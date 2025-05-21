@@ -1,0 +1,28 @@
+<!DOCTYPE HTML>
+<html lang="en" class="govuk-template" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{ layout/main-layout :: layout(~{::title},~{::main})}">
+<title>CWA Bulk Upload - Home</title>
+<main class="govuk-main-wrapper" id="main-content">
+
+    <div class="govuk-width-container">
+        <form action="/upload" method="POST" enctype="multipart/form-data">
+            <div class="govuk-grid-row">
+                <div class="govuk-grid-column-two-thirds">
+                    <h1 class="govuk-heading-xl">CWA Bulk Upload</h1>
+
+                    <div class="govuk-form-group">
+                        <label class="govuk-label" for="file-upload">Select a file to upload</label>
+                        <input class="govuk-file-upload" id="file-upload" name="fileUpload" type="file">
+                    </div>
+
+                </div>
+            </div>
+            <div class="govuk-grid-row">
+                <div class="govuk-grid-column-full">
+                    <button type="submit" class="govuk-button" data-module="govuk-button">Upload</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</main>
+</html>

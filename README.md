@@ -12,3 +12,7 @@ This is a Java based Spring Boot application hosted on [MOJ Cloud Platform](http
 
 ### Run application via Docker
 `docker compose up`
+
+### View application
+
+http://localhost:8082/
