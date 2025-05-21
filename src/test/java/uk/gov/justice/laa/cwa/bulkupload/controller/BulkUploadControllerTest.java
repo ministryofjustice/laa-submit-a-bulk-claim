@@ -30,14 +30,19 @@ class BulkUploadControllerTest {
 
     @Test
     void shouldUploadFile() throws Exception {
-        mockMvc.perform(multipart("/upload").file(new MockMultipartFile("fileUpload", "test.txt", "text/plain", "test".getBytes())))
+        MockMultipartFile uploadFile = new MockMultipartFile("fileUpload", "test.pdf", "text/plain", "test".getBytes());
+
+        mockMvc.perform(multipart("/upload")
+                        .file(uploadFile))
                 .andExpect(status().isOk())
                 .andExpect(view().name("pages/upload-success"));
     }
 
     @Test
     void shouldRejectEmptyFile() throws Exception {
-        mockMvc.perform(multipart("/upload").file(new MockMultipartFile("fileUpload", "empty.txt", "text/plain", new byte[0])))
+        MockMultipartFile emptyFile = new MockMultipartFile("fileUpload", "empty.txt", "text/plain", new byte[0]);
+
+        mockMvc.perform(multipart("/upload").file(emptyFile))
                 .andExpect(status().isOk())
                 .andExpect(view().name("pages/upload-failure"));
     }
