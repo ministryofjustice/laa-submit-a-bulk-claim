@@ -19,3 +19,27 @@ runs:
     - name: Build and test
       run: ./gradlew build
       shell: bash
+
+    - name: Upload checkstyle report
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: checkstyle-report
+        path: build/reports/checkstyle
+        retention-days: 14
+
+    - name: Upload test report
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: test-report
+        path: build/reports/tests
+        retention-days: 14
+
+    - name: Upload jacoco coverage report
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: jacoco-coverage-report
+        path: build/reports/jacoco
+        retention-days: 14
