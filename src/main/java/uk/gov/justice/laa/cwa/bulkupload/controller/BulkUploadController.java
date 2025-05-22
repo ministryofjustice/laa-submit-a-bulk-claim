@@ -6,14 +6,28 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
+/**
+ * Controller for handling the bulk upload requests.
+ */
 @Controller
 public class BulkUploadController {
 
+    /**
+     * Renders the upload page.
+     *
+     * @return the upload page
+     */
     @GetMapping("/")
     public String showUploadPage() {
         return "pages/upload";
     }
 
+    /**
+     * Performs a bulk uploaded for the given file.
+     *
+     * @param file the file to be uploaded
+     * @return the upload results page
+     */
     @PostMapping("/upload")
     public String performUpload(@RequestParam("fileUpload") MultipartFile file) {
         if (file.isEmpty()) {

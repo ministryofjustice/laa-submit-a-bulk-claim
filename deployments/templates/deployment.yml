@@ -1,0 +1,29 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: laa-cwa-bulk-upload-deployment
+  labels:
+    app: laa-cwa-bulk-upload
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: laa-cwa-bulk-upload # this should match the selector in service.yml
+  template:
+    metadata:
+      labels:
+        app: laa-cwa-bulk-upload # this should match the selector in service.yml
+    spec:
+      containers:
+        - name: laa-cwa-bulk-upload
+          image: ${REGISTRY}/${REPOSITORY}:${IMAGE_TAG}
+          ports:
+            - containerPort: 8082
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop: [ "ALL" ]
+            seccompProfile:
+              type: RuntimeDefault
+            runAsNonRoot: true
+            runAsUser: 1001

@@ -3,6 +3,13 @@ plugins {
     id 'org.springframework.boot' version '3.4.5'
     id 'io.spring.dependency-management' version '1.1.7'
     id 'jacoco'
+    id 'checkstyle'
+}
+
+checkstyle {
+    toolVersion = "10.12.4"
+    maxWarnings = 0
+    showViolations = true
 }
 
 repositories {
@@ -37,7 +44,7 @@ jacocoTestReport {
     dependsOn test
     afterEvaluate {
         classDirectories.setFrom(files(classDirectories.files.collect {
-            fileTree(dir: it, exclude: ['**/BulkUploadApplication.class'])
+            fileTree(dir: it, exclude: ['**/BulkUploadApplication.class', '**/*Config.class'])
         }))
     }
 }
@@ -46,7 +53,7 @@ jacocoTestCoverageVerification {
     dependsOn jacocoTestReport
     afterEvaluate {
         classDirectories.setFrom(files(classDirectories.files.collect {
-            fileTree(dir: it, exclude: ['**/BulkUploadApplication.class'])
+            fileTree(dir: it, exclude: ['**/BulkUploadApplication.class', '**/*Config.class'])
         }))
     }
 
