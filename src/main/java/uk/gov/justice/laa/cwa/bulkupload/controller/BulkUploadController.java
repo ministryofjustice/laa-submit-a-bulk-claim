@@ -12,16 +12,26 @@ import org.springframework.web.multipart.MultipartFile;
 @Controller
 public class BulkUploadController {
 
+    /**
+     * Renders the upload page.
+     *
+     * @return the upload page
+     */
     @GetMapping("/")
     public String showUploadPage() {
         return "pages/upload";
+    }
+
+    @GetMapping("/success")
+    public String showSuccessPage() {
+        return "pages/upload-success";
     }
 
     /**
      * Performs a bulk uploaded for the given file.
      *
      * @param file the file to be uploaded
-     * @return the fee
+     * @return the upload results page
      */
     @PostMapping("/upload")
     public String performUpload(@RequestParam("fileUpload") MultipartFile file) {

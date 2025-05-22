@@ -8,6 +8,11 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
  */
 @SpringBootApplication
 public class BulkUploadApplication {
+    /**
+     * The application main method.
+     *
+     * @param args the application arguments.
+     */
     public static void main(String[] args) {
         SpringApplication.run(BulkUploadApplication.class, args);
     }
