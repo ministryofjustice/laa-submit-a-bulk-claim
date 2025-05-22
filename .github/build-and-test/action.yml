@@ -1,0 +1,22 @@
+name: Build and run tests
+
+runs:
+  using: 'composite'
+  steps:
+
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Set up Java
+      uses: actions/setup-java@v4
+      with:
+        distribution: 'corretto'
+        java-version: '21'
+
+    - name: Set up Gradle
+      uses: gradle/gradle-build-action@v2.12.0
+
+    - name: Run unit tests
+      uses: gradle/gradle-build-action@v2.12.0
+      with:
+        arguments: test
