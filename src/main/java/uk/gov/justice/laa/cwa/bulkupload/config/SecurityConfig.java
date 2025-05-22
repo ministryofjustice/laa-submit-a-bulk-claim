@@ -10,20 +10,26 @@ import org.springframework.security.web.SecurityFilterChain;
 
 import static org.springframework.security.config.Customizer.withDefaults;
 
+/**
+ * Spring security configuration for the application.
+ */
 @Profile("!test") // disable security for test profile
 @Configuration
 @EnableMethodSecurity
 @EnableWebSecurity
 public class SecurityConfig {
 
+    /**
+     * Sets up Spring security filter for the application.
+     *
+     * @return the security filter chain.
+     */
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http.authorizeHttpRequests(auth -> auth.anyRequest().authenticated())
                 .saml2Login(withDefaults());
-//                .saml2Logout(withDefaults());
         return http.build();
     }
-
 
 }
 

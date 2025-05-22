@@ -52,7 +52,7 @@ jacocoTestReport {
     dependsOn test
     afterEvaluate {
         classDirectories.setFrom(files(classDirectories.files.collect {
-            fileTree(dir: it, exclude: ['**/BulkUploadApplication.class'])
+            fileTree(dir: it, exclude: ['**/BulkUploadApplication.class', '**/*Config.class'])
         }))
     }
 }
@@ -61,7 +61,7 @@ jacocoTestCoverageVerification {
     dependsOn jacocoTestReport
     afterEvaluate {
         classDirectories.setFrom(files(classDirectories.files.collect {
-            fileTree(dir: it, exclude: ['**/BulkUploadApplication.class'])
+            fileTree(dir: it, exclude: ['**/BulkUploadApplication.class', '**/*Config.class'])
         }))
     }
 
