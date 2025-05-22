@@ -7,10 +7,6 @@ on:
 #      - main
   workflow_dispatch:
 
-permissions:
-  contents: read
-  packages: write
-
 jobs:
   test:
     runs-on: ubuntu-latest
