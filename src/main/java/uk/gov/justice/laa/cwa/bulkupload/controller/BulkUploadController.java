@@ -22,11 +22,6 @@ public class BulkUploadController {
         return "pages/upload";
     }
 
-    @GetMapping("/success")
-    public String showSuccessPage() {
-        return "pages/upload-success";
-    }
-
     /**
      * Performs a bulk uploaded for the given file.
      *

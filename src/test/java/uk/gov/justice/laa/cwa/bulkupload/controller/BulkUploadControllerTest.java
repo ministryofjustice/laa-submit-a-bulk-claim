@@ -15,7 +15,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
 
 @WebMvcTest(BulkUploadController.class)
-@AutoConfigureMockMvc(addFilters = false) // disable security filters
 class BulkUploadControllerTest {
 
     @Autowired

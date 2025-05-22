@@ -2,9 +2,8 @@ name: Build and deploy
 
 on:
   push:
-    branches: [ "add-saml-login" ]
-#    branches:
-#      - main
+    branches:
+      - main
   workflow_dispatch:
 
 jobs:
