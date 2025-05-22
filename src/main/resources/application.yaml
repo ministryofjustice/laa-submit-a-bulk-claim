@@ -1,28 +1,2 @@
 server:
   port: 8082
-  servlet:
-    session:
-      timeout: 30m
-
-spring:
-  security:
-    saml2:
-      relyingparty:
-        registration:
-          entra-id:
-            entity-id: ${SSO_ENTITY_ID}
-#            signing:
-#              credentials:
-#                - private-key-location: classpath:local.key
-#                  certificate-location: classpath:local.crt
-#            singlelogout:
-#              binding: POST
-#              response-url: "{baseUrl}/logout/saml2/slo"
-            assertingparty:
-              entity-id: https://sts.windows.net/${SSO_TENANT_ID}/
-              metadata-uri: https://login.microsoftonline.com/${SSO_TENANT_ID}/federationmetadata/2007-06/federationmetadata.xml?appid=${SSO_APP_ID}
-              singlesignon:
-                url: https://login.microsoftonline.com/${SSO_TENANT_ID}/saml2
-              verification:
-                credentials:
-                  - certificate-location: "classpath:certs/submissiondev.cer"
