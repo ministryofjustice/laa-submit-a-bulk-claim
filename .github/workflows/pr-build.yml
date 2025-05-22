@@ -1,4 +1,4 @@
-name: Feature build and test
+name: PR build and test
 on:
   workflow_dispatch:
   pull_request:
