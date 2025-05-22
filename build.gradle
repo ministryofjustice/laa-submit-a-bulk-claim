@@ -15,9 +15,6 @@ checkstyle {
 repositories {
     // Use Maven Central for resolving dependencies.
     mavenCentral()
-    maven {
-        url "https://build.shibboleth.net/maven/releases/"
-    }
 }
 
 dependencies {
