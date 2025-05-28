@@ -2,6 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: laa-cwa-bulk-upload-deployment
+  namespace: ${NAMESPACE}
   labels:
     app: laa-cwa-bulk-upload
 spec:
@@ -27,3 +28,36 @@ spec:
               type: RuntimeDefault
             runAsNonRoot: true
             runAsUser: 1001
+          env:
+            - name: AUTH_CLIENT_ID
+              valueFrom:
+                secretKeyRef:
+                  name: cwa-bulk-upload-secrets
+                  key: AUTH_CLIENT_ID
+
+            - name: AUTH_CLIENT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: cwa-bulk-upload-secrets
+                  key: AUTH_CLIENT_SECRET
+
+            - name: AUTH_CLOUD_INSTANCE
+              value : https://login.microsoftonline.com
+
+            - name: AUTH_SCOPE
+              valueFrom:
+                secretKeyRef:
+                  name: cwa-bulk-upload-secrets
+                  key: AUTH_SCOPE
+
+            - name: AUTH_TENANT_ID
+              valueFrom:
+                secretKeyRef:
+                  name: cwa-bulk-upload-secrets
+                  key: AUTH_TENANT_ID
+
+            - name: SDS_API_URL
+              valueFrom:
+                secretKeyRef:
+                  name: cwa-bulk-upload-secrets
+                  key: SDS_API_URL

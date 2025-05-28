@@ -3,7 +3,8 @@ name: Build and deploy
 on:
   push:
     branches:
-      - main
+#      - main
+      - deploy-to-all-envs
   workflow_dispatch:
 
 jobs:
