@@ -71,3 +71,9 @@ jobs:
     with:
       environment: dev
     secrets: inherit
+  deploy-prod:
+    needs: deploy-dev
+    uses: ./.github/workflows/deploy-to-env.yml
+    with:
+      environment: prod
+    secrets: inherit
