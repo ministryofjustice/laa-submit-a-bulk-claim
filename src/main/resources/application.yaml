@@ -1,2 +1,18 @@
 server:
   port: 8082
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 10MB
+
+azure:
+  entra-id:
+    client-id: ${AUTH_CLIENT_ID}
+    client-secret: ${AUTH_CLIENT_SECRET}
+    cloud-instance: ${AUTH_CLOUD_INSTANCE}
+    scope: ${AUTH_SCOPE}
+    tenant-id: ${AUTH_TENANT_ID}
+
+sds-api:
+  url: ${SDS_API_URL}
+
