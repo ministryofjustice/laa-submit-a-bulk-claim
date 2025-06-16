@@ -1,0 +1,88 @@
+<!DOCTYPE HTML>
+<html lang="en" class="govuk-template" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{ layout/main-layout :: layout(~{::title},~{::main})}">
+<title>CWA Bulk Upload - Submission Results</title>
+<main class="govuk-main-wrapper" id="main-content">
+    <div class="govuk-width-container">
+        <div class="govuk-grid-row">
+            <div>
+                <a href="/" class="govuk-back-link">Back</a>
+                <h1 class="govuk-heading-xl">CWA Bulk Upload</h1>
+
+                <div th:if="${errors == null}">
+                    <h2 class="govuk-heading-l">Submission Success</h2>
+                </div>
+                <div th:unless="${errors == null}">
+                    <h2 class="govuk-heading-l">Submission Failure</h2>
+                </div>
+                <div class="upload-table">
+                <table class="govuk-table">
+                    <caption class="govuk-table__caption govuk-table__caption--m">Bulk upload summary</caption>
+                    <thead class="govuk-table__head">
+                    <tr class="govuk-table__row">
+                        <th scope="col" class="govuk-table__header">SUMMARY_ID</th>
+                        <th scope="col" class="govuk-table__header">LSC_ACCOUNT_NUM</th>
+                        <th scope="col" class="govuk-table__header">SCHEDULE_NUM</th>
+                        <th scope="col" class="govuk-table__header">TOTAL_OUTCOMES</th>
+                        <th scope="col" class="govuk-table__header">SUCCESSFUL_OUTCOMES</th>
+                        <th scope="col" class="govuk-table__header">PROBLEM_OUTCOMES</th>
+                        <th scope="col" class="govuk-table__header">DUPLICATE_OUTCOMES</th>
+                        <th scope="col" class="govuk-table__header">INVALID_OUTCOMES</th>
+                        <th scope="col" class="govuk-table__header">AM_BULK_FILE_ID</th>
+                    </tr>
+                    </thead>
+                    <tbody class="govuk-table__body">
+                    <tr th:each="summaryLine : ${summary}" class="govuk-table__row" >
+                        <td th:text="${summaryLine.summaryId}" class="govuk-table__cell"></td>
+                        <td th:text="${summaryLine.lscAccountNum}" class="govuk-table__cell"></td>
+                        <td th:text="${summaryLine.scheduleNum}" class="govuk-table__cell"></td>
+                        <td th:text="${summaryLine.totalOutcomes}" class="govuk-table__cell"></td>
+                        <td th:text="${summaryLine.successfulOutcomes}" class="govuk-table__cell"></td>
+                        <td th:text="${summaryLine.problemOutcomes}" class="govuk-table__cell"></td>
+                        <td th:text="${summaryLine.duplicateOutcomes}" class="govuk-table__cell"></td>
+                        <td th:text="${summaryLine.invalidOutcomes}" class="govuk-table__cell"></td>
+                        <td th:text="${summaryLine.fileId}" class="govuk-table__cell"></td>
+                    </tr>
+                    </tbody>
+                </table>
+                </div>
+
+                <div th:if="${errors != null}" class="upload-table" >
+                <table class="govuk-table">
+                    <caption class="govuk-table__caption govuk-table__caption--m">Bulk upload error details</caption>
+                    <thead class="govuk-table__head">
+                    <tr class="govuk-table__row">
+                        <th scope="col" class="govuk-table__header">SUMMARY_ID</th>
+                        <th scope="col" class="govuk-table__header">ITEM_CODE</th>
+                        <th scope="col" class="govuk-table__header">UFN</th>
+                        <th scope="col" class="govuk-table__header">CLIENT_SURNAME</th>
+                        <th scope="col" class="govuk-table__header">ERROR_TYPE</th>
+                        <th scope="col" class="govuk-table__header">DESCRIPTION</th>
+                        <th scope="col" class="govuk-table__header">AM_BULK_FILE_ID</th>
+                        <th scope="col" class="govuk-table__header">AM_BULK_HEADER_ID</th>
+                        <th scope="col" class="govuk-table__header">AM_BULK_LINE_ID</th>
+                        <th scope="col" class="govuk-table__header">ERROR_ID</th>
+                    </tr>
+                    </thead>
+                    <tbody class="govuk-table__body">
+                    <tr th:each="error : ${errors}" class="govuk-table__row" >
+                        <td th:text="${error.summaryId}" class="govuk-table__cell"></td>
+                        <td th:text="${error.itemCode}" class="govuk-table__cell"></td>
+                        <td th:text="${error.ufn}" class="govuk-table__cell"></td>
+                        <td th:text="${error.clientSurname}" class="govuk-table__cell"></td>
+                        <td th:text="${error.errorType}" class="govuk-table__cell"></td>
+                        <td th:text="${error.description}" class="govuk-table__cell"></td>
+                        <td th:text="${error.fileId}" class="govuk-table__cell"></td>
+                        <td th:text="${error.amBulkHeaderId}" class="govuk-table__cell"></td>
+                        <td th:text="${error.amBulkLineId}" class="govuk-table__cell"></td>
+                        <td th:text="${error.errorId}" class="govuk-table__cell"></td>
+                    </tr>
+                    </tbody>
+                </table>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+</html>

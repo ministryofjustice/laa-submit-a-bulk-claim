@@ -61,3 +61,15 @@ spec:
                 secretKeyRef:
                   name: cwa-bulk-upload-secrets
                   key: SDS_API_URL
+
+            - name: CWA_API_URL
+              valueFrom:
+                secretKeyRef:
+                  name: cwa-bulk-upload-secrets
+                  key: CWA_API_URL
+
+            - name: CWA_API_TIMEOUT
+              valueFrom:
+                secretKeyRef:
+                  name: cwa-bulk-upload-secrets
+                  key: CWA_API_TIMEOUT

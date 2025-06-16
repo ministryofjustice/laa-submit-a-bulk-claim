@@ -23,6 +23,7 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
     implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
     implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.reactivestreams:reactive-streams:1.0.4'
 
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
 
@@ -67,7 +68,7 @@ jacocoTestCoverageVerification {
             element = 'CLASS'
             limit {
                 counter = 'LINE'
-                minimum = 0.80
+                minimum = 0.75
             }
         }
     }

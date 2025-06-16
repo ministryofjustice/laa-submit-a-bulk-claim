@@ -37,9 +37,10 @@ public class EntraIdConfig {
     @Value("${azure.entra-id.cloud-instance}")
     private String cloudInstance;
 
-
     /**
      * Client registration repository.
+     *
+     * @return the client registration repository
      */
     @Bean
     public ClientRegistrationRepository clientRegistrationRepository() {
@@ -47,7 +48,10 @@ public class EntraIdConfig {
     }
 
     /**
-     * OAuth client service.
+     * OAuth2 authorized client service.
+     *
+     * @param clientRegistrationRepository the client registration repository
+     * @return the OAuth2 authorized client service
      */
     @Bean
     public OAuth2AuthorizedClientService authorizedClientService(ClientRegistrationRepository clientRegistrationRepository) {
@@ -55,7 +59,11 @@ public class EntraIdConfig {
     }
 
     /**
-     * OAuth Client manager.
+     * OAuth2 authorized client manager.
+     *
+     * @param clientRegistrationRepository the client registration repository
+     * @param authorizedClientService the authorized client service
+     * @return the OAuth2 authorized client manager
      */
     @Bean
     public OAuth2AuthorizedClientManager authorizedClientManager(ClientRegistrationRepository clientRegistrationRepository,

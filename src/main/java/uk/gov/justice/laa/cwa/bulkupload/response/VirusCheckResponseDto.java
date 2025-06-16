@@ -6,7 +6,7 @@ import lombok.Data;
  * The DTO class for upload response.
  */
 @Data
-public class UploadResponseDto {
+public class VirusCheckResponseDto {
     private String detail;
     private String success;
 }

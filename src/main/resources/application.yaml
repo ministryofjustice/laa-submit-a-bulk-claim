@@ -16,3 +16,7 @@ azure:
 sds-api:
   url: ${SDS_API_URL}
 
+cwa-api:
+  url: ${CWA_API_URL}
+  timeout: ${CWA_API_TIMEOUT}
+

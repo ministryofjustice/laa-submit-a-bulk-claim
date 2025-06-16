@@ -1,0 +1,30 @@
+{
+  "request": {
+    "method": "GET",
+    "urlPath": "/api/get_bulkload_summary",
+    "queryParameters": {
+      "am_bulk_file_id": {
+        "equalTo": "324"
+      }
+    }
+  },
+  "response": {
+    "headers": {
+      "Content-Type": "application/json"
+    },
+    "status": 200,
+    "jsonBody": [
+      {
+        "SUMMARY_ID": 1,
+        "LSC_ACCOUNT_NUM": "ACC123456",
+        "SCHEDULE_NUM": "SCH123456",
+        "TOTAL_OUTCOMES": 10,
+        "SUCCESSFUL_OUTCOMES": 8,
+        "PROBLEM_OUTCOMES": 2,
+        "DUPLICATE_OUTCOMES": 1,
+        "INVALID_OUTCOMES": 1,
+        "AM_BULK_FILE_ID": 324
+      }
+    ]
+  }
+}

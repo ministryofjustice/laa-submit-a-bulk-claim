@@ -3,25 +3,78 @@
       th:replace="~{ layout/main-layout :: layout(~{::title},~{::main})}">
 <title>CWA Bulk Upload - Home</title>
 <main class="govuk-main-wrapper" id="main-content">
-
-    <div class="govuk-width-container">
-        <form th:action="@{/upload}" method="POST" enctype="multipart/form-data">
+    <form th:action="@{/upload}" method="POST" enctype="multipart/form-data">
+        <div class="govuk-width-container">
             <div class="govuk-grid-row">
                 <div class="govuk-grid-column-two-thirds">
+                    <div th:if="${error != null}" class="govuk-error-summary" data-module="govuk-error-summary">
+                        <div role="alert">
+                            <h2 class="govuk-error-summary__title">
+                                There is a problem
+                            </h2>
+                            <div class="govuk-error-summary__body">
+                                <ul class="govuk-list govuk-error-summary__list">
+                                    <li>
+                                        <a th:text="${error}" href="#"></a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
                     <h1 class="govuk-heading-xl">CWA Bulk Upload</h1>
                     <div class="govuk-form-group">
-                        <label class="govuk-label" for="file-upload">Select a file to upload</label>
-                        <input class="govuk-file-upload" id="file-upload" name="fileUpload" type="file">
+                        <label class="govuk-label" for="provider">
+                            Select provider
+                        </label>
+                        <select class="govuk-select" id="provider" name="provider">
+                            <option value="">select option</option>
+                            <option th:each="provider : ${providers}" th:value="${provider.vendorId}" th:text="${provider.vendorName}"></option>
+                        </select>
                     </div>
 
+
+                    <div class="govuk-tabs" data-module="govuk-tabs">
+                        <h2 class="govuk-tabs__title">
+                            Contents
+                        </h2>
+                        <ul class="govuk-tabs__list">
+                            <li class="govuk-tabs__list-item govuk-tabs__list-item--selected">
+                                <a class="govuk-tabs__tab" href="#upload-file">
+                                    Upload
+                                </a>
+                            </li>
+                            <li class="govuk-tabs__list-item">
+                                <a class="govuk-tabs__tab" href="#search-upload">
+                                    Search
+                                </a>
+                            </li>
+                        </ul>
+                        <div class="govuk-tabs__panel" id="upload-file">
+                            <h2 class="govuk-heading-l">Upload a file</h2>
+
+                            <div class="govuk-form-group">
+                                <label class="govuk-label" for="file-upload">Select a file to upload</label>
+                                <input class="govuk-file-upload" id="file-upload" name="fileUpload" type="file"  accept=".csv,.xml,.txt">
+                                <button type="submit" class="govuk-button" data-module="govuk-button">Upload</button>
+                            </div>
+
+                        </div>
+
+                        <div class="govuk-tabs__panel govuk-tabs__panel--hidden" id="search-upload">
+                            <h2 class="govuk-heading-l">Search By Reference</h2>
+
+                            <div class="govuk-form-group">
+                                <h1 class="govuk-label-wrapper">
+                                    <label class="govuk-label" for="searchTerm">Enter File Reference</label>
+                                </h1>
+                                <input class="govuk-input" id="searchTerm" name="searchTerm" type="text">
+                            </div>
+                            <button type="submit" class="govuk-button"  th:formaction="@{/search}" data-module="govuk-button">Search</button>
+                        </div>
+                    </div>
                 </div>
             </div>
-            <div class="govuk-grid-row">
-                <div class="govuk-grid-column-full">
-                    <button type="submit" class="govuk-button" data-module="govuk-button">Upload</button>
-                </div>
-            </div>
-        </form>
-    </div>
+        </div>
+    </form>
 </main>
 </html>

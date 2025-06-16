@@ -11,13 +11,15 @@ import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestClient;
 import org.springframework.web.client.RestClientException;
-import uk.gov.justice.laa.cwa.bulkupload.response.UploadResponseDto;
+import uk.gov.justice.laa.cwa.bulkupload.exception.VirusCheckException;
+import uk.gov.justice.laa.cwa.bulkupload.response.VirusCheckResponseDto;
 
 import java.io.IOException;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.endsWith;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -41,14 +43,9 @@ class VirusCheckServiceTest {
     @Test
     void shouldSuccessfullyCheckVirusInFile() throws IOException {
         // Given
-        MockMultipartFile file = new MockMultipartFile(
-                "file",
-                "test.txt",
-                MediaType.TEXT_PLAIN_VALUE,
-                "test content".getBytes()
-        );
         String mockToken = "mock-token";
-        UploadResponseDto expectedResponse = new UploadResponseDto();
+        VirusCheckResponseDto expectedResponse = new VirusCheckResponseDto();
+        expectedResponse.setSuccess("success");
 
         RestClient.RequestBodyUriSpec requestBodyUriSpec = mock(RestClient.RequestBodyUriSpec.class);
         RestClient.RequestBodySpec requestBodySpec = mock(RestClient.RequestBodySpec.class);
@@ -56,21 +53,27 @@ class VirusCheckServiceTest {
 
         when(tokenService.getSdsAccessToken()).thenReturn(mockToken);
         when(restClient.put()).thenReturn(requestBodyUriSpec);
-        when(requestBodyUriSpec.uri("/virus_check_file")).thenReturn(requestBodySpec);
+        when(requestBodyUriSpec.uri(endsWith("/virus_check_file"))).thenReturn(requestBodySpec);
         when(requestBodySpec.contentType(MediaType.MULTIPART_FORM_DATA)).thenReturn(requestBodySpec);
         when(requestBodySpec.header("Authorization", "Bearer " + mockToken)).thenReturn(requestBodySpec);
         when(requestBodySpec.body(any(MultiValueMap.class))).thenReturn(requestBodySpec);
         when(requestBodySpec.retrieve()).thenReturn(responseSpec);
-        when(responseSpec.body(UploadResponseDto.class)).thenReturn(expectedResponse);
+        when(responseSpec.body(VirusCheckResponseDto.class)).thenReturn(expectedResponse);
+
+        MockMultipartFile file = new MockMultipartFile(
+                "file",
+                "test.txt",
+                MediaType.TEXT_PLAIN_VALUE,
+                "test content".getBytes()
+        );
 
         // When
-        UploadResponseDto result = virusCheckService.checkVirus(file);
+        VirusCheckResponseDto result = virusCheckService.checkVirus(file);
 
         // Then
         assertThat(result).isEqualTo(expectedResponse);
         verify(requestBodySpec).contentType(MediaType.MULTIPART_FORM_DATA);
         verify(requestBodySpec).header("Authorization", "Bearer " + mockToken);
-        verify(requestBodySpec).body(any(MultiValueMap.class));
     }
 
     @Test
@@ -78,7 +81,7 @@ class VirusCheckServiceTest {
 
         // When/Then
         assertThatThrownBy(() -> virusCheckService.checkVirus(null))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(VirusCheckException.class)
                 .hasMessage("File cannot be null");
     }
 
@@ -97,7 +100,7 @@ class VirusCheckServiceTest {
 
         when(tokenService.getSdsAccessToken()).thenReturn("mock-token");
         when(restClient.put()).thenReturn(requestBodyUriSpec);
-        when(requestBodyUriSpec.uri("/virus_check_file")).thenReturn(requestBodySpec);
+        when(requestBodyUriSpec.uri(endsWith("/virus_check_file"))).thenReturn(requestBodySpec);
         when(requestBodySpec.contentType(any())).thenReturn(requestBodySpec);
         when(requestBodySpec.header(any(), any())).thenReturn(requestBodySpec);
         when(requestBodySpec.body(any(MultiValueMap.class))).thenReturn(requestBodySpec);

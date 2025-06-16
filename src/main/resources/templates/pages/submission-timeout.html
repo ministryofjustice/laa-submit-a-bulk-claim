@@ -1,7 +1,7 @@
 <!DOCTYPE HTML>
 <html lang="en" class="govuk-template" xmlns:th="http://www.thymeleaf.org"
       th:replace="~{ layout/main-layout :: layout(~{::title},~{::main})}">
-<title>CWA Bulk Upload - Upload Failure</title>
+<title>CWA Bulk Upload - Submission Timeout</title>
 <main class="govuk-main-wrapper" id="main-content">
     <div class="govuk-width-container">
         <div class="govuk-grid-row">
@@ -9,7 +9,9 @@
                 <a href="/" class="govuk-back-link">Back</a>
                 <h1 class="govuk-heading-xl">CWA Bulk Upload</h1>
 
-                <h3 class="govuk-heading-m">Bulk upload failed!</h3>
+                <h3 class="govuk-heading-m">File submission timeout</h3>
+                <p class="govuk-body">Please try search by reference : <span class="govuk-!-font-weight-bold" th:text="${fileId}">Test</span> later, the submission is taking too long.</p>
+
             </div>
         </div>
     </div>

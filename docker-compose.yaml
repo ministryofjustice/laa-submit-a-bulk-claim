@@ -1,6 +1,22 @@
 services:
-  app:
-    build:
-      context: .
+ # app:
+  #  build:
+  #   context: .
+  # ports:
+  #   - "8082:8082"
+
+  cwa-service:
+    image: wiremock/wiremock:3.12.1
+    container_name: cwa-service
+    entrypoint:
+      [
+        "/docker-entrypoint.sh",
+        "--global-response-templating",
+        "--disable-gzip",
+        "--verbose",
+      ]
+    volumes:
+      - ./wiremock/mappings/cwa-service:/home/wiremock/mappings
+    restart: always
     ports:
-      - "8082:8082"
+      - "8090:8080"
