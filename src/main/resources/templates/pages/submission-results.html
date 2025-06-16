@@ -5,8 +5,17 @@
 <main class="govuk-main-wrapper" id="main-content">
     <div class="govuk-width-container">
         <div class="govuk-grid-row">
-            <div>
+            <div class="govuk-grid-column-one-half">
                 <a href="/" class="govuk-back-link">Back</a>
+            </div>
+            <div class="govuk-grid-column-one-half govuk-!-text-align-right">
+                <button type="submit" class="govuk-button govuk-button govuk-button--secondary" data-module="govuk-button" id="print-button" >
+                    Print this page
+                </button>
+            </div>
+        </div>
+        <div class="govuk-grid-row">
+            <div>
                 <h1 class="govuk-heading-xl">CWA Bulk Upload</h1>
 
                 <div th:if="${errors == null}">
@@ -84,5 +93,6 @@
             </div>
         </div>
     </div>
+    <script src="/javascripts/printButton.js"></script>
 </main>
 </html>
