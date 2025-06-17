@@ -2,10 +2,12 @@ package uk.gov.justice.laa.cwa.bulkupload.controller;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.StringUtils;
+import org.springframework.util.unit.DataSize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -26,6 +28,9 @@ import java.security.Principal;
 @Controller
 public class BulkUploadController {
 
+
+    @Value("${upload-max-file-size:10MB}")
+    private String fileSizeLimit;
     private final VirusCheckService virusCheckService;
     private final CwaUploadService cwaUploadService;
     private final ProviderHelper providerHelper;
@@ -64,16 +69,16 @@ public class BulkUploadController {
      */
     @PostMapping("/upload")
     public String performUpload(@RequestParam("fileUpload") MultipartFile file, String provider, Model model, Principal principal) {
+        long maxFileSize = DataSize.parse(fileSizeLimit).toBytes();
+
         if (!StringUtils.hasText(provider)) {
-            model.addAttribute("error", "Please select a provider");
-            providerHelper.populateProviders(model, principal);
-            return "pages/upload";
+            return showErrorOnUpload(model, principal, provider, "Please select a provider");
         }
         if (file.isEmpty()) {
-            model.addAttribute("error", "Please select a file to upload");
-            providerHelper.populateProviders(model, principal);
-            model.addAttribute("provider", provider);
-            return "pages/upload";
+            return showErrorOnUpload(model, principal, provider, "Please select a file to upload");
+        }
+        if (file.getSize() > maxFileSize) {
+            return showErrorOnUpload(model, principal, provider, "File size must not exceed 10MB");
         }
 
         try {
@@ -89,5 +94,21 @@ public class BulkUploadController {
         }
 
         return "pages/submission";
+    }
+
+    /**
+     * Handles errors during file upload.
+     *
+     * @param model        the model to be populated with error information
+     * @param principal    the authenticated user
+     * @param provider     the selected provider
+     * @param errorMessage the error message to display
+     * @return the upload page with error information
+     */
+    private String showErrorOnUpload(Model model, Principal principal, String provider, String errorMessage) {
+        model.addAttribute("error", errorMessage);
+        providerHelper.populateProviders(model, principal);
+        model.addAttribute("provider", provider);
+        return "pages/upload";
     }
 }

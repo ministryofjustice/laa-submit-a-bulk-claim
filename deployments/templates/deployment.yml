@@ -73,3 +73,9 @@ spec:
                 secretKeyRef:
                   name: cwa-bulk-upload-secrets
                   key: CWA_API_TIMEOUT
+
+            - name: UPLOAD_MAX_FILE_SIZE
+              valueFrom:
+                secretKeyRef:
+                  name: cwa-bulk-upload-secrets
+                  key: UPLOAD_MAX_FILE_SIZE

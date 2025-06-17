@@ -6,10 +6,19 @@
     .upload-table {
         overflow: visible !important;
     }
+
     .govuk-table {
         width: 100%;
         font-size: 8px;
         table-layout: auto;
         word-break: break-all;
+    }
+
+    #print-button,
+    .govuk-link,
+    .govuk-header,
+    .govuk-footer,
+    .govuk-back-link {
+        display: none;
     }
 }
