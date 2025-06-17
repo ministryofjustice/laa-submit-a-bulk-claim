@@ -14,8 +14,6 @@ import org.springframework.web.client.RestClientException;
 import uk.gov.justice.laa.cwa.bulkupload.exception.VirusCheckException;
 import uk.gov.justice.laa.cwa.bulkupload.response.VirusCheckResponseDto;
 
-import java.io.IOException;
-
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
@@ -41,7 +39,7 @@ class VirusCheckServiceTest {
     }
 
     @Test
-    void shouldSuccessfullyCheckVirusInFile() throws IOException {
+    void shouldSuccessfullyCheckVirusInFile() {
         // Given
         String mockToken = "mock-token";
         VirusCheckResponseDto expectedResponse = new VirusCheckResponseDto();
@@ -86,7 +84,7 @@ class VirusCheckServiceTest {
     }
 
     @Test
-    void shouldHandleRestClientException() throws IOException {
+    void shouldHandleRestClientException() {
         // Given
         MockMultipartFile file = new MockMultipartFile(
                 "file",

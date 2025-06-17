@@ -74,7 +74,7 @@ class BulkUploadControllerTest {
 
         mockMvc.perform(get("/"))
                 .andExpect(status().isOk())
-                .andExpect(view().name("pages/upload-error"))
+                .andExpect(view().name("error"))
                 .andExpect(content().string(containsString("Something went wrong. The error has been logged")));
     }
 

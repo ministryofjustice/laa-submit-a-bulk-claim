@@ -46,12 +46,12 @@ public class BulkUploadController {
             } else {
                 log.error("Error fetching providers", e);
                 model.addAttribute("error", "An error occurred while fetching providers.");
-                return "pages/upload-error";
+                return "error";
             }
         } catch (Exception e) {
             log.error("Unexpected error fetching providers", e);
             model.addAttribute("error", "An unexpected error occurred while fetching providers.");
-            return "pages/upload-error";
+            return "error";
         }
         return "pages/upload";
     }
@@ -72,6 +72,7 @@ public class BulkUploadController {
         if (file.isEmpty()) {
             model.addAttribute("error", "Please select a file to upload");
             providerHelper.populateProviders(model, principal);
+            model.addAttribute("provider", provider);
             return "pages/upload";
         }
 

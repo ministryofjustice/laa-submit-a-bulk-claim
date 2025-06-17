@@ -45,7 +45,7 @@ public class SubmissionController {
     public String submitFile(String fileId, String provider, Model model, Principal principal) {
         // This method will handle the form submission logic
         // For now, we just log the submission and return a success view
-        ValidateResponseDto validateResponseDto = null;
+        ValidateResponseDto validateResponseDto;
         ExecutorService executor = Executors.newSingleThreadExecutor();
         try {
             Future<ValidateResponseDto> future = executor.submit(() -> cwaUploadService.processSubmission(fileId, principal.getName().toUpperCase(),

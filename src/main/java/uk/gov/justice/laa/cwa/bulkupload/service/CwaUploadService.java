@@ -48,7 +48,7 @@ public class CwaUploadService {
         MultipartBodyBuilder builder = new MultipartBodyBuilder();
         builder.part("file", file.getResource());
         builder.part("username", userName);
-        //  builder.part("provider", provider);
+        builder.part("vendor_id", provider);
 
         return restClient.post()
                 .uri(cwaApiUrl + "/api/upload")
