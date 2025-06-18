@@ -4,7 +4,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.springframework.ui.Model;
-import uk.gov.justice.laa.cwa.bulkupload.response.VendorDto;
+import uk.gov.justice.laa.cwa.bulkupload.response.CwaVendorDto;
 import uk.gov.justice.laa.cwa.bulkupload.service.CwaUploadService;
 
 import java.security.Principal;
@@ -35,7 +35,7 @@ class ProviderHelperTest {
 
     @Test
     void populateProviders_shouldAddProvidersToModel() {
-        List<VendorDto> providers = List.of(new VendorDto());
+        List<CwaVendorDto> providers = List.of(new CwaVendorDto());
         when(cwaUploadService.getProviders("TESTUSER")).thenReturn(providers);
 
         providerHelper.populateProviders(model, principal);

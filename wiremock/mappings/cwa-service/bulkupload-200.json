@@ -1,0 +1,21 @@
+{
+  "request": {
+    "method": "POST",
+    "urlPath": "/api/upload",
+    "bodyPatterns": [
+      {
+        "doesNotMatch": ".*error\\.csv.*"
+      }
+    ]
+  },
+  "response": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json"
+    },
+    "jsonBody": {
+      "am_bulk_file_id": 324,
+      "message": "Record inserted into XXLSC_AM_BULK_LOAD."
+    }
+  }
+}

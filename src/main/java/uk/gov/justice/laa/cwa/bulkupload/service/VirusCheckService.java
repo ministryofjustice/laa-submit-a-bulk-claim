@@ -10,7 +10,7 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.client.RestClient;
 import org.springframework.web.multipart.MultipartFile;
 import uk.gov.justice.laa.cwa.bulkupload.exception.VirusCheckException;
-import uk.gov.justice.laa.cwa.bulkupload.response.VirusCheckResponseDto;
+import uk.gov.justice.laa.cwa.bulkupload.response.SdsVirusCheckResponseDto;
 
 /**
  * Service class for performing virus check.
@@ -31,23 +31,23 @@ public class VirusCheckService {
      * @param file the file
      * @return the result
      */
-    public VirusCheckResponseDto checkVirus(MultipartFile file) {
+    public SdsVirusCheckResponseDto checkVirus(MultipartFile file) {
         if (file == null) {
             throw new VirusCheckException("File cannot be null");
         }
 
         MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
         body.add("file", file.getResource());
-        VirusCheckResponseDto virusCheckResponseDto = restClient.put()
+        SdsVirusCheckResponseDto sdsVirusCheckResponseDto = restClient.put()
                 .uri(sdsApiUrl + "/virus_check_file")
                 .contentType(MediaType.MULTIPART_FORM_DATA)
                 .header("Authorization", "Bearer " + tokenService.getSdsAccessToken())
                 .body(body)
                 .retrieve()
-                .body(VirusCheckResponseDto.class);
-        if (null == virusCheckResponseDto || !StringUtils.hasText(virusCheckResponseDto.getSuccess())) {
+                .body(SdsVirusCheckResponseDto.class);
+        if (null == sdsVirusCheckResponseDto || !StringUtils.hasText(sdsVirusCheckResponseDto.getSuccess())) {
             throw new VirusCheckException("Virus check failed");
         }
-        return virusCheckResponseDto;
+        return sdsVirusCheckResponseDto;
     }
 }

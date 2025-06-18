@@ -1,0 +1,20 @@
+{
+  "request": {
+    "method": "POST",
+    "urlPath": "/api/upload",
+    "bodyPatterns": [
+      {
+        "matches": ".*error\\.csv.*"
+      }
+    ]
+  },
+  "response": {
+    "headers": {
+      "Content-Type": "application/json"
+    },
+    "status": 400,
+    "jsonBody": {
+      "detail": "Declared content type 'text/csv' does not match actual file type 'text/plain'."
+    }
+  }
+}

@@ -45,17 +45,14 @@ public class BulkUploadController {
         try {
             providerHelper.populateProviders(model, principal);
         } catch (HttpClientErrorException e) {
+            log.error("HTTP client error fetching providers from CWA with message: {} ", e.getMessage());
             if (e.getStatusCode() == HttpStatus.FORBIDDEN) {
-                log.warn("403 Forbidden when fetching providers");
                 return "pages/upload-forbidden";
             } else {
-                log.error("Error fetching providers", e);
-                model.addAttribute("error", "An error occurred while fetching providers.");
                 return "error";
             }
         } catch (Exception e) {
-            log.error("Unexpected error fetching providers", e);
-            model.addAttribute("error", "An unexpected error occurred while fetching providers.");
+            log.error("Error fetching providers from CWA with message: {} ", e.getMessage());
             return "error";
         }
         return "pages/upload";
@@ -83,14 +80,19 @@ public class BulkUploadController {
 
         try {
             virusCheckService.checkVirus(file);
+        } catch (Exception e) {
+            log.error("Virus check failed with message:{}", e.getMessage());
+            return showErrorOnUpload(model, principal, provider, "The file failed the virus scan. Please upload a clean file.");
+        }
+
+        try {
             CwaUploadResponseDto cwaUploadResponseDto = cwaUploadService.uploadFile(file, provider, principal.getName().toUpperCase());
             model.addAttribute("fileId", cwaUploadResponseDto.getFileId());
             model.addAttribute("provider", provider);
             log.info("CwaUploadResponseDto :: {}", cwaUploadResponseDto.getFileId());
         } catch (Exception e) {
-            log.error("Exception", e);
-            model.addAttribute("error", "An error occurred while uploading the file");
-            return "pages/upload";
+            log.error("Failed to upload file to CWA with  message:{}", e.getMessage());
+            return showErrorOnUpload(model, principal, provider, "An error occurred while uploading the file.");
         }
 
         return "pages/submission";

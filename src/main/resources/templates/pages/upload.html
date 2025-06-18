@@ -67,7 +67,7 @@
                                 <h1 class="govuk-label-wrapper">
                                     <label class="govuk-label" for="searchTerm">Enter File Reference</label>
                                 </h1>
-                                <input class="govuk-input" id="searchTerm" name="searchTerm" type="text">
+                                <input class="govuk-input govuk-input--width-10" id="searchTerm" maxlength="10" name="searchTerm" type="text"  placeholder="Enter file reference" aria-describedby="searchTerm-hint">
                             </div>
                             <button type="submit" class="govuk-button"  th:formaction="@{/search}" data-module="govuk-button">Search</button>
                         </div>

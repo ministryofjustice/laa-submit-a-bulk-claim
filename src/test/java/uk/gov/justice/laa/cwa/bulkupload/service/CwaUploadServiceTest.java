@@ -11,11 +11,11 @@ import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestClient;
 import org.springframework.web.client.RestClientException;
+import uk.gov.justice.laa.cwa.bulkupload.response.CwaSubmissionResponseDto;
 import uk.gov.justice.laa.cwa.bulkupload.response.CwaUploadErrorResponseDto;
 import uk.gov.justice.laa.cwa.bulkupload.response.CwaUploadResponseDto;
 import uk.gov.justice.laa.cwa.bulkupload.response.CwaUploadSummaryResponseDto;
-import uk.gov.justice.laa.cwa.bulkupload.response.ValidateResponseDto;
-import uk.gov.justice.laa.cwa.bulkupload.response.VendorDto;
+import uk.gov.justice.laa.cwa.bulkupload.response.CwaVendorDto;
 
 import java.util.List;
 import java.util.function.Function;
@@ -106,7 +106,7 @@ class CwaUploadServiceTest {
         String fileId = "file-123";
         String userName = "test-user";
         String provider = "test-provider";
-        ValidateResponseDto expected = new ValidateResponseDto();
+        CwaSubmissionResponseDto expected = new CwaSubmissionResponseDto();
 
         RestClient.RequestBodyUriSpec uriSpec = mock(RestClient.RequestBodyUriSpec.class);
         RestClient.RequestBodySpec bodySpec = mock(RestClient.RequestBodySpec.class);
@@ -117,8 +117,8 @@ class CwaUploadServiceTest {
         when(uriSpec.uri(endsWith("/process_submission"), any(Function.class))).thenReturn(bodySpec);
         when(bodySpec.header(any(), any())).thenReturn(bodySpec);
         when(bodySpec.retrieve()).thenReturn(responseSpec);
-        when(responseSpec.body(ValidateResponseDto.class)).thenReturn(expected);
-        ValidateResponseDto result = cwaUploadService.processSubmission(fileId, userName, provider);
+        when(responseSpec.body(CwaSubmissionResponseDto.class)).thenReturn(expected);
+        CwaSubmissionResponseDto result = cwaUploadService.processSubmission(fileId, userName, provider);
         assertThat(result).isEqualTo(expected);
     }
 
@@ -144,8 +144,8 @@ class CwaUploadServiceTest {
         RestClient.RequestHeadersSpec headersSpec = mock(RestClient.RequestHeadersSpec.class);
         RestClient.ResponseSpec responseSpec = mock(RestClient.ResponseSpec.class);
 
-        VendorDto vendor = new VendorDto();
-        List<VendorDto> expected = List.of(vendor);
+        CwaVendorDto vendor = new CwaVendorDto();
+        List<CwaVendorDto> expected = List.of(vendor);
 
         when(tokenService.getSdsAccessToken()).thenReturn("token");
         when(restClient.get()).thenReturn(uriSpec);
@@ -154,7 +154,7 @@ class CwaUploadServiceTest {
         when(headersSpec.retrieve()).thenReturn(responseSpec);
         when(responseSpec.body(any(ParameterizedTypeReference.class))).thenReturn(expected);
 
-        List<VendorDto> result = cwaUploadService.getProviders("user");
+        List<CwaVendorDto> result = cwaUploadService.getProviders("user");
         assertThat(result).isEqualTo(expected);
     }
 
@@ -271,7 +271,7 @@ class CwaUploadServiceTest {
         when(headersSpec.retrieve()).thenReturn(responseSpec);
         when(responseSpec.body(any(ParameterizedTypeReference.class))).thenReturn(List.of());
 
-        List<VendorDto> result = cwaUploadService.getProviders("user");
+        List<CwaVendorDto> result = cwaUploadService.getProviders("user");
         assertThat(result).isEmpty();
     }
 }

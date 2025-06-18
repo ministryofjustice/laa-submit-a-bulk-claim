@@ -2,7 +2,7 @@ package uk.gov.justice.laa.cwa.bulkupload.helper;
 
 import org.springframework.stereotype.Component;
 import org.springframework.ui.Model;
-import uk.gov.justice.laa.cwa.bulkupload.response.VendorDto;
+import uk.gov.justice.laa.cwa.bulkupload.response.CwaVendorDto;
 import uk.gov.justice.laa.cwa.bulkupload.service.CwaUploadService;
 
 import java.security.Principal;
@@ -32,7 +32,7 @@ public class ProviderHelper {
      * @param model the model to be populated.
      */
     public void populateProviders(Model model, Principal principal) {
-        List<VendorDto> providers = cwaUploadService.getProviders(principal.getName().toUpperCase());
+        List<CwaVendorDto> providers = cwaUploadService.getProviders(principal.getName().toUpperCase());
         model.addAttribute("providers", providers);
     }
 }
