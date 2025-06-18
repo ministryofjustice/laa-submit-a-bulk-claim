@@ -22,7 +22,7 @@ import static org.springframework.security.config.Customizer.withDefaults;
 public class SecurityConfig {
     /**
      * UserDetailsService bean for in-memory user management.
-     * This method creates a user with username "ERNESTCOHEN" and password "password".
+     * This method creates fake users for testing purposes.
      *
      * @return the UserDetailsService instance
      */

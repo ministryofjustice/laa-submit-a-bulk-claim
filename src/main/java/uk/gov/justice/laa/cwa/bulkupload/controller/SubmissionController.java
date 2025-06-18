@@ -58,11 +58,12 @@ public class SubmissionController {
             return "pages/submission-timeout";
         } catch (Exception e) {
             // Handle other exceptions
-            log.error("Submission error with message {}", e.getMessage());
+            log.error("Submission error with message: {}", e.getMessage());
             return "pages/submission-failure";
         } finally {
             executor.shutdown();
         }
+
         List<CwaUploadSummaryResponseDto> summary;
         try {
             summary = cwaUploadService.getUploadSummary(fileId, principal.getName(), provider);

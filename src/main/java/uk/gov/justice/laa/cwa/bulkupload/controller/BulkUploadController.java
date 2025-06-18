@@ -81,7 +81,7 @@ public class BulkUploadController {
         try {
             virusCheckService.checkVirus(file);
         } catch (Exception e) {
-            log.error("Virus check failed with message:{}", e.getMessage());
+            log.error("Virus check failed with message: {}", e.getMessage());
             return showErrorOnUpload(model, principal, provider, "The file failed the virus scan. Please upload a clean file.");
         }
 
@@ -89,9 +89,9 @@ public class BulkUploadController {
             CwaUploadResponseDto cwaUploadResponseDto = cwaUploadService.uploadFile(file, provider, principal.getName().toUpperCase());
             model.addAttribute("fileId", cwaUploadResponseDto.getFileId());
             model.addAttribute("provider", provider);
-            log.info("CwaUploadResponseDto :: {}", cwaUploadResponseDto.getFileId());
+            log.info("CWA Upload response fileId: {}", cwaUploadResponseDto.getFileId());
         } catch (Exception e) {
-            log.error("Failed to upload file to CWA with  message:{}", e.getMessage());
+            log.error("Failed to upload file to CWA with message: {}", e.getMessage());
             return showErrorOnUpload(model, principal, provider, "An error occurred while uploading the file.");
         }
 
