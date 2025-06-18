@@ -8,11 +8,11 @@ import org.springframework.http.client.MultipartBodyBuilder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
 import org.springframework.web.multipart.MultipartFile;
+import uk.gov.justice.laa.cwa.bulkupload.response.CwaSubmissionResponseDto;
 import uk.gov.justice.laa.cwa.bulkupload.response.CwaUploadErrorResponseDto;
 import uk.gov.justice.laa.cwa.bulkupload.response.CwaUploadResponseDto;
 import uk.gov.justice.laa.cwa.bulkupload.response.CwaUploadSummaryResponseDto;
-import uk.gov.justice.laa.cwa.bulkupload.response.ValidateResponseDto;
-import uk.gov.justice.laa.cwa.bulkupload.response.VendorDto;
+import uk.gov.justice.laa.cwa.bulkupload.response.CwaVendorDto;
 
 import java.util.List;
 
@@ -63,9 +63,9 @@ public class CwaUploadService {
      * Retrieves the list of providers from CWA.
      *
      * @param userName for which providers are to be fetched
-     * @return List of VendorDto
+     * @return List of CwaVendorDto
      */
-    public List<VendorDto> getProviders(String userName) {
+    public List<CwaVendorDto> getProviders(String userName) {
         return restClient.get()
                 .uri(cwaApiUrl + "/api/validate_user", uriBuilder -> uriBuilder.queryParam("username", userName).build())
                 .header("Authorization", "Bearer " + tokenService.getSdsAccessToken())
@@ -81,9 +81,9 @@ public class CwaUploadService {
      * @param fileId   the ID of the file to be validated.
      * @param userName the user who is validating the file.
      * @param provider the provider for which validation is to be done.
-     * @return ValidateResponseDto containing validation results.
+     * @return CwaSubmissionResponseDto containing validation results.
      */
-    public ValidateResponseDto processSubmission(String fileId, String userName, String provider) {
+    public CwaSubmissionResponseDto processSubmission(String fileId, String userName, String provider) {
         if (fileId == null) {
             throw new IllegalArgumentException("fileId cannot be null");
         }
@@ -101,7 +101,7 @@ public class CwaUploadService {
                         .build())
                 .header("Authorization", "Bearer " + tokenService.getSdsAccessToken())
                 .retrieve()
-                .body(ValidateResponseDto.class);
+                .body(CwaSubmissionResponseDto.class);
 
     }
 

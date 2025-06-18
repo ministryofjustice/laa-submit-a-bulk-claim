@@ -97,16 +97,6 @@ class BulkUploadControllerTest {
     }
 
     @Test
-    void shouldHandleExceptionDuringUpload() throws Exception {
-        MockMultipartFile file = new MockMultipartFile("fileUpload", "test.pdf", "application/pdf", "test".getBytes());
-        when(virusCheckService.checkVirus(any())).thenThrow(new RuntimeException("Virus check failed"));
-        mockMvc.perform(multipart("/upload").file(file).param("provider", "TestProvider"))
-                .andExpect(status().isOk())
-                .andExpect(view().name("pages/upload"))
-                .andExpect(content().string(containsString("An error occurred while uploading the file")));
-    }
-
-    @Test
     void shouldUploadFileSuccessfully() throws Exception {
         when(virusCheckService.checkVirus(any())).thenReturn(null);
         when(principal.getName()).thenReturn("TestUser");
@@ -117,5 +107,25 @@ class BulkUploadControllerTest {
         mockMvc.perform(multipart("/upload").file(file).param("provider", "TestProvider").principal(principal))
                 .andExpect(status().isOk())
                 .andExpect(view().name("pages/submission"));
+    }
+    // Add to BulkUploadControllerTest.java
+
+    @Test
+    void shouldReturnErrorWhenFileSizeExceedsLimit() throws Exception {
+        MockMultipartFile file = new MockMultipartFile("fileUpload", "big.csv", "text/csv", new byte[11 * 1024 * 1024]);
+        mockMvc.perform(multipart("/upload").file(file).param("provider", "TestProvider"))
+                .andExpect(status().isOk())
+                .andExpect(view().name("pages/upload"))
+                .andExpect(content().string(containsString("File size must not exceed 10MB")));
+    }
+
+    @Test
+    void shouldReturnErrorWhenVirusCheckFails() throws Exception {
+        MockMultipartFile file = new MockMultipartFile("fileUpload", "test.csv", "text/csv", "test".getBytes());
+        doThrow(new RuntimeException("Virus detected")).when(virusCheckService).checkVirus(any());
+        mockMvc.perform(multipart("/upload").file(file).param("provider", "TestProvider"))
+                .andExpect(status().isOk())
+                .andExpect(view().name("pages/upload"))
+                .andExpect(content().string(containsString("The file failed the virus scan. Please upload a clean file.")));
     }
 }

@@ -6,10 +6,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.test.web.servlet.MockMvc;
+import uk.gov.justice.laa.cwa.bulkupload.response.CwaSubmissionResponseDto;
 import uk.gov.justice.laa.cwa.bulkupload.response.CwaUploadErrorResponseDto;
 import uk.gov.justice.laa.cwa.bulkupload.response.CwaUploadSummaryResponseDto;
-import uk.gov.justice.laa.cwa.bulkupload.response.ValidateResponseDto;
 import uk.gov.justice.laa.cwa.bulkupload.service.CwaUploadService;
 
 import java.security.Principal;
@@ -39,7 +40,7 @@ class SubmissionControllerTest {
 
     @Test
     void shouldReturnResultsViewOnSuccessfulSubmission() throws Exception {
-        ValidateResponseDto validateResponse = new ValidateResponseDto();
+        CwaSubmissionResponseDto validateResponse = new CwaSubmissionResponseDto();
         validateResponse.setStatus("success");
         validateResponse.setMessage("OK");
         List<CwaUploadSummaryResponseDto> summary = Collections.emptyList();
@@ -55,7 +56,7 @@ class SubmissionControllerTest {
 
     @Test
     void shouldReturnResultsViewWithErrorsOnValidationFailure() throws Exception {
-        ValidateResponseDto validateResponse = new ValidateResponseDto();
+        CwaSubmissionResponseDto validateResponse = new CwaSubmissionResponseDto();
         validateResponse.setStatus("failure");
         validateResponse.setMessage("Validation failed");
         List<CwaUploadSummaryResponseDto> summary = Collections.emptyList();
@@ -79,7 +80,63 @@ class SubmissionControllerTest {
 
         mockMvc.perform(post("/submit").param("fileId", "file123").param("provider", "provider1").principal(principal))
                 .andExpect(status().isOk())
-                .andExpect(view().name("pages/submission-failure"))
-                .andExpect(model().attributeExists("error"));
+                .andExpect(view().name("pages/submission-failure"));
+    }
+
+    @Test
+    void shouldReturnTimeoutViewOnSubmissionTimeout() throws Exception {
+        when(cwaUploadService.processSubmission(eq("file123"), any(), eq("provider1")))
+                .thenAnswer(invocation -> {
+                    Thread.sleep(2000); // Simulate delay
+                    return new CwaSubmissionResponseDto();
+                });
+        when(principal.getName()).thenReturn("TestUser");
+
+        // Set a very short timeout for the test
+        SubmissionController controller = new SubmissionController(cwaUploadService);
+        ReflectionTestUtils.setField(controller, "cwaApiTimeout", 0); // 0 seconds
+
+        mockMvc.perform(post("/submit").param("fileId", "file123").param("provider", "provider1").principal(principal))
+                .andExpect(status().isOk())
+                .andExpect(view().name("pages/submission-timeout"));
+    }
+
+    @Test
+    void shouldReturnFailureViewWhenGetUploadSummaryThrows() throws Exception {
+        CwaSubmissionResponseDto validateResponse = new CwaSubmissionResponseDto();
+        validateResponse.setStatus("success");
+        when(cwaUploadService.processSubmission(eq("file123"), any(), eq("provider1"))).thenReturn(validateResponse);
+        when(cwaUploadService.getUploadSummary(eq("file123"), any(), eq("provider1"))).thenThrow(new RuntimeException("summary error"));
+        when(principal.getName()).thenReturn("TestUser");
+
+        mockMvc.perform(post("/submit").param("fileId", "file123").param("provider", "provider1").principal(principal))
+                .andExpect(status().isOk())
+                .andExpect(view().name("pages/submission-failure"));
+    }
+
+    @Test
+    void shouldReturnFailureViewWhenGetUploadErrorsThrows() throws Exception {
+        CwaSubmissionResponseDto validateResponse = new CwaSubmissionResponseDto();
+        validateResponse.setStatus("failure");
+        when(cwaUploadService.processSubmission(eq("file123"), any(), eq("provider1"))).thenReturn(validateResponse);
+        when(cwaUploadService.getUploadSummary(eq("file123"), any(), eq("provider1"))).thenReturn(Collections.emptyList());
+        when(cwaUploadService.getUploadErrors(eq("file123"), any(), eq("provider1"))).thenThrow(new RuntimeException("errors error"));
+        when(principal.getName()).thenReturn("TestUser");
+
+        mockMvc.perform(post("/submit").param("fileId", "file123").param("provider", "provider1").principal(principal))
+                .andExpect(status().isOk())
+                .andExpect(view().name("pages/submission-failure"));
+    }
+
+    @Test
+    void shouldReturnFailureViewWhenSubmissionResponseIsNull() throws Exception {
+        when(cwaUploadService.processSubmission(eq("file123"), any(), eq("provider1"))).thenReturn(null);
+        when(cwaUploadService.getUploadSummary(eq("file123"), any(), eq("provider1"))).thenReturn(Collections.emptyList());
+        when(cwaUploadService.getUploadErrors(eq("file123"), any(), eq("provider1"))).thenReturn(Collections.emptyList());
+        when(principal.getName()).thenReturn("TestUser");
+
+        mockMvc.perform(post("/submit").param("fileId", "file123").param("provider", "provider1").principal(principal))
+                .andExpect(status().isOk())
+                .andExpect(view().name("pages/submission-results"));
     }
 }

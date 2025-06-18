@@ -33,7 +33,13 @@ public class SecurityConfig {
                 .password("{noop}password") // {noop} means no password encoder
                 .roles("USER")
                 .build();
-        return new InMemoryUserDetailsManager(user);
+
+        var user2 = User
+                .withUsername("JANEDOE")
+                .password("{noop}password")
+                .roles("USER")
+                .build();
+        return new InMemoryUserDetailsManager(user, user2);
     }
 
     /**

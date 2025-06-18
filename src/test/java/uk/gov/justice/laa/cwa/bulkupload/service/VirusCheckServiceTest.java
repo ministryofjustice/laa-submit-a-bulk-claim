@@ -12,7 +12,7 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestClient;
 import org.springframework.web.client.RestClientException;
 import uk.gov.justice.laa.cwa.bulkupload.exception.VirusCheckException;
-import uk.gov.justice.laa.cwa.bulkupload.response.VirusCheckResponseDto;
+import uk.gov.justice.laa.cwa.bulkupload.response.SdsVirusCheckResponseDto;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -42,7 +42,7 @@ class VirusCheckServiceTest {
     void shouldSuccessfullyCheckVirusInFile() {
         // Given
         String mockToken = "mock-token";
-        VirusCheckResponseDto expectedResponse = new VirusCheckResponseDto();
+        SdsVirusCheckResponseDto expectedResponse = new SdsVirusCheckResponseDto();
         expectedResponse.setSuccess("success");
 
         RestClient.RequestBodyUriSpec requestBodyUriSpec = mock(RestClient.RequestBodyUriSpec.class);
@@ -56,7 +56,7 @@ class VirusCheckServiceTest {
         when(requestBodySpec.header("Authorization", "Bearer " + mockToken)).thenReturn(requestBodySpec);
         when(requestBodySpec.body(any(MultiValueMap.class))).thenReturn(requestBodySpec);
         when(requestBodySpec.retrieve()).thenReturn(responseSpec);
-        when(responseSpec.body(VirusCheckResponseDto.class)).thenReturn(expectedResponse);
+        when(responseSpec.body(SdsVirusCheckResponseDto.class)).thenReturn(expectedResponse);
 
         MockMultipartFile file = new MockMultipartFile(
                 "file",
@@ -66,7 +66,7 @@ class VirusCheckServiceTest {
         );
 
         // When
-        VirusCheckResponseDto result = virusCheckService.checkVirus(file);
+        SdsVirusCheckResponseDto result = virusCheckService.checkVirus(file);
 
         // Then
         assertThat(result).isEqualTo(expectedResponse);

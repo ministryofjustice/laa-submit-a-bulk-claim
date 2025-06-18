@@ -7,7 +7,7 @@ import lombok.Data;
  * The DTO class for vendor information.
  */
 @Data
-public class VendorDto {
+public class CwaVendorDto {
     @JsonProperty("VENDOR_NAME")
     String vendorName;
     @JsonProperty("VENDOR_ID")

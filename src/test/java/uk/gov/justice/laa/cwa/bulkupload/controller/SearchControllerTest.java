@@ -57,7 +57,7 @@ class SearchControllerTest {
         mockMvc.perform(post("/search").param("provider", "TestProvider").principal(principal))
                 .andExpect(status().isOk())
                 .andExpect(view().name("pages/upload"))
-                .andExpect(model().attribute("error", "Please enter file reference to search"));
+                .andExpect(model().attribute("error", "File reference must be between 1 to 10 characters long"));
     }
 
     @Test
@@ -76,5 +76,44 @@ class SearchControllerTest {
                 .andExpect(view().name("pages/submission-results"))
                 .andExpect(model().attribute("summary", summary))
                 .andExpect(model().attribute("errors", errors));
+    }
+
+    @Test
+    void shouldReturnErrorWhenSearchTermIsEmpty() throws Exception {
+        doNothing().when(providerHelper).populateProviders(any(), any());
+        when(principal.getName()).thenReturn("TestUser");
+        mockMvc.perform(post("/search").param("provider", "TestProvider").param("searchTerm", "").principal(principal))
+                .andExpect(status().isOk())
+                .andExpect(view().name("pages/upload"))
+                .andExpect(model().attribute("error", "File reference must be between 1 to 10 characters long"));
+    }
+
+    @Test
+    void shouldReturnErrorWhenSearchTermIsTooLong() throws Exception {
+        doNothing().when(providerHelper).populateProviders(any(), any());
+        when(principal.getName()).thenReturn("TestUser");
+        mockMvc.perform(post("/search").param("provider", "TestProvider").param("searchTerm", "12345678901").principal(principal))
+                .andExpect(status().isOk())
+                .andExpect(view().name("pages/upload"))
+                .andExpect(model().attribute("error", "File reference must be between 1 to 10 characters long"));
+    }
+
+    @Test
+    void shouldReturnFailureViewWhenGetUploadSummaryThrows() throws Exception {
+        when(principal.getName()).thenReturn("TestUser");
+        when(cwaUploadService.getUploadSummary(any(), any(), any())).thenThrow(new RuntimeException("summary error"));
+        mockMvc.perform(post("/search").param("provider", "TestProvider").param("searchTerm", "file123").principal(principal))
+                .andExpect(status().isOk())
+                .andExpect(view().name("pages/upload"));
+    }
+
+    @Test
+    void shouldReturnFailureViewWhenGetUploadErrorsThrows() throws Exception {
+        when(principal.getName()).thenReturn("TestUser");
+        when(cwaUploadService.getUploadSummary(any(), any(), any())).thenReturn(Collections.emptyList());
+        when(cwaUploadService.getUploadErrors(any(), any(), any())).thenThrow(new RuntimeException("errors error"));
+        mockMvc.perform(post("/search").param("provider", "TestProvider").param("searchTerm", "file123").principal(principal))
+                .andExpect(status().isOk())
+                .andExpect(view().name("pages/upload"));
     }
 }
