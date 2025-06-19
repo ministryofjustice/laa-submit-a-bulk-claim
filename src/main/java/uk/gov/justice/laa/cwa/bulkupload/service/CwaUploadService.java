@@ -46,7 +46,8 @@ public class CwaUploadService {
         }
 
         MultipartBodyBuilder builder = new MultipartBodyBuilder();
-        builder.part("file", file.getResource());
+        builder.part("file", file.getResource())
+                .header("Content-Type", file.getContentType());
         builder.part("username", userName);
         builder.part("vendor_id", provider);
 
