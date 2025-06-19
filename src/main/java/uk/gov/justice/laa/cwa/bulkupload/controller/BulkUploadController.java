@@ -52,7 +52,7 @@ public class BulkUploadController {
                 return "error";
             }
         } catch (Exception e) {
-            log.error("Error fetching providers from CWA with message: {} ", e.getMessage());
+            log.error("Error connecting to CWA with message: {} ", e.getMessage());
             return "error";
         }
         return "pages/upload";
