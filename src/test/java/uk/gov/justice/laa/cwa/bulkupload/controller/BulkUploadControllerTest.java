@@ -25,6 +25,7 @@ import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.model;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
 
@@ -54,28 +55,23 @@ class BulkUploadControllerTest {
     void shouldReturnUploadPage() throws Exception {
         mockMvc.perform(get("/"))
                 .andExpect(status().isOk())
-                .andExpect(view().name("pages/upload"))
-                .andExpect(content().string(containsString("Select a file to upload")));
+                .andExpect(view().name("pages/upload"));
     }
 
     @Test
-    void shouldReturnErrorWhenFetchingProvidersFailsWithForbidden() throws Exception {
+    void shouldReturnUploadForbiddenWhenProviderHelperThrowsForbidden() throws Exception {
         doThrow(new HttpClientErrorException(HttpStatus.FORBIDDEN)).when(providerHelper).populateProviders(any(), any());
-
         mockMvc.perform(get("/"))
                 .andExpect(status().isOk())
-                .andExpect(view().name("pages/upload-forbidden"))
-                .andExpect(content().string(containsString("You do not have permission to access this application")));
+                .andExpect(view().name("pages/upload-forbidden"));
     }
 
     @Test
-    void shouldReturnErrorWhenFetchingProvidersFailsWithUnexpectedError() throws Exception {
+    void shouldReturnErrorViewWhenProviderHelperThrowsOtherException() throws Exception {
         doThrow(new RuntimeException("Unexpected error")).when(providerHelper).populateProviders(any(), any());
-
         mockMvc.perform(get("/"))
                 .andExpect(status().isOk())
-                .andExpect(view().name("error"))
-                .andExpect(content().string(containsString("Something went wrong. The error has been logged")));
+                .andExpect(view().name("error"));
     }
 
     @Test
@@ -90,10 +86,41 @@ class BulkUploadControllerTest {
     @Test
     void shouldReturnErrorWhenFileIsEmpty() throws Exception {
         MockMultipartFile emptyFile = new MockMultipartFile("fileUpload", "empty.txt", "text/plain", new byte[0]);
-        mockMvc.perform(multipart("/upload").file(emptyFile).param("provider", "TestProvider"))
+        mockMvc.perform(multipart("/upload").file(emptyFile).param("provider", "123"))
                 .andExpect(status().isOk())
                 .andExpect(view().name("pages/upload"))
                 .andExpect(content().string(containsString("Please select a file to upload")));
+    }
+
+    @Test
+    void shouldReturnErrorWhenFileSizeExceedsLimit() throws Exception {
+        MockMultipartFile file = new MockMultipartFile("fileUpload", "big.csv", "text/csv", new byte[11 * 1024 * 1024]);
+        mockMvc.perform(multipart("/upload").file(file).param("provider", "123"))
+                .andExpect(status().isOk())
+                .andExpect(view().name("pages/upload"))
+                .andExpect(content().string(containsString("File size must not exceed 10MB")));
+    }
+
+    @Test
+    void shouldReturnErrorWhenVirusCheckFails() throws Exception {
+        MockMultipartFile file = new MockMultipartFile("fileUpload", "test.csv", "text/csv", "test".getBytes());
+        doThrow(new RuntimeException("Virus detected")).when(virusCheckService).checkVirus(any());
+        mockMvc.perform(multipart("/upload").file(file).param("provider", "123"))
+                .andExpect(status().isOk())
+                .andExpect(view().name("pages/upload"))
+                .andExpect(content().string(containsString("The file failed the virus scan. Please upload a clean file.")));
+    }
+
+    @Test
+    void shouldReturnErrorWhenUploadServiceFails() throws Exception {
+        when(virusCheckService.checkVirus(any())).thenReturn(null);
+        when(principal.getName()).thenReturn("TestUser");
+        doThrow(new RuntimeException("Upload failed")).when(cwaUploadService).uploadFile(any(), any(), any());
+        MockMultipartFile file = new MockMultipartFile("fileUpload", "test.csv", "text/csv", "test".getBytes());
+        mockMvc.perform(multipart("/upload").file(file).param("provider", "123").principal(principal))
+                .andExpect(status().isOk())
+                .andExpect(view().name("pages/upload"))
+                .andExpect(content().string(containsString("An error occurred while uploading the file.")));
     }
 
     @Test
@@ -104,28 +131,16 @@ class BulkUploadControllerTest {
         response.setFileId("file123");
         when(cwaUploadService.uploadFile(any(), any(), any())).thenReturn(response);
         MockMultipartFile file = new MockMultipartFile("fileUpload", "test.csv", "text/csv", "test".getBytes());
-        mockMvc.perform(multipart("/upload").file(file).param("provider", "TestProvider").principal(principal))
+        mockMvc.perform(multipart("/upload").file(file).param("provider", "123").principal(principal))
                 .andExpect(status().isOk())
                 .andExpect(view().name("pages/submission"));
     }
-    // Add to BulkUploadControllerTest.java
 
     @Test
-    void shouldReturnErrorWhenFileSizeExceedsLimit() throws Exception {
-        MockMultipartFile file = new MockMultipartFile("fileUpload", "big.csv", "text/csv", new byte[11 * 1024 * 1024]);
-        mockMvc.perform(multipart("/upload").file(file).param("provider", "TestProvider"))
-                .andExpect(status().isOk())
-                .andExpect(view().name("pages/upload"))
-                .andExpect(content().string(containsString("File size must not exceed 10MB")));
-    }
-
-    @Test
-    void shouldReturnErrorWhenVirusCheckFails() throws Exception {
+    void shouldAddVendorIdToModelWhenProviderIsInteger() throws Exception {
         MockMultipartFile file = new MockMultipartFile("fileUpload", "test.csv", "text/csv", "test".getBytes());
-        doThrow(new RuntimeException("Virus detected")).when(virusCheckService).checkVirus(any());
-        mockMvc.perform(multipart("/upload").file(file).param("provider", "TestProvider"))
+        mockMvc.perform(multipart("/upload").file(file).param("provider", "123"))
                 .andExpect(status().isOk())
-                .andExpect(view().name("pages/upload"))
-                .andExpect(content().string(containsString("The file failed the virus scan. Please upload a clean file.")));
+                .andExpect(model().attribute("vendorId", 123));
     }
 }

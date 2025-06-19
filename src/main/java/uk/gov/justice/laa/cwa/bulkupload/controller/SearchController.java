@@ -39,14 +39,10 @@ public class SearchController {
     public String submitForm(String provider, String searchTerm, Model model, Principal principal) {
 
         if (!StringUtils.hasText(provider)) {
-            model.addAttribute("error", "Please select a provider");
-            providerHelper.populateProviders(model, principal);
-            return "pages/upload";
+            return handleError(model, principal, provider, "Please select a provider");
         }
         if (!StringUtils.hasText(searchTerm) || searchTerm.length() > 10) {
-            model.addAttribute("error", "File reference must be between 1 to 10 characters long");
-            providerHelper.populateProviders(model, principal);
-            return "pages/upload";
+            return handleError(model, principal, provider, "File reference must be between 1 to 10 characters long");
         }
         List<CwaUploadSummaryResponseDto> summary;
         try {
@@ -54,7 +50,7 @@ public class SearchController {
             model.addAttribute("summary", summary);
         } catch (Exception e) {
             log.error("Error retrieving upload summary: {}", e.getMessage());
-            return handleError(model, principal, "Search failed please try again.");
+            return handleError(model, principal, provider, "Search failed please try again.");
         }
 
         try {
@@ -62,23 +58,31 @@ public class SearchController {
             model.addAttribute("errors", errors);
         } catch (Exception e) {
             log.error("Error retrieving upload errors: {}", e.getMessage());
-            return handleError(model, principal, "Search failed please try again.");
+            return handleError(model, principal, provider, "Search failed please try again.");
         }
 
-
-        return "pages/submission-results"; // Redirect to a success page after submission
+        return "pages/submission-results";
     }
 
     /**
-     * Handles errors during search submission.
+     * Handles the error case for the search form submission.
+     * This method populates the model with error messages and provider information.
      *
-     * @param model        the model to be populated with error information
-     * @param principal    the authenticated user
-     * @param errorMessage the error message to display
-     * @return the upload page with error information
+     * @param model        the model to be populated with error messages.
+     * @param principal    the authenticated user principal.
+     * @param provider     the selected provider.
+     * @param errorMessage the error message to display.
+     * @return the upload page with error messages.
      */
-    private String handleError(Model model, Principal principal, String errorMessage) {
+    private String handleError(Model model, Principal principal, String provider, String errorMessage) {
         model.addAttribute("error", errorMessage);
+        if (StringUtils.hasText(provider)) {
+            try {
+                model.addAttribute("vendorId", Integer.parseInt(provider));
+            } catch (NumberFormatException ignored) {
+                model.addAttribute("vendorId", 0);
+            }
+        }
         providerHelper.populateProviders(model, principal);
         return "pages/upload";
     }
