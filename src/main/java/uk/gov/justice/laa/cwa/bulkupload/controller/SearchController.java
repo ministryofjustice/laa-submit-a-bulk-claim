@@ -78,12 +78,13 @@ public class SearchController {
         model.addAttribute("error", errorMessage);
         if (StringUtils.hasText(provider)) {
             try {
-                model.addAttribute("vendorId", Integer.parseInt(provider));
+                model.addAttribute("selectedProvider", Integer.parseInt(provider));
             } catch (NumberFormatException ignored) {
-                model.addAttribute("vendorId", 0);
+                model.addAttribute("selectedProvider", 0);
             }
         }
         providerHelper.populateProviders(model, principal);
+        model.addAttribute("tab", "search");
         return "pages/upload";
     }
 }

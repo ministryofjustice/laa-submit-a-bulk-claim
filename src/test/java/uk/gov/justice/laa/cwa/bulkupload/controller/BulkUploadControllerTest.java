@@ -141,6 +141,6 @@ class BulkUploadControllerTest {
         MockMultipartFile file = new MockMultipartFile("fileUpload", "test.csv", "text/csv", "test".getBytes());
         mockMvc.perform(multipart("/upload").file(file).param("provider", "123"))
                 .andExpect(status().isOk())
-                .andExpect(model().attribute("vendorId", 123));
+                .andExpect(model().attribute("selectedProvider", 123));
     }
 }

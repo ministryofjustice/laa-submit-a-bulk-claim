@@ -69,20 +69,20 @@ public class BulkUploadController {
         long maxFileSize = DataSize.parse(fileSizeLimit).toBytes();
 
         if (!StringUtils.hasText(provider)) {
-            return showErrorOnUpload(model, principal, provider, file, "Please select a provider");
+            return showErrorOnUpload(model, principal, provider, "Please select a provider");
         }
         if (file.isEmpty()) {
-            return showErrorOnUpload(model, principal, provider, file, "Please select a file to upload");
+            return showErrorOnUpload(model, principal, provider, "Please select a file to upload");
         }
         if (file.getSize() > maxFileSize) {
-            return showErrorOnUpload(model, principal, provider, file, "File size must not exceed 10MB");
+            return showErrorOnUpload(model, principal, provider, "File size must not exceed 10MB");
         }
 
         try {
             virusCheckService.checkVirus(file);
         } catch (Exception e) {
             log.error("Virus check failed with message: {}", e.getMessage());
-            return showErrorOnUpload(model, principal, provider, file, "The file failed the virus scan. Please upload a clean file.");
+            return showErrorOnUpload(model, principal, provider, "The file failed the virus scan. Please upload a clean file.");
         }
 
         try {
@@ -92,26 +92,25 @@ public class BulkUploadController {
             log.info("CWA Upload response fileId: {}", cwaUploadResponseDto.getFileId());
         } catch (Exception e) {
             log.error("Failed to upload file to CWA with message: {}", e.getMessage());
-            return showErrorOnUpload(model, principal, provider, file, "An error occurred while uploading the file.");
+            return showErrorOnUpload(model, principal, provider, "An error occurred while uploading the file.");
         }
 
         return "pages/submission";
     }
 
     /**
-     * Displays an error message on the upload page.
+     * Handles errors during the upload process.
      *
-     * @param model        the model to be populated with error information
-     * @param principal    the authenticated user
+     * @param model        the model to be populated with error messages
+     * @param principal    the authenticated user principal
      * @param provider     the selected provider
-     * @param file         the uploaded file
      * @param errorMessage the error message to display
-     * @return the upload page with error information
+     * @return the upload page with error messages
      */
-    private String showErrorOnUpload(Model model, Principal principal, String provider, MultipartFile file, String errorMessage) {
+    private String showErrorOnUpload(Model model, Principal principal, String provider, String errorMessage) {
         model.addAttribute("error", errorMessage);
         providerHelper.populateProviders(model, principal);
-        model.addAttribute("vendorId", null == provider ? 0 : Integer.parseInt(provider));
+        model.addAttribute("selectedProvider", !StringUtils.hasText(provider) ? 0 : Integer.parseInt(provider));
 
         return "pages/upload";
     }
