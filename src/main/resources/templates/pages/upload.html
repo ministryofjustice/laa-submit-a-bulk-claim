@@ -31,11 +31,11 @@
                             <option th:each="provider : ${providers}"
                                     th:value="${provider.vendorId}"
                                     th:text="${provider.vendorName}"
-                                    th:selected="${provider.vendorId == vendorId}"></option>
+                                    th:selected="${provider.vendorId == selectedProvider}"></option>
                         </select>
                     </div>
 
-
+                    <input id="selected-tab" name="selected-tab" type="hidden" th:value="${tab}"/>
                     <div class="govuk-tabs" data-module="govuk-tabs">
                         <h2 class="govuk-tabs__title">
                             Contents
@@ -79,5 +79,6 @@
             </div>
         </div>
     </form>
+    <script src="/javascripts/upload.js"></script>
 </main>
 </html>
