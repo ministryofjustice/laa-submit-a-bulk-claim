@@ -1,4 +1,3 @@
-```markdown
 # LAA CWA Bulk Upload
 
 A Spring Boot web application for securely uploading files in bulk to the Legal Aid Agency's CWA system. The application provides a user-friendly interface for file uploads, provider selection, virus scanning, and result tracking.
@@ -11,6 +10,8 @@ A Spring Boot web application for securely uploading files in bulk to the Legal 
 - [Getting Started](#getting-started)
   - [Prerequisites](#prerequisites)
   - [Build](#build)
+  - [Wiremock](#wiremock)
+  - [Local Application Properties](#local-application-properties)
   - [Run](#run)
   - [Configuration](#configuration)
 - [Usage](#usage)
@@ -58,8 +59,6 @@ A Spring Boot web application for securely uploading files in bulk to the Legal 
 - Install Docker desktop (https://www.docker.com/products/docker-desktop)
 
 Ensure you have the following environment variables set for local development:
-
-```sh
 
 ### Build
 
