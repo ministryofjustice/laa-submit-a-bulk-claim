@@ -1,19 +1,40 @@
-<!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="https://www.thymeleaf.org">
-<head>
-    <title>Spring Security Example </title>
-</head>
-<body>
-<div th:if="${param.error}">
-    Invalid username and password.
-</div>
-<div th:if="${param.logout}">
-    You have been logged out.
-</div>
-<form th:action="@{/login}" method="post">
-    <div><label> User Name : <input type="text" name="username"/> </label></div>
-    <div><label> Password: <input type="password" name="password"/> </label></div>
-    <div><input type="submit" value="Sign In"/></div>
-</form>
-</body>
+<!DOCTYPE HTML>
+<html lang="en" class="govuk-template" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{ layout/main-layout :: layout(~{::title},~{::main})}">
+<title>CWA Bulk Upload - Login</title>
+<main class="govuk-main-wrapper" id="main-content">
+    <div class="govuk-width-container">
+        <div class="govuk-grid-row">
+            <div class="govuk-grid-column-two-thirds">
+                <h1 class="govuk-heading-xl">CWA Bulk Upload</h1>
+                <div th:if="${param.error}" class="govuk-error-summary" data-module="govuk-error-summary">
+                    <div role="alert">
+                        <div class="govuk-error-summary__body">
+                            <ul class="govuk-list govuk-error-summary__list">
+                                <li>
+                                    <a href="#">Invalid username and password.</a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <form th:action="@{/login}" method="post">
+                    <div class="govuk-form-group">
+                        <label class="govuk-label" for="username">
+                            Username
+                        </label>
+                        <input class="govuk-input govuk-!-width-one-third" id="username" name="username" type="text">
+                    </div>
+                    <div class="govuk-form-group">
+                        <label class="govuk-label" for="password">
+                            Password
+                        </label>
+                        <input class="govuk-input govuk-!-width-one-third" id="password" name="password" type="password">
+                    </div>
+                    <button type="submit" class="govuk-button" data-module="govuk-button">Sign In</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</main>
 </html>

@@ -2,6 +2,13 @@
     overflow-x: auto;
 }
 
+.sign-in-button {
+    background:none;
+    border:none;
+    padding:6px;
+    color:#ffffff;
+}
+
 @media print {
     .upload-table {
         overflow: visible !important;
