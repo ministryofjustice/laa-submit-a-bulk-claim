@@ -17,13 +17,6 @@
         <div class="govuk-grid-row">
             <div>
                 <h1 class="govuk-heading-xl">CWA Bulk Upload</h1>
-
-                <div th:if="${errors == null}">
-                    <h2 class="govuk-heading-l">Submission Success</h2>
-                </div>
-                <div th:unless="${errors == null}">
-                    <h2 class="govuk-heading-l">Submission Failure</h2>
-                </div>
                 <div class="upload-table">
                 <table class="govuk-table">
                     <caption class="govuk-table__caption govuk-table__caption--m">Bulk upload summary</caption>
@@ -37,7 +30,6 @@
                         <th scope="col" class="govuk-table__header">PROBLEM_OUTCOMES</th>
                         <th scope="col" class="govuk-table__header">DUPLICATE_OUTCOMES</th>
                         <th scope="col" class="govuk-table__header">INVALID_OUTCOMES</th>
-                        <th scope="col" class="govuk-table__header">AM_BULK_FILE_ID</th>
                     </tr>
                     </thead>
                     <tbody class="govuk-table__body">
@@ -50,13 +42,12 @@
                         <td th:text="${summaryLine.problemOutcomes}" class="govuk-table__cell"></td>
                         <td th:text="${summaryLine.duplicateOutcomes}" class="govuk-table__cell"></td>
                         <td th:text="${summaryLine.invalidOutcomes}" class="govuk-table__cell"></td>
-                        <td th:text="${summaryLine.fileId}" class="govuk-table__cell"></td>
                     </tr>
                     </tbody>
                 </table>
                 </div>
 
-                <div th:if="${errors != null}" class="upload-table" >
+                <div th:if="${errors != null && errors.size() > 0}" class="upload-table" >
                 <table class="govuk-table">
                     <caption class="govuk-table__caption govuk-table__caption--m">Bulk upload error details</caption>
                     <thead class="govuk-table__head">
@@ -67,10 +58,6 @@
                         <th scope="col" class="govuk-table__header">CLIENT_SURNAME</th>
                         <th scope="col" class="govuk-table__header">ERROR_TYPE</th>
                         <th scope="col" class="govuk-table__header">DESCRIPTION</th>
-                        <th scope="col" class="govuk-table__header">AM_BULK_FILE_ID</th>
-                        <th scope="col" class="govuk-table__header">AM_BULK_HEADER_ID</th>
-                        <th scope="col" class="govuk-table__header">AM_BULK_LINE_ID</th>
-                        <th scope="col" class="govuk-table__header">ERROR_ID</th>
                     </tr>
                     </thead>
                     <tbody class="govuk-table__body">
@@ -81,10 +68,6 @@
                         <td th:text="${error.clientSurname}" class="govuk-table__cell"></td>
                         <td th:text="${error.errorType}" class="govuk-table__cell"></td>
                         <td th:text="${error.description}" class="govuk-table__cell"></td>
-                        <td th:text="${error.fileId}" class="govuk-table__cell"></td>
-                        <td th:text="${error.amBulkHeaderId}" class="govuk-table__cell"></td>
-                        <td th:text="${error.amBulkLineId}" class="govuk-table__cell"></td>
-                        <td th:text="${error.errorId}" class="govuk-table__cell"></td>
                     </tr>
                     </tbody>
                 </table>
