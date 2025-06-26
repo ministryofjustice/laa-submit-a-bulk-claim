@@ -3,8 +3,8 @@ server:
 spring:
   servlet:
     multipart:
-      max-file-size: 50MB
-      max-request-size: 50MB
+      max-file-size: ${SERVER_MAX_FILE_SIZE}
+      max-request-size: ${SERVER_MAX_FILE_SIZE}
 
 azure:
   entra-id:
@@ -23,3 +23,6 @@ cwa-api:
 
 upload-max-file-size: ${UPLOAD_MAX_FILE_SIZE}
 
+rest-client:
+  connect-timeout: ${REST_CLIENT_CONNECT_TIMEOUT}
+  read-timeout: ${REST_CLIENT_READ_TIMEOUT}

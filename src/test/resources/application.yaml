@@ -16,3 +16,10 @@ sds-api:
 cwa-api:
   url: xx
   timeout: 1
+
+
+upload-max-file-size: 10MB
+
+rest-client:
+  connect-timeout: 5
+  read-timeout: 1
