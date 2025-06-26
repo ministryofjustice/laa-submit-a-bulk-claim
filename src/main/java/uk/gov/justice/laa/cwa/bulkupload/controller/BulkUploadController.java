@@ -30,9 +30,9 @@ import java.util.Map;
 @Controller
 public class BulkUploadController {
 
-
     @Value("${upload-max-file-size:10MB}")
     private String fileSizeLimit;
+
     private final VirusCheckService virusCheckService;
     private final CwaUploadService cwaUploadService;
     private final ProviderHelper providerHelper;
@@ -74,9 +74,11 @@ public class BulkUploadController {
         if (!StringUtils.hasText(provider)) {
             errors.put("provider", "Please select a provider");
         }
+
         if (file.isEmpty()) {
             errors.put("fileUpload", "Please select a file to upload");
         }
+
         if (file.getSize() > maxFileSize) {
             errors.put("fileUpload", "File size must not exceed 10MB");
         }

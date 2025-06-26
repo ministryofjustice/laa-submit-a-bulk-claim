@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
 /**
- * The DTO class for vendor information.
+ * The DTO class for CWA vendor information.
  */
 @Data
 public class CwaVendorDto {

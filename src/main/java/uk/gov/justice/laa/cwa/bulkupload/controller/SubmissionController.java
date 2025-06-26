@@ -30,6 +30,7 @@ public class SubmissionController {
 
     @Value("${cwa-api.timeout}")
     private int cwaApiTimeout;
+
     private final CwaUploadService cwaUploadService;
 
     /**
@@ -64,9 +65,8 @@ public class SubmissionController {
             executor.shutdown();
         }
 
-        List<CwaUploadSummaryResponseDto> summary;
         try {
-            summary = cwaUploadService.getUploadSummary(fileId, principal.getName(), provider);
+            List<CwaUploadSummaryResponseDto> summary = cwaUploadService.getUploadSummary(fileId, principal.getName(), provider);
             model.addAttribute("summary", summary);
         } catch (Exception e) {
             log.error("Error retrieving upload summary: {}", e.getMessage());

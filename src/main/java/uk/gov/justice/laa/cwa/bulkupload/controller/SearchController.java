@@ -23,6 +23,7 @@ import java.util.Map;
 @RequiredArgsConstructor
 @Controller
 public class SearchController {
+
     private final CwaUploadService cwaUploadService;
     private final ProviderHelper providerHelper;
 
@@ -42,11 +43,13 @@ public class SearchController {
         if (!StringUtils.hasText(provider)) {
             errors.put("provider", "Please select a provider");
         }
+
         if (!StringUtils.hasText(searchTerm) || searchTerm.length() > 10) {
             errors.put("searchTerm", "File reference must be between 1 to 10 characters long");
         }
+
         if (!errors.isEmpty()) {
-            return handleError(model, principal, provider, searchTerm, errors);
+            return handleErrors(model, principal, provider, searchTerm, errors);
         }
 
         List<CwaUploadSummaryResponseDto> summary;
@@ -56,7 +59,7 @@ public class SearchController {
         } catch (Exception e) {
             log.error("Error retrieving upload summary: {}", e.getMessage());
             errors.put("search", "Search failed please try again.");
-            return handleError(model, principal, provider, searchTerm, errors);
+            return handleErrors(model, principal, provider, searchTerm, errors);
         }
 
         try {
@@ -65,7 +68,7 @@ public class SearchController {
         } catch (Exception e) {
             log.error("Error retrieving upload errors: {}", e.getMessage());
             errors.put("search", "Search failed please try again.");
-            return handleError(model, principal, provider, searchTerm, errors);
+            return handleErrors(model, principal, provider, searchTerm, errors);
         }
 
         return "pages/submission-results";
@@ -82,7 +85,7 @@ public class SearchController {
      * @return the name of the view to render
      */
 
-    private String handleError(Model model, Principal principal, String provider, String searchTerm, Map<String, String> errors) {
+    private String handleErrors(Model model, Principal principal, String provider, String searchTerm, Map<String, String> errors) {
         model.addAttribute("errors", errors);
         if (StringUtils.hasText(provider)) {
             try {
@@ -91,6 +94,7 @@ public class SearchController {
                 model.addAttribute("selectedProvider", 0);
             }
         }
+
         if (StringUtils.hasText(searchTerm)) {
             model.addAttribute("searchTerm", searchTerm);
         }

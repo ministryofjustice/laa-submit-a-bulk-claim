@@ -25,14 +25,17 @@ public class CwaUploadService {
 
     @Value("${cwa-api.url}")
     private String cwaApiUrl;
+
     private final RestClient restClient;
     private final TokenService tokenService;
 
     /**
-     * Perform a virus check for the given file.
+     * Uploads a file to CWA.
      *
-     * @param file the file
-     * @return the result
+     * @param file     the file to be uploaded.
+     * @param provider the provider for which the file is being uploaded.
+     * @param userName the user who is uploading the file.
+     * @return CwaUploadResponseDto containing upload response details.
      */
     public CwaUploadResponseDto uploadFile(MultipartFile file, String provider, String userName) {
         if (file == null) {
