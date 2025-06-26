@@ -56,12 +56,6 @@ spec:
                   name: cwa-bulk-upload-secrets
                   key: AUTH_TENANT_ID
 
-            - name: SDS_API_URL
-              valueFrom:
-                secretKeyRef:
-                  name: cwa-bulk-upload-secrets
-                  key: SDS_API_URL
-
             - name: CWA_API_URL
               valueFrom:
                 secretKeyRef:
@@ -73,6 +67,30 @@ spec:
                 secretKeyRef:
                   name: cwa-bulk-upload-secrets
                   key: CWA_API_TIMEOUT
+
+            - name: REST_CLIENT_CONNECT_TIMEOUT
+              valueFrom:
+                secretKeyRef:
+                  name: cwa-bulk-upload-secrets
+                  key: REST_CLIENT_CONNECT_TIMEOUT
+
+            - name: REST_CLIENT_READ_TIMEOUT
+              valueFrom:
+                secretKeyRef:
+                  name: cwa-bulk-upload-secrets
+                  key: REST_CLIENT_READ_TIMEOUT
+
+            - name: SDS_API_URL
+              valueFrom:
+                secretKeyRef:
+                  name: cwa-bulk-upload-secrets
+                  key: SDS_API_URL
+
+            - name: SERVER_MAX_FILE_SIZE
+              valueFrom:
+                secretKeyRef:
+                  name: cwa-bulk-upload-secrets
+                  key: SERVER_MAX_FILE_SIZE
 
             - name: UPLOAD_MAX_FILE_SIZE
               valueFrom:
