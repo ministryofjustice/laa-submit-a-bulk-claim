@@ -96,6 +96,7 @@
                                 </p>
                                 <input class="govuk-input govuk-input--width-10" id="searchTerm" maxlength="10"
                                        name="searchTerm" type="text" placeholder="Enter file reference"
+                                       th:value="${searchTerm}"
                                        th:classappend="${errors != null && errors.containsKey('searchTerm') ? 'govuk-input--error' : ''}"
                                        th:aria-describedby="${errors != null && errors.containsKey('searchTerm') ? 'searchTerm-error' : ''}">
                             </div>
