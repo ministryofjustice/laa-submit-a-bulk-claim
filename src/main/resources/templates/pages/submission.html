@@ -8,22 +8,26 @@
             <div class="govuk-grid-column-two-thirds">
                 <a href="/" class="govuk-back-link">Back</a>
                 <h1 class="govuk-heading-xl">CWA Bulk Upload</h1>
-                        <h3 class="govuk-heading-m">File Upload is Successful</h3>
-                <p class="govuk-body">Please submit the file <span class="govuk-!-font-weight-bold" th:text="${fileId}">Test</span> for processing</p>
+                <h3 class="govuk-heading-m">File Upload is Successful</h3>
+                <p class="govuk-body">Please submit the file <span class="govuk-!-font-weight-bold" th:text="${fileId}">Test</span>
+                    for processing</p>
 
 
-                        <form th:action="@{/submit}" method="POST" enctype="multipart/form-data">
-                            <input id="fileId" name="fileId" type="hidden" th:value="${fileId}"/>
-                            <input id="provider" name="provider" type="hidden" th:value="${provider}"/>
-                            <div class="govuk-grid-row">
-                                <div class="govuk-grid-column-full">
-                                    <button type="submit" class="govuk-button" data-module="govuk-button">Submit</button>
-                                </div>
-                            </div>
-                        </form>
-
+                <form id="submitForm" th:action="@{/submit}" method="POST" enctype="multipart/form-data">
+                    <input id="fileId" name="fileId" type="hidden" th:value="${fileId}"/>
+                    <input id="provider" name="provider" type="hidden" th:value="${provider}"/>
+                    <div class="govuk-grid-row">
+                        <div class="govuk-grid-column-full">
+                            <button id="submitBtn" type="submit" class="govuk-button" data-module="govuk-button">
+                                Submit
+                            </button>
+                        </div>
+                    </div>
+                </form>
             </div>
         </div>
     </div>
+
+    <script src="/javascripts/submission.js"></script>
 </main>
 </html>
