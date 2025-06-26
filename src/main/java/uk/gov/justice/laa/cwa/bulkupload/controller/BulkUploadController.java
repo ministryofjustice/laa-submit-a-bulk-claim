@@ -19,6 +19,8 @@ import uk.gov.justice.laa.cwa.bulkupload.service.CwaUploadService;
 import uk.gov.justice.laa.cwa.bulkupload.service.VirusCheckService;
 
 import java.security.Principal;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 /**
  * Controller for handling the bulk upload requests.
@@ -67,22 +69,29 @@ public class BulkUploadController {
     @PostMapping("/upload")
     public String performUpload(@RequestParam("fileUpload") MultipartFile file, String provider, Model model, Principal principal) {
         long maxFileSize = DataSize.parse(fileSizeLimit).toBytes();
+        Map<String, String> errors = new LinkedHashMap<>();
 
         if (!StringUtils.hasText(provider)) {
-            return showErrorOnUpload(model, principal, provider, "Please select a provider");
+            errors.put("provider", "Please select a provider");
         }
         if (file.isEmpty()) {
-            return showErrorOnUpload(model, principal, provider, "Please select a file to upload");
+            errors.put("fileUpload", "Please select a file to upload");
         }
         if (file.getSize() > maxFileSize) {
-            return showErrorOnUpload(model, principal, provider, "File size must not exceed 10MB");
+            errors.put("fileUpload", "File size must not exceed 10MB");
         }
 
         try {
-            virusCheckService.checkVirus(file);
+            if (errors.isEmpty()) {
+                virusCheckService.checkVirus(file);
+            }
         } catch (Exception e) {
             log.error("Virus check failed with message: {}", e.getMessage());
-            return showErrorOnUpload(model, principal, provider, "The file failed the virus scan. Please upload a clean file.");
+            errors.put("fileUpload", "The file failed the virus scan. Please upload a clean file.");
+        }
+
+        if (!errors.isEmpty()) {
+            return showErrorOnUpload(model, principal, provider, errors);
         }
 
         try {
@@ -92,26 +101,26 @@ public class BulkUploadController {
             log.info("CWA Upload response fileId: {}", cwaUploadResponseDto.getFileId());
         } catch (Exception e) {
             log.error("Failed to upload file to CWA with message: {}", e.getMessage());
-            return showErrorOnUpload(model, principal, provider, "An error occurred while uploading the file.");
+            errors.put("fileUpload", "An error occurred while uploading the file.");
+            return showErrorOnUpload(model, principal, provider, errors);
         }
 
         return "pages/submission";
     }
 
     /**
-     * Handles errors during the upload process.
+     * Displays the error messages on the upload page.
      *
-     * @param model        the model to be populated with error messages
-     * @param principal    the authenticated user principal
-     * @param provider     the selected provider
-     * @param errorMessage the error message to display
+     * @param model   the model to be populated with error messages
+     * @param principal the authenticated user principal
+     * @param provider the selected provider
+     * @param errors  the map of error messages
      * @return the upload page with error messages
      */
-    private String showErrorOnUpload(Model model, Principal principal, String provider, String errorMessage) {
-        model.addAttribute("error", errorMessage);
+    private String showErrorOnUpload(Model model, Principal principal, String provider, Map<String, String> errors) {
+        model.addAttribute("errors", errors);
         providerHelper.populateProviders(model, principal);
         model.addAttribute("selectedProvider", !StringUtils.hasText(provider) ? 0 : Integer.parseInt(provider));
-
         return "pages/upload";
     }
 }

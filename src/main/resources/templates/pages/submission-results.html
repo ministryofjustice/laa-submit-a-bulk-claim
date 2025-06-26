@@ -17,9 +17,9 @@
         <div class="govuk-grid-row">
             <div>
                 <h1 class="govuk-heading-xl">CWA Bulk Upload</h1>
+                <h3 class="govuk-heading-m">Bulk upload summary</h3>
                 <div class="upload-table">
                 <table class="govuk-table">
-                    <caption class="govuk-table__caption govuk-table__caption--m">Bulk upload summary</caption>
                     <thead class="govuk-table__head">
                     <tr class="govuk-table__row">
                         <th scope="col" class="govuk-table__header">SUMMARY_ID</th>
@@ -46,10 +46,10 @@
                     </tbody>
                 </table>
                 </div>
-
-                <div th:if="${errors != null && errors.size() > 0}" class="upload-table" >
+                <div th:if="${errors != null && errors.size() > 0}">
+                <h3 class="govuk-heading-m">Bulk upload error details</h3>
+                <div class="upload-table" >
                 <table class="govuk-table">
-                    <caption class="govuk-table__caption govuk-table__caption--m">Bulk upload error details</caption>
                     <thead class="govuk-table__head">
                     <tr class="govuk-table__row">
                         <th scope="col" class="govuk-table__header">SUMMARY_ID</th>
@@ -71,7 +71,7 @@
                     </tr>
                     </tbody>
                 </table>
-
+                </div>
                 </div>
             </div>
         </div>

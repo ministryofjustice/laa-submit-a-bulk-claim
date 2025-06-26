@@ -7,26 +7,35 @@
         <div class="govuk-width-container">
             <div class="govuk-grid-row">
                 <div class="govuk-grid-column-two-thirds">
-                    <div th:if="${error != null}" class="govuk-error-summary" data-module="govuk-error-summary">
+                    <div th:if="${errors != null && !errors.isEmpty()}" class="govuk-error-summary"
+                         data-module="govuk-error-summary">
                         <div role="alert">
                             <h2 class="govuk-error-summary__title">
                                 There is a problem
                             </h2>
                             <div class="govuk-error-summary__body">
                                 <ul class="govuk-list govuk-error-summary__list">
-                                    <li>
-                                        <a th:text="${error}" href="#"></a>
+                                    <li th:each="err : ${errors}">
+                                        <a th:text="${err.value}" th:href="'#' + ${err.key}"></a>
                                     </li>
                                 </ul>
                             </div>
                         </div>
                     </div>
                     <h1 class="govuk-heading-xl">CWA Bulk Upload</h1>
-                    <div class="govuk-form-group">
+                    <div class="govuk-form-group"
+                         th:classappend="${errors != null && errors.containsKey('provider') ? 'govuk-form-group--error' : ''}">
                         <label class="govuk-label" for="provider">
                             Select provider
                         </label>
-                        <select class="govuk-select" id="provider" name="provider">
+                        <p th:if="${errors != null && errors.containsKey('provider')}" id="provider-error"
+                           class="govuk-error-message">
+                            <span class="govuk-visually-hidden">Error:</span>
+                            <span th:text="${errors['provider']}"></span>
+                        </p>
+                        <select class="govuk-select" id="provider" name="provider"
+                                th:classappend="${errors != null && errors.containsKey('provider') ? 'govuk-select--error' : ''}"
+                                th:aria-describedby="${errors != null && errors.containsKey('provider') ? 'provider-error' : ''}">
                             <option value="">select option</option>
                             <option th:each="provider : ${providers}"
                                     th:value="${provider.vendorId}"
@@ -55,9 +64,18 @@
                         <div class="govuk-tabs__panel" id="upload-file">
                             <h2 class="govuk-heading-l">Upload a file</h2>
 
-                            <div class="govuk-form-group">
+                            <div class="govuk-form-group"
+                                 th:classappend="${errors != null && errors.containsKey('fileUpload') ? 'govuk-form-group--error' : ''}">
                                 <label class="govuk-label" for="file-upload">Select a file to upload</label>
-                                <input class="govuk-file-upload" id="file-upload" name="fileUpload" type="file"  accept=".csv,.xml,.txt">
+                                <p th:if="${errors != null && errors.containsKey('fileUpload')}" id="file-upload-error"
+                                   class="govuk-error-message">
+                                    <span class="govuk-visually-hidden">Error:</span>
+                                    <span th:text="${errors['fileUpload']}"></span>
+                                </p>
+                                <input class="govuk-file-upload" id="file-upload" name="fileUpload" type="file"
+                                       accept=".csv,.xml,.txt"
+                                       th:classappend="${errors != null && errors.containsKey('fileUpload') ? 'govuk-select--error' : ''}"
+                                       th:aria-describedby="${errors != null && errors.containsKey('fileUpload') ? 'file-upload-error' : ''}">
                                 <button type="submit" class="govuk-button" data-module="govuk-button">Upload</button>
                             </div>
 
@@ -66,13 +84,24 @@
                         <div class="govuk-tabs__panel govuk-tabs__panel--hidden" id="search-upload">
                             <h2 class="govuk-heading-l">Search By Reference</h2>
 
-                            <div class="govuk-form-group">
+                            <div class="govuk-form-group"
+                                 th:classappend="${errors != null && errors.containsKey('searchTerm') ? 'govuk-form-group--error' : ''}">
                                 <h1 class="govuk-label-wrapper">
                                     <label class="govuk-label" for="searchTerm">Enter File Reference</label>
                                 </h1>
-                                <input class="govuk-input govuk-input--width-10" id="searchTerm" maxlength="10" name="searchTerm" type="text"  placeholder="Enter file reference" aria-describedby="searchTerm-hint">
+                                <p th:if="${errors != null && errors.containsKey('searchTerm')}" id="searchTerm-error"
+                                   class="govuk-error-message">
+                                    <span class="govuk-visually-hidden">Error:</span>
+                                    <span th:text="${errors['searchTerm']}"></span>
+                                </p>
+                                <input class="govuk-input govuk-input--width-10" id="searchTerm" maxlength="10"
+                                       name="searchTerm" type="text" placeholder="Enter file reference"
+                                       th:classappend="${errors != null && errors.containsKey('searchTerm') ? 'govuk-input--error' : ''}"
+                                       th:aria-describedby="${errors != null && errors.containsKey('searchTerm') ? 'searchTerm-error' : ''}">
                             </div>
-                            <button type="submit" class="govuk-button"  th:formaction="@{/search}" data-module="govuk-button">Search</button>
+                            <button type="submit" class="govuk-button" th:formaction="@{/search}"
+                                    data-module="govuk-button">Search
+                            </button>
                         </div>
                     </div>
                 </div>

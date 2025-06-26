@@ -12,12 +12,13 @@ import uk.gov.justice.laa.cwa.bulkupload.response.CwaUploadSummaryResponseDto;
 import uk.gov.justice.laa.cwa.bulkupload.service.CwaUploadService;
 
 import java.security.Principal;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
- * Controller for handling the submission of bulk upload.
+ * Controller for handling search requests related to bulk uploads.
  */
-
 @Slf4j
 @RequiredArgsConstructor
 @Controller
@@ -26,56 +27,62 @@ public class SearchController {
     private final ProviderHelper providerHelper;
 
     /**
-     * Handles the search form submission.
-     * This method processes the search term and provider, retrieves the upload summary and errors,
-     * and returns the results page.
+     * Handles the search form submission and retrieves upload summaries and errors.
      *
-     * @param provider   the selected provider.
-     * @param searchTerm the file reference to search.
-     * @param model      the model to be populated with results.
-     * @return the results page or an error page if validation fails.
+     * @param provider   the selected provider
+     * @param searchTerm the search term (file reference)
+     * @param model      the model to add attributes to
+     * @param principal  the authenticated user principal
+     * @return the name of the view to render
      */
     @PostMapping("/search")
     public String submitForm(String provider, String searchTerm, Model model, Principal principal) {
+        Map<String, String> errors = new LinkedHashMap<>();
 
         if (!StringUtils.hasText(provider)) {
-            return handleError(model, principal, provider, "Please select a provider");
+            errors.put("provider", "Please select a provider");
         }
         if (!StringUtils.hasText(searchTerm) || searchTerm.length() > 10) {
-            return handleError(model, principal, provider, "File reference must be between 1 to 10 characters long");
+            errors.put("searchTerm", "File reference must be between 1 to 10 characters long");
         }
+        if (!errors.isEmpty()) {
+            return handleError(model, principal, provider, errors);
+        }
+
         List<CwaUploadSummaryResponseDto> summary;
         try {
             summary = cwaUploadService.getUploadSummary(searchTerm, principal.getName(), provider);
             model.addAttribute("summary", summary);
         } catch (Exception e) {
             log.error("Error retrieving upload summary: {}", e.getMessage());
-            return handleError(model, principal, provider, "Search failed please try again.");
+            errors.put("search", "Search failed please try again.");
+            return handleError(model, principal, provider, errors);
         }
 
         try {
-            List<CwaUploadErrorResponseDto> errors = cwaUploadService.getUploadErrors(searchTerm, principal.getName().toUpperCase(), provider);
-            model.addAttribute("errors", errors);
+            List<CwaUploadErrorResponseDto> uploadErrors = cwaUploadService.getUploadErrors(searchTerm, principal.getName().toUpperCase(), provider);
+            model.addAttribute("errors", uploadErrors);
         } catch (Exception e) {
             log.error("Error retrieving upload errors: {}", e.getMessage());
-            return handleError(model, principal, provider, "Search failed please try again.");
+            errors.put("search", "Search failed please try again.");
+            return handleError(model, principal, provider, errors);
         }
 
         return "pages/submission-results";
     }
 
     /**
-     * Handles the error case for the search form submission.
-     * This method populates the model with error messages and provider information.
+     * Handles errors during the search process and prepares the model for rendering the upload page.
      *
-     * @param model        the model to be populated with error messages.
-     * @param principal    the authenticated user principal.
-     * @param provider     the selected provider.
-     * @param errorMessage the error message to display.
-     * @return the upload page with error messages.
+     * @param model     the model to add attributes to
+     * @param principal the authenticated user principal
+     * @param provider  the selected provider
+     * @param errors    a map of error messages
+     * @return the name of the view to render
      */
-    private String handleError(Model model, Principal principal, String provider, String errorMessage) {
-        model.addAttribute("error", errorMessage);
+
+    private String handleError(Model model, Principal principal, String provider, Map<String, String> errors) {
+        model.addAttribute("errors", errors);
         if (StringUtils.hasText(provider)) {
             try {
                 model.addAttribute("selectedProvider", Integer.parseInt(provider));
@@ -88,4 +95,3 @@ public class SearchController {
         return "pages/upload";
     }
 }
-
