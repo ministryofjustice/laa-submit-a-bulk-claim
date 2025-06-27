@@ -8,7 +8,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 /**
  * Controller for handling user sign-out functionality.
  */
-
 @Slf4j
 @RequiredArgsConstructor
 @Controller

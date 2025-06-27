@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
 /**
- * The DTO class for upload response.
+ * The DTO class for CWA upload summary response.
  */
 @Data
 public class CwaUploadSummaryResponseDto {

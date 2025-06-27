@@ -3,7 +3,7 @@ package uk.gov.justice.laa.cwa.bulkupload.response;
 import lombok.Data;
 
 /**
- * The DTO class for upload response.
+ * The DTO class for CWA submission response.
  */
 @Data
 public class CwaSubmissionResponseDto {
