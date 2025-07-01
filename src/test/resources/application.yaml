@@ -1,14 +1,12 @@
 server:
   port: 8082
-
-
-azure:
-  entra-id:
-    client-id: xx
-    client-secret: xx
-    cloud-instance: xx
-    scope: xx
-    tenant-id: xx
+spring:
+  profiles:
+    active: test
+  servlet:
+    multipart:
+      max-file-size: 50MB
+      max-request-size: 50MB
 
 sds-api:
   url: xx

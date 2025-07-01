@@ -2,7 +2,6 @@ package uk.gov.justice.laa.cwa.bulkupload.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Profile;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.core.userdetails.User;
@@ -14,7 +13,6 @@ import org.springframework.security.web.SecurityFilterChain;
  * Security configuration for the Bulk Upload application.
  * This configuration sets up basic authentication with an in-memory user store.
  */
-@Profile("!test") // disable security for test profile
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
@@ -29,12 +27,6 @@ public class SecurityConfig {
         var user = User
                 .withUsername("ERNESTCOHEN")
                 .password("{noop}password") // {noop} means no password encoder
-                .roles("USER")
-                .build();
-
-        var user2 = User
-                .withUsername("JANEDOE")
-                .password("{noop}password")
                 .roles("USER")
                 .build();
 
@@ -55,7 +47,7 @@ public class SecurityConfig {
                 .password("{noop}password")
                 .roles("USER")
                 .build();
-        return new InMemoryUserDetailsManager(user, user2, user4, user14, user19);
+        return new InMemoryUserDetailsManager(user, user4, user14, user19);
     }
 
     /**

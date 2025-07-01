@@ -6,13 +6,18 @@ spring:
       max-file-size: ${SERVER_MAX_FILE_SIZE}
       max-request-size: ${SERVER_MAX_FILE_SIZE}
 
-azure:
-  entra-id:
-    client-id: ${AUTH_CLIENT_ID}
-    client-secret: ${AUTH_CLIENT_SECRET}
-    cloud-instance: ${AUTH_CLOUD_INSTANCE}
-    scope: ${AUTH_SCOPE}
-    tenant-id: ${AUTH_TENANT_ID}
+  security:
+    oauth2:
+      client:
+        registration:
+          moj-identity:
+            client-id: ${AUTH_CLIENT_ID}
+            client-secret: ${AUTH_CLIENT_SECRET}
+            scope: ${AUTH_SCOPE}
+            authorization-grant-type: client_credentials
+        provider:
+          moj-identity:
+            issuer-uri: https://login.microsoftonline.com/${AUTH_TENANT_ID}/v2.0
 
 sds-api:
   url: ${SDS_API_URL}

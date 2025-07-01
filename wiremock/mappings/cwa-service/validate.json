@@ -4,7 +4,7 @@
     "urlPath": "/api/process_submission",
     "queryParameters": {
       "username": {
-        "equalTo": "ERNESTCOHEN"
+        "matches": "DT_SCRIPT_USER4|DT_SCRIPT_USER14|DT_SCRIPT_USER19"
       },
       "am_bulk_file_id": {
         "equalTo": "324"

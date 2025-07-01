@@ -57,7 +57,6 @@ public class CwaUploadService {
         return restClient.post()
                 .uri(cwaApiUrl + "/api/upload")
                 .contentType(MediaType.MULTIPART_FORM_DATA)
-                .header("Authorization", "Bearer " + tokenService.getSdsAccessToken())
                 .body(builder.build())
                 .retrieve()
                 .body(CwaUploadResponseDto.class);
@@ -72,7 +71,6 @@ public class CwaUploadService {
     public List<CwaVendorDto> getProviders(String userName) {
         return restClient.get()
                 .uri(cwaApiUrl + "/api/validate_user", uriBuilder -> uriBuilder.queryParam("username", userName).build())
-                .header("Authorization", "Bearer " + tokenService.getSdsAccessToken())
                 .retrieve()
                 .body(new ParameterizedTypeReference<>() {
                 });
@@ -103,7 +101,6 @@ public class CwaUploadService {
                         .queryParam("am_bulk_file_id", fileId)
                         .queryParam("vendor_id", provider)
                         .build())
-                .header("Authorization", "Bearer " + tokenService.getSdsAccessToken())
                 .retrieve()
                 .body(CwaSubmissionResponseDto.class);
 
@@ -124,7 +121,6 @@ public class CwaUploadService {
                         .queryParam("am_bulk_file_id", fileId)
                         .queryParam("vendor_id", provider)
                         .build())
-                .header("Authorization", "Bearer " + tokenService.getSdsAccessToken())
                 .retrieve()
                 .body(new ParameterizedTypeReference<>() {
                 });
@@ -146,7 +142,6 @@ public class CwaUploadService {
                         .queryParam("am_bulk_file_id", fileId)
                         .queryParam("vendor_id", provider)
                         .build())
-                .header("Authorization", "Bearer " + tokenService.getSdsAccessToken())
                 .retrieve()
                 .body(new ParameterizedTypeReference<>() {
                 });

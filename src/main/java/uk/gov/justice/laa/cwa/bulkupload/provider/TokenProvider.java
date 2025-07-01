@@ -27,8 +27,8 @@ public class TokenProvider {
     @Cacheable(value = "tokenCache", key = "'sdsAccessToken'")
     public OAuth2AccessToken getTokenFromProvider() {
         OAuth2AuthorizeRequest authorizeRequest = OAuth2AuthorizeRequest
-                .withClientRegistrationId("azure")
-                .principal("service")
+                .withClientRegistrationId("moj-identity")
+                .principal("moj-identity-client")
                 .build();
 
         OAuth2AuthorizedClient authorizedClient = authorizedClientManager.authorize(authorizeRequest);

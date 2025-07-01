@@ -13,7 +13,6 @@ import org.springframework.web.client.HttpClientErrorException;
 import uk.gov.justice.laa.cwa.bulkupload.helper.ProviderHelper;
 import uk.gov.justice.laa.cwa.bulkupload.response.CwaUploadResponseDto;
 import uk.gov.justice.laa.cwa.bulkupload.service.CwaUploadService;
-import uk.gov.justice.laa.cwa.bulkupload.service.TokenService;
 import uk.gov.justice.laa.cwa.bulkupload.service.VirusCheckService;
 
 import java.security.Principal;
@@ -41,9 +40,6 @@ class BulkUploadControllerTest {
 
     @MockitoBean
     private CwaUploadService cwaUploadService;
-
-    @MockitoBean
-    private TokenService tokenService;
 
     @MockitoBean
     private ProviderHelper providerHelper;
