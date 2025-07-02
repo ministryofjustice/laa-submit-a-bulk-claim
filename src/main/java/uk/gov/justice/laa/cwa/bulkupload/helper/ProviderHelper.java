@@ -1,6 +1,5 @@
 package uk.gov.justice.laa.cwa.bulkupload.helper;
 
-import java.security.Principal;
 import java.util.List;
 import org.springframework.stereotype.Component;
 import org.springframework.ui.Model;
@@ -27,8 +26,8 @@ public class ProviderHelper {
    *
    * @param model the model to be populated.
    */
-  public void populateProviders(Model model, Principal principal) {
-    List<CwaVendorDto> providers = cwaUploadService.getProviders(principal.getName().toUpperCase());
+  public void populateProviders(Model model, String username) {
+    List<CwaVendorDto> providers = cwaUploadService.getProviders(username);
     model.addAttribute("providers", providers);
   }
 }

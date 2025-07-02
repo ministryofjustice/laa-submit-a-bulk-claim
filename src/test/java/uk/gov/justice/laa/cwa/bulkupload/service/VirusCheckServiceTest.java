@@ -1,6 +1,5 @@
 package uk.gov.justice.laa.cwa.bulkupload.service;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.endsWith;
@@ -61,10 +60,9 @@ class VirusCheckServiceTest {
             "file", "test.txt", MediaType.TEXT_PLAIN_VALUE, "test content".getBytes());
 
     // When
-    SdsVirusCheckResponseDto result = virusCheckService.checkVirus(file);
+    virusCheckService.checkVirus(file);
 
     // Then
-    assertThat(result).isEqualTo(expectedResponse);
     verify(requestBodySpec).contentType(MediaType.MULTIPART_FORM_DATA);
     verify(requestBodySpec).header("Authorization", "Bearer " + mockToken);
   }

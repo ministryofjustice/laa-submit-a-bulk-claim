@@ -68,6 +68,30 @@ spec:
                   name: cwa-bulk-upload-secrets
                   key: CWA_API_TIMEOUT
 
+            - name: SILAS_CLIENT_ID
+              valueFrom:
+                secretKeyRef:
+                  name: cwa-bulk-upload-secrets
+                  key: SILAS_CLIENT_ID
+
+            - name: SILAS_CLIENT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: cwa-bulk-upload-secrets
+                  key: SILAS_CLIENT_SECRET
+
+            - name: SILAS_CLIENT_SCOPE
+              valueFrom:
+                secretKeyRef:
+                  name: cwa-bulk-upload-secrets
+                  key: SILAS_CLIENT_SCOPE
+
+            - name: SILAS_TENANT_ID
+              valueFrom:
+                secretKeyRef:
+                  name: cwa-bulk-upload-secrets
+                  key: SILAS_TENANT_ID
+
             - name: REST_CLIENT_CONNECT_TIMEOUT
               valueFrom:
                 secretKeyRef:

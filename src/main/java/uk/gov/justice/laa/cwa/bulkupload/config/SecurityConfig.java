@@ -2,22 +2,24 @@ package uk.gov.justice.laa.cwa.bulkupload.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.provisioning.InMemoryUserDetailsManager;
+import org.springframework.security.oauth2.client.oidc.web.logout.OidcClientInitiatedLogoutSuccessHandler;
+import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.logout.LogoutSuccessHandler;
 import org.springframework.security.web.session.SimpleRedirectInvalidSessionStrategy;
 
 /**
  * Security configuration for the Bulk Upload application. This configuration sets up basic
  * authentication with an in-memory user store.
  */
+@Profile("!test") // disable security for test profile
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
-
   /**
    * UserDetailsService bean for in-memory user management. This method creates fake users for
    * testing purposes.
@@ -25,47 +27,12 @@ public class SecurityConfig {
    * @return the UserDetailsService instance
    */
   @Bean
-  public UserDetailsService userDetailsService() {
-    var user =
-        User.withUsername("ERNESTCOHEN")
-            .password("{noop}password") // {noop} means no password encoder
-            .roles("USER")
-            .build();
-
-    var user4 =
-        User.withUsername("DT_SCRIPT_USER4").password("{noop}password").roles("USER").build();
-
-    var user6 =
-        User.withUsername("DT_SCRIPT_USER6").password("{noop}password").roles("USER").build();
-
-    var user14 =
-        User.withUsername("DT_SCRIPT_USER14").password("{noop}password").roles("USER").build();
-
-    var user19 =
-        User.withUsername("DT_SCRIPT_USER19").password("{noop}password").roles("USER").build();
-
-    var user22 =
-        User.withUsername("DT_SCRIPT_USER22").password("{noop}password").roles("USER").build();
-
-    var user23 =
-        User.withUsername("DT_SCRIPT_USER23").password("{noop}password").roles("USER").build();
-    return new InMemoryUserDetailsManager(user, user4, user6, user14, user19, user22, user23);
-  }
-
-  /**
-   * Security filter chain for the application. This method configures HTTP security to require
-   * authentication for all requests and uses basic authentication.
-   *
-   * @param http the HttpSecurity object to configure
-   * @return the configured SecurityFilterChain
-   * @throws Exception if an error occurs during configuration
-   */
-  @Bean
-  public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-
+  public SecurityFilterChain securityFilterChain(
+      HttpSecurity http, ClientRegistrationRepository clientRegistrationRepository)
+      throws Exception {
     http.authorizeHttpRequests(
-            (requests) ->
-                requests
+            authz ->
+                authz
                     .requestMatchers(
                         "/assets/**",
                         "/javascripts/**",
@@ -76,24 +43,25 @@ public class SecurityConfig {
                     .permitAll()
                     .anyRequest()
                     .authenticated())
-        .formLogin((form) -> form.loginPage("/login").permitAll())
-        .sessionManagement(
-            sessionManagement ->
-                sessionManagement.invalidSessionStrategy(
-                    // TODO: Change this once auth provider has been implemented.
-                    new SimpleRedirectInvalidSessionStrategy("/login?invalid")))
+        .csrf(Customizer.withDefaults())
+        .oauth2Login(Customizer.withDefaults())
         .logout(
-            httpSecurityLogoutConfigurer ->
-                httpSecurityLogoutConfigurer
-                    .logoutUrl("/logout")
-                    // TODO: Change this once auth provider has been implemented.
-                    .logoutSuccessUrl("/login?logout")
-                    .permitAll()
-                    .logoutRequestMatcher(
-                        e -> e.getRequestURI().startsWith("/logout") && e.getMethod().equals("GET"))
+            logout ->
+                logout
+                    .logoutSuccessHandler(oidcLogoutSuccessHandler(clientRegistrationRepository))
                     .invalidateHttpSession(true)
-                    .clearAuthentication(true));
+                    .clearAuthentication(true)
+                    .deleteCookies("JSESSIONID"));
 
     return http.build();
+  }
+
+  private LogoutSuccessHandler oidcLogoutSuccessHandler(
+      ClientRegistrationRepository clientRegistrationRepository) {
+    OidcClientInitiatedLogoutSuccessHandler successHandler =
+        new OidcClientInitiatedLogoutSuccessHandler(clientRegistrationRepository);
+    // Optionally set post-logout redirect URI
+    successHandler.setPostLogoutRedirectUri("{baseUrl}/");
+    return successHandler;
   }
 }
