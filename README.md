@@ -1,4 +1,5 @@
 # LAA CWA Bulk Upload
+[![Ministry of Justice Repository Compliance Badge](https://github-community.service.justice.gov.uk/repository-standards/api/laa-cwa-bulk-upload/badge)](https://github-community.service.justice.gov.uk/repository-standards/laa-cwa-bulk-upload)
 
 A Spring Boot web application for securely uploading files in bulk to the Legal Aid Agency's CWA system. The application provides a user-friendly interface for file uploads, provider selection, virus scanning, and result tracking.
 
@@ -41,7 +42,7 @@ A Spring Boot web application for securely uploading files in bulk to the Legal 
 
 ## Technologies
 
-- Java 17+
+- Java 21+
 - Spring Boot
 - Gradle
 - Thymeleaf
@@ -53,7 +54,7 @@ A Spring Boot web application for securely uploading files in bulk to the Legal 
 
 ### Prerequisites
 
-- Java 17 or higher
+- Java 21 or higher
 - Gradle (or use the Gradle wrapper)
 - (Optional) Docker for running dependencies
 - Install Docker desktop (https://www.docker.com/products/docker-desktop)
@@ -70,16 +71,20 @@ cd laa-cwa-bulk-upload
 ./gradlew clean build
 ```
 ### Wiremock
+```
 export WIREMOCK_PORT=8090
 export WIREMOCK_HOST=localhost
+```
 All Wiremock stubs are located in `src/wiremock/mappings/cwa-service`
 Before running the application, ensure Wiremock is running on port 8090.
 You can start it using Docker compose  : `docker-compose up` (from the root of the project)
 Ensure cwa-api.url in your local application yaml is set to 'http://localhost:8090' to point to wiremock.
 
 ### Local Application Properties
+```
 export CWA_API_URL=http://localhost:8090
 export CWA_API_TIMEOUT=20
+```
 
 ### Run
 
@@ -89,7 +94,7 @@ Start the application locally:
 ./gradlew bootRun
 ```
 
-The app will be available at [http://localhost:8080](http://localhost:8080).
+The app will be available at [http://localhost:8082](http://localhost:8082).
 
 ### Configuration
 
@@ -103,7 +108,7 @@ Other configuration options (e.g., CWA API endpoints, authentication) can be add
 
 ## Usage
 
-1. **Open the application** in your browser at [http://localhost:8080](http://localhost:8080).
+1. **Open the application** in your browser at [http://localhost:8082](http://localhost:8082).
 2. **Select a provider** from the dropdown.
 3. **Choose a file** to upload (must be under the configured size limit and virus-free).
 4. **Submit the form** to upload.
