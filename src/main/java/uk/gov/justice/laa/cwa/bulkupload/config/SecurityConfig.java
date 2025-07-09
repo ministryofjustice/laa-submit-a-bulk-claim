@@ -36,6 +36,12 @@ public class SecurityConfig {
                 .roles("USER")
                 .build();
 
+        var user6 = User
+                .withUsername("DT_SCRIPT_USER6")
+                .password("{noop}password")
+                .roles("USER")
+                .build();
+
         var user14 = User
                 .withUsername("DT_SCRIPT_USER14")
                 .password("{noop}password")
@@ -59,7 +65,7 @@ public class SecurityConfig {
                 .password("{noop}password")
                 .roles("USER")
                 .build();
-        return new InMemoryUserDetailsManager(user, user4, user14, user19, user22, user23);
+        return new InMemoryUserDetailsManager(user, user4, user6, user14, user19, user22, user23);
     }
 
     /**
