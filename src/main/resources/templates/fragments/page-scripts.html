@@ -4,11 +4,14 @@
     <meta charset="UTF-8"/>
 </head>
 <body>
-<script type="module" src="/javascripts/govuk-frontend-5.10.1.min.js"></script>
+<script type="module" src="/javascripts/govuk-frontend-5.11.0.min.js"></script>
+<script type="module" src="/javascripts/moj-frontend-5.1.5.min.js"></script>
 <script type="module">
-  import {initAll} from '/javascripts/govuk-frontend-5.10.1.min.js'
+    import * as GOVUKFrontend from '/javascripts/govuk-frontend-5.11.0.min.js'
+    import * as MoJFrontend from '/javascripts/moj-frontend-5.1.5.min.js'
 
-  initAll()
+    GOVUKFrontend.initAll()
+    MoJFrontend.initAll()
 </script>
 </body>
 </html>
