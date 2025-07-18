@@ -4,14 +4,14 @@
     <meta charset="UTF-8"/>
 </head>
 <body>
-<script type="module" src="/javascripts/govuk-frontend-5.11.0.min.js"></script>
-<script type="module" src="/javascripts/moj-frontend-5.1.5.min.js"></script>
+<script type="module" th:src="@{/webjars/govuk-frontend/dist/govuk/govuk-frontend.min.js}"></script>
+<script type="module" th:src="@{/webjars/ministryofjustice__frontend/moj/moj-frontend.min.js}"></script>
 <script type="module">
-    import * as GOVUKFrontend from '/javascripts/govuk-frontend-5.11.0.min.js'
-    import * as MoJFrontend from '/javascripts/moj-frontend-5.1.5.min.js'
+    import * as GOVUKFrontend from '/webjars/govuk-frontend/dist/govuk/govuk-frontend.min.js'
+    import * as MOJFrontend from '/webjars/ministryofjustice__frontend/moj/moj-frontend.min.js'
 
     GOVUKFrontend.initAll()
-    MoJFrontend.initAll()
+    MOJFrontend.initAll()
 </script>
 </body>
 </html>

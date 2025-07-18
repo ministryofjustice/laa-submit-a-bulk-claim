@@ -82,7 +82,7 @@ public class SecurityConfig {
 
         http
                 .authorizeHttpRequests((requests) -> requests
-                        .requestMatchers("/assets/**", "/javascripts/**", "/stylesheets/**").permitAll()
+                        .requestMatchers("/assets/**", "/javascripts/**", "/stylesheets/**", "/webjars/**").permitAll()
                         .anyRequest().authenticated()
                 )
                 .formLogin((form) -> form
