@@ -6,7 +6,7 @@
     <div class="govuk-width-container">
         <div class="govuk-grid-row">
             <div class="govuk-grid-column-two-thirds">
-                <h1 class="govuk-heading-xl">CWA Bulk Upload</h1>
+                <h1 class="govuk-heading-xl" id="header">CWA Bulk Upload</h1>
                 <div th:if="${param.error}" class="govuk-error-summary" data-module="govuk-error-summary">
                     <div role="alert">
                         <div class="govuk-error-summary__body">
@@ -20,21 +20,22 @@
                 </div>
                 <form th:action="@{/login}" method="post">
                     <div class="govuk-form-group">
-                        <label class="govuk-label" for="username">
+                        <label class="govuk-label" for="username-input">
                             Username
                         </label>
-                        <input class="govuk-input govuk-!-width-one-third" id="username" name="username" type="text">
+                        <input class="govuk-input govuk-!-width-two-thirds" id="username-input" name="username" type="text">
                     </div>
                     <div class="govuk-form-group">
-                        <label class="govuk-label" for="password">
+                        <label class="govuk-label" for="password-input">
                             Password
                         </label>
-                        <input class="govuk-input govuk-!-width-one-third" id="password" name="password" type="password">
+                        <input class="govuk-input govuk-!-width-two-thirds" id="password-input" name="password" type="password">
                     </div>
-                    <button type="submit" class="govuk-button" data-module="govuk-button">Sign In</button>
+                    <button type="submit" class="govuk-button" data-module="govuk-button" id="primary-button">Sign In</button>
                 </form>
             </div>
         </div>
     </div>
+
 </main>
 </html>
