@@ -43,11 +43,11 @@
         <div class="moj-header__content" sec:authorize="isAuthenticated()">
             <nav class="moj-header__navigation" aria-label="Account navigation">
                 <ul class="moj-header__navigation-list">
-                    <li class="moj-header__navigation-item">
+                    <li class="moj-header__navigation-item" id="logged-in-user">
                         jonaan.barton@law.com
                     </li>
                     <li class="moj-header__navigation-item header-navigation-link">
-                        <a class="moj-header__navigation-link govuk-!-font-weight-bold" th:href="@{/logout}">Sign out</a>
+                        <a class="moj-header__navigation-link govuk-!-font-weight-bold" id="sign-out-link" th:href="@{/logout}">Sign out</a>
                     </li>
                 </ul>
             </nav>
