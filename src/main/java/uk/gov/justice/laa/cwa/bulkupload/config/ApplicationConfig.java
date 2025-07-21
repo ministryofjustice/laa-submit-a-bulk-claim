@@ -13,20 +13,19 @@ import org.springframework.web.servlet.resource.LiteWebJarsResourceResolver;
 @Configuration
 public class ApplicationConfig implements WebMvcConfigurer {
 
-    /**
-     * Configures resource handling for the application. This method maps the "/webjars/**" URL
-     * pattern to the webjars resources located in the "classpath:/META-INF/resources/webjars/"
-     * directory and configures a resource chain with a custom resolver.
-     *
-     * @param registry the ResourceHandlerRegistry to register resource handlers
-     */
-    @Override
-    public void addResourceHandlers(ResourceHandlerRegistry registry) {
-        registry
-            .addResourceHandler("/webjars/**")
-            .addResourceLocations("classpath:/META-INF/resources/webjars/")
-            .resourceChain(true)
-            .addResolver(new LiteWebJarsResourceResolver());
-    }
-
+  /**
+   * Configures resource handling for the application. This method maps the "/webjars/**" URL
+   * pattern to the webjars resources located in the "classpath:/META-INF/resources/webjars/"
+   * directory and configures a resource chain with a custom resolver.
+   *
+   * @param registry the ResourceHandlerRegistry to register resource handlers
+   */
+  @Override
+  public void addResourceHandlers(ResourceHandlerRegistry registry) {
+    registry
+        .addResourceHandler("/webjars/**")
+        .addResourceLocations("classpath:/META-INF/resources/webjars/")
+        .resourceChain(true)
+        .addResolver(new LiteWebJarsResourceResolver());
+  }
 }
