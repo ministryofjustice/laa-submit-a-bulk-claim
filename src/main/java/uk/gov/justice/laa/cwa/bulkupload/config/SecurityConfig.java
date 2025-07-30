@@ -8,6 +8,7 @@ import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.session.SimpleRedirectInvalidSessionStrategy;
 
 /**
  * Security configuration for the Bulk Upload application. This configuration sets up basic
@@ -66,12 +67,32 @@ public class SecurityConfig {
             (requests) ->
                 requests
                     .requestMatchers(
-                        "/assets/**", "/javascripts/**", "/stylesheets/**", "/webjars/**")
+                        "/assets/**",
+                        "/javascripts/**",
+                        "/stylesheets/**",
+                        "/webjars/**",
+                        "/login",
+                        "/logout")
                     .permitAll()
                     .anyRequest()
                     .authenticated())
         .formLogin((form) -> form.loginPage("/login").permitAll())
-        .logout(httpSecurityLogoutConfigurer -> httpSecurityLogoutConfigurer.logoutSuccessUrl("/"));
+        .sessionManagement(
+            sessionManagement ->
+                sessionManagement.invalidSessionStrategy(
+                    // TODO: Change this once auth provider has been implemented.
+                    new SimpleRedirectInvalidSessionStrategy("/login?invalid")))
+        .logout(
+            httpSecurityLogoutConfigurer ->
+                httpSecurityLogoutConfigurer
+                    .logoutUrl("/logout")
+                    // TODO: Change this once auth provider has been implemented.
+                    .logoutSuccessUrl("/login?logout")
+                    .permitAll()
+                    .logoutRequestMatcher(
+                        e -> e.getRequestURI().startsWith("/logout") && e.getMethod().equals("GET"))
+                    .invalidateHttpSession(true)
+                    .clearAuthentication(true));
 
     return http.build();
   }
