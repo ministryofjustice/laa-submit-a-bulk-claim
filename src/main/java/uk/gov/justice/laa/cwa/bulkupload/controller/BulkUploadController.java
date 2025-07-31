@@ -22,7 +22,9 @@ import uk.gov.justice.laa.cwa.bulkupload.response.CwaUploadResponseDto;
 import uk.gov.justice.laa.cwa.bulkupload.service.CwaUploadService;
 import uk.gov.justice.laa.cwa.bulkupload.service.VirusCheckService;
 
-/** Controller for handling the bulk upload requests. */
+/**
+ * Controller for handling the bulk upload requests.
+ */
 @Slf4j
 @RequiredArgsConstructor
 @Controller
@@ -38,11 +40,11 @@ public class BulkUploadController {
   /**
    * Renders the upload page.
    *
-   * @param model the model to be populated with data
+   * @param model    the model to be populated with data
    * @param oidcUser the authenticated user principal
    * @return the upload page
    */
-  @GetMapping("/")
+  @GetMapping("/upload")
   public String showUploadPage(Model model, @AuthenticationPrincipal OidcUser oidcUser) {
 
     try {
@@ -65,9 +67,9 @@ public class BulkUploadController {
   /**
    * Performs a bulk upload for the given file.
    *
-   * @param file the file to be uploaded
+   * @param file     the file to be uploaded
    * @param provider the selected provider
-   * @param model the model to be populated with data
+   * @param model    the model to be populated with data
    * @param oidcUser the authenticated user principal
    * @return the submission page
    */
@@ -125,9 +127,9 @@ public class BulkUploadController {
   /**
    * Displays the error messages on the upload page.
    *
-   * @param model the model to be populated with error messages
+   * @param model    the model to be populated with error messages
    * @param provider the selected provider
-   * @param errors the map of error messages
+   * @param errors   the map of error messages
    * @return the upload page with error messages
    */
   private String showErrorOnUpload(

@@ -1,25 +1,35 @@
 package uk.gov.justice.laa.cwa.bulkupload.config;
 
+import static org.springframework.security.config.Customizer.withDefaults;
+
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.oauth2.client.oidc.web.logout.OidcClientInitiatedLogoutSuccessHandler;
 import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.logout.LogoutSuccessHandler;
-import org.springframework.security.web.session.SimpleRedirectInvalidSessionStrategy;
 
 /**
  * Security configuration for the Bulk Upload application. This configuration sets up basic
  * authentication with an in-memory user store.
  */
 @Profile("!test") // disable security for test profile
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @EnableWebSecurity
 public class SecurityConfig {
+
+  @Bean
+  public WebSecurityCustomizer webSecurityCustomizer() {
+    return web -> web.ignoring()
+        .requestMatchers("/webjars/**", "/assets/**", "/javascripts/**", "/stylesheets/**");
+  }
+
+
   /**
    * UserDetailsService bean for in-memory user management. This method creates fake users for
    * testing purposes.
@@ -33,25 +43,20 @@ public class SecurityConfig {
     http.authorizeHttpRequests(
             authz ->
                 authz
-                    .requestMatchers(
-                        "/assets/**",
-                        "/javascripts/**",
-                        "/stylesheets/**",
-                        "/webjars/**",
-                        "/login",
-                        "/logout")
+                    .requestMatchers("/logged-out")
                     .permitAll()
                     .anyRequest()
                     .authenticated())
         .csrf(Customizer.withDefaults())
-        .oauth2Login(Customizer.withDefaults())
+        .oauth2Login(oauth2Login ->
+            oauth2Login.loginPage("/oauth2/authorization/silas-identity"))
+        .oauth2Client(withDefaults())
         .logout(
             logout ->
                 logout
                     .logoutSuccessHandler(oidcLogoutSuccessHandler(clientRegistrationRepository))
-                    .invalidateHttpSession(true)
-                    .clearAuthentication(true)
-                    .deleteCookies("JSESSIONID"));
+
+        );
 
     return http.build();
   }
@@ -60,8 +65,7 @@ public class SecurityConfig {
       ClientRegistrationRepository clientRegistrationRepository) {
     OidcClientInitiatedLogoutSuccessHandler successHandler =
         new OidcClientInitiatedLogoutSuccessHandler(clientRegistrationRepository);
-    // Optionally set post-logout redirect URI
-    successHandler.setPostLogoutRedirectUri("{baseUrl}/");
+    successHandler.setPostLogoutRedirectUri("{baseUrl}/logged-out");
     return successHandler;
   }
 }

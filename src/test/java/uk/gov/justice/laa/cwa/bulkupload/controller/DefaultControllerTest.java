@@ -10,14 +10,19 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.test.web.servlet.MockMvc;
 
-@WebMvcTest(LoginController.class)
+@WebMvcTest(DefaultController.class)
 @AutoConfigureMockMvc(addFilters = false)
-class LoginControllerTest {
+class DefaultControllerTest {
 
   @Autowired private MockMvc mockMvc;
 
   @Test
   void shouldReturnLoginView() throws Exception {
     mockMvc.perform(get("/login")).andExpect(status().isOk()).andExpect(view().name("pages/login"));
+  }
+  
+  @Test
+  void shouldReturnLoggedOutView() throws Exception {
+    mockMvc.perform(get("/logged-out")).andExpect(status().isOk()).andExpect(view().name("pages/logged-out"));
   }
 }
