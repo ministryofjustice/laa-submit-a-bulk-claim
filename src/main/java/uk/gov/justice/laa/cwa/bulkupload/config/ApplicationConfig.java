@@ -35,5 +35,4 @@ public class ApplicationConfig implements WebMvcConfigurer {
   RestClient restClient(RestClient.Builder builder) {
     return builder.build();
   }
-
 }

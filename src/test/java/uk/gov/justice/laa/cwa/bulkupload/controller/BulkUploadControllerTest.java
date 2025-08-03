@@ -20,9 +20,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.http.HttpStatus;
 import org.springframework.mock.web.MockMultipartFile;
@@ -35,6 +34,7 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.ui.Model;
 import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.RestClient;
 import org.springframework.web.multipart.MultipartFile;
 import uk.gov.justice.laa.cwa.bulkupload.helper.ProviderHelper;
 import uk.gov.justice.laa.cwa.bulkupload.response.CwaUploadResponseDto;
@@ -42,7 +42,7 @@ import uk.gov.justice.laa.cwa.bulkupload.service.CwaUploadService;
 import uk.gov.justice.laa.cwa.bulkupload.service.VirusCheckService;
 
 @WebMvcTest(BulkUploadController.class)
-@ExtendWith(MockitoExtension.class)
+@AutoConfigureMockMvc
 class BulkUploadControllerTest {
 
   private static final String PROVIDER = "123";
@@ -55,6 +55,8 @@ class BulkUploadControllerTest {
   @MockitoBean private CwaUploadService cwaUploadService;
 
   @MockitoBean private ProviderHelper providerHelper;
+
+  @MockitoBean private RestClient.Builder builder;
 
   private OidcUser getOidcUser() {
     Map<String, Object> claims = new HashMap<>();
@@ -76,7 +78,7 @@ class BulkUploadControllerTest {
         .populateProviders(any(Model.class), eq(TEST_USER));
 
     mockMvc
-        .perform(get("/").with(oidcLogin().oidcUser(getOidcUser())))
+        .perform(get("/upload").with(oidcLogin().oidcUser(getOidcUser())))
         .andExpect(status().isOk())
         .andExpect(view().name("pages/upload-forbidden"));
   }
@@ -88,7 +90,7 @@ class BulkUploadControllerTest {
         .populateProviders(any(Model.class), eq(TEST_USER));
 
     mockMvc
-        .perform(get("/").with(oidcLogin().oidcUser(getOidcUser())))
+        .perform(get("/upload").with(oidcLogin().oidcUser(getOidcUser())))
         .andExpect(status().isOk())
         .andExpect(view().name("error"));
   }

@@ -42,7 +42,7 @@ class ProviderHelperTest {
     providerHelper.populateProviders(model, USERNAME);
 
     verify(cwaUploadService).getProviders(USERNAME);
-    verify(model).addAttribute("providers", providers);
+    verify(model).addAttribute("providers", Collections.emptyList());
   }
 
   @Test

@@ -27,6 +27,7 @@ import org.springframework.security.oauth2.core.oidc.user.OidcUser;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.web.client.RestClient;
 import uk.gov.justice.laa.cwa.bulkupload.response.CwaSubmissionResponseDto;
 import uk.gov.justice.laa.cwa.bulkupload.response.CwaUploadErrorResponseDto;
 import uk.gov.justice.laa.cwa.bulkupload.response.CwaUploadSummaryResponseDto;
@@ -45,6 +46,8 @@ class SubmissionControllerTest {
   @Autowired private SubmissionController submissionController;
 
   @MockitoBean private CwaUploadService cwaUploadService;
+
+  @MockitoBean private RestClient.Builder builder;
 
   @BeforeEach
   void setUp() {

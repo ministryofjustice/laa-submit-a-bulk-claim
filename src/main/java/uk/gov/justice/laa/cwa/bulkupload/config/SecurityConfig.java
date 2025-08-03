@@ -25,10 +25,10 @@ public class SecurityConfig {
 
   @Bean
   public WebSecurityCustomizer webSecurityCustomizer() {
-    return web -> web.ignoring()
-        .requestMatchers("/webjars/**", "/assets/**", "/javascripts/**", "/stylesheets/**");
+    return web ->
+        web.ignoring()
+            .requestMatchers("/webjars/**", "/assets/**", "/javascripts/**", "/stylesheets/**");
   }
-
 
   /**
    * UserDetailsService bean for in-memory user management. This method creates fake users for
@@ -42,8 +42,7 @@ public class SecurityConfig {
       throws Exception {
     http.authorizeHttpRequests(
             authz ->
-                authz
-                    .requestMatchers("/logged-out")
+                authz.requestMatchers("/logged-out")
                     .permitAll()
                     .anyRequest()
                     .authenticated())
@@ -53,13 +52,11 @@ public class SecurityConfig {
         .oauth2Client(withDefaults())
         .logout(
             logout ->
-                logout
-                    .logoutSuccessHandler(oidcLogoutSuccessHandler(clientRegistrationRepository))
-
-        );
-
+                logout.logoutSuccessHandler(
+                    oidcLogoutSuccessHandler(clientRegistrationRepository)));
     return http.build();
   }
+
 
   private LogoutSuccessHandler oidcLogoutSuccessHandler(
       ClientRegistrationRepository clientRegistrationRepository) {
