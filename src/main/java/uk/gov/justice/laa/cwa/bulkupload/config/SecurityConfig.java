@@ -23,7 +23,12 @@ import org.springframework.security.web.authentication.logout.LogoutSuccessHandl
 @EnableWebSecurity
 public class SecurityConfig {
 
-  @Bean
+  /**
+   * Configures web security to ignore requests for static resources. This allows assets like
+   * webjars, stylesheets, and JavaScripts to be served without authentication.
+   *
+   * @return a WebSecurityCustomizer that ignores specified static resource paths
+   */
   public WebSecurityCustomizer webSecurityCustomizer() {
     return web ->
         web.ignoring()
@@ -41,13 +46,15 @@ public class SecurityConfig {
       HttpSecurity http, ClientRegistrationRepository clientRegistrationRepository)
       throws Exception {
     http.authorizeHttpRequests(
-            authz ->
-                authz.requestMatchers("/logged-out")
+            authz -> //
+            authz
+                    .requestMatchers("/logged-out")
                     .permitAll()
-                    .anyRequest()
+                    .anyRequest() //
                     .authenticated())
         .csrf(Customizer.withDefaults())
-        .oauth2Login(oauth2Login ->
+        .oauth2Login(
+            oauth2Login -> //
             oauth2Login.loginPage("/oauth2/authorization/silas-identity"))
         .oauth2Client(withDefaults())
         .logout(
@@ -56,7 +63,6 @@ public class SecurityConfig {
                     oidcLogoutSuccessHandler(clientRegistrationRepository)));
     return http.build();
   }
-
 
   private LogoutSuccessHandler oidcLogoutSuccessHandler(
       ClientRegistrationRepository clientRegistrationRepository) {
