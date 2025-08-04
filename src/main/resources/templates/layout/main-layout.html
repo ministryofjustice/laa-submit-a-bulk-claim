@@ -1,5 +1,5 @@
 <!DOCTYPE HTML>
-<html th:fragment="layout(title, main)" lang="en" class="govuk-template govuk-template--rebranded"
+<html th:fragment="layout(title, main, backLink)" lang="en" class="govuk-template govuk-template--rebranded"
       xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml">
 <head>
   <title th:text="|#{service.name} - ${title}|"/>
@@ -25,6 +25,9 @@
         th:utext="#{phase.banner.description}"/>
     </p>
   </div>
+  <th:block th:replace="${backLink}">
+    Default back link (this should be replaced)
+  </th:block>
   <main th:replace="${main}">
     <p>Default content (this should be replaced)</p>
   </main>

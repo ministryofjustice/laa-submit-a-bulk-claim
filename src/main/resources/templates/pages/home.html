@@ -1,12 +1,12 @@
 <!DOCTYPE HTML>
 <html lang="en" class="govuk-template" xmlns:th="http://www.thymeleaf.org"
-      th:replace="~{ layout/main-layout :: layout(#{home.heading},~{::main})}">
+      th:replace="~{ layout/main-layout :: layout(#{home.heading},~{::main}, ~{})}">
 <main class="govuk-main-wrapper" id="main-content">
   <div class="govuk-width-container">
     <div class="govuk-grid-row">
       <h1 class="govuk-heading-xl" id="header"
           th:text="#{home.heading}"/>
-      <a id="home-primary-button" href="#" role="button" draggable="false"
+      <a id="home-primary-button" th:href="@{/upload}" role="button" draggable="false"
          class="govuk-button govuk-button--start" data-module="govuk-button">
         <th:block th:text="#{home.primaryButton}"/>
         <svg class="govuk-button__start-icon" xmlns="http://www.w3.org/2000/svg" width="17.5"
