@@ -40,6 +40,10 @@ cwa-api:
   url: ${CWA_API_URL}
   timeout: ${CWA_API_TIMEOUT}
 
+claims-api:
+  url: ${CLAIM_API_URL}
+  accessToken: ${CLAIMS_API_ACCESS_TOKEN}
+
 upload-max-file-size: ${UPLOAD_MAX_FILE_SIZE}
 
 management:

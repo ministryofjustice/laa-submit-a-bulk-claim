@@ -26,7 +26,7 @@ import uk.gov.justice.laa.bulkclaim.service.VirusCheckService;
 @Slf4j
 @RequiredArgsConstructor
 @Controller
-public class BulkUploadController {
+public class BulkImportController {
 
   private final VirusCheckService virusCheckService;
   private final CwaUploadService cwaUploadService;
