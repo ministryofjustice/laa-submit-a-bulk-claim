@@ -10,14 +10,28 @@ spring:
     oauth2:
       client:
         registration:
+          silas-identity:
+            client-id: ${LASSIE_CLIENT_ID}
+            client-secret: ${LASSIE_CLIENT_SECRET}
+            authorization-grant-type: authorization_code
+            redirect-uri: "{baseUrl}/login/oauth2/code/{registrationId}"
+            scope: ${LASSIE_SCOPE}
           moj-identity:
             client-id: ${AUTH_CLIENT_ID}
             client-secret: ${AUTH_CLIENT_SECRET}
             scope: ${AUTH_SCOPE}
             authorization-grant-type: client_credentials
         provider:
+          silas-identity:
+            user-name-attribute: email
+            issuer-uri: https://login.microsoftonline.com/${LASSIE_TENANT_ID}/v2.0
           moj-identity:
             issuer-uri: https://login.microsoftonline.com/${AUTH_TENANT_ID}/v2.0
+  http:
+    client:
+      factory: jdk
+      connect-timeout: ${REST_CLIENT_CONNECT_TIMEOUT:5000}
+      read-timeout: ${REST_CLIENT_READ_TIMEOUT:40000}
 
 sds-api:
   url: ${SDS_API_URL}
@@ -27,7 +41,3 @@ cwa-api:
   timeout: ${CWA_API_TIMEOUT}
 
 upload-max-file-size: ${UPLOAD_MAX_FILE_SIZE}
-
-rest-client:
-  connect-timeout: ${REST_CLIENT_CONNECT_TIMEOUT}
-  read-timeout: ${REST_CLIENT_READ_TIMEOUT}

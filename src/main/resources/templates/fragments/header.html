@@ -43,9 +43,11 @@
         <div class="moj-header__content" sec:authorize="isAuthenticated()">
             <nav class="moj-header__navigation" aria-label="Account navigation">
                 <ul class="moj-header__navigation-list">
-                    <li class="moj-header__navigation-item" id="logged-in-user" sec:authentication="name"/>
+                    <li class="moj-header__navigation-item" id="logged-in-user" sec:authentication="principal.attributes['name']"/>
                     <li class="moj-header__navigation-item header-navigation-link">
-                        <a class="moj-header__navigation-link govuk-!-font-weight-bold" id="sign-out-link" th:href="@{/logout}">Sign out</a>
+                        <form th:action="@{/logout}" method="post">
+                            <button type="submit" class="sign-in-button govuk-!-font-weight-bold">Sign out</button>
+                        </form>
                     </li>
                 </ul>
             </nav>

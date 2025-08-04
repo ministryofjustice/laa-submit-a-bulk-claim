@@ -1,11 +1,12 @@
 package uk.gov.justice.laa.cwa.bulkupload.controller;
 
-import java.security.Principal;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.oauth2.core.oidc.user.OidcUser;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.StringUtils;
@@ -30,11 +31,13 @@ public class SearchController {
    * @param provider the selected provider
    * @param searchTerm the search term (file reference)
    * @param model the model to add attributes to
-   * @param principal the authenticated user principal
+   * @param oidcUser the authenticated user principal
    * @return the name of the view to render
    */
   @PostMapping("/search")
-  public String submitForm(String provider, String searchTerm, Model model, Principal principal) {
+  public String submitForm(
+      String provider, String searchTerm, Model model, @AuthenticationPrincipal OidcUser oidcUser) {
+
     Map<String, String> errors = new LinkedHashMap<>();
 
     if (!StringUtils.hasText(provider)) {
@@ -46,27 +49,27 @@ public class SearchController {
     }
 
     if (!errors.isEmpty()) {
-      return handleErrors(model, principal, provider, searchTerm, errors);
+      return handleErrors(model, oidcUser.getName(), provider, searchTerm, errors);
     }
 
     List<CwaUploadSummaryResponseDto> summary;
     try {
-      summary = cwaUploadService.getUploadSummary(searchTerm, principal.getName(), provider);
+      summary = cwaUploadService.getUploadSummary(searchTerm, oidcUser.getName(), provider);
       model.addAttribute("summary", summary);
     } catch (Exception e) {
       log.error("Error retrieving upload summary: {}", e.getMessage());
       errors.put("search", "Search failed please try again.");
-      return handleErrors(model, principal, provider, searchTerm, errors);
+      return handleErrors(model, oidcUser.getName(), provider, searchTerm, errors);
     }
 
     try {
       List<CwaUploadErrorResponseDto> uploadErrors =
-          cwaUploadService.getUploadErrors(searchTerm, principal.getName().toUpperCase(), provider);
+          cwaUploadService.getUploadErrors(searchTerm, oidcUser.getName(), provider);
       model.addAttribute("errors", uploadErrors);
     } catch (Exception e) {
       log.error("Error retrieving upload errors: {}", e.getMessage());
       errors.put("search", "Search failed please try again.");
-      return handleErrors(model, principal, provider, searchTerm, errors);
+      return handleErrors(model, oidcUser.getName(), provider, searchTerm, errors);
     }
 
     return "pages/submission-results";
@@ -76,7 +79,7 @@ public class SearchController {
    * Handles errors during the search process and prepares the model for rendering the upload page.
    *
    * @param model the model to add attributes to
-   * @param principal the authenticated user principal
+   * @param username the authenticated user principal
    * @param provider the selected provider
    * @param searchTerm the search term (file reference)
    * @param errors a map of error messages
@@ -84,7 +87,7 @@ public class SearchController {
    */
   private String handleErrors(
       Model model,
-      Principal principal,
+      String username,
       String provider,
       String searchTerm,
       Map<String, String> errors) {
@@ -100,8 +103,9 @@ public class SearchController {
     if (StringUtils.hasText(searchTerm)) {
       model.addAttribute("searchTerm", searchTerm);
     }
-    providerHelper.populateProviders(model, principal);
+    providerHelper.populateProviders(model, username);
     model.addAttribute("tab", "search");
+
     return "pages/upload";
   }
 }

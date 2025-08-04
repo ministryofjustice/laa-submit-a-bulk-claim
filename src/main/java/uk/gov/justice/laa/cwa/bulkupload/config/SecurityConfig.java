@@ -1,22 +1,39 @@
 package uk.gov.justice.laa.cwa.bulkupload.config;
 
+import static org.springframework.security.config.Customizer.withDefaults;
+
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.provisioning.InMemoryUserDetailsManager;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
+import org.springframework.security.oauth2.client.oidc.web.logout.OidcClientInitiatedLogoutSuccessHandler;
+import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.session.SimpleRedirectInvalidSessionStrategy;
+import org.springframework.security.web.authentication.logout.LogoutSuccessHandler;
 
 /**
  * Security configuration for the Bulk Upload application. This configuration sets up basic
  * authentication with an in-memory user store.
  */
-@Configuration
+@Profile("!test") // disable security for test profile
+@Configuration(proxyBeanMethods = false)
 @EnableWebSecurity
 public class SecurityConfig {
+
+  /**
+   * Configures web security to ignore requests for static resources. This allows assets like
+   * webjars, stylesheets, and JavaScripts to be served without authentication.
+   *
+   * @return a WebSecurityCustomizer that ignores specified static resource paths
+   */
+  public WebSecurityCustomizer webSecurityCustomizer() {
+    return web ->
+        web.ignoring()
+            .requestMatchers("/webjars/**", "/assets/**", "/javascripts/**", "/stylesheets/**");
+  }
 
   /**
    * UserDetailsService bean for in-memory user management. This method creates fake users for
@@ -25,75 +42,33 @@ public class SecurityConfig {
    * @return the UserDetailsService instance
    */
   @Bean
-  public UserDetailsService userDetailsService() {
-    var user =
-        User.withUsername("ERNESTCOHEN")
-            .password("{noop}password") // {noop} means no password encoder
-            .roles("USER")
-            .build();
-
-    var user4 =
-        User.withUsername("DT_SCRIPT_USER4").password("{noop}password").roles("USER").build();
-
-    var user6 =
-        User.withUsername("DT_SCRIPT_USER6").password("{noop}password").roles("USER").build();
-
-    var user14 =
-        User.withUsername("DT_SCRIPT_USER14").password("{noop}password").roles("USER").build();
-
-    var user19 =
-        User.withUsername("DT_SCRIPT_USER19").password("{noop}password").roles("USER").build();
-
-    var user22 =
-        User.withUsername("DT_SCRIPT_USER22").password("{noop}password").roles("USER").build();
-
-    var user23 =
-        User.withUsername("DT_SCRIPT_USER23").password("{noop}password").roles("USER").build();
-    return new InMemoryUserDetailsManager(user, user4, user6, user14, user19, user22, user23);
+  public SecurityFilterChain securityFilterChain(
+      HttpSecurity http, ClientRegistrationRepository clientRegistrationRepository)
+      throws Exception {
+    http.authorizeHttpRequests(
+            authz -> //
+            authz
+                    .requestMatchers("/logged-out")
+                    .permitAll()
+                    .anyRequest() //
+                    .authenticated())
+        .csrf(Customizer.withDefaults())
+        .oauth2Login(
+            oauth2Login -> //
+            oauth2Login.loginPage("/oauth2/authorization/silas-identity"))
+        .oauth2Client(withDefaults())
+        .logout(
+            logout ->
+                logout.logoutSuccessHandler(
+                    oidcLogoutSuccessHandler(clientRegistrationRepository)));
+    return http.build();
   }
 
-  /**
-   * Security filter chain for the application. This method configures HTTP security to require
-   * authentication for all requests and uses basic authentication.
-   *
-   * @param http the HttpSecurity object to configure
-   * @return the configured SecurityFilterChain
-   * @throws Exception if an error occurs during configuration
-   */
-  @Bean
-  public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-
-    http.authorizeHttpRequests(
-            (requests) ->
-                requests
-                    .requestMatchers(
-                        "/assets/**",
-                        "/javascripts/**",
-                        "/stylesheets/**",
-                        "/webjars/**",
-                        "/login",
-                        "/logout")
-                    .permitAll()
-                    .anyRequest()
-                    .authenticated())
-        .formLogin((form) -> form.loginPage("/login").permitAll())
-        .sessionManagement(
-            sessionManagement ->
-                sessionManagement.invalidSessionStrategy(
-                    // TODO: Change this once auth provider has been implemented.
-                    new SimpleRedirectInvalidSessionStrategy("/login?invalid")))
-        .logout(
-            httpSecurityLogoutConfigurer ->
-                httpSecurityLogoutConfigurer
-                    .logoutUrl("/logout")
-                    // TODO: Change this once auth provider has been implemented.
-                    .logoutSuccessUrl("/login?logout")
-                    .permitAll()
-                    .logoutRequestMatcher(
-                        e -> e.getRequestURI().startsWith("/logout") && e.getMethod().equals("GET"))
-                    .invalidateHttpSession(true)
-                    .clearAuthentication(true));
-
-    return http.build();
+  private LogoutSuccessHandler oidcLogoutSuccessHandler(
+      ClientRegistrationRepository clientRegistrationRepository) {
+    OidcClientInitiatedLogoutSuccessHandler successHandler =
+        new OidcClientInitiatedLogoutSuccessHandler(clientRegistrationRepository);
+    successHandler.setPostLogoutRedirectUri("{baseUrl}/logged-out");
+    return successHandler;
   }
 }

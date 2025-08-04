@@ -27,9 +27,8 @@ public class VirusCheckService {
    * Perform a virus check for the given file.
    *
    * @param file the file
-   * @return the result
    */
-  public SdsVirusCheckResponseDto checkVirus(MultipartFile file) {
+  public void checkVirus(MultipartFile file) {
     if (file == null) {
       throw new VirusCheckException("File cannot be null");
     }
@@ -45,10 +44,9 @@ public class VirusCheckService {
             .body(body)
             .retrieve()
             .body(SdsVirusCheckResponseDto.class);
-    if (null == sdsVirusCheckResponseDto
+    if (sdsVirusCheckResponseDto == null
         || !StringUtils.hasText(sdsVirusCheckResponseDto.getSuccess())) {
       throw new VirusCheckException("Virus check failed");
     }
-    return sdsVirusCheckResponseDto;
   }
 }

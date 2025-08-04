@@ -1,12 +1,13 @@
 package uk.gov.justice.laa.cwa.bulkupload.controller;
 
-import java.security.Principal;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.oauth2.core.oidc.user.OidcUser;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.StringUtils;
@@ -37,12 +38,15 @@ public class BulkUploadController {
   /**
    * Renders the upload page.
    *
+   * @param model the model to be populated with data
+   * @param oidcUser the authenticated user principal
    * @return the upload page
    */
-  @GetMapping("/")
-  public String showUploadPage(Model model, Principal principal) {
+  @GetMapping("/upload")
+  public String showUploadPage(Model model, @AuthenticationPrincipal OidcUser oidcUser) {
+
     try {
-      providerHelper.populateProviders(model, principal);
+      providerHelper.populateProviders(model, oidcUser.getName());
     } catch (HttpClientErrorException e) {
       log.error("HTTP client error fetching providers from CWA with message: {} ", e.getMessage());
       if (e.getStatusCode() == HttpStatus.FORBIDDEN) {
@@ -54,21 +58,26 @@ public class BulkUploadController {
       log.error("Error connecting to CWA with message: {} ", e.getMessage());
       return "error";
     }
+
     return "pages/upload";
   }
 
   /**
-   * Performs a bulk uploaded for the given file.
+   * Performs a bulk upload for the given file.
    *
    * @param file the file to be uploaded
-   * @return the upload results page
+   * @param provider the selected provider
+   * @param model the model to be populated with data
+   * @param oidcUser the authenticated user principal
+   * @return the submission page
    */
   @PostMapping("/upload")
   public String performUpload(
       @RequestParam("fileUpload") MultipartFile file,
       String provider,
       Model model,
-      Principal principal) {
+      @AuthenticationPrincipal OidcUser oidcUser) {
+
     long maxFileSize = DataSize.parse(fileSizeLimit).toBytes();
     Map<String, String> errors = new LinkedHashMap<>();
 
@@ -94,37 +103,38 @@ public class BulkUploadController {
     }
 
     if (!errors.isEmpty()) {
-      return showErrorOnUpload(model, principal, provider, errors);
+      return showErrorOnUpload(model, oidcUser.getName(), provider, errors);
     }
 
     try {
       CwaUploadResponseDto cwaUploadResponseDto =
-          cwaUploadService.uploadFile(file, provider, principal.getName().toUpperCase());
+          cwaUploadService.uploadFile(file, provider, oidcUser.getName());
+      log.info("CWA Upload response fileId: {}", cwaUploadResponseDto.getFileId());
+
       model.addAttribute("fileId", cwaUploadResponseDto.getFileId());
       model.addAttribute("provider", provider);
-      log.info("CWA Upload response fileId: {}", cwaUploadResponseDto.getFileId());
+
+      return "pages/submission";
     } catch (Exception e) {
       log.error("Failed to upload file to CWA with message: {}", e.getMessage());
       errors.put("fileUpload", "An error occurred while uploading the file.");
-      return showErrorOnUpload(model, principal, provider, errors);
+      return showErrorOnUpload(model, oidcUser.getName(), provider, errors);
     }
-
-    return "pages/submission";
   }
 
   /**
    * Displays the error messages on the upload page.
    *
    * @param model the model to be populated with error messages
-   * @param principal the authenticated user principal
    * @param provider the selected provider
    * @param errors the map of error messages
    * @return the upload page with error messages
    */
   private String showErrorOnUpload(
-      Model model, Principal principal, String provider, Map<String, String> errors) {
+      Model model, String username, String provider, Map<String, String> errors) {
+    providerHelper.populateProviders(model, username);
+
     model.addAttribute("errors", errors);
-    providerHelper.populateProviders(model, principal);
     model.addAttribute(
         "selectedProvider", !StringUtils.hasText(provider) ? 0 : Integer.parseInt(provider));
     return "pages/upload";

@@ -5,14 +5,19 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 
-/** Controller for handling user sign-out functionality. */
+/** Controller for handling user login and logout functionality. */
 @Slf4j
 @RequiredArgsConstructor
 @Controller
-public class LoginController {
+public class DefaultController {
 
-  @GetMapping("/login")
-  public String login() {
-    return "pages/login";
+  @GetMapping("/")
+  public String loggedIn() {
+    return "redirect:/upload";
+  }
+
+  @GetMapping("/logged-out")
+  public String loggedOut() {
+    return "pages/logged-out";
   }
 }
