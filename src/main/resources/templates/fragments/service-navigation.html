@@ -6,37 +6,35 @@
 </head>
 <body>
 
-<div th:fragment="service-navigation" class="govuk-service-navigation"
+<section th:fragment="service-navigation" class="govuk-service-navigation"
      data-module="govuk-service-navigation">
   <div class="govuk-width-container">
     <div class="govuk-service-navigation__container">
         <span class="govuk-service-navigation__service-name">
-            <a th:href="@{/}" id="service.name" class="govuk-service-navigation__link">
-              Upload a bulk claim
-            </a>
+            <a th:href="@{/}" id="service-name" class="govuk-service-navigation__link"
+              th:text="#{service.name}"/>
         </span>
       <nav aria-label="Menu" class="govuk-service-navigation__wrapper">
         <button type="button"
                 id="menu-button"
                 class="govuk-service-navigation__toggle govuk-js-service-navigation-toggle"
-                aria-controls="navigation" hidden="">
-          Menu
-        </button>
+                aria-controls="navigation" hidden=""
+          th:text="#{header.navigation.menu}"/>
 
         <ul class="govuk-service-navigation__list" id="navigation">
           <li class="govuk-service-navigation__item govuk-service-navigation__item--active">
             <a class="govuk-service-navigation__link" th:href="@{/}"
                id="import-claims-link"
                aria-current="true">
-              <strong class="govuk-service-navigation__active-fallback">Import claims</strong>
+              <strong class="govuk-service-navigation__active-fallback"
+                th:text="#{header.navigation.importClaims}"/>
             </a>
           </li>
 
           <li class="govuk-service-navigation__item">
             <a class="govuk-service-navigation__link" th:href="@{/}"
-              id="search-link">
-              Search
-            </a>
+              id="search-link"
+               th:text="#{header.navigation.search}"/>
           </li>
 
         </ul>
@@ -45,6 +43,6 @@
     </div>
 
   </div>
-</div>
+</section>
 </body>
 </html>

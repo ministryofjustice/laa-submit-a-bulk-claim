@@ -1,7 +1,6 @@
 <!DOCTYPE HTML>
 <html lang="en" class="govuk-template" xmlns:th="http://www.thymeleaf.org"
-      th:replace="~{ layout/main-layout :: layout(~{::title},~{::main})}">
-<title th:text="|#{service.name} #{home.heading}|"/>
+      th:replace="~{ layout/main-layout :: layout(#{home.heading},~{::main})}">
 <main class="govuk-main-wrapper" id="main-content">
   <div class="govuk-width-container">
     <div class="govuk-grid-row">
