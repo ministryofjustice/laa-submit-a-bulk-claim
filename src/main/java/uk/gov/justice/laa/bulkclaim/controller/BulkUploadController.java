@@ -44,7 +44,6 @@ public class BulkUploadController {
    */
   @GetMapping("/upload")
   public String showUploadPage(Model model, @AuthenticationPrincipal OidcUser oidcUser) {
-
     try {
       providerHelper.populateProviders(model, oidcUser.getName());
     } catch (HttpClientErrorException e) {
