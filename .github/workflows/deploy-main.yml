@@ -43,7 +43,7 @@ jobs:
     permissions:
       id-token: write
       contents: read
-    uses: helm-deploy.yml
+    uses: .github/workflows/helm-deploy.yml
     with:
       environment: development
       deployment_name: development
@@ -55,7 +55,7 @@ jobs:
     permissions:
       id-token: write
       contents: read
-    uses: helm-deploy.yml
+    uses: .github/workflows/helm-deploy.yml
     with:
       environment: uat
       deployment_name: uat
@@ -67,7 +67,7 @@ jobs:
     permissions:
       id-token: write
       contents: read
-    uses: helm-deploy.yml
+    uses: .github/workflows/helm-deploy.yml
     with:
       environment: staging
       deployment_name: staging
@@ -79,7 +79,7 @@ jobs:
     permissions:
       id-token: write
       contents: read
-    uses: helm-deploy.yml
+    uses: .github/workflows/helm-deploy.yml
     with:
       environment: production
       deployment_name: production
