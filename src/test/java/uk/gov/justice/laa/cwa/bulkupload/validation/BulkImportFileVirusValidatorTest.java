@@ -14,6 +14,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.validation.SimpleErrors;
 import org.springframework.validation.Validator;
+import uk.gov.justice.laa.cwa.bulkupload.dto.FileUploadForm;
 import uk.gov.justice.laa.cwa.bulkupload.service.VirusCheckService;
 
 @ExtendWith(MockitoExtension.class)
@@ -35,10 +36,11 @@ class BulkImportFileVirusValidatorTest {
     // Given an empty file
     MockMultipartFile file =
         new MockMultipartFile("file", "test.txt", "text/plain", new byte[10 * 1024 * 1024]);
-    SimpleErrors errors = new SimpleErrors(file);
+    FileUploadForm fileUploadForm = new FileUploadForm(file);
+    SimpleErrors errors = new SimpleErrors(fileUploadForm);
 
     // When
-    bulkClaimFileVirusValidator.validate(file, errors);
+    bulkClaimFileVirusValidator.validate(fileUploadForm, errors);
 
     // Then
     verify(virusCheckService, times(1)).checkVirus(file);
@@ -51,11 +53,12 @@ class BulkImportFileVirusValidatorTest {
     // Given an empty file
     MockMultipartFile file =
         new MockMultipartFile("file", "test.txt", "text/plain", new byte[10 * 1024 * 1024]);
-    SimpleErrors errors = new SimpleErrors(file);
+    FileUploadForm fileUploadForm = new FileUploadForm(file);
+    SimpleErrors errors = new SimpleErrors(fileUploadForm);
     doThrow(new RuntimeException("Virus check failed")).when(virusCheckService).checkVirus(file);
 
     // When
-    bulkClaimFileVirusValidator.validate(file, errors);
+    bulkClaimFileVirusValidator.validate(fileUploadForm, errors);
 
     // Then
     verify(virusCheckService, times(1)).checkVirus(file);

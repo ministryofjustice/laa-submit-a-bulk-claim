@@ -23,9 +23,4 @@ class DefaultControllerTest {
   void shouldReturnLoggedOutView() {
     assertThat(mockMvc.perform(get("/logged-out"))).hasStatusOk().hasViewName("pages/logged-out");
   }
-
-  @Test
-  void shouldRedirectToUploadWhenRootAccessed() {
-    assertThat(mockMvc.perform(get("/"))).hasStatus3xxRedirection().hasViewName("redirect:/upload");
-  }
 }

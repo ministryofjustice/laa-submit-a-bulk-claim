@@ -10,6 +10,7 @@ import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.validation.SimpleErrors;
 import org.springframework.validation.Validator;
+import uk.gov.justice.laa.cwa.bulkupload.dto.FileUploadForm;
 
 @DisplayName("Bulk import file validator test")
 class BulkImportFileValidatorTest {
@@ -22,13 +23,14 @@ class BulkImportFileValidatorTest {
     // Given an empty file
     MockMultipartFile file =
         new MockMultipartFile("file", "test.txt", "text/plain", new byte[10 * 1024 * 1024]);
-    SimpleErrors errors = new SimpleErrors(file);
+    FileUploadForm fileUploadForm = new FileUploadForm(file);
+    SimpleErrors errors = new SimpleErrors(fileUploadForm);
 
     // When
-    bulkClaimFileValidator.validate(file, errors);
+    bulkClaimFileValidator.validate(fileUploadForm, errors);
 
     // Then
-    assertThat(errors.hasErrors()).isFalse();
+    assertThat(errors.hasFieldErrors("file")).isFalse();
   }
 
   @ParameterizedTest
@@ -38,13 +40,14 @@ class BulkImportFileValidatorTest {
     // Given
     MockMultipartFile file =
         new MockMultipartFile("file", fileName, "application/xml", new byte[10 * 1024 * 1024]);
-    SimpleErrors errors = new SimpleErrors(file);
+    FileUploadForm fileUploadForm = new FileUploadForm(file);
+    SimpleErrors errors = new SimpleErrors(fileUploadForm);
 
     // When
-    bulkClaimFileValidator.validate(file, errors);
+    bulkClaimFileValidator.validate(fileUploadForm, errors);
 
     // Then
-    assertThat(errors.hasErrors()).isFalse();
+    assertThat(errors.hasFieldErrors("file")).isFalse();
   }
 
   @ParameterizedTest
@@ -54,13 +57,14 @@ class BulkImportFileValidatorTest {
     // Given
     MockMultipartFile file =
         new MockMultipartFile("file", fileName, "text/csv", new byte[10 * 1024 * 1024]);
-    SimpleErrors errors = new SimpleErrors(file);
+    FileUploadForm fileUploadForm = new FileUploadForm(file);
+    SimpleErrors errors = new SimpleErrors(fileUploadForm);
 
     // When
-    bulkClaimFileValidator.validate(file, errors);
+    bulkClaimFileValidator.validate(fileUploadForm, errors);
 
     // Then
-    assertThat(errors.hasErrors()).isFalse();
+    assertThat(errors.hasFieldErrors("file")).isFalse();
   }
 
   @Test
@@ -68,14 +72,16 @@ class BulkImportFileValidatorTest {
   void shouldHaveErrorsIfFileIsEmpty() {
     // Given an empty file
     MockMultipartFile file = new MockMultipartFile("file", "test.xml", "text/xml", new byte[0]);
-    SimpleErrors errors = new SimpleErrors(file);
+    FileUploadForm fileUploadForm = new FileUploadForm(file);
+    SimpleErrors errors = new SimpleErrors(fileUploadForm);
 
     // When
-    bulkClaimFileValidator.validate(file, errors);
+    bulkClaimFileValidator.validate(fileUploadForm, errors);
 
     // Then
-    assertThat(errors.hasErrors()).isTrue();
-    assertThat(errors.getAllErrors().getFirst().getCode()).isEqualTo("bulkImport.validation.empty");
+    assertThat(errors.hasFieldErrors("file")).isTrue();
+    assertThat(errors.getFieldErrors("file").getFirst().getCode())
+        .isEqualTo("bulkImport.validation.empty");
   }
 
   @ParameterizedTest
@@ -86,14 +92,15 @@ class BulkImportFileValidatorTest {
     MockMultipartFile file =
         new MockMultipartFile(
             "file", fileName, "application/json", "content".getBytes(StandardCharsets.UTF_8));
-    SimpleErrors errors = new SimpleErrors(file);
+    FileUploadForm fileUploadForm = new FileUploadForm(file);
+    SimpleErrors errors = new SimpleErrors(fileUploadForm);
 
     // When
-    bulkClaimFileValidator.validate(file, errors);
+    bulkClaimFileValidator.validate(fileUploadForm, errors);
 
     // Then
-    assertThat(errors.hasErrors()).isTrue();
-    assertThat(errors.getAllErrors().getFirst().getCode())
+    assertThat(errors.hasFieldErrors("file")).isTrue();
+    assertThat(errors.getFieldErrors("file").getFirst().getCode())
         .isEqualTo("bulkImport.validation.extension");
   }
 
@@ -105,14 +112,15 @@ class BulkImportFileValidatorTest {
     MockMultipartFile file =
         new MockMultipartFile(
             "file", "test.csv", mimeType, "col1,col2".getBytes(StandardCharsets.UTF_8));
-    SimpleErrors errors = new SimpleErrors(file);
+    FileUploadForm fileUploadForm = new FileUploadForm(file);
+    SimpleErrors errors = new SimpleErrors(fileUploadForm);
 
     // When
-    bulkClaimFileValidator.validate(file, errors);
+    bulkClaimFileValidator.validate(fileUploadForm, errors);
 
     // Then
-    assertThat(errors.hasErrors()).isTrue();
-    assertThat(errors.getAllErrors().getFirst().getCode())
+    assertThat(errors.hasFieldErrors("file")).isTrue();
+    assertThat(errors.getFieldErrors("file").getFirst().getCode())
         .isEqualTo("bulkImport.validation.mimeType");
   }
 
@@ -124,14 +132,15 @@ class BulkImportFileValidatorTest {
     MockMultipartFile file =
         new MockMultipartFile(
             "file", "test.xml", mimeType, "<p></p>".getBytes(StandardCharsets.UTF_8));
-    SimpleErrors errors = new SimpleErrors(file);
+    FileUploadForm fileUploadForm = new FileUploadForm(file);
+    SimpleErrors errors = new SimpleErrors(fileUploadForm);
 
     // When
-    bulkClaimFileValidator.validate(file, errors);
+    bulkClaimFileValidator.validate(fileUploadForm, errors);
 
     // Then
-    assertThat(errors.hasErrors()).isTrue();
-    assertThat(errors.getAllErrors().getFirst().getCode())
+    assertThat(errors.hasFieldErrors("file")).isTrue();
+    assertThat(errors.getFieldErrors("file").getFirst().getCode())
         .isEqualTo("bulkImport.validation.mimeType");
   }
 
@@ -143,14 +152,15 @@ class BulkImportFileValidatorTest {
     MockMultipartFile file =
         new MockMultipartFile(
             "file", "test.txt", mimeType, "Hello".getBytes(StandardCharsets.UTF_8));
-    SimpleErrors errors = new SimpleErrors(file);
+    FileUploadForm fileUploadForm = new FileUploadForm(file);
+    SimpleErrors errors = new SimpleErrors(fileUploadForm);
 
     // When
-    bulkClaimFileValidator.validate(file, errors);
+    bulkClaimFileValidator.validate(fileUploadForm, errors);
 
     // Then
-    assertThat(errors.hasErrors()).isTrue();
-    assertThat(errors.getAllErrors().getFirst().getCode())
+    assertThat(errors.hasFieldErrors("file")).isTrue();
+    assertThat(errors.getFieldErrors("file").getFirst().getCode())
         .isEqualTo("bulkImport.validation.mimeType");
   }
 
@@ -160,13 +170,15 @@ class BulkImportFileValidatorTest {
     // Given
     MockMultipartFile file =
         new MockMultipartFile("file", "test.csv", "text/csv", new byte[(10 * 1024 * 1024) + 1]);
-    SimpleErrors errors = new SimpleErrors(file);
+    FileUploadForm fileUploadForm = new FileUploadForm(file);
+    SimpleErrors errors = new SimpleErrors(fileUploadForm);
 
     // When
-    bulkClaimFileValidator.validate(file, errors);
+    bulkClaimFileValidator.validate(fileUploadForm, errors);
 
     // Then
-    assertThat(errors.hasErrors()).isTrue();
-    assertThat(errors.getAllErrors().getFirst().getCode()).isEqualTo("bulkImport.validation.size");
+    assertThat(errors.hasFieldErrors("file")).isTrue();
+    assertThat(errors.getFieldErrors("file").getFirst().getCode())
+        .isEqualTo("bulkImport.validation.size");
   }
 }

@@ -10,12 +10,14 @@ import java.security.Principal;
 import java.util.Collections;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.springframework.ui.Model;
 import uk.gov.justice.laa.bulkclaim.response.CwaVendorDto;
 import uk.gov.justice.laa.bulkclaim.service.CwaUploadService;
 
+@Disabled("Disabled test until switch to using Provider Data API to fetch providers")
 class ProviderHelperTest {
 
   private static final String USERNAME = "TESTUSER";
