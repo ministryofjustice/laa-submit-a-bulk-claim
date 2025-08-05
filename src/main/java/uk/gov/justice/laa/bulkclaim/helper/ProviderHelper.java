@@ -11,17 +11,6 @@ import uk.gov.justice.laa.bulkclaim.service.CwaUploadService;
 @Slf4j
 public class ProviderHelper {
 
-  private final CwaUploadService cwaUploadService;
-
-  /**
-   * Constructor for ProviderHelper.
-   *
-   * @param cwaUploadService the service to fetch providers.
-   */
-  public ProviderHelper(CwaUploadService cwaUploadService) {
-    this.cwaUploadService = cwaUploadService;
-  }
-
   /**
    * Populates the model with the list of providers.
    *
@@ -29,7 +18,7 @@ public class ProviderHelper {
    */
   public void populateProviders(Model model, String username) {
     // Remove this once backend api implemented
-    log.info("providers: {}", cwaUploadService.getProviders(username));
+    //log.info("providers: {}", cwaUploadService.getProviders(username));
     model.addAttribute("providers", Collections.emptyList());
   }
 }

@@ -6,7 +6,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.MediaType;
 import org.springframework.http.client.MultipartBodyBuilder;
-import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
 import org.springframework.web.multipart.MultipartFile;
 import uk.gov.justice.laa.bulkclaim.response.CwaSubmissionResponseDto;
@@ -15,8 +14,14 @@ import uk.gov.justice.laa.bulkclaim.response.CwaUploadResponseDto;
 import uk.gov.justice.laa.bulkclaim.response.CwaUploadSummaryResponseDto;
 import uk.gov.justice.laa.bulkclaim.response.CwaVendorDto;
 
-/** Service class for performing virus check. */
-@Service
+/**
+ * This service is deprecated as all submission related functionality is now handled by the
+ * Claims API. Leaving this class in place for now to keep the existing logic here until Claims API
+ * is fully integrated.
+ *
+ * @author Jamie Briggs
+ */
+@Deprecated(forRemoval = true)
 @RequiredArgsConstructor
 public class CwaUploadService {
 

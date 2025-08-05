@@ -23,7 +23,7 @@ spring:
             authorization-grant-type: client_credentials
         provider:
           silas-identity:
-            user-name-attribute: email
+            # user-name-attribute: email
             issuer-uri: https://login.microsoftonline.com/${LASSIE_TENANT_ID}/v2.0
           moj-identity:
             issuer-uri: https://login.microsoftonline.com/${AUTH_TENANT_ID}/v2.0

@@ -29,7 +29,6 @@ import uk.gov.justice.laa.bulkclaim.service.VirusCheckService;
 public class BulkImportController {
 
   private final VirusCheckService virusCheckService;
-  private final CwaUploadService cwaUploadService;
   private final ProviderHelper providerHelper;
 
   @Value("${upload-max-file-size:10MB}")
@@ -106,16 +105,17 @@ public class BulkImportController {
     }
 
     try {
-      CwaUploadResponseDto cwaUploadResponseDto =
-          cwaUploadService.uploadFile(file, provider, oidcUser.getName());
-      log.info("CWA Upload response fileId: {}", cwaUploadResponseDto.getFileId());
+      // TODO: Upload to Claims API
+      CwaUploadResponseDto cwaUploadResponseDto = null;
+      //cwaUploadService.uploadFile(file, provider, oidcUser.getName());
+      log.info("Claims API Upload response fileId: {}", cwaUploadResponseDto.getFileId());
 
       model.addAttribute("fileId", cwaUploadResponseDto.getFileId());
       model.addAttribute("provider", provider);
 
       return "pages/submission";
     } catch (Exception e) {
-      log.error("Failed to upload file to CWA with message: {}", e.getMessage());
+      log.error("Failed to upload file to Claims API with message: {}", e.getMessage());
       errors.put("fileUpload", "An error occurred while uploading the file.");
       return showErrorOnUpload(model, oidcUser.getName(), provider, errors);
     }

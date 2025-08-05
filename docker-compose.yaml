@@ -19,18 +19,18 @@ services:
     restart: always
     ports:
       - "8091:8080"
-#  cwa-service:
-#    image: wiremock/wiremock:latest
-#    container_name: cwa-service
-#    entrypoint:
-#      [
-#        "/docker-entrypoint.sh",
-#        "--global-response-templating",
-#        "--disable-gzip",
-#        "--verbose",
-#      ]
-#    volumes:
-#      - ./wiremock/mappings/cwa-service:/home/wiremock/mappings
-#    restart: always
-#    ports:
-#      - "8090:8080"
+  cwa-service:
+    image: wiremock/wiremock:latest
+    container_name: cwa-service
+    entrypoint:
+      [
+        "/docker-entrypoint.sh",
+        "--global-response-templating",
+        "--disable-gzip",
+        "--verbose",
+      ]
+    volumes:
+      - ./wiremock/mappings/cwa-service:/home/wiremock/mappings
+    restart: always
+    ports:
+      - "8090:8080"

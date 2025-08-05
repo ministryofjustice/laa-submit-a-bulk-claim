@@ -11,11 +11,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 @Controller
 public class DefaultController {
 
-  @GetMapping("/")
-  public String loggedIn() {
-    return "redirect:/upload";
-  }
-
   @GetMapping("/logged-out")
   public String loggedOut() {
     return "pages/logged-out";

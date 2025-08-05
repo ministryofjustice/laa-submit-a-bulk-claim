@@ -1,5 +1,6 @@
 package uk.gov.justice.laa.bulkclaim.controller;
 
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -22,7 +23,6 @@ import uk.gov.justice.laa.bulkclaim.service.CwaUploadService;
 @Controller
 public class SearchController {
 
-  private final CwaUploadService cwaUploadService;
   private final ProviderHelper providerHelper;
 
   /**
@@ -54,7 +54,9 @@ public class SearchController {
 
     List<CwaUploadSummaryResponseDto> summary;
     try {
-      summary = cwaUploadService.getUploadSummary(searchTerm, oidcUser.getName(), provider);
+      // TODO: Get upload summary via Claims API
+      summary = Collections.emptyList();
+      //cwaUploadService.getUploadSummary(searchTerm, oidcUser.getName(), provider);
       model.addAttribute("summary", summary);
     } catch (Exception e) {
       log.error("Error retrieving upload summary: {}", e.getMessage());
@@ -63,8 +65,9 @@ public class SearchController {
     }
 
     try {
-      List<CwaUploadErrorResponseDto> uploadErrors =
-          cwaUploadService.getUploadErrors(searchTerm, oidcUser.getName(), provider);
+      // TODO: Get upload errors via Claims API
+      List<CwaUploadErrorResponseDto> uploadErrors = Collections.emptyList();
+      //    cwaUploadService.getUploadErrors(searchTerm, oidcUser.getName(), provider);
       model.addAttribute("errors", uploadErrors);
     } catch (Exception e) {
       log.error("Error retrieving upload errors: {}", e.getMessage());
