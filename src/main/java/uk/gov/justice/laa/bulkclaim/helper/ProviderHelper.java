@@ -4,7 +4,7 @@ import java.util.Collections;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.springframework.ui.Model;
-import uk.gov.justice.laa.bulkclaim.service.CwaUploadService;
+import uk.gov.justice.laa.cwa.bulkupload.service.CwaUploadService;
 
 /** Helper class to fetch and populate providers in the model. */
 @Component
@@ -18,7 +18,7 @@ public class ProviderHelper {
    */
   public void populateProviders(Model model, String username) {
     // Remove this once backend api implemented
-    //log.info("providers: {}", cwaUploadService.getProviders(username));
+    // log.info("providers: {}", cwaUploadService.getProviders(username));
     model.addAttribute("providers", Collections.emptyList());
   }
 }

@@ -15,9 +15,9 @@ import uk.gov.justice.laa.bulkclaim.response.CwaUploadSummaryResponseDto;
 import uk.gov.justice.laa.bulkclaim.response.CwaVendorDto;
 
 /**
- * This service is deprecated as all submission related functionality is now handled by the
- * Claims API. Leaving this class in place for now to keep the existing logic here until Claims API
- * is fully integrated.
+ * This service is deprecated as all submission related functionality is now handled by the Claims
+ * API. Leaving this class in place for now to keep the existing logic here until Claims API is
+ * fully integrated.
  *
  * @author Jamie Briggs
  */

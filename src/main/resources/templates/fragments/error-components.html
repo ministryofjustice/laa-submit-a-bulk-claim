@@ -1,0 +1,35 @@
+<!DOCTYPE HTML>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8"/>
+</head>
+<body>
+<div th:fragment="error-summary"
+     th:if="${#fields.hasErrors()}"
+     id="error-summary" class="govuk-error-summary"
+     data-module="govuk-error-summary">
+  <div role="alert">
+    <h2 class="govuk-error-summary__title" th:text="#{error.summary.heading}">
+      There is a problem
+    </h2>
+    <div class="govuk-error-summary__body">
+      <ul class="govuk-list govuk-error-summary__list">
+        <li th:each="err : ${#fields.allDetailedErrors()}">
+          <a th:href="|#${err.fieldName}-input|" th:text="${err.message}"/>
+        </li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<p th:fragment="error-messages(field)"
+   th:if="${#fields.hasErrors(field)}"
+   th:id="|field-error-message|"
+   class="govuk-error-message"
+   th:each="err : ${#fields.errors('file')}">
+    <span class="govuk-visually-hidden">Error:</span>
+    <th:block th:text="${err}"></th:block>
+</p>
+</p>
+</body>
+</html>

@@ -28,7 +28,7 @@ class ProviderHelperTest {
   @BeforeEach
   void setUp() {
     cwaUploadService = mock(CwaUploadService.class);
-    providerHelper = new ProviderHelper(cwaUploadService);
+    providerHelper = new ProviderHelper();
     model = mock(Model.class);
     principal = mock(Principal.class);
     when(principal.getName()).thenReturn("TestUser");

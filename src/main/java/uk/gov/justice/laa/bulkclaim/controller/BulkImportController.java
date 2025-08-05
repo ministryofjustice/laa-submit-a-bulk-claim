@@ -1,26 +1,23 @@
 package uk.gov.justice.laa.bulkclaim.controller;
 
-import java.util.LinkedHashMap;
-import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.core.oidc.user.OidcUser;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.util.StringUtils;
-import org.springframework.util.unit.DataSize;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.client.HttpClientErrorException;
-import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import uk.gov.justice.laa.cwa.bulkupload.dto.FileUploadForm;
 import uk.gov.justice.laa.bulkclaim.helper.ProviderHelper;
 import uk.gov.justice.laa.bulkclaim.response.CwaUploadResponseDto;
-import uk.gov.justice.laa.bulkclaim.service.CwaUploadService;
-import uk.gov.justice.laa.bulkclaim.service.VirusCheckService;
+import uk.gov.justice.laa.bulkclaim.validation.BulkImportFileValidator;
+import uk.gov.justice.laa.bulkclaim.validation.BulkImportFileVirusValidator;
 
 /** Controller for handling the bulk upload requests. */
 @Slf4j
@@ -28,11 +25,9 @@ import uk.gov.justice.laa.bulkclaim.service.VirusCheckService;
 @Controller
 public class BulkImportController {
 
-  private final VirusCheckService virusCheckService;
   private final ProviderHelper providerHelper;
-
-  @Value("${upload-max-file-size:10MB}")
-  private String fileSizeLimit;
+  private final BulkImportFileValidator bulkImportFileValidator;
+  private final BulkImportFileVirusValidator bulkImportFileVirusValidator;
 
   /**
    * Renders the upload page.
@@ -43,17 +38,23 @@ public class BulkImportController {
    */
   @GetMapping("/upload")
   public String showUploadPage(Model model, @AuthenticationPrincipal OidcUser oidcUser) {
+
+    // Always ensure there's a form object in the model if not already present
+    if (!model.containsAttribute("fileUploadForm")) {
+      model.addAttribute("fileUploadForm", new FileUploadForm(null));
+    }
+
     try {
       providerHelper.populateProviders(model, oidcUser.getName());
     } catch (HttpClientErrorException e) {
-      log.error("HTTP client error fetching providers from CWA with message: {} ", e.getMessage());
+      log.error("HTTP client error fetching providers with message: {} ", e.getMessage());
       if (e.getStatusCode() == HttpStatus.FORBIDDEN) {
         return "pages/upload-forbidden";
       } else {
         return "error";
       }
     } catch (Exception e) {
-      log.error("Error connecting to CWA with message: {} ", e.getMessage());
+      log.error("Error connecting to Provider API with message: {} ", e.getMessage());
       return "error";
     }
 
@@ -63,79 +64,60 @@ public class BulkImportController {
   /**
    * Performs a bulk upload for the given file.
    *
-   * @param file the file to be uploaded
-   * @param provider the selected provider
+   * @param fileUploadForm the file to be uploaded
    * @param model the model to be populated with data
    * @param oidcUser the authenticated user principal
    * @return the submission page
    */
   @PostMapping("/upload")
   public String performUpload(
-      @RequestParam("fileUpload") MultipartFile file,
-      String provider,
+      @ModelAttribute("fileUploadForm") FileUploadForm fileUploadForm,
+      BindingResult bindingResult,
       Model model,
-      @AuthenticationPrincipal OidcUser oidcUser) {
+      @AuthenticationPrincipal OidcUser oidcUser,
+      RedirectAttributes redirectAttributes) {
 
-    long maxFileSize = DataSize.parse(fileSizeLimit).toBytes();
-    Map<String, String> errors = new LinkedHashMap<>();
-
-    if (!StringUtils.hasText(provider)) {
-      errors.put("provider", "Please select a provider");
+    bulkImportFileValidator.validate(fileUploadForm, bindingResult);
+    if (bindingResult.hasErrors()) {
+      return showErrorOnUpload(fileUploadForm, bindingResult, redirectAttributes);
     }
 
-    if (file.isEmpty()) {
-      errors.put("fileUpload", "Please select a file to upload");
-    }
-
-    if (file.getSize() > maxFileSize) {
-      errors.put("fileUpload", "File size must not exceed 10MB");
-    }
-
-    try {
-      if (errors.isEmpty()) {
-        virusCheckService.checkVirus(file);
-      }
-    } catch (Exception e) {
-      log.error("Virus check failed with message: {}", e.getMessage());
-      errors.put("fileUpload", "The file failed the virus scan. Please upload a clean file.");
-    }
-
-    if (!errors.isEmpty()) {
-      return showErrorOnUpload(model, oidcUser.getName(), provider, errors);
+    bulkImportFileVirusValidator.validate(fileUploadForm, bindingResult);
+    if (bindingResult.hasErrors()) {
+      return showErrorOnUpload(fileUploadForm, bindingResult, redirectAttributes);
     }
 
     try {
       // TODO: Upload to Claims API
       CwaUploadResponseDto cwaUploadResponseDto = null;
-      //cwaUploadService.uploadFile(file, provider, oidcUser.getName());
+      // cwaUploadService.uploadFile(file, provider, oidcUser.getName());
       log.info("Claims API Upload response fileId: {}", cwaUploadResponseDto.getFileId());
 
       model.addAttribute("fileId", cwaUploadResponseDto.getFileId());
-      model.addAttribute("provider", provider);
 
+      // TODO: Redirect to submission page rather than return the view (POST -> REDIRECT -> GET)
       return "pages/submission";
     } catch (Exception e) {
       log.error("Failed to upload file to Claims API with message: {}", e.getMessage());
-      errors.put("fileUpload", "An error occurred while uploading the file.");
-      return showErrorOnUpload(model, oidcUser.getName(), provider, errors);
+      bindingResult.reject("bulkImport.validation.uploadFailed");
+      return showErrorOnUpload(fileUploadForm, bindingResult, redirectAttributes);
     }
   }
 
   /**
-   * Displays the error messages on the upload page.
+   * Redirects back to the upload page with the errors.
    *
-   * @param model the model to be populated with error messages
-   * @param provider the selected provider
-   * @param errors the map of error messages
-   * @return the upload page with error messages
+   * @param bindingResult binding result of errors
+   * @return redirect back to upload page
    */
   private String showErrorOnUpload(
-      Model model, String username, String provider, Map<String, String> errors) {
-    providerHelper.populateProviders(model, username);
+      FileUploadForm fileUploadForm,
+      BindingResult bindingResult,
+      RedirectAttributes redirectAttributes) {
 
-    model.addAttribute("errors", errors);
-    model.addAttribute(
-        "selectedProvider", !StringUtils.hasText(provider) ? 0 : Integer.parseInt(provider));
-    return "pages/upload";
+    redirectAttributes.addFlashAttribute("fileUploadForm", fileUploadForm);
+    redirectAttributes.addFlashAttribute(
+        "org.springframework.validation.BindingResult.fileUploadForm", bindingResult);
+    return "redirect:/upload";
   }
 }

@@ -16,6 +16,9 @@ import uk.gov.justice.laa.bulkclaim.helper.ProviderHelper;
 import uk.gov.justice.laa.bulkclaim.response.CwaUploadErrorResponseDto;
 import uk.gov.justice.laa.bulkclaim.response.CwaUploadSummaryResponseDto;
 import uk.gov.justice.laa.bulkclaim.service.CwaUploadService;
+import uk.gov.justice.laa.bulkclaim.helper.ProviderHelper;
+import uk.gov.justice.laa.bulkclaim.response.CwaUploadErrorResponseDto;
+import uk.gov.justice.laa.bulkclaim.response.CwaUploadSummaryResponseDto;
 
 /** Controller for handling search requests related to bulk uploads. */
 @Slf4j
@@ -56,7 +59,7 @@ public class SearchController {
     try {
       // TODO: Get upload summary via Claims API
       summary = Collections.emptyList();
-      //cwaUploadService.getUploadSummary(searchTerm, oidcUser.getName(), provider);
+      // cwaUploadService.getUploadSummary(searchTerm, oidcUser.getName(), provider);
       model.addAttribute("summary", summary);
     } catch (Exception e) {
       log.error("Error retrieving upload summary: {}", e.getMessage());
