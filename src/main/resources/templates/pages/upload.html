@@ -11,7 +11,7 @@
       <form class="form" th:action="@{/upload}" method="post"
             enctype="multipart/form-data" th:object="${fileUploadForm}">
 
-        <div th:replace="fragments/error-components :: error-summary"/>
+        <div th:replace="~{fragments/error-components :: error-summary}"/>
 
         <fieldset class="govuk-fieldset">
           <legend class="govuk-fieldset__legend govuk-fieldset__legend--xl">
@@ -22,7 +22,7 @@
                th:classappend="${#fields.hasErrors('file')} ? 'govuk-form-group--error'">
             <label class="govuk-label" for="file-input"
                    th:text="#{bulkImport.upload.label}"/>
-            <p th:replace="fragments/error-components :: error-messages('file')"/>
+            <p th:replace="~{ fragments/error-components :: error-messages('file')}"/>
             <div
                 class="govuk-drop-zone"
                 data-module="govuk-file-upload">

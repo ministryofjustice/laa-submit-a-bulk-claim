@@ -13,9 +13,11 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import uk.gov.justice.laa.claims.model.UploadResponse;
 import uk.gov.justice.laa.cwa.bulkupload.dto.FileUploadForm;
 import uk.gov.justice.laa.bulkclaim.helper.ProviderHelper;
 import uk.gov.justice.laa.bulkclaim.response.CwaUploadResponseDto;
+import uk.gov.justice.laa.cwa.bulkupload.service.ClaimsRestService;
 import uk.gov.justice.laa.bulkclaim.validation.BulkImportFileValidator;
 import uk.gov.justice.laa.bulkclaim.validation.BulkImportFileVirusValidator;
 
@@ -28,6 +30,7 @@ public class BulkImportController {
   private final ProviderHelper providerHelper;
   private final BulkImportFileValidator bulkImportFileValidator;
   private final BulkImportFileVirusValidator bulkImportFileVirusValidator;
+  private final ClaimsRestService claimsRestService;
 
   /**
    * Renders the upload page.
@@ -88,14 +91,12 @@ public class BulkImportController {
     }
 
     try {
-      // TODO: Upload to Claims API
-      CwaUploadResponseDto cwaUploadResponseDto = null;
-      // cwaUploadService.uploadFile(file, provider, oidcUser.getName());
-      log.info("Claims API Upload response fileId: {}", cwaUploadResponseDto.getFileId());
+      UploadResponse uploadResponse = claimsRestService.upload(fileUploadForm.file()).block();
+      log.info("Claims API Upload response fileId: {}", uploadResponse.getMessage());
 
-      model.addAttribute("fileId", cwaUploadResponseDto.getFileId());
 
       // TODO: Redirect to submission page rather than return the view (POST -> REDIRECT -> GET)
+      //model.addAttribute("fileId", uploadResponse.getFileId());
       return "pages/submission";
     } catch (Exception e) {
       log.error("Failed to upload file to Claims API with message: {}", e.getMessage());
