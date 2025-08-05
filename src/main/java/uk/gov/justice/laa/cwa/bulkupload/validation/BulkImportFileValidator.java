@@ -12,21 +12,6 @@ import uk.gov.justice.laa.cwa.bulkupload.dto.FileUploadForm;
  * A validator for validating files intended for bulk submissions. This class implements the {@link
  * Validator} and checks the general properties of the file.
  *
- * <p>The supported file types and their validation rules include:
- *
- * <ul>
- *   <li>CSV files: Must have an extension ".csv" and MIME type "text/csv".
- *   <li>XML files: Must have an extension ".xml" and MIME type "text/xml" or "application/xml".
- *   <li>TXT files: Must have an extension ".txt" and MIME type "text/plain".
- * </ul>
- *
- * <p>Additionally, the validator ensures that:
- *
- * <ul>
- *   <li>The file is not empty.
- *   <li>The file size does not exceed 10MB.
- * </ul>
- *
  * @author Jamie Briggs
  */
 @Component
@@ -51,7 +36,7 @@ public class BulkImportFileValidator implements Validator {
   }
 
   /**
-   * Validates the provided {@link FileUploadForm} using the following rules:
+   * Validates the provided {@link FileUploadForm}.
    *
    * <p>The supported file types and their validation rules include:
    *
