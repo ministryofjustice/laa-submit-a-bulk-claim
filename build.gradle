@@ -1,17 +1,7 @@
 plugins {
-    id 'java'
-    id 'org.springframework.boot' version '3.5.3'
-    id 'io.spring.dependency-management' version '1.1.7'
-    id 'jacoco'
+    id 'uk.gov.laa.springboot.laa-spring-boot-gradle-plugin' version '1.0.0'
     id 'io.freefair.lombok' version '8.14'
-    id 'checkstyle'
     id("com.diffplug.spotless") version "7.2.1"
-}
-
-checkstyle {
-    toolVersion = "10.12.4"
-    maxWarnings = 0
-    showViolations = true
 }
 
 repositories {
@@ -58,9 +48,7 @@ test {
     finalizedBy jacocoTestReport
 }
 
-
 jacocoTestReport {
-    dependsOn test
     afterEvaluate {
         classDirectories.setFrom(files(classDirectories.files.collect {
             fileTree(dir: it, exclude: ['**/BulkUploadApplication.class', '**/*Config.class', '**/*Dto.class'])
@@ -69,7 +57,6 @@ jacocoTestReport {
 }
 
 jacocoTestCoverageVerification {
-    dependsOn jacocoTestReport
     afterEvaluate {
         classDirectories.setFrom(files(classDirectories.files.collect {
             fileTree(dir: it, exclude: ['**/BulkUploadApplication.class', '**/*Config.class', '**/*Dto.class'])

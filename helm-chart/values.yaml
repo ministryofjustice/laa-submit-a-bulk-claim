@@ -1,0 +1,125 @@
+global:
+  clusterDomain: apps.live.cloud-platform.service.justice.gov.uk
+
+  image:
+    repository: ""
+
+  ports:
+    protocol: TCP
+    port: 80
+    targetPort: 8082
+
+  management:
+    protocol: TCP
+    port: 8081
+    targetPort: 8081
+
+  ingress:
+    externalRoute:
+      mojDigitalVpnRequired: false
+
+env:
+  - name: AUTH_CLIENT_ID
+    valueFrom:
+      secretKeyRef:
+        name: submit-a-bulk-claim-secrets
+        key: AUTH_CLIENT_ID
+
+  - name: AUTH_CLIENT_SECRET
+    valueFrom:
+      secretKeyRef:
+        name: submit-a-bulk-claim-secrets
+        key: AUTH_CLIENT_SECRET
+
+  - name: AUTH_CLOUD_INSTANCE
+    value : https://login.microsoftonline.com
+
+  - name: AUTH_SCOPE
+    valueFrom:
+      secretKeyRef:
+        name: submit-a-bulk-claim-secrets
+        key: AUTH_SCOPE
+
+  - name: AUTH_TENANT_ID
+    valueFrom:
+      secretKeyRef:
+        name: submit-a-bulk-claim-secrets
+        key: AUTH_TENANT_ID
+
+  - name: CWA_API_URL
+    valueFrom:
+      secretKeyRef:
+        name: submit-a-bulk-claim-secrets
+        key: CWA_API_URL
+
+  - name: CWA_API_TIMEOUT
+    valueFrom:
+      secretKeyRef:
+        name: submit-a-bulk-claim-secrets
+        key: CWA_API_TIMEOUT
+
+  - name: SILAS_CLIENT_ID
+    valueFrom:
+      secretKeyRef:
+        name: submit-a-bulk-claim-secrets
+        key: SILAS_CLIENT_ID
+
+  - name: SILAS_CLIENT_SECRET
+    valueFrom:
+      secretKeyRef:
+        name: submit-a-bulk-claim-secrets
+        key: SILAS_CLIENT_SECRET
+
+  - name: SILAS_CLIENT_SCOPE
+    valueFrom:
+      secretKeyRef:
+        name: submit-a-bulk-claim-secrets
+        key: SILAS_CLIENT_SCOPE
+
+  - name: SILAS_TENANT_ID
+    valueFrom:
+      secretKeyRef:
+        name: submit-a-bulk-claim-secrets
+        key: SILAS_TENANT_ID
+
+  - name: REST_CLIENT_CONNECT_TIMEOUT
+    valueFrom:
+      secretKeyRef:
+        name: submit-a-bulk-claim-secrets
+        key: REST_CLIENT_CONNECT_TIMEOUT
+
+  - name: REST_CLIENT_READ_TIMEOUT
+    valueFrom:
+      secretKeyRef:
+        name: submit-a-bulk-claim-secrets
+        key: REST_CLIENT_READ_TIMEOUT
+
+  - name: SDS_API_URL
+    valueFrom:
+      secretKeyRef:
+        name: submit-a-bulk-claim-secrets
+        key: SDS_API_URL
+
+  - name: SERVER_MAX_FILE_SIZE
+    valueFrom:
+      secretKeyRef:
+        name: submit-a-bulk-claim-secrets
+        key: SERVER_MAX_FILE_SIZE
+
+  - name: UPLOAD_MAX_FILE_SIZE
+    valueFrom:
+      secretKeyRef:
+        name: submit-a-bulk-claim-secrets
+        key: UPLOAD_MAX_FILE_SIZE
+
+ingress:
+  externalRoute:
+    enabled: true
+    hostname:
+      enabled: false
+
+probe:
+  enabled: true
+
+stickiness:
+  enabled: true

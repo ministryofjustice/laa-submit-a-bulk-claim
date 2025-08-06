@@ -41,3 +41,16 @@ cwa-api:
   timeout: ${CWA_API_TIMEOUT}
 
 upload-max-file-size: ${UPLOAD_MAX_FILE_SIZE}
+
+management:
+  endpoint:
+    health:
+      show-details: always
+      probes:
+        enabled: true
+  endpoints:
+    web:
+      exposure:
+        include:
+          - health
+          - info

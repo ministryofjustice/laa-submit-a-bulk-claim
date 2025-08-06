@@ -1,7 +1,7 @@
-# LAA CWA Bulk Upload
+# Submit a Bulk Claim
 [![Ministry of Justice Repository Compliance Badge](https://github-community.service.justice.gov.uk/repository-standards/api/laa-cwa-bulk-upload/badge)](https://github-community.service.justice.gov.uk/repository-standards/laa-cwa-bulk-upload)
 
-A Spring Boot web application for securely uploading files in bulk to the Legal Aid Agency's CWA system. The application provides a user-friendly interface for file uploads, provider selection, virus scanning, and result tracking.
+A Spring Boot web application for securely uploading bulk claim files to the Legal Aid Agency. The application provides a user-friendly interface for file uploads, provider selection, virus scanning, and result tracking.
 
 ## Table of Contents
 
@@ -54,6 +54,8 @@ A Spring Boot web application for securely uploading files in bulk to the Legal 
 
 ### Prerequisites
 
+The project uses the `laa-ccms-spring-boot-gradle-plugin`. Please follow the steps in the [laa-ccms-spring-boot-common](https://github.com/ministryofjustice/laa-ccms-spring-boot-common?tab=readme-ov-file#provide-your-repository-credentials) repository to set up your Github Packages credentials locally before building the application.
+
 - Java 21 or higher
 - Gradle (or use the Gradle wrapper)
 - (Optional) Docker for running dependencies
@@ -66,8 +68,8 @@ Ensure you have the following environment variables set for local development:
 Clone the repository and build the project:
 
 ```sh
-git clone git@github.com:ministryofjustice/laa-cwa-bulk-upload.git
-cd laa-cwa-bulk-upload
+git clone git@github.com:ministryofjustice/submit-a-bulk-claim.git
+cd submit-a-bulk-claim
 ./gradlew clean build
 ```
 ### Wiremock
@@ -131,11 +133,11 @@ Test coverage includes:
 
 ## Project Structure
 
-- `src/main/java/uk/gov/justice/laa/cwa/bulkupload/controller` — Web controllers
-- `src/main/java/uk/gov/justice/laa/cwa/bulkupload/service` — Business logic and services
-- `src/main/java/uk/gov/justice/laa/cwa/bulkupload/helper` — Helper and utility classes
+- `src/main/java/uk/gov/justice/laa/bulkclaim/controller` — Web controllers
+- `src/main/java/uk/gov/justice/laa/bulkclaim/service` — Business logic and services
+- `src/main/java/uk/gov/justice/laa/bulkclaim/helper` — Helper and utility classes
 - `src/main/resources/templates` — Thymeleaf HTML templates
-- `src/test/java/uk/gov/justice/laa/cwa/bulkupload/controller` — Controller tests
+- `src/test/java/uk/gov/justice/laa/bulkclaim/controller` — Controller tests
 
 ## Contributing
 
