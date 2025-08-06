@@ -1,7 +1,3 @@
-{{- define "laa.cidr-ranges.alpha-vpn" -}}
-35.176.93.186/32,35.176.148.126/32,18.169.147.172/32,18.130.148.126/32
-{{- end -}}
-
 {{- define "laa.cidr-ranges.cp-live-cluster-gateway" -}}
 35.178.209.113/32,3.8.51.207/32,35.177.252.54/32
 {{- end -}}
@@ -36,9 +32,6 @@
 
 {{- define "laa.cidr-ranges.dynamic" -}}
 {{- $ranges := list -}}
-{{- if .Values.ingress.whitelist.includeAlphaVpn }}
-  {{- $ranges = append $ranges (include "laa.cidr-ranges.alpha-vpn" .) }}
-{{- end }}
 {{- if .Values.ingress.whitelist.includeCpLiveCluster }}
   {{- $ranges = append $ranges (include "laa.cidr-ranges.cp-live-cluster-gateway" .) }}
 {{- end }}
