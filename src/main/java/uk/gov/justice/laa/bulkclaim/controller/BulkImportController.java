@@ -92,7 +92,7 @@ public class BulkImportController {
 
     try {
       CreateBulkSubmission201Response uploadResponse =
-          claimsRestService.upload(fileUploadForm.file());
+          claimsRestService.upload(fileUploadForm.file()).block();
       log.info("Claims API Upload response submission UUID: {}", uploadResponse.getSubmissionId());
 
       // TODO: Redirect to submission page rather than return the view (POST -> REDIRECT -> GET)

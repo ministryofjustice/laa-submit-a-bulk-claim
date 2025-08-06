@@ -36,6 +36,9 @@ dependencies {
 
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'org.springframework.security:spring-security-test'
+
+    testImplementation 'org.testcontainers:mockserver:1.21.3'
+    testImplementation 'org.mock-server:mockserver-client-java:5.15.0'
 }
 
 // Apply a specific Java toolchain to ease working on different environments.

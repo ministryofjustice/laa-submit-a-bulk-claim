@@ -5,6 +5,7 @@ import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.service.annotation.HttpExchange;
 import org.springframework.web.service.annotation.PostExchange;
+import reactor.core.publisher.Mono;
 import uk.gov.justice.laa.claims.model.CreateBulkSubmission201Response;
 
 /**
@@ -22,5 +23,5 @@ public interface ClaimsRestService {
    * @return a mono containing the response from the Claims API.
    */
   @PostExchange(contentType = MediaType.MULTIPART_FORM_DATA_VALUE)
-  CreateBulkSubmission201Response upload(@RequestPart("file") MultipartFile file);
+  Mono<CreateBulkSubmission201Response> upload(@RequestPart("file") MultipartFile file);
 }
