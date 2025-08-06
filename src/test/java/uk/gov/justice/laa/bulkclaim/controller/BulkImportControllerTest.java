@@ -1,17 +1,14 @@
 package uk.gov.justice.laa.bulkclaim.controller;
 
-import static org.hamcrest.Matchers.containsString;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.oidcLogin;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.model;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
 
@@ -19,11 +16,13 @@ import java.time.Instant;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.HttpStatus;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -34,17 +33,20 @@ import org.springframework.security.oauth2.core.oidc.user.OidcUser;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.ui.Model;
+import org.springframework.validation.Errors;
 import org.springframework.web.client.HttpClientErrorException;
-import org.springframework.web.client.RestClient;
-import org.springframework.web.multipart.MultipartFile;
+import reactor.core.publisher.Mono;
+import uk.gov.justice.laa.claims.model.CreateBulkSubmission201Response;
+import uk.gov.justice.laa.cwa.bulkupload.config.WebMvcTestConfig;
+import uk.gov.justice.laa.cwa.bulkupload.dto.FileUploadForm;
 import uk.gov.justice.laa.bulkclaim.helper.ProviderHelper;
-import uk.gov.justice.laa.bulkclaim.response.CwaUploadResponseDto;
-import uk.gov.justice.laa.bulkclaim.service.CwaUploadService;
-import uk.gov.justice.laa.bulkclaim.service.VirusCheckService;
+import uk.gov.justice.laa.bulkclaim.service.ClaimsRestService;
+import uk.gov.justice.laa.bulkclaim.validation.BulkImportFileValidator;
+import uk.gov.justice.laa.bulkclaim.validation.BulkImportFileVirusValidator;
 
-@Disabled("This is due for refactor as part of current branch")
 @WebMvcTest(BulkImportController.class)
 @AutoConfigureMockMvc
+@Import(WebMvcTestConfig.class)
 class BulkImportControllerTest {
 
   private static final String PROVIDER = "123";
@@ -52,13 +54,10 @@ class BulkImportControllerTest {
 
   @Autowired private MockMvc mockMvc;
 
-  @MockitoBean private VirusCheckService virusCheckService;
-
-  @MockitoBean private CwaUploadService cwaUploadService;
-
   @MockitoBean private ProviderHelper providerHelper;
-
-  @MockitoBean private RestClient.Builder builder;
+  @MockitoBean private BulkImportFileValidator bulkImportFileValidator;
+  @MockitoBean private BulkImportFileVirusValidator bulkImportFileVirusValidator;
+  @MockitoBean private ClaimsRestService claimsRestService;
 
   private OidcUser getOidcUser() {
     Map<String, Object> claims = new HashMap<>();
@@ -73,154 +72,137 @@ class BulkImportControllerTest {
         List.of(new SimpleGrantedAuthority("ROLE_USER")), oidcIdToken, oidcUserInfo, "email");
   }
 
-  @Test
-  void shouldReturnUploadForbiddenWhenProviderHelperThrowsForbidden() throws Exception {
-    doThrow(new HttpClientErrorException(HttpStatus.FORBIDDEN))
-        .when(providerHelper)
-        .populateProviders(any(Model.class), eq(TEST_USER));
+  @Nested
+  @DisplayName("GET: /upload")
+  class GetUploadTests {
 
-    mockMvc
-        .perform(get("/upload").with(oidcLogin().oidcUser(getOidcUser())))
-        .andExpect(status().isOk())
-        .andExpect(view().name("pages/upload-forbidden"));
+    @Test
+    @DisplayName("Should return expected view")
+    void shouldReturnExpectedView() throws Exception {
+      mockMvc
+          .perform(get("/upload").with(oidcLogin().oidcUser(getOidcUser())))
+          .andExpect(status().isOk())
+          .andExpect(view().name("pages/upload"));
+    }
+
+    @Test
+    @DisplayName("Should return forbidden view when provider helper throws forbidden")
+    void shouldReturnUploadForbiddenWhenProviderHelperThrowsForbidden() throws Exception {
+      doThrow(new HttpClientErrorException(HttpStatus.FORBIDDEN))
+          .when(providerHelper)
+          .populateProviders(any(Model.class), eq(TEST_USER));
+
+      mockMvc
+          .perform(get("/upload").with(oidcLogin().oidcUser(getOidcUser())))
+          .andExpect(status().isOk())
+          .andExpect(view().name("pages/upload-forbidden"));
+    }
+
+    @Test
+    @DisplayName("Should return error view when helper generic exception")
+    void shouldReturnErrorViewWhenProviderHelperThrowsOtherException() throws Exception {
+      doThrow(new RuntimeException("Unexpected error"))
+          .when(providerHelper)
+          .populateProviders(any(Model.class), eq(TEST_USER));
+
+      mockMvc
+          .perform(get("/upload").with(oidcLogin().oidcUser(getOidcUser())))
+          .andExpect(status().isOk())
+          .andExpect(view().name("error"));
+    }
   }
 
-  @Test
-  void shouldReturnErrorViewWhenProviderHelperThrowsOtherException() throws Exception {
-    doThrow(new RuntimeException("Unexpected error"))
-        .when(providerHelper)
-        .populateProviders(any(Model.class), eq(TEST_USER));
+  @Nested
+  @DisplayName("POST: /upload")
+  class PostUploadTests {
 
-    mockMvc
-        .perform(get("/upload").with(oidcLogin().oidcUser(getOidcUser())))
-        .andExpect(status().isOk())
-        .andExpect(view().name("error"));
-  }
+    @Test
+    @DisplayName("Should redirect when file has validation errors")
+    void shouldRedirectWhenFileHasValidationErrors() throws Exception {
+      MockMultipartFile file =
+          new MockMultipartFile("fileUpload", "empty.txt", "text/plain", "text".getBytes());
+      FileUploadForm input = new FileUploadForm(file);
 
-  @Test
-  void shouldReturnErrorWhenProviderMissing() throws Exception {
-    MockMultipartFile file =
-        new MockMultipartFile("fileUpload", "test.pdf", "application/pdf", "test".getBytes());
+      doAnswer(
+              invocationOnMock -> {
+                Errors errors = invocationOnMock.getArgument(1);
+                errors.rejectValue("file", "bulkImport.validation.empty");
+                return null;
+              })
+          .when(bulkImportFileValidator)
+          .validate(any(FileUploadForm.class), any(Errors.class));
+      mockMvc
+          .perform(
+              post("/upload")
+                  .sessionAttr("fileUploadForm", input)
+                  .with(csrf())
+                  .with(oidcLogin().oidcUser(getOidcUser())))
+          .andExpect(status().is3xxRedirection())
+          .andExpect(view().name("redirect:/upload"));
+    }
 
-    mockMvc
-        .perform(
-            multipart("/upload").file(file).with(csrf()).with(oidcLogin().oidcUser(getOidcUser())))
-        .andExpect(status().isOk())
-        .andExpect(view().name("pages/upload"))
-        .andExpect(content().string(containsString("Please select a provider")));
-  }
+    @Test
+    @DisplayName("Should redirect when file fails virus check")
+    void shouldRedirectWhenFileFailsVirusCheck() throws Exception {
+      MockMultipartFile file =
+          new MockMultipartFile("fileUpload", "empty.txt", "text/plain", "text".getBytes());
+      FileUploadForm input = new FileUploadForm(file);
 
-  @Test
-  void shouldReturnErrorWhenFileIsEmpty() throws Exception {
-    MockMultipartFile emptyFile =
-        new MockMultipartFile("fileUpload", "empty.txt", "text/plain", new byte[0]);
+      doAnswer(
+              invocationOnMock -> {
+                Errors errors = invocationOnMock.getArgument(1);
+                errors.rejectValue("file", "bulkImport.validation.empty");
+                return null;
+              })
+          .when(bulkImportFileVirusValidator)
+          .validate(any(FileUploadForm.class), any(Errors.class));
 
-    mockMvc
-        .perform(
-            multipart("/upload")
-                .file(emptyFile)
-                .param("provider", PROVIDER)
-                .with(csrf())
-                .with(oidcLogin().oidcUser(getOidcUser())))
-        .andExpect(status().isOk())
-        .andExpect(view().name("pages/upload"))
-        .andExpect(content().string(containsString("Please select a file to upload")));
-  }
+      mockMvc
+          .perform(
+              post("/upload")
+                  .sessionAttr("fileUploadForm", input)
+                  .with(csrf())
+                  .with(oidcLogin().oidcUser(getOidcUser())))
+          .andExpect(status().is3xxRedirection())
+          .andExpect(view().name("redirect:/upload"));
+    }
 
-  @Test
-  void shouldReturnErrorWhenFileSizeExceedsLimit() throws Exception {
-    MockMultipartFile file =
-        new MockMultipartFile("fileUpload", "big.csv", "text/csv", new byte[11 * 1024 * 1024]);
+    @Test
+    @DisplayName("Should redirect when upload service fails")
+    void shouldRedirectWhenUploadServiceFails() throws Exception {
+      MockMultipartFile file =
+          new MockMultipartFile("fileUpload", "test.csv", "text/csv", "text".getBytes());
+      FileUploadForm input = new FileUploadForm(file);
 
-    mockMvc
-        .perform(
-            multipart("/upload")
-                .file(file)
-                .param("provider", PROVIDER)
-                .with(csrf())
-                .with(oidcLogin().oidcUser(getOidcUser())))
-        .andExpect(status().isOk())
-        .andExpect(view().name("pages/upload"))
-        .andExpect(content().string(containsString("File size must not exceed 10MB")));
-  }
+      when(claimsRestService.upload(any())).thenThrow(new RuntimeException("Unexpected error"));
 
-  @Test
-  void shouldReturnErrorWhenVirusCheckFails() throws Exception {
-    MockMultipartFile file =
-        new MockMultipartFile("fileUpload", "test.csv", "text/csv", "test".getBytes());
-    doThrow(new RuntimeException("Virus detected"))
-        .when(virusCheckService)
-        .checkVirus(any(MultipartFile.class));
-    mockMvc
-        .perform(
-            multipart("/upload")
-                .file(file)
-                .param("provider", PROVIDER)
-                .with(csrf())
-                .with(oidcLogin().oidcUser(getOidcUser())))
-        .andExpect(status().isOk())
-        .andExpect(view().name("pages/upload"))
-        .andExpect(
-            content()
-                .string(
-                    containsString("The file failed the virus scan. Please upload a clean file.")));
-  }
+      mockMvc
+          .perform(
+              post("/upload")
+                  .sessionAttr("fileUploadForm", input)
+                  .with(csrf())
+                  .with(oidcLogin().oidcUser(getOidcUser())))
+          .andExpect(status().is3xxRedirection())
+          .andExpect(view().name("redirect:/upload"));
+    }
 
-  @Test
-  void shouldReturnErrorWhenUploadServiceFails() throws Exception {
-    MockMultipartFile file =
-        new MockMultipartFile("fileUpload", "test.csv", "text/csv", "test".getBytes());
-    doNothing().when(virusCheckService).checkVirus(any(MultipartFile.class));
-    doThrow(new RuntimeException("Upload failed"))
-        .when(cwaUploadService)
-        .uploadFile(any(MultipartFile.class), eq(PROVIDER), any(String.class));
+    @Test
+    @DisplayName("Should upload file successfully")
+    void shouldUploadFileSuccessfully() throws Exception {
+      MockMultipartFile file =
+          new MockMultipartFile("fileUpload", "test.csv", "text/csv", "text".getBytes());
+      FileUploadForm input = new FileUploadForm(file);
 
-    mockMvc
-        .perform(
-            multipart("/upload")
-                .file(file)
-                .param("provider", PROVIDER)
-                .with(csrf())
-                .with(oidcLogin().oidcUser(getOidcUser())))
-        .andExpect(status().isOk())
-        .andExpect(view().name("pages/upload"))
-        .andExpect(content().string(containsString("An error occurred while uploading the file.")));
-  }
-
-  @Test
-  void shouldUploadFileSuccessfully() throws Exception {
-    doNothing().when(virusCheckService).checkVirus(any(MultipartFile.class));
-    CwaUploadResponseDto response = new CwaUploadResponseDto();
-    response.setFileId("file123");
-    when(cwaUploadService.uploadFile(any(MultipartFile.class), eq(PROVIDER), any(String.class)))
-        .thenReturn(response);
-    MockMultipartFile file =
-        new MockMultipartFile("fileUpload", "test.csv", "text/csv", "test".getBytes());
-
-    mockMvc
-        .perform(
-            multipart("/upload")
-                .file(file)
-                .param("provider", PROVIDER)
-                .with(csrf())
-                .with(oidcLogin().oidcUser(getOidcUser())))
-        .andExpect(status().isOk())
-        .andExpect(view().name("pages/submission"));
-  }
-
-  @Test
-  void shouldAddVendorIdToModelWhenProviderIsInteger() throws Exception {
-    MockMultipartFile file =
-        new MockMultipartFile("fileUpload", "test.csv", "text/csv", "test".getBytes());
-
-    mockMvc
-        .perform(
-            multipart("/upload")
-                .file(file)
-                .param("provider", PROVIDER)
-                .with(csrf())
-                .with(oidcLogin().oidcUser(getOidcUser())))
-        .andExpect(status().isOk())
-        .andExpect(model().attribute("selectedProvider", 123));
+      when(claimsRestService.upload(any()))
+          .thenReturn(Mono.just(new CreateBulkSubmission201Response()));
+      mockMvc
+          .perform(
+              post("/upload")
+                  .sessionAttr("fileUploadForm", input)
+                  .with(csrf())
+                  .with(oidcLogin().oidcUser(getOidcUser())))
+          .andExpect(status().isOk())
+          .andExpect(view().name("pages/submission"));
+    }
   }
 }

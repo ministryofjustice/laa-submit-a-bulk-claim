@@ -74,9 +74,9 @@ public class BulkImportController {
    */
   @PostMapping("/upload")
   public String performUpload(
+      Model model,
       @ModelAttribute("fileUploadForm") FileUploadForm fileUploadForm,
       BindingResult bindingResult,
-      Model model,
       @AuthenticationPrincipal OidcUser oidcUser,
       RedirectAttributes redirectAttributes) {
 
@@ -95,8 +95,8 @@ public class BulkImportController {
           claimsRestService.upload(fileUploadForm.file()).block();
       log.info("Claims API Upload response submission UUID: {}", uploadResponse.getSubmissionId());
 
-      // TODO: Redirect to submission page rather than return the view (POST -> REDIRECT -> GET)
-      // model.addAttribute("fileId", uploadResponse.getFileId());
+      // TODO: Redirect to import in progress rather than return the view (POST -> REDIRECT -> GET)
+      //  in CCMSPUI-747.
       return "pages/submission";
     } catch (Exception e) {
       log.error("Failed to upload file to Claims API with message: {}", e.getMessage());

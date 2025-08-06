@@ -30,13 +30,16 @@ import org.testcontainers.utility.DockerImageName;
 import uk.gov.justice.laa.cwa.bulkupload.config.rest.ApiProperties;
 import uk.gov.justice.laa.cwa.bulkupload.config.rest.WebClientConfiguration;
 
+/**
+ * Base class for integration tests that require a MockServer instance.
+ *
+ * @author Jamie Briggs
+ */
 @Slf4j
 @TestInstance(Lifecycle.PER_CLASS)
 public abstract class MockServerIntegrationTest {
 
-
-  @MockitoBean
-  OAuth2AuthorizedClientManager authorizedClientManager;
+  @MockitoBean OAuth2AuthorizedClientManager authorizedClientManager;
 
   protected static final DockerImageName MOCKSERVER_IMAGE =
       DockerImageName.parse("mockserver/mockserver")
@@ -90,9 +93,7 @@ public abstract class MockServerIntegrationTest {
   }
 
   protected @NotNull WebClient createWebClient() {
-    ApiProperties apiProperties =
-        new ApiProperties(
-            mockServerContainer.getEndpoint(), "1234");
+    ApiProperties apiProperties = new ApiProperties(mockServerContainer.getEndpoint(), "1234");
     return WebClientConfiguration.createWebClient(apiProperties);
   }
 
