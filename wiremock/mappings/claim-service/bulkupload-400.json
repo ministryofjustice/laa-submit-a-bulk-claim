@@ -1,7 +1,7 @@
 {
   "request": {
     "method": "POST",
-    "urlPath": "/bulk-submissions",
+    "urlPath": "/api/v0/bulk-submissions",
     "bodyPatterns": [
       {
         "matches": ".*error\\.csv.*"
