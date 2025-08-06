@@ -166,7 +166,7 @@ class BulkImportFileValidatorTest {
 
   @Test
   @DisplayName("Should have error if file size is larger than 10MB")
-  void shouldHaveErrorIfFileSizeIsLargerThan10MB() {
+  void shouldHaveErrorIfFileSizeIsLargerThan10Mb() {
     // Given
     MockMultipartFile file =
         new MockMultipartFile("file", "test.csv", "text/csv", new byte[(10 * 1024 * 1024) + 1]);
