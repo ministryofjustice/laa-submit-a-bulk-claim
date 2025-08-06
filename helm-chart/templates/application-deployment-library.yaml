@@ -1,4 +1,4 @@
-{{- define "laa-ccms-service.application-deployment-library" -}}
+{{- define "laa.application-deployment-library" -}}
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -183,7 +183,7 @@ metadata:
   namespace: {{ .Release.Namespace }}
   annotations:
     {{- if hasKey .Values.ingress "whitelist" }}
-    nginx.ingress.kubernetes.io/whitelist-source-range: {{ include "laa-ccms-service.cidr-ranges.dynamic" . | quote }}
+    nginx.ingress.kubernetes.io/whitelist-source-range: {{ include "laa.cidr-ranges.dynamic" . | quote }}
     {{- end }}
     {{ if and (hasKey .Values "stickiness") (eq .Values.stickiness.enabled true) }}
     nginx.ingress.kubernetes.io/affinity: "cookie"

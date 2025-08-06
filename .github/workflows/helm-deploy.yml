@@ -21,6 +21,7 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v3
+
       - name: Authenticate to the cluster
         run: |
           echo "${{ secrets.kube_cert }}" > ca.crt
@@ -39,11 +40,18 @@ jobs:
         uses: aws-actions/amazon-ecr-login@v1
         id: login-ecr
 
-      - name: Install or Upgrade helm charts
+      - name: Set helm chart app version
+        run: |
+          yq eval-all "( .appVersion = \"${{ inputs.image_tag }}\" )" -i helm-chart/Chart.yaml
+
+      - name: Install or upgrade helm charts
+        id: helm-install
         run: |
           echo "Deploying Helm release '${{ inputs.deployment_name }}'..."
           helm upgrade --install --wait --timeout 5m \
             -f helm-chart/values/env-${{ inputs.environment }}.yaml \
             ${{ inputs.deployment_name }} helm-chart \
-            --set image.repository=${{ steps.login-ecr.outputs.registry }}/${{ vars.ECR_REPOSITORY }} \
-            --set image.tag=${{ inputs.image_tag }}
+            --set global.image.repository=${{ steps.login-ecr.outputs.registry }}/${{ vars.ECR_REPOSITORY }}
+          IMAGES=$(helm get manifest ${{ inputs.deployment_name }} | yq -o=json '.' | jq -sc '[.[] | select(.kind == "Deployment") | select(.spec.template.spec.containers[0].image | contains("${{ steps.login-ecr.outputs.registry }}/${{ vars.ECR_REPOSITORY }}")) | {image_version_tag: .metadata.labels.appVersion, release_tag: .metadata.name}]')
+          echo "images=$IMAGES" >> $GITHUB_OUTPUT
+          echo "Deployed Images: $(echo $IMAGES | jq)"
