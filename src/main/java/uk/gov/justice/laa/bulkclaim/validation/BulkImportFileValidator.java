@@ -1,4 +1,4 @@
-package uk.gov.justice.laa.cwa.bulkupload.validation;
+package uk.gov.justice.laa.bulkclaim.validation;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -6,7 +6,7 @@ import org.springframework.util.unit.DataSize;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 import org.springframework.web.multipart.MultipartFile;
-import uk.gov.justice.laa.cwa.bulkupload.dto.FileUploadForm;
+import uk.gov.justice.laa.bulkclaim.dto.FileUploadForm;
 
 /**
  * A validator for validating files intended for bulk submissions. This class implements the {@link

@@ -4,7 +4,6 @@ import java.util.Collections;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.springframework.ui.Model;
-import uk.gov.justice.laa.cwa.bulkupload.service.CwaUploadService;
 
 /** Helper class to fetch and populate providers in the model. */
 @Component

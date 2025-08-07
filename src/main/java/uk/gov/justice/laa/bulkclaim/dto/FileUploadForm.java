@@ -1,4 +1,4 @@
-package uk.gov.justice.laa.cwa.bulkupload.dto;
+package uk.gov.justice.laa.bulkclaim.dto;
 
 import org.springframework.web.multipart.MultipartFile;
 

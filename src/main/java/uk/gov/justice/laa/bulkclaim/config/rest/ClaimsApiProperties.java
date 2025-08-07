@@ -1,4 +1,4 @@
-package uk.gov.justice.laa.cwa.bulkupload.config.rest;
+package uk.gov.justice.laa.bulkclaim.config.rest;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 

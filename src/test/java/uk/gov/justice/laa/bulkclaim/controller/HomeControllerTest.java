@@ -1,4 +1,4 @@
-package uk.gov.justice.laa.cwa.bulkupload.controller;
+package uk.gov.justice.laa.bulkclaim.controller;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
@@ -16,7 +16,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.assertj.MockMvcTester;
-import uk.gov.justice.laa.cwa.bulkupload.config.WebMvcTestConfig;
+import uk.gov.justice.laa.bulkclaim.config.WebMvcTestConfig;
 
 @WebMvcTest(HomeController.class)
 @AutoConfigureMockMvc(addFilters = false)

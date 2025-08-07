@@ -1,4 +1,4 @@
-package uk.gov.justice.laa.cwa.bulkupload.validation;
+package uk.gov.justice.laa.bulkclaim.validation;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.mockito.Mockito.doThrow;
@@ -14,8 +14,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.validation.SimpleErrors;
 import org.springframework.validation.Validator;
-import uk.gov.justice.laa.cwa.bulkupload.dto.FileUploadForm;
-import uk.gov.justice.laa.cwa.bulkupload.service.VirusCheckService;
+import uk.gov.justice.laa.bulkclaim.dto.FileUploadForm;
+import uk.gov.justice.laa.bulkclaim.service.VirusCheckService;
 
 @ExtendWith(MockitoExtension.class)
 @DisplayName("Bulk import file virus validator test")

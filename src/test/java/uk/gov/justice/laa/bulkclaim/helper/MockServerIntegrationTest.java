@@ -1,4 +1,4 @@
-package uk.gov.justice.laa.cwa.bulkupload.helper;
+package uk.gov.justice.laa.bulkclaim.helper;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
@@ -27,8 +27,8 @@ import org.testcontainers.DockerClientFactory;
 import org.testcontainers.containers.MockServerContainer;
 import org.testcontainers.containers.wait.strategy.Wait;
 import org.testcontainers.utility.DockerImageName;
-import uk.gov.justice.laa.cwa.bulkupload.config.rest.ApiProperties;
-import uk.gov.justice.laa.cwa.bulkupload.config.rest.WebClientConfiguration;
+import uk.gov.justice.laa.bulkclaim.config.rest.ApiProperties;
+import uk.gov.justice.laa.bulkclaim.config.rest.WebClientConfiguration;
 
 /**
  * Base class for integration tests that require a MockServer instance.

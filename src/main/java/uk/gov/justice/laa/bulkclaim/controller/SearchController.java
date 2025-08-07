@@ -15,10 +15,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import uk.gov.justice.laa.bulkclaim.helper.ProviderHelper;
 import uk.gov.justice.laa.bulkclaim.response.CwaUploadErrorResponseDto;
 import uk.gov.justice.laa.bulkclaim.response.CwaUploadSummaryResponseDto;
-import uk.gov.justice.laa.bulkclaim.service.CwaUploadService;
-import uk.gov.justice.laa.bulkclaim.helper.ProviderHelper;
-import uk.gov.justice.laa.bulkclaim.response.CwaUploadErrorResponseDto;
-import uk.gov.justice.laa.bulkclaim.response.CwaUploadSummaryResponseDto;
 
 /** Controller for handling search requests related to bulk uploads. */
 @Slf4j

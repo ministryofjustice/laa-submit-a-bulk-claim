@@ -1,4 +1,4 @@
-package uk.gov.justice.laa.cwa.bulkupload.service;
+package uk.gov.justice.laa.bulkclaim.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertThrows;
@@ -18,9 +18,9 @@ import org.springframework.web.reactive.function.client.WebClientResponseExcepti
 import org.springframework.web.reactive.function.client.WebClientResponseException.Forbidden;
 import org.springframework.web.reactive.function.client.WebClientResponseException.InternalServerError;
 import org.springframework.web.reactive.function.client.WebClientResponseException.Unauthorized;
+import uk.gov.justice.laa.bulkclaim.config.WebMvcTestConfig;
+import uk.gov.justice.laa.bulkclaim.helper.MockServerIntegrationTest;
 import uk.gov.justice.laa.claims.model.CreateBulkSubmission201Response;
-import uk.gov.justice.laa.cwa.bulkupload.config.WebMvcTestConfig;
-import uk.gov.justice.laa.cwa.bulkupload.helper.MockServerIntegrationTest;
 
 /**
  * Integration tests for the {@link ClaimsRestService}.

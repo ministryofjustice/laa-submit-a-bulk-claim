@@ -13,13 +13,12 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-import uk.gov.justice.laa.claims.model.CreateBulkSubmission201Response;
 import uk.gov.justice.laa.bulkclaim.dto.FileUploadForm;
 import uk.gov.justice.laa.bulkclaim.helper.ProviderHelper;
-import uk.gov.justice.laa.bulkclaim.response.CwaUploadResponseDto;
 import uk.gov.justice.laa.bulkclaim.service.ClaimsRestService;
 import uk.gov.justice.laa.bulkclaim.validation.BulkImportFileValidator;
 import uk.gov.justice.laa.bulkclaim.validation.BulkImportFileVirusValidator;
+import uk.gov.justice.laa.claims.model.CreateBulkSubmission201Response;
 
 /** Controller for handling the bulk upload requests. */
 @Slf4j

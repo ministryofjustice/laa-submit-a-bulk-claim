@@ -36,13 +36,13 @@ import org.springframework.ui.Model;
 import org.springframework.validation.Errors;
 import org.springframework.web.client.HttpClientErrorException;
 import reactor.core.publisher.Mono;
-import uk.gov.justice.laa.claims.model.CreateBulkSubmission201Response;
-import uk.gov.justice.laa.cwa.bulkupload.config.WebMvcTestConfig;
-import uk.gov.justice.laa.cwa.bulkupload.dto.FileUploadForm;
+import uk.gov.justice.laa.bulkclaim.config.WebMvcTestConfig;
+import uk.gov.justice.laa.bulkclaim.dto.FileUploadForm;
 import uk.gov.justice.laa.bulkclaim.helper.ProviderHelper;
 import uk.gov.justice.laa.bulkclaim.service.ClaimsRestService;
 import uk.gov.justice.laa.bulkclaim.validation.BulkImportFileValidator;
 import uk.gov.justice.laa.bulkclaim.validation.BulkImportFileVirusValidator;
+import uk.gov.justice.laa.claims.model.CreateBulkSubmission201Response;
 
 @WebMvcTest(BulkImportController.class)
 @AutoConfigureMockMvc

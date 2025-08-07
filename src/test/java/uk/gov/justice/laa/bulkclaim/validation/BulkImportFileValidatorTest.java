@@ -1,4 +1,4 @@
-package uk.gov.justice.laa.cwa.bulkupload.validation;
+package uk.gov.justice.laa.bulkclaim.validation;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
@@ -10,7 +10,7 @@ import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.validation.SimpleErrors;
 import org.springframework.validation.Validator;
-import uk.gov.justice.laa.cwa.bulkupload.dto.FileUploadForm;
+import uk.gov.justice.laa.bulkclaim.dto.FileUploadForm;
 
 @DisplayName("Bulk import file validator test")
 class BulkImportFileValidatorTest {

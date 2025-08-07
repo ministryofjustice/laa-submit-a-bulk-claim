@@ -1,4 +1,4 @@
-package uk.gov.justice.laa.cwa.bulkupload.service;
+package uk.gov.justice.laa.bulkclaim.service;
 
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.RequestPart;
