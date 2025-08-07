@@ -1,4 +1,5 @@
 plugins {
+    id 'net.researchgate.release' version '3.1.0'
     id 'uk.gov.laa.springboot.laa-spring-boot-gradle-plugin' version '1.0.0'
     id 'io.freefair.lombok' version '8.14'
     id("com.diffplug.spotless") version "7.2.1"
@@ -11,6 +12,12 @@ repositories {
 
 dependencies {
     implementation project(':claims-api-reference')
+
+    /**
+     * Upgrades to resolve vulnerabilities
+     */
+    // Upgrade to fix CVE-2025-48924
+    implementation 'org.apache.commons:commons-lang3:3.18.0'
 
     implementation 'org.springframework.boot:spring-boot-starter-cache'
     implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
@@ -85,7 +92,6 @@ jacocoTestCoverageVerification {
 }
 
 check.dependsOn jacocoTestCoverageVerification
-
 
 spotless {
     java {
