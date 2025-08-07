@@ -3,7 +3,6 @@ ingress:
   externalRoute:
     enabled: true
   whitelist:
-    includeAlphaVpn: true
     includeCpLiveCluster: true
     includeProdAwsWorkspace: true
     includeLondonProdNatGatewayWorkspaces: true
