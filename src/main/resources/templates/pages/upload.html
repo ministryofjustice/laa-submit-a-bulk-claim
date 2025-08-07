@@ -1,7 +1,7 @@
 <!DOCTYPE HTML>
 <html lang="en" class="govuk-template" xmlns:th="http://www.thymeleaf.org"
       th:replace="~{ layout/main-layout :: layout(~{::title},~{::main})}">
-<title>CWA Bulk Upload - Home</title>
+<title>Submit a bulk claim - Home</title>
 <main class="govuk-main-wrapper" id="main-content">
     <form th:action="@{/upload}" method="POST" enctype="multipart/form-data">
         <div class="govuk-width-container">
@@ -22,7 +22,7 @@
                             </div>
                         </div>
                     </div>
-                    <h1 class="govuk-heading-xl" id="header">CWA Bulk Upload</h1>
+                    <h1 class="govuk-heading-xl" id="header">Submit a bulk claim</h1>
                     <div class="govuk-form-group"
                          th:classappend="${errors != null && errors.containsKey('provider') ? 'govuk-form-group--error' : ''}">
                         <label class="govuk-label" for="provider">
