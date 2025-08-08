@@ -13,11 +13,14 @@ import org.mockserver.model.HttpRequest;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseEntity;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.web.reactive.function.client.WebClientResponseException.BadRequest;
 import org.springframework.web.reactive.function.client.WebClientResponseException.Forbidden;
 import org.springframework.web.reactive.function.client.WebClientResponseException.InternalServerError;
 import org.springframework.web.reactive.function.client.WebClientResponseException.Unauthorized;
+import reactor.core.publisher.Mono;
 import uk.gov.justice.laa.bulkclaim.config.WebMvcTestConfig;
 import uk.gov.justice.laa.bulkclaim.helper.MockServerIntegrationTest;
 import uk.gov.justice.laa.claims.model.CreateBulkSubmission201Response;
@@ -30,7 +33,7 @@ import uk.gov.justice.laa.claims.model.CreateBulkSubmission201Response;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureMockMvc(addFilters = false)
 @Import(WebMvcTestConfig.class)
-public class ClaimsRestServiceIntegrationTest extends MockServerIntegrationTest {
+class ClaimsRestServiceIntegrationTest extends MockServerIntegrationTest {
 
   protected ClaimsRestService claimsRestService;
 
@@ -62,15 +65,21 @@ public class ClaimsRestServiceIntegrationTest extends MockServerIntegrationTest 
               response()
                   .withStatusCode(201)
                   .withHeader("Content-Type", "application/json")
+                  .withHeader("Location", "/api/v0/bulk-submissions/1234567890")
                   .withBody(expectedBody));
 
       // When
-      CreateBulkSubmission201Response result = claimsRestService.upload(file).block();
+      Mono<ResponseEntity<CreateBulkSubmission201Response>> upload = claimsRestService.upload(file);
+      ResponseEntity<CreateBulkSubmission201Response> block = upload.block();
+      CreateBulkSubmission201Response result = block.getBody();
+      String locationHeader = block.getHeaders().getFirst(HttpHeaders.LOCATION);
+
       // Then
       assertThat(result.getBulkSubmissionId())
           .isEqualTo(UUID.fromString("f7ed1cda-692e-417a-bb55-5a5135006774"));
       assertThat(result.getSubmissionId())
           .isEqualTo(UUID.fromString("aca8d879-3dd4-4fd1-97ee-03f0d0cfd5db"));
+      assertThat(locationHeader).isEqualTo("/api/v0/bulk-submissions/1234567890");
     }
 
     @Test

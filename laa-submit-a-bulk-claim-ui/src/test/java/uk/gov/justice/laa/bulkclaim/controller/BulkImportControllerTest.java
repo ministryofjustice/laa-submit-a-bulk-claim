@@ -16,6 +16,7 @@ import java.time.Instant;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -24,6 +25,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.oauth2.core.oidc.OidcIdToken;
@@ -52,12 +54,17 @@ class BulkImportControllerTest {
   private static final String PROVIDER = "123";
   private static final String TEST_USER = "test@example.com";
 
-  @Autowired private MockMvc mockMvc;
+  @Autowired
+  private MockMvc mockMvc;
 
-  @MockitoBean private ProviderHelper providerHelper;
-  @MockitoBean private BulkImportFileValidator bulkImportFileValidator;
-  @MockitoBean private BulkImportFileVirusValidator bulkImportFileVirusValidator;
-  @MockitoBean private ClaimsRestService claimsRestService;
+  @MockitoBean
+  private ProviderHelper providerHelper;
+  @MockitoBean
+  private BulkImportFileValidator bulkImportFileValidator;
+  @MockitoBean
+  private BulkImportFileVirusValidator bulkImportFileVirusValidator;
+  @MockitoBean
+  private ClaimsRestService claimsRestService;
 
   private OidcUser getOidcUser() {
     Map<String, Object> claims = new HashMap<>();
@@ -124,11 +131,11 @@ class BulkImportControllerTest {
       FileUploadForm input = new FileUploadForm(file);
 
       doAnswer(
-              invocationOnMock -> {
-                Errors errors = invocationOnMock.getArgument(1);
-                errors.rejectValue("file", "bulkImport.validation.empty");
-                return null;
-              })
+          invocationOnMock -> {
+            Errors errors = invocationOnMock.getArgument(1);
+            errors.rejectValue("file", "bulkImport.validation.empty");
+            return null;
+          })
           .when(bulkImportFileValidator)
           .validate(any(FileUploadForm.class), any(Errors.class));
       mockMvc
@@ -149,11 +156,11 @@ class BulkImportControllerTest {
       FileUploadForm input = new FileUploadForm(file);
 
       doAnswer(
-              invocationOnMock -> {
-                Errors errors = invocationOnMock.getArgument(1);
-                errors.rejectValue("file", "bulkImport.validation.empty");
-                return null;
-              })
+          invocationOnMock -> {
+            Errors errors = invocationOnMock.getArgument(1);
+            errors.rejectValue("file", "bulkImport.validation.empty");
+            return null;
+          })
           .when(bulkImportFileVirusValidator)
           .validate(any(FileUploadForm.class), any(Errors.class));
 
@@ -194,7 +201,8 @@ class BulkImportControllerTest {
       FileUploadForm input = new FileUploadForm(file);
 
       when(claimsRestService.upload(any()))
-          .thenReturn(Mono.just(new CreateBulkSubmission201Response()));
+          .thenReturn(
+              Mono.just(ResponseEntity.of(Optional.of(new CreateBulkSubmission201Response()))));
       mockMvc
           .perform(
               post("/upload")
