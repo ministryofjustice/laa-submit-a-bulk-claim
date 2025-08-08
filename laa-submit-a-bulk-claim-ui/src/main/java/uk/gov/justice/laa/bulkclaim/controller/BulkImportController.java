@@ -3,6 +3,7 @@ package uk.gov.justice.laa.bulkclaim.controller;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.core.oidc.user.OidcUser;
 import org.springframework.stereotype.Controller;
@@ -92,9 +93,10 @@ public class BulkImportController {
     }
 
     try {
-      CreateBulkSubmission201Response uploadResponse =
+      ResponseEntity<CreateBulkSubmission201Response> responseEntity =
           claimsRestService.upload(fileUploadForm.file()).block();
-      log.info("Claims API Upload response submission UUID: {}", uploadResponse.getSubmissionId());
+      CreateBulkSubmission201Response bulkSubmissionResponse = responseEntity.getBody();
+      log.info("Claims API Upload response submission UUID: {}", bulkSubmissionResponse.getSubmissionId());
 
       // TODO: Redirect to import in progress rather than return the view (POST -> REDIRECT -> GET)
       //  in CCMSPUI-747.
