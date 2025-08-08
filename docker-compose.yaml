@@ -4,9 +4,23 @@ services:
   #   context: .
   # ports:
   #   - "8082:8082"
-
+  claim-service:
+    image: wiremock/wiremock:latest
+    container_name: claim-service
+    entrypoint:
+      [
+        "/docker-entrypoint.sh",
+        "--global-response-templating",
+        "--disable-gzip",
+        "--verbose",
+      ]
+    volumes:
+      - ./wiremock/mappings/claim-service:/home/wiremock/mappings
+    restart: always
+    ports:
+      - "8091:8080"
   cwa-service:
-    image: wiremock/wiremock:3.12.1
+    image: wiremock/wiremock:latest
     container_name: cwa-service
     entrypoint:
       [

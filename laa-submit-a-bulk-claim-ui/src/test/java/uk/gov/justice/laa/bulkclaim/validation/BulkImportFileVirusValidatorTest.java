@@ -1,0 +1,70 @@
+package uk.gov.justice.laa.bulkclaim.validation;
+
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.validation.SimpleErrors;
+import org.springframework.validation.Validator;
+import uk.gov.justice.laa.bulkclaim.dto.FileUploadForm;
+import uk.gov.justice.laa.bulkclaim.exception.VirusCheckException;
+import uk.gov.justice.laa.bulkclaim.service.VirusCheckService;
+
+@ExtendWith(MockitoExtension.class)
+@DisplayName("Bulk import file virus validator test")
+class BulkImportFileVirusValidatorTest {
+
+  @Mock VirusCheckService virusCheckService;
+
+  Validator bulkClaimFileVirusValidator;
+
+  @BeforeEach
+  void beforeEach() {
+    bulkClaimFileVirusValidator = new BulkImportFileVirusValidator(virusCheckService);
+  }
+
+  @Test
+  @DisplayName("Should not have errors")
+  void shouldHaveNoErrors() {
+    // Given an empty file
+    MockMultipartFile file =
+        new MockMultipartFile("file", "test.txt", "text/plain", new byte[10 * 1024 * 1024]);
+    FileUploadForm fileUploadForm = new FileUploadForm(file);
+    SimpleErrors errors = new SimpleErrors(fileUploadForm);
+
+    // When
+    bulkClaimFileVirusValidator.validate(fileUploadForm, errors);
+
+    // Then
+    verify(virusCheckService, times(1)).checkVirus(file);
+    assertThat(errors.hasErrors()).isFalse();
+  }
+
+  @Test
+  @DisplayName("Should have errors when virus check failed")
+  void shouldHaveErrorsWhenVirusCheckFailed() {
+    // Given an empty file
+    MockMultipartFile file =
+        new MockMultipartFile("file", "test.txt", "text/plain", new byte[10 * 1024 * 1024]);
+    FileUploadForm fileUploadForm = new FileUploadForm(file);
+    SimpleErrors errors = new SimpleErrors(fileUploadForm);
+    doThrow(new VirusCheckException("Virus check failed")).when(virusCheckService).checkVirus(file);
+
+    // When
+    bulkClaimFileVirusValidator.validate(fileUploadForm, errors);
+
+    // Then
+    verify(virusCheckService, times(1)).checkVirus(file);
+    assertThat(errors.hasErrors()).isTrue();
+    assertThat(errors.getAllErrors().getFirst().getCode())
+        .isEqualTo("bulkImport.validation.virusScanFailed");
+  }
+}

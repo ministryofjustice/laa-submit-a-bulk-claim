@@ -15,9 +15,13 @@ application-local.yaml
 out/
 !**/src/main/**/out/
 !**/src/test/**/out/
+.run/
 
 ### VS Code ###
 .vscode/
 
 ### Mac
 .DS_Store
+
+
+claims-api-reference/generated

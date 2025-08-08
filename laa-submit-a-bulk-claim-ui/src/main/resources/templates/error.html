@@ -1,0 +1,12 @@
+<!DOCTYPE HTML>
+<html lang="en" class="govuk-template" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{ layout/main-layout :: layout(#{error.heading},~{::main}, ~{})}">
+<main class="govuk-main-wrapper" id="main-content">
+    <div class="govuk-width-container">
+        <div class="govuk-grid-row">
+            <h1 class="govuk-heading-l" id="header"
+                th:text="#{error.heading}"/>
+        </div>
+    </div>
+</main>
+</html>

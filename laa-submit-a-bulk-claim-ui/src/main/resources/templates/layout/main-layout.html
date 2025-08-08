@@ -1,0 +1,38 @@
+<!DOCTYPE HTML>
+<html th:fragment="layout(title, main, backLink)" lang="en" class="govuk-template govuk-template--rebranded"
+      xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml">
+<head>
+  <title th:text="|#{service.name} - ${title}|"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <link rel="manifest" th:href="@{/webjars/govuk-frontend/dist/govuk/assets/rebrand/manifest.json}" crossorigin="use-credentials">
+  <link th:href="@{/webjars/govuk-frontend/dist/govuk/govuk-frontend.min.css}" rel="stylesheet"/>
+  <link th:href="@{/webjars/ministryofjustice__frontend/moj/moj-frontend.min.css}"
+        rel="stylesheet"/>
+  <link rel="stylesheet" th:href="@{/stylesheets/upload.css}">
+  <link rel="icon" th:href="@{/webjars/govuk-frontend/dist/govuk/assets/images/favicon.ico}" sizes="any">
+  <link rel="icon" th:href="@{/webjars/govuk-frontend/dist/govuk/assets/images/favicon.svg}" type="image/svg+xml">
+</head>
+<body class="govuk-template__body">
+<script>document.body.className += ' js-enabled' + ('noModule' in HTMLScriptElement.prototype ? ' govuk-frontend-supported' : '');</script>
+<header th:replace="~{fragments/header :: header}"/>
+
+<div class="govuk-width-container">
+  <div class="govuk-phase-banner">
+    <p class="govuk-phase-banner__content">
+      <strong class="govuk-tag govuk-phase-banner__content__tag" id="phase-banner-tag"
+        th:text="#{phase.banner.tag}"/>
+      <span class="govuk-phase-banner__text" id="phase-banner-descriptions"
+        th:utext="#{phase.banner.description}"/>
+    </p>
+  </div>
+  <th:block th:replace="${backLink}">
+    Default back link (this should be replaced)
+  </th:block>
+  <main th:replace="${main}">
+    <p>Default content (this should be replaced)</p>
+  </main>
+</div>
+<footer th:replace="~{fragments/footer :: footer}"></footer>
+<th:block th:insert="~{fragments/page-scripts :: script}" />
+</body>
+</html>

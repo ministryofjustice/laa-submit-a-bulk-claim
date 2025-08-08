@@ -1,0 +1,21 @@
+{
+  "request": {
+    "method": "POST",
+    "urlPath": "/api/v0/bulk-submissions",
+    "bodyPatterns": [
+      {
+        "doesNotMatch": ".*error\\.csv.*"
+      }
+    ]
+  },
+  "response": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json"
+    },
+    "jsonBody": {
+      "submissionId": "1234567890",
+      "message": "Submission uploaded"
+    }
+  }
+}
