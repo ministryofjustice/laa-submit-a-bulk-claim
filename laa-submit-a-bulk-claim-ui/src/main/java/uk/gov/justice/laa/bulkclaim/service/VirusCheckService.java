@@ -27,8 +27,9 @@ public class VirusCheckService {
    * Perform a virus check for the given file.
    *
    * @param file the file
+   * @throws VirusCheckException if virus check fails
    */
-  public void checkVirus(MultipartFile file) {
+  public void checkVirus(MultipartFile file) throws VirusCheckException {
     if (file == null) {
       throw new VirusCheckException("File cannot be null");
     }

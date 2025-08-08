@@ -15,6 +15,7 @@ import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.validation.SimpleErrors;
 import org.springframework.validation.Validator;
 import uk.gov.justice.laa.bulkclaim.dto.FileUploadForm;
+import uk.gov.justice.laa.bulkclaim.exception.VirusCheckException;
 import uk.gov.justice.laa.bulkclaim.service.VirusCheckService;
 
 @ExtendWith(MockitoExtension.class)
@@ -55,7 +56,7 @@ class BulkImportFileVirusValidatorTest {
         new MockMultipartFile("file", "test.txt", "text/plain", new byte[10 * 1024 * 1024]);
     FileUploadForm fileUploadForm = new FileUploadForm(file);
     SimpleErrors errors = new SimpleErrors(fileUploadForm);
-    doThrow(new RuntimeException("Virus check failed")).when(virusCheckService).checkVirus(file);
+    doThrow(new VirusCheckException("Virus check failed")).when(virusCheckService).checkVirus(file);
 
     // When
     bulkClaimFileVirusValidator.validate(fileUploadForm, errors);

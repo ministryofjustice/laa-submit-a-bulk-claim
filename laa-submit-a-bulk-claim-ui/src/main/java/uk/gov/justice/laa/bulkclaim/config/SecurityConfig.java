@@ -29,6 +29,7 @@ public class SecurityConfig {
    *
    * @return a WebSecurityCustomizer that ignores specified static resource paths
    */
+  @Bean
   public WebSecurityCustomizer webSecurityCustomizer() {
     return web ->
         web.ignoring()

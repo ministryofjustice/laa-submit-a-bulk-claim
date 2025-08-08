@@ -7,6 +7,7 @@ import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 import org.springframework.web.multipart.MultipartFile;
 import uk.gov.justice.laa.bulkclaim.dto.FileUploadForm;
+import uk.gov.justice.laa.bulkclaim.exception.VirusCheckException;
 import uk.gov.justice.laa.bulkclaim.service.VirusCheckService;
 
 /**
@@ -37,10 +38,8 @@ public class BulkImportFileVirusValidator implements Validator {
     FileUploadForm uploadForm = (FileUploadForm) target;
     MultipartFile file = uploadForm.file();
     try {
-
       virusCheckService.checkVirus(file);
-
-    } catch (Exception e) {
+    } catch (VirusCheckException e) {
       log.error("Virus check failed with message: {}", e.getMessage());
       errors.reject("bulkImport.validation.virusScanFailed");
     }

@@ -47,13 +47,6 @@ dependencies {
     testImplementation 'org.mock-server:mockserver-client-java:5.15.0'
 }
 
-// Apply a specific Java toolchain to ease working on different environments.
-java {
-    toolchain {
-        languageVersion = JavaLanguageVersion.of(21)
-    }
-}
-
 test {
     // Use JUnit Platform for unit tests.
     useJUnitPlatform()
