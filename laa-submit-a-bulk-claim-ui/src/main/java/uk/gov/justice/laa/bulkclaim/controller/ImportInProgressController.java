@@ -86,4 +86,5 @@ public class ImportInProgressController {
     model.addAttribute("shouldRefresh", true);
     return "pages/upload-in-progress";
   }
+
 }
