@@ -26,6 +26,8 @@ import uk.gov.justice.laa.claims.model.CreateBulkSubmission201Response;
 @Controller
 public class BulkImportController {
 
+  public static final String FILE_UPLOAD_FORM_MODEL_ATTR = "fileUploadForm";
+
   private final ProviderHelper providerHelper;
   private final BulkImportFileValidator bulkImportFileValidator;
   private final BulkImportFileVirusValidator bulkImportFileVirusValidator;
@@ -38,12 +40,12 @@ public class BulkImportController {
    * @param oidcUser the authenticated user principal
    * @return the upload page
    */
-  @GetMapping("/upload")
+  @GetMapping("/")
   public String showUploadPage(Model model, @AuthenticationPrincipal OidcUser oidcUser) {
 
     // Always ensure there's a form object in the model if not already present
-    if (!model.containsAttribute("fileUploadForm")) {
-      model.addAttribute("fileUploadForm", new FileUploadForm(null));
+    if (!model.containsAttribute(FILE_UPLOAD_FORM_MODEL_ATTR)) {
+      model.addAttribute(FILE_UPLOAD_FORM_MODEL_ATTR, new FileUploadForm(null));
     }
 
     try {
@@ -74,7 +76,7 @@ public class BulkImportController {
   @PostMapping("/upload")
   public String performUpload(
       Model model,
-      @ModelAttribute("fileUploadForm") FileUploadForm fileUploadForm,
+      @ModelAttribute(FILE_UPLOAD_FORM_MODEL_ATTR) FileUploadForm fileUploadForm,
       BindingResult bindingResult,
       @AuthenticationPrincipal OidcUser oidcUser,
       RedirectAttributes redirectAttributes) {
@@ -115,9 +117,9 @@ public class BulkImportController {
       BindingResult bindingResult,
       RedirectAttributes redirectAttributes) {
 
-    redirectAttributes.addFlashAttribute("fileUploadForm", fileUploadForm);
+    redirectAttributes.addFlashAttribute(FILE_UPLOAD_FORM_MODEL_ATTR, fileUploadForm);
     redirectAttributes.addFlashAttribute(
         "org.springframework.validation.BindingResult.fileUploadForm", bindingResult);
-    return "redirect:/upload";
+    return "redirect:/";
   }
 }
