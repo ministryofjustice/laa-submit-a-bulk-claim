@@ -64,6 +64,7 @@ public class BulkImportFileValidator implements Validator {
     // Step 1: Check if file is null or empty
     if (file.isEmpty()) {
       errors.rejectValue("file", "bulkImport.validation.empty");
+      return;
     }
 
     String originalFilename = file.getOriginalFilename();
@@ -75,6 +76,7 @@ public class BulkImportFileValidator implements Validator {
             && !lowercaseFileName.endsWith(".xml")
             && !lowercaseFileName.endsWith(".txt")) {
       errors.rejectValue("file", "bulkImport.validation.extension");
+      return;
     }
 
     // Step 3: Validate MIME Type
@@ -84,6 +86,7 @@ public class BulkImportFileValidator implements Validator {
             && !("text/xml".equals(contentType) || "application/xml".equals(contentType)))
         || (lowercaseFileName.endsWith(".txt") && !("text/plain".equals(contentType)))) {
       errors.rejectValue("file", "bulkImport.validation.mimeType");
+      return;
     }
 
     // Step 4: Validate file size
