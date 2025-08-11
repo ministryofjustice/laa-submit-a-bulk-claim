@@ -48,7 +48,7 @@ public class SubmissionSummaryBuilder {
                     SubmissionSummaryRow::submissionReference, // Key: submissionReference
                     row ->
                         dataClaimsRestService
-                            .getValidationErrors(row.submissionReference()) // Value: List of errors
+                          .getValidationErrors(row.submissionReference()) // Value: List of errors
                             .blockOptional()
                             .orElse(List.of()) // Handle empty results
                     ));
@@ -61,11 +61,8 @@ public class SubmissionSummaryBuilder {
             submissionReference ->
                 errorList.addAll(
                     errorMap.get(submissionReference).stream()
-                        .map(
-                            x ->
-                                bulkClaimSummaryMapper.toSubmissionSummaryClaimError(
-                                    submissionReference, x))
-                        .toList()));
+            .map(x -> bulkClaimSummaryMapper.toSubmissionSummaryClaimError(submissionReference, x))
+            .toList()));
 
     return new BulkClaimSummary(summaryRows, errorList);
   }
