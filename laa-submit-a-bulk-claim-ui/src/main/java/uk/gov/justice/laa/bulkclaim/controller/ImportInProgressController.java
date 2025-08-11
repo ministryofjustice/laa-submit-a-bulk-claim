@@ -12,7 +12,9 @@ public class ImportInProgressController {
   @GetMapping("/upload/{bulkSubmissionId}/import-in-progress")
   public String importInProgress(Model model, @PathVariable("bulkSubmissionId")
   UUID bulkSubmissionId) {
+
     // TODO: GET BULK SUBMISSION AS SESSION ATTRIBUTE
+    model.addAttribute("shouldRefresh", true);
     return "pages/upload-in-progress";
   }
 
