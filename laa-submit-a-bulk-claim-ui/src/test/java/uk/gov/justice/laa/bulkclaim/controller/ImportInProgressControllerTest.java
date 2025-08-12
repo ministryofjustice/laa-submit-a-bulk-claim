@@ -19,7 +19,7 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.assertj.MockMvcTester;
 import reactor.core.publisher.Mono;
 import uk.gov.justice.laa.bulkclaim.config.WebMvcTestConfig;
-import uk.gov.justice.laa.bulkclaim.exception.SubmitABulkClaimException;
+import uk.gov.justice.laa.bulkclaim.exception.SubmitBulkClaimException;
 import uk.gov.justice.laa.bulkclaim.service.ClaimsRestService;
 import uk.gov.justice.laa.claims.model.GetSubmission200Response;
 import uk.gov.justice.laa.claims.model.GetSubmission200ResponseClaimsInner;
@@ -187,7 +187,7 @@ public class ImportInProgressControllerTest {
                       .with(oidcLogin().oidcUser(ControllerTestHelper.getOidcUser()))
                       .sessionAttr("bulkSubmissionId", submissionId.toString())))
           .failure()
-          .hasCauseInstanceOf(SubmitABulkClaimException.class)
+          .hasCauseInstanceOf(SubmitBulkClaimException.class)
           .hasMessageContaining("No claims found for bulk submission: " + submissionId);
     }
 
@@ -205,7 +205,7 @@ public class ImportInProgressControllerTest {
                       .with(oidcLogin().oidcUser(ControllerTestHelper.getOidcUser()))
                       .sessionAttr("bulkSubmissionId", submissionId.toString())))
           .failure()
-          .hasCauseInstanceOf(SubmitABulkClaimException.class)
+          .hasCauseInstanceOf(SubmitBulkClaimException.class)
           .hasMessageContaining("No claims found for bulk submission: " + submissionId);
     }
   }
