@@ -16,10 +16,6 @@ import uk.gov.justice.laa.bulkclaim.exception.SubmitBulkClaimException;
 import uk.gov.justice.laa.bulkclaim.service.claims.DataClaimsRestService;
 import uk.gov.justice.laa.claims.model.GetSubmission200Response;
 import uk.gov.justice.laa.claims.model.GetSubmission200ResponseClaimsInner;
-import uk.gov.justice.laa.bulkclaim.service.ClaimsRestService;
-import uk.gov.justice.laa.claims.model.GetSubmission200Response;
-import uk.gov.justice.laa.claims.model.GetSubmission200ResponseClaimsInner;
-
 /**
  * Controller for handling the import in progress page after a user has submitted a bulk claim.
  *
