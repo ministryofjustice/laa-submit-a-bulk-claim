@@ -11,11 +11,8 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
+import static uk.gov.justice.laa.bulkclaim.controller.ControllerTestHelper.getOidcUser;
 
-import java.time.Instant;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -27,11 +24,6 @@ import org.springframework.context.annotation.Import;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.mock.web.MockMultipartFile;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.oauth2.core.oidc.OidcIdToken;
-import org.springframework.security.oauth2.core.oidc.OidcUserInfo;
-import org.springframework.security.oauth2.core.oidc.user.DefaultOidcUser;
-import org.springframework.security.oauth2.core.oidc.user.OidcUser;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.ui.Model;
@@ -60,19 +52,6 @@ class BulkImportControllerTest {
   @MockitoBean private BulkImportFileValidator bulkImportFileValidator;
   @MockitoBean private BulkImportFileVirusValidator bulkImportFileVirusValidator;
   @MockitoBean private ClaimsRestService claimsRestService;
-
-  private OidcUser getOidcUser() {
-    Map<String, Object> claims = new HashMap<>();
-    claims.put("sub", "1234567890");
-    claims.put("email", "test@example.com");
-
-    OidcIdToken oidcIdToken =
-        new OidcIdToken("token123", Instant.now(), Instant.now().plusSeconds(60), claims);
-    OidcUserInfo oidcUserInfo = new OidcUserInfo(claims);
-
-    return new DefaultOidcUser(
-        List.of(new SimpleGrantedAuthority("ROLE_USER")), oidcIdToken, oidcUserInfo, "email");
-  }
 
   @Nested
   @DisplayName("GET: /upload")
