@@ -1,10 +1,8 @@
 package uk.gov.justice.laa.bulkclaim.service;
 
-import jakarta.websocket.server.PathParam;
 import java.util.UUID;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.multipart.MultipartFile;
@@ -30,7 +28,8 @@ public interface ClaimsRestService {
    * @return a mono containing the response from the Claims API.
    */
   @PostExchange(value = "/bulk-submissions", contentType = MediaType.MULTIPART_FORM_DATA_VALUE)
-  Mono<ResponseEntity<CreateBulkSubmission201Response>> upload(@RequestPart("file") MultipartFile file);
+  Mono<ResponseEntity<CreateBulkSubmission201Response>> upload(
+      @RequestPart("file") MultipartFile file);
 
   @GetExchange(value = "/submissions/{submissionId}")
   Mono<GetSubmission200Response> getSubmission(@PathVariable("submissionId") UUID submissionId);

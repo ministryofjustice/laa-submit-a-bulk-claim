@@ -1,6 +1,5 @@
 package uk.gov.justice.laa.bulkclaim.controller;
 
-import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
@@ -20,19 +19,20 @@ public class ImportInProgressController {
   private final ClaimsRestService claimsRestService;
 
   @GetMapping("/upload/import-in-progress")
-  public String importInProgress(Model model, @ModelAttribute("bulkSubmissionId")
-  UUID bulkSubmissionId) {
+  public String importInProgress(
+      Model model, @ModelAttribute("bulkSubmissionId") UUID bulkSubmissionId) {
 
     GetSubmission200Response block = claimsRestService.getSubmission(bulkSubmissionId).block();
 
-    boolean fullyImported = block.getClaims().stream().map(
-        GetSubmission200ResponseClaimsInner::getStatus).allMatch("READY"::equals);
-    if(fullyImported){
+    boolean fullyImported =
+        block.getClaims().stream()
+            .map(GetSubmission200ResponseClaimsInner::getStatus)
+            .allMatch("READY"::equals);
+    if (fullyImported) {
       // TODO: Redirect to imported page CCMSPUI-788
       return "redirect:/";
     }
     model.addAttribute("shouldRefresh", true);
     return "pages/upload-in-progress";
   }
-
 }
