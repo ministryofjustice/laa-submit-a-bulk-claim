@@ -26,7 +26,7 @@ public class ImportInProgressController {
     GetSubmission200Response block = claimsRestService.getSubmission(bulkSubmissionId).block();
 
     boolean fullyImported = block.getClaims().stream().map(
-        GetSubmission200ResponseClaimsInner::getStatus).allMatch("Imported"::equals);
+        GetSubmission200ResponseClaimsInner::getStatus).allMatch("READY"::equals);
     if(fullyImported){
       // TODO: Redirect to imported page CCMSPUI-788
       return "redirect:/";
