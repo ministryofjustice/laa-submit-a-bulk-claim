@@ -2,7 +2,6 @@ package uk.gov.justice.laa.bulkclaim.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertThrows;
-import static org.junit.Assert.fail;
 import static org.mockserver.model.HttpResponse.response;
 
 import java.util.UUID;
@@ -11,7 +10,6 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.mockserver.model.HttpRequest;
-import org.springframework.boot.autoconfigure.graphql.GraphQlProperties.Http;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
@@ -145,7 +143,7 @@ class ClaimsRestServiceIntegrationTest extends MockServerIntegrationTest {
 
   @Nested
   @DisplayName("GET: /api/v0/submission/{submissionId}")
-  class GetSubmission{
+  class GetSubmission {
 
     @Test
     @DisplayName("Should handle a 200 response")
@@ -153,10 +151,16 @@ class ClaimsRestServiceIntegrationTest extends MockServerIntegrationTest {
       // Given
       UUID submissionId = UUID.fromString("3fa85f64-5717-4562-b3fc-2c963f66afa6");
       String expectJson = readJsonFromFile("/GetSubmission200.json");
-      mockServerClient.when(HttpRequest.request().withMethod("GET")
-          .withPath("/api/v0/submissions/" + submissionId))
-          .respond(response().withStatusCode(200).withHeader("Content-Type", "application/json")
-              .withBody(expectJson));
+      mockServerClient
+          .when(
+              HttpRequest.request()
+                  .withMethod("GET")
+                  .withPath("/api/v0/submissions/" + submissionId))
+          .respond(
+              response()
+                  .withStatusCode(200)
+                  .withHeader("Content-Type", "application/json")
+                  .withBody(expectJson));
       // Then
       GetSubmission200Response block = claimsRestService.getSubmission(submissionId).block();
       String result = objectMapper.writeValueAsString(block);
@@ -165,12 +169,14 @@ class ClaimsRestServiceIntegrationTest extends MockServerIntegrationTest {
 
     @Test
     @DisplayName("Should handle a 400 response")
-    void shouldHandle400Response(){
+    void shouldHandle400Response() {
       // Given
       UUID submissionId = UUID.fromString("3fa85f64-5717-4562-b3fc-2c963f66afa6");
       mockServerClient
-          .when(HttpRequest.request().withMethod("GET")
-              .withPath("/api/v0/submissions/" + submissionId))
+          .when(
+              HttpRequest.request()
+                  .withMethod("GET")
+                  .withPath("/api/v0/submissions/" + submissionId))
           .respond(response().withStatusCode(400).withHeader("Content-Type", "application/json"));
 
       // When
@@ -179,12 +185,14 @@ class ClaimsRestServiceIntegrationTest extends MockServerIntegrationTest {
 
     @Test
     @DisplayName("Should handle a 401 response")
-    void shouldHandle401Response(){
+    void shouldHandle401Response() {
       // Given
       UUID submissionId = UUID.fromString("3fa85f64-5717-4562-b3fc-2c963f66afa6");
       mockServerClient
-          .when(HttpRequest.request().withMethod("GET")
-              .withPath("/api/v0/submissions/" + submissionId))
+          .when(
+              HttpRequest.request()
+                  .withMethod("GET")
+                  .withPath("/api/v0/submissions/" + submissionId))
           .respond(response().withStatusCode(401).withHeader("Content-Type", "application/json"));
 
       // When
@@ -193,12 +201,14 @@ class ClaimsRestServiceIntegrationTest extends MockServerIntegrationTest {
 
     @Test
     @DisplayName("Should handle a 403 response")
-    void shouldHandle403Response(){
+    void shouldHandle403Response() {
       // Given
       UUID submissionId = UUID.fromString("3fa85f64-5717-4562-b3fc-2c963f66afa6");
       mockServerClient
-          .when(HttpRequest.request().withMethod("GET")
-              .withPath("/api/v0/submissions/" + submissionId))
+          .when(
+              HttpRequest.request()
+                  .withMethod("GET")
+                  .withPath("/api/v0/submissions/" + submissionId))
           .respond(response().withStatusCode(403).withHeader("Content-Type", "application/json"));
 
       // When
@@ -207,12 +217,14 @@ class ClaimsRestServiceIntegrationTest extends MockServerIntegrationTest {
 
     @Test
     @DisplayName("Should handle a 404 response")
-    void shouldHandle404Response(){
+    void shouldHandle404Response() {
       // Given
       UUID submissionId = UUID.fromString("3fa85f64-5717-4562-b3fc-2c963f66afa6");
       mockServerClient
-          .when(HttpRequest.request().withMethod("GET")
-              .withPath("/api/v0/submissions/" + submissionId))
+          .when(
+              HttpRequest.request()
+                  .withMethod("GET")
+                  .withPath("/api/v0/submissions/" + submissionId))
           .respond(response().withStatusCode(404).withHeader("Content-Type", "application/json"));
 
       // When
@@ -221,16 +233,19 @@ class ClaimsRestServiceIntegrationTest extends MockServerIntegrationTest {
 
     @Test
     @DisplayName("Should handle a 500 response")
-    void shouldHandle500Response(){
+    void shouldHandle500Response() {
       // Given
       UUID submissionId = UUID.fromString("3fa85f64-5717-4562-b3fc-2c963f66afa6");
       mockServerClient
-          .when(HttpRequest.request().withMethod("GET")
-              .withPath("/api/v0/submissions/" + submissionId))
+          .when(
+              HttpRequest.request()
+                  .withMethod("GET")
+                  .withPath("/api/v0/submissions/" + submissionId))
           .respond(response().withStatusCode(500).withHeader("Content-Type", "application/json"));
 
       // When
-      assertThrows(InternalServerError.class, () -> claimsRestService.getSubmission(submissionId).block());
+      assertThrows(
+          InternalServerError.class, () -> claimsRestService.getSubmission(submissionId).block());
     }
   }
 }
