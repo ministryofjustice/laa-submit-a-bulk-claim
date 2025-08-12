@@ -27,6 +27,9 @@ spring:
             issuer-uri: https://login.microsoftonline.com/${LASSIE_TENANT_ID}/v2.0
           moj-identity:
             issuer-uri: https://login.microsoftonline.com/${AUTH_TENANT_ID}/v2.0
+  threads:
+    virtual:
+      enabled: true
   http:
     client:
       factory: jdk
