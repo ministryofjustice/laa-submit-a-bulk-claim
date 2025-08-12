@@ -34,7 +34,7 @@ public class ImportInProgressControllerTest {
   @MockitoBean private ClaimsRestService claimsRestService;
 
   @Nested
-  @DisplayName("GET: /upload/import-in-progress")
+  @DisplayName("GET: /import-in-progress")
   class ImportInProgressTests {
 
     @Test
@@ -55,7 +55,7 @@ public class ImportInProgressControllerTest {
 
       assertThat(
               mockMvc.perform(
-                  get("/upload/import-in-progress")
+                  get("/import-in-progress")
                       .with(oidcLogin().oidcUser(ControllerTestHelper.getOidcUser()))
                       .sessionAttr("bulkSubmissionId", submissionId.toString())))
           .hasStatusOk()
@@ -83,7 +83,7 @@ public class ImportInProgressControllerTest {
 
       assertThat(
               mockMvc.perform(
-                  get("/upload/import-in-progress")
+                  get("/import-in-progress")
                       .with(oidcLogin().oidcUser(ControllerTestHelper.getOidcUser()))
                       .sessionAttr("bulkSubmissionId", submissionId.toString())))
           .hasStatusOk()
@@ -111,7 +111,7 @@ public class ImportInProgressControllerTest {
 
       assertThat(
               mockMvc.perform(
-                  get("/upload/import-in-progress")
+                  get("/import-in-progress")
                       .with(oidcLogin().oidcUser(ControllerTestHelper.getOidcUser()))
                       .sessionAttr("bulkSubmissionId", submissionId.toString())))
           .hasStatusOk()
@@ -136,7 +136,7 @@ public class ImportInProgressControllerTest {
 
       assertThat(
               mockMvc.perform(
-                  get("/upload/import-in-progress")
+                  get("/import-in-progress")
                       .with(oidcLogin().oidcUser(ControllerTestHelper.getOidcUser()))
                       .sessionAttr("bulkSubmissionId", submissionId.toString())))
           .hasStatus3xxRedirection()
@@ -163,7 +163,7 @@ public class ImportInProgressControllerTest {
 
       assertThat(
               mockMvc.perform(
-                  get("/upload/import-in-progress")
+                  get("/import-in-progress")
                       .with(oidcLogin().oidcUser(ControllerTestHelper.getOidcUser()))
                       .sessionAttr("bulkSubmissionId", submissionId.toString())))
           .hasStatus3xxRedirection()
@@ -183,7 +183,7 @@ public class ImportInProgressControllerTest {
 
       assertThat(
               mockMvc.perform(
-                  get("/upload/import-in-progress")
+                  get("/import-in-progress")
                       .with(oidcLogin().oidcUser(ControllerTestHelper.getOidcUser()))
                       .sessionAttr("bulkSubmissionId", submissionId.toString())))
           .failure()
@@ -201,7 +201,7 @@ public class ImportInProgressControllerTest {
 
       assertThat(
               mockMvc.perform(
-                  get("/upload/import-in-progress")
+                  get("/import-in-progress")
                       .with(oidcLogin().oidcUser(ControllerTestHelper.getOidcUser()))
                       .sessionAttr("bulkSubmissionId", submissionId.toString())))
           .failure()
