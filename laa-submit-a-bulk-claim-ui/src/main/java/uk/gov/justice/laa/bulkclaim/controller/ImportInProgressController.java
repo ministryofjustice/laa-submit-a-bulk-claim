@@ -33,7 +33,7 @@ public class ImportInProgressController {
    * @param bulkSubmissionId the bulk submission id session attribute.
    * @return the import in progress view or redirects to view submission.
    */
-  @GetMapping("/upload/import-in-progress")
+  @GetMapping("/import-in-progress")
   public String importInProgress(
       Model model, @ModelAttribute("bulkSubmissionId") UUID bulkSubmissionId) {
 

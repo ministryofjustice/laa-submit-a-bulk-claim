@@ -101,7 +101,7 @@ public class BulkImportController {
           bulkSubmissionResponse.getBulkSubmissionId());
       redirectAttributes.addFlashAttribute(
           "bulkSubmissionId", bulkSubmissionResponse.getBulkSubmissionId());
-      return "redirect:/upload/import-in-progress";
+      return "redirect:/import-in-progress";
     } catch (Exception e) {
       log.error("Failed to upload file to Claims API with message: {}", e.getMessage());
       bindingResult.reject("bulkImport.validation.uploadFailed");

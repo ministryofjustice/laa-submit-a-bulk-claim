@@ -61,7 +61,7 @@ class BulkImportControllerTest {
     @DisplayName("Should return expected view")
     void shouldReturnExpectedView() throws Exception {
       mockMvc
-          .perform(get("/upload").with(oidcLogin().oidcUser(getOidcUser())))
+          .perform(get("/").with(oidcLogin().oidcUser(getOidcUser())))
           .andExpect(status().isOk())
           .andExpect(view().name("pages/upload"));
     }
@@ -74,7 +74,7 @@ class BulkImportControllerTest {
           .populateProviders(any(Model.class), eq(TEST_USER));
 
       mockMvc
-          .perform(get("/upload").with(oidcLogin().oidcUser(getOidcUser())))
+          .perform(get("/").with(oidcLogin().oidcUser(getOidcUser())))
           .andExpect(status().isOk())
           .andExpect(view().name("pages/upload-forbidden"));
     }
@@ -87,7 +87,7 @@ class BulkImportControllerTest {
           .populateProviders(any(Model.class), eq(TEST_USER));
 
       mockMvc
-          .perform(get("/upload").with(oidcLogin().oidcUser(getOidcUser())))
+          .perform(get("/").with(oidcLogin().oidcUser(getOidcUser())))
           .andExpect(status().isOk())
           .andExpect(view().name("error"));
     }
@@ -119,7 +119,7 @@ class BulkImportControllerTest {
                   .with(csrf())
                   .with(oidcLogin().oidcUser(getOidcUser())))
           .andExpect(status().is3xxRedirection())
-          .andExpect(view().name("redirect:/upload"));
+          .andExpect(view().name("redirect:/"));
     }
 
     @Test
@@ -145,7 +145,7 @@ class BulkImportControllerTest {
                   .with(csrf())
                   .with(oidcLogin().oidcUser(getOidcUser())))
           .andExpect(status().is3xxRedirection())
-          .andExpect(view().name("redirect:/upload"));
+          .andExpect(view().name("redirect:/"));
     }
 
     @Test
@@ -164,7 +164,7 @@ class BulkImportControllerTest {
                   .with(csrf())
                   .with(oidcLogin().oidcUser(getOidcUser())))
           .andExpect(status().is3xxRedirection())
-          .andExpect(view().name("redirect:/upload"));
+          .andExpect(view().name("redirect:/"));
     }
 
     @Test
@@ -183,8 +183,8 @@ class BulkImportControllerTest {
                   .sessionAttr("fileUploadForm", input)
                   .with(csrf())
                   .with(oidcLogin().oidcUser(getOidcUser())))
-          .andExpect(status().isOk())
-          .andExpect(view().name("pages/submission"));
+          .andExpect(status().is3xxRedirection())
+          .andExpect(view().name("redirect:/import-in-progress"));
     }
   }
 }
