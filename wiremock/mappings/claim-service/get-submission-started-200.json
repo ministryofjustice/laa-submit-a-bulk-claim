@@ -1,13 +1,11 @@
 {
   "request": {
-    "method": "POST",
-    "urlPath": "/api/v0/bulk-submissions/{id}",
-    "bodyPatterns": [
-      {
-        "doesNotMatch": ".*error\\.csv.*"
-      }
-    ]
+    "method": "GET",
+    "urlPath": "/api/v0/submissions/0561d67b-30ed-412e-8231-f6296a53538d"
   },
+  "scenarioName": "Submission status alternator",
+  "requiredScenarioState": "Started",
+  "newScenarioState": "InProgress",
   "response": {
     "status": 200,
     "headers": {
@@ -28,7 +26,11 @@
       "claims": [
         {
           "claim_id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
-          "status": "string"
+          "status": "Pending"
+        },
+        {
+          "claim_id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+          "status": "Pending"
         }
       ],
       "matter_starts": [
