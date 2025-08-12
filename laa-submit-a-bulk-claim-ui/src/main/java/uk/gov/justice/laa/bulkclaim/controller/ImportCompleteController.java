@@ -21,4 +21,9 @@ public class ImportCompleteController {
   public String viewSubmission(){
     return "pages/_submission";
   }
+
+  @GetMapping("/claim-search")
+  public String search(){
+    return "pages/_search-results";
+  }
 }
