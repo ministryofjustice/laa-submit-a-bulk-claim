@@ -1,5 +1,7 @@
 package uk.gov.justice.laa.bulkclaim.controller;
 
+import static uk.gov.justice.laa.bulkclaim.config.SessionConstants.BULK_SUBMISSION_ID;
+
 import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
@@ -24,7 +26,7 @@ import uk.gov.justice.laa.claims.model.GetSubmission200ResponseClaimsInner;
 @Slf4j
 @Controller
 @RequiredArgsConstructor
-@SessionAttributes("bulkSubmissionId")
+@SessionAttributes(BULK_SUBMISSION_ID)
 public class ImportInProgressController {
 
   private final DataClaimsRestService dataClaimsRestService;
@@ -42,7 +44,7 @@ public class ImportInProgressController {
    */
   @GetMapping("/import-in-progress")
   public String importInProgress(
-      Model model, @ModelAttribute("bulkSubmissionId") UUID bulkSubmissionId) {
+      Model model, @ModelAttribute(BULK_SUBMISSION_ID) UUID bulkSubmissionId) {
 
     // Check submission exists otherwise they will be stuck in a loop on this page.
     GetSubmission200Response getSubmission;
@@ -79,8 +81,7 @@ public class ImportInProgressController {
             .map(GetSubmission200ResponseClaimsInner::getStatus)
             .allMatch(completedStatuses::contains);
     if (fullyImported) {
-      // TODO: Redirect to imported page CCMSPUI-788
-      return "redirect:/";
+      return "redirect:/view-submission-summary";
     }
     model.addAttribute("shouldRefresh", true);
     return "pages/upload-in-progress";

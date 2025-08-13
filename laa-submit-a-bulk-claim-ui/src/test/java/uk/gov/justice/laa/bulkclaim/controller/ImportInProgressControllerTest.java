@@ -209,7 +209,7 @@ public class ImportInProgressControllerTest {
                       .sessionAttr("bulkSubmissionId", submissionId.toString())))
           .hasStatus3xxRedirection()
           // TODO: Redirect to imported page CCMSPUI-788
-          .hasRedirectedUrl("/");
+          .hasRedirectedUrl("/view-submission-summary");
     }
 
     @Test
@@ -231,7 +231,7 @@ public class ImportInProgressControllerTest {
                       .sessionAttr("bulkSubmissionId", submissionId.toString())))
           .hasStatus3xxRedirection()
           // TODO: Redirect to imported page CCMSPUI-788
-          .hasRedirectedUrl("/");
+          .hasRedirectedUrl("/view-submission-summary");
     }
 
     @Test

@@ -28,6 +28,7 @@ checkstyleMain.exclude "*"
 
 openApiGenerate {
     generatorName = "spring"
+    // https://github.com/ministryofjustice/laa-data-claims-api/blob/openapi/v0/claims-data/api/open-api-specification.yml
     inputSpec = "$rootDir/claims-api-reference/open-api-specification.yml".toString()
     outputDir = "$rootDir/claims-api-reference/generated".toString()
     apiPackage = "uk.gov.justice.laa.claims.api"
