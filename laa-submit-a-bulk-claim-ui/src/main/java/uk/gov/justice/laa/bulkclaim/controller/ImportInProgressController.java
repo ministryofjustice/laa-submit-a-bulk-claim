@@ -7,6 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.util.Assert;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.SessionAttributes;
@@ -57,15 +58,25 @@ public class ImportInProgressController {
       throw new SubmitBulkClaimException("Claims API returned an error", e);
     }
 
-    // Check submission has claims otherwise they will be stuck in a loop on this page.
-    List<GetSubmission200ResponseClaimsInner> claims = getSubmission.getClaims();
-    if (claims == null || claims.isEmpty()) {
-      throw new SubmitBulkClaimException(
-          "No claims found for bulk submission: %s".formatted(bulkSubmissionId.toString()));
+    // Check submission. If the response from data claims API is 200, these fields
+    //  should be not null.
+    Assert.notNull(getSubmission, "Submission is null");
+    Assert.notNull(getSubmission.getSubmission(), "Submission fields is null");
+
+    // Check for NIL submission
+    if (Boolean.TRUE.equals(getSubmission.getSubmission().getIsNilSubmission())) {
+      // TODO: Redirect to imported page CCMSPUI-788
+      log.info("NIL submission found, will redirect: %s".formatted(bulkSubmissionId.toString()));
+      return "redirect:/";
     }
 
+    // Check submission has claims otherwise they will be stuck in a loop on this page.
+    Assert.notEmpty(
+        getSubmission.getClaims(),
+        "No claims found for bulk submission: %s".formatted(bulkSubmissionId.toString()));
+
     boolean fullyImported =
-        claims.stream()
+        getSubmission.getClaims().stream()
             .map(GetSubmission200ResponseClaimsInner::getStatus)
             .allMatch(completedStatuses::contains);
     if (fullyImported) {
