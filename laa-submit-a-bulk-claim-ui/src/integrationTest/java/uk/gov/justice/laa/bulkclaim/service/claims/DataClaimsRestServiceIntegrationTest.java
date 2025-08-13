@@ -1,4 +1,4 @@
-package uk.gov.justice.laa.bulkclaim.service;
+package uk.gov.justice.laa.bulkclaim.service.claims;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertThrows;
@@ -28,20 +28,20 @@ import uk.gov.justice.laa.claims.model.CreateBulkSubmission201Response;
 import uk.gov.justice.laa.claims.model.GetSubmission200Response;
 
 /**
- * Integration tests for the {@link ClaimsRestService}.
+ * Integration tests for the {@link DataClaimsRestService}.
  *
  * @author Jamie Briggs
  */
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureMockMvc(addFilters = false)
 @Import(WebMvcTestConfig.class)
-class ClaimsRestServiceIntegrationTest extends MockServerIntegrationTest {
+class DataClaimsRestServiceIntegrationTest extends MockServerIntegrationTest {
 
-  protected ClaimsRestService claimsRestService;
+  protected DataClaimsRestService dataClaimsRestService;
 
   @BeforeEach
   void setUp() {
-    claimsRestService = createClient(ClaimsRestService.class);
+    dataClaimsRestService = createClient(DataClaimsRestService.class);
   }
 
   @Nested
@@ -71,7 +71,8 @@ class ClaimsRestServiceIntegrationTest extends MockServerIntegrationTest {
                   .withBody(expectedBody));
 
       // When
-      Mono<ResponseEntity<CreateBulkSubmission201Response>> upload = claimsRestService.upload(file);
+      Mono<ResponseEntity<CreateBulkSubmission201Response>> upload =
+          dataClaimsRestService.upload(file);
       ResponseEntity<CreateBulkSubmission201Response> block = upload.block();
       CreateBulkSubmission201Response result = block.getBody();
       String locationHeader = block.getHeaders().getFirst(HttpHeaders.LOCATION);
@@ -95,7 +96,7 @@ class ClaimsRestServiceIntegrationTest extends MockServerIntegrationTest {
           .respond(response().withStatusCode(400).withHeader("Content-Type", "application/json"));
 
       // When
-      assertThrows(BadRequest.class, () -> claimsRestService.upload(file).block());
+      assertThrows(BadRequest.class, () -> dataClaimsRestService.upload(file).block());
     }
 
     @Test
@@ -109,7 +110,7 @@ class ClaimsRestServiceIntegrationTest extends MockServerIntegrationTest {
           .respond(response().withStatusCode(401).withHeader("Content-Type", "application/json"));
 
       // When
-      assertThrows(Unauthorized.class, () -> claimsRestService.upload(file).block());
+      assertThrows(Unauthorized.class, () -> dataClaimsRestService.upload(file).block());
     }
 
     @Test
@@ -123,7 +124,7 @@ class ClaimsRestServiceIntegrationTest extends MockServerIntegrationTest {
           .respond(response().withStatusCode(403).withHeader("Content-Type", "application/json"));
 
       // When
-      assertThrows(Forbidden.class, () -> claimsRestService.upload(file).block());
+      assertThrows(Forbidden.class, () -> dataClaimsRestService.upload(file).block());
     }
 
     @Test
@@ -137,7 +138,7 @@ class ClaimsRestServiceIntegrationTest extends MockServerIntegrationTest {
           .respond(response().withStatusCode(500).withHeader("Content-Type", "application/json"));
 
       // When
-      assertThrows(InternalServerError.class, () -> claimsRestService.upload(file).block());
+      assertThrows(InternalServerError.class, () -> dataClaimsRestService.upload(file).block());
     }
   }
 
@@ -162,7 +163,7 @@ class ClaimsRestServiceIntegrationTest extends MockServerIntegrationTest {
                   .withHeader("Content-Type", "application/json")
                   .withBody(expectJson));
       // Then
-      GetSubmission200Response block = claimsRestService.getSubmission(submissionId).block();
+      GetSubmission200Response block = dataClaimsRestService.getSubmission(submissionId).block();
       String result = objectMapper.writeValueAsString(block);
       assertThatJsonMatches(expectJson, result);
     }
@@ -180,7 +181,8 @@ class ClaimsRestServiceIntegrationTest extends MockServerIntegrationTest {
           .respond(response().withStatusCode(400).withHeader("Content-Type", "application/json"));
 
       // When
-      assertThrows(BadRequest.class, () -> claimsRestService.getSubmission(submissionId).block());
+      assertThrows(
+          BadRequest.class, () -> dataClaimsRestService.getSubmission(submissionId).block());
     }
 
     @Test
@@ -196,7 +198,8 @@ class ClaimsRestServiceIntegrationTest extends MockServerIntegrationTest {
           .respond(response().withStatusCode(401).withHeader("Content-Type", "application/json"));
 
       // When
-      assertThrows(Unauthorized.class, () -> claimsRestService.getSubmission(submissionId).block());
+      assertThrows(
+          Unauthorized.class, () -> dataClaimsRestService.getSubmission(submissionId).block());
     }
 
     @Test
@@ -212,7 +215,8 @@ class ClaimsRestServiceIntegrationTest extends MockServerIntegrationTest {
           .respond(response().withStatusCode(403).withHeader("Content-Type", "application/json"));
 
       // When
-      assertThrows(Forbidden.class, () -> claimsRestService.getSubmission(submissionId).block());
+      assertThrows(
+          Forbidden.class, () -> dataClaimsRestService.getSubmission(submissionId).block());
     }
 
     @Test
@@ -228,7 +232,7 @@ class ClaimsRestServiceIntegrationTest extends MockServerIntegrationTest {
           .respond(response().withStatusCode(404).withHeader("Content-Type", "application/json"));
 
       // When
-      assertThrows(NotFound.class, () -> claimsRestService.getSubmission(submissionId).block());
+      assertThrows(NotFound.class, () -> dataClaimsRestService.getSubmission(submissionId).block());
     }
 
     @Test
@@ -245,7 +249,8 @@ class ClaimsRestServiceIntegrationTest extends MockServerIntegrationTest {
 
       // When
       assertThrows(
-          InternalServerError.class, () -> claimsRestService.getSubmission(submissionId).block());
+          InternalServerError.class,
+          () -> dataClaimsRestService.getSubmission(submissionId).block());
     }
   }
 }

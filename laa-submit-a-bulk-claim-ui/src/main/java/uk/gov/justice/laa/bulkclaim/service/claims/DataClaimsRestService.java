@@ -1,4 +1,4 @@
-package uk.gov.justice.laa.bulkclaim.service;
+package uk.gov.justice.laa.bulkclaim.service.claims;
 
 import java.util.UUID;
 import org.springframework.http.MediaType;
@@ -20,7 +20,7 @@ import uk.gov.justice.laa.claims.model.GetSubmission200Response;
  * @author Jamie Briggs
  */
 @HttpExchange("/api/v0")
-public interface ClaimsRestService {
+public interface DataClaimsRestService {
 
   /**
    * Uploads a bulk claim submission file to the Claims API.

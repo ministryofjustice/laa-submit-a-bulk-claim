@@ -24,7 +24,7 @@ import org.springframework.web.reactive.function.client.WebClientResponseExcepti
 import reactor.core.publisher.Mono;
 import uk.gov.justice.laa.bulkclaim.config.WebMvcTestConfig;
 import uk.gov.justice.laa.bulkclaim.exception.SubmitBulkClaimException;
-import uk.gov.justice.laa.bulkclaim.service.ClaimsRestService;
+import uk.gov.justice.laa.bulkclaim.service.claims.DataClaimsRestService;
 import uk.gov.justice.laa.claims.model.GetSubmission200Response;
 import uk.gov.justice.laa.claims.model.GetSubmission200ResponseClaimsInner;
 
@@ -35,7 +35,7 @@ public class ImportInProgressControllerTest {
 
   @Autowired private MockMvcTester mockMvc;
 
-  @MockitoBean private ClaimsRestService claimsRestService;
+  @MockitoBean private DataClaimsRestService dataClaimsRestService;
 
   @Nested
   @DisplayName("GET: /import-in-progress")
@@ -46,7 +46,7 @@ public class ImportInProgressControllerTest {
     void shouldReturnExpectedResult() {
       // Given
       UUID submissionId = UUID.fromString("5933fc67-bac7-4f48-81ed-61c8c463f054");
-      when(claimsRestService.getSubmission(submissionId))
+      when(dataClaimsRestService.getSubmission(submissionId))
           .thenReturn(
               Mono.just(
                   GetSubmission200Response.builder()
@@ -71,7 +71,7 @@ public class ImportInProgressControllerTest {
     void shouldReturnExpectedResultWhenMultipleClaimsNotReady() {
       // Given
       UUID submissionId = UUID.fromString("5933fc67-bac7-4f48-81ed-61c8c463f054");
-      when(claimsRestService.getSubmission(submissionId))
+      when(dataClaimsRestService.getSubmission(submissionId))
           .thenReturn(
               Mono.just(
                   GetSubmission200Response.builder()
@@ -99,7 +99,7 @@ public class ImportInProgressControllerTest {
     void shouldReturnExpectedResultWhenPartialClaimsNotReady() {
       // Given
       UUID submissionId = UUID.fromString("5933fc67-bac7-4f48-81ed-61c8c463f054");
-      when(claimsRestService.getSubmission(submissionId))
+      when(dataClaimsRestService.getSubmission(submissionId))
           .thenReturn(
               Mono.just(
                   GetSubmission200Response.builder()
@@ -127,7 +127,7 @@ public class ImportInProgressControllerTest {
     void shouldReturnExpectedResultWhenSubmissionNotFound() {
       // Given
       UUID submissionId = UUID.fromString("5933fc67-bac7-4f48-81ed-61c8c463f054");
-      when(claimsRestService.getSubmission(submissionId))
+      when(dataClaimsRestService.getSubmission(submissionId))
           .thenThrow(
               new WebClientResponseException(
                   HttpStatusCode.valueOf(404), "Submission not found", null, null, null, null));
@@ -146,7 +146,7 @@ public class ImportInProgressControllerTest {
     void shouldRedirectWhenOnlyClaimHasImported() {
       // Given
       UUID submissionId = UUID.fromString("5933fc67-bac7-4f48-81ed-61c8c463f054");
-      when(claimsRestService.getSubmission(submissionId))
+      when(dataClaimsRestService.getSubmission(submissionId))
           .thenReturn(
               Mono.just(
                   GetSubmission200Response.builder()
@@ -172,7 +172,7 @@ public class ImportInProgressControllerTest {
     void shouldRedirectWhenMultipleClaimsHasImported() {
       // Given
       UUID submissionId = UUID.fromString("5933fc67-bac7-4f48-81ed-61c8c463f054");
-      when(claimsRestService.getSubmission(submissionId))
+      when(dataClaimsRestService.getSubmission(submissionId))
           .thenReturn(
               Mono.just(
                   GetSubmission200Response.builder()
@@ -199,7 +199,7 @@ public class ImportInProgressControllerTest {
     void shouldThrowErrorWhenSubmissionHasNoClaims() {
       // Given
       UUID submissionId = UUID.fromString("5933fc67-bac7-4f48-81ed-61c8c463f054");
-      when(claimsRestService.getSubmission(submissionId))
+      when(dataClaimsRestService.getSubmission(submissionId))
           .thenReturn(
               Mono.just(
                   GetSubmission200Response.builder().claims(Collections.emptyList()).build()));
@@ -219,7 +219,7 @@ public class ImportInProgressControllerTest {
     void shouldThrowErrorWhenSubmissionClaimsIsNull() {
       // Given
       UUID submissionId = UUID.fromString("5933fc67-bac7-4f48-81ed-61c8c463f054");
-      when(claimsRestService.getSubmission(submissionId))
+      when(dataClaimsRestService.getSubmission(submissionId))
           .thenReturn(Mono.just(GetSubmission200Response.builder().claims(null).build()));
 
       assertThat(
@@ -238,7 +238,7 @@ public class ImportInProgressControllerTest {
     void shouldThrowErrorWhenExceptionThrownByClaimsRestService(int statusCode) {
       // Given
       UUID submissionId = UUID.fromString("5933fc67-bac7-4f48-81ed-61c8c463f054");
-      when(claimsRestService.getSubmission(submissionId))
+      when(dataClaimsRestService.getSubmission(submissionId))
           .thenThrow(new WebClientResponseException(statusCode, "Error", null, null, null, null));
 
       assertThat(

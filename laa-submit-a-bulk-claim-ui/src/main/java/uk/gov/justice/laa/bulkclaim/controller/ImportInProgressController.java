@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.SessionAttributes;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
 import uk.gov.justice.laa.bulkclaim.exception.SubmitBulkClaimException;
-import uk.gov.justice.laa.bulkclaim.service.ClaimsRestService;
+import uk.gov.justice.laa.bulkclaim.service.claims.DataClaimsRestService;
 import uk.gov.justice.laa.claims.model.GetSubmission200Response;
 import uk.gov.justice.laa.claims.model.GetSubmission200ResponseClaimsInner;
 
@@ -27,7 +27,7 @@ import uk.gov.justice.laa.claims.model.GetSubmission200ResponseClaimsInner;
 @SessionAttributes("bulkSubmissionId")
 public class ImportInProgressController {
 
-  private final ClaimsRestService claimsRestService;
+  private final DataClaimsRestService dataClaimsRestService;
 
   /**
    * Shows the import in progress page, and refreshes every 5 seconds. Redirects if the submission
@@ -44,7 +44,7 @@ public class ImportInProgressController {
     // Check submission exists otherwise they will be stuck in a loop on this page.
     GetSubmission200Response getSubmission;
     try {
-      getSubmission = claimsRestService.getSubmission(bulkSubmissionId).block();
+      getSubmission = dataClaimsRestService.getSubmission(bulkSubmissionId).block();
     } catch (WebClientResponseException e) {
       if (e.getStatusCode().isSameCodeAs(HttpStatusCode.valueOf(404))) {
         log.debug("No submission found, will retry: %s".formatted(bulkSubmissionId.toString()));

@@ -16,7 +16,7 @@ import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import uk.gov.justice.laa.bulkclaim.dto.FileUploadForm;
 import uk.gov.justice.laa.bulkclaim.helper.ProviderHelper;
-import uk.gov.justice.laa.bulkclaim.service.ClaimsRestService;
+import uk.gov.justice.laa.bulkclaim.service.claims.DataClaimsRestService;
 import uk.gov.justice.laa.bulkclaim.validation.BulkImportFileValidator;
 import uk.gov.justice.laa.bulkclaim.validation.BulkImportFileVirusValidator;
 import uk.gov.justice.laa.claims.model.CreateBulkSubmission201Response;
@@ -32,7 +32,7 @@ public class BulkImportController {
   private final ProviderHelper providerHelper;
   private final BulkImportFileValidator bulkImportFileValidator;
   private final BulkImportFileVirusValidator bulkImportFileVirusValidator;
-  private final ClaimsRestService claimsRestService;
+  private final DataClaimsRestService dataClaimsRestService;
 
   /**
    * Renders the upload page.
@@ -94,7 +94,7 @@ public class BulkImportController {
 
     try {
       ResponseEntity<CreateBulkSubmission201Response> responseEntity =
-          claimsRestService.upload(fileUploadForm.file()).block();
+          dataClaimsRestService.upload(fileUploadForm.file()).block();
       CreateBulkSubmission201Response bulkSubmissionResponse = responseEntity.getBody();
       log.info(
           "Claims API Upload response submission UUID: {}",

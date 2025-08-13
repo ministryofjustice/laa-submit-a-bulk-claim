@@ -33,7 +33,7 @@ import reactor.core.publisher.Mono;
 import uk.gov.justice.laa.bulkclaim.config.WebMvcTestConfig;
 import uk.gov.justice.laa.bulkclaim.dto.FileUploadForm;
 import uk.gov.justice.laa.bulkclaim.helper.ProviderHelper;
-import uk.gov.justice.laa.bulkclaim.service.ClaimsRestService;
+import uk.gov.justice.laa.bulkclaim.service.claims.DataClaimsRestService;
 import uk.gov.justice.laa.bulkclaim.validation.BulkImportFileValidator;
 import uk.gov.justice.laa.bulkclaim.validation.BulkImportFileVirusValidator;
 import uk.gov.justice.laa.claims.model.CreateBulkSubmission201Response;
@@ -51,7 +51,7 @@ class BulkImportControllerTest {
   @MockitoBean private ProviderHelper providerHelper;
   @MockitoBean private BulkImportFileValidator bulkImportFileValidator;
   @MockitoBean private BulkImportFileVirusValidator bulkImportFileVirusValidator;
-  @MockitoBean private ClaimsRestService claimsRestService;
+  @MockitoBean private DataClaimsRestService dataClaimsRestService;
 
   @Nested
   @DisplayName("GET: /upload")
@@ -155,7 +155,7 @@ class BulkImportControllerTest {
           new MockMultipartFile("fileUpload", "test.csv", "text/csv", "text".getBytes());
       FileUploadForm input = new FileUploadForm(file);
 
-      when(claimsRestService.upload(any())).thenThrow(new RuntimeException("Unexpected error"));
+      when(dataClaimsRestService.upload(any())).thenThrow(new RuntimeException("Unexpected error"));
 
       mockMvc
           .perform(
@@ -174,7 +174,7 @@ class BulkImportControllerTest {
           new MockMultipartFile("fileUpload", "test.csv", "text/csv", "text".getBytes());
       FileUploadForm input = new FileUploadForm(file);
 
-      when(claimsRestService.upload(any()))
+      when(dataClaimsRestService.upload(any()))
           .thenReturn(
               Mono.just(ResponseEntity.of(Optional.of(new CreateBulkSubmission201Response()))));
       mockMvc
