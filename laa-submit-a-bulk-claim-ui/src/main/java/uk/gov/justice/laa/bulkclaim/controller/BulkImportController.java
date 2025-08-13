@@ -1,5 +1,7 @@
 package uk.gov.justice.laa.bulkclaim.controller;
 
+import static uk.gov.justice.laa.bulkclaim.config.SessionConstants.BULK_SUBMISSION_ID;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -102,7 +104,7 @@ public class BulkImportController {
           "Claims API Upload response submission UUID: {}",
           bulkSubmissionResponse.getBulkSubmissionId());
       redirectAttributes.addFlashAttribute(
-          "bulkSubmissionId", bulkSubmissionResponse.getBulkSubmissionId());
+          BULK_SUBMISSION_ID, bulkSubmissionResponse.getBulkSubmissionId());
       return "redirect:/import-in-progress";
     } catch (Exception e) {
       log.error("Failed to upload file to Claims API with message: {}", e.getMessage());

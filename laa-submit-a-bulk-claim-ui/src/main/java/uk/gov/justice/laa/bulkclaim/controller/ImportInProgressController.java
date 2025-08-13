@@ -1,5 +1,6 @@
 package uk.gov.justice.laa.bulkclaim.controller;
 
+import static uk.gov.justice.laa.bulkclaim.config.SessionConstants.BULK_SUBMISSION;
 import static uk.gov.justice.laa.bulkclaim.config.SessionConstants.BULK_SUBMISSION_ID;
 
 import java.util.List;
@@ -26,7 +27,7 @@ import uk.gov.justice.laa.claims.model.GetSubmission200ResponseClaimsInner;
 @Slf4j
 @Controller
 @RequiredArgsConstructor
-@SessionAttributes(BULK_SUBMISSION_ID)
+@SessionAttributes({BULK_SUBMISSION_ID, BULK_SUBMISSION})
 public class ImportInProgressController {
 
   private final DataClaimsRestService dataClaimsRestService;
@@ -47,9 +48,9 @@ public class ImportInProgressController {
       Model model, @ModelAttribute(BULK_SUBMISSION_ID) UUID bulkSubmissionId) {
 
     // Check submission exists otherwise they will be stuck in a loop on this page.
-    GetSubmission200Response getSubmission;
+    GetSubmission200Response bulkSubmission;
     try {
-      getSubmission = dataClaimsRestService.getSubmission(bulkSubmissionId).block();
+      bulkSubmission = dataClaimsRestService.getSubmission(bulkSubmissionId).block();
     } catch (WebClientResponseException e) {
       if (e.getStatusCode().isSameCodeAs(HttpStatusCode.valueOf(404))) {
         log.debug("No submission found, will retry: %s".formatted(bulkSubmissionId.toString()));

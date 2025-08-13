@@ -1,0 +1,23 @@
+package uk.gov.justice.laa.bulkclaim.dto.summary;
+
+import java.time.LocalDate;
+import java.util.UUID;
+
+/**
+ * Summary of a single submission.
+ *
+ * @param submissionReference unique identifier for the submission
+ * @param officeAccount account number for the office
+ * @param submissionType type of submission
+ * @param submissionDate date of submission
+ * @param totalClaims total number of claims in the submission
+ * @param totalErrors total number of claim errors in the submission
+ * @author Jamie Briggs
+ */
+public record SubmissionSummaryRow(
+    UUID submissionReference,
+    String officeAccount,
+    String submissionType,
+    LocalDate submissionDate,
+    int totalClaims,
+    int totalErrors) {}

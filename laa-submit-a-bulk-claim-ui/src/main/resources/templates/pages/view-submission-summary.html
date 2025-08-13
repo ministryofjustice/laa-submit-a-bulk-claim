@@ -1,61 +1,164 @@
 <!DOCTYPE HTML>
 <html lang="en" class="govuk-template" xmlns:th="http://www.thymeleaf.org"
-      th:replace="~{ layout/main-layout :: layout(#{importInProgress.heading},~{::main}, ~{})}">
+      th:replace="~{ layout/main-layout :: layout(${bulkClaimSummary.containsErrors()} ?
+      #{bulkClaimSummary.failed.heading} :
+      #{bulkClaimSummary.success.heading},~{::main}, ~{})}">
 <main class="govuk-main-wrapper" id="main-content">
 
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-full">
 
-      <h1 class="govuk-heading-l" id="header" th:text="#{submissionSummary.success.heading}"/>
+      <h1 class="govuk-heading-l" id="header" th:text="${bulkClaimSummary.containsErrors()} ?
+      #{bulkClaimSummary.failed.heading} :
+      #{bulkClaimSummary.success.heading}"/>
 
+      <!--Error summary-->
+      <div role="region" class="moj-alert moj-alert--warning moj-alert--with-heading"
+           th:if="${bulkClaimSummary.containsErrors()}"
+           th:aria-label="|#{common.warning}: #{bulkClaimSummary.errorsFoundModal.heading}|"
+           aria-label="warning: Some information could not be imported" data-module="moj-alert">
+        <div>
+          <svg class="moj-alert__icon" role="presentation" focusable="false"
+               xmlns="http://www.w3.org/2000/svg" viewBox="0 0 30 30" height="30" width="30">
+            <path fill-rule="evenodd" clip-rule="evenodd"
+                  d="M15 2.44922L28.75 26.1992H1.25L15 2.44922ZM13.5107 9.49579H16.4697L16.2431 17.7678H13.7461L13.5107 9.49579ZM13.1299 21.82C13.1299 21.5661 13.1787 21.3285 13.2764 21.1071C13.374 20.8793 13.5075 20.6807 13.6768 20.5114C13.8525 20.3421 14.0544 20.2087 14.2822 20.111C14.5101 20.0134 14.7542 19.9645 15.0146 19.9645C15.2686 19.9645 15.5062 20.0134 15.7275 20.111C15.9554 20.2087 16.154 20.3421 16.3232 20.5114C16.4925 20.6807 16.626 20.8793 16.7236 21.1071C16.8213 21.3285 16.8701 21.5661 16.8701 21.82C16.8701 22.0804 16.8213 22.3246 16.7236 22.5524C16.626 22.7803 16.4925 22.9789 16.3232 23.1481C16.154 23.3174 15.9554 23.4509 15.7275 23.5485C15.5062 23.6462 15.2686 23.695 15.0146 23.695C14.7542 23.695 14.5101 23.6462 14.2822 23.5485C14.0544 23.4509 13.8525 23.3174 13.6768 23.1481C13.5075 22.9789 13.374 22.7803 13.2764 22.5524C13.1787 22.3246 13.1299 22.0804 13.1299 21.82Z"
+                  fill="currentColor"/>
+          </svg>
+        </div>
+        <div class="moj-alert__content">
+          <h2 class="moj-alert__heading" th:text="#{bulkClaimSummary.errorsFoundModal.heading}"/>
+          <th:block
+              th:text="#{bulkClaimSummary.errorsFoundModal.message(${bulkClaimSummary.totalErrors()})}"/>
+        </div>
+
+        <div class="moj-alert__action">
+          <button class="moj-alert__dismiss" hidden th:text="#{common.dismiss}"/>
+        </div>
+      </div>
+
+      <!--Upload summary-->
       <table class="govuk-table" data-module="moj-sortable-table">
-        <caption class="govuk-table__caption" th:text="#{submissionSummary.summaryTable.caption}"/>
+        <caption class="govuk-table__caption" th:text="#{bulkClaimSummary.summaryTable.caption}"/>
 
         <thead class="govuk-table__head">
         <tr class="govuk-table__row">
           <th scope="col" class="govuk-table__header" aria-sort="ascending"
-            th:text="#{submissionSummary.summaryTable.submissionReference}"/>
+              th:text="#{submission.properties.submissionReference}"/>
           <th scope="col" class="govuk-table__header" aria-sort="none"
-            th:text="#{submissionSummary.summaryTable.officeAccount}"/>
+              th:text="#{submission.properties.officeAccount}"/>
           <th scope="col" class="govuk-table__header" aria-sort="none"
-            th:text="#{submissionSummary.summaryTable.submissionType}"/>
+              th:text="#{submission.properties.submissionType}"/>
           <th scope="col" class="govuk-table__header" aria-sort="none"
-            th:text="#{submissionSummary.summaryTable.submissionDate}"/>
+              th:text="#{submission.properties.submissionDate}"/>
           <th scope="col" class="govuk-table__header" aria-sort="none"
-            th:text="#{submissionSummary.summaryTable.totalClaims}"/>
+              th:text="#{submission.properties.totalClaims}"/>
           <th scope="col" class="govuk-table__header" aria-sort="none"
-            th:text="#{submissionSummary.summaryTable.totalErrors}"/>
+              th:text="#{submission.properties.totalErrors}"/>
         </tr>
         </thead>
 
         <tbody class="govuk-table__body">
 
-        <tr class="govuk-table__row">
+        <tr class="govuk-table__row" th:each="submission, idx : ${bulkClaimSummary.submissions()}"
+            ,
+            th:id="|submission-${idx.index}|">
 
-          <td class="govuk-table__cell">
-            <a href="#" class="govuk-link">69f57fc4-ed9b-4b8e-b964-5c2f902132e1</a>
+          <td class="govuk-table__cell"
+              th:id="|submission-reference-${idx.index}|"
+              th:data-sort-value="${submission.submissionReference()}">
+            <a href="#" class="govuk-link" th:text="${submission.submissionReference()}"/>
           </td>
-          <td class="govuk-table__cell" data-sort-value="A1B2C3">A1B2C3</td>
-          <td class="govuk-table__cell" data-sort-value="Crime lower">Crime lower</td>
-          <td class="govuk-table__cell" data-sort-value="July 2025">July 2025</td>
-          <td class="govuk-table__cell" data-sort-value="123">123</td>
-          <td class="govuk-table__cell" data-sort-value="0">0</td>
+          <td class="govuk-table__cell"
+              th:id="|office-account-${idx.index}|"
+              th:data-sort-value="${submission.officeAccount()}"
+              th:text="${submission.officeAccount()}"/>
+          <td class="govuk-table__cell"
+              th:id="|submission-type-${idx.index}|"
+              th:data-sort-value="${submission.submissionType()}"
+              th:text="${submission.submissionType()}"/>
+          <td class="govuk-table__cell"
+              th:id="|submission-date-${idx.index}|"
+              th:data-sort-value="${#temporals.format(submission.submissionDate(), 'MMM YYYY')}"
+              th:text="${#temporals.format(submission.submissionDate(), 'MMM YYYY')}"/>
+          <td class="govuk-table__cell"
+              th:id="|total-claims-${idx.index}|"
+              th:data-sort-value="${submission.totalClaims()}"
+              th:text="${submission.totalClaims()}"/>
+          <td class="govuk-table__cell"
+              th:id="|total-errors-${idx.index}|"
+              th:data-sort-value="${submission.totalErrors()}"
+              th:text="${submission.totalErrors()}"/>
         </tr>
 
+        </tbody>
+      </table>
+
+      <!--Claim errors-->
+      <table class="govuk-table" th:if="${bulkClaimSummary.containsErrors()}"
+             data-module="moj-sortable-table">
+
+        <caption class="govuk-table__caption" th:text="#{bulkClaimSummary.claimErrors.caption}"/>
+
+        <thead class="govuk-table__head">
+        <tr class="govuk-table__row">
+          <th scope="col" class="govuk-table__header" aria-sort="none"
+              th:text="#{submission.properties.officeAccount}"/>
+          <th scope="col" class="govuk-table__header" aria-sort="none"
+              th:text="#{submission.properties.submissionType}"/>
+          <th scope="col" class="govuk-table__header" aria-sort="none"
+              th:text="#{submission.claim.properties.ufn}"/>
+          <th scope="col" class="govuk-table__header" aria-sort="none"
+              th:text="#{submission.claim.properties.ucn}"/>
+          <th scope="col" class="govuk-table__header" aria-sort="none"
+              th:text="#{submission.claim.properties.client}"/>
+          <th scope="col" class="govuk-table__header" aria-sort="none"
+              th:text="#{submission.claim.properties.errorDescription}"/>
+        </tr>
+        </thead>
+
+        <tbody class="govuk-table__body">
+
+        <tr class="govuk-table__row" th:each="error, idx : ${bulkClaimSummary.claimErrors()}"
+            th:id="|claim-error-${idx.index}|">
+          <td class="govuk-table__cell"
+              th:id="|error-office-account-${idx.index}|"
+              th:data-sort-value="${error.parentSubmission().officeAccount()}"
+              th:text="${error.parentSubmission().officeAccount()}"/>
+          <td class="govuk-table__cell"
+              th:id="|error-submission-type-${idx.index}|"
+              th:data-sort-value="${error.parentSubmission().submissionType()}"
+              th:text="${error.parentSubmission().submissionType()}"/>
+          <td class="govuk-table__cell"
+              th:id="|error-ufn|"
+              th:data-sort-value="${error.ufn()}"
+              th:text="${error.ufn()}"/>
+          <td class="govuk-table__cell"
+              th:id="|error-ucn-${idx.index}|"
+              th:data-sort-value="${error.ucn()}"
+              th:text="${error.ucn()}"/>
+          <td class="govuk-table__cell"
+              th:id="|error-client-${idx.index}|"
+              th:data-sort-value="${error.client()}"
+              th:text="${error.client()}"/>
+          <td class="govuk-table__cell"
+              th:id="|error-description-${idx.index}|"
+              th:data-sort-value="${error.errorDescription()}"
+              th:text="${error.errorDescription()}"/>
+        </tr>
         </tbody>
       </table>
 
       <div class="govuk-button-group">
         <a th:href="@{/}" role="button" draggable="false" class="govuk-button govuk-button--start"
            data-module="govuk-button">
-          <th:block th:text="#{submissionSummary.primaryLink}"/>
+          <th:block th:text="#{bulkClaimSummary.primaryLink}"/>
           <svg class="govuk-button__start-icon" xmlns="http://www.w3.org/2000/svg" width="17.5"
                height="19" viewBox="0 0 33 40" aria-hidden="true" focusable="false">
             <path fill="currentColor" d="M0 0h13l20 20-20 20H0l20-20z"/>
           </svg>
         </a>
         <a class="govuk-link" href="#"
-          th:text="#{submissionSummary.searchLink}"/>
+           th:text="#{bulkClaimSummary.searchLink}"/>
       </div>
 
     </div>

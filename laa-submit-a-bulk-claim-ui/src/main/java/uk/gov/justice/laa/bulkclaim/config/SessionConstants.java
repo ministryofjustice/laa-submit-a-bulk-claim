@@ -9,5 +9,6 @@ public final class SessionConstants {
 
   private SessionConstants() {}
 
-  public static final String BULK_SUBMISSION_ID = "bulkSubmissionId";
+  public static final String BULK_SUBMISSION_ID = "bulkClaimSubmissionId";
+  public static final String BULK_SUBMISSION = "bulkClaimSubmission";
 }
