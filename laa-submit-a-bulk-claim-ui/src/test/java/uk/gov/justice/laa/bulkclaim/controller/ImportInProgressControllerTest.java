@@ -11,12 +11,16 @@ import java.util.UUID;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.context.annotation.Import;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.assertj.MockMvcTester;
+import org.springframework.web.reactive.function.client.WebClientResponseException;
 import reactor.core.publisher.Mono;
 import uk.gov.justice.laa.bulkclaim.config.WebMvcTestConfig;
 import uk.gov.justice.laa.bulkclaim.exception.SubmitBulkClaimException;
@@ -119,6 +123,25 @@ public class ImportInProgressControllerTest {
     }
 
     @Test
+    @DisplayName("Should return expected result when submission not found")
+    void shouldReturnExpectedResultWhenSubmissionNotFound() {
+      // Given
+      UUID submissionId = UUID.fromString("5933fc67-bac7-4f48-81ed-61c8c463f054");
+      when(claimsRestService.getSubmission(submissionId))
+          .thenThrow(
+              new WebClientResponseException(
+                  HttpStatusCode.valueOf(404), "Submission not found", null, null, null, null));
+
+      assertThat(
+              mockMvc.perform(
+                  get("/import-in-progress")
+                      .with(oidcLogin().oidcUser(ControllerTestHelper.getOidcUser()))
+                      .sessionAttr("bulkSubmissionId", submissionId.toString())))
+          .hasStatusOk()
+          .hasViewName("pages/upload-in-progress");
+    }
+
+    @Test
     @DisplayName("Should redirect when only claim has imported")
     void shouldRedirectWhenOnlyClaimHasImported() {
       // Given
@@ -207,6 +230,25 @@ public class ImportInProgressControllerTest {
           .failure()
           .hasCauseInstanceOf(SubmitBulkClaimException.class)
           .hasMessageContaining("No claims found for bulk submission: " + submissionId);
+    }
+
+    @ParameterizedTest
+    @ValueSource(ints = {400, 401, 403, 500, 503})
+    @DisplayName("Should throw error when exception thrown by claims rest service")
+    void shouldThrowErrorWhenExceptionThrownByClaimsRestService(int statusCode) {
+      // Given
+      UUID submissionId = UUID.fromString("5933fc67-bac7-4f48-81ed-61c8c463f054");
+      when(claimsRestService.getSubmission(submissionId))
+          .thenThrow(new WebClientResponseException(statusCode, "Error", null, null, null, null));
+
+      assertThat(
+              mockMvc.perform(
+                  get("/import-in-progress")
+                      .with(oidcLogin().oidcUser(ControllerTestHelper.getOidcUser()))
+                      .sessionAttr("bulkSubmissionId", submissionId.toString())))
+          .failure()
+          .hasCauseInstanceOf(SubmitBulkClaimException.class)
+          .hasMessageContaining("Claims API returned an error");
     }
   }
 }
