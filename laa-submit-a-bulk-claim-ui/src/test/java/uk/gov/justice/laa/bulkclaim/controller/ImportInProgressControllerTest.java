@@ -126,6 +126,25 @@ public class ImportInProgressControllerTest {
     void shouldReturnExpectedResultWhenSubmissionNotFound() {
       // Given
       UUID submissionId = UUID.fromString("5933fc67-bac7-4f48-81ed-61c8c463f054");
+      when(claimsRestService.getSubmission(submissionId))
+          .thenThrow(
+              new WebClientResponseException(
+                  HttpStatusCode.valueOf(404), "Submission not found", null, null, null, null));
+
+      assertThat(
+              mockMvc.perform(
+                  get("/import-in-progress")
+                      .with(oidcLogin().oidcUser(ControllerTestHelper.getOidcUser()))
+                      .sessionAttr("bulkSubmissionId", submissionId.toString())))
+          .hasStatusOk()
+          .hasViewName("pages/upload-in-progress");
+    }
+
+    @Test
+    @DisplayName("Should return expected result when submission not found")
+    void shouldReturnExpectedResultWhenSubmissionNotFound() {
+      // Given
+      UUID submissionId = UUID.fromString("5933fc67-bac7-4f48-81ed-61c8c463f054");
       when(dataClaimsRestService.getSubmission(submissionId))
           .thenThrow(
               new WebClientResponseException(
