@@ -29,6 +29,9 @@ public class ImportInProgressController {
 
   private final DataClaimsRestService dataClaimsRestService;
 
+  private final List<String> completedStatuses =
+      List.of("VALIDATION_SUCCEEDED", "VALIDATION_FAILED");
+
   /**
    * Shows the import in progress page, and refreshes every 5 seconds. Redirects if the submission
    * is ready.
@@ -64,7 +67,7 @@ public class ImportInProgressController {
     boolean fullyImported =
         claims.stream()
             .map(GetSubmission200ResponseClaimsInner::getStatus)
-            .allMatch("READY"::equals);
+            .allMatch(completedStatuses::contains);
     if (fullyImported) {
       // TODO: Redirect to imported page CCMSPUI-788
       return "redirect:/";

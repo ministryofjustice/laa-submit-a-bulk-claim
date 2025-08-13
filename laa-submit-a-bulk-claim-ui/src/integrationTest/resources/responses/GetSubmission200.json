@@ -13,11 +13,11 @@
   "claims": [
     {
       "claim_id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
-      "status": "SUBMITTED"
+      "status": "READY_FOR_VALIDATION"
     },
     {
       "claim_id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
-      "status": "READY"
+      "status": "VALIDATION_SUCCEEDED"
     }
   ],
   "matter_starts": [

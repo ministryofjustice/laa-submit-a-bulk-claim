@@ -41,9 +41,10 @@ public class ImportInProgressControllerTest {
   @DisplayName("GET: /import-in-progress")
   class ImportInProgressTests {
 
-    @Test
+    @ParameterizedTest
+    @ValueSource(strings = {"CREATED", "READY_FOR_VALIDATION"})
     @DisplayName("Should return expected result when single claim not ready")
-    void shouldReturnExpectedResult() {
+    void shouldReturnExpectedResult(String status) {
       // Given
       UUID submissionId = UUID.fromString("5933fc67-bac7-4f48-81ed-61c8c463f054");
       when(dataClaimsRestService.getSubmission(submissionId))
@@ -52,9 +53,7 @@ public class ImportInProgressControllerTest {
                   GetSubmission200Response.builder()
                       .claims(
                           Collections.singletonList(
-                              GetSubmission200ResponseClaimsInner.builder()
-                                  .status("SUBMITTED")
-                                  .build()))
+                              GetSubmission200ResponseClaimsInner.builder().status(status).build()))
                       .build()));
 
       assertThat(
@@ -66,9 +65,10 @@ public class ImportInProgressControllerTest {
           .hasViewName("pages/upload-in-progress");
     }
 
-    @Test
+    @ParameterizedTest
+    @ValueSource(strings = {"CREATED", "READY_FOR_VALIDATION"})
     @DisplayName("Should return expected result when multiple claims not ready")
-    void shouldReturnExpectedResultWhenMultipleClaimsNotReady() {
+    void shouldReturnExpectedResultWhenMultipleClaimsNotReady(String status) {
       // Given
       UUID submissionId = UUID.fromString("5933fc67-bac7-4f48-81ed-61c8c463f054");
       when(dataClaimsRestService.getSubmission(submissionId))
@@ -77,12 +77,8 @@ public class ImportInProgressControllerTest {
                   GetSubmission200Response.builder()
                       .claims(
                           Arrays.asList(
-                              GetSubmission200ResponseClaimsInner.builder()
-                                  .status("SUBMITTED")
-                                  .build(),
-                              GetSubmission200ResponseClaimsInner.builder()
-                                  .status("SUBMITTED")
-                                  .build()))
+                              GetSubmission200ResponseClaimsInner.builder().status(status).build(),
+                              GetSubmission200ResponseClaimsInner.builder().status(status).build()))
                       .build()));
 
       assertThat(
@@ -94,9 +90,10 @@ public class ImportInProgressControllerTest {
           .hasViewName("pages/upload-in-progress");
     }
 
-    @Test
+    @ParameterizedTest
+    @ValueSource(strings = {"CREATED", "READY_FOR_VALIDATION"})
     @DisplayName("Should return expected result when partial claims not ready")
-    void shouldReturnExpectedResultWhenPartialClaimsNotReady() {
+    void shouldReturnExpectedResultWhenPartialClaimsNotReady(String status) {
       // Given
       UUID submissionId = UUID.fromString("5933fc67-bac7-4f48-81ed-61c8c463f054");
       when(dataClaimsRestService.getSubmission(submissionId))
@@ -106,11 +103,9 @@ public class ImportInProgressControllerTest {
                       .claims(
                           Arrays.asList(
                               GetSubmission200ResponseClaimsInner.builder()
-                                  .status("IMPORTED")
+                                  .status("READY_FOR_VALIDATION")
                                   .build(),
-                              GetSubmission200ResponseClaimsInner.builder()
-                                  .status("SUBMITTED")
-                                  .build()))
+                              GetSubmission200ResponseClaimsInner.builder().status(status).build()))
                       .build()));
 
       assertThat(
@@ -141,9 +136,10 @@ public class ImportInProgressControllerTest {
           .hasViewName("pages/upload-in-progress");
     }
 
-    @Test
+    @ParameterizedTest
+    @ValueSource(strings = {"VALIDATION_SUCCEEDED", "VALIDATION_FAILED"})
     @DisplayName("Should redirect when only claim has imported")
-    void shouldRedirectWhenOnlyClaimHasImported() {
+    void shouldRedirectWhenOnlyClaimHasImported(String status) {
       // Given
       UUID submissionId = UUID.fromString("5933fc67-bac7-4f48-81ed-61c8c463f054");
       when(dataClaimsRestService.getSubmission(submissionId))
@@ -152,9 +148,7 @@ public class ImportInProgressControllerTest {
                   GetSubmission200Response.builder()
                       .claims(
                           Collections.singletonList(
-                              GetSubmission200ResponseClaimsInner.builder()
-                                  .status("READY")
-                                  .build()))
+                              GetSubmission200ResponseClaimsInner.builder().status(status).build()))
                       .build()));
 
       assertThat(
@@ -167,9 +161,10 @@ public class ImportInProgressControllerTest {
           .hasRedirectedUrl("/");
     }
 
-    @Test
+    @ParameterizedTest
+    @ValueSource(strings = {"VALIDATION_SUCCEEDED", "VALIDATION_FAILED"})
     @DisplayName("Should redirect when multiple claims has imported")
-    void shouldRedirectWhenMultipleClaimsHasImported() {
+    void shouldRedirectWhenMultipleClaimsHasImported(String status) {
       // Given
       UUID submissionId = UUID.fromString("5933fc67-bac7-4f48-81ed-61c8c463f054");
       when(dataClaimsRestService.getSubmission(submissionId))
@@ -178,10 +173,8 @@ public class ImportInProgressControllerTest {
                   GetSubmission200Response.builder()
                       .claims(
                           Arrays.asList(
-                              GetSubmission200ResponseClaimsInner.builder().status("READY").build(),
-                              GetSubmission200ResponseClaimsInner.builder()
-                                  .status("READY")
-                                  .build()))
+                              GetSubmission200ResponseClaimsInner.builder().status(status).build(),
+                              GetSubmission200ResponseClaimsInner.builder().status(status).build()))
                       .build()));
 
       assertThat(
