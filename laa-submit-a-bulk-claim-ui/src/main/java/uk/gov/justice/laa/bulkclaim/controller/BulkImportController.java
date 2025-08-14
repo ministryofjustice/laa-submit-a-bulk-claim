@@ -14,6 +14,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.support.SessionStatus;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import uk.gov.justice.laa.bulkclaim.dto.FileUploadForm;
@@ -46,7 +47,11 @@ public class BulkImportController {
    * @return the upload page
    */
   @GetMapping("/")
-  public String showUploadPage(Model model, @AuthenticationPrincipal OidcUser oidcUser) {
+  public String showUploadPage(Model model, @AuthenticationPrincipal OidcUser oidcUser,
+      SessionStatus sessionStatus) {
+
+    // Clear the session due to new submission
+    sessionStatus.setComplete();
 
     // Always ensure there's a form object in the model if not already present
     if (!model.containsAttribute(FILE_UPLOAD_FORM_MODEL_ATTR)) {

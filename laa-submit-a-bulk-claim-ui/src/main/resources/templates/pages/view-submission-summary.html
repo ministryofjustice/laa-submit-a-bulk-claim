@@ -78,8 +78,8 @@
               th:text="${#temporals.format(submission.submissionDate(), 'MMM YYYY')}"/>
           <td class="govuk-table__cell"
               th:id="|submission-area-of-law-${idx.index}|"
-              th:data-sort-value="${submission.submissionType()}"
-              th:text="${submission.submissionType()}"/>
+              th:data-sort-value="${submission.areaOfLaw()}"
+              th:text="${submission.areaOfLaw()}"/>
           <td class="govuk-table__cell"
               th:id="|total-claims-${idx.index}|"
               th:data-sort-value="${submission.totalClaims()}"

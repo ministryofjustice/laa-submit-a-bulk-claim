@@ -8,7 +8,7 @@ import java.util.UUID;
  *
  * @param submissionReference unique identifier for the submission
  * @param officeAccount account number for the office
- * @param submissionType type of submission
+ * @param areaOfLaw type of submission
  * @param submissionDate date of submission
  * @param totalClaims total number of claims in the submission
  * @param totalErrors total number of claim errors in the submission
@@ -17,7 +17,7 @@ import java.util.UUID;
 public record SubmissionSummaryRow(
     UUID submissionReference,
     String officeAccount,
-    String submissionType,
+    String areaOfLaw,
     LocalDate submissionDate,
     int totalClaims,
     int totalErrors) {}
