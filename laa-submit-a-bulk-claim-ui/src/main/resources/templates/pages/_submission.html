@@ -24,15 +24,7 @@
           </div>
           <div class="govuk-summary-list__row">
             <dt class="govuk-summary-list__key">
-              Submission value
-            </dt>
-            <dd class="govuk-summary-list__value">
-              £5432.00
-            </dd>
-          </div>
-          <div class="govuk-summary-list__row">
-            <dt class="govuk-summary-list__key">
-              Submission month
+              Submission period
             </dt>
             <dd class="govuk-summary-list__value">
               July 2025
@@ -44,6 +36,14 @@
             </dt>
             <dd class="govuk-summary-list__value">
               C1B1C1
+            </dd>
+          </div>
+          <div class="govuk-summary-list__row">
+            <dt class="govuk-summary-list__key">
+              Submission value
+            </dt>
+            <dd class="govuk-summary-list__value">
+              £5432.00
             </dd>
           </div>
           <div class="govuk-summary-list__row">
@@ -103,7 +103,7 @@
             <td class="govuk-table__cell">£1000.00</td>
           </tr>
           <tr class="govuk-table__row">
-            <th scope="row" class="govuk-table__header">Additional costs</th>
+            <th scope="row" class="govuk-table__header">Additional payments/costs</th>
             <td class="govuk-table__cell">£1100.00</td>
           </tr>
           <tr class="govuk-table__row">
@@ -111,7 +111,7 @@
             <td class="govuk-table__cell">£2000.00</td>
           </tr>
           <tr class="govuk-table__row">
-            <th scope="row" class="govuk-table__header">Total</th>
+            <th scope="row" class="govuk-table__header">Submission value</th>
             <td class="govuk-table__cell">£4100.00</td>
           </tr>
           </tbody>
@@ -119,61 +119,66 @@
       </div>
       <div class="govuk-grid-column-full">
 
-        <table class="govuk-table" data-module="moj-sortable-table">
+        <div class="moj-scrollable-pane">
+          <table class="govuk-table" data-module="moj-sortable-table">
 
-          <caption class="govuk-table__caption govuk-table__caption--m">All claims</caption>
+            <caption class="govuk-table__caption govuk-table__caption--m">All claims</caption>
 
-          <thead class="govuk-table__head">
-          <tr class="govuk-table__row">
+            <thead class="govuk-table__head">
+            <tr class="govuk-table__row">
 
-            <th scope="col" class="govuk-table__header" aria-sort="none">No.</th>
-            <th scope="col" class="govuk-table__header" aria-sort="none">UFN</th>
-            <th scope="col" class="govuk-table__header" aria-sort="none">UCN</th>
-            <th scope="col" class="govuk-table__header" aria-sort="none">Client</th>
-            <th scope="col" class="govuk-table__header" aria-sort="none">Category</th>
-            <th scope="col" class="govuk-table__header" aria-sort="none">Matter</th>
-            <th scope="col" class="govuk-table__header" aria-sort="none">Concluded/ claimed</th>
-            <th scope="col" class="govuk-table__header" aria-sort="none">Fee type</th>
-            <th scope="col" class="govuk-table__header" aria-sort="none">Claimed</th>
+              <th scope="col" class="govuk-table__header" aria-sort="none">No.</th>
+              <th scope="col" class="govuk-table__header" aria-sort="none">UFN</th>
+              <th scope="col" class="govuk-table__header" aria-sort="none">UCN</th>
+              <th scope="col" class="govuk-table__header" aria-sort="none">Client</th>
+              <th scope="col" class="govuk-table__header" aria-sort="none">Category</th>
+              <th scope="col" class="govuk-table__header" aria-sort="none">Matter</th>
+              <th scope="col" class="govuk-table__header" aria-sort="none">Concluded/ claimed</th>
+              <th scope="col" class="govuk-table__header" aria-sort="none">Fee type</th>
+              <th scope="col" class="govuk-table__header" aria-sort="none">Fee code</th>
+              <th scope="col" class="govuk-table__header" aria-sort="none">Claim value</th>
 
-          </tr>
-          </thead>
+            </tr>
+            </thead>
 
-          <tbody class="govuk-table__body">
+            <tbody class="govuk-table__body">
 
-          <tr class="govuk-table__row">
+            <tr class="govuk-table__row">
 
-            <td class="govuk-table__cell" data-sort-value="1">1</td>
-            <td class="govuk-table__cell" data-sort-value="010113">010113</td>
-            <td class="govuk-table__cell" data-sort-value="29384">29384</td>
-            <td class="govuk-table__cell" data-sort-value="Giordano">Giordano</td>
-            <td class="govuk-table__cell" data-sort-value="Family">Family</td>
-            <td class="govuk-table__cell" data-sort-value="FAMD:FRES">FAMD:FRES</td>
-            <td class="govuk-table__cell" data-sort-value="18/3/2025">18/3/2025</td>
-            <td class="govuk-table__cell" data-sort-value="Escape">Escape</td>
-            <td class="govuk-table__cell" data-sort-value="£234.56">£234.56</td>
+              <td class="govuk-table__cell" data-sort-value="1">1</td>
+              <td class="govuk-table__cell" data-sort-value="010113">010113</td>
+              <td class="govuk-table__cell" data-sort-value="29384">29384</td>
+              <td class="govuk-table__cell" data-sort-value="Giordano">Giordano</td>
+              <td class="govuk-table__cell" data-sort-value="Family">Family</td>
+              <td class="govuk-table__cell" data-sort-value="FAMD:FRES">FAMD:FRES</td>
+              <td class="govuk-table__cell" data-sort-value="18/3/2025">18/3/2025</td>
+              <td class="govuk-table__cell" data-sort-value="Escape">Escape</td>
+              <td class="govuk-table__cell" data-sort-value="432EC">432EC</td>
+              <td class="govuk-table__cell" data-sort-value="£234.56">£234.56</td>
 
-          </tr>
+            </tr>
 
-          <tr class="govuk-table__row">
+            <tr class="govuk-table__row">
 
-            <td class="govuk-table__cell" data-sort-value="2">2</td>
-            <td class="govuk-table__cell" data-sort-value="100323/098">100323/098</td>
-            <td class="govuk-table__cell" data-sort-value="29384">29384</td>
-            <td class="govuk-table__cell" data-sort-value="Amoto">Amoto</td>
-            <td class="govuk-table__cell" data-sort-value="Immigration and Asylum">Immigration and
-              Asylum
-            </td>
-            <td class="govuk-table__cell" data-sort-value="IAXL:IUAS">IAXL:IUAS</td>
-            <td class="govuk-table__cell" data-sort-value="14/3/2025">14/3/2025</td>
-            <td class="govuk-table__cell" data-sort-value="Fixed">Fixed</td>
-            <td class="govuk-table__cell" data-sort-value="£56.00">£56.00</td>
+              <td class="govuk-table__cell" data-sort-value="2">2</td>
+              <td class="govuk-table__cell" data-sort-value="100323/098">100323/098</td>
+              <td class="govuk-table__cell" data-sort-value="29384">29384</td>
+              <td class="govuk-table__cell" data-sort-value="Amoto">Amoto</td>
+              <td class="govuk-table__cell" data-sort-value="Immigration and Asylum">Immigration and
+                Asylum
+              </td>
+              <td class="govuk-table__cell" data-sort-value="IAXL:IUAS">IAXL:IUAS</td>
+              <td class="govuk-table__cell" data-sort-value="14/3/2025">14/3/2025</td>
+              <td class="govuk-table__cell" data-sort-value="Fixed">Fixed</td>
+              <td class="govuk-table__cell" data-sort-value="123AB">123AB</td>
+              <td class="govuk-table__cell" data-sort-value="£56.00">£56.00</td>
 
-          </tr>
+            </tr>
 
 
-          </tbody>
-        </table>
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
 </main>
