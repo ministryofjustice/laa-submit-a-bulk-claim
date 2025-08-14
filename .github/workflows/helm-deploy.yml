@@ -44,6 +44,10 @@ jobs:
         run: |
           yq eval-all "( .appVersion = \"${{ inputs.image_tag }}\" )" -i helm-chart/Chart.yaml
 
+      - name: Show helm chart
+        run: |
+          cat helm-chart/Chart.yaml
+
       - name: Install or upgrade helm charts
         id: helm-install
         run: |
