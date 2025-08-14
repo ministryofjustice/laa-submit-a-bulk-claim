@@ -11,11 +11,9 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
+import static uk.gov.justice.laa.bulkclaim.controller.ControllerTestHelper.getOidcUser;
 
-import java.time.Instant;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.Optional;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -24,12 +22,8 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.mock.web.MockMultipartFile;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.oauth2.core.oidc.OidcIdToken;
-import org.springframework.security.oauth2.core.oidc.OidcUserInfo;
-import org.springframework.security.oauth2.core.oidc.user.DefaultOidcUser;
-import org.springframework.security.oauth2.core.oidc.user.OidcUser;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.ui.Model;
@@ -39,7 +33,7 @@ import reactor.core.publisher.Mono;
 import uk.gov.justice.laa.bulkclaim.config.WebMvcTestConfig;
 import uk.gov.justice.laa.bulkclaim.dto.FileUploadForm;
 import uk.gov.justice.laa.bulkclaim.helper.ProviderHelper;
-import uk.gov.justice.laa.bulkclaim.service.ClaimsRestService;
+import uk.gov.justice.laa.bulkclaim.service.claims.DataClaimsRestService;
 import uk.gov.justice.laa.bulkclaim.validation.BulkImportFileValidator;
 import uk.gov.justice.laa.bulkclaim.validation.BulkImportFileVirusValidator;
 import uk.gov.justice.laa.claims.model.CreateBulkSubmission201Response;
@@ -57,20 +51,7 @@ class BulkImportControllerTest {
   @MockitoBean private ProviderHelper providerHelper;
   @MockitoBean private BulkImportFileValidator bulkImportFileValidator;
   @MockitoBean private BulkImportFileVirusValidator bulkImportFileVirusValidator;
-  @MockitoBean private ClaimsRestService claimsRestService;
-
-  private OidcUser getOidcUser() {
-    Map<String, Object> claims = new HashMap<>();
-    claims.put("sub", "1234567890");
-    claims.put("email", "test@example.com");
-
-    OidcIdToken oidcIdToken =
-        new OidcIdToken("token123", Instant.now(), Instant.now().plusSeconds(60), claims);
-    OidcUserInfo oidcUserInfo = new OidcUserInfo(claims);
-
-    return new DefaultOidcUser(
-        List.of(new SimpleGrantedAuthority("ROLE_USER")), oidcIdToken, oidcUserInfo, "email");
-  }
+  @MockitoBean private DataClaimsRestService dataClaimsRestService;
 
   @Nested
   @DisplayName("GET: /upload")
@@ -80,7 +61,7 @@ class BulkImportControllerTest {
     @DisplayName("Should return expected view")
     void shouldReturnExpectedView() throws Exception {
       mockMvc
-          .perform(get("/upload").with(oidcLogin().oidcUser(getOidcUser())))
+          .perform(get("/").with(oidcLogin().oidcUser(getOidcUser())))
           .andExpect(status().isOk())
           .andExpect(view().name("pages/upload"));
     }
@@ -93,7 +74,7 @@ class BulkImportControllerTest {
           .populateProviders(any(Model.class), eq(TEST_USER));
 
       mockMvc
-          .perform(get("/upload").with(oidcLogin().oidcUser(getOidcUser())))
+          .perform(get("/").with(oidcLogin().oidcUser(getOidcUser())))
           .andExpect(status().isOk())
           .andExpect(view().name("pages/upload-forbidden"));
     }
@@ -106,7 +87,7 @@ class BulkImportControllerTest {
           .populateProviders(any(Model.class), eq(TEST_USER));
 
       mockMvc
-          .perform(get("/upload").with(oidcLogin().oidcUser(getOidcUser())))
+          .perform(get("/").with(oidcLogin().oidcUser(getOidcUser())))
           .andExpect(status().isOk())
           .andExpect(view().name("error"));
     }
@@ -138,7 +119,7 @@ class BulkImportControllerTest {
                   .with(csrf())
                   .with(oidcLogin().oidcUser(getOidcUser())))
           .andExpect(status().is3xxRedirection())
-          .andExpect(view().name("redirect:/upload"));
+          .andExpect(view().name("redirect:/"));
     }
 
     @Test
@@ -164,7 +145,7 @@ class BulkImportControllerTest {
                   .with(csrf())
                   .with(oidcLogin().oidcUser(getOidcUser())))
           .andExpect(status().is3xxRedirection())
-          .andExpect(view().name("redirect:/upload"));
+          .andExpect(view().name("redirect:/"));
     }
 
     @Test
@@ -174,7 +155,7 @@ class BulkImportControllerTest {
           new MockMultipartFile("fileUpload", "test.csv", "text/csv", "text".getBytes());
       FileUploadForm input = new FileUploadForm(file);
 
-      when(claimsRestService.upload(any())).thenThrow(new RuntimeException("Unexpected error"));
+      when(dataClaimsRestService.upload(any())).thenThrow(new RuntimeException("Unexpected error"));
 
       mockMvc
           .perform(
@@ -183,7 +164,7 @@ class BulkImportControllerTest {
                   .with(csrf())
                   .with(oidcLogin().oidcUser(getOidcUser())))
           .andExpect(status().is3xxRedirection())
-          .andExpect(view().name("redirect:/upload"));
+          .andExpect(view().name("redirect:/"));
     }
 
     @Test
@@ -193,16 +174,17 @@ class BulkImportControllerTest {
           new MockMultipartFile("fileUpload", "test.csv", "text/csv", "text".getBytes());
       FileUploadForm input = new FileUploadForm(file);
 
-      when(claimsRestService.upload(any()))
-          .thenReturn(Mono.just(new CreateBulkSubmission201Response()));
+      when(dataClaimsRestService.upload(any()))
+          .thenReturn(
+              Mono.just(ResponseEntity.of(Optional.of(new CreateBulkSubmission201Response()))));
       mockMvc
           .perform(
               post("/upload")
                   .sessionAttr("fileUploadForm", input)
                   .with(csrf())
                   .with(oidcLogin().oidcUser(getOidcUser())))
-          .andExpect(status().isOk())
-          .andExpect(view().name("pages/submission"));
+          .andExpect(status().is3xxRedirection())
+          .andExpect(view().name("redirect:/import-in-progress"));
     }
   }
 }

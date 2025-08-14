@@ -1,0 +1,42 @@
+{
+  "request": {
+    "method": "GET",
+    "urlPath": "/api/v0/submissions/0561d67b-30ed-412e-8231-f6296a53538d"
+  },
+  "scenarioName": "Submission status alternator",
+  "requiredScenarioState": "Started",
+  "newScenarioState": "InProgress",
+  "response": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json"
+    },
+    "jsonBody": {
+      "submission": {
+        "submission_id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+        "bulk_submission_id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+        "office_account_number": "string",
+        "submission_period": "string",
+        "area_of_law": "string",
+        "schedule_number": "string",
+        "previous_submission_id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+        "is_nil_submission": true,
+        "number_of_claims": 0
+      },
+      "claims": [
+        {
+          "claim_id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+          "status": "CREATED"
+        },
+        {
+          "claim_id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+          "status": "READY_FOR_VALIDATION"
+        }
+      ],
+      "matter_starts": [
+        "3fa85f64-5717-4562-b3fc-2c963f66afa6"
+      ]
+    }
+  }
+}
+
