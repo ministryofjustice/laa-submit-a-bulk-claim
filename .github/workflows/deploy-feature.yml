@@ -60,14 +60,14 @@ jobs:
       ecr_role_to_assume: ${{ secrets.ECR_ROLE_TO_ASSUME }}
 
   deploy-development:
-    needs: [ ecr-publish-image ]
+    needs: [ ecr-publish-image, define-feature-version ]
     permissions:
       id-token: write
       contents: read
     uses: ./.github/workflows/helm-deploy.yml
     with:
       environment: development
-      deployment_name: development
+      deployment_name: ${{ needs.define-feature-version.outputs.feature_version }}
       image_tag: ${{ needs.ecr-publish-image.outputs.published_image_version }}
     secrets: inherit
 
