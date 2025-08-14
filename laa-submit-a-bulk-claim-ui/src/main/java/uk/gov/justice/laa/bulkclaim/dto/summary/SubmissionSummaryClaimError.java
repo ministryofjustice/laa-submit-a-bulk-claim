@@ -10,7 +10,4 @@ package uk.gov.justice.laa.bulkclaim.dto.summary;
  * @author Jamie Briggs
  */
 public record SubmissionSummaryClaimError(
-    String ufn,
-    String ucn,
-    String client,
-    String errorDescription) {}
+    String ufn, String ucn, String client, String errorDescription) {}

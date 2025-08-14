@@ -133,11 +133,7 @@ class SubmissionControllerTest {
     List<SubmissionSummaryClaimError> errors =
         List.of(
             new SubmissionSummaryClaimError(
-                summaryRow,
-                "UFN1",
-                "UCN2",
-                "Client",
-                "This is an error which is found on your claim!"));
+                "UFN1", "UCN2", "Client", "This is an error which is found on your claim!"));
     return new BulkClaimSummary(Collections.singletonList(summaryRow), errors);
   }
 }

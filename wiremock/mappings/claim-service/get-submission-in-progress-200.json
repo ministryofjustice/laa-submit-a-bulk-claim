@@ -25,11 +25,11 @@
       },
       "claims": [
         {
-          "claim_id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+          "claim_id": "6850db96-fbb7-4859-a5a5-fc111cd205b2",
           "status": "VALIDATION_SUCCEEDED"
         },
         {
-          "claim_id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+          "claim_id": "6850db96-fbb7-4859-a5a5-fc111cd205b2",
           "status": "CREATED"
         }
       ],
