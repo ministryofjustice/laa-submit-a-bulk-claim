@@ -21,9 +21,7 @@ import uk.gov.justice.laa.bulkclaim.validation.BulkImportFileValidator;
 import uk.gov.justice.laa.bulkclaim.validation.BulkImportFileVirusValidator;
 import uk.gov.justice.laa.claims.model.CreateBulkSubmission201Response;
 
-/**
- * Controller for handling the bulk upload requests.
- */
+/** Controller for handling the bulk upload requests. */
 @Slf4j
 @RequiredArgsConstructor
 @Controller
@@ -39,7 +37,7 @@ public class BulkImportController {
   /**
    * Renders the upload page.
    *
-   * @param model    the model to be populated with data
+   * @param model the model to be populated with data
    * @param oidcUser the authenticated user principal
    * @return the upload page
    */
@@ -72,8 +70,8 @@ public class BulkImportController {
    * Performs a bulk upload for the given file.
    *
    * @param fileUploadForm the file to be uploaded
-   * @param model          the model to be populated with data
-   * @param oidcUser       the authenticated user principal
+   * @param model the model to be populated with data
+   * @param oidcUser the authenticated user principal
    * @return the submission page
    */
   @PostMapping("/upload")
@@ -110,7 +108,6 @@ public class BulkImportController {
       return showErrorOnUpload(fileUploadForm, bindingResult, redirectAttributes);
     }
   }
-
 
   /**
    * Redirects back to the upload page with the errors.
