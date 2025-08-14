@@ -23,11 +23,17 @@ spec:
         fsGroup: {{ .Values.securityContext.fsGroup }}
         runAsUser: {{ .Values.securityContext.runAsUser }}
         runAsGroup: {{ .Values.securityContext.runAsGroup }}
+        runAsNonRoot: true
       {{- end }}
       containers:
         - name: {{ .Release.Name }}-{{ .Chart.Name }}
           securityContext:
             allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
+            seccompProfile:
+              type: RuntimeDefault
           {{ if .Values.image }}
           image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
           {{ else }}
