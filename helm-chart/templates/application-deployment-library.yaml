@@ -256,7 +256,7 @@ spec:
       port: {{ .Values.global.ports.port }}
       targetPort: {{ .Values.global.ports.targetPort }}
     {{- end }}
-    {{ if .Values.management.enabled }}
+    {{ if .Values.global.management.enabled }}
     - protocol: {{ .Values.global.management.protocol }}
       name: {{ .Chart.Name }}-management
       port: {{ .Values.global.management.port }}
