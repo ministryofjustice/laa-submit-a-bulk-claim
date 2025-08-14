@@ -1,0 +1,185 @@
+<!DOCTYPE HTML>
+<html lang="en" class="govuk-template" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{ layout/main-layout :: layout(~{::title},~{::main},~{})}">
+<title>Submit a bulk claim - Submission Results</title>
+<main class="govuk-main-wrapper" id="main-content">
+  <div class="govuk-width-container">
+    <div class="govuk-grid-row">
+      <div class="govuk-grid-column-full">
+        <strong class="govuk-tag govuk-tag--pink">
+          Submitted
+        </strong>
+        <h1 class="govuk-heading-l govuk-!-padding-top-4">View submission</h1>
+      </div>
+
+      <div class="govuk-grid-column-full">
+        <dl class="govuk-summary-list govuk-summary-list--no-border">
+          <div class="govuk-summary-list__row">
+            <dt class="govuk-summary-list__key">
+              Submission reference
+            </dt>
+            <dd class="govuk-summary-list__value">
+              <span class="govuk-!-font-weight-bold">578633c1-6244-4dfd-a738-5b45afee0717</span>
+            </dd>
+          </div>
+          <div class="govuk-summary-list__row">
+            <dt class="govuk-summary-list__key">
+              Submission period
+            </dt>
+            <dd class="govuk-summary-list__value">
+              July 2025
+            </dd>
+          </div>
+          <div class="govuk-summary-list__row">
+            <dt class="govuk-summary-list__key">
+              Account
+            </dt>
+            <dd class="govuk-summary-list__value">
+              C1B1C1
+            </dd>
+          </div>
+          <div class="govuk-summary-list__row">
+            <dt class="govuk-summary-list__key">
+              Submission value
+            </dt>
+            <dd class="govuk-summary-list__value">
+              £5432.00
+            </dd>
+          </div>
+          <div class="govuk-summary-list__row">
+            <dt class="govuk-summary-list__key">
+              Submission type
+            </dt>
+            <dd class="govuk-summary-list__value">
+              Legal help
+            </dd>
+          </div>
+          <div class="govuk-summary-list__row">
+            <dt class="govuk-summary-list__key">
+              Submitted
+            </dt>
+            <dd class="govuk-summary-list__value">
+              31/4/2025
+            </dd>
+          </div>
+
+        </dl>
+
+        <nav class="moj-sub-navigation" aria-label="Sub navigation">
+
+          <ul class="moj-sub-navigation__list">
+            <li class="moj-sub-navigation__item">
+              <a class="moj-sub-navigation__link" aria-current="page" href="#1">Claims</a>
+            </li>
+
+            <li class="moj-sub-navigation__item">
+              <a class="moj-sub-navigation__link" href="#2">Matter starts</a>
+            </li>
+
+          </ul>
+
+        </nav>
+      </div>
+
+
+      <div class="govuk-grid-column-two-thirds">
+        <h2 class="govuk-heading-l">Claims</h2>
+        <table class="govuk-table">
+          <caption class="govuk-table__caption govuk-table__caption--m">Submission costs summary
+          </caption>
+          <thead class="govuk-table__head">
+          <tr class="govuk-table__row">
+            <th scope="col" class="govuk-table__header"></th>
+            <th scope="col" class="govuk-table__header">Claimed</th>
+          </tr>
+          </thead>
+          <tbody class="govuk-table__body">
+          <tr class="govuk-table__row">
+            <th scope="row" class="govuk-table__header">Profit costs</th>
+            <td class="govuk-table__cell"></td>
+          </tr>
+          <tr class="govuk-table__row">
+            <th scope="row" class="govuk-table__header">Disbursements (including VAT)</th>
+            <td class="govuk-table__cell">£1000.00</td>
+          </tr>
+          <tr class="govuk-table__row">
+            <th scope="row" class="govuk-table__header">Additional payments/costs</th>
+            <td class="govuk-table__cell">£1100.00</td>
+          </tr>
+          <tr class="govuk-table__row">
+            <th scope="row" class="govuk-table__header">Fixed fee</th>
+            <td class="govuk-table__cell">£2000.00</td>
+          </tr>
+          <tr class="govuk-table__row">
+            <th scope="row" class="govuk-table__header">Submission value</th>
+            <td class="govuk-table__cell">£4100.00</td>
+          </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="govuk-grid-column-full">
+
+        <div class="moj-scrollable-pane">
+          <table class="govuk-table" data-module="moj-sortable-table">
+
+            <caption class="govuk-table__caption govuk-table__caption--m">All claims</caption>
+
+            <thead class="govuk-table__head">
+            <tr class="govuk-table__row">
+
+              <th scope="col" class="govuk-table__header" aria-sort="none">No.</th>
+              <th scope="col" class="govuk-table__header" aria-sort="none">UFN</th>
+              <th scope="col" class="govuk-table__header" aria-sort="none">UCN</th>
+              <th scope="col" class="govuk-table__header" aria-sort="none">Client</th>
+              <th scope="col" class="govuk-table__header" aria-sort="none">Category</th>
+              <th scope="col" class="govuk-table__header" aria-sort="none">Matter</th>
+              <th scope="col" class="govuk-table__header" aria-sort="none">Concluded/ claimed</th>
+              <th scope="col" class="govuk-table__header" aria-sort="none">Fee type</th>
+              <th scope="col" class="govuk-table__header" aria-sort="none">Fee code</th>
+              <th scope="col" class="govuk-table__header" aria-sort="none">Claim value</th>
+
+            </tr>
+            </thead>
+
+            <tbody class="govuk-table__body">
+
+            <tr class="govuk-table__row">
+
+              <td class="govuk-table__cell" data-sort-value="1">1</td>
+              <td class="govuk-table__cell" data-sort-value="010113">010113</td>
+              <td class="govuk-table__cell" data-sort-value="29384">29384</td>
+              <td class="govuk-table__cell" data-sort-value="Giordano">Giordano</td>
+              <td class="govuk-table__cell" data-sort-value="Family">Family</td>
+              <td class="govuk-table__cell" data-sort-value="FAMD:FRES">FAMD:FRES</td>
+              <td class="govuk-table__cell" data-sort-value="18/3/2025">18/3/2025</td>
+              <td class="govuk-table__cell" data-sort-value="Escape">Escape</td>
+              <td class="govuk-table__cell" data-sort-value="432EC">432EC</td>
+              <td class="govuk-table__cell" data-sort-value="£234.56">£234.56</td>
+
+            </tr>
+
+            <tr class="govuk-table__row">
+
+              <td class="govuk-table__cell" data-sort-value="2">2</td>
+              <td class="govuk-table__cell" data-sort-value="100323/098">100323/098</td>
+              <td class="govuk-table__cell" data-sort-value="29384">29384</td>
+              <td class="govuk-table__cell" data-sort-value="Amoto">Amoto</td>
+              <td class="govuk-table__cell" data-sort-value="Immigration and Asylum">Immigration and
+                Asylum
+              </td>
+              <td class="govuk-table__cell" data-sort-value="IAXL:IUAS">IAXL:IUAS</td>
+              <td class="govuk-table__cell" data-sort-value="14/3/2025">14/3/2025</td>
+              <td class="govuk-table__cell" data-sort-value="Fixed">Fixed</td>
+              <td class="govuk-table__cell" data-sort-value="123AB">123AB</td>
+              <td class="govuk-table__cell" data-sort-value="£56.00">£56.00</td>
+
+            </tr>
+
+
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+</main>
+</html>

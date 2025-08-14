@@ -18,6 +18,8 @@ dependencies {
      */
     // Upgrade to fix CVE-2025-48924
     implementation 'org.apache.commons:commons-lang3:3.18.0'
+    // Upgrade to fix CVE-2025-55163
+    implementation 'io.netty:netty-codec-http2:4.1.124.Final'
 
     implementation 'org.springframework.boot:spring-boot-starter-cache'
     implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
