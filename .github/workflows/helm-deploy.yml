@@ -49,7 +49,6 @@ jobs:
           cat helm-chart/Chart.yaml
 
       - name: Helm chart template
-        id: helm-install
         run: |
           echo "Generating template for Helm release '${{ inputs.deployment_name }}'..."
           helm template \
