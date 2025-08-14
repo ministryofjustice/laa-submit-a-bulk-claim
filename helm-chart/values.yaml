@@ -10,6 +10,7 @@ global:
     targetPort: 8082
 
   management:
+    enabled: true
     protocol: TCP
     port: 8081
     targetPort: 8081
