@@ -28,53 +28,55 @@ class BulkClaimSummaryMapperTest {
   @DisplayName("Should map submission summary row")
   void shouldMapSubmissionSummaryRow() {
     // Given
-    GetSubmission200Response submission200Response = GetSubmission200Response.builder()
-        .submission(SubmissionFields.builder()
-            .submissionId(UUID.fromString("ee92c4ac-0ff9-4896-8bbe-c58fa04206e3"))
-            .officeAccountNumber("1234567890")
-            .areaOfLaw("Civil Law")
-            .submissionPeriod("2020-05")
-            .numberOfClaims(123)
-            .build())
-        .build();
+    GetSubmission200Response submission200Response =
+        GetSubmission200Response.builder()
+            .submission(
+                SubmissionFields.builder()
+                    .submissionId(UUID.fromString("ee92c4ac-0ff9-4896-8bbe-c58fa04206e3"))
+                    .officeAccountNumber("1234567890")
+                    .areaOfLaw("Civil Law")
+                    .submissionPeriod("2020-05")
+                    .numberOfClaims(123)
+                    .build())
+            .build();
     // When
     SubmissionSummaryRow result = mapper.toSubmissionSummaryRow(submission200Response);
     // Then
-    SoftAssertions.assertSoftly(softly -> {
-      softly.assertThat(result.submissionReference())
-          .isEqualTo(UUID.fromString("ee92c4ac-0ff9-4896-8bbe-c58fa04206e3"));
-      softly.assertThat(result.officeAccount())
-          .isEqualTo("1234567890");
-      softly.assertThat(result.areaOfLaw())
-          .isEqualTo("Civil Law");
-      softly.assertThat(result.submissionDate())
-          .isEqualTo("2020-05-01");
-      softly.assertThat(result.totalClaims())
-          .isEqualTo(123);
-      // TODO: Update once updated the specification
-      softly.assertThat(result.totalErrors()).isEqualTo(100);
-    });
+    SoftAssertions.assertSoftly(
+        softly -> {
+          softly
+              .assertThat(result.submissionReference())
+              .isEqualTo(UUID.fromString("ee92c4ac-0ff9-4896-8bbe-c58fa04206e3"));
+          softly.assertThat(result.officeAccount()).isEqualTo("1234567890");
+          softly.assertThat(result.areaOfLaw()).isEqualTo("Civil Law");
+          softly.assertThat(result.submissionDate()).isEqualTo("2020-05-01");
+          softly.assertThat(result.totalClaims()).isEqualTo(123);
+          // TODO: Update once updated the specification
+          softly.assertThat(result.totalErrors()).isEqualTo(100);
+        });
   }
 
   @Test
   @DisplayName("Should map submission summary claim errors")
   void shouldMapSubmissionSummaryClaimErrors() {
     // Given
-    ClaimFields claimFields = ClaimFields.builder()
-        .uniqueFileNumber("F123")
-        .uniqueClientNumber("C123")
-        .clientForename("First")
-        .clientSurname("Last")
-        .build();
+    ClaimFields claimFields =
+        ClaimFields.builder()
+            .uniqueFileNumber("F123")
+            .uniqueClientNumber("C123")
+            .clientForename("First")
+            .clientSurname("Last")
+            .build();
     // When
     SubmissionSummaryClaimError result = mapper.toSubmissionSummaryClaimError(claimFields);
     // Then
-    SoftAssertions.assertSoftly(softly -> {
-      softly.assertThat(result.ufn()).isEqualTo("F123");
-      softly.assertThat(result.ucn()).isEqualTo("C123");
-      softly.assertThat(result.client()).isEqualTo("First Last");
-      // TODO: Update once updated the specification
-      softly.assertThat(result.errorDescription()).isEqualTo("Error description");
-    });
+    SoftAssertions.assertSoftly(
+        softly -> {
+          softly.assertThat(result.ufn()).isEqualTo("F123");
+          softly.assertThat(result.ucn()).isEqualTo("C123");
+          softly.assertThat(result.client()).isEqualTo("First Last");
+          // TODO: Update once updated the specification
+          softly.assertThat(result.errorDescription()).isEqualTo("Error description");
+        });
   }
 }

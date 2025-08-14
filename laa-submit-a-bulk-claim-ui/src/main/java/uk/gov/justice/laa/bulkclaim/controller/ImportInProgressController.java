@@ -19,6 +19,7 @@ import uk.gov.justice.laa.bulkclaim.exception.SubmitBulkClaimException;
 import uk.gov.justice.laa.bulkclaim.service.claims.DataClaimsRestService;
 import uk.gov.justice.laa.claims.model.GetSubmission200Response;
 import uk.gov.justice.laa.claims.model.GetSubmission200ResponseClaimsInner;
+
 /**
  * Controller for handling the import in progress page after a user has submitted a bulk claim.
  *
@@ -62,23 +63,22 @@ public class ImportInProgressController {
 
     // Check submission. If the response from data claims API is 200, these fields
     //  should be not null.
-    Assert.notNull(getSubmission, "Submission is null");
-    Assert.notNull(getSubmission.getSubmission(), "Submission fields is null");
+    Assert.notNull(bulkSubmission, "Submission is null");
+    Assert.notNull(bulkSubmission.getSubmission(), "Submission fields is null");
 
     // Check for NIL submission
-    if (Boolean.TRUE.equals(getSubmission.getSubmission().getIsNilSubmission())) {
-      // TODO: Redirect to imported page CCMSPUI-788
+    if (Boolean.TRUE.equals(bulkSubmission.getSubmission().getIsNilSubmission())) {
       log.info("NIL submission found, will redirect: %s".formatted(bulkSubmissionId.toString()));
-      return "redirect:/";
+      return "redirect:/view-submission-summary";
     }
 
     // Check submission has claims otherwise they will be stuck in a loop on this page.
     Assert.notEmpty(
-        getSubmission.getClaims(),
+        bulkSubmission.getClaims(),
         "No claims found for bulk submission: %s".formatted(bulkSubmissionId.toString()));
 
     boolean fullyImported =
-        getSubmission.getClaims().stream()
+        bulkSubmission.getClaims().stream()
             .map(GetSubmission200ResponseClaimsInner::getStatus)
             .allMatch(completedStatuses::contains);
     if (fullyImported) {

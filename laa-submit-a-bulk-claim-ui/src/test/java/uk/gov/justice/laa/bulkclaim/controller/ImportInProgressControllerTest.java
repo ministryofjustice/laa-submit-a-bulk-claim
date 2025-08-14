@@ -89,7 +89,7 @@ public class ImportInProgressControllerTest {
               mockMvc.perform(
                   get("/import-in-progress")
                       .with(oidcLogin().oidcUser(ControllerTestHelper.getOidcUser()))
-                      .sessionAttr("bulkSubmissionId", submissionId.toString())))
+                      .sessionAttr("bulkClaimSubmissionId", submissionId.toString())))
           .hasStatusOk()
           .hasViewName("pages/upload-in-progress");
     }
@@ -112,25 +112,6 @@ public class ImportInProgressControllerTest {
                                   .build(),
                               GetSubmission200ResponseClaimsInner.builder().status(status).build()))
                       .build()));
-
-      assertThat(
-              mockMvc.perform(
-                  get("/import-in-progress")
-                      .with(oidcLogin().oidcUser(ControllerTestHelper.getOidcUser()))
-                      .sessionAttr(BULK_SUBMISSION_ID, submissionId.toString())))
-          .hasStatusOk()
-          .hasViewName("pages/upload-in-progress");
-    }
-
-    @Test
-    @DisplayName("Should return expected result when submission not found")
-    void shouldReturnExpectedResultWhenSubmissionNotFound() {
-      // Given
-      UUID submissionId = UUID.fromString("5933fc67-bac7-4f48-81ed-61c8c463f054");
-      when(claimsRestService.getSubmission(submissionId))
-          .thenThrow(
-              new WebClientResponseException(
-                  HttpStatusCode.valueOf(404), "Submission not found", null, null, null, null));
 
       assertThat(
               mockMvc.perform(
@@ -180,10 +161,9 @@ public class ImportInProgressControllerTest {
               mockMvc.perform(
                   get("/import-in-progress")
                       .with(oidcLogin().oidcUser(ControllerTestHelper.getOidcUser()))
-                      .sessionAttr("bulkSubmissionId", submissionId.toString())))
+                      .sessionAttr("bulkClaimSubmissionId", submissionId.toString())))
           .hasStatus3xxRedirection()
-          // TODO: Redirect to imported page CCMSPUI-788
-          .hasRedirectedUrl("/");
+          .hasRedirectedUrl("/view-submission-summary");
     }
 
     @ParameterizedTest
@@ -209,7 +189,6 @@ public class ImportInProgressControllerTest {
                       .with(oidcLogin().oidcUser(ControllerTestHelper.getOidcUser()))
                       .sessionAttr(BULK_SUBMISSION_ID, submissionId.toString())))
           .hasStatus3xxRedirection()
-          // TODO: Redirect to imported page CCMSPUI-788
           .hasRedirectedUrl("/view-submission-summary");
     }
 
@@ -231,7 +210,6 @@ public class ImportInProgressControllerTest {
                       .with(oidcLogin().oidcUser(ControllerTestHelper.getOidcUser()))
                       .sessionAttr(BULK_SUBMISSION_ID, submissionId.toString())))
           .hasStatus3xxRedirection()
-          // TODO: Redirect to imported page CCMSPUI-788
           .hasRedirectedUrl("/view-submission-summary");
     }
 
@@ -246,7 +224,7 @@ public class ImportInProgressControllerTest {
               mockMvc.perform(
                   get("/import-in-progress")
                       .with(oidcLogin().oidcUser(ControllerTestHelper.getOidcUser()))
-                      .sessionAttr("bulkSubmissionId", submissionId.toString())))
+                      .sessionAttr("bulkClaimSubmissionId", submissionId.toString())))
           .failure()
           .hasCauseInstanceOf(IllegalArgumentException.class)
           .hasMessageContaining("Submission is null");
@@ -289,7 +267,7 @@ public class ImportInProgressControllerTest {
               mockMvc.perform(
                   get("/import-in-progress")
                       .with(oidcLogin().oidcUser(ControllerTestHelper.getOidcUser()))
-                      .sessionAttr("bulkSubmissionId", submissionId.toString())))
+                      .sessionAttr("bulkClaimSubmissionId", submissionId.toString())))
           .failure()
           .hasCauseInstanceOf(IllegalArgumentException.class)
           .hasMessageContaining("No claims found for bulk submission: " + submissionId);

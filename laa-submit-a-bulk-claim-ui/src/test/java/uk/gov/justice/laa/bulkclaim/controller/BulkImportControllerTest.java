@@ -14,7 +14,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static uk.gov.justice.laa.bulkclaim.controller.ControllerTestHelper.getOidcUser;
 
 import java.util.Optional;
-import java.util.Optional;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -47,17 +46,12 @@ class BulkImportControllerTest {
   private static final String PROVIDER = "123";
   private static final String TEST_USER = "test@example.com";
 
-  @Autowired
-  private MockMvc mockMvc;
+  @Autowired private MockMvc mockMvc;
 
-  @MockitoBean
-  private ProviderHelper providerHelper;
-  @MockitoBean
-  private BulkImportFileValidator bulkImportFileValidator;
-  @MockitoBean
-  private BulkImportFileVirusValidator bulkImportFileVirusValidator;
-  @MockitoBean
-  private DataClaimsRestService dataClaimsRestService;
+  @MockitoBean private ProviderHelper providerHelper;
+  @MockitoBean private BulkImportFileValidator bulkImportFileValidator;
+  @MockitoBean private BulkImportFileVirusValidator bulkImportFileVirusValidator;
+  @MockitoBean private DataClaimsRestService dataClaimsRestService;
 
   @Nested
   @DisplayName("GET: /upload")
@@ -111,11 +105,11 @@ class BulkImportControllerTest {
       FileUploadForm input = new FileUploadForm(file);
 
       doAnswer(
-          invocationOnMock -> {
-            Errors errors = invocationOnMock.getArgument(1);
-            errors.rejectValue("file", "bulkImport.validation.empty");
-            return null;
-          })
+              invocationOnMock -> {
+                Errors errors = invocationOnMock.getArgument(1);
+                errors.rejectValue("file", "bulkImport.validation.empty");
+                return null;
+              })
           .when(bulkImportFileValidator)
           .validate(any(FileUploadForm.class), any(Errors.class));
       mockMvc
@@ -136,11 +130,11 @@ class BulkImportControllerTest {
       FileUploadForm input = new FileUploadForm(file);
 
       doAnswer(
-          invocationOnMock -> {
-            Errors errors = invocationOnMock.getArgument(1);
-            errors.rejectValue("file", "bulkImport.validation.empty");
-            return null;
-          })
+              invocationOnMock -> {
+                Errors errors = invocationOnMock.getArgument(1);
+                errors.rejectValue("file", "bulkImport.validation.empty");
+                return null;
+              })
           .when(bulkImportFileVirusValidator)
           .validate(any(FileUploadForm.class), any(Errors.class));
 

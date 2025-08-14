@@ -37,14 +37,15 @@ public class SubmissionSummaryBuilder {
 
     // Get only failed claims, and map to claim error object using data claims API to get further
     //  information regarding the claim.
-    List<SubmissionSummaryClaimError> claimErrors = submissionResponse.getClaims().stream()
-        .filter(x -> "VALIDATION_FAILED".equals(x.getStatus()))
-        .map(x -> dataClaimsRestService.getSubmissionClaim(
-            submissionResponse.getSubmission()
-                .getSubmissionId(), x.getClaimId()))
-        .map(x -> bulkClaimSummaryMapper.toSubmissionSummaryClaimError(x.block()))
-        .toList();
+    List<SubmissionSummaryClaimError> claimErrors =
+        submissionResponse.getClaims().stream()
+            .filter(x -> "VALIDATION_FAILED".equals(x.getStatus()))
+            .map(
+                x ->
+                    dataClaimsRestService.getSubmissionClaim(
+                        submissionResponse.getSubmission().getSubmissionId(), x.getClaimId()))
+            .map(x -> bulkClaimSummaryMapper.toSubmissionSummaryClaimError(x.block()))
+            .toList();
     return new BulkClaimSummary(Collections.singletonList(summaryRow), claimErrors);
   }
-
 }
