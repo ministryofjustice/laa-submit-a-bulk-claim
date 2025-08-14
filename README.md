@@ -85,7 +85,6 @@ Ensure cwa-api.url in your local application yaml is set to 'http://localhost:80
 ### Local Application Properties
 ```
 export CWA_API_URL=http://localhost:8090
-export CWA_API_TIMEOUT=20
 ```
 
 ### Run

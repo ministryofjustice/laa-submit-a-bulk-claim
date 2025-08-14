@@ -26,6 +26,8 @@ spec:
       {{- end }}
       containers:
         - name: {{ .Release.Name }}-{{ .Chart.Name }}
+          securityContext:
+            allowPrivilegeEscalation: false
           {{ if .Values.image }}
           image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
           {{ else }}

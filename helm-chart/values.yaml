@@ -52,12 +52,6 @@ env:
         name: laa-submit-a-bulk-claim-secrets
         key: CWA_API_URL
 
-  - name: CWA_API_TIMEOUT
-    valueFrom:
-      secretKeyRef:
-        name: laa-submit-a-bulk-claim-secrets
-        key: CWA_API_TIMEOUT
-
   - name: SILAS_CLIENT_ID
     valueFrom:
       secretKeyRef:
@@ -111,6 +105,11 @@ env:
       secretKeyRef:
         name: laa-submit-a-bulk-claim-secrets
         key: UPLOAD_MAX_FILE_SIZE
+
+securityContext:
+  fsGroup: 1000
+  runAsUser: 1000
+  runAsGroup: 1000
 
 ingress:
   externalRoute:
