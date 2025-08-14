@@ -1,5 +1,3 @@
-{{- define "laa.application-deployment-library" -}}
----
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -258,4 +256,3 @@ spec:
     {{- end }}
   selector:
     app.kubernetes.io/name: {{ .Release.Name }}-{{ .Chart.Name }}
-{{- end -}}
