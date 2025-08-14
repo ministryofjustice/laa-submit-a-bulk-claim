@@ -11,7 +11,6 @@ import java.util.UUID;
  * @param areaOfLaw type of submission
  * @param submissionDate date of submission
  * @param totalClaims total number of claims in the submission
- * @param totalErrors total number of claim errors in the submission
  * @author Jamie Briggs
  */
 public record SubmissionSummaryRow(
@@ -19,5 +18,4 @@ public record SubmissionSummaryRow(
     String officeAccount,
     String areaOfLaw,
     LocalDate submissionDate,
-    int totalClaims,
-    int totalErrors) {}
+    int totalClaims) {}

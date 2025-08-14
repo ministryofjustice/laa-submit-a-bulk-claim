@@ -85,9 +85,10 @@
               th:data-sort-value="${submission.totalClaims()}"
               th:text="${submission.totalClaims()}"/>
           <td class="govuk-table__cell"
+              th:with="totalErrors=${bulkClaimSummary.totalErrors(submission.submissionReference())}"
               th:id="|total-errors-${idx.index}|"
-              th:data-sort-value="${submission.totalErrors()}"
-              th:text="${submission.totalErrors()}"/>
+              th:data-sort-value="${totalErrors}"
+              th:text="${totalErrors}"/>
         </tr>
 
         </tbody>

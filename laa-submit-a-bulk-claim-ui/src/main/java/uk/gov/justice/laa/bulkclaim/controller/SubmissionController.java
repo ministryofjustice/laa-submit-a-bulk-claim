@@ -46,7 +46,6 @@ public class SubmissionController {
     // Add bulk submission to session if it does not exist
     if (!model.containsAttribute(BULK_SUBMISSION)) {
       try {
-
         model.addAttribute(
             BULK_SUBMISSION, dataClaimsRestService.getSubmission(bulkSubmissionId).block());
       } catch (WebClientResponseException e) {
@@ -56,7 +55,7 @@ public class SubmissionController {
 
     // Map submission summary to model
     BulkClaimSummary bulkClaimSummary =
-        submissionSummaryBuilder.mapSubmissionSummary(
+        submissionSummaryBuilder.build(
             (GetSubmission200Response) model.getAttribute(BULK_SUBMISSION));
     model.addAttribute("bulkClaimSummary", bulkClaimSummary);
     return "pages/view-submission-summary";

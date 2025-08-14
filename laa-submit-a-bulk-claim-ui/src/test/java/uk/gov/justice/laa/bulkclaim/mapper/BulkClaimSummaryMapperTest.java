@@ -9,7 +9,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.justice.laa.bulkclaim.dto.summary.SubmissionSummaryClaimError;
 import uk.gov.justice.laa.bulkclaim.dto.summary.SubmissionSummaryRow;
-import uk.gov.justice.laa.claims.model.ClaimFields;
+import uk.gov.justice.laa.claims.model.ClaimValidationError;
 import uk.gov.justice.laa.claims.model.GetSubmission200Response;
 import uk.gov.justice.laa.claims.model.SubmissionFields;
 
@@ -51,8 +51,6 @@ class BulkClaimSummaryMapperTest {
           softly.assertThat(result.areaOfLaw()).isEqualTo("Civil Law");
           softly.assertThat(result.submissionDate()).isEqualTo("2020-05-01");
           softly.assertThat(result.totalClaims()).isEqualTo(123);
-          // TODO: Update once updated the specification
-          softly.assertThat(result.totalErrors()).isEqualTo(100);
         });
   }
 
@@ -60,23 +58,27 @@ class BulkClaimSummaryMapperTest {
   @DisplayName("Should map submission summary claim errors")
   void shouldMapSubmissionSummaryClaimErrors() {
     // Given
-    ClaimFields claimFields =
-        ClaimFields.builder()
+    ClaimValidationError claimValidationError =
+        ClaimValidationError.builder()
             .uniqueFileNumber("F123")
             .uniqueClientNumber("C123")
-            .clientForename("First")
-            .clientSurname("Last")
+            .client("First Last")
+            .errorDescription("This is an error!")
             .build();
     // When
-    SubmissionSummaryClaimError result = mapper.toSubmissionSummaryClaimError(claimFields);
+    SubmissionSummaryClaimError result =
+        mapper.toSubmissionSummaryClaimError(
+            UUID.fromString("ee92c4ac-0ff9-4896-8bbe-c58fa04206e3"), claimValidationError);
     // Then
     SoftAssertions.assertSoftly(
         softly -> {
+          softly
+              .assertThat(result.submissionReference())
+              .isEqualTo(UUID.fromString("ee92c4ac-0ff9-4896-8bbe-c58fa04206e3"));
           softly.assertThat(result.ufn()).isEqualTo("F123");
           softly.assertThat(result.ucn()).isEqualTo("C123");
           softly.assertThat(result.client()).isEqualTo("First Last");
-          // TODO: Update once updated the specification
-          softly.assertThat(result.errorDescription()).isEqualTo("Error description");
+          softly.assertThat(result.errorDescription()).isEqualTo("This is an error!");
         });
   }
 }

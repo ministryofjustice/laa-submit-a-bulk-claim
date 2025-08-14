@@ -1,6 +1,8 @@
 package uk.gov.justice.laa.bulkclaim.dto.summary;
 
 import java.util.List;
+import java.util.Objects;
+import java.util.UUID;
 
 /**
  * Summary of submissions and claim errors. Used in the submission summary page between two tables.
@@ -15,7 +17,29 @@ public record BulkClaimSummary(
     return claimErrors != null && !claimErrors.isEmpty();
   }
 
+  /**
+   * Returns the total number of errors for the bulk claim.
+   *
+   * @return the total number of errors for the bulk claim
+   */
   public int totalErrors() {
     return claimErrors != null ? claimErrors.size() : 0;
+  }
+
+  /**
+   * Returns the number of errors for the given submission reference.
+   *
+   * @param submissionReference the submission reference
+   * @return the number of errors for the given submission reference
+   */
+  public int totalErrors(UUID submissionReference) {
+    if (claimErrors == null) {
+      return 0;
+    }
+
+    return Math.toIntExact(
+        claimErrors.stream()
+            .filter(x -> Objects.equals(submissionReference, x.submissionReference()))
+            .count());
   }
 }

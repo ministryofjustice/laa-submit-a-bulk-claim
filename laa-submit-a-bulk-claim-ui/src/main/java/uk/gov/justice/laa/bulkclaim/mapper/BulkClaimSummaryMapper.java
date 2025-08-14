@@ -1,12 +1,14 @@
 package uk.gov.justice.laa.bulkclaim.mapper;
 
 import java.time.LocalDate;
+import java.util.UUID;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Named;
 import uk.gov.justice.laa.bulkclaim.dto.summary.SubmissionSummaryClaimError;
 import uk.gov.justice.laa.bulkclaim.dto.summary.SubmissionSummaryRow;
 import uk.gov.justice.laa.claims.model.ClaimFields;
+import uk.gov.justice.laa.claims.model.ClaimValidationError;
 import uk.gov.justice.laa.claims.model.GetSubmission200Response;
 
 /**
@@ -32,7 +34,6 @@ public interface BulkClaimSummaryMapper {
       source = "submission.submissionPeriod",
       qualifiedByName = "toSubmissionPeriod")
   @Mapping(target = "totalClaims", source = "submission.numberOfClaims")
-  @Mapping(target = "totalErrors", constant = "100")
   SubmissionSummaryRow toSubmissionSummaryRow(GetSubmission200Response submissionResponse);
 
   /**
@@ -49,19 +50,15 @@ public interface BulkClaimSummaryMapper {
   }
 
   /**
-   * Maps a {@link ClaimFields} to a {@link SubmissionSummaryClaimError}.
+   * Maps a {@link ClaimFields} to a {@link SubmissionSummaryClaimError}, whilst also including a
+   * submission reference.
    *
+   * @param submissionReference The submission reference.
    * @param claimFields The claim fields to map.
    * @return The mapped {@link SubmissionSummaryClaimError}.
    */
-  @Mapping(target = "ufn", source = "uniqueFileNumber")
-  @Mapping(target = "ucn", source = "uniqueClientNumber")
-  @Mapping(
-      target = "client",
-      expression =
-          """
-        java(claimFields.getClientForename() + \" \" + claimFields.getClientSurname())
-      """)
-  @Mapping(target = "errorDescription", constant = "Error description")
-  SubmissionSummaryClaimError toSubmissionSummaryClaimError(ClaimFields claimFields);
+  @Mapping(target = "ufn", source = "claimFields.uniqueFileNumber")
+  @Mapping(target = "ucn", source = "claimFields.uniqueClientNumber")
+  SubmissionSummaryClaimError toSubmissionSummaryClaimError(
+      UUID submissionReference, ClaimValidationError claimFields);
 }

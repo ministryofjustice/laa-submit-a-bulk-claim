@@ -60,8 +60,7 @@ class SubmissionControllerTest {
           new GetSubmission200Response()
               .submission(SubmissionFields.builder().submissionId(bulkSubmissionId).build());
       BulkClaimSummary bulkClaimSummary = getTestSubmissionSummary(bulkSubmissionId);
-      when(submissionSummaryBuilder.mapSubmissionSummary(bulkSubmission))
-          .thenReturn(bulkClaimSummary);
+      when(submissionSummaryBuilder.build(bulkSubmission)).thenReturn(bulkClaimSummary);
       // When / Then
       assertThat(
               mockMvc.perform(
@@ -74,7 +73,7 @@ class SubmissionControllerTest {
           .model()
           .hasFieldOrProperty(BULK_SUBMISSION)
           .hasFieldOrProperty(BULK_SUBMISSION_ID);
-      verify(submissionSummaryBuilder, times(1)).mapSubmissionSummary(bulkSubmission);
+      verify(submissionSummaryBuilder, times(1)).build(bulkSubmission);
       verify(dataClaimsRestService, times(0)).getSubmission(bulkSubmissionId);
     }
 
@@ -89,8 +88,7 @@ class SubmissionControllerTest {
       BulkClaimSummary bulkClaimSummary = getTestSubmissionSummary(bulkSubmissionId);
       when(dataClaimsRestService.getSubmission(bulkSubmissionId))
           .thenReturn(Mono.just(bulkSubmission));
-      when(submissionSummaryBuilder.mapSubmissionSummary(bulkSubmission))
-          .thenReturn(bulkClaimSummary);
+      when(submissionSummaryBuilder.build(bulkSubmission)).thenReturn(bulkClaimSummary);
       // When / Then
       assertThat(
               mockMvc.perform(
@@ -102,7 +100,7 @@ class SubmissionControllerTest {
           .model()
           .hasFieldOrProperty(BULK_SUBMISSION)
           .hasFieldOrProperty(BULK_SUBMISSION_ID);
-      verify(submissionSummaryBuilder, times(1)).mapSubmissionSummary(bulkSubmission);
+      verify(submissionSummaryBuilder, times(1)).build(bulkSubmission);
       verify(dataClaimsRestService, times(1)).getSubmission(bulkSubmissionId);
     }
   }
@@ -129,11 +127,15 @@ class SubmissionControllerTest {
   private static @NotNull BulkClaimSummary getTestSubmissionSummary(UUID submissionReference) {
     SubmissionSummaryRow summaryRow =
         new SubmissionSummaryRow(
-            submissionReference, "AQB2C3", "Legal help", LocalDate.of(2025, 5, 10), 30, 1);
+            submissionReference, "AQB2C3", "Legal help", LocalDate.of(2025, 5, 10), 30);
     List<SubmissionSummaryClaimError> errors =
         List.of(
             new SubmissionSummaryClaimError(
-                "UFN1", "UCN2", "Client", "This is an error which is found on your claim!"));
+                submissionReference,
+                "UFN1",
+                "UCN2",
+                "Client",
+                "This is an error which is found on your claim!"));
     return new BulkClaimSummary(Collections.singletonList(summaryRow), errors);
   }
 }
