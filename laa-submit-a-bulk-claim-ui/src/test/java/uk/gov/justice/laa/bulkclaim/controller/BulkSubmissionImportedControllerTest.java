@@ -37,10 +37,10 @@ import uk.gov.justice.laa.bulkclaim.service.claims.DataClaimsRestService;
 import uk.gov.justice.laa.claims.model.GetSubmission200Response;
 import uk.gov.justice.laa.claims.model.SubmissionFields;
 
-@WebMvcTest(SubmissionController.class)
+@WebMvcTest(BulkSubmissionImportedController.class)
 @AutoConfigureMockMvc
 @Import(WebMvcTestConfig.class)
-class SubmissionControllerTest {
+class BulkSubmissionImportedControllerTest {
 
   @Autowired private MockMvcTester mockMvc;
 

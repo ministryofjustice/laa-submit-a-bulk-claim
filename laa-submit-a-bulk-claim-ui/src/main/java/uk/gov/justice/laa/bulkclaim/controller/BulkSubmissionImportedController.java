@@ -29,7 +29,7 @@ import uk.gov.justice.laa.claims.model.GetSubmission200Response;
 @Controller
 @RequiredArgsConstructor
 @SessionAttributes({BULK_SUBMISSION_ID, BULK_SUBMISSION})
-public class SubmissionController {
+public class BulkSubmissionImportedController {
 
   private final DataClaimsRestService dataClaimsRestService;
   private final SubmissionSummaryBuilder submissionSummaryBuilder;
