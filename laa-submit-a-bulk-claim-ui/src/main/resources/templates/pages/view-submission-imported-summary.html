@@ -65,7 +65,8 @@
           <td class="govuk-table__cell"
               th:id="|submission-reference-${idx.index}|"
               th:data-sort-value="${submission.submissionReference()}">
-            <a href="#" class="govuk-link" th:text="${submission.submissionReference()}"/>
+            <a th:href="@{/submission/{submissionId}(submissionId=${submission.submissionReference()})}"
+               class="govuk-link" th:text="${submission.submissionReference()}"/>
           </td>
           <td class="govuk-table__cell"
               th:id="|office-account-${idx.index}|"

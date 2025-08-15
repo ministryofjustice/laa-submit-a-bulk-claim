@@ -69,7 +69,7 @@ class BulkSubmissionImportedControllerTest {
                       .sessionAttr(BULK_SUBMISSION_ID, bulkSubmissionId)
                       .sessionAttr(BULK_SUBMISSION, bulkSubmission)))
           .hasStatusOk()
-          .hasViewName("pages/view-submission-summary")
+          .hasViewName("pages/view-submission-imported-summary")
           .model()
           .hasFieldOrProperty(BULK_SUBMISSION)
           .hasFieldOrProperty(BULK_SUBMISSION_ID);
@@ -79,7 +79,7 @@ class BulkSubmissionImportedControllerTest {
 
     @Test
     @DisplayName("Should return expected result without submission present")
-    void shouldRetuenExpectedResultWithoutSubmissionPresent() {
+    void shouldReturnExpectedResultWithoutSubmissionPresent() {
       // Given
       UUID bulkSubmissionId = UUID.fromString("314d1cac-ffb8-41b5-9013-bab4e47e23ca");
       GetSubmission200Response bulkSubmission =
@@ -96,7 +96,7 @@ class BulkSubmissionImportedControllerTest {
                       .with(oidcLogin().oidcUser(ControllerTestHelper.getOidcUser()))
                       .sessionAttr(BULK_SUBMISSION_ID, bulkSubmissionId)))
           .hasStatusOk()
-          .hasViewName("pages/view-submission-summary")
+          .hasViewName("pages/view-submission-imported-summary")
           .model()
           .hasFieldOrProperty(BULK_SUBMISSION)
           .hasFieldOrProperty(BULK_SUBMISSION_ID);

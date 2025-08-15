@@ -60,6 +60,6 @@ public class BulkSubmissionImportedController {
             Collections.singletonList(
                 (GetSubmission200Response) model.getAttribute(BULK_SUBMISSION)));
     model.addAttribute("bulkClaimSummary", bulkClaimSummary);
-    return "pages/view-submission-summary";
+    return "pages/view-submission-imported-summary";
   }
 }
