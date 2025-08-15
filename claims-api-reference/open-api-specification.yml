@@ -282,7 +282,7 @@ paths:
       responses:
         '204':
           description: 'Submission status updated successfully'
-          content: { }
+          content: {}
         '400':
           description: 'Bad request'
         '401':
@@ -418,7 +418,7 @@ paths:
       responses:
         '204':
           description: Claim updated successfully
-          content: { }
+          content: {}
         '400':
           description: Invalid request
         '404':

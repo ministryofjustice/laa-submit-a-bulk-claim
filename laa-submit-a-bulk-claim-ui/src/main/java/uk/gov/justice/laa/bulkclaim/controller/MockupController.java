@@ -14,11 +14,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 @Profile("local")
 public class MockupController {
 
-  @GetMapping("/import-failed")
-  public String importFailed() {
-    return "pages/_import-failed";
-  }
-
   @GetMapping("/submission")
   public String viewSubmission() {
     return "pages/_submission";

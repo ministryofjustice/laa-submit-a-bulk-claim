@@ -74,8 +74,8 @@
               th:text="${submission.officeAccount()}"/>
           <td class="govuk-table__cell"
               th:id="|submission-date-${idx.index}|"
-              th:data-sort-value="${#temporals.format(submission.submissionDate(), 'MMM YYYY')}"
-              th:text="${#temporals.format(submission.submissionDate(), 'MMM YYYY')}"/>
+              th:data-sort-value="${#temporals.format(submission.submissionPeriod(), 'MMM YYYY')}"
+              th:text="${#temporals.format(submission.submissionPeriod(), 'MMM YYYY')}"/>
           <td class="govuk-table__cell"
               th:id="|submission-area-of-law-${idx.index}|"
               th:data-sort-value="${submission.areaOfLaw()}"

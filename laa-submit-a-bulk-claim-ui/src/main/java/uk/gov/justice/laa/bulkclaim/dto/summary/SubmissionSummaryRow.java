@@ -9,7 +9,7 @@ import java.util.UUID;
  * @param submissionReference unique identifier for the submission
  * @param officeAccount account number for the office
  * @param areaOfLaw type of submission
- * @param submissionDate date of submission
+ * @param submissionPeriod submission period
  * @param totalClaims total number of claims in the submission
  * @author Jamie Briggs
  */
@@ -17,5 +17,5 @@ public record SubmissionSummaryRow(
     UUID submissionReference,
     String officeAccount,
     String areaOfLaw,
-    LocalDate submissionDate,
+    LocalDate submissionPeriod,
     int totalClaims) {}

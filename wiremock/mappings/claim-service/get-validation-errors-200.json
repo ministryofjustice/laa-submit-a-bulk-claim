@@ -15,14 +15,14 @@
     },
     "jsonBody": [
       {
-        "ucn": "C1234567",
-        "ufn": "F1234567",
+        "unique_client_number": "C1234567",
+        "unique_file_number": "F1234567",
         "client": "Client name",
         "error_description": "Error description"
       },
       {
-        "ucn": "C7654321",
-        "ufn": "F7654321",
+        "unique_client_number": "C7654321",
+        "unique_file_number": "F7654321",
         "client": "Second client name",
         "error_description": "This is another error!"
       }

@@ -1,6 +1,7 @@
 package uk.gov.justice.laa.bulkclaim.mapper;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.UUID;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -30,11 +31,14 @@ public interface BulkClaimSummaryMapper {
   @Mapping(target = "officeAccount", source = "submission.officeAccountNumber")
   @Mapping(target = "areaOfLaw", source = "submission.areaOfLaw")
   @Mapping(
-      target = "submissionDate",
+      target = "submissionPeriod",
       source = "submission.submissionPeriod",
       qualifiedByName = "toSubmissionPeriod")
   @Mapping(target = "totalClaims", source = "submission.numberOfClaims")
   SubmissionSummaryRow toSubmissionSummaryRow(GetSubmission200Response submissionResponse);
+
+  List<SubmissionSummaryRow> toSubmissionSummaryRows(
+      List<GetSubmission200Response> submissionResponses);
 
   /**
    * Returns a {@link LocalDate} from a submission period string.

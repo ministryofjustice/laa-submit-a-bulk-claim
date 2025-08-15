@@ -3,6 +3,7 @@ package uk.gov.justice.laa.bulkclaim.controller;
 import static uk.gov.justice.laa.bulkclaim.config.SessionConstants.BULK_SUBMISSION;
 import static uk.gov.justice.laa.bulkclaim.config.SessionConstants.BULK_SUBMISSION_ID;
 
+import java.util.Collections;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -56,7 +57,8 @@ public class SubmissionController {
     // Map submission summary to model
     BulkClaimSummary bulkClaimSummary =
         submissionSummaryBuilder.build(
-            (GetSubmission200Response) model.getAttribute(BULK_SUBMISSION));
+            Collections.singletonList(
+                (GetSubmission200Response) model.getAttribute(BULK_SUBMISSION)));
     model.addAttribute("bulkClaimSummary", bulkClaimSummary);
     return "pages/view-submission-summary";
   }

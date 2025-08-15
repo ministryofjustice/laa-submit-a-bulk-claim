@@ -1,5 +1,6 @@
 package uk.gov.justice.laa.bulkclaim.mapper;
 
+import java.util.List;
 import java.util.UUID;
 import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -40,16 +41,18 @@ class BulkClaimSummaryMapperTest {
                     .build())
             .build();
     // When
-    SubmissionSummaryRow result = mapper.toSubmissionSummaryRow(submission200Response);
+    List<SubmissionSummaryRow> resultList =
+        mapper.toSubmissionSummaryRows(List.of(submission200Response));
     // Then
     SoftAssertions.assertSoftly(
         softly -> {
+          SubmissionSummaryRow result = resultList.getFirst();
           softly
               .assertThat(result.submissionReference())
               .isEqualTo(UUID.fromString("ee92c4ac-0ff9-4896-8bbe-c58fa04206e3"));
           softly.assertThat(result.officeAccount()).isEqualTo("1234567890");
           softly.assertThat(result.areaOfLaw()).isEqualTo("Civil Law");
-          softly.assertThat(result.submissionDate()).isEqualTo("2020-05-01");
+          softly.assertThat(result.submissionPeriod()).isEqualTo("2020-05-01");
           softly.assertThat(result.totalClaims()).isEqualTo(123);
         });
   }

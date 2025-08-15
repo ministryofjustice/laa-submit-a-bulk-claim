@@ -60,7 +60,7 @@ class SubmissionControllerTest {
           new GetSubmission200Response()
               .submission(SubmissionFields.builder().submissionId(bulkSubmissionId).build());
       BulkClaimSummary bulkClaimSummary = getTestSubmissionSummary(bulkSubmissionId);
-      when(submissionSummaryBuilder.build(bulkSubmission)).thenReturn(bulkClaimSummary);
+      when(submissionSummaryBuilder.build(List.of(bulkSubmission))).thenReturn(bulkClaimSummary);
       // When / Then
       assertThat(
               mockMvc.perform(
@@ -73,7 +73,7 @@ class SubmissionControllerTest {
           .model()
           .hasFieldOrProperty(BULK_SUBMISSION)
           .hasFieldOrProperty(BULK_SUBMISSION_ID);
-      verify(submissionSummaryBuilder, times(1)).build(bulkSubmission);
+      verify(submissionSummaryBuilder, times(1)).build(List.of(bulkSubmission));
       verify(dataClaimsRestService, times(0)).getSubmission(bulkSubmissionId);
     }
 
@@ -88,7 +88,7 @@ class SubmissionControllerTest {
       BulkClaimSummary bulkClaimSummary = getTestSubmissionSummary(bulkSubmissionId);
       when(dataClaimsRestService.getSubmission(bulkSubmissionId))
           .thenReturn(Mono.just(bulkSubmission));
-      when(submissionSummaryBuilder.build(bulkSubmission)).thenReturn(bulkClaimSummary);
+      when(submissionSummaryBuilder.build(List.of(bulkSubmission))).thenReturn(bulkClaimSummary);
       // When / Then
       assertThat(
               mockMvc.perform(
@@ -100,7 +100,7 @@ class SubmissionControllerTest {
           .model()
           .hasFieldOrProperty(BULK_SUBMISSION)
           .hasFieldOrProperty(BULK_SUBMISSION_ID);
-      verify(submissionSummaryBuilder, times(1)).build(bulkSubmission);
+      verify(submissionSummaryBuilder, times(1)).build(List.of(bulkSubmission));
       verify(dataClaimsRestService, times(1)).getSubmission(bulkSubmissionId);
     }
   }
