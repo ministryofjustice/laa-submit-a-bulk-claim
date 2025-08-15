@@ -65,11 +65,11 @@ env:
         name: laa-submit-a-bulk-claim-secrets
         key: SILAS_CLIENT_SECRET
 
-  - name: SILAS_CLIENT_SCOPE
+  - name: SILAS_SCOPE
     valueFrom:
       secretKeyRef:
         name: laa-submit-a-bulk-claim-secrets
-        key: SILAS_CLIENT_SCOPE
+        key: SILAS_SCOPE
 
   - name: SILAS_TENANT_ID
     valueFrom:
