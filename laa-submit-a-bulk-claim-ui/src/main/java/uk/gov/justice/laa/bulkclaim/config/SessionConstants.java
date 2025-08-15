@@ -11,5 +11,6 @@ public final class SessionConstants {
 
   public static final String BULK_SUBMISSION_ID = "bulkClaimSubmissionId";
   public static final String BULK_SUBMISSION = "bulkClaimSubmission";
+  public static final String SUBMISSION_ID = "submissionId";
   public static final String UPLOADED_FILENAME = "uploadedFilename";
 }
