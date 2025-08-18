@@ -1,4 +1,4 @@
-package uk.gov.justice.laa.bulkclaim.dto.submisison;
+package uk.gov.justice.laa.bulkclaim.dto.submission;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;

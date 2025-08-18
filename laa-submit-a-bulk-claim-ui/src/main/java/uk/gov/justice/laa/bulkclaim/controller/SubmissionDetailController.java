@@ -12,8 +12,10 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.SessionAttributes;
+import uk.gov.justice.laa.bulkclaim.builder.SubmissionClaimDetailsBuilder;
 import uk.gov.justice.laa.bulkclaim.builder.SubmissionSummaryBuilder;
-import uk.gov.justice.laa.bulkclaim.dto.submisison.SubmissionSummary;
+import uk.gov.justice.laa.bulkclaim.dto.submission.SubmissionClaimDetails;
+import uk.gov.justice.laa.bulkclaim.dto.submission.SubmissionSummary;
 import uk.gov.justice.laa.bulkclaim.service.claims.DataClaimsRestService;
 import uk.gov.justice.laa.claims.model.GetSubmission200Response;
 
@@ -29,6 +31,7 @@ import uk.gov.justice.laa.claims.model.GetSubmission200Response;
 public class SubmissionDetailController {
 
   private final SubmissionSummaryBuilder submissionSummaryBuilder;
+  private final SubmissionClaimDetailsBuilder submissionClaimDetailsBuilder;
   private final DataClaimsRestService dataClaimsRestService;
 
   /**
@@ -54,11 +57,13 @@ public class SubmissionDetailController {
    */
   @GetMapping("/view-submission-detail")
   public String getSubmissionDetail(Model model, @ModelAttribute(SUBMISSION_ID) UUID submissionId) {
-    GetSubmission200Response submission200Response =
+    GetSubmission200Response submissionResponse =
         dataClaimsRestService.getSubmission(submissionId).block();
 
-    SubmissionSummary build = submissionSummaryBuilder.build(submission200Response);
-    model.addAttribute("submissionSummary", build);
+    SubmissionSummary submissionSummary = submissionSummaryBuilder.build(submissionResponse);
+    SubmissionClaimDetails claimDetails = submissionClaimDetailsBuilder.build(submissionResponse);
+    model.addAttribute("submissionSummary", submissionSummary);
+    model.addAttribute("claimDetails", claimDetails);
 
     return "pages/view-submission-detail";
   }

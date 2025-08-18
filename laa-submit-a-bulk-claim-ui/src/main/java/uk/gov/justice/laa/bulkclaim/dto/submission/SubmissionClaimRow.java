@@ -1,12 +1,11 @@
-package uk.gov.justice.laa.bulkclaim.dto.submisison;
+package uk.gov.justice.laa.bulkclaim.dto.submission;
 
-import java.math.BigDecimal;
 import java.time.LocalDate;
 
 /**
  * Holds information about a claim in a submission. Intended for a table of data.
  *
- * @param claimNumber unique identifier for the claim
+ * @param lineNumber the line number for the claim
  * @param ufn the unique file number
  * @param ucn the unique client number
  * @param client the client name
@@ -15,11 +14,11 @@ import java.time.LocalDate;
  * @param concludedOrClaimedDate the date the claim was concluded or claimed
  * @param feeType the fee type
  * @param feeCode the fee code
- * @param claimValue the claim value
+ * @param costsDetails the costs details
  * @author Jamie Briggs
  */
 public record SubmissionClaimRow(
-    int claimNumber,
+    int lineNumber,
     String ufn,
     String ucn,
     String client,
@@ -28,4 +27,4 @@ public record SubmissionClaimRow(
     LocalDate concludedOrClaimedDate,
     String feeType,
     String feeCode,
-    BigDecimal claimValue) {}
+    SubmissionClaimRowCostsDetails costsDetails) {}

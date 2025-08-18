@@ -6,7 +6,7 @@
     <div class="govuk-grid-row">
       <div class="govuk-grid-column-full">
         <strong class="govuk-tag govuk-tag--pink"
-            th:text="${submissionSummary.status()}"/>
+                th:text="${submissionSummary.status()}"/>
         <h1 class="govuk-heading-l govuk-!-padding-top-4" th:text="#{viewSubmission.heading}"/>
       </div>
 
@@ -17,7 +17,7 @@
                 th:text="#{submission.properties.submissionReference}"/>
             <dd class="govuk-summary-list__value">
               <span class="govuk-!-font-weight-bold"
-                th:text="${submissionSummary.submissionReference()}"/>
+                    th:text="${submissionSummary.submissionReference()}"/>
             </dd>
           </div>
           <div class="govuk-summary-list__row">
@@ -33,17 +33,17 @@
           <div class="govuk-summary-list__row">
             <dt class="govuk-summary-list__key" th:text="#{submission.properties.submissionValue}"/>
             <dd class="govuk-summary-list__value"
-              th:text="|£${#numbers.formatDecimal(submissionSummary.submissionValue(), 0, 'COMMA', 2, 'POINT')}|"/>
+                th:text="${@currencyUtil.toString(submissionSummary.submissionValue())}"/>
           </div>
           <div class="govuk-summary-list__row">
             <dt class="govuk-summary-list__key" th:text="#{submission.properties.areaOfLaw}">
             <dd class="govuk-summary-list__value"
-              th:text="${submissionSummary.areaOfLaw()}"/>
+                th:text="${submissionSummary.areaOfLaw()}"/>
           </div>
           <div class="govuk-summary-list__row">
             <dt class="govuk-summary-list__key" th:text="#{submission.properties.submitted}"/>
             <dd class="govuk-summary-list__value"
-              th:text="${#temporals.format(submissionSummary.submitted(), 'dd/MM/yyyy')}"/>
+                th:text="${#temporals.format(submissionSummary.submitted(), 'dd/MM/yyyy')}"/>
           </div>
 
         </dl>
@@ -83,27 +83,37 @@
           <tr class="govuk-table__row">
             <th scope="row" class="govuk-table__header"
                 th:text="#{viewSubmission.claims.submissionCosts.profitCosts}"/>
-            <td class="govuk-table__cell"></td>
+            <td class="govuk-table__cell"
+              id="profit-costs-value"
+              th:text="${@currencyUtil.toString(claimDetails.costsSummary().profitCosts())}"/>
           </tr>
           <tr class="govuk-table__row">
             <th scope="row" class="govuk-table__header"
                 th:text="#{viewSubmission.claims.submissionCosts.disbursements}"/>
-            <td class="govuk-table__cell">£1000.00</td>
+            <td class="govuk-table__cell"
+              id="disbursements-value"
+              th:text="${@currencyUtil.toString(claimDetails.costsSummary().disbursements())}"/>
           </tr>
           <tr class="govuk-table__row">
             <th scope="row" class="govuk-table__header"
                 th:text="#{viewSubmission.claims.submissionCosts.additionalPayments}"/>
-            <td class="govuk-table__cell">£1100.00</td>
+            <td class="govuk-table__cell"
+                id="additional-payments-costs-value"
+                th:text="${@currencyUtil.toString(claimDetails.costsSummary().additionalPayments())}"/>
           </tr>
           <tr class="govuk-table__row">
             <th scope="row" class="govuk-table__header"
                 th:text="#{viewSubmission.claims.submissionCosts.fixedFee}"/>
-            <td class="govuk-table__cell">£2000.00</td>
+            <td class="govuk-table__cell"
+                id="fixed-fee-value"
+                th:text="${@currencyUtil.toString(claimDetails.costsSummary().fixedFee())}"/>
           </tr>
           <tr class="govuk-table__row">
             <th scope="row" class="govuk-table__header"
                 th:text="#{viewSubmission.claims.submissionCosts.submissionValue}"/>
-            <td class="govuk-table__cell">£4100.00</td>
+            <td class="govuk-table__cell"
+                id="submission-value"
+                th:text="${@currencyUtil.toString(claimDetails.costsSummary().submissionValue())}"/>
           </tr>
           </tbody>
         </table>
@@ -145,36 +155,51 @@
 
             <tbody class="govuk-table__body">
 
-            <tr class="govuk-table__row">
+            <tr class="govuk-table__row"
+                th:each="claim, idx : ${claimDetails.submissionClaims()}"
+                th:id="|claim-${idx.index}|">
 
-              <td class="govuk-table__cell" data-sort-value="1">1</td>
-              <td class="govuk-table__cell" data-sort-value="010113">010113</td>
-              <td class="govuk-table__cell" data-sort-value="29384">29384</td>
-              <td class="govuk-table__cell" data-sort-value="Giordano">Giordano</td>
-              <td class="govuk-table__cell" data-sort-value="Family">Family</td>
-              <td class="govuk-table__cell" data-sort-value="FAMD:FRES">FAMD:FRES</td>
-              <td class="govuk-table__cell" data-sort-value="18/3/2025">18/3/2025</td>
-              <td class="govuk-table__cell" data-sort-value="Escape">Escape</td>
-              <td class="govuk-table__cell" data-sort-value="432EC">432EC</td>
-              <td class="govuk-table__cell" data-sort-value="£234.56">£234.56</td>
-
-            </tr>
-
-            <tr class="govuk-table__row">
-
-              <td class="govuk-table__cell" data-sort-value="2">2</td>
-              <td class="govuk-table__cell" data-sort-value="100323/098">100323/098</td>
-              <td class="govuk-table__cell" data-sort-value="29384">29384</td>
-              <td class="govuk-table__cell" data-sort-value="Amoto">Amoto</td>
-              <td class="govuk-table__cell" data-sort-value="Immigration and Asylum">Immigration and
-                Asylum
-              </td>
-              <td class="govuk-table__cell" data-sort-value="IAXL:IUAS">IAXL:IUAS</td>
-              <td class="govuk-table__cell" data-sort-value="14/3/2025">14/3/2025</td>
-              <td class="govuk-table__cell" data-sort-value="Fixed">Fixed</td>
-              <td class="govuk-table__cell" data-sort-value="123AB">123AB</td>
-              <td class="govuk-table__cell" data-sort-value="£56.00">£56.00</td>
-
+              <td class="govuk-table__cell"
+                  th:id="|line-number-${idx.index}|"
+                  th:data-sort-value="${claim.lineNumber()}"
+                  th:text="${claim.lineNumber()}"/>
+              <td class="govuk-table__cell"
+                  th:id="|unique-file-number-${idx.index}|"
+                  th:data-sort-value="${claim.ufn()}"
+                  th:text="${claim.ufn()}"/>
+              <td class="govuk-table__cell"
+                  th:id="|unique-client-number-${idx.index}|"
+                  th:data-sort-value="${claim.ucn()}"
+                  th:text="${claim.ucn()}"/>
+              <td class="govuk-table__cell"
+                  th:id="|client-name-${idx.index}|"
+                  th:data-sort-value="${claim.client()}"
+                  th:text="${claim.client()}"/>
+              <td class="govuk-table__cell"
+                  th:id="|category-${idx}|"
+                  th:data-sort-value="${claim.category()}"
+                  th:text="${claim.category()}"/>
+              <td class="govuk-table__cell"
+                  th:id="|matter-${idx}|"
+                  th:data-sort-value="${claim.matter()}"
+                  th:text="${claim.matter()}"/>
+              <td class="govuk-table__cell"
+                  th:id="|concluded-claimed-${idx}|"
+                  th:data-sort-value="${claim.concludedOrClaimedDate()}"
+                  th:text="${claim.concludedOrClaimedDate()}"/>
+              <td class="govuk-table__cell"
+                  th:id="|fee-type-${idx.index}|"
+                  th:data-sort-value="${claim.feeType()}"
+                  th:text="${claim.feeType()}"/>
+              <td class="govuk-table__cell"
+                  th:id="|fee-code-${idx.index}|"
+                  th:data-sort-value="${claim.feeCode()}"
+                  th:text="${claim.feeCode()}"/>
+              <td class="govuk-table__cell"
+                  th:with="cost=${@currencyUtil.toString(claim.costsDetails().claimValue())}"
+                  th:id="|claim-value-${idx.index}|"
+                  th:data-sort-value="${cost}"
+                  th:text="${cost}"/>
             </tr>
 
 
