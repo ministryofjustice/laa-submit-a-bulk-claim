@@ -1,6 +1,6 @@
-package uk.gov.justice.laa.bulkclaim.dto.submisison;
+package uk.gov.justice.laa.bulkclaim.dto.submission;
 
 import java.util.List;
 
-public record SubmissionClaimsDetail(
+public record SubmissionClaimDetails(
     SubmissionCostsSummary costsSummary, List<SubmissionClaimRow> submissionClaims) {}
