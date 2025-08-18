@@ -27,10 +27,10 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.assertj.MockMvcTester;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
 import reactor.core.publisher.Mono;
-import uk.gov.justice.laa.bulkclaim.builder.SubmissionSummaryBuilder;
+import uk.gov.justice.laa.bulkclaim.builder.BulkClaimSummaryBuilder;
 import uk.gov.justice.laa.bulkclaim.config.WebMvcTestConfig;
-import uk.gov.justice.laa.bulkclaim.dto.summary.BulkClaimSummary;
-import uk.gov.justice.laa.bulkclaim.dto.summary.SubmissionSummaryClaimError;
+import uk.gov.justice.laa.bulkclaim.dto.summary.BulkClaimImportSummary;
+import uk.gov.justice.laa.bulkclaim.dto.summary.SubmissionSummaryClaimErrorRow;
 import uk.gov.justice.laa.bulkclaim.dto.summary.SubmissionSummaryRow;
 import uk.gov.justice.laa.bulkclaim.exception.SubmitBulkClaimException;
 import uk.gov.justice.laa.bulkclaim.service.claims.DataClaimsRestService;
@@ -45,11 +45,11 @@ class BulkSubmissionImportedControllerTest {
   @Autowired private MockMvcTester mockMvc;
 
   @MockitoBean private DataClaimsRestService dataClaimsRestService;
-  @MockitoBean private SubmissionSummaryBuilder submissionSummaryBuilder;
+  @MockitoBean private BulkClaimSummaryBuilder bulkClaimSummaryBuilder;
 
   @Nested
   @DisplayName("GET: /view-submission-summary")
-  class ViewBulkClaimSummary {
+  class ViewBulkClaimImportSummary {
 
     @Test
     @DisplayName("Should return expected result with submission present")
@@ -59,8 +59,9 @@ class BulkSubmissionImportedControllerTest {
       GetSubmission200Response bulkSubmission =
           new GetSubmission200Response()
               .submission(SubmissionFields.builder().submissionId(bulkSubmissionId).build());
-      BulkClaimSummary bulkClaimSummary = getTestSubmissionSummary(bulkSubmissionId);
-      when(submissionSummaryBuilder.build(List.of(bulkSubmission))).thenReturn(bulkClaimSummary);
+      BulkClaimImportSummary bulkClaimImportSummary = getTestSubmissionSummary(bulkSubmissionId);
+      when(bulkClaimSummaryBuilder.build(List.of(bulkSubmission)))
+          .thenReturn(bulkClaimImportSummary);
       // When / Then
       assertThat(
               mockMvc.perform(
@@ -73,7 +74,7 @@ class BulkSubmissionImportedControllerTest {
           .model()
           .hasFieldOrProperty(BULK_SUBMISSION)
           .hasFieldOrProperty(BULK_SUBMISSION_ID);
-      verify(submissionSummaryBuilder, times(1)).build(List.of(bulkSubmission));
+      verify(bulkClaimSummaryBuilder, times(1)).build(List.of(bulkSubmission));
       verify(dataClaimsRestService, times(0)).getSubmission(bulkSubmissionId);
     }
 
@@ -85,10 +86,11 @@ class BulkSubmissionImportedControllerTest {
       GetSubmission200Response bulkSubmission =
           new GetSubmission200Response()
               .submission(SubmissionFields.builder().submissionId(bulkSubmissionId).build());
-      BulkClaimSummary bulkClaimSummary = getTestSubmissionSummary(bulkSubmissionId);
+      BulkClaimImportSummary bulkClaimImportSummary = getTestSubmissionSummary(bulkSubmissionId);
       when(dataClaimsRestService.getSubmission(bulkSubmissionId))
           .thenReturn(Mono.just(bulkSubmission));
-      when(submissionSummaryBuilder.build(List.of(bulkSubmission))).thenReturn(bulkClaimSummary);
+      when(bulkClaimSummaryBuilder.build(List.of(bulkSubmission)))
+          .thenReturn(bulkClaimImportSummary);
       // When / Then
       assertThat(
               mockMvc.perform(
@@ -100,7 +102,7 @@ class BulkSubmissionImportedControllerTest {
           .model()
           .hasFieldOrProperty(BULK_SUBMISSION)
           .hasFieldOrProperty(BULK_SUBMISSION_ID);
-      verify(submissionSummaryBuilder, times(1)).build(List.of(bulkSubmission));
+      verify(bulkClaimSummaryBuilder, times(1)).build(List.of(bulkSubmission));
       verify(dataClaimsRestService, times(1)).getSubmission(bulkSubmissionId);
     }
   }
@@ -124,18 +126,19 @@ class BulkSubmissionImportedControllerTest {
         .hasMessageEndingWith("Error retrieving submission from data claims API.");
   }
 
-  private static @NotNull BulkClaimSummary getTestSubmissionSummary(UUID submissionReference) {
+  private static @NotNull BulkClaimImportSummary getTestSubmissionSummary(
+      UUID submissionReference) {
     SubmissionSummaryRow summaryRow =
         new SubmissionSummaryRow(
             submissionReference, "AQB2C3", "Legal help", LocalDate.of(2025, 5, 10), 30);
-    List<SubmissionSummaryClaimError> errors =
+    List<SubmissionSummaryClaimErrorRow> errors =
         List.of(
-            new SubmissionSummaryClaimError(
+            new SubmissionSummaryClaimErrorRow(
                 submissionReference,
                 "UFN1",
                 "UCN2",
                 "Client",
                 "This is an error which is found on your claim!"));
-    return new BulkClaimSummary(Collections.singletonList(summaryRow), errors);
+    return new BulkClaimImportSummary(Collections.singletonList(summaryRow), errors);
   }
 }

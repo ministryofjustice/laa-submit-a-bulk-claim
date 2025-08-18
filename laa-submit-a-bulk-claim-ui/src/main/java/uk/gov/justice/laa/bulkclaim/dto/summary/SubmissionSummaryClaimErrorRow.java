@@ -12,5 +12,5 @@ import java.util.UUID;
  * @param errorDescription    the error description
  * @author Jamie Briggs
  */
-public record SubmissionSummaryClaimError(
+public record SubmissionSummaryClaimErrorRow(
     UUID submissionReference, String ufn, String ucn, String client, String errorDescription) {}

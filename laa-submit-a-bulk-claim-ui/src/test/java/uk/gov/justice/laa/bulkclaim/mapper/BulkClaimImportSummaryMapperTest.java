@@ -8,7 +8,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import uk.gov.justice.laa.bulkclaim.dto.summary.SubmissionSummaryClaimError;
+import uk.gov.justice.laa.bulkclaim.dto.summary.SubmissionSummaryClaimErrorRow;
 import uk.gov.justice.laa.bulkclaim.dto.summary.SubmissionSummaryRow;
 import uk.gov.justice.laa.claims.model.ClaimValidationError;
 import uk.gov.justice.laa.claims.model.ClaimValidationError;
@@ -17,13 +17,13 @@ import uk.gov.justice.laa.claims.model.SubmissionFields;
 
 @ExtendWith(SpringExtension.class)
 @DisplayName("Bulk claim summary mapper test")
-class BulkClaimSummaryMapperTest {
+class BulkClaimImportSummaryMapperTest {
 
-  private BulkClaimSummaryMapper mapper;
+  private BulkClaimImportSummaryMapper mapper;
 
   @BeforeEach
   void setUp() {
-    mapper = new BulkClaimSummaryMapperImpl();
+    mapper = new BulkClaimImportSummaryMapperImpl();
   }
 
   @Test
@@ -71,7 +71,7 @@ class BulkClaimSummaryMapperTest {
             .errorDescription("This is an error!")
             .build();
     // When
-    SubmissionSummaryClaimError result =
+    SubmissionSummaryClaimErrorRow result =
         mapper.toSubmissionSummaryClaimError(
             UUID.fromString("ee92c4ac-0ff9-4896-8bbe-c58fa04206e3"), claimValidationError);
     // Then
