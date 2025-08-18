@@ -7,6 +7,11 @@ import uk.gov.justice.laa.bulkclaim.dto.submission.SubmissionClaimRow;
 import uk.gov.justice.laa.bulkclaim.dto.submission.SubmissionClaimRowCostsDetails;
 import uk.gov.justice.laa.claims.model.ClaimFields;
 
+/**
+ * Maps between {@link ClaimFields} and {@link SubmissionClaimRow}.
+ *
+ * @author Jamie Briggs
+ */
 @Mapper(componentModel = "spring")
 public interface SubmissionClaimMapper {
 
@@ -28,6 +33,12 @@ public interface SubmissionClaimMapper {
   @Mapping(target = "claimValue", constant = "0.00")
   SubmissionClaimRowCostsDetails toSubmissionClaimRowCostsDetails(ClaimFields claimFields);
 
+  /**
+   * Ensures that a BigDecimal is not null and instead changes to be zero if it is null.
+   *
+   * @param value the BigDecimal to tidy
+   * @return the tidied BigDecimal
+   */
   static BigDecimal tidy(BigDecimal value) {
     return value == null ? BigDecimal.ZERO : value;
   }
