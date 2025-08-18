@@ -10,8 +10,8 @@ import java.util.UUID;
  * @param submissions the submissions part of the bulk claim
  * @param claimErrors the claim errors part of the bulk claim
  */
-public record BulkClaimSummary(
-    List<SubmissionSummaryRow> submissions, List<SubmissionSummaryClaimError> claimErrors) {
+public record BulkClaimImportSummary(
+    List<SubmissionSummaryRow> submissions, List<SubmissionSummaryClaimErrorRow> claimErrors) {
 
   public boolean containsErrors() {
     return claimErrors != null && !claimErrors.isEmpty();

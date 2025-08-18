@@ -8,7 +8,7 @@ import java.util.UUID;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Named;
-import uk.gov.justice.laa.bulkclaim.dto.summary.SubmissionSummaryClaimError;
+import uk.gov.justice.laa.bulkclaim.dto.summary.SubmissionSummaryClaimErrorRow;
 import uk.gov.justice.laa.bulkclaim.dto.summary.SubmissionSummaryRow;
 import uk.gov.justice.laa.claims.model.ClaimFields;
 import uk.gov.justice.laa.claims.model.ClaimValidationError;
@@ -16,12 +16,12 @@ import uk.gov.justice.laa.claims.model.GetSubmission200Response;
 
 /**
  * Maps between {@link GetSubmission200Response} and {@link SubmissionSummaryRow}, and {@link
- * ClaimFields} and {@link SubmissionSummaryClaimError}.
+ * ClaimFields} and {@link SubmissionSummaryClaimErrorRow}.
  *
  * @author Jamie Briggs
  */
 @Mapper(componentModel = "spring")
-public interface BulkClaimSummaryMapper {
+public interface BulkClaimImportSummaryMapper {
 
   /**
    * Maps a {@link GetSubmission200Response} to a {@link SubmissionSummaryRow}.
@@ -57,15 +57,15 @@ public interface BulkClaimSummaryMapper {
   }
 
   /**
-   * Maps a {@link ClaimFields} to a {@link SubmissionSummaryClaimError}, whilst also including a
+   * Maps a {@link ClaimFields} to a {@link SubmissionSummaryClaimErrorRow}, whilst also including a
    * submission reference.
    *
    * @param submissionReference The submission reference.
    * @param claimFields The claim fields to map.
-   * @return The mapped {@link SubmissionSummaryClaimError}.
+   * @return The mapped {@link SubmissionSummaryClaimErrorRow}.
    */
   @Mapping(target = "ufn", source = "claimFields.uniqueFileNumber")
   @Mapping(target = "ucn", source = "claimFields.uniqueClientNumber")
-  SubmissionSummaryClaimError toSubmissionSummaryClaimError(
+  SubmissionSummaryClaimErrorRow toSubmissionSummaryClaimError(
       UUID submissionReference, ClaimValidationError claimFields);
 }

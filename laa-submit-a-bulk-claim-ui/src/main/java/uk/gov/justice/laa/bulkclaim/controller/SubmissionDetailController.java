@@ -12,6 +12,10 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.SessionAttributes;
+import uk.gov.justice.laa.bulkclaim.builder.SubmissionSummaryBuilder;
+import uk.gov.justice.laa.bulkclaim.dto.submisison.SubmissionSummary;
+import uk.gov.justice.laa.bulkclaim.service.claims.DataClaimsRestService;
+import uk.gov.justice.laa.claims.model.GetSubmission200Response;
 
 /**
  * Controller for handling viewing a submission.
@@ -23,6 +27,9 @@ import org.springframework.web.bind.annotation.SessionAttributes;
 @RequiredArgsConstructor
 @SessionAttributes({SUBMISSION_ID})
 public class SubmissionDetailController {
+
+  private final SubmissionSummaryBuilder submissionSummaryBuilder;
+  private final DataClaimsRestService dataClaimsRestService;
 
   /**
    * Gets the submission reference, stores it in the session and redirects to the view submission.
@@ -47,6 +54,12 @@ public class SubmissionDetailController {
    */
   @GetMapping("/view-submission-detail")
   public String getSubmissionDetail(Model model, @ModelAttribute(SUBMISSION_ID) UUID submissionId) {
+    GetSubmission200Response submission200Response =
+        dataClaimsRestService.getSubmission(submissionId).block();
+
+    SubmissionSummary build = submissionSummaryBuilder.build(submission200Response);
+    model.addAttribute("submissionSummary", build);
+
     return "pages/view-submission-detail";
   }
 }

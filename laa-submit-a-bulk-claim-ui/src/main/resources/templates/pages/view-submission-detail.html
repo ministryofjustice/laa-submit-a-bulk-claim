@@ -5,9 +5,8 @@
   <div class="govuk-width-container">
     <div class="govuk-grid-row">
       <div class="govuk-grid-column-full">
-        <strong class="govuk-tag govuk-tag--pink">
-          Submitted
-        </strong>
+        <strong class="govuk-tag govuk-tag--pink"
+            th:text="${submissionSummary.status()}"/>
         <h1 class="govuk-heading-l govuk-!-padding-top-4" th:text="#{viewSubmission.heading}"/>
       </div>
 
@@ -17,38 +16,34 @@
             <dt class="govuk-summary-list__key"
                 th:text="#{submission.properties.submissionReference}"/>
             <dd class="govuk-summary-list__value">
-              <span class="govuk-!-font-weight-bold">578633c1-6244-4dfd-a738-5b45afee0717</span>
+              <span class="govuk-!-font-weight-bold"
+                th:text="${submissionSummary.submissionReference()}"/>
             </dd>
           </div>
           <div class="govuk-summary-list__row">
             <dt class="govuk-summary-list__key" th:text="#{submission.properties.submissionDate}"/>
-            <dd class="govuk-summary-list__value">
-              July 2025
-            </dd>
+            <dd class="govuk-summary-list__value"
+                th:text="${submissionSummary.submissionPeriod()}"/>
           </div>
           <div class="govuk-summary-list__row">
             <dt class="govuk-summary-list__key" th:text="#{submission.properties.officeAccount}"/>
-            <dd class="govuk-summary-list__value">
-              C1B1C1
-            </dd>
+            <dd class="govuk-summary-list__value"
+                th:text="${submissionSummary.officeAccount()}"/>
           </div>
           <div class="govuk-summary-list__row">
             <dt class="govuk-summary-list__key" th:text="#{submission.properties.submissionValue}"/>
-            <dd class="govuk-summary-list__value">
-              £5432.00
-            </dd>
+            <dd class="govuk-summary-list__value"
+              th:text="|£${#numbers.formatDecimal(submissionSummary.submissionValue(), 0, 'COMMA', 2, 'POINT')}|"/>
           </div>
           <div class="govuk-summary-list__row">
             <dt class="govuk-summary-list__key" th:text="#{submission.properties.areaOfLaw}">
-            <dd class="govuk-summary-list__value">
-              Legal help
-            </dd>
+            <dd class="govuk-summary-list__value"
+              th:text="${submissionSummary.areaOfLaw()}"/>
           </div>
           <div class="govuk-summary-list__row">
             <dt class="govuk-summary-list__key" th:text="#{submission.properties.submitted}"/>
-            <dd class="govuk-summary-list__value">
-              31/4/2025
-            </dd>
+            <dd class="govuk-summary-list__value"
+              th:text="${#temporals.format(submissionSummary.submitted(), 'dd/MM/yyyy')}"/>
           </div>
 
         </dl>
