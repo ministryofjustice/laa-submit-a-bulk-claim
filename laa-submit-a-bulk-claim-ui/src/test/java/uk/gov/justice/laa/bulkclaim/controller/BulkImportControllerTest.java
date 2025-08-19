@@ -152,8 +152,7 @@ class BulkImportControllerTest {
     @DisplayName("Should redirect when upload service fails")
     void shouldRedirectWhenUploadServiceFails() throws Exception {
       MockMultipartFile file =
-          new MockMultipartFile("fileUpload", "test.csv",
-              "text/csv", "text".getBytes());
+          new MockMultipartFile("fileUpload", "test.csv", "text/csv", "text".getBytes());
       FileUploadForm input = new FileUploadForm(file);
 
       when(dataClaimsRestService.upload(any())).thenThrow(new RuntimeException("Unexpected error"));
