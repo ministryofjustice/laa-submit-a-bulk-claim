@@ -12,8 +12,8 @@ import uk.gov.justice.laa.bulkclaim.service.claims.DataClaimsRestService;
 import uk.gov.justice.laa.claims.model.GetSubmission200Response;
 
 /**
- * Builder class for constructing a {@link SubmissionClaimDetails} object used for displaying
- * a table of claim details to the user.
+ * Builder class for constructing a {@link SubmissionClaimDetails} object used for displaying a
+ * table of claim details to the user.
  *
  * @author Jamie Briggs
  */
@@ -26,7 +26,7 @@ public class SubmissionClaimDetailsBuilder {
 
   /**
    * Builds a {@link SubmissionClaimDetails} object. This object contains a summary of the costs
-   *  constructed using the claims attached to the submission.
+   * constructed using the claims attached to the submission.
    *
    * @param submissionResponse The source submission response.
    * @return The built {@link SubmissionClaimDetails} object.
