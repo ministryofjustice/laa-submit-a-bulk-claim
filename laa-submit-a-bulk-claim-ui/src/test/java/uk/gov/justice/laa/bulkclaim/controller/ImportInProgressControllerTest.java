@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.oidcLogin;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static uk.gov.justice.laa.bulkclaim.config.SessionConstants.BULK_SUBMISSION_ID;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -62,7 +63,7 @@ public class ImportInProgressControllerTest {
               mockMvc.perform(
                   get("/import-in-progress")
                       .with(oidcLogin().oidcUser(ControllerTestHelper.getOidcUser()))
-                      .sessionAttr("bulkSubmissionId", submissionId.toString())))
+                      .sessionAttr(BULK_SUBMISSION_ID, submissionId.toString())))
           .hasStatusOk()
           .hasViewName("pages/upload-in-progress");
     }
@@ -88,7 +89,7 @@ public class ImportInProgressControllerTest {
               mockMvc.perform(
                   get("/import-in-progress")
                       .with(oidcLogin().oidcUser(ControllerTestHelper.getOidcUser()))
-                      .sessionAttr("bulkSubmissionId", submissionId.toString())))
+                      .sessionAttr("bulkClaimSubmissionId", submissionId.toString())))
           .hasStatusOk()
           .hasViewName("pages/upload-in-progress");
     }
@@ -116,7 +117,7 @@ public class ImportInProgressControllerTest {
               mockMvc.perform(
                   get("/import-in-progress")
                       .with(oidcLogin().oidcUser(ControllerTestHelper.getOidcUser()))
-                      .sessionAttr("bulkSubmissionId", submissionId.toString())))
+                      .sessionAttr(BULK_SUBMISSION_ID, submissionId.toString())))
           .hasStatusOk()
           .hasViewName("pages/upload-in-progress");
     }
@@ -135,7 +136,7 @@ public class ImportInProgressControllerTest {
               mockMvc.perform(
                   get("/import-in-progress")
                       .with(oidcLogin().oidcUser(ControllerTestHelper.getOidcUser()))
-                      .sessionAttr("bulkSubmissionId", submissionId.toString())))
+                      .sessionAttr(BULK_SUBMISSION_ID, submissionId.toString())))
           .hasStatusOk()
           .hasViewName("pages/upload-in-progress");
     }
@@ -160,10 +161,9 @@ public class ImportInProgressControllerTest {
               mockMvc.perform(
                   get("/import-in-progress")
                       .with(oidcLogin().oidcUser(ControllerTestHelper.getOidcUser()))
-                      .sessionAttr("bulkSubmissionId", submissionId.toString())))
+                      .sessionAttr("bulkClaimSubmissionId", submissionId.toString())))
           .hasStatus3xxRedirection()
-          // TODO: Redirect to imported page CCMSPUI-788
-          .hasRedirectedUrl("/");
+          .hasRedirectedUrl("/view-submission-summary");
     }
 
     @ParameterizedTest
@@ -187,10 +187,9 @@ public class ImportInProgressControllerTest {
               mockMvc.perform(
                   get("/import-in-progress")
                       .with(oidcLogin().oidcUser(ControllerTestHelper.getOidcUser()))
-                      .sessionAttr("bulkSubmissionId", submissionId.toString())))
+                      .sessionAttr(BULK_SUBMISSION_ID, submissionId.toString())))
           .hasStatus3xxRedirection()
-          // TODO: Redirect to imported page CCMSPUI-788
-          .hasRedirectedUrl("/");
+          .hasRedirectedUrl("/view-submission-summary");
     }
 
     @Test
@@ -209,10 +208,9 @@ public class ImportInProgressControllerTest {
               mockMvc.perform(
                   get("/import-in-progress")
                       .with(oidcLogin().oidcUser(ControllerTestHelper.getOidcUser()))
-                      .sessionAttr("bulkSubmissionId", submissionId.toString())))
+                      .sessionAttr(BULK_SUBMISSION_ID, submissionId.toString())))
           .hasStatus3xxRedirection()
-          // TODO: Redirect to imported page CCMSPUI-788
-          .hasRedirectedUrl("/");
+          .hasRedirectedUrl("/view-submission-summary");
     }
 
     @Test
@@ -226,7 +224,7 @@ public class ImportInProgressControllerTest {
               mockMvc.perform(
                   get("/import-in-progress")
                       .with(oidcLogin().oidcUser(ControllerTestHelper.getOidcUser()))
-                      .sessionAttr("bulkSubmissionId", submissionId.toString())))
+                      .sessionAttr("bulkClaimSubmissionId", submissionId.toString())))
           .failure()
           .hasCauseInstanceOf(IllegalArgumentException.class)
           .hasMessageContaining("Submission is null");
@@ -246,7 +244,7 @@ public class ImportInProgressControllerTest {
               mockMvc.perform(
                   get("/import-in-progress")
                       .with(oidcLogin().oidcUser(ControllerTestHelper.getOidcUser()))
-                      .sessionAttr("bulkSubmissionId", submissionId.toString())))
+                      .sessionAttr(BULK_SUBMISSION_ID, submissionId.toString())))
           .failure()
           .hasCauseInstanceOf(IllegalArgumentException.class)
           .hasMessageContaining("Submission fields is null");
@@ -269,7 +267,7 @@ public class ImportInProgressControllerTest {
               mockMvc.perform(
                   get("/import-in-progress")
                       .with(oidcLogin().oidcUser(ControllerTestHelper.getOidcUser()))
-                      .sessionAttr("bulkSubmissionId", submissionId.toString())))
+                      .sessionAttr("bulkClaimSubmissionId", submissionId.toString())))
           .failure()
           .hasCauseInstanceOf(IllegalArgumentException.class)
           .hasMessageContaining("No claims found for bulk submission: " + submissionId);
@@ -292,7 +290,7 @@ public class ImportInProgressControllerTest {
               mockMvc.perform(
                   get("/import-in-progress")
                       .with(oidcLogin().oidcUser(ControllerTestHelper.getOidcUser()))
-                      .sessionAttr("bulkSubmissionId", submissionId.toString())))
+                      .sessionAttr(BULK_SUBMISSION_ID, submissionId.toString())))
           .failure()
           .hasCauseInstanceOf(IllegalArgumentException.class)
           .hasMessageContaining("No claims found for bulk submission: " + submissionId);
@@ -311,7 +309,7 @@ public class ImportInProgressControllerTest {
               mockMvc.perform(
                   get("/import-in-progress")
                       .with(oidcLogin().oidcUser(ControllerTestHelper.getOidcUser()))
-                      .sessionAttr("bulkSubmissionId", submissionId.toString())))
+                      .sessionAttr(BULK_SUBMISSION_ID, submissionId.toString())))
           .failure()
           .hasCauseInstanceOf(SubmitBulkClaimException.class)
           .hasMessageContaining("Claims API returned an error");

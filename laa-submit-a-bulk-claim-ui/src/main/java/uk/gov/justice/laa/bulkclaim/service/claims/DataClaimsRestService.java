@@ -1,9 +1,11 @@
 package uk.gov.justice.laa.bulkclaim.service.claims;
 
+import java.util.List;
 import java.util.UUID;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
@@ -11,6 +13,8 @@ import org.springframework.web.service.annotation.GetExchange;
 import org.springframework.web.service.annotation.HttpExchange;
 import org.springframework.web.service.annotation.PostExchange;
 import reactor.core.publisher.Mono;
+import uk.gov.justice.laa.claims.model.ClaimFields;
+import uk.gov.justice.laa.claims.model.ClaimValidationError;
 import uk.gov.justice.laa.claims.model.CreateBulkSubmission201Response;
 import uk.gov.justice.laa.claims.model.GetSubmission200Response;
 
@@ -43,4 +47,26 @@ public interface DataClaimsRestService {
   @GetExchange(value = "/submissions/{submissionId}")
   Mono<GetSubmission200Response> getSubmission(@PathVariable("submissionId") UUID submissionId)
       throws WebClientResponseException;
+
+  /**
+   * Gets a submission claim by submission ID and claim ID.
+   *
+   * @param submissionId the submission ID
+   * @param claimId the claim ID
+   * @return a mono containing the response from the Claims API.
+   * @throws WebClientResponseException if status other than 2xx is returned
+   */
+  @GetExchange(value = "/submissions/{submission-id}/claims/{claim-id}")
+  Mono<ClaimFields> getSubmissionClaim(
+      @PathVariable("submission-id") UUID submissionId, @PathVariable("claim-id") UUID claimId);
+
+  /**
+   * Gets validation errors for a submission.
+   *
+   * @param submissionId the submission ID
+   * @return a Mono containing a list of validation errors for a submission.
+   */
+  @GetExchange(value = "/validation-errors")
+  Mono<List<ClaimValidationError>> getValidationErrors(
+      @RequestParam("submission-id") UUID submissionId);
 }

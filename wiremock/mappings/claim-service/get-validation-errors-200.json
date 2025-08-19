@@ -1,0 +1,32 @@
+{
+  "request": {
+    "method": "GET",
+    "queryParameters": {
+      "submission-id": {
+        "equalTo": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
+      }
+    },
+    "urlPath": "/api/v0/validation-errors"
+  },
+  "response": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json"
+    },
+    "jsonBody": [
+      {
+        "unique_client_number": "C1234567",
+        "unique_file_number": "F1234567",
+        "client": "Client name",
+        "error_description": "Error description"
+      },
+      {
+        "unique_client_number": "C7654321",
+        "unique_file_number": "F7654321",
+        "client": "Second client name",
+        "error_description": "This is another error!"
+      }
+    ]
+  }
+}
+

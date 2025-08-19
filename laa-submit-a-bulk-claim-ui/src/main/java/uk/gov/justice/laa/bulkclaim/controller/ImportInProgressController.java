@@ -1,5 +1,8 @@
 package uk.gov.justice.laa.bulkclaim.controller;
 
+import static uk.gov.justice.laa.bulkclaim.config.SessionConstants.BULK_SUBMISSION;
+import static uk.gov.justice.laa.bulkclaim.config.SessionConstants.BULK_SUBMISSION_ID;
+
 import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
@@ -25,7 +28,7 @@ import uk.gov.justice.laa.claims.model.GetSubmission200ResponseClaimsInner;
 @Slf4j
 @Controller
 @RequiredArgsConstructor
-@SessionAttributes("bulkSubmissionId")
+@SessionAttributes({BULK_SUBMISSION_ID, BULK_SUBMISSION})
 public class ImportInProgressController {
 
   private final DataClaimsRestService dataClaimsRestService;
@@ -43,12 +46,12 @@ public class ImportInProgressController {
    */
   @GetMapping("/import-in-progress")
   public String importInProgress(
-      Model model, @ModelAttribute("bulkSubmissionId") UUID bulkSubmissionId) {
+      Model model, @ModelAttribute(BULK_SUBMISSION_ID) UUID bulkSubmissionId) {
 
     // Check submission exists otherwise they will be stuck in a loop on this page.
-    GetSubmission200Response getSubmission;
+    GetSubmission200Response bulkSubmission;
     try {
-      getSubmission = dataClaimsRestService.getSubmission(bulkSubmissionId).block();
+      bulkSubmission = dataClaimsRestService.getSubmission(bulkSubmissionId).block();
     } catch (WebClientResponseException e) {
       if (e.getStatusCode().isSameCodeAs(HttpStatusCode.valueOf(404))) {
         log.debug("No submission found, will retry: %s".formatted(bulkSubmissionId.toString()));
@@ -60,28 +63,26 @@ public class ImportInProgressController {
 
     // Check submission. If the response from data claims API is 200, these fields
     //  should be not null.
-    Assert.notNull(getSubmission, "Submission is null");
-    Assert.notNull(getSubmission.getSubmission(), "Submission fields is null");
+    Assert.notNull(bulkSubmission, "Submission is null");
+    Assert.notNull(bulkSubmission.getSubmission(), "Submission fields is null");
 
     // Check for NIL submission
-    if (Boolean.TRUE.equals(getSubmission.getSubmission().getIsNilSubmission())) {
-      // TODO: Redirect to imported page CCMSPUI-788
+    if (Boolean.TRUE.equals(bulkSubmission.getSubmission().getIsNilSubmission())) {
       log.info("NIL submission found, will redirect: %s".formatted(bulkSubmissionId.toString()));
-      return "redirect:/";
+      return "redirect:/view-submission-summary";
     }
 
     // Check submission has claims otherwise they will be stuck in a loop on this page.
     Assert.notEmpty(
-        getSubmission.getClaims(),
+        bulkSubmission.getClaims(),
         "No claims found for bulk submission: %s".formatted(bulkSubmissionId.toString()));
 
     boolean fullyImported =
-        getSubmission.getClaims().stream()
+        bulkSubmission.getClaims().stream()
             .map(GetSubmission200ResponseClaimsInner::getStatus)
             .allMatch(completedStatuses::contains);
     if (fullyImported) {
-      // TODO: Redirect to imported page CCMSPUI-788
-      return "redirect:/";
+      return "redirect:/view-submission-summary";
     }
     model.addAttribute("shouldRefresh", true);
     return "pages/upload-in-progress";

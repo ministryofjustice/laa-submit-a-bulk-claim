@@ -1,5 +1,7 @@
 package uk.gov.justice.laa.bulkclaim.controller;
 
+import static uk.gov.justice.laa.bulkclaim.config.SessionConstants.BULK_SUBMISSION_ID;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -12,6 +14,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.support.SessionStatus;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import uk.gov.justice.laa.bulkclaim.dto.FileUploadForm;
@@ -42,7 +45,11 @@ public class BulkImportController {
    * @return the upload page
    */
   @GetMapping("/")
-  public String showUploadPage(Model model, @AuthenticationPrincipal OidcUser oidcUser) {
+  public String showUploadPage(
+      Model model, @AuthenticationPrincipal OidcUser oidcUser, SessionStatus sessionStatus) {
+
+    // Clear the session due to new submission
+    sessionStatus.setComplete();
 
     // Always ensure there's a form object in the model if not already present
     if (!model.containsAttribute(FILE_UPLOAD_FORM_MODEL_ATTR)) {
@@ -100,7 +107,7 @@ public class BulkImportController {
           "Claims API Upload response submission UUID: {}",
           bulkSubmissionResponse.getBulkSubmissionId());
       redirectAttributes.addFlashAttribute(
-          "bulkSubmissionId", bulkSubmissionResponse.getBulkSubmissionId());
+          BULK_SUBMISSION_ID, bulkSubmissionResponse.getBulkSubmissionId());
       return "redirect:/import-in-progress";
     } catch (Exception e) {
       log.error("Failed to upload file to Claims API with message: {}", e.getMessage());

@@ -15,21 +15,21 @@
       "submission": {
         "submission_id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
         "bulk_submission_id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
-        "office_account_number": "string",
-        "submission_period": "string",
-        "area_of_law": "string",
-        "schedule_number": "string",
+        "office_account_number": "AQ2B3C",
+        "submission_period": "2025-05",
+        "area_of_law": "Legal help",
+        "schedule_number": "23456",
         "previous_submission_id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
-        "is_nil_submission": true,
-        "number_of_claims": 0
+        "is_nil_submission": false,
+        "number_of_claims": 30
       },
       "claims": [
         {
-          "claim_id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+          "claim_id": "6850db96-fbb7-4859-a5a5-fc111cd205b2",
           "status": "CREATED"
         },
         {
-          "claim_id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+          "claim_id": "6850db96-fbb7-4859-a5a5-fc111cd205b2",
           "status": "READY_FOR_VALIDATION"
         }
       ],
