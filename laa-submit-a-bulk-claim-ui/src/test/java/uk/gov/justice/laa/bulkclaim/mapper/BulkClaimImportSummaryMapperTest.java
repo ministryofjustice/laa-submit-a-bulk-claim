@@ -11,7 +11,6 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.justice.laa.bulkclaim.dto.summary.SubmissionSummaryClaimErrorRow;
 import uk.gov.justice.laa.bulkclaim.dto.summary.SubmissionSummaryRow;
 import uk.gov.justice.laa.claims.model.ClaimValidationError;
-import uk.gov.justice.laa.claims.model.ClaimValidationError;
 import uk.gov.justice.laa.claims.model.GetSubmission200Response;
 import uk.gov.justice.laa.claims.model.SubmissionFields;
 
@@ -55,7 +54,6 @@ class BulkClaimImportSummaryMapperTest {
           softly.assertThat(result.areaOfLaw()).isEqualTo("Civil Law");
           softly.assertThat(result.submissionPeriod()).isEqualTo("2020-05-01");
           softly.assertThat(result.totalClaims()).isEqualTo(123);
-
         });
   }
 
