@@ -29,8 +29,7 @@ public interface SubmissionClaimMapper {
   @Mapping(target = "costsDetails", source = "claimFields")
   SubmissionClaimRow toSubmissionClaimRow(ClaimFields claimFields);
 
-  // TODO: Add claim value to the OpenAPI spec.
-  @Mapping(target = "claimValue", constant = "0.00")
+  @Mapping(target = "claimValue", source = "claimFields.totalValue")
   SubmissionClaimRowCostsDetails toSubmissionClaimRowCostsDetails(ClaimFields claimFields);
 
   /**

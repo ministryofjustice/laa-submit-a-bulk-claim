@@ -15,6 +15,7 @@
       "submission": {
         "submission_id": "0561d67b-30ed-412e-8231-f6296a53538d",
         "bulk_submission_id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+        "status": "CREATED",
         "office_account_number": "AQ2B3C",
         "submission_period": "2025-05",
         "area_of_law": "Legal help",
@@ -26,11 +27,11 @@
       "claims": [
         {
           "claim_id": "6850db96-fbb7-4859-a5a5-fc111cd205b2",
-          "status": "CREATED"
+          "status": "READY_TO_PROCESS"
         },
         {
           "claim_id": "6850db96-fbb7-4859-a5a5-fc111cd205b2",
-          "status": "READY_FOR_VALIDATION"
+          "status": "READY_TO_PROCESS"
         }
       ],
       "matter_starts": [

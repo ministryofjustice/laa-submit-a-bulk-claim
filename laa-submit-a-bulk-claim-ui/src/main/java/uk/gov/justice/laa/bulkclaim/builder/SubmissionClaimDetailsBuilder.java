@@ -55,6 +55,10 @@ public class SubmissionClaimDetailsBuilder {
         submissionClaimRows.stream()
             .map(x -> x.costsDetails().additionalCosts())
             .reduce(BigDecimal.ZERO, BigDecimal::add);
+    BigDecimal submissionValue =
+        submissionClaimRows.stream()
+            .map(x -> x.costsDetails().claimValue())
+            .reduce(BigDecimal.ZERO, BigDecimal::add);
 
     // Add to cost summary using claims
     SubmissionCostsSummary costSummary =
@@ -62,8 +66,9 @@ public class SubmissionClaimDetailsBuilder {
             totalProfitCosts,
             disbursements,
             additionalPayments,
-            // Where is fixed fee from?
-            BigDecimal.ZERO);
+            // TODO: Where is fixed fee from?
+            BigDecimal.ZERO,
+            submissionValue);
     return new SubmissionClaimDetails(costSummary, submissionClaimRows);
   }
 }

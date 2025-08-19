@@ -69,7 +69,8 @@ class SubmissionDetailControllerTest {
                       new BigDecimal("100.00"),
                       new BigDecimal("100.50"),
                       new BigDecimal("100.85"),
-                      new BigDecimal("100.90")),
+                      new BigDecimal("100.90"),
+                      new BigDecimal("123.45")),
                   Collections.emptyList()));
       // When
       assertThat(
