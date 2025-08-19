@@ -3,23 +3,26 @@
     "method": "GET",
     "urlPathPattern": "/api/v0/submissions/[a-f0-9\\-]+/claims/[a-f0-9\\-]+"
   },
+  "scenarioName": "get claim",
+  "requiredScenarioState": "claim-two",
+  "newScenarioState": "Started",
   "response": {
     "status": 200,
     "headers": {
       "Content-Type": "application/json"
     },
     "jsonBody": {
-      "status": "string",
+      "status": "VALID",
       "schedule_reference": "string",
-      "line_number": 0,
+      "line_number": 2,
       "case_reference_number": "string",
-      "unique_file_number": "string",
+      "unique_file_number": "100323/098",
       "case_start_date": "2025-08-14",
-      "case_concluded_date": "2025-08-14",
-      "matter_type_code": "string",
+      "case_concluded_date": "2025-03-14",
+      "matter_type_code": "IAXL:IUAS",
       "crime_matter_type_code": "string",
       "fee_scheme_code": "string",
-      "fee_code": "string",
+      "fee_code": "123AB",
       "procurement_area_code": "string",
       "access_point_code": "string",
       "delivery_location": "string",
@@ -37,10 +40,10 @@
       "mediation_time_minutes": 0,
       "outreach_location": "string",
       "referral_source": "string",
-      "client_forename": "string",
-      "client_surname": "string",
+      "client_forename": "Amoto",
+      "client_surname": "Amo",
       "client_date_of_birth": "2025-08-14",
-      "unique_client_number": "string",
+      "unique_client_number": "29332",
       "client_postcode": "string",
       "gender_code": "string",
       "ethnicity_code": "string",
@@ -63,7 +66,7 @@
       "unique_case_id": "string",
       "case_stage_code": "string",
       "stage_reached_code": "string",
-      "standard_fee_category_code": "string",
+      "standard_fee_category_code": "Immigration and Asylum",
       "outcome_code": "string",
       "designated_accredited_representative_code": "string",
       "is_postal_application_accepted": true,
@@ -107,7 +110,8 @@
       "ait_hearing_centre_code": "string",
       "is_substantive_hearing": true,
       "ho_interview": "string",
-      "local_authority_number": "string"
+      "local_authority_number": "string",
+      "total_value": "562.32"
     }
   }
 }

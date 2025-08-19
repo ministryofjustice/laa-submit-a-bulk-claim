@@ -13,6 +13,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -28,7 +29,9 @@ import uk.gov.justice.laa.bulkclaim.exception.SubmitBulkClaimException;
 import uk.gov.justice.laa.bulkclaim.service.claims.DataClaimsRestService;
 import uk.gov.justice.laa.claims.model.GetSubmission200Response;
 import uk.gov.justice.laa.claims.model.GetSubmission200ResponseClaimsInner;
+import uk.gov.justice.laa.claims.model.GetSubmission200ResponseClaimsInner.StatusEnum;
 import uk.gov.justice.laa.claims.model.SubmissionFields;
+import uk.gov.justice.laa.claims.model.SubmissionStatus;
 
 @WebMvcTest(ImportInProgressController.class)
 @AutoConfigureMockMvc
@@ -43,74 +46,24 @@ public class ImportInProgressControllerTest {
   @DisplayName("GET: /import-in-progress")
   class ImportInProgressTests {
 
-    @ParameterizedTest
-    @ValueSource(strings = {"CREATED", "READY_FOR_VALIDATION"})
-    @DisplayName("Should return expected result when single claim not ready")
-    void shouldReturnExpectedResult(String status) {
+    @Test
+    @DisplayName("Should return expected result submission is not ready")
+    void shouldReturnExpectedResult() {
       // Given
       UUID submissionId = UUID.fromString("5933fc67-bac7-4f48-81ed-61c8c463f054");
       when(dataClaimsRestService.getSubmission(submissionId))
           .thenReturn(
               Mono.just(
                   GetSubmission200Response.builder()
-                      .submission(SubmissionFields.builder().build())
+                      .submission(
+                          SubmissionFields.builder()
+                              .status(SubmissionStatus.READY_FOR_VALIDATION)
+                              .build())
                       .claims(
                           Collections.singletonList(
-                              GetSubmission200ResponseClaimsInner.builder().status(status).build()))
-                      .build()));
-
-      assertThat(
-              mockMvc.perform(
-                  get("/import-in-progress")
-                      .with(oidcLogin().oidcUser(ControllerTestHelper.getOidcUser()))
-                      .sessionAttr(BULK_SUBMISSION_ID, submissionId.toString())))
-          .hasStatusOk()
-          .hasViewName("pages/upload-in-progress");
-    }
-
-    @ParameterizedTest
-    @ValueSource(strings = {"CREATED", "READY_FOR_VALIDATION"})
-    @DisplayName("Should return expected result when multiple claims not ready")
-    void shouldReturnExpectedResultWhenMultipleClaimsNotReady(String status) {
-      // Given
-      UUID submissionId = UUID.fromString("5933fc67-bac7-4f48-81ed-61c8c463f054");
-      when(dataClaimsRestService.getSubmission(submissionId))
-          .thenReturn(
-              Mono.just(
-                  GetSubmission200Response.builder()
-                      .submission(SubmissionFields.builder().build())
-                      .claims(
-                          Arrays.asList(
-                              GetSubmission200ResponseClaimsInner.builder().status(status).build(),
-                              GetSubmission200ResponseClaimsInner.builder().status(status).build()))
-                      .build()));
-
-      assertThat(
-              mockMvc.perform(
-                  get("/import-in-progress")
-                      .with(oidcLogin().oidcUser(ControllerTestHelper.getOidcUser()))
-                      .sessionAttr("bulkClaimSubmissionId", submissionId.toString())))
-          .hasStatusOk()
-          .hasViewName("pages/upload-in-progress");
-    }
-
-    @ParameterizedTest
-    @ValueSource(strings = {"CREATED", "READY_FOR_VALIDATION"})
-    @DisplayName("Should return expected result when partial claims not ready")
-    void shouldReturnExpectedResultWhenPartialClaimsNotReady(String status) {
-      // Given
-      UUID submissionId = UUID.fromString("5933fc67-bac7-4f48-81ed-61c8c463f054");
-      when(dataClaimsRestService.getSubmission(submissionId))
-          .thenReturn(
-              Mono.just(
-                  GetSubmission200Response.builder()
-                      .submission(SubmissionFields.builder().build())
-                      .claims(
-                          Arrays.asList(
                               GetSubmission200ResponseClaimsInner.builder()
-                                  .status("READY_FOR_VALIDATION")
-                                  .build(),
-                              GetSubmission200ResponseClaimsInner.builder().status(status).build()))
+                                  .status(StatusEnum.VALID)
+                                  .build()))
                       .build()));
 
       assertThat(
@@ -142,45 +95,26 @@ public class ImportInProgressControllerTest {
     }
 
     @ParameterizedTest
-    @ValueSource(strings = {"VALIDATION_SUCCEEDED", "VALIDATION_FAILED"})
-    @DisplayName("Should redirect when only claim has imported")
-    void shouldRedirectWhenOnlyClaimHasImported(String status) {
+    @EnumSource(
+        value = SubmissionStatus.class,
+        names = {"VALIDATION_SUCCEEDED", "VALIDATION_FAILED"})
+    @DisplayName("Should redirect when complete")
+    void shouldRedirectWhenMultipleClaimsHasImported(SubmissionStatus status) {
       // Given
       UUID submissionId = UUID.fromString("5933fc67-bac7-4f48-81ed-61c8c463f054");
       when(dataClaimsRestService.getSubmission(submissionId))
           .thenReturn(
               Mono.just(
                   GetSubmission200Response.builder()
-                      .submission(SubmissionFields.builder().build())
-                      .claims(
-                          Collections.singletonList(
-                              GetSubmission200ResponseClaimsInner.builder().status(status).build()))
-                      .build()));
-
-      assertThat(
-              mockMvc.perform(
-                  get("/import-in-progress")
-                      .with(oidcLogin().oidcUser(ControllerTestHelper.getOidcUser()))
-                      .sessionAttr("bulkClaimSubmissionId", submissionId.toString())))
-          .hasStatus3xxRedirection()
-          .hasRedirectedUrl("/view-submission-summary");
-    }
-
-    @ParameterizedTest
-    @ValueSource(strings = {"VALIDATION_SUCCEEDED", "VALIDATION_FAILED"})
-    @DisplayName("Should redirect when multiple claims has imported")
-    void shouldRedirectWhenMultipleClaimsHasImported(String status) {
-      // Given
-      UUID submissionId = UUID.fromString("5933fc67-bac7-4f48-81ed-61c8c463f054");
-      when(dataClaimsRestService.getSubmission(submissionId))
-          .thenReturn(
-              Mono.just(
-                  GetSubmission200Response.builder()
-                      .submission(SubmissionFields.builder().build())
+                      .submission(SubmissionFields.builder().status(status).build())
                       .claims(
                           Arrays.asList(
-                              GetSubmission200ResponseClaimsInner.builder().status(status).build(),
-                              GetSubmission200ResponseClaimsInner.builder().status(status).build()))
+                              GetSubmission200ResponseClaimsInner.builder()
+                                  .status(StatusEnum.VALID)
+                                  .build(),
+                              GetSubmission200ResponseClaimsInner.builder()
+                                  .status(StatusEnum.INVALID)
+                                  .build()))
                       .build()));
 
       assertThat(
@@ -192,16 +126,20 @@ public class ImportInProgressControllerTest {
           .hasRedirectedUrl("/view-submission-summary");
     }
 
-    @Test
-    @DisplayName("Should redirect when multiple claims has imported")
-    void shouldRedirectWhenNilSubmission() {
+    @ParameterizedTest
+    @EnumSource(
+        value = SubmissionStatus.class,
+        names = {"VALIDATION_SUCCEEDED", "VALIDATION_FAILED"})
+    @DisplayName("Should redirect when nil submission")
+    void shouldRedirectWhenNilSubmission(SubmissionStatus status) {
       // Given
       UUID submissionId = UUID.fromString("5933fc67-bac7-4f48-81ed-61c8c463f054");
       when(dataClaimsRestService.getSubmission(submissionId))
           .thenReturn(
               Mono.just(
                   GetSubmission200Response.builder()
-                      .submission(SubmissionFields.builder().isNilSubmission(true).build())
+                      .submission(
+                          SubmissionFields.builder().isNilSubmission(true).status(status).build())
                       .build()));
 
       assertThat(
@@ -248,52 +186,6 @@ public class ImportInProgressControllerTest {
           .failure()
           .hasCauseInstanceOf(IllegalArgumentException.class)
           .hasMessageContaining("Submission fields is null");
-    }
-
-    @Test
-    @DisplayName("Should throw error when submission has no claims")
-    void shouldThrowErrorWhenSubmissionHasNoClaims() {
-      // Given
-      UUID submissionId = UUID.fromString("5933fc67-bac7-4f48-81ed-61c8c463f054");
-      when(dataClaimsRestService.getSubmission(submissionId))
-          .thenReturn(
-              Mono.just(
-                  GetSubmission200Response.builder()
-                      .submission(SubmissionFields.builder().build())
-                      .claims(Collections.emptyList())
-                      .build()));
-
-      assertThat(
-              mockMvc.perform(
-                  get("/import-in-progress")
-                      .with(oidcLogin().oidcUser(ControllerTestHelper.getOidcUser()))
-                      .sessionAttr("bulkClaimSubmissionId", submissionId.toString())))
-          .failure()
-          .hasCauseInstanceOf(IllegalArgumentException.class)
-          .hasMessageContaining("No claims found for bulk submission: " + submissionId);
-    }
-
-    @Test
-    @DisplayName("Should throw error when submission claims is null")
-    void shouldThrowErrorWhenSubmissionClaimsIsNull() {
-      // Given
-      UUID submissionId = UUID.fromString("5933fc67-bac7-4f48-81ed-61c8c463f054");
-      when(dataClaimsRestService.getSubmission(submissionId))
-          .thenReturn(
-              Mono.just(
-                  GetSubmission200Response.builder()
-                      .submission(SubmissionFields.builder().build())
-                      .claims(null)
-                      .build()));
-
-      assertThat(
-              mockMvc.perform(
-                  get("/import-in-progress")
-                      .with(oidcLogin().oidcUser(ControllerTestHelper.getOidcUser()))
-                      .sessionAttr(BULK_SUBMISSION_ID, submissionId.toString())))
-          .failure()
-          .hasCauseInstanceOf(IllegalArgumentException.class)
-          .hasMessageContaining("No claims found for bulk submission: " + submissionId);
     }
 
     @ParameterizedTest

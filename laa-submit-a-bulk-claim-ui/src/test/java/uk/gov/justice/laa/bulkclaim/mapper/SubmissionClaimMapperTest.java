@@ -78,6 +78,7 @@ class SubmissionClaimMapperTest {
             .disbursementsVatAmount(new BigDecimal("17.50"))
             .netWaitingCostsAmount(new BigDecimal("400.40"))
             .travelWaitingCostsAmount(new BigDecimal("500.50"))
+            .totalValue(new BigDecimal("1234.56"))
             .build();
     // When
     SubmissionClaimRowCostsDetails result = mapper.toSubmissionClaimRowCostsDetails(claimFields);
@@ -102,6 +103,7 @@ class SubmissionClaimMapperTest {
           softAssertions
               .assertThat(result.travelWaitingCostsAmount())
               .isEqualTo(new BigDecimal("500.50"));
+          softAssertions.assertThat(result.claimValue()).isEqualTo(new BigDecimal("1234.56"));
         });
   }
 }

@@ -7,9 +7,20 @@ import org.mapstruct.Named;
 import uk.gov.justice.laa.bulkclaim.dto.submission.SubmissionSummary;
 import uk.gov.justice.laa.claims.model.GetSubmission200Response;
 
+/**
+ * Maps between {@link GetSubmission200Response} and {@link SubmissionSummary}.
+ *
+ * @author Jamie Briggs
+ */
 @Mapper(componentModel = "spring")
 public interface SubmissionSummaryMapper {
 
+  /**
+   * Maps a {@link GetSubmission200Response} to a {@link SubmissionSummary}.
+   *
+   * @param submissionResponse The response to map.
+   * @return The mapped {@link SubmissionSummary}.
+   */
   @Mapping(target = "submissionReference", source = "submission.submissionId")
   @Mapping(target = "areaOfLaw", source = "submission.areaOfLaw")
   @Mapping(target = "officeAccount", source = "submission.officeAccountNumber")

@@ -16,14 +16,5 @@ public record SubmissionCostsSummary(
     BigDecimal disbursements,
     BigDecimal additionalPayments,
     // TODO: Where is fixed fee from?
-    BigDecimal fixedFee) {
-
-  /**
-   * Returns the total value of the submission.
-   *
-   * @return the total value of the submission
-   */
-  public BigDecimal submissionValue() {
-    return profitCosts.add(disbursements).add(additionalPayments);
-  }
-}
+    BigDecimal fixedFee,
+    BigDecimal submissionValue) {}
