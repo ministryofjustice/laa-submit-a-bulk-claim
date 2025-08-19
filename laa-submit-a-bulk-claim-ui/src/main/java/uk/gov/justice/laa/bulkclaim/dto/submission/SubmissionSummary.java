@@ -19,7 +19,7 @@ import java.util.UUID;
 public record SubmissionSummary(
     UUID submissionReference,
     String status,
-    String submissionPeriod,
+    LocalDate submissionPeriod,
     String officeAccount,
     BigDecimal submissionValue,
     String areaOfLaw,

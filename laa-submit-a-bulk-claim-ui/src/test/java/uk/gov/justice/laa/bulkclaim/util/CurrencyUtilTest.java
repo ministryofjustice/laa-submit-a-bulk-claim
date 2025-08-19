@@ -13,7 +13,7 @@ class CurrencyUtilTest {
 
   @Test
   @DisplayName("Should return zero")
-  void shouldReturnZero(){
+  void shouldReturnZero() {
     // Given
     BigDecimal zero = BigDecimal.ZERO;
     // Then
@@ -22,7 +22,7 @@ class CurrencyUtilTest {
 
   @Test
   @DisplayName("Should return 5p")
-  void shouldReturn5pence(){
+  void shouldReturn5pence() {
     // Given
     BigDecimal input = new BigDecimal("0.05");
     // Then
@@ -31,7 +31,7 @@ class CurrencyUtilTest {
 
   @Test
   @DisplayName("Should return £1,000.50")
-  void shouldReturn1000_05(){
+  void shouldReturn1000_05() {
     // Given
     BigDecimal input = new BigDecimal("1000.50");
     // Then
@@ -40,7 +40,7 @@ class CurrencyUtilTest {
 
   @Test
   @DisplayName("Should return £9,876,543,210.99")
-  void shouldReturnMillions(){
+  void shouldReturnMillions() {
     // Given
     BigDecimal input = new BigDecimal("9876543210.99");
     // Then

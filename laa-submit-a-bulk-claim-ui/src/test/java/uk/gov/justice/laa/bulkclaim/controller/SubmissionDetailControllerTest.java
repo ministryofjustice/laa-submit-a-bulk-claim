@@ -35,16 +35,11 @@ import uk.gov.justice.laa.claims.model.GetSubmission200Response;
 @DisplayName("Submission detail controller test")
 class SubmissionDetailControllerTest {
 
-  @Autowired
-  private MockMvcTester mockMvc;
+  @Autowired private MockMvcTester mockMvc;
 
-  @MockitoBean
-  private SubmissionSummaryBuilder submissionSummaryBuilder;
-  @MockitoBean
-  private SubmissionClaimDetailsBuilder submissionClaimDetailsBuilder;
-  @MockitoBean
-  private DataClaimsRestService dataClaimsRestService;
-
+  @MockitoBean private SubmissionSummaryBuilder submissionSummaryBuilder;
+  @MockitoBean private SubmissionClaimDetailsBuilder submissionClaimDetailsBuilder;
+  @MockitoBean private DataClaimsRestService dataClaimsRestService;
 
   @Nested
   @DisplayName("GET: /submission/{submissionId}")
@@ -55,30 +50,32 @@ class SubmissionDetailControllerTest {
     void shouldExpectRedirect() {
       // Given
       UUID submissionReference = UUID.fromString("bceac49c-d756-4e05-8e28-3334b84b6fe8");
-      when(dataClaimsRestService.getSubmission(submissionReference)).thenReturn(Mono.just(
-          GetSubmission200Response.builder().build()));
-      when(submissionSummaryBuilder.build(any())).thenReturn(new SubmissionSummary(
-          submissionReference,
-          "Submitted",
-          "2025-05",
-          "AQ2B3C",
-          new BigDecimal("100.50"),
-          "Legal aid",
-          LocalDate.of(2025, 1, 1)
-      ));
-      when(submissionClaimDetailsBuilder.build(any())).thenReturn(
-          new SubmissionClaimDetails(
-              new SubmissionCostsSummary(
-                  new BigDecimal("100.00"),
+      when(dataClaimsRestService.getSubmission(submissionReference))
+          .thenReturn(Mono.just(GetSubmission200Response.builder().build()));
+      when(submissionSummaryBuilder.build(any()))
+          .thenReturn(
+              new SubmissionSummary(
+                  submissionReference,
+                  "Submitted",
+                  LocalDate.of(2025, 5, 1),
+                  "AQ2B3C",
                   new BigDecimal("100.50"),
-                  new BigDecimal("100.85"),
-                  new BigDecimal("100.90")
-              ), Collections.emptyList()));
+                  "Legal aid",
+                  LocalDate.of(2025, 1, 1)));
+      when(submissionClaimDetailsBuilder.build(any()))
+          .thenReturn(
+              new SubmissionClaimDetails(
+                  new SubmissionCostsSummary(
+                      new BigDecimal("100.00"),
+                      new BigDecimal("100.50"),
+                      new BigDecimal("100.85"),
+                      new BigDecimal("100.90")),
+                  Collections.emptyList()));
       // When
       assertThat(
-          mockMvc.perform(
-              get("/submission/" + submissionReference)
-                  .with(oidcLogin().oidcUser(ControllerTestHelper.getOidcUser()))))
+              mockMvc.perform(
+                  get("/submission/" + submissionReference)
+                      .with(oidcLogin().oidcUser(ControllerTestHelper.getOidcUser()))))
           .hasStatus3xxRedirection()
           .hasRedirectedUrl("/view-submission-detail");
     }
