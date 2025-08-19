@@ -1,6 +1,7 @@
 package uk.gov.justice.laa.bulkclaim.controller;
 
 import static uk.gov.justice.laa.bulkclaim.config.SessionConstants.BULK_SUBMISSION_ID;
+import static uk.gov.justice.laa.bulkclaim.config.SessionConstants.UPLOADED_FILENAME;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -24,7 +25,9 @@ import uk.gov.justice.laa.bulkclaim.validation.BulkImportFileValidator;
 import uk.gov.justice.laa.bulkclaim.validation.BulkImportFileVirusValidator;
 import uk.gov.justice.laa.claims.model.CreateBulkSubmission201Response;
 
-/** Controller for handling the bulk upload requests. */
+/**
+ * Controller for handling the bulk upload requests.
+ */
 @Slf4j
 @RequiredArgsConstructor
 @Controller
@@ -40,7 +43,7 @@ public class BulkImportController {
   /**
    * Renders the upload page.
    *
-   * @param model the model to be populated with data
+   * @param model    the model to be populated with data
    * @param oidcUser the authenticated user principal
    * @return the upload page
    */
@@ -77,8 +80,8 @@ public class BulkImportController {
    * Performs a bulk upload for the given file.
    *
    * @param fileUploadForm the file to be uploaded
-   * @param model the model to be populated with data
-   * @param oidcUser the authenticated user principal
+   * @param model          the model to be populated with data
+   * @param oidcUser       the authenticated user principal
    * @return the submission page
    */
   @PostMapping("/upload")
@@ -108,6 +111,8 @@ public class BulkImportController {
           bulkSubmissionResponse.getBulkSubmissionId());
       redirectAttributes.addFlashAttribute(
           BULK_SUBMISSION_ID, bulkSubmissionResponse.getBulkSubmissionId());
+      redirectAttributes.addFlashAttribute(
+          UPLOADED_FILENAME, fileUploadForm.file().getOriginalFilename());
       return "redirect:/import-in-progress";
     } catch (Exception e) {
       log.error("Failed to upload file to Claims API with message: {}", e.getMessage());

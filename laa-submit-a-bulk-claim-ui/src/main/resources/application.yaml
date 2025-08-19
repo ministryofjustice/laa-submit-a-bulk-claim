@@ -1,11 +1,12 @@
 server:
   port: 8082
+
+
 spring:
   servlet:
     multipart:
       max-file-size: ${SERVER_MAX_FILE_SIZE}
       max-request-size: ${SERVER_MAX_FILE_SIZE}
-
   security:
     oauth2:
       client:

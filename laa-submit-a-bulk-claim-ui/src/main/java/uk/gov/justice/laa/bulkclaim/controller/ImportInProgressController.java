@@ -2,6 +2,7 @@ package uk.gov.justice.laa.bulkclaim.controller;
 
 import static uk.gov.justice.laa.bulkclaim.config.SessionConstants.BULK_SUBMISSION;
 import static uk.gov.justice.laa.bulkclaim.config.SessionConstants.BULK_SUBMISSION_ID;
+import static uk.gov.justice.laa.bulkclaim.config.SessionConstants.UPLOADED_FILENAME;
 
 import java.util.List;
 import java.util.UUID;
@@ -28,7 +29,7 @@ import uk.gov.justice.laa.claims.model.GetSubmission200ResponseClaimsInner;
 @Slf4j
 @Controller
 @RequiredArgsConstructor
-@SessionAttributes({BULK_SUBMISSION_ID, BULK_SUBMISSION})
+@SessionAttributes({BULK_SUBMISSION_ID, BULK_SUBMISSION, UPLOADED_FILENAME})
 public class ImportInProgressController {
 
   private final DataClaimsRestService dataClaimsRestService;
