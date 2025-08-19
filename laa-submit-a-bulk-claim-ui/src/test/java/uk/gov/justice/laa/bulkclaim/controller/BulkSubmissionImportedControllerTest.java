@@ -107,8 +107,8 @@ class BulkSubmissionImportedControllerTest {
 
   @ParameterizedTest
   @ValueSource(ints = {400, 401, 403, 500, 503})
-  @DisplayName("Should redirect to error when submission not found")
-  void shouldReturnExpectedResultWithoutSubmissionPresent(int statusCode) {
+  @DisplayName("Should redirect to error when submission could not be retrieved")
+  void shouldReturnErrorWhenGetSubmissionFails(int statusCode) {
     // Given
     UUID bulkSubmissionId = UUID.fromString("314d1cac-ffb8-41b5-9013-bab4e47e23ca");
     when(dataClaimsRestService.getSubmission(bulkSubmissionId))
