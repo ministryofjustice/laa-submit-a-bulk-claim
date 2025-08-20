@@ -17,6 +17,7 @@ import uk.gov.justice.laa.claims.model.ClaimFields;
 import uk.gov.justice.laa.claims.model.ClaimValidationError;
 import uk.gov.justice.laa.claims.model.CreateBulkSubmission201Response;
 import uk.gov.justice.laa.claims.model.GetSubmission200Response;
+import uk.gov.justice.laa.claims.model.MatterStartsFields;
 
 /**
  * REST Service interface for interacting with the Claims API.
@@ -60,6 +61,9 @@ public interface DataClaimsRestService {
   Mono<ClaimFields> getSubmissionClaim(
       @PathVariable("submission-id") UUID submissionId, @PathVariable("claim-id") UUID claimId);
 
+  @GetExchange(value = "/submissions/{submission-id}/matter-starts/{matter-starts-id}")
+  Mono<MatterStartsFields> getSubmissionMatterStarts(
+      @PathVariable("submission-id") UUID submissionId, @PathVariable("matter-starts-id") UUID claimId);
   /**
    * Gets validation errors for a submission.
    *
