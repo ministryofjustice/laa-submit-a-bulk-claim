@@ -15,9 +15,11 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.SessionAttributes;
 import uk.gov.justice.laa.bulkclaim.builder.SubmissionClaimDetailsBuilder;
+import uk.gov.justice.laa.bulkclaim.builder.SubmissionMatterStartsDetailsBuilder;
 import uk.gov.justice.laa.bulkclaim.builder.SubmissionSummaryBuilder;
 import uk.gov.justice.laa.bulkclaim.constants.ViewSubmissionNavigationTab;
 import uk.gov.justice.laa.bulkclaim.dto.submission.SubmissionClaimDetails;
+import uk.gov.justice.laa.bulkclaim.dto.submission.SubmissionMatterStartsDetails;
 import uk.gov.justice.laa.bulkclaim.dto.submission.SubmissionSummary;
 import uk.gov.justice.laa.bulkclaim.service.claims.DataClaimsRestService;
 import uk.gov.justice.laa.claims.model.GetSubmission200Response;
@@ -35,6 +37,7 @@ public class SubmissionDetailController {
 
   private final SubmissionSummaryBuilder submissionSummaryBuilder;
   private final SubmissionClaimDetailsBuilder submissionClaimDetailsBuilder;
+  private final SubmissionMatterStartsDetailsBuilder submissionMatterStartsDetailsBuilder;
   private final DataClaimsRestService dataClaimsRestService;
 
   /**
@@ -72,7 +75,9 @@ public class SubmissionDetailController {
       SubmissionClaimDetails claimDetails = submissionClaimDetailsBuilder.build(submissionResponse);
       model.addAttribute("claimDetails", claimDetails);
     } else {
-      // If no nav-tab request param or anything else, just show the default claims tab
+      SubmissionMatterStartsDetails build =
+          submissionMatterStartsDetailsBuilder.build(submissionResponse);
+      model.addAttribute("matterStartsDetails", build);
     }
     model.addAttribute("submissionSummary", submissionSummary);
     model.addAttribute("navTab", navigationTab);

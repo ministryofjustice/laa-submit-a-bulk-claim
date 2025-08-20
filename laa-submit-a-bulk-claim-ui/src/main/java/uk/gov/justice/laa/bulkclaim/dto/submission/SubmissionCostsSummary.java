@@ -5,10 +5,10 @@ import java.math.BigDecimal;
 /**
  * Holds summary information about the costs of a submission.
  *
- * @param profitCosts the total profit costs of the submission
- * @param disbursements the total disbursements of the submission including VAT
- * @param additionalPayments the total additional payments of the submission
- * @param fixedFee the total fixed fee of the submission
+ * @param profitCosts the numberOfMatterStarts profit costs of the submission
+ * @param disbursements the numberOfMatterStarts disbursements of the submission including VAT
+ * @param additionalPayments the numberOfMatterStarts additional payments of the submission
+ * @param fixedFee the numberOfMatterStarts fixed fee of the submission
  * @author Jamie Briggs
  */
 public record SubmissionCostsSummary(

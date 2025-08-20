@@ -401,8 +401,7 @@ class DataClaimsRestServiceIntegrationTest extends MockServerIntegrationTest {
                   .withHeader("Content-Type", "application/json")
                   .withBody(expectJson));
       // Then
-      MatterStartsFields
-          block =
+      MatterStartsFields block =
           dataClaimsRestService.getSubmissionMatterStarts(submissionId, matterStartsId).block();
       String result = objectMapper.writeValueAsString(block);
       assertThatJsonMatches(expectJson, result);
@@ -424,8 +423,10 @@ class DataClaimsRestServiceIntegrationTest extends MockServerIntegrationTest {
       // When
       assertThrows(
           BadRequest.class,
-          () -> dataClaimsRestService.getSubmissionMatterStarts(submissionId, matterStartsId)
-              .block());
+          () ->
+              dataClaimsRestService
+                  .getSubmissionMatterStarts(submissionId, matterStartsId)
+                  .block());
     }
 
     @Test
@@ -462,8 +463,10 @@ class DataClaimsRestServiceIntegrationTest extends MockServerIntegrationTest {
       // When
       assertThrows(
           Forbidden.class,
-          () -> dataClaimsRestService.getSubmissionMatterStarts(submissionId, matterStartsId)
-              .block());
+          () ->
+              dataClaimsRestService
+                  .getSubmissionMatterStarts(submissionId, matterStartsId)
+                  .block());
     }
 
     @Test
@@ -500,8 +503,10 @@ class DataClaimsRestServiceIntegrationTest extends MockServerIntegrationTest {
       // When
       assertThrows(
           InternalServerError.class,
-          () -> dataClaimsRestService.getSubmissionMatterStarts(submissionId, matterStartsId)
-              .block());
+          () ->
+              dataClaimsRestService
+                  .getSubmissionMatterStarts(submissionId, matterStartsId)
+                  .block());
     }
   }
 
@@ -621,5 +626,4 @@ class DataClaimsRestServiceIntegrationTest extends MockServerIntegrationTest {
           () -> dataClaimsRestService.getValidationErrors(submissionId).block());
     }
   }
-
 }

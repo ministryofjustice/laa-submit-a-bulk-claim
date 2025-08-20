@@ -11,7 +11,7 @@ import java.util.UUID;
  * @param status the status of the submission
  * @param submissionPeriod submission period
  * @param officeAccount account number for the office
- * @param submissionValue total value of the submission
+ * @param submissionValue numberOfMatterStarts value of the submission
  * @param areaOfLaw type of submission
  * @param submitted date the submission was submitted
  * @author Jamie Briggs
