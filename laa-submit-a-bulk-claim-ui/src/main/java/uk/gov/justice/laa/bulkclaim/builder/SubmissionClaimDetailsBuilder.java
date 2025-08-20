@@ -60,7 +60,7 @@ public class SubmissionClaimDetailsBuilder {
             .map(x -> x.costsDetails().claimValue())
             .reduce(BigDecimal.ZERO, BigDecimal::add);
 
-    // Add to cost summary using claims
+    // Add to the cost summary using claims
     SubmissionCostsSummary costSummary =
         new SubmissionCostsSummary(
             totalProfitCosts,
