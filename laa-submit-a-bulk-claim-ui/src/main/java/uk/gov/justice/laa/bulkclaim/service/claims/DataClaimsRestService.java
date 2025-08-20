@@ -63,7 +63,9 @@ public interface DataClaimsRestService {
 
   @GetExchange(value = "/submissions/{submission-id}/matter-starts/{matter-starts-id}")
   Mono<MatterStartsFields> getSubmissionMatterStarts(
-      @PathVariable("submission-id") UUID submissionId, @PathVariable("matter-starts-id") UUID claimId);
+      @PathVariable("submission-id") UUID submissionId,
+      @PathVariable("matter-starts-id") UUID claimId);
+
   /**
    * Gets validation errors for a submission.
    *

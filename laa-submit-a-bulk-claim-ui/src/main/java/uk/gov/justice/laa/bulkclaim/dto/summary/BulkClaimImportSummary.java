@@ -18,9 +18,9 @@ public record BulkClaimImportSummary(
   }
 
   /**
-   * Returns the total number of errors for the bulk claim.
+   * Returns the numberOfMatterStarts number of errors for the bulk claim.
    *
-   * @return the total number of errors for the bulk claim
+   * @return the numberOfMatterStarts number of errors for the bulk claim
    */
   public int totalErrors() {
     return claimErrors != null ? claimErrors.size() : 0;
