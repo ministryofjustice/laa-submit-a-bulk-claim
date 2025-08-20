@@ -48,165 +48,206 @@
 
         </dl>
 
+
+      </div>
+
+      <div class="govuk-grid-column-full">
         <nav class="moj-sub-navigation" aria-label="Sub navigation">
 
           <ul class="moj-sub-navigation__list">
+            <!--/*@thymesVar id="navTab" type="uk.gov.justice.laa.bulkclaim.constants.ViewSubmissionNavigationTab"*/-->
             <li class="moj-sub-navigation__item">
-              <a class="moj-sub-navigation__link" aria-current="page" href="#1"
+              <a class="moj-sub-navigation__link"
+                 th:with="isCurrent=${navTab.toString() == 'CLAIM_DETAILS'},
+                  url=@{/view-submission-detail(navTab='CLAIM_DETAILS')}"
+                 th:attr="aria-current=${isCurrent ? 'page' : null}"
+                 th:href="${isCurrent ? '#claims' : url}"
                  th:text="#{viewSubmission.claims.subHeading}"/>
             </li>
 
             <li class="moj-sub-navigation__item">
-              <a class="moj-sub-navigation__link" href="#2"
+              <a class="moj-sub-navigation__link"
+                 th:with="isCurrent=${navTab.toString() == 'MATTER_STARTS'},
+                  url=@{/view-submission-detail(navTab='MATTER_STARTS')}"
+                 th:attr="aria-current=${isCurrent ? 'page' : null}"
+                 th:href="${isCurrent ? '#matter-starts' : url}"
                  th:text="#{viewSubmission.matterStarts.subHeading}"/>
             </li>
 
           </ul>
 
         </nav>
+
       </div>
 
-
-      <div class="govuk-grid-column-two-thirds">
-        <h2 class="govuk-heading-l" th:text="#{viewSubmission.claims.subHeading}"/>
-        <table class="govuk-table">
-          <caption class="govuk-table__caption govuk-table__caption--m"
-                   th:text="#{viewSubmission.claims.submissionCosts.caption}"/>
-          <thead class="govuk-table__head">
-          <tr class="govuk-table__row">
-            <th scope="col" class="govuk-table__header"></th>
-            <th scope="col" class="govuk-table__header"
-                th:text="#{viewSubmission.claims.submissionCosts.tableHeader.claimed}"/>
-          </tr>
-          </thead>
-          <tbody class="govuk-table__body">
-          <tr class="govuk-table__row">
-            <th scope="row" class="govuk-table__header"
-                th:text="#{viewSubmission.claims.submissionCosts.profitCosts}"/>
-            <td class="govuk-table__cell"
-              id="profit-costs-value"
-              th:text="${@currencyUtil.toString(claimDetails.costsSummary().profitCosts())}"/>
-          </tr>
-          <tr class="govuk-table__row">
-            <th scope="row" class="govuk-table__header"
-                th:text="#{viewSubmission.claims.submissionCosts.disbursements}"/>
-            <td class="govuk-table__cell"
-              id="disbursements-value"
-              th:text="${@currencyUtil.toString(claimDetails.costsSummary().disbursements())}"/>
-          </tr>
-          <tr class="govuk-table__row">
-            <th scope="row" class="govuk-table__header"
-                th:text="#{viewSubmission.claims.submissionCosts.additionalPayments}"/>
-            <td class="govuk-table__cell"
-                id="additional-payments-costs-value"
-                th:text="${@currencyUtil.toString(claimDetails.costsSummary().additionalPayments())}"/>
-          </tr>
-          <tr class="govuk-table__row">
-            <th scope="row" class="govuk-table__header"
-                th:text="#{viewSubmission.claims.submissionCosts.fixedFee}"/>
-            <td class="govuk-table__cell"
-                id="fixed-fee-value"
-                th:text="${@currencyUtil.toString(claimDetails.costsSummary().fixedFee())}"/>
-          </tr>
-          <tr class="govuk-table__row">
-            <th scope="row" class="govuk-table__header"
-                th:text="#{viewSubmission.claims.submissionCosts.submissionValue}"/>
-            <td class="govuk-table__cell"
-                id="submission-value"
-                th:text="${@currencyUtil.toString(claimDetails.costsSummary().submissionValue())}"/>
-          </tr>
-          </tbody>
-        </table>
-      </div>
-      <div class="govuk-grid-column-full">
-
-        <div class="moj-scrollable-pane">
-          <table class="govuk-table" data-module="moj-sortable-table">
-
+      <!--Claim details information-->
+      <th:block th:if="${navTab.toString() == 'CLAIM_DETAILS'}">
+        <div class="govuk-grid-column-two-thirds">
+          <h2 class="govuk-heading-l" id="claims" th:text="#{viewSubmission.claims.subHeading}"/>
+          <table class="govuk-table">
             <caption class="govuk-table__caption govuk-table__caption--m"
-                     th:text="#{viewSubmission.claims.allClaims.caption}"/>
-
+                     th:text="#{viewSubmission.claims.submissionCosts.caption}"/>
             <thead class="govuk-table__head">
             <tr class="govuk-table__row">
-
-              <th scope="col" class="govuk-table__header" aria-sort="none"
-                  th:text="#{viewSubmission.claims.allClaims.number}"/>
-              <th scope="col" class="govuk-table__header" aria-sort="none"
-                  th:text="#{submission.claim.properties.uniqueFileNumber}"/>
-              <th scope="col" class="govuk-table__header" aria-sort="none"
-                  th:text="#{submission.claim.properties.uniqueClaimNumber}"/>
-              <th scope="col" class="govuk-table__header" aria-sort="none"
-                  th:text="#{submission.claim.properties.client}"/>
-              <th scope="col" class="govuk-table__header" aria-sort="none"
-                  th:text="#{submission.claim.properties.category}"/>
-              <th scope="col" class="govuk-table__header" aria-sort="none"
-                  th:text="#{submission.claim.properties.matter}"/>
-              <th scope="col" class="govuk-table__header" aria-sort="none"
-                  th:text="#{submission.claim.properties.concludedClaimed}"/>
-              <th scope="col" class="govuk-table__header" aria-sort="none"
-                  th:text="#{submission.claim.properties.feeType}"/>
-              <th scope="col" class="govuk-table__header" aria-sort="none"
-                  th:text="#{submission.claim.properties.feeCode}"/>
-              <th scope="col" class="govuk-table__header" aria-sort="none"
-                  th:text="#{submission.claim.properties.claimValue}"/>
-
+              <th scope="col" class="govuk-table__header"></th>
+              <th scope="col" class="govuk-table__header"
+                  th:text="#{viewSubmission.claims.submissionCosts.tableHeader.claimed}"/>
             </tr>
             </thead>
-
             <tbody class="govuk-table__body">
-
-            <tr class="govuk-table__row"
-                th:each="claim, idx : ${claimDetails.submissionClaims()}"
-                th:id="|claim-${idx.index}|">
-
+            <tr class="govuk-table__row">
+              <th scope="row" class="govuk-table__header"
+                  th:text="#{viewSubmission.claims.submissionCosts.profitCosts}"/>
               <td class="govuk-table__cell"
-                  th:id="|line-number-${idx.index}|"
-                  th:data-sort-value="${claim.lineNumber()}"
-                  th:text="${claim.lineNumber()}"/>
-              <td class="govuk-table__cell"
-                  th:id="|unique-file-number-${idx.index}|"
-                  th:data-sort-value="${claim.ufn()}"
-                  th:text="${claim.ufn()}"/>
-              <td class="govuk-table__cell"
-                  th:id="|unique-client-number-${idx.index}|"
-                  th:data-sort-value="${claim.ucn()}"
-                  th:text="${claim.ucn()}"/>
-              <td class="govuk-table__cell"
-                  th:id="|client-name-${idx.index}|"
-                  th:data-sort-value="${claim.client()}"
-                  th:text="${claim.client()}"/>
-              <td class="govuk-table__cell"
-                  th:id="|category-${idx}|"
-                  th:data-sort-value="${claim.category()}"
-                  th:text="${claim.category()}"/>
-              <td class="govuk-table__cell"
-                  th:id="|matter-${idx}|"
-                  th:data-sort-value="${claim.matter()}"
-                  th:text="${claim.matter()}"/>
-              <td class="govuk-table__cell"
-                  th:id="|concluded-claimed-${idx}|"
-                  th:data-sort-value="${claim.concludedOrClaimedDate()}"
-                  th:text="${claim.concludedOrClaimedDate()}"/>
-              <td class="govuk-table__cell"
-                  th:id="|fee-type-${idx.index}|"
-                  th:data-sort-value="${claim.feeType()}"
-                  th:text="${claim.feeType()}"/>
-              <td class="govuk-table__cell"
-                  th:id="|fee-code-${idx.index}|"
-                  th:data-sort-value="${claim.feeCode()}"
-                  th:text="${claim.feeCode()}"/>
-              <td class="govuk-table__cell"
-                  th:with="cost=${@currencyUtil.toString(claim.costsDetails().claimValue())}"
-                  th:id="|claim-value-${idx.index}|"
-                  th:data-sort-value="${cost}"
-                  th:text="${cost}"/>
+                  id="profit-costs-value"
+                  th:text="${@currencyUtil.toString(claimDetails.costsSummary().profitCosts())}"/>
             </tr>
-
-
+            <tr class="govuk-table__row">
+              <th scope="row" class="govuk-table__header"
+                  th:text="#{viewSubmission.claims.submissionCosts.disbursements}"/>
+              <td class="govuk-table__cell"
+                  id="disbursements-value"
+                  th:text="${@currencyUtil.toString(claimDetails.costsSummary().disbursements())}"/>
+            </tr>
+            <tr class="govuk-table__row">
+              <th scope="row" class="govuk-table__header"
+                  th:text="#{viewSubmission.claims.submissionCosts.additionalPayments}"/>
+              <td class="govuk-table__cell"
+                  id="additional-payments-costs-value"
+                  th:text="${@currencyUtil.toString(claimDetails.costsSummary().additionalPayments())}"/>
+            </tr>
+            <tr class="govuk-table__row">
+              <th scope="row" class="govuk-table__header"
+                  th:text="#{viewSubmission.claims.submissionCosts.fixedFee}"/>
+              <td class="govuk-table__cell"
+                  id="fixed-fee-value"
+                  th:text="${@currencyUtil.toString(claimDetails.costsSummary().fixedFee())}"/>
+            </tr>
+            <tr class="govuk-table__row">
+              <th scope="row" class="govuk-table__header"
+                  th:text="#{viewSubmission.claims.submissionCosts.submissionValue}"/>
+              <td class="govuk-table__cell"
+                  id="submission-value"
+                  th:text="${@currencyUtil.toString(claimDetails.costsSummary().submissionValue())}"/>
+            </tr>
             </tbody>
           </table>
         </div>
-      </div>
+        <div class="govuk-grid-column-full">
+
+          <div class="moj-scrollable-pane">
+            <table class="govuk-table" data-module="moj-sortable-table">
+
+              <caption class="govuk-table__caption govuk-table__caption--m"
+                       th:text="#{viewSubmission.claims.allClaims.caption}"/>
+
+              <thead class="govuk-table__head">
+              <tr class="govuk-table__row">
+
+                <th scope="col" class="govuk-table__header" aria-sort="none"
+                    th:text="#{viewSubmission.claims.allClaims.number}"/>
+                <th scope="col" class="govuk-table__header" aria-sort="none"
+                    th:text="#{submission.claim.properties.uniqueFileNumber}"/>
+                <th scope="col" class="govuk-table__header" aria-sort="none"
+                    th:text="#{submission.claim.properties.uniqueClaimNumber}"/>
+                <th scope="col" class="govuk-table__header" aria-sort="none"
+                    th:text="#{submission.claim.properties.client}"/>
+                <th scope="col" class="govuk-table__header" aria-sort="none"
+                    th:text="#{submission.claim.properties.category}"/>
+                <th scope="col" class="govuk-table__header" aria-sort="none"
+                    th:text="#{submission.claim.properties.matter}"/>
+                <th scope="col" class="govuk-table__header" aria-sort="none"
+                    th:text="#{submission.claim.properties.concludedClaimed}"/>
+                <th scope="col" class="govuk-table__header" aria-sort="none"
+                    th:text="#{submission.claim.properties.feeType}"/>
+                <th scope="col" class="govuk-table__header" aria-sort="none"
+                    th:text="#{submission.claim.properties.feeCode}"/>
+                <th scope="col" class="govuk-table__header" aria-sort="none"
+                    th:text="#{submission.claim.properties.claimValue}"/>
+
+              </tr>
+              </thead>
+
+              <tbody class="govuk-table__body">
+
+              <tr class="govuk-table__row"
+                  th:each="claim, idx : ${claimDetails.submissionClaims()}"
+                  th:id="|claim-${idx.index}|">
+
+                <td class="govuk-table__cell"
+                    th:id="|line-number-${idx.index}|"
+                    th:data-sort-value="${claim.lineNumber()}"
+                    th:text="${claim.lineNumber()}"/>
+                <td class="govuk-table__cell"
+                    th:id="|unique-file-number-${idx.index}|"
+                    th:data-sort-value="${claim.ufn()}"
+                    th:text="${claim.ufn()}"/>
+                <td class="govuk-table__cell"
+                    th:id="|unique-client-number-${idx.index}|"
+                    th:data-sort-value="${claim.ucn()}"
+                    th:text="${claim.ucn()}"/>
+                <td class="govuk-table__cell"
+                    th:id="|client-name-${idx.index}|"
+                    th:data-sort-value="${claim.client()}"
+                    th:text="${claim.client()}"/>
+                <td class="govuk-table__cell"
+                    th:id="|category-${idx}|"
+                    th:data-sort-value="${claim.category()}"
+                    th:text="${claim.category()}"/>
+                <td class="govuk-table__cell"
+                    th:id="|matter-${idx}|"
+                    th:data-sort-value="${claim.matter()}"
+                    th:text="${claim.matter()}"/>
+                <td class="govuk-table__cell"
+                    th:id="|concluded-claimed-${idx}|"
+                    th:data-sort-value="${claim.concludedOrClaimedDate()}"
+                    th:text="${claim.concludedOrClaimedDate()}"/>
+                <td class="govuk-table__cell"
+                    th:id="|fee-type-${idx.index}|"
+                    th:data-sort-value="${claim.feeType()}"
+                    th:text="${claim.feeType()}"/>
+                <td class="govuk-table__cell"
+                    th:id="|fee-code-${idx.index}|"
+                    th:data-sort-value="${claim.feeCode()}"
+                    th:text="${claim.feeCode()}"/>
+                <td class="govuk-table__cell"
+                    th:with="cost=${@currencyUtil.toString(claim.costsDetails().claimValue())}"
+                    th:id="|claim-value-${idx.index}|"
+                    th:data-sort-value="${cost}"
+                    th:text="${cost}"/>
+              </tr>
+
+
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </th:block>
+
+      <th:block th:if="${navTab.toString() == 'MATTER_STARTS'}">
+        <div class="govuk-grid-column-two-thirds">
+          <h2 class="govuk-heading-l" id="matter-starts" th:text="#{viewSubmission.matterStarts.subHeading}"/>
+
+          <dl class="govuk-summary-list">
+            <div class="govuk-summary-list__row">
+              <dt class="govuk-summary-list__key">
+                Family
+              </dt>
+              <dd class="govuk-summary-list__value">
+                2
+              </dd>
+            </div>
+            <div class="govuk-summary-list__row">
+              <dt class="govuk-summary-list__key">
+                Immigration and asylum
+              </dt>
+              <dd class="govuk-summary-list__value">
+                3
+              </dd>
+            </div>
+          </dl>
+        </div>
+      </th:block>
     </div>
   </div>
 </main>

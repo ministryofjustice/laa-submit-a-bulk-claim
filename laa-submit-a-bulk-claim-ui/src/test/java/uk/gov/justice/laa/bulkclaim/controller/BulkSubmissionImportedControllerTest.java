@@ -6,8 +6,8 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.oidcLogin;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static uk.gov.justice.laa.bulkclaim.config.SessionConstants.BULK_SUBMISSION;
-import static uk.gov.justice.laa.bulkclaim.config.SessionConstants.BULK_SUBMISSION_ID;
+import static uk.gov.justice.laa.bulkclaim.constants.SessionConstants.BULK_SUBMISSION;
+import static uk.gov.justice.laa.bulkclaim.constants.SessionConstants.BULK_SUBMISSION_ID;
 
 import java.time.LocalDate;
 import java.util.Collections;

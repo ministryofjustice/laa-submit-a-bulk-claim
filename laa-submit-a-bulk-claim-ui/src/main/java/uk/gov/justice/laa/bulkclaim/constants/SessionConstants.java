@@ -1,4 +1,4 @@
-package uk.gov.justice.laa.bulkclaim.config;
+package uk.gov.justice.laa.bulkclaim.constants;
 
 /**
  * Contains session constant names used across the application.
