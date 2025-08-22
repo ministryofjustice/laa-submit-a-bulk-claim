@@ -29,6 +29,7 @@ import uk.gov.justice.laa.claims.model.ClaimFields;
 import uk.gov.justice.laa.claims.model.ClaimValidationError;
 import uk.gov.justice.laa.claims.model.CreateBulkSubmission201Response;
 import uk.gov.justice.laa.claims.model.GetSubmission200Response;
+import uk.gov.justice.laa.claims.model.MatterStartsFields;
 
 /**
  * Integration tests for the {@link DataClaimsRestService}.
@@ -61,7 +62,9 @@ class DataClaimsRestServiceIntegrationTest extends MockServerIntegrationTest {
           """
               {
                 "bulk_submission_id": "f7ed1cda-692e-417a-bb55-5a5135006774",
-                "submission_id": "aca8d879-3dd4-4fd1-97ee-03f0d0cfd5db"
+                "submission_ids": [
+                  "aca8d879-3dd4-4fd1-97ee-03f0d0cfd5db"
+                ]
               }
               """;
       mockServerClient
@@ -83,7 +86,7 @@ class DataClaimsRestServiceIntegrationTest extends MockServerIntegrationTest {
       // Then
       assertThat(result.getBulkSubmissionId())
           .isEqualTo(UUID.fromString("f7ed1cda-692e-417a-bb55-5a5135006774"));
-      assertThat(result.getSubmissionId())
+      assertThat(result.getSubmissionIds().get(0))
           .isEqualTo(UUID.fromString("aca8d879-3dd4-4fd1-97ee-03f0d0cfd5db"));
       assertThat(locationHeader).isEqualTo("/api/v0/bulk-submissions/1234567890");
     }
@@ -372,6 +375,138 @@ class DataClaimsRestServiceIntegrationTest extends MockServerIntegrationTest {
       assertThrows(
           InternalServerError.class,
           () -> dataClaimsRestService.getSubmissionClaim(submissionId, claimId).block());
+    }
+  }
+
+  @Nested
+  @DisplayName("GET: /api/v0/submission/{submission-id}/matter-starts/{matter-starts-id}")
+  class GetSubmissionMatterStarts {
+
+    @Test
+    @DisplayName("Should handle a 200 response")
+    void shouldHandle200Response() throws Exception {
+      // Given
+      UUID submissionId = UUID.fromString("3fa85f64-5717-4562-b3fc-2c963f66afa6");
+      UUID matterStartsId = UUID.fromString("f75578dc-add2-4fe1-80c4-4b9e8c3c523b");
+      String expectJson = readJsonFromFile("/GetMatterStarts200.json");
+      mockServerClient
+          .when(
+              HttpRequest.request()
+                  .withMethod("GET")
+                  .withPath(
+                      "/api/v0/submissions/" + submissionId + "/matter-starts/" + matterStartsId))
+          .respond(
+              response()
+                  .withStatusCode(200)
+                  .withHeader("Content-Type", "application/json")
+                  .withBody(expectJson));
+      // Then
+      MatterStartsFields block =
+          dataClaimsRestService.getSubmissionMatterStarts(submissionId, matterStartsId).block();
+      String result = objectMapper.writeValueAsString(block);
+      assertThatJsonMatches(expectJson, result);
+    }
+
+    @Test
+    @DisplayName("Should handle a 400 response")
+    void shouldHandle400Response() {
+      // Given
+      UUID submissionId = UUID.fromString("3fa85f64-5717-4562-b3fc-2c963f66afa6");
+      UUID matterStartsId = UUID.fromString("f75578dc-add2-4fe1-80c4-4b9e8c3c523b");
+      mockServerClient
+          .when(
+              HttpRequest.request()
+                  .withMethod("GET")
+                  .withPath(
+                      "/api/v0/submissions/" + submissionId + "/matter-starts/" + matterStartsId))
+          .respond(response().withStatusCode(400).withHeader("Content-Type", "application/json"));
+      // When
+      assertThrows(
+          BadRequest.class,
+          () ->
+              dataClaimsRestService
+                  .getSubmissionMatterStarts(submissionId, matterStartsId)
+                  .block());
+    }
+
+    @Test
+    @DisplayName("Should handle a 401 response")
+    void shouldHandle401Response() {
+      // Given
+      UUID submissionId = UUID.fromString("3fa85f64-5717-4562-b3fc-2c963f66afa6");
+      UUID matterStartsId = UUID.fromString("f75578dc-add2-4fe1-80c4-4b9e8c3c523b");
+      mockServerClient
+          .when(
+              HttpRequest.request()
+                  .withMethod("GET")
+                  .withPath("/api/v0/submissions/" + submissionId + "/claims/" + matterStartsId))
+          .respond(response().withStatusCode(401).withHeader("Content-Type", "application/json"));
+      // When
+      assertThrows(
+          Unauthorized.class,
+          () -> dataClaimsRestService.getSubmissionClaim(submissionId, matterStartsId).block());
+    }
+
+    @Test
+    @DisplayName("Should handle a 403 response")
+    void shouldHandle403Response() {
+      // Given
+      UUID submissionId = UUID.fromString("3fa85f64-5717-4562-b3fc-2c963f66afa6");
+      UUID matterStartsId = UUID.fromString("f75578dc-add2-4fe1-80c4-4b9e8c3c523b");
+      mockServerClient
+          .when(
+              HttpRequest.request()
+                  .withMethod("GET")
+                  .withPath(
+                      "/api/v0/submissions/" + submissionId + "/matter-starts/" + matterStartsId))
+          .respond(response().withStatusCode(403).withHeader("Content-Type", "application/json"));
+      // When
+      assertThrows(
+          Forbidden.class,
+          () ->
+              dataClaimsRestService
+                  .getSubmissionMatterStarts(submissionId, matterStartsId)
+                  .block());
+    }
+
+    @Test
+    @DisplayName("Should handle a 404 response")
+    void shouldHandle404Response() {
+      // Given
+      UUID submissionId = UUID.fromString("3fa85f64-5717-4562-b3fc-2c963f66afa6");
+      UUID claimId = UUID.fromString("f75578dc-add2-4fe1-80c4-4b9e8c3c523b");
+      mockServerClient
+          .when(
+              HttpRequest.request()
+                  .withMethod("GET")
+                  .withPath("/api/v0/submissions/" + submissionId + "/claims/" + claimId))
+          .respond(response().withStatusCode(404).withHeader("Content-Type", "application/json"));
+      // When
+      assertThrows(
+          NotFound.class,
+          () -> dataClaimsRestService.getSubmissionClaim(submissionId, claimId).block());
+    }
+
+    @Test
+    @DisplayName("Should handle a 500 response")
+    void shouldHandle500Response() {
+      // Given
+      UUID submissionId = UUID.fromString("3fa85f64-5717-4562-b3fc-2c963f66afa6");
+      UUID matterStartsId = UUID.fromString("f75578dc-add2-4fe1-80c4-4b9e8c3c523b");
+      mockServerClient
+          .when(
+              HttpRequest.request()
+                  .withMethod("GET")
+                  .withPath(
+                      "/api/v0/submissions/" + submissionId + "/matter-starts/" + matterStartsId))
+          .respond(response().withStatusCode(500).withHeader("Content-Type", "application/json"));
+      // When
+      assertThrows(
+          InternalServerError.class,
+          () ->
+              dataClaimsRestService
+                  .getSubmissionMatterStarts(submissionId, matterStartsId)
+                  .block());
     }
   }
 

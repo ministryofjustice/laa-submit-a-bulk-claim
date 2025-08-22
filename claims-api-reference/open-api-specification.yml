@@ -26,6 +26,13 @@ paths:
         Upload a file (as multipart/form-data) containing data related to a submission.
         The file is converted into a JSON document and stored in the `bulk_submission` table.
         A 201 response is returned with a `Location` header containing the URI of the created record.
+      parameters:
+        - name: userId
+          in: query
+          required: true
+          description: The user ID of the user performing the bulk submission
+          schema:
+            type: string
       requestBody:
         required: true
         content:
@@ -58,18 +65,23 @@ paths:
                     type: string
                     format: uuid
                     description: UUID of the created bulk submission record.
-                  submission_id:
-                    type: string
-                    format: uuid
-                    description: UUID for the future submission record, will have to be sent back in a later call.
+                  submission_ids:
+                    type: array
+                    items:
+                      type: string
+                      format: uuid
+                    description: list of UUIDs for the future submission records (only one submission per bulk expected), will have to be sent back in a later call.
         '400':
           description: 'Bad request'
         '401':
           description: 'Unauthorized'
         '403':
           description: 'Forbidden'
+        '415':
+          description: 'Unsupported Media Type'
         '500':
           description: 'Internal server error'
+
   /api/v0/bulk-submissions/{id}:
     get:
       operationId: getBulkSubmission
@@ -216,22 +228,7 @@ paths:
         content:
           application/json:
             schema:
-              type: object
-              description: Matter Start details
-              properties:
-                schedule_reference:
-                  type: string
-                category_code:
-                  type: string
-                procurement_area_code:
-                  type: string
-                access_point_code:
-                  type: string
-                delivery_location:
-                  type: string
-                number_of_matter_starts:
-                  type: integer
-                  example: 3
+              $ref: '#/components/schemas/MatterStartsFields'
       responses:
         '201':
           description: Matter Start created successfully
@@ -257,7 +254,60 @@ paths:
           description: 'Forbidden'
         '500':
           description: 'Internal server error'
-
+  /api/v0/submissions/{id}/matter-starts/{matter-starts-id}:
+    get:
+      operationId: getMatterStart
+      tags:
+        - Matter Starts
+      summary: Returns a Matter Start for a Submission
+      description: |
+        Returns a Matter Start record belonging to the submission with the specified ID.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: UUID of the submission
+          schema:
+            type: string
+            format: uuid
+        - name: matter-starts-id
+          in: path
+          required: true
+          description: UUID of the matter starts
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MatterStartsFields'
+      responses:
+        '201':
+          description: Matter Start created successfully
+          headers:
+            Location:
+              description: URI of the newly created Matter Start
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+                    format: uuid
+                    description: UUID of the created Matter Start
+        '400':
+          description: 'Bad request'
+        '401':
+          description: 'Unauthorized'
+        '403':
+          description: 'Forbidden'
+        '500':
+          description: 'Internal server error'
   /api/v0/submissions/{id}:
     patch:
       operationId: updateSubmission
@@ -282,7 +332,7 @@ paths:
       responses:
         '204':
           description: 'Submission status updated successfully'
-          content: {}
+          content: { }
         '400':
           description: 'Bad request'
         '401':
@@ -331,6 +381,10 @@ paths:
                           format: uuid
                         status:
                           type: string
+                          enum:
+                            - READY_TO_PROCESS
+                            - VALID
+                            - INVALID
                   matter_starts:
                     type: array
                     description: List of matter start IDs for this submission
@@ -418,11 +472,12 @@ paths:
       responses:
         '204':
           description: Claim updated successfully
-          content: {}
+          content: { }
         '400':
           description: Invalid request
         '404':
           description: Submission or claim not found
+
 
   /api/v0/validation-errors:
     get:
@@ -459,9 +514,16 @@ paths:
           description: 'Submission ID not found'
         '500':
           description: 'Internal server error'
-
 components:
   schemas:
+    BulkSubmissionStatus:
+      type: string
+      enum:
+        - READY_FOR_PARSING
+        - PARSING_COMPLETED
+        - PARSING_FAILED
+        - VALIDATION_FAILED
+        - REPLACED
     SubmissionPost:
       allOf:
         - $ref: '#/components/schemas/SubmissionFields'
@@ -475,6 +537,15 @@ components:
     SubmissionPatch:
       allOf:
         - $ref: '#/components/schemas/SubmissionFields'
+    SubmissionStatus:
+      type: string
+      enum:
+        - CREATED
+        - READY_FOR_VALIDATION
+        - VALIDATION_IN_PROGRESS
+        - VALIDATION_SUCCEEDED
+        - VALIDATION_FAILED
+        - REPLACED
     SubmissionFields:
       type: object
       description: submission details
@@ -496,14 +567,14 @@ components:
         area_of_law:
           type: string
           description: Area of law (e.g., "crime", "civil").
+        status:
+          $ref: "#/components/schemas/SubmissionStatus"
         schedule_number:
           type: string
-          nullable: true
           description: Optional schedule number.
         previous_submission_id:
           type: string
           format: uuid
-          nullable: true
           description: UUID of the previous submission that this replaces, if any.
         is_nil_submission:
           type: boolean
@@ -511,6 +582,9 @@ components:
         number_of_claims:
           type: integer
           description: Number of claims in this submission.
+        submitted:
+          type: date
+          description: Date the submission was submitted
 
     ClaimPost:
       allOf:
@@ -535,6 +609,10 @@ components:
       properties:
         status:
           type: string
+          enum:
+            - READY_TO_PROCESS
+            - VALID
+            - INVALID
         schedule_reference:
           type: string
         line_number:
@@ -595,6 +673,8 @@ components:
           type: string
         referral_source:
           type: string
+        total_value:
+          type: number
         client_forename:
           type: string
         client_surname:
@@ -757,3 +837,20 @@ components:
           type: string
         error_description:
           type: string
+    MatterStartsFields:
+      type: object
+      description: Matter starts for a submission
+      properties:
+        schedule_reference:
+          type: string
+        category_code:
+          type: string
+        procurement_area_code:
+          type: string
+        access_point_code:
+          type: string
+        delivery_location:
+          type: string
+        number_of_matter_starts:
+          type: integer
+          example: 3

@@ -10,17 +10,17 @@ import java.util.UUID;
  * @param submissions the submissions part of the bulk claim
  * @param claimErrors the claim errors part of the bulk claim
  */
-public record BulkClaimSummary(
-    List<SubmissionSummaryRow> submissions, List<SubmissionSummaryClaimError> claimErrors) {
+public record BulkClaimImportSummary(
+    List<SubmissionSummaryRow> submissions, List<SubmissionSummaryClaimErrorRow> claimErrors) {
 
   public boolean containsErrors() {
     return claimErrors != null && !claimErrors.isEmpty();
   }
 
   /**
-   * Returns the total number of errors for the bulk claim.
+   * Returns the numberOfMatterStarts number of errors for the bulk claim.
    *
-   * @return the total number of errors for the bulk claim
+   * @return the numberOfMatterStarts number of errors for the bulk claim
    */
   public int totalErrors() {
     return claimErrors != null ? claimErrors.size() : 0;
