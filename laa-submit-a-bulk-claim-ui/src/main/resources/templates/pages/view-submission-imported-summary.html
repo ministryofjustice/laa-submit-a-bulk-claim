@@ -26,7 +26,8 @@
           </svg>
         </div>
         <div class="moj-alert__content">
-          <h2 class="moj-alert__heading" th:text="#{bulkClaimImportSummary.errorsFoundModal.heading}"/>
+          <h2 class="moj-alert__heading"
+              th:text="#{bulkClaimImportSummary.errorsFoundModal.heading}"/>
           <th:block
               th:text="#{bulkClaimImportSummary.errorsFoundModal.message(${bulkClaimImportSummary.totalErrors()})}"/>
         </div>
@@ -38,7 +39,8 @@
 
       <!--Upload summary-->
       <table class="govuk-table" data-module="moj-sortable-table">
-        <caption class="govuk-table__caption" th:text="#{bulkClaimImportSummary.summaryTable.caption}"/>
+        <caption class="govuk-table__caption"
+                 th:text="#{bulkClaimImportSummary.summaryTable.caption}"/>
 
         <thead class="govuk-table__head">
         <tr class="govuk-table__row">
@@ -59,7 +61,8 @@
 
         <tbody class="govuk-table__body">
 
-        <tr class="govuk-table__row" th:each="submission, idx : ${bulkClaimImportSummary.submissions()}"
+        <tr class="govuk-table__row"
+            th:each="submission, idx : ${bulkClaimImportSummary.submissions()}"
             th:id="|submission-${idx.index}|">
 
           <td class="govuk-table__cell"
@@ -72,9 +75,10 @@
               th:id="|office-account-${idx.index}|"
               th:data-sort-value="${submission.officeAccount()}"
               th:text="${submission.officeAccount()}"/>
+          <!--sort via numeric month to order chronologically rather than alphabetically.-->
           <td class="govuk-table__cell"
               th:id="|submission-date-${idx.index}|"
-              th:data-sort-value="${#temporals.format(submission.submissionPeriod(), 'MMM YYYY')}"
+              th:data-sort-value="${#temporals.format(submission.submissionPeriod(), 'MM YYYY')}"
               th:text="${#temporals.format(submission.submissionPeriod(), 'MMM YYYY')}"/>
           <td class="govuk-table__cell"
               th:id="|submission-area-of-law-${idx.index}|"
@@ -98,7 +102,8 @@
       <table class="govuk-table" th:if="${bulkClaimImportSummary.containsErrors()}"
              data-module="moj-sortable-table">
 
-        <caption class="govuk-table__caption" th:text="#{bulkClaimImportSummary.claimErrors.caption}"/>
+        <caption class="govuk-table__caption"
+                 th:text="#{bulkClaimImportSummary.claimErrors.caption}"/>
 
         <thead class="govuk-table__head">
         <tr class="govuk-table__row">

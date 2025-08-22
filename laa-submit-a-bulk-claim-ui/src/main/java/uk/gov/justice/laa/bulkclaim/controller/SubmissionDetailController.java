@@ -21,6 +21,7 @@ import uk.gov.justice.laa.bulkclaim.constants.ViewSubmissionNavigationTab;
 import uk.gov.justice.laa.bulkclaim.dto.submission.SubmissionClaimDetails;
 import uk.gov.justice.laa.bulkclaim.dto.submission.SubmissionMatterStartsDetails;
 import uk.gov.justice.laa.bulkclaim.dto.submission.SubmissionSummary;
+import uk.gov.justice.laa.bulkclaim.exception.SubmitBulkClaimException;
 import uk.gov.justice.laa.bulkclaim.service.claims.DataClaimsRestService;
 import uk.gov.justice.laa.claims.model.GetSubmission200Response;
 
@@ -48,7 +49,7 @@ public class SubmissionDetailController {
    * @return the redirect to view a submission detail
    */
   @GetMapping("/submission/{submissionReference}")
-  public String getSubmission(
+  public String getSubmissionReference(
       @PathVariable("submissionReference") UUID submissionReference, HttpSession httpSession) {
     httpSession.setAttribute(SUBMISSION_ID, submissionReference);
     return "redirect:/view-submission-detail";
@@ -68,7 +69,13 @@ public class SubmissionDetailController {
       @RequestParam(value = "navTab", required = false, defaultValue = "CLAIM_DETAILS")
           ViewSubmissionNavigationTab navigationTab) {
     GetSubmission200Response submissionResponse =
-        dataClaimsRestService.getSubmission(submissionId).block();
+        dataClaimsRestService
+            .getSubmission(submissionId)
+            .blockOptional()
+            .orElseThrow(
+                () ->
+                    new SubmitBulkClaimException(
+                        "Submission %s does not exist".formatted(submissionId.toString())));
 
     SubmissionSummary submissionSummary = submissionSummaryBuilder.build(submissionResponse);
     if (CLAIM_DETAILS.equals(navigationTab)) {
