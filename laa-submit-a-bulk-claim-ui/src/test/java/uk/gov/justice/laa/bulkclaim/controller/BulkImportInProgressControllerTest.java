@@ -33,10 +33,10 @@ import uk.gov.justice.laa.claims.model.GetSubmission200ResponseClaimsInner.Statu
 import uk.gov.justice.laa.claims.model.SubmissionFields;
 import uk.gov.justice.laa.claims.model.SubmissionStatus;
 
-@WebMvcTest(ImportInProgressController.class)
+@WebMvcTest(BulkImportInProgressController.class)
 @AutoConfigureMockMvc
 @Import(WebMvcTestConfig.class)
-public class ImportInProgressControllerTest {
+public class BulkImportInProgressControllerTest {
 
   @Autowired private MockMvcTester mockMvc;
 
