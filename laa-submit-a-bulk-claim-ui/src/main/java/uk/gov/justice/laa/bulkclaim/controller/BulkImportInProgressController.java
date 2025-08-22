@@ -30,7 +30,7 @@ import uk.gov.justice.laa.claims.model.SubmissionStatus;
 @Controller
 @RequiredArgsConstructor
 @SessionAttributes({BULK_SUBMISSION_ID, BULK_SUBMISSION, UPLOADED_FILENAME})
-public class ImportInProgressController {
+public class BulkImportInProgressController {
 
   private final DataClaimsRestService dataClaimsRestService;
 
