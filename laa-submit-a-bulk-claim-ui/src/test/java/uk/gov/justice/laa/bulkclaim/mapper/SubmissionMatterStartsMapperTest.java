@@ -7,7 +7,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.justice.laa.bulkclaim.dto.submission.SubmissionMatterStartsRow;
-import uk.gov.justice.laa.claims.model.MatterStartsFields;
+import uk.gov.justice.laa.claims.model.MatterStartsGet;
 
 @ExtendWith(SpringExtension.class)
 @DisplayName("Submission matter starts mapper tests")
@@ -24,8 +24,8 @@ class SubmissionMatterStartsMapperTest {
   @DisplayName("Should map submission matter starts")
   void shouldMapSubmissionMatterStarts() {
     // Given
-    MatterStartsFields matterStartsFields =
-        MatterStartsFields.builder()
+    MatterStartsGet matterStartsFields =
+        MatterStartsGet.builder()
             .scheduleReference("Schedule Reference")
             .categoryCode("Category Code")
             .procurementAreaCode("Procurement Area Code")

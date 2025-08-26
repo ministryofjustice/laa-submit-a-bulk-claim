@@ -18,7 +18,7 @@ import uk.gov.justice.laa.bulkclaim.dto.submission.SubmissionMatterStartsRow;
 import uk.gov.justice.laa.bulkclaim.mapper.SubmissionMatterStartsMapper;
 import uk.gov.justice.laa.bulkclaim.service.claims.DataClaimsRestService;
 import uk.gov.justice.laa.claims.model.GetSubmission200Response;
-import uk.gov.justice.laa.claims.model.MatterStartsFields;
+import uk.gov.justice.laa.claims.model.MatterStartsGet;
 import uk.gov.justice.laa.claims.model.SubmissionFields;
 
 @ExtendWith(MockitoExtension.class)
@@ -48,13 +48,12 @@ class SubmissionMatterStartsDetailsBuilderTest {
             .build();
     when(dataClaimsRestService.getSubmissionMatterStarts(
             submissionReference, matterStartsReference))
-        .thenReturn(Mono.just(MatterStartsFields.builder().build()));
+        .thenReturn(Mono.just(MatterStartsGet.builder().build()));
     SubmissionMatterStartsRow expected = new SubmissionMatterStartsRow("Description");
     when(mapper.toSubmissionMatterTypesRow(any())).thenReturn(expected);
     // When
     SubmissionMatterStartsDetails build = builder.build(getSubmission200Response);
     // Then
-    assertThat(build.matterTypes().get(new SubmissionMatterStartsRow("Description")))
-        .isEqualTo(1L);
+    assertThat(build.matterTypes().get(new SubmissionMatterStartsRow("Description"))).isEqualTo(1L);
   }
 }
