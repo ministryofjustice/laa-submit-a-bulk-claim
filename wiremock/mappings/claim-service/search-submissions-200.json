@@ -1,0 +1,52 @@
+{
+  "request": {
+    "method": "GET",
+    "urlPath": "/api/v0/submissions"
+  },
+  "response": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json"
+    },
+    "jsonBody": {
+      "submissions": [
+        {
+          "submissionId": "550e8400-e29b-41d4-a716-446655440000",
+          "officeAccountNumber": "1A234B",
+          "submissionPeriod": "2025-07",
+          "scheduleNumber": null,
+          "previousSubmissionID": null,
+          "isNilSubmission": false,
+          "numberOfClaims": null,
+          "areaOfLaw": "CRIME",
+          "status": "CREATED",
+          "submitted": "2025-08-20"
+        },
+        {
+          "submissionId": "660e8400-e29b-41d4-a716-14618440000",
+          "officeAccountNumber": "9Z876X",
+          "submissionPeriod": "2025-07",
+          "scheduleNumber": null,
+          "previousSubmissionID": null,
+          "isNilSubmission": false,
+          "numberOfClaims": null,
+          "areaOfLaw": "CIVIL",
+          "status": "PROCESSED",
+          "submitted": "2025-08-21"
+        },
+        {
+          "submissionId": "770e8400-e29b-41d4-a716-42892598452",
+          "officeAccountNumber": "9Z876X",
+          "submissionPeriod": "2025-07",
+          "scheduleNumber": null,
+          "previousSubmissionID": null,
+          "isNilSubmission": false,
+          "numberOfClaims": null,
+          "areaOfLaw": "CIVIL",
+          "status": "PROCESSED",
+          "submitted": "2025-09-21"
+        }
+      ]
+    }
+  }
+}

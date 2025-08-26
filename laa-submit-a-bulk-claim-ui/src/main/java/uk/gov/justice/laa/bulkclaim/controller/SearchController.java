@@ -1,5 +1,7 @@
 package uk.gov.justice.laa.bulkclaim.controller;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -11,10 +13,16 @@ import org.springframework.security.oauth2.core.oidc.user.OidcUser;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.StringUtils;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.client.HttpClientErrorException;
+import uk.gov.justice.laa.bulkclaim.dto.SubmissionsSearchForm;
 import uk.gov.justice.laa.bulkclaim.helper.ProviderHelper;
 import uk.gov.justice.laa.bulkclaim.response.CwaUploadErrorResponseDto;
 import uk.gov.justice.laa.bulkclaim.response.CwaUploadSummaryResponseDto;
+import uk.gov.justice.laa.bulkclaim.response.SubmissionSearchResponseDto;
+import uk.gov.justice.laa.bulkclaim.service.ClaimsRestService;
 
 /** Controller for handling search requests related to bulk uploads. */
 @Slf4j
@@ -23,6 +31,91 @@ import uk.gov.justice.laa.bulkclaim.response.CwaUploadSummaryResponseDto;
 public class SearchController {
 
   private final ProviderHelper providerHelper;
+  private final ClaimsRestService claimsRestService;
+
+  /**
+   * Handles rendering the search form for claims.
+   *
+   * @return the search form page template
+   */
+  @GetMapping("/submissions-search")
+  public String search(Model model) {
+    model.addAttribute("submissionsSearchForm", new SubmissionsSearchForm(null, null, null));
+
+    return "submissions-search";
+  }
+
+  /**
+   * Handles the submissions search form submissions.
+   *
+   * @param submissionsSearchForm dto holding form values
+   * @param model view model
+   * @param oidcUser currently authenticated user
+   * @return search results view
+   */
+  @PostMapping("/submissions-search")
+  public String handleSearch(
+      @ModelAttribute("submissionsSearchForm") SubmissionsSearchForm submissionsSearchForm,
+      Model model,
+      @AuthenticationPrincipal OidcUser oidcUser) {
+
+    Map<String, String> errors = new LinkedHashMap<>();
+    final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+    String submissionId =
+        StringUtils.hasText(submissionsSearchForm.submissionId())
+            ? submissionsSearchForm.submissionId().trim()
+            : null;
+
+    LocalDate submittedDateFrom = submissionsSearchForm.submittedDateFrom();
+    LocalDate submittedDateTo = submissionsSearchForm.submittedDateTo();
+
+    boolean hasSearchCriteria =
+        (StringUtils.hasText(submissionId))
+            || (submittedDateFrom != null)
+            || (submittedDateTo != null);
+
+    if (!hasSearchCriteria) {
+      errors.put("global", "search.error.criteria.required");
+    }
+
+    if (submittedDateFrom != null
+        && submittedDateTo != null
+        && submittedDateFrom.isAfter(submittedDateTo)) {
+      errors.put("dateRange", "search.error.date.range");
+    }
+
+    model.addAttribute("submissionId", submissionId);
+    model.addAttribute(
+        "submittedDateFrom", submittedDateFrom != null ? formatter.format(submittedDateFrom) : "");
+    model.addAttribute(
+        "submittedDateTo", submittedDateTo != null ? formatter.format(submittedDateTo) : "");
+
+    if (!errors.isEmpty()) {
+      model.addAttribute("errors", errors);
+      return "submissions-search";
+    }
+
+    // List<String> offices = oidcUser.getUserInfo().getClaim("provider");
+    List<String> offices = List.of("1");
+
+    try {
+      SubmissionSearchResponseDto response =
+          claimsRestService
+              .search(offices, submissionId, submittedDateFrom, submittedDateTo)
+              .block();
+      log.info("Returning response from claims search: {}", response);
+      model.addAttribute("submissions", response.submissions());
+
+      return "submissions-search-results";
+    } catch (HttpClientErrorException e) {
+      log.error("HTTP client error fetching submissions: {} ", e.getMessage());
+
+      return "error";
+    } catch (Exception e) {
+      log.error("Error connecting to Claims API with message: {} ", e.getMessage());
+      return "error";
+    }
+  }
 
   /**
    * Handles the search form submission and retrieves upload summaries and errors.
