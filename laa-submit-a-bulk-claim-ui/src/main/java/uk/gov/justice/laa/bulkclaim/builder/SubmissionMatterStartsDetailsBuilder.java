@@ -1,6 +1,8 @@
 package uk.gov.justice.laa.bulkclaim.builder;
 
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
@@ -38,6 +40,9 @@ public class SubmissionMatterStartsDetailsBuilder {
             .map(Mono::block)
             .map(mapper::toSubmissionMatterTypesRow)
             .toList();
-    return new SubmissionMatterStartsDetails(list);
+
+    Map<SubmissionMatterStartsRow, Long> rows =
+        list.stream().collect(Collectors.groupingBy(x -> x, Collectors.counting()));
+    return new SubmissionMatterStartsDetails(rows);
   }
 }

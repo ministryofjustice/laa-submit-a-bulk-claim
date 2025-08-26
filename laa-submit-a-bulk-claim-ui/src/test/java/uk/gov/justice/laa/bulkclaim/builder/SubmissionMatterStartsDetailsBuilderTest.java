@@ -49,12 +49,12 @@ class SubmissionMatterStartsDetailsBuilderTest {
     when(dataClaimsRestService.getSubmissionMatterStarts(
             submissionReference, matterStartsReference))
         .thenReturn(Mono.just(MatterStartsFields.builder().build()));
-    SubmissionMatterStartsRow expected = new SubmissionMatterStartsRow("Description", 1);
+    SubmissionMatterStartsRow expected = new SubmissionMatterStartsRow("Description");
     when(mapper.toSubmissionMatterTypesRow(any())).thenReturn(expected);
     // When
     SubmissionMatterStartsDetails build = builder.build(getSubmission200Response);
     // Then
-    assertThat(expected.description()).isEqualTo("Description");
-    assertThat(expected.numberOfMatterStarts()).isEqualTo(1);
+    assertThat(build.matterTypes().get(new SubmissionMatterStartsRow("Description")))
+        .isEqualTo(1L);
   }
 }

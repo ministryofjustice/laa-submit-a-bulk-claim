@@ -31,7 +31,6 @@ class SubmissionMatterStartsMapperTest {
             .procurementAreaCode("Procurement Area Code")
             .accessPointCode("Access Point Code")
             .deliveryLocation("Delivery Location")
-            .numberOfMatterStarts(3)
             .build();
     // When
     SubmissionMatterStartsRow result = mapper.toSubmissionMatterTypesRow(matterStartsFields);
@@ -39,7 +38,6 @@ class SubmissionMatterStartsMapperTest {
     SoftAssertions.assertSoftly(
         softAssertions -> {
           softAssertions.assertThat(result.description()).isEqualTo("Category Code");
-          softAssertions.assertThat(result.numberOfMatterStarts()).isEqualTo(3);
         });
   }
 }

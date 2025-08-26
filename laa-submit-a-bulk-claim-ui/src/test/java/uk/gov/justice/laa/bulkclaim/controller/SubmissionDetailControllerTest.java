@@ -1,6 +1,5 @@
 package uk.gov.justice.laa.bulkclaim.controller;
 
-import static java.util.Collections.singletonList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.times;
@@ -12,6 +11,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.UUID;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -166,10 +166,10 @@ class SubmissionDetailControllerTest {
                   new BigDecimal("100.50"),
                   "Legal aid",
                   LocalDate.of(2025, 1, 1)));
+      HashMap<SubmissionMatterStartsRow, Long> matterTypes = new HashMap<>();
+      matterTypes.put(new SubmissionMatterStartsRow("Description"), 1L);
       when(submissionMatterStartsDetailsBuilder.build(any()))
-          .thenReturn(
-              new SubmissionMatterStartsDetails(
-                  singletonList(new SubmissionMatterStartsRow("Description", 1))));
+          .thenReturn(new SubmissionMatterStartsDetails(matterTypes));
       // When / Then
       assertThat(
               mockMvc.perform(

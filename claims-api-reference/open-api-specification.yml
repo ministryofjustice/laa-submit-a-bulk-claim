@@ -277,29 +277,13 @@ paths:
           schema:
             type: string
             format: uuid
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/MatterStartsFields'
       responses:
-        '201':
-          description: Matter Start created successfully
-          headers:
-            Location:
-              description: URI of the newly created Matter Start
-              schema:
-                type: string
+        '200':
+          description: Returns a Matter Start for a Submission
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  id:
-                    type: string
-                    format: uuid
-                    description: UUID of the created Matter Start
+                $ref: '#/components/schemas/MatterStartsFields'
         '400':
           description: 'Bad request'
         '401':
@@ -332,7 +316,7 @@ paths:
       responses:
         '204':
           description: 'Submission status updated successfully'
-          content: { }
+          content: {}
         '400':
           description: 'Bad request'
         '401':
@@ -472,7 +456,7 @@ paths:
       responses:
         '204':
           description: Claim updated successfully
-          content: { }
+          content: {}
         '400':
           description: Invalid request
         '404':
@@ -837,6 +821,12 @@ components:
           type: string
         error_description:
           type: string
+    MatterStartsPost:
+      allOf:
+        - $ref: '#/components/schemas/MatterStartsFields'
+    MatterStartsGet:
+      allOf:
+        - $ref: '#/components/schemas/MatterStartsFields'
     MatterStartsFields:
       type: object
       description: Matter starts for a submission
@@ -851,6 +841,3 @@ components:
           type: string
         delivery_location:
           type: string
-        number_of_matter_starts:
-          type: integer
-          example: 3

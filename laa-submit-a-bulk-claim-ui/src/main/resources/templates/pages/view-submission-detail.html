@@ -233,9 +233,9 @@
             <div class="govuk-summary-list__row"
                  th:each="matterStart, idx : ${matterStartsDetails.matterTypes}">
               <dt class="govuk-summary-list__key"
-                th:text="${matterStart.description}"/>
+                th:text="${matterStart.key.description}"/>
               <dd class="govuk-summary-list__value"
-                th:text="${matterStart.numberOfMatterStarts}"/>
+                th:text="${matterStart.value}"/>
             </div>
           </dl>
         </div>
