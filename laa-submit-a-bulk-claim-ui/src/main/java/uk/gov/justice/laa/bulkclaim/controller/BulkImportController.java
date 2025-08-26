@@ -1,6 +1,7 @@
 package uk.gov.justice.laa.bulkclaim.controller;
 
 import static uk.gov.justice.laa.bulkclaim.config.SessionConstants.BULK_SUBMISSION_ID;
+import static uk.gov.justice.laa.bulkclaim.config.SessionConstants.UPLOADED_FILENAME;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -108,6 +109,8 @@ public class BulkImportController {
           bulkSubmissionResponse.getBulkSubmissionId());
       redirectAttributes.addFlashAttribute(
           BULK_SUBMISSION_ID, bulkSubmissionResponse.getBulkSubmissionId());
+      redirectAttributes.addFlashAttribute(
+          UPLOADED_FILENAME, fileUploadForm.file().getOriginalFilename());
       return "redirect:/import-in-progress";
     } catch (Exception e) {
       log.error("Failed to upload file to Claims API with message: {}", e.getMessage());

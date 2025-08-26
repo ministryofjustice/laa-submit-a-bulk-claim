@@ -180,7 +180,7 @@ class BulkImportControllerTest {
       mockMvc
           .perform(
               post("/upload")
-                  .sessionAttr("fileUploadForm", input)
+                  .flashAttr("fileUploadForm", input)
                   .with(csrf())
                   .with(oidcLogin().oidcUser(getOidcUser())))
           .andExpect(status().is3xxRedirection())
