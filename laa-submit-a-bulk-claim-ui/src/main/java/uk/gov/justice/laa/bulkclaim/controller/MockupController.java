@@ -16,7 +16,7 @@ public class MockupController {
 
   @GetMapping("/submission")
   public String viewSubmission() {
-    return "pages/_submission";
+    return "submission";
   }
 
   @GetMapping("/claim-search")

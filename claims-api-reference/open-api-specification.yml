@@ -26,6 +26,13 @@ paths:
         Upload a file (as multipart/form-data) containing data related to a submission.
         The file is converted into a JSON document and stored in the `bulk_submission` table.
         A 201 response is returned with a `Location` header containing the URI of the created record.
+      parameters:
+        - name: userId
+          in: query
+          required: true
+          description: The user ID of the user performing the bulk submission
+          schema:
+            type: string
       requestBody:
         required: true
         content:
@@ -58,18 +65,23 @@ paths:
                     type: string
                     format: uuid
                     description: UUID of the created bulk submission record.
-                  submission_id:
-                    type: string
-                    format: uuid
-                    description: UUID for the future submission record, will have to be sent back in a later call.
+                  submission_ids:
+                    type: array
+                    items:
+                      type: string
+                      format: uuid
+                    description: list of UUIDs for the future submission records (only one submission per bulk expected), will have to be sent back in a later call.
         '400':
           description: 'Bad request'
         '401':
           description: 'Unauthorized'
         '403':
           description: 'Forbidden'
+        '415':
+          description: 'Unsupported Media Type'
         '500':
           description: 'Internal server error'
+
   /api/v0/bulk-submissions/{id}:
     get:
       operationId: getBulkSubmission
@@ -89,12 +101,50 @@ paths:
             format: uuid
       responses:
         '200':
-          description: Successfully retrieved bulk submission document
+          description: Successfully retrieved bulk submission resource
           content:
             application/json:
               schema:
                 type: object
-                description: The JSON document stored in the `bulk_submission` table
+                description: The JSON object representing the `bulk_submission` stored in the corresponding table with bulk submission id and status
+                properties:
+                  bulkSubmissionId:
+                    type: string
+                    format: uuid
+                    description: UUID of the bulk submission.
+                  status:
+                    $ref: "#/components/schemas/BulkSubmissionStatus"
+                  details:
+                    type: object
+                    description: The object storing all the details of the bulk submission
+                    properties:
+                      office:
+                        type: object
+                        description: The office submitting a claim
+                        properties:
+                          account:
+                            type: string
+                      schedule:
+                        type: object
+                        description: The details of the bulk submission schedule
+                        properties:
+                          submissionPeriod:
+                            type: string
+                          areaOfLaw:
+                            type: string
+                          scheduleNum:
+                            type: string
+                      outcomes:
+                        type: array
+                        description: List of outcome objects for the bulk submission
+                        items:
+                          $ref: '#/components/schemas/BulkSubmissionOutcome'
+                      matterStarts:
+                        type: array
+                        description: List of matter start objects for the bulk submission
+                        items:
+                          $ref: '#/components/schemas/BulkSubmissionMatterStart'
+
         '400':
           description: 'Bad request'
         '401':
@@ -216,22 +266,7 @@ paths:
         content:
           application/json:
             schema:
-              type: object
-              description: Matter Start details
-              properties:
-                schedule_reference:
-                  type: string
-                category_code:
-                  type: string
-                procurement_area_code:
-                  type: string
-                access_point_code:
-                  type: string
-                delivery_location:
-                  type: string
-                number_of_matter_starts:
-                  type: integer
-                  example: 3
+              $ref: '#/components/schemas/MatterStartsPost'
       responses:
         '201':
           description: Matter Start created successfully
@@ -249,6 +284,44 @@ paths:
                     type: string
                     format: uuid
                     description: UUID of the created Matter Start
+        '400':
+          description: 'Bad request'
+        '401':
+          description: 'Unauthorized'
+        '403':
+          description: 'Forbidden'
+        '500':
+          description: 'Internal server error'
+  /api/v0/submissions/{id}/matter-starts/{matter-starts-id}:
+    get:
+      operationId: getMatterStart
+      tags:
+        - Matter Starts
+      summary: Returns a Matter Start for a Submission
+      description: |
+        Returns a Matter Start record belonging to the submission with the specified ID.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: UUID of the submission
+          schema:
+            type: string
+            format: uuid
+        - name: matter-starts-id
+          in: path
+          required: true
+          description: UUID of the matter starts
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Returns a Matter Start for a Submission
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MatterStartsGet'
         '400':
           description: 'Bad request'
         '401':
@@ -282,7 +355,7 @@ paths:
       responses:
         '204':
           description: 'Submission status updated successfully'
-          content: {}
+          content: { }
         '400':
           description: 'Bad request'
         '401':
@@ -331,6 +404,10 @@ paths:
                           format: uuid
                         status:
                           type: string
+                          enum:
+                            - READY_TO_PROCESS
+                            - VALID
+                            - INVALID
                   matter_starts:
                     type: array
                     description: List of matter start IDs for this submission
@@ -418,12 +495,11 @@ paths:
       responses:
         '204':
           description: Claim updated successfully
-          content: {}
+          content: { }
         '400':
           description: Invalid request
         '404':
           description: Submission or claim not found
-
   /api/v0/validation-errors:
     get:
       operationId: getValidationErrors
@@ -459,9 +535,16 @@ paths:
           description: 'Submission ID not found'
         '500':
           description: 'Internal server error'
-
 components:
   schemas:
+    BulkSubmissionStatus:
+      type: string
+      enum:
+        - READY_FOR_PARSING
+        - PARSING_COMPLETED
+        - PARSING_FAILED
+        - VALIDATION_FAILED
+        - REPLACED
     SubmissionPost:
       allOf:
         - $ref: '#/components/schemas/SubmissionFields'
@@ -475,6 +558,15 @@ components:
     SubmissionPatch:
       allOf:
         - $ref: '#/components/schemas/SubmissionFields'
+    SubmissionStatus:
+      type: string
+      enum:
+        - CREATED
+        - READY_FOR_VALIDATION
+        - VALIDATION_IN_PROGRESS
+        - VALIDATION_SUCCEEDED
+        - VALIDATION_FAILED
+        - REPLACED
     SubmissionFields:
       type: object
       description: submission details
@@ -496,14 +588,14 @@ components:
         area_of_law:
           type: string
           description: Area of law (e.g., "crime", "civil").
+        status:
+          $ref: "#/components/schemas/SubmissionStatus"
         schedule_number:
           type: string
-          nullable: true
           description: Optional schedule number.
         previous_submission_id:
           type: string
           format: uuid
-          nullable: true
           description: UUID of the previous submission that this replaces, if any.
         is_nil_submission:
           type: boolean
@@ -511,6 +603,9 @@ components:
         number_of_claims:
           type: integer
           description: Number of claims in this submission.
+        submitted:
+          type: date
+          description: Date the submission was submitted
 
     ClaimPost:
       allOf:
@@ -529,12 +624,19 @@ components:
       allOf:
         - $ref: '#/components/schemas/ClaimFields'
 
+    ClaimStatus:
+      type: string
+      enum:
+        - READY_TO_PROCESS
+        - VALID
+        - INVALID
+
     ClaimFields:
       type: object
       description: Claim details
       properties:
         status:
-          type: string
+          $ref: "#/components/schemas/ClaimStatus"
         schedule_reference:
           type: string
         line_number:
@@ -595,6 +697,8 @@ components:
           type: string
         referral_source:
           type: string
+        total_value:
+          type: number
         client_forename:
           type: string
         client_surname:
@@ -744,6 +848,269 @@ components:
         ho_interview:
           type: string
         local_authority_number:
+          type: string
+    BulkSubmissionMatterStart:
+      type: object
+      description: matter start details for a bulk submission
+      properties:
+        scheduleRef:
+          type: string
+        categoryCode:
+          type: string
+        procurementArea:
+          type: string
+        accessPoint:
+          type: string
+        deliveryLocation:
+          type: string
+
+    BulkSubmissionOutcome:
+      type: object
+      description: bulk submission outcome details
+      properties:
+        matterType:
+          type: string
+        feeCode:
+          type: string
+        caseRefNumber:
+          type: string
+        caseStartDate:
+          type: string
+          format: date
+        caseId:
+          type: string
+        caseStageLevel:
+          type: string
+        ufn:
+          type: string
+        procurementArea:
+          type: string
+        accessPoint:
+          type: string
+        clientForename:
+          type: string
+        clientSurname:
+          type: string
+        clientDateOfBirth:
+          type: string
+          format: date
+        ucn:
+          type: string
+        claRefNumber:
+          type: string
+        claExemption:
+          type: string
+        gender:
+          type: string
+        ethnicity:
+          type: string
+        disability:
+          type: string
+        clientPostCode:
+          type: string
+        workConcludedDate:
+          type: string
+          format: date
+        adviceTime:
+          type: integer
+        travelTime:
+          type: integer
+        waitingTime:
+          type: integer
+        profitCost:
+          type: number
+          format: bigDecimal
+        valueOfCosts:
+          type: number
+          format: bigDecimal
+        disbursementsAmount:
+          type: number
+          format: bigDecimal
+        counselCost:
+          type: number
+          format: bigDecimal
+        disbursementsVat:
+          type: number
+          format: bigDecimal
+        travelWaitingCosts:
+          type: number
+          format: bigDecimal
+        vatIndicator:
+          type: boolean
+        londonNonlondonRate:
+          type: boolean
+        clientType:
+          type: string
+        toleranceIndicator:
+          type: boolean
+        travelCosts:
+          type: number
+          format: bigDecimal
+        outcomeCode:
+          type: string
+        legacyCase:
+          type: boolean
+        claimType:
+          type: string
+        adjournedHearingFee:
+          type: number
+          format: bigDecimal
+        typeOfAdvice:
+          type: string
+        postalApplAccp:
+          type: boolean
+        scheduleRef:
+          type: string
+        cmrhOral:
+          type: string
+        cmrhTelephone:
+          type: string
+        aitHearingCentre:
+          type: string
+        substantiveHearing:
+          type: boolean
+        hoInterview:
+          type: string
+        hoUcn:
+          type: string
+        transferDate:
+          type: string
+          format: date
+        detentionTravelWaitingCosts:
+          type: number
+          format: bigDecimal
+        deliveryLocation:
+          type: string
+        priorAuthorityRef:
+          type: string
+        jrFormFilling:
+          type: string
+        additionalTravelPayment:
+          type: boolean
+        meetingsAttended:
+          type: string
+        medicalReportsClaimed:
+          type: integer
+        desiAccRep:
+          type: integer
+        mhtRefNumber:
+          type: string
+        stageReached:
+          type: string
+        followOnWork:
+          type: string
+        nationalRefMechanismAdvice:
+          type: string
+        exemptionCriteriaSatisfied:
+          type: string
+        exclCaseFundingRef:
+          type: string
+        noOfClients:
+          type: integer
+        noOfSurgeryClients:
+          type: integer
+        ircSurgery:
+          type: string
+        surgeryDate:
+          type: string
+          format: date
+        lineNumber:
+          type: string
+        crimeMatterType:
+          type: string
+        feeScheme:
+          type: string
+        repOrderDate:
+          type: string
+          format: date
+        noOfSuspects:
+          type: integer
+        noOfPoliceStation:
+          type: integer
+        policeStation:
+          type: string
+        dsccNumber:
+          type: string
+        maatId:
+          type: string
+        prisonLawPriorApproval:
+          type: string
+        dutySolicitor:
+          type: string
+        youthCourt:
+          type: string
+        schemeId:
+          type: string
+        numberOfMediationSessions:
+          type: integer
+        mediationTime:
+          type: integer
+        outreach:
+          type: string
+        referral:
+          type: string
+        clientLegallyAided:
+          type: string
+        client2Forename:
+          type: string
+        client2Surname:
+          type: string
+        client2DateOfBirth:
+          type: string
+          format: date
+        client2Ucn:
+          type: string
+        client2PostCode:
+          type: string
+        client2Gender:
+          type: string
+        client2Ethnicity:
+          type: string
+        client2Disability:
+          type: string
+        client2LegallyAided:
+          type: string
+        uniqueCaseId:
+          type: string
+        standardFeeCat:
+          type: string
+        client2PostalApplAccp:
+          type: string
+        costsDamagesRecovered:
+          type: string
+        eligibleClient:
+          type: string
+        courtLocation:
+          type: string
+        localAuthorityNumber:
+          type: string
+        paNumber:
+          type: string
+        excessTravelCosts:
+          type: number
+          format: bigDecimal
+        medConcludedDate:
+          type: string
+          format: date
+    MatterStartsPost:
+      allOf:
+        - $ref: '#/components/schemas/MatterStartsFields'
+    MatterStartsGet:
+      allOf:
+        - $ref: '#/components/schemas/MatterStartsFields'
+    MatterStartsFields:
+      type: object
+      description: Matter starts for a submission
+      properties:
+        schedule_reference:
+          type: string
+        category_code:
+          type: string
+        procurement_area_code:
+          type: string
+        access_point_code:
+          type: string
+        delivery_location:
           type: string
     ClaimValidationError:
       type: object

@@ -1,7 +1,7 @@
 package uk.gov.justice.laa.bulkclaim.controller;
 
-import static uk.gov.justice.laa.bulkclaim.config.SessionConstants.BULK_SUBMISSION;
-import static uk.gov.justice.laa.bulkclaim.config.SessionConstants.BULK_SUBMISSION_ID;
+import static uk.gov.justice.laa.bulkclaim.constants.SessionConstants.BULK_SUBMISSION;
+import static uk.gov.justice.laa.bulkclaim.constants.SessionConstants.BULK_SUBMISSION_ID;
 
 import java.util.Collections;
 import java.util.UUID;
@@ -13,8 +13,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.SessionAttributes;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
-import uk.gov.justice.laa.bulkclaim.builder.SubmissionSummaryBuilder;
-import uk.gov.justice.laa.bulkclaim.dto.summary.BulkClaimSummary;
+import uk.gov.justice.laa.bulkclaim.builder.BulkClaimSummaryBuilder;
+import uk.gov.justice.laa.bulkclaim.dto.summary.BulkClaimImportSummary;
 import uk.gov.justice.laa.bulkclaim.exception.SubmitBulkClaimException;
 import uk.gov.justice.laa.bulkclaim.service.claims.DataClaimsRestService;
 import uk.gov.justice.laa.claims.model.GetSubmission200Response;
@@ -32,7 +32,7 @@ import uk.gov.justice.laa.claims.model.GetSubmission200Response;
 public class BulkSubmissionImportedController {
 
   private final DataClaimsRestService dataClaimsRestService;
-  private final SubmissionSummaryBuilder submissionSummaryBuilder;
+  private final BulkClaimSummaryBuilder bulkClaimSummaryBuilder;
 
   /**
    * Shows the view submitted submissions page.
@@ -55,11 +55,11 @@ public class BulkSubmissionImportedController {
     }
 
     // Map submission summary to model
-    BulkClaimSummary bulkClaimSummary =
-        submissionSummaryBuilder.build(
+    BulkClaimImportSummary bulkClaimImportSummary =
+        bulkClaimSummaryBuilder.build(
             Collections.singletonList(
                 (GetSubmission200Response) model.getAttribute(BULK_SUBMISSION)));
-    model.addAttribute("bulkClaimSummary", bulkClaimSummary);
-    return "pages/view-submission-summary";
+    model.addAttribute("bulkClaimImportSummary", bulkClaimImportSummary);
+    return "pages/view-submission-imported-summary";
   }
 }
