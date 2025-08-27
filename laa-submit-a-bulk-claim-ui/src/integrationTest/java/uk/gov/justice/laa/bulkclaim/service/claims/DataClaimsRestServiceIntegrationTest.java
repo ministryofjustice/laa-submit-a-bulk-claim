@@ -30,6 +30,7 @@ import uk.gov.justice.laa.claims.model.ClaimValidationError;
 import uk.gov.justice.laa.claims.model.CreateBulkSubmission201Response;
 import uk.gov.justice.laa.claims.model.GetSubmission200Response;
 import uk.gov.justice.laa.claims.model.MatterStartsFields;
+import uk.gov.justice.laa.claims.model.MatterStartsGet;
 
 /**
  * Integration tests for the {@link DataClaimsRestService}.
@@ -401,7 +402,7 @@ class DataClaimsRestServiceIntegrationTest extends MockServerIntegrationTest {
                   .withHeader("Content-Type", "application/json")
                   .withBody(expectJson));
       // Then
-      MatterStartsFields block =
+      MatterStartsGet block =
           dataClaimsRestService.getSubmissionMatterStarts(submissionId, matterStartsId).block();
       String result = objectMapper.writeValueAsString(block);
       assertThatJsonMatches(expectJson, result);
