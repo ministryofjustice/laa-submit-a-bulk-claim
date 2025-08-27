@@ -1,8 +1,8 @@
 package uk.gov.justice.laa.bulkclaim.controller;
 
-import static uk.gov.justice.laa.bulkclaim.config.SessionConstants.BULK_SUBMISSION;
-import static uk.gov.justice.laa.bulkclaim.config.SessionConstants.BULK_SUBMISSION_ID;
-import static uk.gov.justice.laa.bulkclaim.config.SessionConstants.UPLOADED_FILENAME;
+import static uk.gov.justice.laa.bulkclaim.constants.SessionConstants.BULK_SUBMISSION;
+import static uk.gov.justice.laa.bulkclaim.constants.SessionConstants.BULK_SUBMISSION_ID;
+import static uk.gov.justice.laa.bulkclaim.constants.SessionConstants.UPLOADED_FILENAME;
 
 import java.util.List;
 import java.util.UUID;
