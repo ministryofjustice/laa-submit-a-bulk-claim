@@ -1,0 +1,33 @@
+name: Sanitize deployment name
+
+on:
+  workflow_call:
+    outputs:
+      deployment_name:
+        description: 'Sanitized deployment name'
+        # Reference the job output after it has been produced by the job
+        value: ${{ jobs.sanitize.outputs.deployment_name }}
+
+jobs:
+  sanitize:
+    runs-on: ubuntu-latest
+    outputs:
+      deployment_name: ${{ steps.sanitize.outputs.deployment_name }}
+    steps:
+      - name: Sanitize branch name for helm release
+        id: sanitize
+        run: |
+          RAW_BRANCH_NAME=${GITHUB_REF##*/}
+          # Convert to lowercase and replace non-alphanumeric characters with hyphens
+          DEPLOYMENT_NAME=$(echo "$RAW_BRANCH_NAME" | tr '[:upper:]' '[:lower:]' | sed 's/[^a-z0-9]/-/g')
+
+          if [[ "$DEPLOYMENT_NAME" != "development" ]]; then
+            # Trim to 5 characters if longer
+            DEPLOYMENT_NAME=$(echo "$DEPLOYMENT_NAME" | cut -c 1-5)
+          fi
+
+          # Ensure it starts and ends with an alphanumeric character
+          DEPLOYMENT_NAME=$(echo "$DEPLOYMENT_NAME" | sed 's/^[^a-z0-9]*//;s/[^a-z0-9]*$//')
+
+          echo "Sanitized deployment name is ${DEPLOYMENT_NAME}"
+          echo "deployment_name=${DEPLOYMENT_NAME}" >> "$GITHUB_OUTPUT"

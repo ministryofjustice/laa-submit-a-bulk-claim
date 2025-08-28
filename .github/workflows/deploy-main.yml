@@ -51,18 +51,18 @@ jobs:
       image_tag: ${{ needs.ecr-publish-image.outputs.published_image_version }}
     secrets: inherit
 
-#  deploy-uat:
-#    needs: [ ecr-publish-image, deploy-development ]
-#    permissions:
-#      id-token: write
-#      contents: read
-#    uses: ./.github/workflows/helm-deploy.yml
-#    with:
-#      environment: uat
-#      deployment_name: uat
-#      image_tag: ${{ needs.ecr-publish-image.outputs.published_image_version }}
-#    secrets: inherit
-#
+  deploy-uat:
+    needs: [ ecr-publish-image, deploy-development ]
+    permissions:
+      id-token: write
+      contents: read
+    uses: ./.github/workflows/helm-deploy.yml
+    with:
+      environment: uat
+      deployment_name: uat
+      image_tag: ${{ needs.ecr-publish-image.outputs.published_image_version }}
+    secrets: inherit
+
 #  deploy-staging:
 #    needs: [ ecr-publish-image, deploy-uat ]
 #    permissions:

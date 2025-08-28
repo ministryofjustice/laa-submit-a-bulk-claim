@@ -28,6 +28,7 @@ jobs:
           echo "Feature version: ${{ steps.get-feature-name.outputs.result }}-${COMMIT_HASH}-SNAPSHOT"
 
   assemble:
+    needs: [ define-feature-version ]
     uses: ministryofjustice/laa-ccms-common-workflows/.github/workflows/gradle-build-and-publish.yml@v1
     permissions:
       contents: write
@@ -58,38 +59,42 @@ jobs:
       ecr_region: ${{ vars.ECR_REGION }}
       ecr_role_to_assume: ${{ secrets.ECR_ROLE_TO_ASSUME }}
 
+  sanitize-deployment-name:
+    name: Sanitize deployment name
+    uses: ./.github/workflows/sanitize-deployment-name.yml
+
   deploy-development:
-    needs: [ ecr-publish-image ]
+    needs: [ ecr-publish-image, sanitize-deployment-name ]
     permissions:
       id-token: write
       contents: read
     uses: ./.github/workflows/helm-deploy.yml
     with:
       environment: development
-      deployment_name: development
+      deployment_name: ${{ needs.sanitize-deployment-name.outputs.deployment_name }}
       image_tag: ${{ needs.ecr-publish-image.outputs.published_image_version }}
     secrets: inherit
 
-#  deploy-uat:
-#    needs: [ ecr-publish-image ]
-#    permissions:
-#      id-token: write
-#      contents: read
-#    uses: ./.github/workflows/helm-deploy.yml
-#    with:
-#      environment: uat
-#      deployment_name: uat
-#      image_tag: ${{ needs.ecr-publish-image.outputs.published_image_version }}
-#    secrets: inherit
-#
+  deploy-uat:
+    needs: [ ecr-publish-image, sanitize-deployment-name ]
+    permissions:
+      id-token: write
+      contents: read
+    uses: ./.github/workflows/helm-deploy.yml
+    with:
+      environment: uat
+      deployment_name: ${{ needs.sanitize-deployment-name.outputs.deployment_name }}
+      image_tag: ${{ needs.ecr-publish-image.outputs.published_image_version }}
+    secrets: inherit
+
 #  deploy-staging:
-#    needs: [ ecr-publish-image ]
+#    needs: [ ecr-publish-image, sanitize-deployment-name ]
 #    permissions:
 #      id-token: write
 #      contents: read
 #    uses: ./.github/workflows/helm-deploy.yml
 #    with:
 #      environment: staging
-#      deployment_name: staging
+#      deployment_name: ${{ needs.sanitize-deployment-name.outputs.deployment_name }}
 #      image_tag: ${{ needs.ecr-publish-image.outputs.published_image_version }}
 #    secrets: inherit
