@@ -4,6 +4,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertThrows;
 import static org.mockserver.model.HttpResponse.response;
 
+import java.time.Duration;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
@@ -15,6 +17,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.web.reactive.function.client.WebClientResponseException.BadRequest;
@@ -25,6 +28,7 @@ import org.springframework.web.reactive.function.client.WebClientResponseExcepti
 import reactor.core.publisher.Mono;
 import uk.gov.justice.laa.bulkclaim.config.WebMvcTestConfig;
 import uk.gov.justice.laa.bulkclaim.helper.MockServerIntegrationTest;
+import uk.gov.justice.laa.bulkclaim.response.SubmissionSearchResponseDto;
 import uk.gov.justice.laa.claims.model.ClaimFields;
 import uk.gov.justice.laa.claims.model.ClaimValidationError;
 import uk.gov.justice.laa.claims.model.CreateBulkSubmission201Response;
@@ -145,6 +149,50 @@ class DataClaimsRestServiceIntegrationTest extends MockServerIntegrationTest {
 
       // When
       assertThrows(InternalServerError.class, () -> dataClaimsRestService.upload(file).block());
+    }
+  }
+
+  @Nested
+  @DisplayName("GET: /api/v0/submissions")
+  class GetSubmissionsSearch {
+    @Test
+    @DisplayName("Should return 200 and collection of submissions result")
+    void shouldReturn200WithSubmissionCollectionResults() {
+      String submissionsBody =
+          """
+          {
+            "submissionId": "660e8400-e29b-41d4-a716-14618440000",
+            "officeAccountNumber": "9Z876X",
+            "status": "PROCESSED",
+            "areaOfLaw": "CIVIL",
+            "submitted": "2025-08-21"
+          },
+          {
+            "submissionId": "770e8400-e29b-41d4-a716-42892598452",
+            "officeAccountNumber": "9Z876X",
+            "status": "PROCESSED",
+            "areaOfLaw": "CIVIL",
+            "submitted": "2025-08-22"
+          }
+          """;
+      mockServerClient
+          .when(HttpRequest.request().withMethod("GET").withPath("/api/v0/submissions"))
+          .respond(
+              response()
+                  .withStatusCode(200)
+                  .withHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE)
+                  .withBody("{\"submissions\": [" + submissionsBody + "]}"));
+
+      List<String> offices = List.of("1");
+      String submissionId = "1234";
+      LocalDate from = LocalDate.of(2025, 8, 1);
+      LocalDate to = LocalDate.of(2025, 8, 31);
+
+      SubmissionSearchResponseDto response =
+          dataClaimsRestService.search(offices, submissionId, from, to).block(Duration.ofSeconds(2));
+      assertThat(response.toString()).isNotEmpty();
+      assertThat(response.submissions().getFirst().submissionId())
+          .isEqualTo("660e8400-e29b-41d4-a716-14618440000");
     }
   }
 

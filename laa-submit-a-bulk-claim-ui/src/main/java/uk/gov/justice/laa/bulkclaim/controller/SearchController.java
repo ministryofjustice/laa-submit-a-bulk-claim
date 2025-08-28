@@ -22,7 +22,7 @@ import uk.gov.justice.laa.bulkclaim.helper.ProviderHelper;
 import uk.gov.justice.laa.bulkclaim.response.CwaUploadErrorResponseDto;
 import uk.gov.justice.laa.bulkclaim.response.CwaUploadSummaryResponseDto;
 import uk.gov.justice.laa.bulkclaim.response.SubmissionSearchResponseDto;
-import uk.gov.justice.laa.bulkclaim.service.ClaimsRestService;
+import uk.gov.justice.laa.bulkclaim.service.claims.DataClaimsRestService;
 
 /** Controller for handling search requests related to bulk uploads. */
 @Slf4j
@@ -31,7 +31,7 @@ import uk.gov.justice.laa.bulkclaim.service.ClaimsRestService;
 public class SearchController {
 
   private final ProviderHelper providerHelper;
-  private final ClaimsRestService claimsRestService;
+  private final DataClaimsRestService claimsRestService;
 
   /**
    * Handles rendering the search form for submissions.

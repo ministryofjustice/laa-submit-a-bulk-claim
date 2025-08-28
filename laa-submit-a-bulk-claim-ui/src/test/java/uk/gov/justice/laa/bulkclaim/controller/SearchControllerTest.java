@@ -32,8 +32,8 @@ import uk.gov.justice.laa.bulkclaim.response.CwaUploadErrorResponseDto;
 import uk.gov.justice.laa.bulkclaim.response.CwaUploadSummaryResponseDto;
 import uk.gov.justice.laa.bulkclaim.response.SubmissionDto;
 import uk.gov.justice.laa.bulkclaim.response.SubmissionSearchResponseDto;
-import uk.gov.justice.laa.bulkclaim.service.ClaimsRestService;
 import uk.gov.justice.laa.bulkclaim.service.CwaUploadService;
+import uk.gov.justice.laa.bulkclaim.service.claims.DataClaimsRestService;
 
 @AutoConfigureMockMvc(addFilters = false)
 class SearchControllerTest {
@@ -46,7 +46,7 @@ class SearchControllerTest {
   @Mock private ProviderHelper providerHelper;
   @Mock private Model model;
   @Mock private Principal principal;
-  @Mock private ClaimsRestService claimsRestService;
+  @Mock private DataClaimsRestService claimsRestService;
 
   @InjectMocks private SearchController searchController;
 
