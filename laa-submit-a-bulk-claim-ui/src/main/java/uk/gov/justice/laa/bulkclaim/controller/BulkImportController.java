@@ -1,8 +1,12 @@
 package uk.gov.justice.laa.bulkclaim.controller;
 
+import static uk.gov.justice.laa.bulkclaim.constants.SessionConstants.BULK_SUBMISSION_ID;
+import static uk.gov.justice.laa.bulkclaim.constants.SessionConstants.UPLOADED_FILENAME;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.core.oidc.user.OidcUser;
 import org.springframework.stereotype.Controller;
@@ -11,11 +15,12 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.support.SessionStatus;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import uk.gov.justice.laa.bulkclaim.dto.FileUploadForm;
 import uk.gov.justice.laa.bulkclaim.helper.ProviderHelper;
-import uk.gov.justice.laa.bulkclaim.service.ClaimsRestService;
+import uk.gov.justice.laa.bulkclaim.service.claims.DataClaimsRestService;
 import uk.gov.justice.laa.bulkclaim.validation.BulkImportFileValidator;
 import uk.gov.justice.laa.bulkclaim.validation.BulkImportFileVirusValidator;
 import uk.gov.justice.laa.claims.model.CreateBulkSubmission201Response;
@@ -26,10 +31,12 @@ import uk.gov.justice.laa.claims.model.CreateBulkSubmission201Response;
 @Controller
 public class BulkImportController {
 
+  public static final String FILE_UPLOAD_FORM_MODEL_ATTR = "fileUploadForm";
+
   private final ProviderHelper providerHelper;
   private final BulkImportFileValidator bulkImportFileValidator;
   private final BulkImportFileVirusValidator bulkImportFileVirusValidator;
-  private final ClaimsRestService claimsRestService;
+  private final DataClaimsRestService dataClaimsRestService;
 
   /**
    * Renders the upload page.
@@ -38,12 +45,16 @@ public class BulkImportController {
    * @param oidcUser the authenticated user principal
    * @return the upload page
    */
-  @GetMapping("/upload")
-  public String showUploadPage(Model model, @AuthenticationPrincipal OidcUser oidcUser) {
+  @GetMapping("/")
+  public String showUploadPage(
+      Model model, @AuthenticationPrincipal OidcUser oidcUser, SessionStatus sessionStatus) {
+
+    // Clear the session due to new submission
+    sessionStatus.setComplete();
 
     // Always ensure there's a form object in the model if not already present
-    if (!model.containsAttribute("fileUploadForm")) {
-      model.addAttribute("fileUploadForm", new FileUploadForm(null));
+    if (!model.containsAttribute(FILE_UPLOAD_FORM_MODEL_ATTR)) {
+      model.addAttribute(FILE_UPLOAD_FORM_MODEL_ATTR, new FileUploadForm(null));
     }
 
     try {
@@ -74,7 +85,7 @@ public class BulkImportController {
   @PostMapping("/upload")
   public String performUpload(
       Model model,
-      @ModelAttribute("fileUploadForm") FileUploadForm fileUploadForm,
+      @ModelAttribute(FILE_UPLOAD_FORM_MODEL_ATTR) FileUploadForm fileUploadForm,
       BindingResult bindingResult,
       @AuthenticationPrincipal OidcUser oidcUser,
       RedirectAttributes redirectAttributes) {
@@ -90,13 +101,17 @@ public class BulkImportController {
     }
 
     try {
-      CreateBulkSubmission201Response uploadResponse =
-          claimsRestService.upload(fileUploadForm.file()).block();
-      log.info("Claims API Upload response submission UUID: {}", uploadResponse.getSubmissionId());
-
-      // TODO: Redirect to import in progress rather than return the view (POST -> REDIRECT -> GET)
-      //  in CCMSPUI-747.
-      return "pages/submission";
+      ResponseEntity<CreateBulkSubmission201Response> responseEntity =
+          dataClaimsRestService.upload(fileUploadForm.file()).block();
+      CreateBulkSubmission201Response bulkSubmissionResponse = responseEntity.getBody();
+      log.info(
+          "Claims API Upload response submission UUID: {}",
+          bulkSubmissionResponse.getBulkSubmissionId());
+      redirectAttributes.addFlashAttribute(
+          BULK_SUBMISSION_ID, bulkSubmissionResponse.getBulkSubmissionId());
+      redirectAttributes.addFlashAttribute(
+          UPLOADED_FILENAME, fileUploadForm.file().getOriginalFilename());
+      return "redirect:/import-in-progress";
     } catch (Exception e) {
       log.error("Failed to upload file to Claims API with message: {}", e.getMessage());
       bindingResult.reject("bulkImport.validation.uploadFailed");
@@ -115,9 +130,9 @@ public class BulkImportController {
       BindingResult bindingResult,
       RedirectAttributes redirectAttributes) {
 
-    redirectAttributes.addFlashAttribute("fileUploadForm", fileUploadForm);
+    redirectAttributes.addFlashAttribute(FILE_UPLOAD_FORM_MODEL_ATTR, fileUploadForm);
     redirectAttributes.addFlashAttribute(
         "org.springframework.validation.BindingResult.fileUploadForm", bindingResult);
-    return "redirect:/upload";
+    return "redirect:/";
   }
 }

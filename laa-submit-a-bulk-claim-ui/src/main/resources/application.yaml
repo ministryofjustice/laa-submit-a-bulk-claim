@@ -1,11 +1,12 @@
 server:
   port: 8082
+
+
 spring:
   servlet:
     multipart:
       max-file-size: ${SERVER_MAX_FILE_SIZE}
       max-request-size: ${SERVER_MAX_FILE_SIZE}
-
   security:
     oauth2:
       client:
@@ -27,6 +28,9 @@ spring:
             issuer-uri: https://login.microsoftonline.com/${LASSIE_TENANT_ID}/v2.0
           moj-identity:
             issuer-uri: https://login.microsoftonline.com/${AUTH_TENANT_ID}/v2.0
+  threads:
+    virtual:
+      enabled: true
   http:
     client:
       factory: jdk
@@ -45,6 +49,10 @@ claims-api:
   accessToken: ${CLAIMS_API_ACCESS_TOKEN}
 
 upload-max-file-size: ${UPLOAD_MAX_FILE_SIZE}
+
+links:
+  bulk-upload-spreadsheet: https://assets.publishing.service.gov.uk/media/5a82c76aed915d74e623796e/bulkload-spreadsheet-guidance.pdf
+  guidance: https://www.gov.uk/guidance/submit-a-contracted-work-and-administration-cwa-claim-online
 
 management:
   endpoint:
