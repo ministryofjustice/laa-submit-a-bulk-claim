@@ -8,7 +8,7 @@
           <h1 class="govuk-heading-xl" th:text="#{search.title}"></h1>
           <p th:text="#{search.intro}"></p>
           <div class="search-panel govuk-!-margin-bottom-6">
-            <form id="claims-search-form" th:action="@{/submissions-search}" th:object="${submissionsSearchForm}" method="post">
+            <form id="claims-search-form" th:action="@{/submissions/search}" th:object="${submissionsSearchForm}" method="post">
               <div th:if="${errors}" >
                 <p class="govuk-error-message" th:each="error : ${errors}" th:text="#{search.error.criteria.required}"></p>
               </div>
@@ -60,7 +60,7 @@
                   Search
                 </button>
 
-                <a class="govuk-link" th:href="@{/submissions-search}">Clear all</a>
+                <a class="govuk-link" th:href="@{/submissions/search}">Clear all</a>
               </div>
             </form>
           </div>

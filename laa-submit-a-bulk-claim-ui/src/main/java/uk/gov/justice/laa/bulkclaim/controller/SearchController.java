@@ -38,11 +38,11 @@ public class SearchController {
    *
    * @return the search form page template
    */
-  @GetMapping("/submissions-search")
+  @GetMapping("/submissions/search")
   public String search(Model model) {
     model.addAttribute("submissionsSearchForm", new SubmissionsSearchForm(null, null, null));
 
-    return "submissions-search";
+    return "pages/submissions-search";
   }
 
   /**
@@ -53,7 +53,7 @@ public class SearchController {
    * @param oidcUser currently authenticated user
    * @return search results view
    */
-  @PostMapping("/submissions-search")
+  @PostMapping("/submissions/search")
   public String handleSearch(
       @ModelAttribute("submissionsSearchForm") SubmissionsSearchForm submissionsSearchForm,
       Model model,
@@ -92,7 +92,7 @@ public class SearchController {
 
     if (!errors.isEmpty()) {
       model.addAttribute("errors", errors);
-      return "submissions-search";
+      return "pages/submissions-search";
     }
 
     // List<String> offices = oidcUser.getUserInfo().getClaim("provider");
@@ -106,7 +106,7 @@ public class SearchController {
       log.info("Returning response from claims search: {}", response);
       model.addAttribute("submissions", response.submissions());
 
-      return "submissions-search-results";
+      return "pages/submissions-search-results";
     } catch (HttpClientErrorException e) {
       log.error("HTTP client error fetching submissions: {} ", e.getMessage());
 

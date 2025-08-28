@@ -132,6 +132,6 @@ class SearchControllerTest {
     verify(model).addAttribute("submittedDateFrom", "");
     verify(model).addAttribute("submittedDateTo", "");
     verify(model).addAttribute(eq("submissions"), eq(submissions));
-    assertEquals("submissions-search-results", view);
+    assertEquals("pages/submissions-search-results", view);
   }
 }
