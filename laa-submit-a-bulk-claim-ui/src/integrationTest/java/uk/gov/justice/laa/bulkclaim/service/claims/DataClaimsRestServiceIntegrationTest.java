@@ -189,7 +189,9 @@ class DataClaimsRestServiceIntegrationTest extends MockServerIntegrationTest {
       LocalDate to = LocalDate.of(2025, 8, 31);
 
       SubmissionSearchResponseDto response =
-          dataClaimsRestService.search(offices, submissionId, from, to).block(Duration.ofSeconds(2));
+          dataClaimsRestService
+              .search(offices, submissionId, from, to)
+              .block(Duration.ofSeconds(2));
       assertThat(response.toString()).isNotEmpty();
       assertThat(response.submissions().getFirst().submissionId())
           .isEqualTo("660e8400-e29b-41d4-a716-14618440000");
