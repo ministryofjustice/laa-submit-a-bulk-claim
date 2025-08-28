@@ -47,7 +47,7 @@ jobs:
     uses: ./.github/workflows/helm-deploy.yml
     with:
       environment: development
-      deployment_name: development
+      deployment_name: dev
       image_tag: ${{ needs.ecr-publish-image.outputs.published_image_version }}
     secrets: inherit
 
@@ -71,7 +71,7 @@ jobs:
 #    uses: ./.github/workflows/helm-deploy.yml
 #    with:
 #      environment: staging
-#      deployment_name: staging
+#      deployment_name: stg
 #      image_tag: ${{ needs.ecr-publish-image.outputs.published_image_version }}
 #    secrets: inherit
 #
@@ -83,6 +83,6 @@ jobs:
 #    uses: ./.github/workflows/helm-deploy.yml
 #    with:
 #      environment: production
-#      deployment_name: production
+#      deployment_name: prod
 #      image_tag: ${{ needs.ecr-publish-image.outputs.published_image_version }}
 #    secrets: inherit
