@@ -34,7 +34,7 @@ public class SearchController {
   private final ClaimsRestService claimsRestService;
 
   /**
-   * Handles rendering the search form for claims.
+   * Handles rendering the search form for submissions.
    *
    * @return the search form page template
    */
