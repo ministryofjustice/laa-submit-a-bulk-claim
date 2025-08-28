@@ -1,5 +1,6 @@
 package uk.gov.justice.laa.bulkclaim.service.claims;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
 import org.springframework.http.MediaType;
@@ -13,6 +14,7 @@ import org.springframework.web.service.annotation.GetExchange;
 import org.springframework.web.service.annotation.HttpExchange;
 import org.springframework.web.service.annotation.PostExchange;
 import reactor.core.publisher.Mono;
+import uk.gov.justice.laa.bulkclaim.response.SubmissionSearchResponseDto;
 import uk.gov.justice.laa.claims.model.ClaimFields;
 import uk.gov.justice.laa.claims.model.ClaimValidationError;
 import uk.gov.justice.laa.claims.model.CreateBulkSubmission201Response;
@@ -37,6 +39,22 @@ public interface DataClaimsRestService {
   @PostExchange(value = "/bulk-submissions", contentType = MediaType.MULTIPART_FORM_DATA_VALUE)
   Mono<ResponseEntity<CreateBulkSubmission201Response>> upload(
       @RequestPart("file") MultipartFile file) throws WebClientResponseException;
+
+  /**
+   * Searches submissions using JSON criteria sent in the GET request body.
+   *
+   * @param offices array of authenticated user silas provider offices.
+   * @param submissionId submission id
+   * @param dateFrom date range date from
+   * @param dateTo date range date to
+   * @return SubmissionSearchResponseDto
+   */
+  @GetExchange(url = "/submissions", accept = MediaType.APPLICATION_JSON_VALUE)
+  Mono<SubmissionSearchResponseDto> search(
+      @RequestParam(required = true) List<String> offices,
+      @RequestParam String submissionId,
+      @RequestParam LocalDate dateFrom,
+      @RequestParam LocalDate dateTo);
 
   /**
    * Gets a submission by its ID.
