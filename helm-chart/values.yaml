@@ -113,6 +113,7 @@ securityContext:
   runAsGroup: 1000
 
 ingress:
+  className: modsec
   externalRoute:
     enabled: true
     hostname:

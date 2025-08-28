@@ -1,5 +1,6 @@
 replicas: 1
 ingress:
+  className: modsec-non-prod
   externalRoute:
     enabled: true
   whitelist:
