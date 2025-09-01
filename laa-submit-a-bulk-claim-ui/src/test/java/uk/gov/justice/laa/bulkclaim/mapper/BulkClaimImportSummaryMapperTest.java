@@ -50,9 +50,7 @@ class BulkClaimImportSummaryMapperTest {
     SoftAssertions.assertSoftly(
         softly -> {
           SubmissionSummaryRow result = resultList.getFirst();
-          softly
-              .assertThat(result.submitted())
-              .isEqualTo(LocalDateTime.of(2020, 5, 1, 0, 0, 0));
+          softly.assertThat(result.submitted()).isEqualTo(LocalDateTime.of(2020, 5, 1, 0, 0, 0));
           softly
               .assertThat(result.submissionReference())
               .isEqualTo(UUID.fromString("ee92c4ac-0ff9-4896-8bbe-c58fa04206e3"));

@@ -48,7 +48,8 @@ public class BulkImportInProgressController {
    */
   @GetMapping("/import-in-progress")
   public String importInProgress(
-      Model model, @ModelAttribute(BULK_SUBMISSION_ID) UUID bulkSubmissionId,
+      Model model,
+      @ModelAttribute(BULK_SUBMISSION_ID) UUID bulkSubmissionId,
       @ModelAttribute(UPLOADED_FILENAME) String uploadedFilename) {
 
     // Check submission exists otherwise they will be stuck in a loop on this page.
@@ -64,14 +65,18 @@ public class BulkImportInProgressController {
       throw new SubmitBulkClaimException("Claims API returned an error", e);
     }
 
-    UploadInProgressSummary summary = new UploadInProgressSummary(submission.getSubmission().getSubmitted(),
-        submission.getSubmission().getSubmissionId(), uploadedFilename);
-    model.addAttribute("inProgressSummary", summary);
-
     // Check submission. If the response from data claims API is 200, these fields
     //  should be not null.
     Assert.notNull(submission, "Submission is null");
     Assert.notNull(submission.getSubmission(), "Submission fields is null");
+
+    // Get summary
+    UploadInProgressSummary summary =
+        new UploadInProgressSummary(
+            submission.getSubmission().getSubmitted(),
+            submission.getSubmission().getSubmissionId(),
+            uploadedFilename);
+    model.addAttribute("inProgressSummary", summary);
 
     // Check for NIL submission
     if (Boolean.TRUE.equals(submission.getSubmission().getIsNilSubmission())) {

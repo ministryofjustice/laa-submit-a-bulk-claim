@@ -16,20 +16,21 @@
               <span class="govuk-!-font-weight-bold"
                     th:text="#{importInProgress.upload}"/>:
               <span id="bulk-submission-date"
+                    th:if="${inProgressSummary?.uploadDate()}"
                     th:text="|${#temporals.format(inProgressSummary.uploadDate(),'d MMM yyyy')} at ${#temporals.format(inProgressSummary.uploadDate(),'hh:MM:SS')}|"/>
             </p>
 
             <p>
               <span class="govuk-!-font-weight-bold"
                     th:text="#{submission.properties.submissionReference}"/>:
-              <span id="bulk-submission-id" th:text="${inProgressSummary.submissionReference()}"/>
+              <span id="bulk-submission-id" th:text="${inProgressSummary?.submissionReference()}"/>
             </p>
 
             <p>
               <th:block th:if="${uploadedFilename != null}">
                 <span class="govuk-!-font-weight-bold"
                       th:text="#{importInProgress.file}"/>:
-                <span id="bulk-submission-file-name" th:text="${inProgressSummary.fileName()}"/>
+                <span id="bulk-submission-file-name" th:text="${inProgressSummary?.fileName()}"/>
               </th:block>
             </p>
           </div>

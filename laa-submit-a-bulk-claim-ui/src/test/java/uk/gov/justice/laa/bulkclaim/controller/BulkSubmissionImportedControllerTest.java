@@ -132,7 +132,11 @@ class BulkSubmissionImportedControllerTest {
     SubmissionSummaryRow summaryRow =
         new SubmissionSummaryRow(
             LocalDateTime.of(2025, 5, 10, 10, 10, 10),
-            submissionReference, "AQB2C3", "Legal help", LocalDate.of(2025, 5, 10), 30);
+            submissionReference,
+            "AQB2C3",
+            "Legal help",
+            LocalDate.of(2025, 5, 10),
+            30);
     List<SubmissionSummaryClaimErrorRow> errors =
         List.of(
             new SubmissionSummaryClaimErrorRow(

@@ -56,7 +56,11 @@ class BulkClaimImportSummaryBuilderTest {
       SubmissionSummaryRow expectedSubmissionSummaryRow =
           new SubmissionSummaryRow(
               LocalDateTime.of(2020, 5, 1, 12, 0, 0),
-              submissionId, "Office Account", "Area of Law", LocalDate.of(2020, 5, 1), 1);
+              submissionId,
+              "Office Account",
+              "Area of Law",
+              LocalDate.of(2020, 5, 1),
+              1);
       when(bulkClaimImportSummaryMapper.toSubmissionSummaryRows(List.of(submission200Response)))
           .thenReturn(List.of(expectedSubmissionSummaryRow));
       when(dataClaimsRestService.getValidationErrors(submissionId)).thenReturn(Mono.empty());
@@ -79,7 +83,11 @@ class BulkClaimImportSummaryBuilderTest {
       SubmissionSummaryRow expectedSubmissionSummaryRow =
           new SubmissionSummaryRow(
               LocalDateTime.of(2020, 5, 1, 12, 0, 0),
-              submissionId, "Office Account", "Area of Law", LocalDate.of(2020, 5, 1), 1);
+              submissionId,
+              "Office Account",
+              "Area of Law",
+              LocalDate.of(2020, 5, 1),
+              1);
       when(bulkClaimImportSummaryMapper.toSubmissionSummaryRows(List.of(submission200Response)))
           .thenReturn(List.of(expectedSubmissionSummaryRow));
       when(dataClaimsRestService.getValidationErrors(submissionId))
