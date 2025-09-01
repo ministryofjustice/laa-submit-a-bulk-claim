@@ -1,5 +1,3 @@
-{{- define "laa.application-deployment-library" -}}
----
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -19,15 +17,23 @@ spec:
         app: {{ .Release.Name }}-{{ .Chart.Name }}-pod
         app.kubernetes.io/name: {{ .Release.Name }}-{{ .Chart.Name }}
     spec:
-      serviceAccountName: {{ .Release.Namespace }}
+      serviceAccountName: {{ .Release.Namespace }}-service-account
       {{- if .Values.securityContext }}
       securityContext:
         fsGroup: {{ .Values.securityContext.fsGroup }}
         runAsUser: {{ .Values.securityContext.runAsUser }}
         runAsGroup: {{ .Values.securityContext.runAsGroup }}
+        runAsNonRoot: true
       {{- end }}
       containers:
         - name: {{ .Release.Name }}-{{ .Chart.Name }}
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
+            seccompProfile:
+              type: RuntimeDefault
           {{ if .Values.image }}
           image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
           {{ else }}
@@ -256,6 +262,11 @@ spec:
       port: {{ .Values.global.ports.port }}
       targetPort: {{ .Values.global.ports.targetPort }}
     {{- end }}
+    {{ if .Values.global.management.enabled }}
+    - protocol: {{ .Values.global.management.protocol }}
+      name: {{ .Chart.Name }}-management
+      port: {{ .Values.global.management.port }}
+      targetPort: {{ .Values.global.management.targetPort }}
+    {{- end }}
   selector:
     app.kubernetes.io/name: {{ .Release.Name }}-{{ .Chart.Name }}
-{{- end -}}

@@ -1,4 +1,8 @@
 # com.nimbusds:nimbus-jose-jwt (nimbus-jose-jwt-9.37.3.jar)
 CVE-2025-53864
+
+# io.netty:netty-codec-http2 (netty-codec-http2-4.1.123.Final.jar)
+CVE-2025-55163
+
 # stdlib issue inside buildpack
 CVE-2025-47907

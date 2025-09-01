@@ -47,22 +47,22 @@ jobs:
     uses: ./.github/workflows/helm-deploy.yml
     with:
       environment: development
-      deployment_name: development
+      deployment_name: dev
       image_tag: ${{ needs.ecr-publish-image.outputs.published_image_version }}
     secrets: inherit
 
-#  deploy-uat:
-#    needs: [ ecr-publish-image, deploy-development ]
-#    permissions:
-#      id-token: write
-#      contents: read
-#    uses: ./.github/workflows/helm-deploy.yml
-#    with:
-#      environment: uat
-#      deployment_name: uat
-#      image_tag: ${{ needs.ecr-publish-image.outputs.published_image_version }}
-#    secrets: inherit
-#
+  deploy-uat:
+    needs: [ ecr-publish-image, deploy-development ]
+    permissions:
+      id-token: write
+      contents: read
+    uses: ./.github/workflows/helm-deploy.yml
+    with:
+      environment: uat
+      deployment_name: uat
+      image_tag: ${{ needs.ecr-publish-image.outputs.published_image_version }}
+    secrets: inherit
+
 #  deploy-staging:
 #    needs: [ ecr-publish-image, deploy-uat ]
 #    permissions:
@@ -71,7 +71,7 @@ jobs:
 #    uses: ./.github/workflows/helm-deploy.yml
 #    with:
 #      environment: staging
-#      deployment_name: staging
+#      deployment_name: stg
 #      image_tag: ${{ needs.ecr-publish-image.outputs.published_image_version }}
 #    secrets: inherit
 #
@@ -83,6 +83,6 @@ jobs:
 #    uses: ./.github/workflows/helm-deploy.yml
 #    with:
 #      environment: production
-#      deployment_name: production
+#      deployment_name: prod
 #      image_tag: ${{ needs.ecr-publish-image.outputs.published_image_version }}
 #    secrets: inherit

@@ -33,7 +33,13 @@ public class SecurityConfig {
   public WebSecurityCustomizer webSecurityCustomizer() {
     return web ->
         web.ignoring()
-            .requestMatchers("/webjars/**", "/assets/**", "/javascripts/**", "/stylesheets/**");
+            .requestMatchers(
+                "/webjars/**",
+                "/assets/**",
+                "/javascripts/**",
+                "/stylesheets/**",
+                "/actuator/health",
+                "/actuator/info");
   }
 
   /**
