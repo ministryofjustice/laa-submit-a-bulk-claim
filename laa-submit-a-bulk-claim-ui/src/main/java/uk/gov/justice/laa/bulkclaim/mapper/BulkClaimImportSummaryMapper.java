@@ -29,6 +29,7 @@ public interface BulkClaimImportSummaryMapper {
    * @param submissionResponse The response to map.
    * @return The mapped {@link SubmissionSummaryRow}.
    */
+  @Mapping(target = "submitted", source = "submission.submitted")
   @Mapping(target = "submissionReference", source = "submission.submissionId")
   @Mapping(target = "officeAccount", source = "submission.officeAccountNumber")
   @Mapping(target = "areaOfLaw", source = "submission.areaOfLaw")

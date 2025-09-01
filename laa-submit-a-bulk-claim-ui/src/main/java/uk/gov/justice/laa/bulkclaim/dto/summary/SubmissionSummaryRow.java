@@ -1,11 +1,13 @@
 package uk.gov.justice.laa.bulkclaim.dto.summary;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 /**
  * Summary of a single submission.
  *
+ * @param submitted date and time of when submission was made
  * @param submissionReference unique identifier for the submission
  * @param officeAccount account number for the office
  * @param areaOfLaw type of submission
@@ -14,6 +16,7 @@ import java.util.UUID;
  * @author Jamie Briggs
  */
 public record SubmissionSummaryRow(
+    LocalDateTime submitted,
     UUID submissionReference,
     String officeAccount,
     String areaOfLaw,
