@@ -39,7 +39,7 @@
 
       <dl class="govuk-summary-list" th:with="submission=${bulkClaimImportSummary.submissions().first}">
         <div class="govuk-summary-list__row">
-          <dt class="govuk-summary-list__key" th:text="#{submission.properties.submissionDate}"/>
+          <dt class="govuk-summary-list__key" th:text="#{submission.properties.submissionDateTime}"/>
           <dd class="govuk-summary-list__value govuk-!-font-weight-bold"
               id="submission-date"
               th:text="|${#temporals.format(submission.submitted,'d MMM yyyy')} at ${#temporals.format(submission.submitted(),'hh:MM:SS')}|"/>
@@ -51,7 +51,7 @@
               th:text="${submission.totalClaims}"/>
         </div>
         <div class="govuk-summary-list__row" th:if="${bulkClaimImportSummary.containsErrors()}">
-          <dt class="govuk-summary-list__key" th:text="#{submission.properties.totalClaims}"/>
+          <dt class="govuk-summary-list__key" th:text="#{submission.properties.totalErrors}"/>
           <dd class="govuk-summary-list__value"
               id="submission-total-errors"
               th:text="${bulkClaimImportSummary.totalErrors()}"/>
