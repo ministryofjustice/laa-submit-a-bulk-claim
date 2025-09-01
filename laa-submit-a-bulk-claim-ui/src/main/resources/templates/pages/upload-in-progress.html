@@ -15,7 +15,8 @@
             <p>
               <span class="govuk-!-font-weight-bold"
                     th:text="#{importInProgress.upload}"/>:
-              <span id="bulk-submission-date" th:text="|${#temporals.format(inProgressSummary.uploadDate(),'d MMM yyyy')} at ${#temporals.format(inProgressSummary.uploadDate(),'hh:MM:SS')}|"/>
+              <span id="bulk-submission-date"
+                    th:text="|${#temporals.format(inProgressSummary.uploadDate(),'d MMM yyyy')} at ${#temporals.format(inProgressSummary.uploadDate(),'hh:MM:SS')}|"/>
             </p>
 
             <p>
@@ -32,13 +33,58 @@
               </th:block>
             </p>
           </div>
-          <div class="govuk-button-group moj-interruption-card__actions">
+          <div class="govuk-button-group moj-interruption-card__actions" id="actions-container">
 
-            <a th:href="@{/search}" role="button" draggable="false" class="govuk-button govuk-button--inverse"
+            <a th:href="@{/search}" id="go-to-search-button" role="button" draggable="false"
+               class="govuk-button govuk-button--inverse"
                data-module="govuk-button" th:text="#{importInProgress.goToSearch}"/>
 
-            <a role="button" draggable="false" class="govuk-button govuk-button--inverse"
-               data-module="govuk-button" th:text="#{importInProgress.copyButton}"/>
+
+            <script type="text/javascript">
+              (function () {
+                function copyReference() {
+                  // Get the text field
+                  var copyText = document.getElementById("bulk-submission-id");
+
+                  // Copy the text inside the text field
+                  navigator.clipboard.writeText(copyText.textContent);
+
+                  // Create and show element was copied to clipboard
+                  var notification = document.createElement('p');
+                  notification.textContent = 'Submission reference copied to clipboard.';
+                  notification.className = 'govuk-body';
+                  notification.style.color = '#ffffff';
+                  notification.style.marginTop = '0';
+                  notification.style.marginBottom = '0';
+                  notification.style.transition = 'opacity 5s';
+
+                  var actionsContainer = document.getElementById('actions-container');
+                  actionsContainer.appendChild(notification);
+
+                  // Remove notification over 5 seconds
+                  notification.style.transition = 'opacity 3s';
+                  
+                  setTimeout(function () {
+                    notification.style.opacity = '0';
+                    setTimeout(function () {
+                      actionsContainer.removeChild(notification);
+                    }, 3000);
+                  }, 2000);
+
+                }
+                if (document.getElementById) {
+                  var actionsContainer = document.getElementById('actions-container');
+                  var copyToClipboardButton = document.createElement('a');
+                  copyToClipboardButton.setAttribute('role', 'button');
+                  copyToClipboardButton.setAttribute('draggable', 'false');
+                  copyToClipboardButton.setAttribute('data-module', 'govuk-button');
+                  copyToClipboardButton.className = 'govuk-button govuk-button--inverse';
+                  copyToClipboardButton.textContent = /*[[#{importInProgress.copyButton}]]*/ 'Copy submission reference';
+                  copyToClipboardButton.addEventListener('click', copyReference);
+                  actionsContainer.appendChild(copyToClipboardButton);
+                }
+              })();
+            </script>
 
 
           </div>
