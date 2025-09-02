@@ -30,7 +30,6 @@ import uk.gov.justice.laa.bulkclaim.service.claims.DataClaimsRestService;
 import uk.gov.justice.laa.claims.model.GetSubmission200Response;
 import uk.gov.justice.laa.claims.model.GetSubmission200ResponseClaimsInner;
 import uk.gov.justice.laa.claims.model.GetSubmission200ResponseClaimsInner.StatusEnum;
-import uk.gov.justice.laa.claims.model.SubmissionFields;
 import uk.gov.justice.laa.claims.model.SubmissionStatus;
 
 @WebMvcTest(BulkImportInProgressController.class)
@@ -55,10 +54,7 @@ public class BulkImportInProgressControllerTest {
           .thenReturn(
               Mono.just(
                   GetSubmission200Response.builder()
-                      .submission(
-                          SubmissionFields.builder()
-                              .status(SubmissionStatus.READY_FOR_VALIDATION)
-                              .build())
+                      .status(SubmissionStatus.READY_FOR_VALIDATION)
                       .claims(
                           Collections.singletonList(
                               GetSubmission200ResponseClaimsInner.builder()
@@ -106,7 +102,7 @@ public class BulkImportInProgressControllerTest {
           .thenReturn(
               Mono.just(
                   GetSubmission200Response.builder()
-                      .submission(SubmissionFields.builder().status(status).build())
+                      .status(status)
                       .claims(
                           Arrays.asList(
                               GetSubmission200ResponseClaimsInner.builder()
@@ -137,10 +133,7 @@ public class BulkImportInProgressControllerTest {
       when(dataClaimsRestService.getSubmission(submissionId))
           .thenReturn(
               Mono.just(
-                  GetSubmission200Response.builder()
-                      .submission(
-                          SubmissionFields.builder().isNilSubmission(true).status(status).build())
-                      .build()));
+                  GetSubmission200Response.builder().isNilSubmission(true).status(status).build()));
 
       assertThat(
               mockMvc.perform(
@@ -149,43 +142,6 @@ public class BulkImportInProgressControllerTest {
                       .sessionAttr(BULK_SUBMISSION_ID, submissionId.toString())))
           .hasStatus3xxRedirection()
           .hasRedirectedUrl("/view-submission-summary");
-    }
-
-    @Test
-    @DisplayName("Should throw error when submission has no fields")
-    void shouldThrowErrorWhenSubmissionIsNull() {
-      // Given
-      UUID submissionId = UUID.fromString("5933fc67-bac7-4f48-81ed-61c8c463f054");
-      when(dataClaimsRestService.getSubmission(submissionId)).thenReturn(Mono.empty());
-
-      assertThat(
-              mockMvc.perform(
-                  get("/import-in-progress")
-                      .with(oidcLogin().oidcUser(ControllerTestHelper.getOidcUser()))
-                      .sessionAttr("bulkClaimSubmissionId", submissionId.toString())))
-          .failure()
-          .hasCauseInstanceOf(IllegalArgumentException.class)
-          .hasMessageContaining("Submission is null");
-    }
-
-    @Test
-    @DisplayName("Should throw error when submission has no fields")
-    void shouldThrowErrorWhenSubmissionHasNoFields() {
-      // Given
-      UUID submissionId = UUID.fromString("5933fc67-bac7-4f48-81ed-61c8c463f054");
-      when(dataClaimsRestService.getSubmission(submissionId))
-          .thenReturn(
-              Mono.just(
-                  GetSubmission200Response.builder().claims(Collections.emptyList()).build()));
-
-      assertThat(
-              mockMvc.perform(
-                  get("/import-in-progress")
-                      .with(oidcLogin().oidcUser(ControllerTestHelper.getOidcUser()))
-                      .sessionAttr(BULK_SUBMISSION_ID, submissionId.toString())))
-          .failure()
-          .hasCauseInstanceOf(IllegalArgumentException.class)
-          .hasMessageContaining("Submission fields is null");
     }
 
     @ParameterizedTest

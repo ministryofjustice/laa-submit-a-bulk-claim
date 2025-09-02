@@ -35,7 +35,6 @@ import uk.gov.justice.laa.bulkclaim.dto.summary.SubmissionSummaryRow;
 import uk.gov.justice.laa.bulkclaim.exception.SubmitBulkClaimException;
 import uk.gov.justice.laa.bulkclaim.service.claims.DataClaimsRestService;
 import uk.gov.justice.laa.claims.model.GetSubmission200Response;
-import uk.gov.justice.laa.claims.model.SubmissionFields;
 
 @WebMvcTest(BulkSubmissionImportedController.class)
 @AutoConfigureMockMvc
@@ -57,8 +56,7 @@ class BulkSubmissionImportedControllerTest {
       // Given
       UUID bulkSubmissionId = UUID.fromString("314d1cac-ffb8-41b5-9013-bab4e47e23ca");
       GetSubmission200Response bulkSubmission =
-          new GetSubmission200Response()
-              .submission(SubmissionFields.builder().submissionId(bulkSubmissionId).build());
+          GetSubmission200Response.builder().submissionId(bulkSubmissionId).build();
       BulkClaimImportSummary bulkClaimImportSummary = getTestSubmissionSummary(bulkSubmissionId);
       when(bulkClaimSummaryBuilder.build(List.of(bulkSubmission)))
           .thenReturn(bulkClaimImportSummary);
@@ -84,8 +82,7 @@ class BulkSubmissionImportedControllerTest {
       // Given
       UUID bulkSubmissionId = UUID.fromString("314d1cac-ffb8-41b5-9013-bab4e47e23ca");
       GetSubmission200Response bulkSubmission =
-          new GetSubmission200Response()
-              .submission(SubmissionFields.builder().submissionId(bulkSubmissionId).build());
+          GetSubmission200Response.builder().submissionId(bulkSubmissionId).build();
       BulkClaimImportSummary bulkClaimImportSummary = getTestSubmissionSummary(bulkSubmissionId);
       when(dataClaimsRestService.getSubmission(bulkSubmissionId))
           .thenReturn(Mono.just(bulkSubmission));

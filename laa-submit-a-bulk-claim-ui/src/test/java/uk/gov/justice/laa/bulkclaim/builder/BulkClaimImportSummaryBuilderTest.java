@@ -23,7 +23,6 @@ import uk.gov.justice.laa.bulkclaim.mapper.BulkClaimImportSummaryMapper;
 import uk.gov.justice.laa.bulkclaim.service.claims.DataClaimsRestService;
 import uk.gov.justice.laa.claims.model.ClaimValidationError;
 import uk.gov.justice.laa.claims.model.GetSubmission200Response;
-import uk.gov.justice.laa.claims.model.SubmissionFields;
 
 @ExtendWith(MockitoExtension.class)
 @DisplayName("Submission summary builder test")
@@ -49,9 +48,7 @@ class BulkClaimImportSummaryBuilderTest {
       // Given
       UUID submissionId = UUID.fromString("2528e557-6c24-4725-b659-6346399bf021");
       GetSubmission200Response submission200Response =
-          GetSubmission200Response.builder()
-              .submission(SubmissionFields.builder().submissionId(submissionId).build())
-              .build();
+          GetSubmission200Response.builder().submissionId(submissionId).build();
       SubmissionSummaryRow expectedSubmissionSummaryRow =
           new SubmissionSummaryRow(
               submissionId, "Office Account", "Area of Law", LocalDate.of(2020, 5, 1), 1);
@@ -71,9 +68,7 @@ class BulkClaimImportSummaryBuilderTest {
       // Given
       UUID submissionId = UUID.fromString("2528e557-6c24-4725-b659-6346399bf021");
       GetSubmission200Response submission200Response =
-          GetSubmission200Response.builder()
-              .submission(SubmissionFields.builder().submissionId(submissionId).build())
-              .build();
+          GetSubmission200Response.builder().submissionId(submissionId).build();
       SubmissionSummaryRow expectedSubmissionSummaryRow =
           new SubmissionSummaryRow(
               submissionId, "Office Account", "Area of Law", LocalDate.of(2020, 5, 1), 1);

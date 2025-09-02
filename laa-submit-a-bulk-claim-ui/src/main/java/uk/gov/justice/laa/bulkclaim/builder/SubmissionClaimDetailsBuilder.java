@@ -39,7 +39,7 @@ public class SubmissionClaimDetailsBuilder {
             .map(
                 x ->
                     dataClaimsRestService.getSubmissionClaim(
-                        submissionResponse.getSubmission().getSubmissionId(), x.getClaimId()))
+                        submissionResponse.getSubmissionId(), x.getClaimId()))
             .map(x -> submissionClaimMapper.toSubmissionClaimRow(x.block()))
             .toList();
 
