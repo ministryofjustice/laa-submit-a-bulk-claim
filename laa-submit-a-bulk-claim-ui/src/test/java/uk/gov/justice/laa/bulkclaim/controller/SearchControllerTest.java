@@ -30,10 +30,10 @@ import uk.gov.justice.laa.bulkclaim.dto.SubmissionsSearchForm;
 import uk.gov.justice.laa.bulkclaim.helper.ProviderHelper;
 import uk.gov.justice.laa.bulkclaim.response.CwaUploadErrorResponseDto;
 import uk.gov.justice.laa.bulkclaim.response.CwaUploadSummaryResponseDto;
-import uk.gov.justice.laa.bulkclaim.response.SubmissionDto;
-import uk.gov.justice.laa.bulkclaim.response.SubmissionSearchResponseDto;
 import uk.gov.justice.laa.bulkclaim.service.CwaUploadService;
 import uk.gov.justice.laa.bulkclaim.service.claims.DataClaimsRestService;
+import uk.gov.justice.laa.claims.model.SubmissionFields;
+import uk.gov.justice.laa.claims.model.SubmissionsResultSet;
 
 @AutoConfigureMockMvc(addFilters = false)
 class SearchControllerTest {
@@ -117,12 +117,13 @@ class SearchControllerTest {
   @Test
   @DisplayName("Search form should return submissions when parameters are valid.")
   void submissionsSearchShouldReturnSubmissionResults_whenNoErrors() {
-    List<SubmissionDto> submissions = Collections.emptyList();
+    List<SubmissionFields> submissions = Collections.emptyList();
     String submissionId = "1234";
 
-    SubmissionSearchResponseDto responseDto = new SubmissionSearchResponseDto(submissions);
+    SubmissionsResultSet response = new SubmissionsResultSet();
+    response.content(submissions);
     when(claimsRestService.search(eq(List.of("1")), eq(submissionId), isNull(), isNull()))
-        .thenReturn(Mono.just(responseDto));
+        .thenReturn(Mono.just(response));
 
     String view =
         searchController.handleSearch(

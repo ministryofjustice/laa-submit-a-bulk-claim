@@ -21,8 +21,8 @@ import uk.gov.justice.laa.bulkclaim.dto.SubmissionsSearchForm;
 import uk.gov.justice.laa.bulkclaim.helper.ProviderHelper;
 import uk.gov.justice.laa.bulkclaim.response.CwaUploadErrorResponseDto;
 import uk.gov.justice.laa.bulkclaim.response.CwaUploadSummaryResponseDto;
-import uk.gov.justice.laa.bulkclaim.response.SubmissionSearchResponseDto;
 import uk.gov.justice.laa.bulkclaim.service.claims.DataClaimsRestService;
+import uk.gov.justice.laa.claims.model.SubmissionsResultSet;
 
 /** Controller for handling search requests related to bulk uploads. */
 @Slf4j
@@ -99,12 +99,12 @@ public class SearchController {
     List<String> offices = List.of("1");
 
     try {
-      SubmissionSearchResponseDto response =
+      SubmissionsResultSet response =
           claimsRestService
               .search(offices, submissionId, submittedDateFrom, submittedDateTo)
               .block();
       log.info("Returning response from claims search: {}", response);
-      model.addAttribute("submissions", response.submissions());
+      model.addAttribute("submissions", response.getContent());
 
       return "pages/submissions-search-results";
     } catch (HttpClientErrorException e) {

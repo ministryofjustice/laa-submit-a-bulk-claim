@@ -14,12 +14,12 @@ import org.springframework.web.service.annotation.GetExchange;
 import org.springframework.web.service.annotation.HttpExchange;
 import org.springframework.web.service.annotation.PostExchange;
 import reactor.core.publisher.Mono;
-import uk.gov.justice.laa.bulkclaim.response.SubmissionSearchResponseDto;
 import uk.gov.justice.laa.claims.model.ClaimFields;
 import uk.gov.justice.laa.claims.model.ClaimValidationError;
 import uk.gov.justice.laa.claims.model.CreateBulkSubmission201Response;
 import uk.gov.justice.laa.claims.model.GetSubmission200Response;
 import uk.gov.justice.laa.claims.model.MatterStartsGet;
+import uk.gov.justice.laa.claims.model.SubmissionsResultSet;
 
 /**
  * REST Service interface for interacting with the Claims API.
@@ -50,7 +50,7 @@ public interface DataClaimsRestService {
    * @return SubmissionSearchResponseDto
    */
   @GetExchange(url = "/submissions", accept = MediaType.APPLICATION_JSON_VALUE)
-  Mono<SubmissionSearchResponseDto> search(
+  Mono<SubmissionsResultSet> search(
       @RequestParam(required = true) List<String> offices,
       @RequestParam String submissionId,
       @RequestParam LocalDate dateFrom,
