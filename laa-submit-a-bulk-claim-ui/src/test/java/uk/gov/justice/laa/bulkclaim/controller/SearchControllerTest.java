@@ -25,6 +25,7 @@ import org.springframework.security.oauth2.core.oidc.OidcIdToken;
 import org.springframework.security.oauth2.core.oidc.OidcUserInfo;
 import org.springframework.security.oauth2.core.oidc.user.DefaultOidcUser;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import reactor.core.publisher.Mono;
 import uk.gov.justice.laa.bulkclaim.dto.SubmissionsSearchForm;
 import uk.gov.justice.laa.bulkclaim.helper.ProviderHelper;
@@ -47,6 +48,7 @@ class SearchControllerTest {
   @Mock private Model model;
   @Mock private Principal principal;
   @Mock private DataClaimsRestService claimsRestService;
+  @Mock private BindingResult bindingResult;
 
   @InjectMocks private SearchController searchController;
 
@@ -127,11 +129,12 @@ class SearchControllerTest {
 
     String view =
         searchController.handleSearch(
-            new SubmissionsSearchForm(submissionId, null, null), model, getDefaultOidcUser());
+            new SubmissionsSearchForm(submissionId, null, null),
+            bindingResult,
+            model,
+            getDefaultOidcUser());
 
-    verify(model).addAttribute("submissionId", submissionId);
-    verify(model).addAttribute("submittedDateFrom", "");
-    verify(model).addAttribute("submittedDateTo", "");
+    assertEquals(0, bindingResult.getErrorCount());
     verify(model).addAttribute(eq("submissions"), eq(submissions));
     assertEquals("pages/submissions-search-results", view);
   }

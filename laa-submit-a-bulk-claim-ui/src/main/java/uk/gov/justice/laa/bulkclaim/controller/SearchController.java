@@ -13,7 +13,10 @@ import org.springframework.security.oauth2.core.oidc.user.OidcUser;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.StringUtils;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.client.HttpClientErrorException;
@@ -22,6 +25,7 @@ import uk.gov.justice.laa.bulkclaim.helper.ProviderHelper;
 import uk.gov.justice.laa.bulkclaim.response.CwaUploadErrorResponseDto;
 import uk.gov.justice.laa.bulkclaim.response.CwaUploadSummaryResponseDto;
 import uk.gov.justice.laa.bulkclaim.service.claims.DataClaimsRestService;
+import uk.gov.justice.laa.bulkclaim.validation.SubmissionSearchValidator;
 import uk.gov.justice.laa.claims.model.SubmissionsResultSet;
 
 /** Controller for handling search requests related to bulk uploads. */
@@ -32,6 +36,12 @@ public class SearchController {
 
   private final ProviderHelper providerHelper;
   private final DataClaimsRestService claimsRestService;
+  private final SubmissionSearchValidator submissionSearchValidator;
+
+  @InitBinder("submissionsSearchForm")
+  void initSubmissionSearchValidator(WebDataBinder binder) {
+    binder.addValidators(submissionSearchValidator);
+  }
 
   /**
    * Handles rendering the search form for submissions.
@@ -56,6 +66,7 @@ public class SearchController {
   @PostMapping("/submissions/search")
   public String handleSearch(
       @ModelAttribute("submissionsSearchForm") SubmissionsSearchForm submissionsSearchForm,
+      BindingResult bindingResult,
       Model model,
       @AuthenticationPrincipal OidcUser oidcUser) {
 
@@ -69,29 +80,8 @@ public class SearchController {
     LocalDate submittedDateFrom = submissionsSearchForm.submittedDateFrom();
     LocalDate submittedDateTo = submissionsSearchForm.submittedDateTo();
 
-    boolean hasSearchCriteria =
-        (StringUtils.hasText(submissionId))
-            || (submittedDateFrom != null)
-            || (submittedDateTo != null);
-
-    if (!hasSearchCriteria) {
-      errors.put("global", "search.error.criteria.required");
-    }
-
-    if (submittedDateFrom != null
-        && submittedDateTo != null
-        && submittedDateFrom.isAfter(submittedDateTo)) {
-      errors.put("dateRange", "search.error.date.range");
-    }
-
-    model.addAttribute("submissionId", submissionId);
-    model.addAttribute(
-        "submittedDateFrom", submittedDateFrom != null ? formatter.format(submittedDateFrom) : "");
-    model.addAttribute(
-        "submittedDateTo", submittedDateTo != null ? formatter.format(submittedDateTo) : "");
-
-    if (!errors.isEmpty()) {
-      model.addAttribute("errors", errors);
+    if (bindingResult.hasErrors()) {
+      model.addAttribute("errors", bindingResult.getFieldErrors());
       return "pages/submissions-search";
     }
 
