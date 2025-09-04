@@ -18,7 +18,7 @@ import uk.gov.justice.laa.claims.model.ClaimFields;
 import uk.gov.justice.laa.claims.model.ClaimValidationError;
 import uk.gov.justice.laa.claims.model.CreateBulkSubmission201Response;
 import uk.gov.justice.laa.claims.model.GetSubmission200Response;
-import uk.gov.justice.laa.claims.model.MatterStartsGet;
+import uk.gov.justice.laa.claims.model.MatterStartGet;
 import uk.gov.justice.laa.claims.model.SubmissionsResultSet;
 
 /**
@@ -80,7 +80,7 @@ public interface DataClaimsRestService {
       @PathVariable("submission-id") UUID submissionId, @PathVariable("claim-id") UUID claimId);
 
   @GetExchange(value = "/submissions/{submission-id}/matter-starts/{matter-starts-id}")
-  Mono<MatterStartsGet> getSubmissionMatterStarts(
+  Mono<MatterStartGet> getSubmissionMatterStarts(
       @PathVariable("submission-id") UUID submissionId,
       @PathVariable("matter-starts-id") UUID claimId);
 
