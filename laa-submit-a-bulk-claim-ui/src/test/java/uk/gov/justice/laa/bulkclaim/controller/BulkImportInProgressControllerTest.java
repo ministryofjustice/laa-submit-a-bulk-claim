@@ -5,6 +5,7 @@ import static org.mockito.Mockito.when;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.oidcLogin;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static uk.gov.justice.laa.bulkclaim.constants.SessionConstants.BULK_SUBMISSION_ID;
+import static uk.gov.justice.laa.bulkclaim.constants.SessionConstants.UPLOADED_FILENAME;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -66,7 +67,8 @@ public class BulkImportInProgressControllerTest {
               mockMvc.perform(
                   get("/import-in-progress")
                       .with(oidcLogin().oidcUser(ControllerTestHelper.getOidcUser()))
-                      .sessionAttr(BULK_SUBMISSION_ID, submissionId.toString())))
+                      .sessionAttr(BULK_SUBMISSION_ID, submissionId.toString())
+                      .sessionAttr(UPLOADED_FILENAME, "fileName.csv")))
           .hasStatusOk()
           .hasViewName("pages/upload-in-progress");
     }
@@ -85,7 +87,8 @@ public class BulkImportInProgressControllerTest {
               mockMvc.perform(
                   get("/import-in-progress")
                       .with(oidcLogin().oidcUser(ControllerTestHelper.getOidcUser()))
-                      .sessionAttr(BULK_SUBMISSION_ID, submissionId.toString())))
+                      .sessionAttr(BULK_SUBMISSION_ID, submissionId.toString())
+                      .sessionAttr(UPLOADED_FILENAME, "fileName.csv")))
           .hasStatusOk()
           .hasViewName("pages/upload-in-progress");
     }
@@ -117,7 +120,8 @@ public class BulkImportInProgressControllerTest {
               mockMvc.perform(
                   get("/import-in-progress")
                       .with(oidcLogin().oidcUser(ControllerTestHelper.getOidcUser()))
-                      .sessionAttr(BULK_SUBMISSION_ID, submissionId.toString())))
+                      .sessionAttr(BULK_SUBMISSION_ID, submissionId.toString())
+                      .sessionAttr(UPLOADED_FILENAME, "fileName.csv")))
           .hasStatus3xxRedirection()
           .hasRedirectedUrl("/view-submission-summary");
     }
@@ -139,9 +143,49 @@ public class BulkImportInProgressControllerTest {
               mockMvc.perform(
                   get("/import-in-progress")
                       .with(oidcLogin().oidcUser(ControllerTestHelper.getOidcUser()))
-                      .sessionAttr(BULK_SUBMISSION_ID, submissionId.toString())))
+                      .sessionAttr(BULK_SUBMISSION_ID, submissionId.toString())
+                      .sessionAttr(UPLOADED_FILENAME, "fileName.csv")))
           .hasStatus3xxRedirection()
           .hasRedirectedUrl("/view-submission-summary");
+    }
+
+    @Test
+    @DisplayName("Should throw error when submission has no fields")
+    void shouldThrowErrorWhenSubmissionIsNull() {
+      // Given
+      UUID submissionId = UUID.fromString("5933fc67-bac7-4f48-81ed-61c8c463f054");
+      when(dataClaimsRestService.getSubmission(submissionId)).thenReturn(Mono.empty());
+
+      assertThat(
+              mockMvc.perform(
+                  get("/import-in-progress")
+                      .with(oidcLogin().oidcUser(ControllerTestHelper.getOidcUser()))
+                      .sessionAttr(BULK_SUBMISSION_ID, submissionId.toString())
+                      .sessionAttr(UPLOADED_FILENAME, "fileName.csv")))
+          .failure()
+          .hasCauseInstanceOf(IllegalArgumentException.class)
+          .hasMessageContaining("Submission is null");
+    }
+
+    @Test
+    @DisplayName("Should throw error when submission has no fields")
+    void shouldThrowErrorWhenSubmissionHasNoFields() {
+      // Given
+      UUID submissionId = UUID.fromString("5933fc67-bac7-4f48-81ed-61c8c463f054");
+      when(dataClaimsRestService.getSubmission(submissionId))
+          .thenReturn(
+              Mono.just(
+                  GetSubmission200Response.builder().claims(Collections.emptyList()).build()));
+
+      assertThat(
+              mockMvc.perform(
+                  get("/import-in-progress")
+                      .with(oidcLogin().oidcUser(ControllerTestHelper.getOidcUser()))
+                      .sessionAttr(BULK_SUBMISSION_ID, submissionId.toString())
+                      .sessionAttr(UPLOADED_FILENAME, "fileName.csv")))
+          .failure()
+          .hasCauseInstanceOf(IllegalArgumentException.class)
+          .hasMessageContaining("Submission fields is null");
     }
 
     @ParameterizedTest
@@ -157,7 +201,8 @@ public class BulkImportInProgressControllerTest {
               mockMvc.perform(
                   get("/import-in-progress")
                       .with(oidcLogin().oidcUser(ControllerTestHelper.getOidcUser()))
-                      .sessionAttr(BULK_SUBMISSION_ID, submissionId.toString())))
+                      .sessionAttr(BULK_SUBMISSION_ID, submissionId.toString())
+                      .sessionAttr(UPLOADED_FILENAME, "fileName.csv")))
           .failure()
           .hasCauseInstanceOf(SubmitBulkClaimException.class)
           .hasMessageContaining("Claims API returned an error");
