@@ -13,18 +13,6 @@ apply plugin: 'uk.gov.laa.springboot.laa-spring-boot-gradle-plugin'
 dependencies {
     implementation project(':claims-api-reference')
 
-    /**
-     * Upgrades to resolve vulnerabilities
-     */
-    // Upgrade to fix CVE-2025-48924
-    implementation 'org.apache.commons:commons-lang3:3.18.0'
-    // Upgrade to fix CVE-2025-55163
-    implementation 'io.netty:netty-codec-http2:4.1.124.Final'
-    // Update to fix CVE-2025-41242
-    implementation 'org.springframework:spring-webmvc:6.2.10'
-    // Update to fix CVE-2025-48989
-    implementation 'org.apache.tomcat.embed:tomcat-embed-core:11.0.10'
-
     implementation 'org.springframework.boot:spring-boot-starter-cache'
     implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
     implementation 'org.springframework.boot:spring-boot-starter-security'
