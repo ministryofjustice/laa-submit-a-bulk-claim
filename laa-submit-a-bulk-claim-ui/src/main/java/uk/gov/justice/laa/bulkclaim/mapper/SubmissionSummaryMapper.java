@@ -29,7 +29,7 @@ public interface SubmissionSummaryMapper {
       source = "submissionPeriod",
       qualifiedByName = "toSubmissionPeriod")
   @Mapping(target = "status", constant = "Submitted")
-  @Mapping(target = "submitted", source = "submission.submitted")
+  @Mapping(target = "submitted", source = "submitted")
   @Mapping(target = "submissionValue", constant = "50.52")
   SubmissionSummary toSubmissionSummary(GetSubmission200Response submissionResponse);
 

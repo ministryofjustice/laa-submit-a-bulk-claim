@@ -67,15 +67,12 @@ public class BulkImportInProgressController {
 
     // Check submission. If the response from data claims API is 200, these fields
     //  should be not null.
-    Assert.notNull(submission, "Submission is null");
-    Assert.notNull(submission.getSubmissionId(), "Submission fields is null");
+    Assert.notNull(submission, "Submission fields is null");
 
     // Get summary
     UploadInProgressSummary summary =
         new UploadInProgressSummary(
-            submission.getSubmitted(),
-            submission.getSubmissionId(),
-            uploadedFilename);
+            submission.getSubmitted(), submission.getSubmissionId(), uploadedFilename);
     model.addAttribute("inProgressSummary", summary);
 
     // Check for NIL submission

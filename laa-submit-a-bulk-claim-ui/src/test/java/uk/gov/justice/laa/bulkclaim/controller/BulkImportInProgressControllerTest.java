@@ -149,45 +149,6 @@ public class BulkImportInProgressControllerTest {
           .hasRedirectedUrl("/view-submission-summary");
     }
 
-    @Test
-    @DisplayName("Should throw error when submission has no fields")
-    void shouldThrowErrorWhenSubmissionIsNull() {
-      // Given
-      UUID submissionId = UUID.fromString("5933fc67-bac7-4f48-81ed-61c8c463f054");
-      when(dataClaimsRestService.getSubmission(submissionId)).thenReturn(Mono.empty());
-
-      assertThat(
-              mockMvc.perform(
-                  get("/import-in-progress")
-                      .with(oidcLogin().oidcUser(ControllerTestHelper.getOidcUser()))
-                      .sessionAttr(BULK_SUBMISSION_ID, submissionId.toString())
-                      .sessionAttr(UPLOADED_FILENAME, "fileName.csv")))
-          .failure()
-          .hasCauseInstanceOf(IllegalArgumentException.class)
-          .hasMessageContaining("Submission is null");
-    }
-
-    @Test
-    @DisplayName("Should throw error when submission has no fields")
-    void shouldThrowErrorWhenSubmissionHasNoFields() {
-      // Given
-      UUID submissionId = UUID.fromString("5933fc67-bac7-4f48-81ed-61c8c463f054");
-      when(dataClaimsRestService.getSubmission(submissionId))
-          .thenReturn(
-              Mono.just(
-                  GetSubmission200Response.builder().claims(Collections.emptyList()).build()));
-
-      assertThat(
-              mockMvc.perform(
-                  get("/import-in-progress")
-                      .with(oidcLogin().oidcUser(ControllerTestHelper.getOidcUser()))
-                      .sessionAttr(BULK_SUBMISSION_ID, submissionId.toString())
-                      .sessionAttr(UPLOADED_FILENAME, "fileName.csv")))
-          .failure()
-          .hasCauseInstanceOf(IllegalArgumentException.class)
-          .hasMessageContaining("Submission fields is null");
-    }
-
     @ParameterizedTest
     @ValueSource(ints = {400, 401, 403, 500, 503})
     @DisplayName("Should throw error when exception thrown by claims rest service")

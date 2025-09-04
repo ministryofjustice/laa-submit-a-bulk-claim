@@ -12,7 +12,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.justice.laa.bulkclaim.dto.submission.SubmissionSummary;
 import uk.gov.justice.laa.claims.model.GetSubmission200Response;
-import uk.gov.justice.laa.claims.model.SubmissionFields;
 
 @DisplayName("Submission summary mapper test")
 @ExtendWith(SpringExtension.class)
