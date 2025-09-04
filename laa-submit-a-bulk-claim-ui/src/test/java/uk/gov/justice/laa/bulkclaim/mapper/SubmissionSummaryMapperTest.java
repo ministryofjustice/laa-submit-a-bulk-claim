@@ -2,6 +2,7 @@ package uk.gov.justice.laa.bulkclaim.mapper;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.UUID;
 import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -35,7 +36,7 @@ class SubmissionSummaryMapperTest {
             .officeAccountNumber("1234567890")
             // TODO: Add submission value to specification
             .areaOfLaw("Civil Law")
-            // TODO: Add submitted date to specification
+            .submitted(LocalDate.of(2025, 1, 1))
             .build();
 
     // When
@@ -50,7 +51,9 @@ class SubmissionSummaryMapperTest {
           softAssertions.assertThat(result.officeAccount()).isEqualTo("1234567890");
           softAssertions.assertThat(result.submissionValue()).isEqualTo(new BigDecimal("50.52"));
           softAssertions.assertThat(result.areaOfLaw()).isEqualTo("Civil Law");
-          softAssertions.assertThat(result.submitted()).isEqualTo(LocalDate.of(2025, 1, 1));
+          softAssertions
+              .assertThat(result.submitted())
+              .isEqualTo(LocalDateTime.of(2025, 1, 1, 0, 0, 0));
         });
   }
 }

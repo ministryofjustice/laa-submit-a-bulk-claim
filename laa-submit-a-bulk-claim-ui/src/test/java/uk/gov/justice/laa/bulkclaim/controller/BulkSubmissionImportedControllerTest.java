@@ -10,6 +10,7 @@ import static uk.gov.justice.laa.bulkclaim.constants.SessionConstants.BULK_SUBMI
 import static uk.gov.justice.laa.bulkclaim.constants.SessionConstants.BULK_SUBMISSION_ID;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
@@ -127,7 +128,12 @@ class BulkSubmissionImportedControllerTest {
       UUID submissionReference) {
     SubmissionSummaryRow summaryRow =
         new SubmissionSummaryRow(
-            submissionReference, "AQB2C3", "Legal help", LocalDate.of(2025, 5, 10), 30);
+            LocalDateTime.of(2025, 5, 10, 10, 10, 10),
+            submissionReference,
+            "AQB2C3",
+            "Legal help",
+            LocalDate.of(2025, 5, 10),
+            30);
     List<SubmissionSummaryClaimErrorRow> errors =
         List.of(
             new SubmissionSummaryClaimErrorRow(

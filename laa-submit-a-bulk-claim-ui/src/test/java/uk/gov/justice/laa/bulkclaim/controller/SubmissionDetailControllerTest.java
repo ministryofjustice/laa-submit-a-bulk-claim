@@ -10,6 +10,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.UUID;
@@ -87,7 +88,7 @@ class SubmissionDetailControllerTest {
                   "AQ2B3C",
                   new BigDecimal("100.50"),
                   "Legal aid",
-                  LocalDate.of(2025, 1, 1)));
+                  LocalDateTime.of(2025, 1, 1, 10, 10, 10)));
       when(submissionClaimDetailsBuilder.build(any()))
           .thenReturn(
               new SubmissionClaimDetails(
@@ -126,7 +127,7 @@ class SubmissionDetailControllerTest {
                   "AQ2B3C",
                   new BigDecimal("100.50"),
                   "Legal aid",
-                  LocalDate.of(2025, 1, 1)));
+                  LocalDateTime.of(2025, 1, 1, 10, 10, 10)));
       when(submissionClaimDetailsBuilder.build(any()))
           .thenReturn(
               new SubmissionClaimDetails(
@@ -165,7 +166,7 @@ class SubmissionDetailControllerTest {
                   "AQ2B3C",
                   new BigDecimal("100.50"),
                   "Legal aid",
-                  LocalDate.of(2025, 1, 1)));
+                  LocalDateTime.of(2025, 1, 1, 10, 10, 10)));
       HashMap<SubmissionMatterStartsRow, Long> matterTypes = new HashMap<>();
       matterTypes.put(new SubmissionMatterStartsRow("Description"), 1L);
       when(submissionMatterStartsDetailsBuilder.build(any()))

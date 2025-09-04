@@ -6,6 +6,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
@@ -51,7 +52,12 @@ class BulkClaimImportSummaryBuilderTest {
           GetSubmission200Response.builder().submissionId(submissionId).build();
       SubmissionSummaryRow expectedSubmissionSummaryRow =
           new SubmissionSummaryRow(
-              submissionId, "Office Account", "Area of Law", LocalDate.of(2020, 5, 1), 1);
+              LocalDateTime.of(2020, 5, 1, 12, 0, 0),
+              submissionId,
+              "Office Account",
+              "Area of Law",
+              LocalDate.of(2020, 5, 1),
+              1);
       when(bulkClaimImportSummaryMapper.toSubmissionSummaryRows(List.of(submission200Response)))
           .thenReturn(List.of(expectedSubmissionSummaryRow));
       when(dataClaimsRestService.getValidationErrors(submissionId)).thenReturn(Mono.empty());
@@ -71,7 +77,12 @@ class BulkClaimImportSummaryBuilderTest {
           GetSubmission200Response.builder().submissionId(submissionId).build();
       SubmissionSummaryRow expectedSubmissionSummaryRow =
           new SubmissionSummaryRow(
-              submissionId, "Office Account", "Area of Law", LocalDate.of(2020, 5, 1), 1);
+              LocalDateTime.of(2020, 5, 1, 12, 0, 0),
+              submissionId,
+              "Office Account",
+              "Area of Law",
+              LocalDate.of(2020, 5, 1),
+              1);
       when(bulkClaimImportSummaryMapper.toSubmissionSummaryRows(List.of(submission200Response)))
           .thenReturn(List.of(expectedSubmissionSummaryRow));
       when(dataClaimsRestService.getValidationErrors(submissionId))

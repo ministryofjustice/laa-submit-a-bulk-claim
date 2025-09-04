@@ -6,7 +6,7 @@
 <main class="govuk-main-wrapper" id="main-content">
 
   <div class="govuk-grid-row">
-    <div class="govuk-grid-column-full">
+    <div class="govuk-grid-column-two-thirds-from-desktop">
 
       <h1 class="govuk-heading-l" id="header" th:text="${bulkClaimImportSummary.containsErrors()} ?
       #{bulkClaimImportSummary.failed.heading} :
@@ -27,9 +27,9 @@
         </div>
         <div class="moj-alert__content">
           <h2 class="moj-alert__heading"
-              th:text="#{bulkClaimImportSummary.errorsFoundModal.heading}"/>
+              th:text="#{bulkClaimImportSummary.errorsFoundModal.heading(${bulkClaimImportSummary.totalErrors()})}"/>
           <th:block
-              th:text="#{bulkClaimImportSummary.errorsFoundModal.message(${bulkClaimImportSummary.totalErrors()})}"/>
+              th:text="#{bulkClaimImportSummary.errorsFoundModal.message}"/>
         </div>
 
         <div class="moj-alert__action">
@@ -37,66 +37,49 @@
         </div>
       </div>
 
-      <!--Upload summary-->
-      <table class="govuk-table" data-module="moj-sortable-table">
-        <caption class="govuk-table__caption"
-                 th:text="#{bulkClaimImportSummary.summaryTable.caption}"/>
-
-        <thead class="govuk-table__head">
-        <tr class="govuk-table__row">
-          <th scope="col" class="govuk-table__header" aria-sort="ascending"
-              th:text="#{submission.properties.submissionReference}"/>
-          <th scope="col" class="govuk-table__header" aria-sort="none"
-              th:text="#{submission.properties.officeAccount}"/>
-          <th scope="col" class="govuk-table__header" aria-sort="none"
-              th:text="#{submission.properties.submissionDate}"/>
-          <th scope="col" class="govuk-table__header" aria-sort="none"
-              th:text="#{submission.properties.areaOfLaw}"/>
-          <th scope="col" class="govuk-table__header" aria-sort="none"
-              th:text="#{submission.properties.totalClaims}"/>
-          <th scope="col" class="govuk-table__header" aria-sort="none"
-              th:text="#{submission.properties.totalErrors}"/>
-        </tr>
-        </thead>
-
-        <tbody class="govuk-table__body">
-
-        <tr class="govuk-table__row"
-            th:each="submission, idx : ${bulkClaimImportSummary.submissions()}"
-            th:id="|submission-${idx.index}|">
-
-          <td class="govuk-table__cell"
-              th:id="|submission-reference-${idx.index}|"
-              th:data-sort-value="${submission.submissionReference()}">
+      <dl class="govuk-summary-list" th:with="submission=${bulkClaimImportSummary.submissions().first}">
+        <div class="govuk-summary-list__row">
+          <dt class="govuk-summary-list__key" th:text="#{submission.properties.submissionDateTime}"/>
+          <dd class="govuk-summary-list__value govuk-!-font-weight-bold"
+              id="submission-date"
+              th:text="|${#temporals.format(submission.submitted,'d MMM yyyy')} at ${#temporals.format(submission.submitted(),'hh:MM:SS')}|"/>
+        </div>
+        <div class="govuk-summary-list__row">
+          <dt class="govuk-summary-list__key" th:text="#{submission.properties.totalClaims}"/>
+          <dd class="govuk-summary-list__value"
+              id="submission-total-claims"
+              th:text="${submission.totalClaims}"/>
+        </div>
+        <div class="govuk-summary-list__row" th:if="${bulkClaimImportSummary.containsErrors()}">
+          <dt class="govuk-summary-list__key" th:text="#{submission.properties.totalErrors}"/>
+          <dd class="govuk-summary-list__value"
+              id="submission-total-errors"
+              th:text="${bulkClaimImportSummary.totalErrors()}"/>
+        </div>
+        <div class="govuk-summary-list__row">
+          <dt class="govuk-summary-list__key" th:text="#{submission.properties.areaOfLaw}"/>
+          <dd class="govuk-summary-list__value"
+              id="submission-area-of-law"
+              th:text="${submission.areaOfLaw}"/>
+        </div>
+        <div class="govuk-summary-list__row">
+          <dt class="govuk-summary-list__key" th:text="#{submission.properties.officeAccount}"/>
+          <dd class="govuk-summary-list__value"
+              id="submission-office-account"
+              th:text="${submission.officeAccount}"/>
+        </div>
+        <div class="govuk-summary-list__row">
+          <dt class="govuk-summary-list__key" th:text="#{submission.properties.officeAccount}"/>
+          <dd class="govuk-summary-list__value"
+              id="submission-reference">
             <a th:href="@{/submission/{submissionId}(submissionId=${submission.submissionReference()})}"
                class="govuk-link" th:text="${submission.submissionReference()}"/>
-          </td>
-          <td class="govuk-table__cell"
-              th:id="|office-account-${idx.index}|"
-              th:data-sort-value="${submission.officeAccount()}"
-              th:text="${submission.officeAccount()}"/>
-          <!--sort via numeric month to order chronologically rather than alphabetically.-->
-          <td class="govuk-table__cell"
-              th:id="|submission-date-${idx.index}|"
-              th:data-sort-value="${#temporals.format(submission.submissionPeriod(), 'MM YYYY')}"
-              th:text="${#temporals.format(submission.submissionPeriod(), 'MMM YYYY')}"/>
-          <td class="govuk-table__cell"
-              th:id="|submission-area-of-law-${idx.index}|"
-              th:data-sort-value="${submission.areaOfLaw()}"
-              th:text="${submission.areaOfLaw()}"/>
-          <td class="govuk-table__cell"
-              th:id="|total-claims-${idx.index}|"
-              th:data-sort-value="${submission.totalClaims()}"
-              th:text="${submission.totalClaims()}"/>
-          <td class="govuk-table__cell"
-              th:with="totalErrors=${bulkClaimImportSummary.totalErrors(submission.submissionReference())}"
-              th:id="|total-errors-${idx.index}|"
-              th:data-sort-value="${totalErrors}"
-              th:text="${totalErrors}"/>
-        </tr>
+          </dd>
+        </div>
+      </dl>
 
-        </tbody>
-      </table>
+    </div>
+    <div class="govuk-grid-column-full">
 
       <!--Claim errors-->
       <table class="govuk-table" th:if="${bulkClaimImportSummary.containsErrors()}"

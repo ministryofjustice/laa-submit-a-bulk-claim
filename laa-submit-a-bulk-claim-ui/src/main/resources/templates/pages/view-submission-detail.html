@@ -10,20 +10,17 @@
         <h1 class="govuk-heading-l govuk-!-padding-top-4" th:text="#{viewSubmission.heading}"/>
       </div>
 
-      <div class="govuk-grid-column-full">
-        <dl class="govuk-summary-list govuk-summary-list--no-border">
+      <div class="govuk-grid-column-two-thirds-from-desktop">
+        <dl class="govuk-summary-list">
           <div class="govuk-summary-list__row">
-            <dt class="govuk-summary-list__key"
-                th:text="#{submission.properties.submissionReference}"/>
-            <dd class="govuk-summary-list__value">
-              <span class="govuk-!-font-weight-bold"
-                    th:text="${submissionSummary.submissionReference}"/>
-            </dd>
+            <dt class="govuk-summary-list__key" th:text="#{submission.properties.submissionDateTimeAbbreviated}"/>
+            <dd class="govuk-summary-list__value govuk-!-font-weight-bold"
+                th:text="|${#temporals.format(submissionSummary.submitted,'d MMM yyyy')} at ${#temporals.format(submissionSummary.submitted(),'hh:MM:SS')}|"/>
           </div>
           <div class="govuk-summary-list__row">
-            <dt class="govuk-summary-list__key" th:text="#{submission.properties.submissionDate}"/>
+            <dt class="govuk-summary-list__key" th:text="#{submission.properties.submissionPeriod}"/>
             <dd class="govuk-summary-list__value"
-                th:text="${#temporals.format(submissionSummary.submissionPeriod(), 'MMM YYYY')}"/>
+                th:text="${#temporals.format(submissionSummary.submissionPeriod, 'MMM YYYY')}"/>
           </div>
           <div class="govuk-summary-list__row">
             <dt class="govuk-summary-list__key" th:text="#{submission.properties.officeAccount}"/>
@@ -41,9 +38,11 @@
                 th:text="${submissionSummary.areaOfLaw}"/>
           </div>
           <div class="govuk-summary-list__row">
-            <dt class="govuk-summary-list__key" th:text="#{submission.properties.submitted}"/>
+            <dt class="govuk-summary-list__key"
+                th:text="#{submission.properties.submissionReferenceAbbreviated}"/>
             <dd class="govuk-summary-list__value"
-                th:text="${#temporals.format(submissionSummary.submitted, 'dd/MM/yyyy')}"/>
+                    th:text="${submissionSummary.submissionReference}"/>
+
           </div>
 
         </dl>
@@ -89,7 +88,8 @@
                      th:text="#{viewSubmission.claims.submissionCosts.caption}"/>
             <thead class="govuk-table__head">
             <tr class="govuk-table__row">
-              <th scope="col" class="govuk-table__header"></th>
+              <th scope="col" class="govuk-table__header"
+                  th:text="#{viewSubmission.claims.submissionCosts.tableHeader.name}"/>
               <th scope="col" class="govuk-table__header"
                   th:text="#{viewSubmission.claims.submissionCosts.tableHeader.claimed}"/>
             </tr>
@@ -135,7 +135,6 @@
         </div>
         <div class="govuk-grid-column-full">
 
-          <div class="moj-scrollable-pane">
             <table class="govuk-table" data-module="moj-sortable-table">
 
               <caption class="govuk-table__caption govuk-table__caption--m"
@@ -220,7 +219,6 @@
 
               </tbody>
             </table>
-          </div>
         </div>
       </th:block>
 

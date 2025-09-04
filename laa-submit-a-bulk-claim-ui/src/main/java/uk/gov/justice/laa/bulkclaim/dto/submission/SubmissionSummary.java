@@ -2,6 +2,7 @@ package uk.gov.justice.laa.bulkclaim.dto.submission;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 /**
@@ -13,7 +14,7 @@ import java.util.UUID;
  * @param officeAccount account number for the office
  * @param submissionValue numberOfMatterStarts value of the submission
  * @param areaOfLaw type of submission
- * @param submitted date the submission was submitted
+ * @param submitted date and time the submission was submitted
  * @author Jamie Briggs
  */
 public record SubmissionSummary(
@@ -23,4 +24,4 @@ public record SubmissionSummary(
     String officeAccount,
     BigDecimal submissionValue,
     String areaOfLaw,
-    LocalDate submitted) {}
+    LocalDateTime submitted) {}
