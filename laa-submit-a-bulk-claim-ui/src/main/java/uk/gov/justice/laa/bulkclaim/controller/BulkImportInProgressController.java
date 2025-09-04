@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.SessionAttributes;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
+import uk.gov.justice.laa.bulkclaim.dto.UploadInProgressSummary;
 import uk.gov.justice.laa.bulkclaim.exception.SubmitBulkClaimException;
 import uk.gov.justice.laa.bulkclaim.service.claims.DataClaimsRestService;
 import uk.gov.justice.laa.claims.model.GetSubmission200Response;
@@ -47,7 +48,9 @@ public class BulkImportInProgressController {
    */
   @GetMapping("/import-in-progress")
   public String importInProgress(
-      Model model, @ModelAttribute(BULK_SUBMISSION_ID) UUID bulkSubmissionId) {
+      Model model,
+      @ModelAttribute(BULK_SUBMISSION_ID) UUID bulkSubmissionId,
+      @ModelAttribute(UPLOADED_FILENAME) String uploadedFilename) {
 
     // Check submission exists otherwise they will be stuck in a loop on this page.
     GetSubmission200Response submission;
@@ -66,6 +69,14 @@ public class BulkImportInProgressController {
     //  should be not null.
     Assert.notNull(submission, "Submission is null");
     Assert.notNull(submission.getSubmission(), "Submission fields is null");
+
+    // Get summary
+    UploadInProgressSummary summary =
+        new UploadInProgressSummary(
+            submission.getSubmission().getSubmitted(),
+            submission.getSubmission().getSubmissionId(),
+            uploadedFilename);
+    model.addAttribute("inProgressSummary", summary);
 
     // Check for NIL submission
     if (Boolean.TRUE.equals(submission.getSubmission().getIsNilSubmission())) {

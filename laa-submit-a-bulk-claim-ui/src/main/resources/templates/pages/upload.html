@@ -17,12 +17,13 @@
           <legend class="govuk-fieldset__legend govuk-fieldset__legend--xl">
             <h1 class="govuk-fieldset__heading" th:text="#{bulkImport.heading}"/>
           </legend>
-          <p class="govuk-body-l" th:text="#{bulkImport.leadParagraph}"/>
-          <p class="govuk-body" th:utext="#{bulkImport.links(
-            ${@environment.getProperty('links.guidance')},
-            ${@environment.getProperty('links.bulk-upload-spreadsheet')}
-          )}"/>
-          <div class="govuk-form-group"
+          <p class="govuk-body-l" th:utext="#{bulkImport.leadParagraph(
+            ${@environment.getProperty('links.bulk-upload-spreadsheet')},
+            ${@environment.getProperty('upload-max-file-size')})}"/>
+          <a class="govuk-body govuk-link" target="_blank" th:text="#{bulkImport.guidanceLink}"
+             th:href="${@environment.getProperty('links.guidance')}"/>
+
+          <div class="govuk-form-group govuk-!-padding-top-4"
                th:classappend="${#fields.hasErrors('file')} ? 'govuk-form-group--error'">
             <label class="govuk-label" for="file-input"
                    th:text="#{bulkImport.upload.label}"/>
