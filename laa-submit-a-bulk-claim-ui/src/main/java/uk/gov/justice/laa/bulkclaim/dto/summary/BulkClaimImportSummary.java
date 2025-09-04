@@ -39,7 +39,7 @@ public record BulkClaimImportSummary(
 
     return Math.toIntExact(
         claimErrors.stream()
-            .filter(x -> Objects.equals(submissionReference, x.submissionReference()))
+            .filter(errorRow -> Objects.equals(submissionReference, errorRow.submissionReference()))
             .count());
   }
 }
