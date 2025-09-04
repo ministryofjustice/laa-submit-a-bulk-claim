@@ -1,5 +1,6 @@
 package uk.gov.justice.laa.bulkclaim.service.claims;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
 import org.springframework.http.MediaType;
@@ -17,7 +18,8 @@ import uk.gov.justice.laa.claims.model.ClaimFields;
 import uk.gov.justice.laa.claims.model.ClaimValidationError;
 import uk.gov.justice.laa.claims.model.CreateBulkSubmission201Response;
 import uk.gov.justice.laa.claims.model.GetSubmission200Response;
-import uk.gov.justice.laa.claims.model.MatterStartsGet;
+import uk.gov.justice.laa.claims.model.MatterStartGet;
+import uk.gov.justice.laa.claims.model.SubmissionsResultSet;
 
 /**
  * REST Service interface for interacting with the Claims API.
@@ -37,6 +39,22 @@ public interface DataClaimsRestService {
   @PostExchange(value = "/bulk-submissions", contentType = MediaType.MULTIPART_FORM_DATA_VALUE)
   Mono<ResponseEntity<CreateBulkSubmission201Response>> upload(
       @RequestPart("file") MultipartFile file) throws WebClientResponseException;
+
+  /**
+   * Searches submissions using JSON criteria sent in the GET request body.
+   *
+   * @param offices array of authenticated user silas provider offices.
+   * @param submissionId submission id
+   * @param dateFrom date range date from
+   * @param dateTo date range date to
+   * @return SubmissionSearchResponseDto
+   */
+  @GetExchange(url = "/submissions", accept = MediaType.APPLICATION_JSON_VALUE)
+  Mono<SubmissionsResultSet> search(
+      @RequestParam(required = true) List<String> offices,
+      @RequestParam String submissionId,
+      @RequestParam LocalDate dateFrom,
+      @RequestParam LocalDate dateTo);
 
   /**
    * Gets a submission by its ID.
@@ -62,7 +80,7 @@ public interface DataClaimsRestService {
       @PathVariable("submission-id") UUID submissionId, @PathVariable("claim-id") UUID claimId);
 
   @GetExchange(value = "/submissions/{submission-id}/matter-starts/{matter-starts-id}")
-  Mono<MatterStartsGet> getSubmissionMatterStarts(
+  Mono<MatterStartGet> getSubmissionMatterStarts(
       @PathVariable("submission-id") UUID submissionId,
       @PathVariable("matter-starts-id") UUID claimId);
 

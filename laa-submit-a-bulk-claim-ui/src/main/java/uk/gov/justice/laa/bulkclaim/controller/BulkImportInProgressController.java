@@ -67,25 +67,22 @@ public class BulkImportInProgressController {
 
     // Check submission. If the response from data claims API is 200, these fields
     //  should be not null.
-    Assert.notNull(submission, "Submission is null");
-    Assert.notNull(submission.getSubmission(), "Submission fields is null");
+    Assert.notNull(submission, "Submission fields is null");
 
     // Get summary
     UploadInProgressSummary summary =
         new UploadInProgressSummary(
-            submission.getSubmission().getSubmitted(),
-            submission.getSubmission().getSubmissionId(),
-            uploadedFilename);
+            submission.getSubmitted(), submission.getSubmissionId(), uploadedFilename);
     model.addAttribute("inProgressSummary", summary);
 
     // Check for NIL submission
-    if (Boolean.TRUE.equals(submission.getSubmission().getIsNilSubmission())) {
+    if (Boolean.TRUE.equals(submission.getIsNilSubmission())) {
       log.info("NIL submission found, will redirect: %s".formatted(bulkSubmissionId.toString()));
       return "redirect:/view-submission-summary";
     }
 
     // Redirect if submission is complete
-    if (completedStatuses.contains(submission.getSubmission().getStatus())) {
+    if (completedStatuses.contains(submission.getStatus())) {
       return "redirect:/view-submission-summary";
     }
     model.addAttribute("shouldRefresh", true);

@@ -34,9 +34,7 @@ public class SubmissionMatterStartsDetailsBuilder {
     List<SubmissionMatterStartsRow> list =
         response.getMatterStarts().stream()
             .map(
-                x ->
-                    dataClaimsRestService.getSubmissionMatterStarts(
-                        response.getSubmission().getSubmissionId(), x))
+                x -> dataClaimsRestService.getSubmissionMatterStarts(response.getSubmissionId(), x))
             .map(Mono::block)
             .map(mapper::toSubmissionMatterTypesRow)
             .toList();

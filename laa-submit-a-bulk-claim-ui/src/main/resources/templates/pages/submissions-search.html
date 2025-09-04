@@ -1,0 +1,73 @@
+<!DOCTYPE HTML>
+<html lang="en" class="govuk-template" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{ layout/main-layout :: layout(~{::title},~{::main}, ~{})}">
+<main class="govuk-main-wrapper" id="main-content">
+  <div class="govuk-width-container">
+    <div class="govuk-grid-row">
+        <div class="govuk-grid-column-full">
+          <h1 class="govuk-heading-xl" th:text="#{search.title}"></h1>
+          <p th:text="#{search.intro}"></p>
+          <div class="search-panel govuk-!-margin-bottom-6">
+            <form id="claims-search-form" th:action="@{/submissions/search}" th:object="${submissionsSearchForm}" method="post">
+              <div th:if="${errors}" >
+                <p class="govuk-error-message" th:each="error : ${errors}" th:text="#{search.error.criteria.required}"></p>
+              </div>
+              <div class="govuk-form-group govuk-!-width-two-thirds" role="search">
+                <h2 class="govuk-label-wrapper">
+                  <label class="govuk-label govuk-label--s" for="submissionId" th:text="#{search.submissionId.label}">
+                  </label>
+                </h2>
+                <input class="govuk-input" id="submissionId" name="submissionId" type="search" aria-description="submission id search criteria">
+              </div>
+              <fieldset class="govuk-fieldset">
+                <legend class="govuk-fieldset__legend govuk-fieldset__legend--s" th:text="#{search.legend}"></legend>
+                <p th:text="#{search.dateHint}"></p>
+                <div id="date-filters" class="govuk-date-input">
+                  <div class="govuk-date-input__item">
+                    <div class="moj-datepicker" data-module="moj-date-picker"
+                         th:attr="data-min-date=#{search.date.min},
+                         data-max-date=#{search.date.max},
+                         data-excluded-dates=#{search.date.excludedDates},
+                         data-excluded-days=#{search.date.excludedDays}"
+                         >
+
+                      <div class="govuk-form-group">
+                        <label class="govuk-label" for="submittedDateFrom" th:text="#{search.submittedDateFrom.label}">
+                        </label>
+                        <input class="govuk-input moj-js-datepicker-input " id="submittedDateFrom" name="submittedDateFrom" type="text" aria-describedby="date-hint" autocomplete="off">
+                      </div>
+
+                    </div>
+                  </div>
+                  <div class="govuk-date-input__item">
+                    <div class="moj-datepicker" data-module="moj-date-picker"
+                         th:attr="data-min-date=#{search.date.min},
+                         data-max-date=#{search.date.max},
+                         data-excluded-dates=#{search.date.excludedDates},
+                         data-excluded-days=#{search.date.excludedDays}"
+                    >
+                      <div class="govuk-form-group">
+                        <label class="govuk-label" for="submittedDateTo" th:text="#{search.submittedDateTo.label}">
+                        </label>
+                        <input class="govuk-input moj-js-datepicker-input " id="submittedDateTo" name="submittedDateTo" type="text" aria-describedby="date-hint" autocomplete="off">
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </fieldset>
+              <div class="govuk-button-group">
+                <button type="submit" class="govuk-button" data-module="govuk-button" id="searchButton" data-govuk-button-init="">
+                  Search
+                </button>
+
+                <a class="govuk-link" th:href="@{/submissions/search}">Clear all</a>
+              </div>
+            </form>
+          </div>
+
+        </div>
+    </div>
+  </div>
+  </div>
+</main>
+</html>

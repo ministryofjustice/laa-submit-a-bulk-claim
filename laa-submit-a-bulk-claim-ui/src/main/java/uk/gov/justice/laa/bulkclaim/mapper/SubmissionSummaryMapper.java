@@ -21,15 +21,15 @@ public interface SubmissionSummaryMapper {
    * @param submissionResponse The response to map.
    * @return The mapped {@link SubmissionSummary}.
    */
-  @Mapping(target = "submissionReference", source = "submission.submissionId")
-  @Mapping(target = "areaOfLaw", source = "submission.areaOfLaw")
-  @Mapping(target = "officeAccount", source = "submission.officeAccountNumber")
+  @Mapping(target = "submissionReference", source = "submissionId")
+  @Mapping(target = "areaOfLaw", source = "areaOfLaw")
+  @Mapping(target = "officeAccount", source = "officeAccountNumber")
   @Mapping(
       target = "submissionPeriod",
-      source = "submission.submissionPeriod",
+      source = "submissionPeriod",
       qualifiedByName = "toSubmissionPeriod")
   @Mapping(target = "status", constant = "Submitted")
-  @Mapping(target = "submitted", source = "submission.submitted")
+  @Mapping(target = "submitted", source = "submitted")
   @Mapping(target = "submissionValue", constant = "50.52")
   SubmissionSummary toSubmissionSummary(GetSubmission200Response submissionResponse);
 

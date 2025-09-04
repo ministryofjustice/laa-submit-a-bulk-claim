@@ -14,7 +14,6 @@ import uk.gov.justice.laa.bulkclaim.dto.summary.SubmissionSummaryClaimErrorRow;
 import uk.gov.justice.laa.bulkclaim.dto.summary.SubmissionSummaryRow;
 import uk.gov.justice.laa.claims.model.ClaimValidationError;
 import uk.gov.justice.laa.claims.model.GetSubmission200Response;
-import uk.gov.justice.laa.claims.model.SubmissionFields;
 
 @ExtendWith(SpringExtension.class)
 @DisplayName("Bulk claim summary mapper test")
@@ -33,15 +32,12 @@ class BulkClaimImportSummaryMapperTest {
     // Given
     GetSubmission200Response submission200Response =
         GetSubmission200Response.builder()
-            .submission(
-                SubmissionFields.builder()
-                    .submitted(LocalDate.of(2020, 5, 1))
-                    .submissionId(UUID.fromString("ee92c4ac-0ff9-4896-8bbe-c58fa04206e3"))
-                    .officeAccountNumber("1234567890")
-                    .areaOfLaw("Civil Law")
-                    .submissionPeriod("2020-05")
-                    .numberOfClaims(123)
-                    .build())
+            .submitted(LocalDate.of(2020, 5, 1))
+            .submissionId(UUID.fromString("ee92c4ac-0ff9-4896-8bbe-c58fa04206e3"))
+            .officeAccountNumber("1234567890")
+            .areaOfLaw("Civil Law")
+            .submissionPeriod("2020-05")
+            .numberOfClaims(123)
             .build();
     // When
     List<SubmissionSummaryRow> resultList =

@@ -23,7 +23,6 @@ import uk.gov.justice.laa.bulkclaim.service.claims.DataClaimsRestService;
 import uk.gov.justice.laa.claims.model.ClaimFields;
 import uk.gov.justice.laa.claims.model.GetSubmission200Response;
 import uk.gov.justice.laa.claims.model.GetSubmission200ResponseClaimsInner;
-import uk.gov.justice.laa.claims.model.SubmissionFields;
 
 @ExtendWith(MockitoExtension.class)
 @DisplayName("Submission claim details builder tests")
@@ -47,7 +46,7 @@ class SubmissionClaimDetailsBuilderTest {
     UUID claimId = UUID.fromString("87fdac7e-6de4-4a98-a788-e89a9d1c0225");
     GetSubmission200Response getSubmission200Response =
         GetSubmission200Response.builder()
-            .submission(SubmissionFields.builder().submissionId(submissionId).build())
+            .submissionId(submissionId)
             .claims(List.of(GetSubmission200ResponseClaimsInner.builder().claimId(claimId).build()))
             .build();
     when(dataClaimsRestService.getSubmissionClaim(submissionId, claimId))
@@ -86,7 +85,7 @@ class SubmissionClaimDetailsBuilderTest {
     UUID claimId = UUID.fromString("87fdac7e-6de4-4a98-a788-e89a9d1c0225");
     GetSubmission200Response getSubmission200Response =
         GetSubmission200Response.builder()
-            .submission(SubmissionFields.builder().submissionId(submissionId).build())
+            .submissionId(submissionId)
             .claims(
                 List.of(
                     GetSubmission200ResponseClaimsInner.builder().claimId(claimId).build(),

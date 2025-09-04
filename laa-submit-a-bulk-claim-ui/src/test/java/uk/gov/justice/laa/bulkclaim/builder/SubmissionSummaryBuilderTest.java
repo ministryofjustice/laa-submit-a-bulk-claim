@@ -13,7 +13,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.justice.laa.bulkclaim.dto.submission.SubmissionSummary;
 import uk.gov.justice.laa.bulkclaim.mapper.SubmissionSummaryMapper;
 import uk.gov.justice.laa.claims.model.GetSubmission200Response;
-import uk.gov.justice.laa.claims.model.SubmissionFields;
 
 @ExtendWith(MockitoExtension.class)
 @DisplayName("Submission summary builder tests")
@@ -34,9 +33,7 @@ class SubmissionSummaryBuilderTest {
     // Given
     UUID submissionReference = UUID.fromString("e20ca04b-09a4-4754-8e88-aea8820d1208");
     GetSubmission200Response submission200Response =
-        GetSubmission200Response.builder()
-            .submission(SubmissionFields.builder().submissionId(submissionReference).build())
-            .build();
+        GetSubmission200Response.builder().submissionId(submissionReference).build();
     SubmissionSummary expected =
         new SubmissionSummary(submissionReference, null, null, null, null, null, null);
     when(submissionSummaryMapper.toSubmissionSummary(submission200Response)).thenReturn(expected);

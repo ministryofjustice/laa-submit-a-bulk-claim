@@ -15,6 +15,12 @@
     color: #1d8feb;
 }
 
+.search-panel {
+    padding: 15px 20px 0px 20px;
+    border-bottom: 1px solid transparent;
+    background-color: #f3f2f1;
+}
+
 @media print {
     .upload-table {
         overflow: visible !important;

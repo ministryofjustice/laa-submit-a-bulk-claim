@@ -2,6 +2,7 @@ package uk.gov.justice.laa.bulkclaim.controller;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.argThat;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.eq;
@@ -14,6 +15,7 @@ import java.util.List;
 import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -23,10 +25,16 @@ import org.springframework.security.oauth2.core.oidc.OidcIdToken;
 import org.springframework.security.oauth2.core.oidc.OidcUserInfo;
 import org.springframework.security.oauth2.core.oidc.user.DefaultOidcUser;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
+import reactor.core.publisher.Mono;
+import uk.gov.justice.laa.bulkclaim.dto.SubmissionsSearchForm;
 import uk.gov.justice.laa.bulkclaim.helper.ProviderHelper;
 import uk.gov.justice.laa.bulkclaim.response.CwaUploadErrorResponseDto;
 import uk.gov.justice.laa.bulkclaim.response.CwaUploadSummaryResponseDto;
 import uk.gov.justice.laa.bulkclaim.service.CwaUploadService;
+import uk.gov.justice.laa.bulkclaim.service.claims.DataClaimsRestService;
+import uk.gov.justice.laa.claims.model.SubmissionFields;
+import uk.gov.justice.laa.claims.model.SubmissionsResultSet;
 
 @AutoConfigureMockMvc(addFilters = false)
 class SearchControllerTest {
@@ -39,6 +47,8 @@ class SearchControllerTest {
   @Mock private ProviderHelper providerHelper;
   @Mock private Model model;
   @Mock private Principal principal;
+  @Mock private DataClaimsRestService claimsRestService;
+  @Mock private BindingResult bindingResult;
 
   @InjectMocks private SearchController searchController;
 
@@ -104,5 +114,28 @@ class SearchControllerTest {
     verify(model).addAttribute("summary", summary);
     verify(model).addAttribute("errors", uploadErrors);
     assertEquals("pages/submission-results", view);
+  }
+
+  @Test
+  @DisplayName("Search form should return submissions when parameters are valid.")
+  void submissionsSearchShouldReturnSubmissionResults_whenNoErrors() {
+    List<SubmissionFields> submissions = Collections.emptyList();
+    String submissionId = "1234";
+
+    SubmissionsResultSet response = new SubmissionsResultSet();
+    response.content(submissions);
+    when(claimsRestService.search(eq(List.of("1")), eq(submissionId), isNull(), isNull()))
+        .thenReturn(Mono.just(response));
+
+    String view =
+        searchController.handleSearch(
+            new SubmissionsSearchForm(submissionId, null, null),
+            bindingResult,
+            model,
+            getDefaultOidcUser());
+
+    assertEquals(0, bindingResult.getErrorCount());
+    verify(model).addAttribute(eq("submissions"), eq(submissions));
+    assertEquals("pages/submissions-search-results", view);
   }
 }
