@@ -4,5 +4,10 @@ CVE-2025-53864
 # io.netty:netty-codec-http2 (netty-codec-http2-4.1.123.Final.jar)
 CVE-2025-55163
 
+# io.netty:netty-codec (netty-codec-4.1.124.Final.jar)
+CVE-2025-58057
+
 # stdlib issue inside buildpack
 CVE-2025-47907
+
+
