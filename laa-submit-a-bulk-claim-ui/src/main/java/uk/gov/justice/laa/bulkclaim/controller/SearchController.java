@@ -21,7 +21,6 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.client.HttpClientErrorException;
 import uk.gov.justice.laa.bulkclaim.dto.SubmissionsSearchForm;
-import uk.gov.justice.laa.bulkclaim.helper.ProviderHelper;
 import uk.gov.justice.laa.bulkclaim.response.CwaUploadErrorResponseDto;
 import uk.gov.justice.laa.bulkclaim.response.CwaUploadSummaryResponseDto;
 import uk.gov.justice.laa.bulkclaim.service.claims.DataClaimsRestService;
@@ -34,7 +33,6 @@ import uk.gov.justice.laa.claims.model.SubmissionsResultSet;
 @Controller
 public class SearchController {
 
-  private final ProviderHelper providerHelper;
   private final DataClaimsRestService claimsRestService;
   private final SubmissionSearchValidator submissionSearchValidator;
 
@@ -188,7 +186,6 @@ public class SearchController {
     if (StringUtils.hasText(searchTerm)) {
       model.addAttribute("searchTerm", searchTerm);
     }
-    providerHelper.populateProviders(model, username);
     model.addAttribute("tab", "search");
 
     return "pages/upload";

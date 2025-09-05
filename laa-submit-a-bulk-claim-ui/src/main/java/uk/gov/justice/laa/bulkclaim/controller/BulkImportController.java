@@ -86,7 +86,9 @@ public class BulkImportController {
 
     try {
       ResponseEntity<CreateBulkSubmission201Response> responseEntity =
-          dataClaimsRestService.upload(fileUploadForm.file(), oidcUser.getPreferredUsername()).block();
+          dataClaimsRestService
+              .upload(fileUploadForm.file(), oidcUser.getPreferredUsername())
+              .block();
       CreateBulkSubmission201Response bulkSubmissionResponse = responseEntity.getBody();
       log.info(
           "Claims API Upload response bulk submission UUID: {}",
@@ -95,8 +97,7 @@ public class BulkImportController {
           SUBMISSION_ID, bulkSubmissionResponse.getSubmissionIds().getFirst());
       redirectAttributes.addFlashAttribute(
           UPLOADED_FILENAME, fileUploadForm.file().getOriginalFilename());
-      redirectAttributes.addFlashAttribute(
-          SUBMISSION_DATE_TIME, LocalDateTime.now());
+      redirectAttributes.addFlashAttribute(SUBMISSION_DATE_TIME, LocalDateTime.now());
       return "redirect:/import-in-progress";
     } catch (Exception e) {
       log.error("Failed to upload file to Claims API with message: {}", e.getMessage());

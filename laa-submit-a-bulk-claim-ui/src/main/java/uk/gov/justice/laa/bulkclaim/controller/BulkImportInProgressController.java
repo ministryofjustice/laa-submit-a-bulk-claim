@@ -4,7 +4,7 @@ import static uk.gov.justice.laa.bulkclaim.constants.SessionConstants.SUBMISSION
 import static uk.gov.justice.laa.bulkclaim.constants.SessionConstants.SUBMISSION_ID;
 import static uk.gov.justice.laa.bulkclaim.constants.SessionConstants.UPLOADED_FILENAME;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
@@ -15,6 +15,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.SessionAttributes;
+import org.springframework.web.bind.support.SessionStatus;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
 import uk.gov.justice.laa.bulkclaim.dto.UploadInProgressSummary;
 import uk.gov.justice.laa.bulkclaim.exception.SubmitBulkClaimException;
@@ -51,15 +52,15 @@ public class BulkImportInProgressController {
       Model model,
       @ModelAttribute(SUBMISSION_ID) UUID submissionId,
       @ModelAttribute(UPLOADED_FILENAME) String uploadedFilename,
-      @ModelAttribute(SUBMISSION_DATE_TIME) LocalDate submissionDateTime) {
+      @ModelAttribute(SUBMISSION_DATE_TIME) LocalDateTime submissionDateTime,
+      SessionStatus sessionStatus) {
 
     // Check submission exists otherwise they will be stuck in a loop on this page.
     GetSubmission200Response submission;
 
     // Get summary
     UploadInProgressSummary summary =
-        new UploadInProgressSummary(
-            submissionDateTime, submissionId, uploadedFilename);
+        new UploadInProgressSummary(submissionDateTime, submissionId, uploadedFilename);
     model.addAttribute("inProgressSummary", summary);
 
     try {
@@ -76,13 +77,16 @@ public class BulkImportInProgressController {
     // Check for NIL submission
     if (Boolean.TRUE.equals(submission.getIsNilSubmission())) {
       log.info("NIL submission found, will redirect: %s".formatted(submissionId.toString()));
+      sessionStatus.setComplete();
       return "redirect:/view-submission-summary";
     }
 
     // Redirect if submission is complete
     if (completedStatuses.contains(submission.getStatus())) {
+      sessionStatus.setComplete();
       return "redirect:/view-submission-summary";
     }
+
     model.addAttribute("shouldRefresh", true);
     return "pages/upload-in-progress";
   }

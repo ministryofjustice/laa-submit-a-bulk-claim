@@ -1,9 +1,7 @@
 package uk.gov.justice.laa.bulkclaim.controller;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doAnswer;
-import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.oidcLogin;
@@ -13,7 +11,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
 import static uk.gov.justice.laa.bulkclaim.controller.ControllerTestHelper.getOidcUser;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -21,18 +21,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.context.annotation.Import;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.ui.Model;
 import org.springframework.validation.Errors;
-import org.springframework.web.client.HttpClientErrorException;
 import reactor.core.publisher.Mono;
 import uk.gov.justice.laa.bulkclaim.config.WebMvcTestConfig;
 import uk.gov.justice.laa.bulkclaim.dto.FileUploadForm;
-import uk.gov.justice.laa.bulkclaim.helper.ProviderHelper;
 import uk.gov.justice.laa.bulkclaim.service.claims.DataClaimsRestService;
 import uk.gov.justice.laa.bulkclaim.validation.BulkImportFileValidator;
 import uk.gov.justice.laa.bulkclaim.validation.BulkImportFileVirusValidator;
@@ -43,12 +39,10 @@ import uk.gov.justice.laa.claims.model.CreateBulkSubmission201Response;
 @Import(WebMvcTestConfig.class)
 class BulkImportControllerTest {
 
-  private static final String PROVIDER = "123";
   private static final String TEST_USER = "test@example.com";
 
   @Autowired private MockMvc mockMvc;
 
-  @MockitoBean private ProviderHelper providerHelper;
   @MockitoBean private BulkImportFileValidator bulkImportFileValidator;
   @MockitoBean private BulkImportFileVirusValidator bulkImportFileVirusValidator;
   @MockitoBean private DataClaimsRestService dataClaimsRestService;
@@ -64,32 +58,6 @@ class BulkImportControllerTest {
           .perform(get("/").with(oidcLogin().oidcUser(getOidcUser())))
           .andExpect(status().isOk())
           .andExpect(view().name("pages/upload"));
-    }
-
-    @Test
-    @DisplayName("Should return forbidden view when provider helper throws forbidden")
-    void shouldReturnUploadForbiddenWhenProviderHelperThrowsForbidden() throws Exception {
-      doThrow(new HttpClientErrorException(HttpStatus.FORBIDDEN))
-          .when(providerHelper)
-          .populateProviders(any(Model.class), eq(TEST_USER));
-
-      mockMvc
-          .perform(get("/").with(oidcLogin().oidcUser(getOidcUser())))
-          .andExpect(status().isOk())
-          .andExpect(view().name("pages/upload-forbidden"));
-    }
-
-    @Test
-    @DisplayName("Should return error view when helper generic exception")
-    void shouldReturnErrorViewWhenProviderHelperThrowsOtherException() throws Exception {
-      doThrow(new RuntimeException("Unexpected error"))
-          .when(providerHelper)
-          .populateProviders(any(Model.class), eq(TEST_USER));
-
-      mockMvc
-          .perform(get("/").with(oidcLogin().oidcUser(getOidcUser())))
-          .andExpect(status().isOk())
-          .andExpect(view().name("error"));
     }
   }
 
@@ -155,7 +123,8 @@ class BulkImportControllerTest {
           new MockMultipartFile("fileUpload", "test.csv", "text/csv", "text".getBytes());
       FileUploadForm input = new FileUploadForm(file);
 
-      when(dataClaimsRestService.upload(any())).thenThrow(new RuntimeException("Unexpected error"));
+      when(dataClaimsRestService.upload(any(), any()))
+          .thenThrow(new RuntimeException("Unexpected error"));
 
       mockMvc
           .perform(
@@ -174,9 +143,14 @@ class BulkImportControllerTest {
           new MockMultipartFile("fileUpload", "test.csv", "text/csv", "text".getBytes());
       FileUploadForm input = new FileUploadForm(file);
 
-      when(dataClaimsRestService.upload(any()))
+      when(dataClaimsRestService.upload(any(), any()))
           .thenReturn(
-              Mono.just(ResponseEntity.of(Optional.of(new CreateBulkSubmission201Response()))));
+              Mono.just(
+                  ResponseEntity.of(
+                      Optional.of(
+                          new CreateBulkSubmission201Response()
+                              .bulkSubmissionId(UUID.randomUUID())
+                              .submissionIds(List.of(UUID.randomUUID()))))));
       mockMvc
           .perform(
               post("/upload")
