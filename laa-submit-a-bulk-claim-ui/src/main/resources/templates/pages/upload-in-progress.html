@@ -17,7 +17,7 @@
                     th:text="#{importInProgress.upload}"/>:
               <span id="bulk-submission-date"
                     th:if="${inProgressSummary?.uploadDate()}"
-                    th:text="|${#temporals.format(inProgressSummary.uploadDate(),'d MMM yyyy')} at ${#temporals.format(inProgressSummary.uploadDate(),'hh:MM:SS')}|"/>
+                    th:text="|${#temporals.format(inProgressSummary.uploadDate(),'d MMM yyyy')} at ${#temporals.format(inProgressSummary.uploadDate(),'HH:mm:ss')}|"/>
             </p>
 
             <p>
