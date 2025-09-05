@@ -77,7 +77,7 @@ class DataClaimsRestServiceIntegrationTest extends MockServerIntegrationTest {
 
       // When
       Mono<ResponseEntity<CreateBulkSubmission201Response>> upload =
-          dataClaimsRestService.upload(file);
+          dataClaimsRestService.upload(file, "test-user-id");
       ResponseEntity<CreateBulkSubmission201Response> block = upload.block();
       CreateBulkSubmission201Response result = block.getBody();
       String locationHeader = block.getHeaders().getFirst(HttpHeaders.LOCATION);
@@ -447,7 +447,7 @@ class DataClaimsRestServiceIntegrationTest extends MockServerIntegrationTest {
                   .withHeader("Content-Type", "application/json")
                   .withBody(expectJson));
       // Then
-      MatterStartsGet block =
+      MatterStartGet block =
           dataClaimsRestService.getSubmissionMatterStarts(submissionId, matterStartsId).block();
       String result = objectMapper.writeValueAsString(block);
       assertThatJsonMatches(expectJson, result);

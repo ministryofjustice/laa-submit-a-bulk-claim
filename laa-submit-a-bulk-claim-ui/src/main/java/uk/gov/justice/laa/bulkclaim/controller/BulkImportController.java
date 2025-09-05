@@ -1,8 +1,11 @@
 package uk.gov.justice.laa.bulkclaim.controller;
 
 import static uk.gov.justice.laa.bulkclaim.constants.SessionConstants.BULK_SUBMISSION_ID;
+import static uk.gov.justice.laa.bulkclaim.constants.SessionConstants.SUBMISSION_DATE_TIME;
+import static uk.gov.justice.laa.bulkclaim.constants.SessionConstants.SUBMISSION_ID;
 import static uk.gov.justice.laa.bulkclaim.constants.SessionConstants.UPLOADED_FILENAME;
 
+import java.time.LocalDateTime;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -57,20 +60,6 @@ public class BulkImportController {
       model.addAttribute(FILE_UPLOAD_FORM_MODEL_ATTR, new FileUploadForm(null));
     }
 
-    try {
-      providerHelper.populateProviders(model, oidcUser.getName());
-    } catch (HttpClientErrorException e) {
-      log.error("HTTP client error fetching providers with message: {} ", e.getMessage());
-      if (e.getStatusCode() == HttpStatus.FORBIDDEN) {
-        return "pages/upload-forbidden";
-      } else {
-        return "error";
-      }
-    } catch (Exception e) {
-      log.error("Error connecting to Provider API with message: {} ", e.getMessage());
-      return "error";
-    }
-
     return "pages/upload";
   }
 
@@ -102,15 +91,17 @@ public class BulkImportController {
 
     try {
       ResponseEntity<CreateBulkSubmission201Response> responseEntity =
-          dataClaimsRestService.upload(fileUploadForm.file()).block();
+          dataClaimsRestService.upload(fileUploadForm.file(), oidcUser.getPreferredUsername()).block();
       CreateBulkSubmission201Response bulkSubmissionResponse = responseEntity.getBody();
       log.info(
-          "Claims API Upload response submission UUID: {}",
+          "Claims API Upload response bulk submission UUID: {}",
           bulkSubmissionResponse.getBulkSubmissionId());
       redirectAttributes.addFlashAttribute(
-          BULK_SUBMISSION_ID, bulkSubmissionResponse.getBulkSubmissionId());
+          SUBMISSION_ID, bulkSubmissionResponse.getSubmissionIds().getFirst());
       redirectAttributes.addFlashAttribute(
           UPLOADED_FILENAME, fileUploadForm.file().getOriginalFilename());
+      redirectAttributes.addFlashAttribute(
+          SUBMISSION_DATE_TIME, LocalDateTime.now());
       return "redirect:/import-in-progress";
     } catch (Exception e) {
       log.error("Failed to upload file to Claims API with message: {}", e.getMessage());
