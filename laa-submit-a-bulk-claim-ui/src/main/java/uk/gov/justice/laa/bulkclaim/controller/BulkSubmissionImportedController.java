@@ -1,7 +1,7 @@
 package uk.gov.justice.laa.bulkclaim.controller;
 
-import static uk.gov.justice.laa.bulkclaim.constants.SessionConstants.BULK_SUBMISSION;
-import static uk.gov.justice.laa.bulkclaim.constants.SessionConstants.BULK_SUBMISSION_ID;
+import static uk.gov.justice.laa.bulkclaim.constants.SessionConstants.SUBMISSION;
+import static uk.gov.justice.laa.bulkclaim.constants.SessionConstants.SUBMISSION_ID;
 
 import java.util.Collections;
 import java.util.UUID;
@@ -28,7 +28,7 @@ import uk.gov.justice.laa.claims.model.GetSubmission200Response;
 @Slf4j
 @Controller
 @RequiredArgsConstructor
-@SessionAttributes({BULK_SUBMISSION_ID, BULK_SUBMISSION})
+@SessionAttributes({SUBMISSION_ID, SUBMISSION})
 public class BulkSubmissionImportedController {
 
   private final DataClaimsRestService dataClaimsRestService;
@@ -41,14 +41,12 @@ public class BulkSubmissionImportedController {
    * @return the view submitted submission page.
    */
   @GetMapping("/view-submission-summary")
-  public String getSubmission(
-      Model model, @ModelAttribute(BULK_SUBMISSION_ID) UUID bulkSubmissionId) {
+  public String getSubmission(Model model, @ModelAttribute(SUBMISSION_ID) UUID submissionId) {
 
     // Add bulk submission to session if it does not exist
-    if (!model.containsAttribute(BULK_SUBMISSION)) {
+    if (!model.containsAttribute(SUBMISSION)) {
       try {
-        model.addAttribute(
-            BULK_SUBMISSION, dataClaimsRestService.getSubmission(bulkSubmissionId).block());
+        model.addAttribute(SUBMISSION, dataClaimsRestService.getSubmission(submissionId).block());
       } catch (WebClientResponseException e) {
         throw new SubmitBulkClaimException("Error retrieving submission from data claims API.", e);
       }
@@ -57,8 +55,7 @@ public class BulkSubmissionImportedController {
     // Map submission summary to model
     BulkClaimImportSummary bulkClaimImportSummary =
         bulkClaimSummaryBuilder.build(
-            Collections.singletonList(
-                (GetSubmission200Response) model.getAttribute(BULK_SUBMISSION)));
+            Collections.singletonList((GetSubmission200Response) model.getAttribute(SUBMISSION)));
     model.addAttribute("bulkClaimImportSummary", bulkClaimImportSummary);
     return "pages/view-submission-imported-summary";
   }

@@ -3,7 +3,9 @@ package uk.gov.justice.laa.bulkclaim.mapper;
 import java.time.LocalDate;
 import java.time.YearMonth;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeFormatterBuilder;
 import java.util.List;
+import java.util.Locale;
 import java.util.UUID;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -51,8 +53,12 @@ public interface BulkClaimImportSummaryMapper {
    */
   @Named("toSubmissionPeriod")
   default LocalDate toSubmissionPeriod(final String submissionPeriod) {
-    // Assumes that API returns YYYY-MM format.
-    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM");
+    DateTimeFormatter formatter =
+        new DateTimeFormatterBuilder()
+            .parseCaseInsensitive()
+            .appendPattern("MMM-yyyy")
+            .toFormatter(Locale.ENGLISH);
+
     YearMonth yearMonth = YearMonth.parse(submissionPeriod, formatter);
     return yearMonth.atDay(1);
   }
