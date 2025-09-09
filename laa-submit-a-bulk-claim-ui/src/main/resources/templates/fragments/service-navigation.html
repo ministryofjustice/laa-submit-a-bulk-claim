@@ -22,7 +22,8 @@
           th:text="#{header.navigation.menu}"/>
 
         <ul class="govuk-service-navigation__list" id="navigation">
-          <li class="govuk-service-navigation__item govuk-service-navigation__item--active">
+          <li class="govuk-service-navigation__item"
+              th:classappend="${contextPath == '/'} ? 'govuk-service-navigation__item--active' : ''">
             <a class="govuk-service-navigation__link" th:href="@{/}"
                id="import-claims-link"
                aria-current="true">
@@ -31,8 +32,10 @@
             </a>
           </li>
 
-          <li class="govuk-service-navigation__item">
-            <a class="govuk-service-navigation__link" th:href="@{/submissions/search}"
+          <li class="govuk-service-navigation__item"
+              th:with="activePath=#{search.url}"
+              th:classappend="${contextPath == activePath} ? 'govuk-service-navigation__item--active' : ''">
+            <a class="govuk-service-navigation__link" th:href="@{#{search.url}}"
               id="search-link"
                th:text="#{header.navigation.search}"/>
           </li>

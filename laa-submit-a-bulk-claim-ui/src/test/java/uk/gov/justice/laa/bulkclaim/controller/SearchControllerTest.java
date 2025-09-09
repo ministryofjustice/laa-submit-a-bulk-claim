@@ -135,7 +135,7 @@ class SearchControllerTest {
             getDefaultOidcUser());
 
     assertEquals(0, bindingResult.getErrorCount());
-    verify(model).addAttribute(eq("submissions"), eq(submissions));
+    verify(model).addAttribute(eq("submissions"), eq(response));
     assertEquals("pages/submissions-search-results", view);
   }
 }

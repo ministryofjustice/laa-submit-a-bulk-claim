@@ -94,7 +94,7 @@ public class SearchController {
               .search(offices, submissionId, submittedDateFrom, submittedDateTo)
               .block();
       log.info("Returning response from claims search: {}", response);
-      model.addAttribute("submissions", response.getContent());
+      model.addAttribute("submissions", response);
 
       return "pages/submissions-search-results";
     } catch (HttpClientErrorException e) {
