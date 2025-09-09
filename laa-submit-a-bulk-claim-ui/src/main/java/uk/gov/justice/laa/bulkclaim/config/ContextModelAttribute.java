@@ -18,8 +18,7 @@ public class ContextModelAttribute {
    */
   @ModelAttribute("contextPath")
   public void addContextPath(Model model, HttpServletRequest request) {
-    log.debug("Adding contextPath to model: {}",
-    model.getAttribute("contextPath"));
+    log.debug("Adding contextPath to model: {}", model.getAttribute("contextPath"));
     if (!model.containsAttribute("contextPath")) {
       model.addAttribute("contextPath", "/");
     }
