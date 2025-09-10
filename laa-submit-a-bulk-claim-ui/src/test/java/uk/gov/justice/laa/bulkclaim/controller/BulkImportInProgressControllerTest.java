@@ -60,9 +60,7 @@ public class BulkImportInProgressControllerTest {
                       .status(SubmissionStatus.READY_FOR_VALIDATION)
                       .claims(
                           Collections.singletonList(
-                              SubmissionClaim.builder()
-                                  .status(ClaimStatus.VALID)
-                                  .build()))
+                              SubmissionClaim.builder().status(ClaimStatus.VALID).build()))
                       .build()));
 
       assertThat(
@@ -112,12 +110,8 @@ public class BulkImportInProgressControllerTest {
                       .status(status)
                       .claims(
                           Arrays.asList(
-                              SubmissionClaim.builder()
-                                  .status(ClaimStatus.VALID)
-                                  .build(),
-                              SubmissionClaim.builder()
-                                  .status(ClaimStatus.INVALID)
-                                  .build()))
+                              SubmissionClaim.builder().status(ClaimStatus.VALID).build(),
+                              SubmissionClaim.builder().status(ClaimStatus.INVALID).build()))
                       .build()));
 
       assertThat(
@@ -141,8 +135,7 @@ public class BulkImportInProgressControllerTest {
       UUID submissionId = UUID.fromString("5933fc67-bac7-4f48-81ed-61c8c463f054");
       when(dataClaimsRestService.getSubmission(submissionId))
           .thenReturn(
-              Mono.just(
-                  SubmissionResponse.builder().isNilSubmission(true).status(status).build()));
+              Mono.just(SubmissionResponse.builder().isNilSubmission(true).status(status).build()));
 
       assertThat(
               mockMvc.perform(

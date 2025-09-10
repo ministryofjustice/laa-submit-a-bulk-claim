@@ -6,14 +6,12 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeFormatterBuilder;
 import java.util.List;
 import java.util.Locale;
-import java.util.UUID;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Named;
 import uk.gov.justice.laa.bulkclaim.dto.summary.SubmissionSummaryClaimErrorRow;
 import uk.gov.justice.laa.bulkclaim.dto.summary.SubmissionSummaryRow;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.ClaimResponse;
-import uk.gov.justice.laa.dstew.payments.claimsdata.model.ClaimValidationError;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionResponse;
 
 /**
@@ -42,8 +40,7 @@ public interface BulkClaimImportSummaryMapper {
   @Mapping(target = "totalClaims", source = "numberOfClaims")
   SubmissionSummaryRow toSubmissionSummaryRow(SubmissionResponse submissionResponse);
 
-  List<SubmissionSummaryRow> toSubmissionSummaryRows(
-      List<SubmissionResponse> submissionResponses);
+  List<SubmissionSummaryRow> toSubmissionSummaryRows(List<SubmissionResponse> submissionResponses);
 
   /**
    * Returns a {@link LocalDate} from a submission period string.
@@ -63,16 +60,17 @@ public interface BulkClaimImportSummaryMapper {
     return yearMonth.atDay(1);
   }
 
-  /**
-   * Maps a {@link ClaimResponse} to a {@link SubmissionSummaryClaimErrorRow}, whilst also including a
-   * submission reference.
-   *
-   * @param submissionReference The submission reference.
-   * @param claimFields The claim fields to map.
-   * @return The mapped {@link SubmissionSummaryClaimErrorRow}.
-   */
-  @Mapping(target = "ufn", source = "claimFields.uniqueFileNumber")
-  @Mapping(target = "ucn", source = "claimFields.uniqueClientNumber")
-  SubmissionSummaryClaimErrorRow toSubmissionSummaryClaimError(
-      UUID submissionReference, ClaimValidationError claimFields);
+  //  /**
+  //   * Maps a {@link ClaimResponse} to a {@link SubmissionSummaryClaimErrorRow}, whilst also
+  // including a
+  //   * submission reference.
+  //   *
+  //   * @param submissionReference The submission reference.
+  //   * @param claimFields The claim fields to map.
+  //   * @return The mapped {@link SubmissionSummaryClaimErrorRow}.
+  //   */
+  //  @Mapping(target = "ufn", source = "claimFields.uniqueFileNumber")
+  //  @Mapping(target = "ucn", source = "claimFields.uniqueClientNumber")
+  //  SubmissionSummaryClaimErrorRow toSubmissionSummaryClaimError(
+  //      UUID submissionReference, ClaimValidationError claimFields);
 }

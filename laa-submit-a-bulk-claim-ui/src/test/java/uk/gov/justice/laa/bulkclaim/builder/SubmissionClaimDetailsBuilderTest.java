@@ -20,10 +20,7 @@ import uk.gov.justice.laa.bulkclaim.dto.submission.SubmissionClaimRow;
 import uk.gov.justice.laa.bulkclaim.dto.submission.SubmissionClaimRowCostsDetails;
 import uk.gov.justice.laa.bulkclaim.mapper.SubmissionClaimMapper;
 import uk.gov.justice.laa.bulkclaim.service.claims.DataClaimsRestService;
-import uk.gov.justice.laa.dstew.payments.claimsdata.model.ClaimFields;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.ClaimResponse;
-import uk.gov.justice.laa.dstew.payments.claimsdata.model.GetSubmission200Response;
-import uk.gov.justice.laa.dstew.payments.claimsdata.model.GetSubmission200ResponseClaimsInner;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionClaim;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionResponse;
 

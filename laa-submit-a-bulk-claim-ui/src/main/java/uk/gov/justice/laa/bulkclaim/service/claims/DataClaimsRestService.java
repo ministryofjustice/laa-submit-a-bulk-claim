@@ -15,11 +15,11 @@ import org.springframework.web.service.annotation.HttpExchange;
 import org.springframework.web.service.annotation.PostExchange;
 import reactor.core.publisher.Mono;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.ClaimResponse;
-import uk.gov.justice.laa.dstew.payments.claimsdata.model.ClaimValidationError;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.CreateBulkSubmission201Response;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.MatterStartGet;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionResponse;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionsResultSet;
+import uk.gov.justice.laa.dstew.payments.claimsdata.model.ValidationErrorsResponse;
 
 /**
  * REST Service interface for interacting with the Claims API.
@@ -92,6 +92,6 @@ public interface DataClaimsRestService {
    * @return a Mono containing a list of validation errors for a submission.
    */
   @GetExchange(value = "/validation-errors")
-  Mono<List<ClaimValidationError>> getValidationErrors(
+  Mono<ValidationErrorsResponse> getValidationErrors(
       @RequestParam("submission-id") UUID submissionId);
 }

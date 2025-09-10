@@ -2,7 +2,6 @@ package uk.gov.justice.laa.bulkclaim.dto.submission;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.util.UUID;
 
