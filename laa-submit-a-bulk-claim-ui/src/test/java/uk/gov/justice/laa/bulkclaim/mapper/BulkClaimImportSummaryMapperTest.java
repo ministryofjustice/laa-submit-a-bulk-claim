@@ -10,8 +10,11 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import uk.gov.justice.laa.bulkclaim.dto.summary.SubmissionSummaryClaimErrorRow;
 import uk.gov.justice.laa.bulkclaim.dto.summary.SubmissionSummaryRow;
+import uk.gov.justice.laa.dstew.payments.claimsdata.model.ClaimResponse;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionResponse;
+import uk.gov.justice.laa.dstew.payments.claimsdata.model.ValidationErrorFields;
 
 @ExtendWith(SpringExtension.class)
 @DisplayName("Bulk claim summary mapper test")
@@ -57,31 +60,72 @@ class BulkClaimImportSummaryMapperTest {
         });
   }
 
-  //  @Test
-  //  @DisplayName("Should map submission summary claim errors")
-  //  void shouldMapSubmissionSummaryClaimErrors() {
-  //    // Given
-  //    ClaimValidationError claimValidationError =
-  //        ClaimValidationError.builder()
-  //            .uniqueFileNumber("F123")
-  //            .uniqueClientNumber("C123")
-  //            .client("First Last")
-  //            .errorDescription("This is an error!")
-  //            .build();
-  //    // When
-  //    SubmissionSummaryClaimErrorRow result =
-  //        mapper.toSubmissionSummaryClaimError(
-  //            UUID.fromString("ee92c4ac-0ff9-4896-8bbe-c58fa04206e3"), claimValidationError);
-  //    // Then
-  //    SoftAssertions.assertSoftly(
-  //        softly -> {
-  //          softly
-  //              .assertThat(result.submissionReference())
-  //              .isEqualTo(UUID.fromString("ee92c4ac-0ff9-4896-8bbe-c58fa04206e3"));
-  //          softly.assertThat(result.ufn()).isEqualTo("F123");
-  //          softly.assertThat(result.ucn()).isEqualTo("C123");
-  //          softly.assertThat(result.client()).isEqualTo("First Last");
-  //          softly.assertThat(result.errorDescription()).isEqualTo("This is an error!");
-  //        });
-  //  }
+  @Test
+  @DisplayName("Should map submission summary claim errors when primary client name is present")
+  void shouldMapSubmissionSummaryClaimErrorsWithPrimaryClient() {
+    UUID submissionId = UUID.fromString("ee92c4ac-0ff9-4896-8bbe-c58fa04206e3");
+
+    ValidationErrorFields errors =
+        new ValidationErrorFields()
+            .submissionId(submissionId)
+            .errorDescription("This is an error!");
+
+    ClaimResponse claimResponse = new ClaimResponse();
+    claimResponse.setUniqueFileNumber("F123");
+    claimResponse.setUniqueClientNumber("C123");
+    claimResponse.setClientForename("First");
+    claimResponse.setClientSurname("Last");
+
+    SubmissionSummaryClaimErrorRow result =
+        mapper.toSubmissionSummaryClaimError(errors, claimResponse);
+
+    SoftAssertions.assertSoftly(
+        softly -> {
+          softly.assertThat(result.submissionReference()).isEqualTo(submissionId);
+          softly.assertThat(result.ufn()).isEqualTo("F123");
+          softly.assertThat(result.ucn()).isEqualTo("C123");
+          softly.assertThat(result.client()).isEqualTo("First Last");
+          softly.assertThat(result.errorDescription()).isEqualTo("This is an error!");
+        });
+  }
+
+  @Test
+  @DisplayName("Should fallback to secondary client when primary client name is blank")
+  void shouldFallbackToSecondaryClient() {
+    ValidationErrorFields errors =
+        new ValidationErrorFields().submissionId(UUID.randomUUID()).errorDescription("Error!");
+
+    ClaimResponse claimResponse = new ClaimResponse();
+    claimResponse.setClientForename("");
+    claimResponse.setClientSurname("");
+    claimResponse.setClient2Forename("Second");
+    claimResponse.setClient2Surname("Client");
+
+    SubmissionSummaryClaimErrorRow result =
+        mapper.toSubmissionSummaryClaimError(errors, claimResponse);
+
+    SoftAssertions.assertSoftly(
+        softly -> {
+          softly.assertThat(result.client()).isEqualTo("Second Client");
+          softly.assertThat(result.errorDescription()).isEqualTo("Error!");
+        });
+  }
+
+  @Test
+  @DisplayName("Should return null client name when no names are provided")
+  void shouldReturnNullClientNameWhenNoNames() {
+    ValidationErrorFields errors =
+        new ValidationErrorFields().submissionId(UUID.randomUUID()).errorDescription("Error!");
+
+    ClaimResponse claimResponse = new ClaimResponse();
+
+    SubmissionSummaryClaimErrorRow result =
+        mapper.toSubmissionSummaryClaimError(errors, claimResponse);
+
+    SoftAssertions.assertSoftly(
+        softly -> {
+          softly.assertThat(result.client()).isNull();
+          softly.assertThat(result.errorDescription()).isEqualTo("Error!");
+        });
+  }
 }
