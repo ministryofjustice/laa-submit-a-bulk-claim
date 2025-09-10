@@ -33,7 +33,7 @@ import uk.gov.justice.laa.bulkclaim.dto.submission.SubmissionCostsSummary;
 import uk.gov.justice.laa.bulkclaim.dto.submission.SubmissionMatterStartsDetails;
 import uk.gov.justice.laa.bulkclaim.dto.submission.SubmissionMatterStartsRow;
 import uk.gov.justice.laa.bulkclaim.dto.submission.SubmissionSummary;
-import uk.gov.justice.laa.bulkclaim.service.claims.DataClaimsRestService;
+import uk.gov.justice.laa.bulkclaim.client.DataClaimsRestClient;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionResponse;
 
 @WebMvcTest(SubmissionDetailController.class)
@@ -47,7 +47,7 @@ class SubmissionDetailControllerTest {
   @MockitoBean private SubmissionSummaryBuilder submissionSummaryBuilder;
   @MockitoBean private SubmissionClaimDetailsBuilder submissionClaimDetailsBuilder;
   @MockitoBean private SubmissionMatterStartsDetailsBuilder submissionMatterStartsDetailsBuilder;
-  @MockitoBean private DataClaimsRestService dataClaimsRestService;
+  @MockitoBean private DataClaimsRestClient dataClaimsRestClient;
 
   @Nested
   @DisplayName("GET: /submission/{submissionId}")
@@ -77,7 +77,7 @@ class SubmissionDetailControllerTest {
     void shouldReturnExpectedResult() {
       // Given
       UUID submissionReference = UUID.fromString("bceac49c-d756-4e05-8e28-3334b84b6fe8");
-      when(dataClaimsRestService.getSubmission(submissionReference))
+      when(dataClaimsRestClient.getSubmission(submissionReference))
           .thenReturn(Mono.just(SubmissionResponse.builder().build()));
       when(submissionSummaryBuilder.build(any()))
           .thenReturn(
@@ -116,7 +116,7 @@ class SubmissionDetailControllerTest {
     void shouldReturnExpectedResultWithClaims() {
       // Given
       UUID submissionReference = UUID.fromString("bceac49c-d756-4e05-8e28-3334b84b6fe8");
-      when(dataClaimsRestService.getSubmission(submissionReference))
+      when(dataClaimsRestClient.getSubmission(submissionReference))
           .thenReturn(Mono.just(SubmissionResponse.builder().build()));
       when(submissionSummaryBuilder.build(any()))
           .thenReturn(
@@ -155,7 +155,7 @@ class SubmissionDetailControllerTest {
     void shouldReturnExpectedResultWithMatterStarts() {
       // Given
       UUID submissionReference = UUID.fromString("bceac49c-d756-4e05-8e28-3334b84b6fe8");
-      when(dataClaimsRestService.getSubmission(submissionReference))
+      when(dataClaimsRestClient.getSubmission(submissionReference))
           .thenReturn(Mono.just(SubmissionResponse.builder().build()));
       when(submissionSummaryBuilder.build(any()))
           .thenReturn(
@@ -188,7 +188,7 @@ class SubmissionDetailControllerTest {
     void shouldThrowExceptionWhenSubmissionDoesNotExist() {
       // Given
       UUID submissionReference = UUID.fromString("bceac49c-d756-4e05-8e28-3334b84b6fe8");
-      when(dataClaimsRestService.getSubmission(submissionReference)).thenReturn(Mono.empty());
+      when(dataClaimsRestClient.getSubmission(submissionReference)).thenReturn(Mono.empty());
       // When / Then
       assertThat(
               mockMvc.perform(

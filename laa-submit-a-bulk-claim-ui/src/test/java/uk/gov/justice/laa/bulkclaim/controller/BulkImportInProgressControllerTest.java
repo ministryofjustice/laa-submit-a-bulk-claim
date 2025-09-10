@@ -29,7 +29,7 @@ import org.springframework.web.reactive.function.client.WebClientResponseExcepti
 import reactor.core.publisher.Mono;
 import uk.gov.justice.laa.bulkclaim.config.WebMvcTestConfig;
 import uk.gov.justice.laa.bulkclaim.exception.SubmitBulkClaimException;
-import uk.gov.justice.laa.bulkclaim.service.claims.DataClaimsRestService;
+import uk.gov.justice.laa.bulkclaim.client.DataClaimsRestClient;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.ClaimStatus;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionClaim;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionResponse;
@@ -42,7 +42,7 @@ public class BulkImportInProgressControllerTest {
 
   @Autowired private MockMvcTester mockMvc;
 
-  @MockitoBean private DataClaimsRestService dataClaimsRestService;
+  @MockitoBean private DataClaimsRestClient dataClaimsRestClient;
 
   @Nested
   @DisplayName("GET: /import-in-progress")
@@ -53,7 +53,7 @@ public class BulkImportInProgressControllerTest {
     void shouldReturnExpectedResult() {
       // Given
       UUID submissionId = UUID.fromString("5933fc67-bac7-4f48-81ed-61c8c463f054");
-      when(dataClaimsRestService.getSubmission(submissionId))
+      when(dataClaimsRestClient.getSubmission(submissionId))
           .thenReturn(
               Mono.just(
                   SubmissionResponse.builder()
@@ -79,7 +79,7 @@ public class BulkImportInProgressControllerTest {
     void shouldReturnExpectedResultWhenSubmissionNotFound() {
       // Given
       UUID submissionId = UUID.fromString("5933fc67-bac7-4f48-81ed-61c8c463f054");
-      when(dataClaimsRestService.getSubmission(submissionId))
+      when(dataClaimsRestClient.getSubmission(submissionId))
           .thenThrow(
               new WebClientResponseException(
                   HttpStatusCode.valueOf(404), "Submission not found", null, null, null, null));
@@ -103,7 +103,7 @@ public class BulkImportInProgressControllerTest {
     void shouldRedirectWhenMultipleClaimsHasImported(SubmissionStatus status) {
       // Given
       UUID submissionId = UUID.fromString("5933fc67-bac7-4f48-81ed-61c8c463f054");
-      when(dataClaimsRestService.getSubmission(submissionId))
+      when(dataClaimsRestClient.getSubmission(submissionId))
           .thenReturn(
               Mono.just(
                   SubmissionResponse.builder()
@@ -133,7 +133,7 @@ public class BulkImportInProgressControllerTest {
     void shouldRedirectWhenNilSubmission(SubmissionStatus status) {
       // Given
       UUID submissionId = UUID.fromString("5933fc67-bac7-4f48-81ed-61c8c463f054");
-      when(dataClaimsRestService.getSubmission(submissionId))
+      when(dataClaimsRestClient.getSubmission(submissionId))
           .thenReturn(
               Mono.just(SubmissionResponse.builder().isNilSubmission(true).status(status).build()));
 
@@ -154,7 +154,7 @@ public class BulkImportInProgressControllerTest {
     void shouldThrowErrorWhenExceptionThrownByClaimsRestService(int statusCode) {
       // Given
       UUID submissionId = UUID.fromString("5933fc67-bac7-4f48-81ed-61c8c463f054");
-      when(dataClaimsRestService.getSubmission(submissionId))
+      when(dataClaimsRestClient.getSubmission(submissionId))
           .thenThrow(new WebClientResponseException(statusCode, "Error", null, null, null, null));
 
       assertThat(

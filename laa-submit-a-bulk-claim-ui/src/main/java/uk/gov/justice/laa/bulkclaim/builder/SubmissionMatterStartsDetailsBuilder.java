@@ -9,7 +9,7 @@ import reactor.core.publisher.Mono;
 import uk.gov.justice.laa.bulkclaim.dto.submission.SubmissionMatterStartsDetails;
 import uk.gov.justice.laa.bulkclaim.dto.submission.SubmissionMatterStartsRow;
 import uk.gov.justice.laa.bulkclaim.mapper.SubmissionMatterStartsMapper;
-import uk.gov.justice.laa.bulkclaim.service.claims.DataClaimsRestService;
+import uk.gov.justice.laa.bulkclaim.client.DataClaimsRestClient;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionResponse;
 
 /**
@@ -21,7 +21,7 @@ import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionResponse;
 @RequiredArgsConstructor
 public class SubmissionMatterStartsDetailsBuilder {
 
-  private final DataClaimsRestService dataClaimsRestService;
+  private final DataClaimsRestClient dataClaimsRestClient;
   private final SubmissionMatterStartsMapper mapper;
 
   /**
@@ -34,7 +34,7 @@ public class SubmissionMatterStartsDetailsBuilder {
     List<SubmissionMatterStartsRow> list =
         response.getMatterStarts().stream()
             .map(
-                x -> dataClaimsRestService.getSubmissionMatterStarts(response.getSubmissionId(), x))
+                x -> dataClaimsRestClient.getSubmissionMatterStarts(response.getSubmissionId(), x))
             .map(Mono::block)
             .map(mapper::toSubmissionMatterTypesRow)
             .toList();

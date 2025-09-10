@@ -17,7 +17,7 @@ import org.springframework.web.reactive.function.client.WebClientResponseExcepti
 import uk.gov.justice.laa.bulkclaim.builder.BulkClaimSummaryBuilder;
 import uk.gov.justice.laa.bulkclaim.dto.summary.BulkClaimImportSummary;
 import uk.gov.justice.laa.bulkclaim.exception.SubmitBulkClaimException;
-import uk.gov.justice.laa.bulkclaim.service.claims.DataClaimsRestService;
+import uk.gov.justice.laa.bulkclaim.client.DataClaimsRestClient;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionResponse;
 
 /**
@@ -32,7 +32,7 @@ import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionResponse;
 @SessionAttributes({SUBMISSION_ID, SUBMISSION})
 public class BulkSubmissionImportedController {
 
-  private final DataClaimsRestService dataClaimsRestService;
+  private final DataClaimsRestClient dataClaimsRestClient;
   private final BulkClaimSummaryBuilder bulkClaimSummaryBuilder;
 
   /**
@@ -47,7 +47,7 @@ public class BulkSubmissionImportedController {
     // Add bulk submission to session if it does not exist
     if (!model.containsAttribute(SUBMISSION)) {
       try {
-        model.addAttribute(SUBMISSION, dataClaimsRestService.getSubmission(submissionId).block());
+        model.addAttribute(SUBMISSION, dataClaimsRestClient.getSubmission(submissionId).block());
       } catch (WebClientResponseException e) {
         throw new SubmitBulkClaimException("Error retrieving submission from data claims API.", e);
       }
@@ -63,7 +63,7 @@ public class BulkSubmissionImportedController {
 
   @GetMapping("/test")
   public String test(HttpSession session) {
-    session.setAttribute(SUBMISSION_ID, UUID.fromString("3e3da7fb-93d4-4a6a-9dfd-490b8cb6dc34"));
+    session.setAttribute(SUBMISSION_ID, UUID.fromString("20d83a66-8ff8-4dcb-b00d-04e40ef3b1cb"));
 
     return "redirect:/view-submission-summary";
   }

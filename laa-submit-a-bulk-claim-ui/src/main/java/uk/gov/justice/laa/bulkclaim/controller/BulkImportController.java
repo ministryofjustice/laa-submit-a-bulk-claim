@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.support.SessionStatus;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import uk.gov.justice.laa.bulkclaim.dto.FileUploadForm;
-import uk.gov.justice.laa.bulkclaim.service.claims.DataClaimsRestService;
+import uk.gov.justice.laa.bulkclaim.client.DataClaimsRestClient;
 import uk.gov.justice.laa.bulkclaim.validation.BulkImportFileValidator;
 import uk.gov.justice.laa.bulkclaim.validation.BulkImportFileVirusValidator;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.CreateBulkSubmission201Response;
@@ -34,7 +34,7 @@ public class BulkImportController {
 
   private final BulkImportFileValidator bulkImportFileValidator;
   private final BulkImportFileVirusValidator bulkImportFileVirusValidator;
-  private final DataClaimsRestService dataClaimsRestService;
+  private final DataClaimsRestClient dataClaimsRestClient;
 
   /**
    * Renders the upload page.
@@ -86,7 +86,7 @@ public class BulkImportController {
 
     try {
       ResponseEntity<CreateBulkSubmission201Response> responseEntity =
-          dataClaimsRestService
+          dataClaimsRestClient
               .upload(fileUploadForm.file(), oidcUser.getPreferredUsername())
               .block();
       CreateBulkSubmission201Response bulkSubmissionResponse = responseEntity.getBody();

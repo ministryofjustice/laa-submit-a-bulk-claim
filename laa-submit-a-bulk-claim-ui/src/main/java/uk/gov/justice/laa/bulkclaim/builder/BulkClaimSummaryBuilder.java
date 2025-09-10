@@ -4,11 +4,14 @@ import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 import uk.gov.justice.laa.bulkclaim.dto.summary.BulkClaimImportSummary;
 import uk.gov.justice.laa.bulkclaim.dto.summary.SubmissionSummaryClaimErrorRow;
 import uk.gov.justice.laa.bulkclaim.dto.summary.SubmissionSummaryRow;
 import uk.gov.justice.laa.bulkclaim.mapper.BulkClaimImportSummaryMapper;
-import uk.gov.justice.laa.bulkclaim.service.claims.DataClaimsRestService;
+import uk.gov.justice.laa.bulkclaim.client.DataClaimsRestClient;
+import uk.gov.justice.laa.dstew.payments.claimsdata.model.ClaimResponse;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionResponse;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.ValidationErrorsResponse;
 
@@ -22,7 +25,7 @@ import uk.gov.justice.laa.dstew.payments.claimsdata.model.ValidationErrorsRespon
 @RequiredArgsConstructor
 public class BulkClaimSummaryBuilder {
 
-  private final DataClaimsRestService dataClaimsRestService;
+  private final DataClaimsRestClient dataClaimsRestClient;
   private final BulkClaimImportSummaryMapper bulkClaimImportSummaryMapper;
 
   /**
@@ -40,19 +43,30 @@ public class BulkClaimSummaryBuilder {
     // Get all errors using the data claims rest service.
     // we only currently support one submission at a time so get the first one
     ValidationErrorsResponse errorResponse =
-        dataClaimsRestService
+        dataClaimsRestClient
             .getValidationErrors(summaryRows.getFirst().submissionReference())
             .block();
-
-    // todo call the get claims endpoint for ufn,ucn and client name.
 
     // Loop through an error map and add claims
     List<SubmissionSummaryClaimErrorRow> errorList =
         Optional.ofNullable(errorResponse)
             .map(ValidationErrorsResponse::getContent)
-            .orElseGet(List::of) // safe empty list
+            .orElseGet(List::of)
             .stream()
-            .map(bulkClaimImportSummaryMapper::toSubmissionSummaryClaimError)
+            .map(errors -> {
+              ClaimResponse claimResponse;
+              if (errors.getClaimId() == null) {
+                // no call if claimId is missing
+                claimResponse = new ClaimResponse();
+              } else {
+                claimResponse = dataClaimsRestClient
+                    .getSubmissionClaim(errors.getSubmissionId(), errors.getClaimId())
+                    .onErrorResume(ex -> Mono.just(new ClaimResponse()))
+                    .switchIfEmpty(Mono.just(new ClaimResponse()))
+                    .block();
+              }
+              return bulkClaimImportSummaryMapper.toSubmissionSummaryClaimError(errors, claimResponse);
+            })
             .toList();
 
     int totalErrorCount =

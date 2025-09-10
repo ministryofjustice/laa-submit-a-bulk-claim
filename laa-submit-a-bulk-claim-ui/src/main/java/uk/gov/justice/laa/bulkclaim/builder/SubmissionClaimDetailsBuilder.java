@@ -8,7 +8,7 @@ import uk.gov.justice.laa.bulkclaim.dto.submission.SubmissionClaimDetails;
 import uk.gov.justice.laa.bulkclaim.dto.submission.SubmissionClaimRow;
 import uk.gov.justice.laa.bulkclaim.dto.submission.SubmissionCostsSummary;
 import uk.gov.justice.laa.bulkclaim.mapper.SubmissionClaimMapper;
-import uk.gov.justice.laa.bulkclaim.service.claims.DataClaimsRestService;
+import uk.gov.justice.laa.bulkclaim.client.DataClaimsRestClient;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionResponse;
 
 /**
@@ -21,7 +21,7 @@ import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionResponse;
 @RequiredArgsConstructor
 public class SubmissionClaimDetailsBuilder {
 
-  private final DataClaimsRestService dataClaimsRestService;
+  private final DataClaimsRestClient dataClaimsRestClient;
   private final SubmissionClaimMapper submissionClaimMapper;
 
   /**
@@ -38,7 +38,7 @@ public class SubmissionClaimDetailsBuilder {
         submissionResponse.getClaims().stream()
             .map(
                 x ->
-                    dataClaimsRestService.getSubmissionClaim(
+                    dataClaimsRestClient.getSubmissionClaim(
                         submissionResponse.getSubmissionId(), x.getClaimId()))
             .map(x -> submissionClaimMapper.toSubmissionClaimRow(x.block()))
             .toList();

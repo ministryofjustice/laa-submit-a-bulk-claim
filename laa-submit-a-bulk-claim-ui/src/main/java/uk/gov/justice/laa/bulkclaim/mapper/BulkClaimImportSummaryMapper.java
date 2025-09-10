@@ -61,10 +61,36 @@ public interface BulkClaimImportSummaryMapper {
     return yearMonth.atDay(1);
   }
 
-  @Mapping(target = "ufn", ignore = true)
-  @Mapping(target = "ucn", ignore = true)
-  @Mapping(target = "client", ignore = true)
-  @Mapping(target = "submissionReference", source = "submissionId")
-  @Mapping(target = "errorDescription", source = "errorDescription")
-  SubmissionSummaryClaimErrorRow toSubmissionSummaryClaimError(ValidationErrorFields errors);
+  @Mapping(target = "ufn", source = "claimResponse.uniqueFileNumber")
+  @Mapping(target = "ucn", source = "claimResponse.uniqueClientNumber")
+  @Mapping(target = "client", expression = "java(buildClientName(claimResponse))")
+  @Mapping(target = "submissionReference", source = "errors.submissionId")
+  @Mapping(target = "errorDescription", source = "errors.errorDescription")
+  SubmissionSummaryClaimErrorRow toSubmissionSummaryClaimError(
+      ValidationErrorFields errors,
+      ClaimResponse claimResponse
+  );
+
+
+  default String buildClientName(ClaimResponse claimResponse) {
+    if (claimResponse == null) {
+      return null;
+    }
+
+    // Prefer client1, fallback to client2
+    String forename = claimResponse.getClientForename();
+    String surname = claimResponse.getClientSurname();
+    if ((forename == null || forename.isBlank()) && (surname == null || surname.isBlank())) {
+      forename = claimResponse.getClient2Forename();
+      surname = claimResponse.getClient2Surname();
+    }
+
+    if ((forename == null || forename.isBlank()) && (surname == null || surname.isBlank())) {
+      return null; // no usable name at all
+    }
+
+    return String.format("%s %s",
+        forename != null ? forename : "",
+        surname != null ? surname : "").trim();
+  }
 }

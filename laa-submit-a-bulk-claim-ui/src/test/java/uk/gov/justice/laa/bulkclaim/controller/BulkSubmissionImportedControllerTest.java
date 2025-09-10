@@ -34,7 +34,7 @@ import uk.gov.justice.laa.bulkclaim.dto.summary.BulkClaimImportSummary;
 import uk.gov.justice.laa.bulkclaim.dto.summary.SubmissionSummaryClaimErrorRow;
 import uk.gov.justice.laa.bulkclaim.dto.summary.SubmissionSummaryRow;
 import uk.gov.justice.laa.bulkclaim.exception.SubmitBulkClaimException;
-import uk.gov.justice.laa.bulkclaim.service.claims.DataClaimsRestService;
+import uk.gov.justice.laa.bulkclaim.client.DataClaimsRestClient;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionResponse;
 
 @WebMvcTest(BulkSubmissionImportedController.class)
@@ -44,7 +44,7 @@ class BulkSubmissionImportedControllerTest {
 
   @Autowired private MockMvcTester mockMvc;
 
-  @MockitoBean private DataClaimsRestService dataClaimsRestService;
+  @MockitoBean private DataClaimsRestClient dataClaimsRestClient;
   @MockitoBean private BulkClaimSummaryBuilder bulkClaimSummaryBuilder;
 
   @Nested
@@ -74,7 +74,7 @@ class BulkSubmissionImportedControllerTest {
           .hasFieldOrProperty(BULK_SUBMISSION)
           .hasFieldOrProperty(BULK_SUBMISSION_ID);
       verify(bulkClaimSummaryBuilder, times(1)).build(List.of(submissionResponse));
-      verify(dataClaimsRestService, times(0)).getSubmission(bulkSubmissionId);
+      verify(dataClaimsRestClient, times(0)).getSubmission(bulkSubmissionId);
     }
 
     @Test
@@ -85,7 +85,7 @@ class BulkSubmissionImportedControllerTest {
       SubmissionResponse submissionResponse =
           SubmissionResponse.builder().submissionId(bulkSubmissionId).build();
       BulkClaimImportSummary bulkClaimImportSummary = getTestSubmissionSummary(bulkSubmissionId);
-      when(dataClaimsRestService.getSubmission(bulkSubmissionId))
+      when(dataClaimsRestClient.getSubmission(bulkSubmissionId))
           .thenReturn(Mono.just(submissionResponse));
       when(bulkClaimSummaryBuilder.build(List.of(submissionResponse)))
           .thenReturn(bulkClaimImportSummary);
@@ -101,7 +101,7 @@ class BulkSubmissionImportedControllerTest {
           .hasFieldOrProperty(BULK_SUBMISSION)
           .hasFieldOrProperty(BULK_SUBMISSION_ID);
       verify(bulkClaimSummaryBuilder, times(1)).build(List.of(submissionResponse));
-      verify(dataClaimsRestService, times(1)).getSubmission(bulkSubmissionId);
+      verify(dataClaimsRestClient, times(1)).getSubmission(bulkSubmissionId);
     }
   }
 
@@ -111,7 +111,7 @@ class BulkSubmissionImportedControllerTest {
   void shouldReturnExpectedResultWithoutSubmissionPresent(int statusCode) {
     // Given
     UUID bulkSubmissionId = UUID.fromString("314d1cac-ffb8-41b5-9013-bab4e47e23ca");
-    when(dataClaimsRestService.getSubmission(bulkSubmissionId))
+    when(dataClaimsRestClient.getSubmission(bulkSubmissionId))
         .thenThrow(new WebClientResponseException(statusCode, "Error", null, null, null));
     // When / Then
     assertThat(

@@ -19,7 +19,7 @@ import org.springframework.web.bind.support.SessionStatus;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
 import uk.gov.justice.laa.bulkclaim.dto.UploadInProgressSummary;
 import uk.gov.justice.laa.bulkclaim.exception.SubmitBulkClaimException;
-import uk.gov.justice.laa.bulkclaim.service.claims.DataClaimsRestService;
+import uk.gov.justice.laa.bulkclaim.client.DataClaimsRestClient;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionResponse;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionStatus;
 
@@ -34,7 +34,7 @@ import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionStatus;
 @SessionAttributes({SUBMISSION_ID, UPLOADED_FILENAME, SUBMISSION_DATE_TIME})
 public class BulkImportInProgressController {
 
-  private final DataClaimsRestService dataClaimsRestService;
+  private final DataClaimsRestClient dataClaimsRestClient;
 
   private final List<SubmissionStatus> completedStatuses =
       List.of(SubmissionStatus.VALIDATION_SUCCEEDED, SubmissionStatus.VALIDATION_FAILED);
@@ -64,7 +64,7 @@ public class BulkImportInProgressController {
     model.addAttribute("inProgressSummary", summary);
 
     try {
-      submission = dataClaimsRestService.getSubmission(submissionId).block();
+      submission = dataClaimsRestClient.getSubmission(submissionId).block();
     } catch (WebClientResponseException e) {
       if (e.getStatusCode().isSameCodeAs(HttpStatusCode.valueOf(404))) {
         log.debug("No submission found, will retry: %s".formatted(submissionId.toString()));

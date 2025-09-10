@@ -10,7 +10,7 @@ import org.springframework.web.reactive.function.client.ExchangeStrategies;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.support.WebClientAdapter;
 import org.springframework.web.service.invoker.HttpServiceProxyFactory;
-import uk.gov.justice.laa.bulkclaim.service.claims.DataClaimsRestService;
+import uk.gov.justice.laa.bulkclaim.client.DataClaimsRestClient;
 
 /**
  * Configuration class for creating and configuring WebClient instances.
@@ -23,20 +23,20 @@ import uk.gov.justice.laa.bulkclaim.service.claims.DataClaimsRestService;
 public class WebClientConfiguration {
 
   /**
-   * Creates a {@link DataClaimsRestService} bean to communicate with the Claims API using a
+   * Creates a {@link uk.gov.justice.laa.bulkclaim.client.DataClaimsRestClient} bean to communicate with the Claims API using a
    * WebClient instance.
    *
    * @param properties The configuration properties required to initialize the WebClient, including
    *     the base URL and access token for the Provider Details API.
-   * @return An instance of {@link DataClaimsRestService} for interacting with the Claims API.
+   * @return An instance of {@link uk.gov.justice.laa.bulkclaim.client.DataClaimsRestClient} for interacting with the Claims API.
    */
   @Bean
-  public DataClaimsRestService claimsApiClient(final ClaimsApiProperties properties) {
+  public DataClaimsRestClient claimsApiClient(final ClaimsApiProperties properties) {
     final WebClient webClient = createWebClient(properties);
     final WebClientAdapter webClientAdapter = WebClientAdapter.create(webClient);
     HttpServiceProxyFactory factory = HttpServiceProxyFactory.builderFor(webClientAdapter).build();
 
-    return factory.createClient(DataClaimsRestService.class);
+    return factory.createClient(DataClaimsRestClient.class);
   }
 
   /**

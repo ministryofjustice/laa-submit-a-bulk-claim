@@ -1,4 +1,4 @@
-package uk.gov.justice.laa.bulkclaim.service.claims;
+package uk.gov.justice.laa.bulkclaim.client;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -27,7 +27,7 @@ import uk.gov.justice.laa.dstew.payments.claimsdata.model.ValidationErrorsRespon
  * @author Jamie Briggs
  */
 @HttpExchange("/api/v0")
-public interface DataClaimsRestService {
+public interface DataClaimsRestClient {
 
   /**
    * Uploads a bulk claim submission file to the Claims API.

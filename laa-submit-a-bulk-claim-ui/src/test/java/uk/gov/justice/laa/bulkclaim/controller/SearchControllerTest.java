@@ -29,7 +29,7 @@ import uk.gov.justice.laa.bulkclaim.dto.SubmissionsSearchForm;
 import uk.gov.justice.laa.bulkclaim.response.CwaUploadErrorResponseDto;
 import uk.gov.justice.laa.bulkclaim.response.CwaUploadSummaryResponseDto;
 import uk.gov.justice.laa.bulkclaim.service.CwaUploadService;
-import uk.gov.justice.laa.bulkclaim.service.claims.DataClaimsRestService;
+import uk.gov.justice.laa.bulkclaim.client.DataClaimsRestClient;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionBase;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionsResultSet;
 
@@ -43,7 +43,7 @@ class SearchControllerTest {
   @Mock private CwaUploadService cwaUploadService;
   @Mock private Model model;
   @Mock private Principal principal;
-  @Mock private DataClaimsRestService claimsRestService;
+  @Mock private DataClaimsRestClient claimsRestService;
   @Mock private BindingResult bindingResult;
 
   @InjectMocks private SearchController searchController;

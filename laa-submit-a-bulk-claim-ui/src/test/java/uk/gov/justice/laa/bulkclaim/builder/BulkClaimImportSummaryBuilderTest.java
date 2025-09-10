@@ -21,7 +21,7 @@ import uk.gov.justice.laa.bulkclaim.dto.summary.BulkClaimImportSummary;
 import uk.gov.justice.laa.bulkclaim.dto.summary.SubmissionSummaryClaimErrorRow;
 import uk.gov.justice.laa.bulkclaim.dto.summary.SubmissionSummaryRow;
 import uk.gov.justice.laa.bulkclaim.mapper.BulkClaimImportSummaryMapper;
-import uk.gov.justice.laa.bulkclaim.service.claims.DataClaimsRestService;
+import uk.gov.justice.laa.bulkclaim.client.DataClaimsRestClient;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.ClaimValidationError;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionResponse;
 
@@ -29,14 +29,15 @@ import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionResponse;
 @DisplayName("Submission summary builder test")
 class BulkClaimImportSummaryBuilderTest {
 
-  @Mock DataClaimsRestService dataClaimsRestService;
+  @Mock
+  DataClaimsRestClient dataClaimsRestClient;
   @Mock BulkClaimImportSummaryMapper bulkClaimImportSummaryMapper;
 
   BulkClaimSummaryBuilder builder;
 
   @BeforeEach
   void beforeEach() {
-    builder = new BulkClaimSummaryBuilder(dataClaimsRestService, bulkClaimImportSummaryMapper);
+    builder = new BulkClaimSummaryBuilder(dataClaimsRestClient, bulkClaimImportSummaryMapper);
   }
 
   @Nested
@@ -60,7 +61,7 @@ class BulkClaimImportSummaryBuilderTest {
               1);
       when(bulkClaimImportSummaryMapper.toSubmissionSummaryRows(List.of(submissionResponse)))
           .thenReturn(List.of(expectedSubmissionSummaryRow));
-      when(dataClaimsRestService.getValidationErrors(submissionId)).thenReturn(Mono.empty());
+      when(dataClaimsRestClient.getValidationErrors(submissionId)).thenReturn(Mono.empty());
       // When
       BulkClaimImportSummary result = builder.build(singletonList(submissionResponse));
       // Then
@@ -85,7 +86,7 @@ class BulkClaimImportSummaryBuilderTest {
               1);
       when(bulkClaimImportSummaryMapper.toSubmissionSummaryRows(List.of(submissionResponse)))
           .thenReturn(List.of(expectedSubmissionSummaryRow));
-      when(dataClaimsRestService.getValidationErrors(submissionId))
+      when(dataClaimsRestClient.getValidationErrors(submissionId))
           .thenReturn(Mono.just(singletonList(new ClaimValidationError())));
       SubmissionSummaryClaimErrorRow claimError =
           new SubmissionSummaryClaimErrorRow(submissionId, "UFN", "UCN", "Client", "Error");

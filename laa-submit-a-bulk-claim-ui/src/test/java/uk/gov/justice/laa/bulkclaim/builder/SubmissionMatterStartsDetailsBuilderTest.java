@@ -16,7 +16,7 @@ import reactor.core.publisher.Mono;
 import uk.gov.justice.laa.bulkclaim.dto.submission.SubmissionMatterStartsDetails;
 import uk.gov.justice.laa.bulkclaim.dto.submission.SubmissionMatterStartsRow;
 import uk.gov.justice.laa.bulkclaim.mapper.SubmissionMatterStartsMapper;
-import uk.gov.justice.laa.bulkclaim.service.claims.DataClaimsRestService;
+import uk.gov.justice.laa.bulkclaim.client.DataClaimsRestClient;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.MatterStartGet;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionResponse;
 
@@ -26,12 +26,13 @@ class SubmissionMatterStartsDetailsBuilderTest {
 
   private SubmissionMatterStartsDetailsBuilder builder;
 
-  @Mock DataClaimsRestService dataClaimsRestService;
+  @Mock
+  DataClaimsRestClient dataClaimsRestClient;
   @Mock SubmissionMatterStartsMapper mapper;
 
   @BeforeEach
   void beforeEach() {
-    this.builder = new SubmissionMatterStartsDetailsBuilder(dataClaimsRestService, mapper);
+    this.builder = new SubmissionMatterStartsDetailsBuilder(dataClaimsRestClient, mapper);
   }
 
   @Test
@@ -45,7 +46,7 @@ class SubmissionMatterStartsDetailsBuilderTest {
             .submissionId(submissionReference)
             .matterStarts(Collections.singletonList(matterStartsReference))
             .build();
-    when(dataClaimsRestService.getSubmissionMatterStarts(
+    when(dataClaimsRestClient.getSubmissionMatterStarts(
             submissionReference, matterStartsReference))
         .thenReturn(Mono.just(MatterStartGet.builder().build()));
     SubmissionMatterStartsRow expected = new SubmissionMatterStartsRow("Description");
