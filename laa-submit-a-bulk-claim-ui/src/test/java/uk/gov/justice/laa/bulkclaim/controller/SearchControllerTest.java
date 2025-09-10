@@ -1,22 +1,21 @@
 package uk.gov.justice.laa.bulkclaim.controller;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.ArgumentMatchers.isNull;
-import static org.mockito.Mockito.argThat;
-import static org.mockito.Mockito.eq;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
 import java.security.Principal;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import static org.mockito.ArgumentMatchers.isNull;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import static org.mockito.Mockito.argThat;
+import static org.mockito.Mockito.eq;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 import org.mockito.MockitoAnnotations;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.security.oauth2.core.oidc.OidcIdToken;
@@ -30,8 +29,8 @@ import uk.gov.justice.laa.bulkclaim.response.CwaUploadErrorResponseDto;
 import uk.gov.justice.laa.bulkclaim.response.CwaUploadSummaryResponseDto;
 import uk.gov.justice.laa.bulkclaim.service.CwaUploadService;
 import uk.gov.justice.laa.bulkclaim.service.claims.DataClaimsRestService;
-import uk.gov.justice.laa.claims.model.SubmissionFields;
-import uk.gov.justice.laa.claims.model.SubmissionsResultSet;
+import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionBase;
+import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionsResultSet;
 
 @AutoConfigureMockMvc(addFilters = false)
 class SearchControllerTest {
@@ -114,7 +113,7 @@ class SearchControllerTest {
   @Test
   @DisplayName("Search form should return submissions when parameters are valid.")
   void submissionsSearchShouldReturnSubmissionResults_whenNoErrors() {
-    List<SubmissionFields> submissions = Collections.emptyList();
+    List<SubmissionBase> submissions = Collections.emptyList();
     String submissionId = "1234";
 
     SubmissionsResultSet response = new SubmissionsResultSet();

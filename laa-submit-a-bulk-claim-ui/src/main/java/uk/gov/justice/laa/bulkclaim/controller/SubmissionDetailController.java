@@ -23,7 +23,7 @@ import uk.gov.justice.laa.bulkclaim.dto.submission.SubmissionMatterStartsDetails
 import uk.gov.justice.laa.bulkclaim.dto.submission.SubmissionSummary;
 import uk.gov.justice.laa.bulkclaim.exception.SubmitBulkClaimException;
 import uk.gov.justice.laa.bulkclaim.service.claims.DataClaimsRestService;
-import uk.gov.justice.laa.claims.model.GetSubmission200Response;
+import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionResponse;
 
 /**
  * Controller for handling viewing a submission.
@@ -68,7 +68,7 @@ public class SubmissionDetailController {
       @ModelAttribute(SUBMISSION_ID) UUID submissionId,
       @RequestParam(value = "navTab", required = false, defaultValue = "CLAIM_DETAILS")
           ViewSubmissionNavigationTab navigationTab) {
-    GetSubmission200Response submissionResponse =
+    SubmissionResponse submissionResponse =
         dataClaimsRestService
             .getSubmission(submissionId)
             .blockOptional()

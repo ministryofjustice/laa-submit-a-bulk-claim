@@ -5,10 +5,10 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Named;
 import uk.gov.justice.laa.bulkclaim.dto.submission.SubmissionSummary;
-import uk.gov.justice.laa.claims.model.GetSubmission200Response;
+import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionResponse;
 
 /**
- * Maps between {@link GetSubmission200Response} and {@link SubmissionSummary}.
+ * Maps between {@link SubmissionResponse} and {@link SubmissionSummary}.
  *
  * @author Jamie Briggs
  */
@@ -16,7 +16,7 @@ import uk.gov.justice.laa.claims.model.GetSubmission200Response;
 public interface SubmissionSummaryMapper {
 
   /**
-   * Maps a {@link GetSubmission200Response} to a {@link SubmissionSummary}.
+   * Maps a {@link SubmissionResponse} to a {@link SubmissionSummary}.
    *
    * @param submissionResponse The response to map.
    * @return The mapped {@link SubmissionSummary}.
@@ -31,7 +31,7 @@ public interface SubmissionSummaryMapper {
   @Mapping(target = "status", constant = "Submitted")
   @Mapping(target = "submitted", source = "submitted")
   @Mapping(target = "submissionValue", constant = "50.52")
-  SubmissionSummary toSubmissionSummary(GetSubmission200Response submissionResponse);
+  SubmissionSummary toSubmissionSummary(SubmissionResponse submissionResponse);
 
   /**
    * Returns a {@link LocalDate} from a submission period string.

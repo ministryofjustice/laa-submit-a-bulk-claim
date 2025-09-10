@@ -30,10 +30,10 @@ import reactor.core.publisher.Mono;
 import uk.gov.justice.laa.bulkclaim.config.WebMvcTestConfig;
 import uk.gov.justice.laa.bulkclaim.exception.SubmitBulkClaimException;
 import uk.gov.justice.laa.bulkclaim.service.claims.DataClaimsRestService;
-import uk.gov.justice.laa.claims.model.GetSubmission200Response;
-import uk.gov.justice.laa.claims.model.GetSubmission200ResponseClaimsInner;
-import uk.gov.justice.laa.claims.model.GetSubmission200ResponseClaimsInner.StatusEnum;
-import uk.gov.justice.laa.claims.model.SubmissionStatus;
+import uk.gov.justice.laa.dstew.payments.claimsdata.model.ClaimStatus;
+import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionClaim;
+import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionResponse;
+import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionStatus;
 
 @WebMvcTest(BulkImportInProgressController.class)
 @AutoConfigureMockMvc
@@ -56,12 +56,12 @@ public class BulkImportInProgressControllerTest {
       when(dataClaimsRestService.getSubmission(submissionId))
           .thenReturn(
               Mono.just(
-                  GetSubmission200Response.builder()
+                  SubmissionResponse.builder()
                       .status(SubmissionStatus.READY_FOR_VALIDATION)
                       .claims(
                           Collections.singletonList(
-                              GetSubmission200ResponseClaimsInner.builder()
-                                  .status(StatusEnum.VALID)
+                              SubmissionClaim.builder()
+                                  .status(ClaimStatus.VALID)
                                   .build()))
                       .build()));
 
@@ -108,15 +108,15 @@ public class BulkImportInProgressControllerTest {
       when(dataClaimsRestService.getSubmission(submissionId))
           .thenReturn(
               Mono.just(
-                  GetSubmission200Response.builder()
+                  SubmissionResponse.builder()
                       .status(status)
                       .claims(
                           Arrays.asList(
-                              GetSubmission200ResponseClaimsInner.builder()
-                                  .status(StatusEnum.VALID)
+                              SubmissionClaim.builder()
+                                  .status(ClaimStatus.VALID)
                                   .build(),
-                              GetSubmission200ResponseClaimsInner.builder()
-                                  .status(StatusEnum.INVALID)
+                              SubmissionClaim.builder()
+                                  .status(ClaimStatus.INVALID)
                                   .build()))
                       .build()));
 
@@ -142,7 +142,7 @@ public class BulkImportInProgressControllerTest {
       when(dataClaimsRestService.getSubmission(submissionId))
           .thenReturn(
               Mono.just(
-                  GetSubmission200Response.builder().isNilSubmission(true).status(status).build()));
+                  SubmissionResponse.builder().isNilSubmission(true).status(status).build()));
 
       assertThat(
               mockMvc.perform(

@@ -10,7 +10,7 @@ import uk.gov.justice.laa.bulkclaim.dto.submission.SubmissionMatterStartsDetails
 import uk.gov.justice.laa.bulkclaim.dto.submission.SubmissionMatterStartsRow;
 import uk.gov.justice.laa.bulkclaim.mapper.SubmissionMatterStartsMapper;
 import uk.gov.justice.laa.bulkclaim.service.claims.DataClaimsRestService;
-import uk.gov.justice.laa.claims.model.GetSubmission200Response;
+import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionResponse;
 
 /**
  * Builder class responsible for creating instances of SubmissionMatterStartsDetails.
@@ -30,7 +30,7 @@ public class SubmissionMatterStartsDetailsBuilder {
    * @param response The source submission response.
    * @return The built {@link SubmissionMatterStartsDetails} object.
    */
-  public SubmissionMatterStartsDetails build(GetSubmission200Response response) {
+  public SubmissionMatterStartsDetails build(SubmissionResponse response) {
     List<SubmissionMatterStartsRow> list =
         response.getMatterStarts().stream()
             .map(

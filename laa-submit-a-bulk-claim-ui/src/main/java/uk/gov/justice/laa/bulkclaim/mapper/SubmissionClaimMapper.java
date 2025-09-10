@@ -5,10 +5,10 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import uk.gov.justice.laa.bulkclaim.dto.submission.SubmissionClaimRow;
 import uk.gov.justice.laa.bulkclaim.dto.submission.SubmissionClaimRowCostsDetails;
-import uk.gov.justice.laa.claims.model.ClaimFields;
+import uk.gov.justice.laa.dstew.payments.claimsdata.model.ClaimResponse;
 
 /**
- * Maps between {@link ClaimFields} and {@link SubmissionClaimRow}.
+ * Maps between {@link ClaimResponse} and {@link SubmissionClaimRow}.
  *
  * @author Jamie Briggs
  */
@@ -27,10 +27,10 @@ public interface SubmissionClaimMapper {
   // TODO: Add fee type to the OpenAPI spec.
   @Mapping(target = "feeType", constant = "Fee type")
   @Mapping(target = "costsDetails", source = "claimFields")
-  SubmissionClaimRow toSubmissionClaimRow(ClaimFields claimFields);
+  SubmissionClaimRow toSubmissionClaimRow(ClaimResponse claimFields);
 
   @Mapping(target = "claimValue", source = "claimFields.totalValue")
-  SubmissionClaimRowCostsDetails toSubmissionClaimRowCostsDetails(ClaimFields claimFields);
+  SubmissionClaimRowCostsDetails toSubmissionClaimRowCostsDetails(ClaimResponse claimFields);
 
   /**
    * Ensures that a BigDecimal is not null and instead changes to be zero if it is null.

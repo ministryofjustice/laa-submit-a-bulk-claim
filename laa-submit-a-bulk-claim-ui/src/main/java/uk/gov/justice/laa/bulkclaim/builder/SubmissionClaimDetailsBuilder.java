@@ -9,7 +9,7 @@ import uk.gov.justice.laa.bulkclaim.dto.submission.SubmissionClaimRow;
 import uk.gov.justice.laa.bulkclaim.dto.submission.SubmissionCostsSummary;
 import uk.gov.justice.laa.bulkclaim.mapper.SubmissionClaimMapper;
 import uk.gov.justice.laa.bulkclaim.service.claims.DataClaimsRestService;
-import uk.gov.justice.laa.claims.model.GetSubmission200Response;
+import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionResponse;
 
 /**
  * Builder class for constructing a {@link SubmissionClaimDetails} object used for displaying a
@@ -31,7 +31,7 @@ public class SubmissionClaimDetailsBuilder {
    * @param submissionResponse The source submission response.
    * @return The built {@link SubmissionClaimDetails} object.
    */
-  public SubmissionClaimDetails build(GetSubmission200Response submissionResponse) {
+  public SubmissionClaimDetails build(SubmissionResponse submissionResponse) {
 
     // Get all claims from data claims service
     List<SubmissionClaimRow> submissionClaimRows =

@@ -28,7 +28,7 @@ import org.springframework.web.reactive.function.client.WebClientResponseExcepti
 import reactor.core.publisher.Mono;
 import uk.gov.justice.laa.bulkclaim.config.WebMvcTestConfig;
 import uk.gov.justice.laa.bulkclaim.helper.MockServerIntegrationTest;
-import uk.gov.justice.laa.claims.model.*;
+import uk.gov.justice.laa.dstew.payments.claimsdata.model.*;
 
 /**
  * Integration tests for the {@link DataClaimsRestService}.

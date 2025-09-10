@@ -7,7 +7,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.justice.laa.bulkclaim.dto.submission.SubmissionMatterStartsRow;
-import uk.gov.justice.laa.claims.model.MatterStartGet;
+import uk.gov.justice.laa.dstew.payments.claimsdata.model.MatterStartGet;
 
 @ExtendWith(SpringExtension.class)
 @DisplayName("Submission matter starts mapper tests")

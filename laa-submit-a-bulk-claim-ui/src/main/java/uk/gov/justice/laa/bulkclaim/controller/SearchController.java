@@ -25,7 +25,7 @@ import uk.gov.justice.laa.bulkclaim.response.CwaUploadErrorResponseDto;
 import uk.gov.justice.laa.bulkclaim.response.CwaUploadSummaryResponseDto;
 import uk.gov.justice.laa.bulkclaim.service.claims.DataClaimsRestService;
 import uk.gov.justice.laa.bulkclaim.validation.SubmissionSearchValidator;
-import uk.gov.justice.laa.claims.model.SubmissionsResultSet;
+import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionsResultSet;
 
 /** Controller for handling search requests related to bulk uploads. */
 @Slf4j
