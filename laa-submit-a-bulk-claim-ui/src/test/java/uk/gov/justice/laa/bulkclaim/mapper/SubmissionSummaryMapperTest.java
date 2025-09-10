@@ -2,7 +2,6 @@ package uk.gov.justice.laa.bulkclaim.mapper;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.util.UUID;
@@ -34,7 +33,7 @@ class SubmissionSummaryMapperTest {
     SubmissionResponse submissionResponse =
         SubmissionResponse.builder()
             .submissionId(submissionReference)
-            .submissionPeriod("2025-05")
+            .submissionPeriod("MAY-2025")
             .officeAccountNumber("1234567890")
             // TODO: Add submission value to specification
             .areaOfLaw("Civil Law")
@@ -44,7 +43,6 @@ class SubmissionSummaryMapperTest {
     // When
     SubmissionSummary result = mapper.toSubmissionSummary(submissionResponse);
     // Then
-
     SoftAssertions.assertSoftly(
         softAssertions -> {
           softAssertions.assertThat(result.submissionReference()).isEqualTo(submissionReference);
@@ -55,7 +53,7 @@ class SubmissionSummaryMapperTest {
           softAssertions.assertThat(result.areaOfLaw()).isEqualTo("Civil Law");
           softAssertions
               .assertThat(result.submitted())
-              .isEqualTo(LocalDateTime.of(2025, 1, 1, 0, 0, 0));
+              .isEqualTo(OffsetDateTime.of(2025, 1, 1, 0, 0, 0, 0, ZoneOffset.UTC));
         });
   }
 }

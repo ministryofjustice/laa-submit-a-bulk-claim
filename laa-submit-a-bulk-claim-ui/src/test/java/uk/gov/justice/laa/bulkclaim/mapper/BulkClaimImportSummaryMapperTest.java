@@ -1,8 +1,7 @@
 package uk.gov.justice.laa.bulkclaim.mapper;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
+import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
 import java.util.List;
 import java.util.UUID;
 import org.assertj.core.api.SoftAssertions;
@@ -31,12 +30,11 @@ class BulkClaimImportSummaryMapperTest {
     // Given
     SubmissionResponse submission200Response =
         SubmissionResponse.builder()
-            .submitted(
-                LocalDate.of(2020, 5, 1).atStartOfDay(ZoneId.systemDefault()).toOffsetDateTime())
+            .submitted(OffsetDateTime.of(2025, 1, 1, 10, 10, 10, 0, ZoneOffset.UTC))
             .submissionId(UUID.fromString("ee92c4ac-0ff9-4896-8bbe-c58fa04206e3"))
             .officeAccountNumber("1234567890")
             .areaOfLaw("Civil Law")
-            .submissionPeriod("2020-05")
+            .submissionPeriod("MAY-2020")
             .numberOfClaims(123)
             .build();
     // When
@@ -46,7 +44,9 @@ class BulkClaimImportSummaryMapperTest {
     SoftAssertions.assertSoftly(
         softly -> {
           SubmissionSummaryRow result = resultList.getFirst();
-          softly.assertThat(result.submitted()).isEqualTo(LocalDateTime.of(2020, 5, 1, 0, 0, 0));
+          softly
+              .assertThat(result.submitted())
+              .isEqualTo(OffsetDateTime.of(2025, 1, 1, 10, 10, 10, 0, ZoneOffset.UTC));
           softly
               .assertThat(result.submissionReference())
               .isEqualTo(UUID.fromString("ee92c4ac-0ff9-4896-8bbe-c58fa04206e3"));

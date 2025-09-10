@@ -6,8 +6,8 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.oidcLogin;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static uk.gov.justice.laa.bulkclaim.constants.SessionConstants.BULK_SUBMISSION;
-import static uk.gov.justice.laa.bulkclaim.constants.SessionConstants.BULK_SUBMISSION_ID;
+import static uk.gov.justice.laa.bulkclaim.constants.SessionConstants.SUBMISSION;
+import static uk.gov.justice.laa.bulkclaim.constants.SessionConstants.SUBMISSION_ID;
 
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
@@ -56,10 +56,10 @@ class BulkSubmissionImportedControllerTest {
     @DisplayName("Should return expected result with submission present")
     void shouldRetuenExpectedResultWithSubmissionPresent() {
       // Given
-      UUID bulkSubmissionId = UUID.fromString("314d1cac-ffb8-41b5-9013-bab4e47e23ca");
+      UUID submissionId = UUID.fromString("314d1cac-ffb8-41b5-9013-bab4e47e23ca");
       SubmissionResponse submissionResponse =
-          SubmissionResponse.builder().submissionId(bulkSubmissionId).build();
-      BulkClaimImportSummary bulkClaimImportSummary = getTestSubmissionSummary(bulkSubmissionId);
+          SubmissionResponse.builder().submissionId(submissionId).build();
+      BulkClaimImportSummary bulkClaimImportSummary = getTestSubmissionSummary(submissionId);
       when(bulkClaimSummaryBuilder.build(List.of(submissionResponse)))
           .thenReturn(bulkClaimImportSummary);
       // When / Then
@@ -67,26 +67,26 @@ class BulkSubmissionImportedControllerTest {
               mockMvc.perform(
                   get("/view-submission-summary")
                       .with(oidcLogin().oidcUser(ControllerTestHelper.getOidcUser()))
-                      .sessionAttr(BULK_SUBMISSION_ID, bulkSubmissionId)
-                      .sessionAttr(BULK_SUBMISSION, submissionResponse)))
+                      .sessionAttr(SUBMISSION_ID, submissionId)
+                      .sessionAttr(SUBMISSION, submissionResponse)))
           .hasStatusOk()
           .hasViewName("pages/view-submission-imported-summary")
           .model()
-          .hasFieldOrProperty(BULK_SUBMISSION)
-          .hasFieldOrProperty(BULK_SUBMISSION_ID);
+          .hasFieldOrProperty(SUBMISSION)
+          .hasFieldOrProperty(SUBMISSION_ID);
       verify(bulkClaimSummaryBuilder, times(1)).build(List.of(submissionResponse));
-      verify(dataClaimsRestClient, times(0)).getSubmission(bulkSubmissionId);
+      verify(dataClaimsRestClient, times(0)).getSubmission(submissionId);
     }
 
     @Test
     @DisplayName("Should return expected result without submission present")
     void shouldReturnExpectedResultWithoutSubmissionPresent() {
       // Given
-      UUID bulkSubmissionId = UUID.fromString("314d1cac-ffb8-41b5-9013-bab4e47e23ca");
+      UUID submissionId = UUID.fromString("314d1cac-ffb8-41b5-9013-bab4e47e23ca");
       SubmissionResponse submissionResponse =
-          SubmissionResponse.builder().submissionId(bulkSubmissionId).build();
-      BulkClaimImportSummary bulkClaimImportSummary = getTestSubmissionSummary(bulkSubmissionId);
-      when(dataClaimsRestClient.getSubmission(bulkSubmissionId))
+          SubmissionResponse.builder().submissionId(submissionId).build();
+      BulkClaimImportSummary bulkClaimImportSummary = getTestSubmissionSummary(submissionId);
+      when(dataClaimsRestClient.getSubmission(submissionId))
           .thenReturn(Mono.just(submissionResponse));
       when(bulkClaimSummaryBuilder.build(List.of(submissionResponse)))
           .thenReturn(bulkClaimImportSummary);
@@ -95,14 +95,14 @@ class BulkSubmissionImportedControllerTest {
               mockMvc.perform(
                   get("/view-submission-summary")
                       .with(oidcLogin().oidcUser(ControllerTestHelper.getOidcUser()))
-                      .sessionAttr(BULK_SUBMISSION_ID, bulkSubmissionId)))
+                      .sessionAttr(SUBMISSION_ID, submissionId)))
           .hasStatusOk()
           .hasViewName("pages/view-submission-imported-summary")
           .model()
-          .hasFieldOrProperty(BULK_SUBMISSION)
-          .hasFieldOrProperty(BULK_SUBMISSION_ID);
+          .hasFieldOrProperty(SUBMISSION)
+          .hasFieldOrProperty(SUBMISSION_ID);
       verify(bulkClaimSummaryBuilder, times(1)).build(List.of(submissionResponse));
-      verify(dataClaimsRestClient, times(1)).getSubmission(bulkSubmissionId);
+      verify(dataClaimsRestClient, times(1)).getSubmission(submissionId);
     }
   }
 
@@ -111,15 +111,15 @@ class BulkSubmissionImportedControllerTest {
   @DisplayName("Should redirect to error when submission not found")
   void shouldReturnExpectedResultWithoutSubmissionPresent(int statusCode) {
     // Given
-    UUID bulkSubmissionId = UUID.fromString("314d1cac-ffb8-41b5-9013-bab4e47e23ca");
-    when(dataClaimsRestClient.getSubmission(bulkSubmissionId))
+    UUID submissionId = UUID.fromString("314d1cac-ffb8-41b5-9013-bab4e47e23ca");
+    when(dataClaimsRestClient.getSubmission(submissionId))
         .thenThrow(new WebClientResponseException(statusCode, "Error", null, null, null));
     // When / Then
     assertThat(
             mockMvc.perform(
                 get("/view-submission-summary")
                     .with(oidcLogin().oidcUser(ControllerTestHelper.getOidcUser()))
-                    .sessionAttr(BULK_SUBMISSION_ID, bulkSubmissionId)))
+                    .sessionAttr(SUBMISSION_ID, submissionId)))
         .failure()
         .hasCauseInstanceOf(SubmitBulkClaimException.class)
         .hasMessageEndingWith("Error retrieving submission from data claims API.");
