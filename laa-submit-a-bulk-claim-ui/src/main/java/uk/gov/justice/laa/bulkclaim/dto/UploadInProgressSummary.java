@@ -1,6 +1,6 @@
 package uk.gov.justice.laa.bulkclaim.dto;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 /**
@@ -12,4 +12,4 @@ import java.util.UUID;
  * @author Jamie Briggs
  */
 public record UploadInProgressSummary(
-    LocalDate uploadDate, UUID submissionReference, String fileName) {}
+    LocalDateTime uploadDate, UUID submissionReference, String fileName) {}

@@ -10,6 +10,13 @@ apply plugin: 'uk.gov.laa.springboot.laa-spring-boot-gradle-plugin'
     mavenCentral()
 }
 
+dependencyManagement {
+    imports {
+        // Upgrade to fix vulnerabilities in netty
+        mavenBom('io.netty:netty-bom:4.2.5.Final')
+    }
+}
+
 dependencies {
     implementation project(':claims-api-reference')
 
@@ -18,11 +25,6 @@ dependencies {
      */
     // Upgrade to fix CVE-2025-48924
     implementation 'org.apache.commons:commons-lang3:3.18.0'
-
-    // Force ALL Netty artifacts to the patched version
-    implementation(enforcedPlatform("io.netty:netty-bom:4.1.126.Final"))
-    // Let the BOM provide versions for Netty bits you use
-    implementation "io.netty:netty-codec-http2"
 
     implementation 'org.springframework.boot:spring-boot-starter-cache'
     implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'

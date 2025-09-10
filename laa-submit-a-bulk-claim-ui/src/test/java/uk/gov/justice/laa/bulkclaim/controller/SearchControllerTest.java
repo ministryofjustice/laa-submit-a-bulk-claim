@@ -1,10 +1,8 @@
 package uk.gov.justice.laa.bulkclaim.controller;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.argThat;
-import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -28,7 +26,6 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import reactor.core.publisher.Mono;
 import uk.gov.justice.laa.bulkclaim.dto.SubmissionsSearchForm;
-import uk.gov.justice.laa.bulkclaim.helper.ProviderHelper;
 import uk.gov.justice.laa.bulkclaim.response.CwaUploadErrorResponseDto;
 import uk.gov.justice.laa.bulkclaim.response.CwaUploadSummaryResponseDto;
 import uk.gov.justice.laa.bulkclaim.service.CwaUploadService;
@@ -44,7 +41,6 @@ class SearchControllerTest {
   private static final String TEST_USER = "TESTUSER";
 
   @Mock private CwaUploadService cwaUploadService;
-  @Mock private ProviderHelper providerHelper;
   @Mock private Model model;
   @Mock private Principal principal;
   @Mock private DataClaimsRestService claimsRestService;
@@ -56,7 +52,6 @@ class SearchControllerTest {
   void setUp() {
     MockitoAnnotations.openMocks(this);
     when(principal.getName()).thenReturn(TEST_USER);
-    doNothing().when(providerHelper).populateProviders(any(Model.class), eq(TEST_USER));
     when(cwaUploadService.getProviders(TEST_USER)).thenReturn(Collections.emptyList());
     when(model.asMap()).thenReturn(Collections.emptyMap());
   }

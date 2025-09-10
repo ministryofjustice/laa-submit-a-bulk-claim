@@ -38,7 +38,8 @@ public interface DataClaimsRestService {
    */
   @PostExchange(value = "/bulk-submissions", contentType = MediaType.MULTIPART_FORM_DATA_VALUE)
   Mono<ResponseEntity<CreateBulkSubmission201Response>> upload(
-      @RequestPart("file") MultipartFile file) throws WebClientResponseException;
+      @RequestPart("file") MultipartFile file, @RequestParam(required = true) String userId)
+      throws WebClientResponseException;
 
   /**
    * Searches submissions using JSON criteria sent in the GET request body.

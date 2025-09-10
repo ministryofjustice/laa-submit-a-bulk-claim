@@ -1,11 +1,12 @@
 package uk.gov.justice.laa.bulkclaim.controller;
 
-import static uk.gov.justice.laa.bulkclaim.constants.SessionConstants.BULK_SUBMISSION_ID;
+import static uk.gov.justice.laa.bulkclaim.constants.SessionConstants.SUBMISSION_DATE_TIME;
+import static uk.gov.justice.laa.bulkclaim.constants.SessionConstants.SUBMISSION_ID;
 import static uk.gov.justice.laa.bulkclaim.constants.SessionConstants.UPLOADED_FILENAME;
 
+import java.time.LocalDateTime;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.core.oidc.user.OidcUser;
@@ -16,10 +17,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.support.SessionStatus;
-import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import uk.gov.justice.laa.bulkclaim.dto.FileUploadForm;
-import uk.gov.justice.laa.bulkclaim.helper.ProviderHelper;
 import uk.gov.justice.laa.bulkclaim.service.claims.DataClaimsRestService;
 import uk.gov.justice.laa.bulkclaim.validation.BulkImportFileValidator;
 import uk.gov.justice.laa.bulkclaim.validation.BulkImportFileVirusValidator;
@@ -33,7 +32,6 @@ public class BulkImportController {
 
   public static final String FILE_UPLOAD_FORM_MODEL_ATTR = "fileUploadForm";
 
-  private final ProviderHelper providerHelper;
   private final BulkImportFileValidator bulkImportFileValidator;
   private final BulkImportFileVirusValidator bulkImportFileVirusValidator;
   private final DataClaimsRestService dataClaimsRestService;
@@ -55,20 +53,6 @@ public class BulkImportController {
     // Always ensure there's a form object in the model if not already present
     if (!model.containsAttribute(FILE_UPLOAD_FORM_MODEL_ATTR)) {
       model.addAttribute(FILE_UPLOAD_FORM_MODEL_ATTR, new FileUploadForm(null));
-    }
-
-    try {
-      providerHelper.populateProviders(model, oidcUser.getName());
-    } catch (HttpClientErrorException e) {
-      log.error("HTTP client error fetching providers with message: {} ", e.getMessage());
-      if (e.getStatusCode() == HttpStatus.FORBIDDEN) {
-        return "pages/upload-forbidden";
-      } else {
-        return "error";
-      }
-    } catch (Exception e) {
-      log.error("Error connecting to Provider API with message: {} ", e.getMessage());
-      return "error";
     }
 
     return "pages/upload";
@@ -102,15 +86,18 @@ public class BulkImportController {
 
     try {
       ResponseEntity<CreateBulkSubmission201Response> responseEntity =
-          dataClaimsRestService.upload(fileUploadForm.file()).block();
+          dataClaimsRestService
+              .upload(fileUploadForm.file(), oidcUser.getPreferredUsername())
+              .block();
       CreateBulkSubmission201Response bulkSubmissionResponse = responseEntity.getBody();
       log.info(
-          "Claims API Upload response submission UUID: {}",
+          "Claims API Upload response bulk submission UUID: {}",
           bulkSubmissionResponse.getBulkSubmissionId());
       redirectAttributes.addFlashAttribute(
-          BULK_SUBMISSION_ID, bulkSubmissionResponse.getBulkSubmissionId());
+          SUBMISSION_ID, bulkSubmissionResponse.getSubmissionIds().getFirst());
       redirectAttributes.addFlashAttribute(
           UPLOADED_FILENAME, fileUploadForm.file().getOriginalFilename());
+      redirectAttributes.addFlashAttribute(SUBMISSION_DATE_TIME, LocalDateTime.now());
       return "redirect:/import-in-progress";
     } catch (Exception e) {
       log.error("Failed to upload file to Claims API with message: {}", e.getMessage());
