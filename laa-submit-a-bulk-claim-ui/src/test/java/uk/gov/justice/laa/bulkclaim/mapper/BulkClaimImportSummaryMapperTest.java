@@ -12,8 +12,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.justice.laa.bulkclaim.dto.summary.SubmissionSummaryClaimErrorRow;
 import uk.gov.justice.laa.bulkclaim.dto.summary.SubmissionSummaryRow;
-import uk.gov.justice.laa.claims.model.ClaimValidationError;
-import uk.gov.justice.laa.claims.model.GetSubmission200Response;
+import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionResponse;
 
 @ExtendWith(SpringExtension.class)
 @DisplayName("Bulk claim summary mapper test")
@@ -30,8 +29,8 @@ class BulkClaimImportSummaryMapperTest {
   @DisplayName("Should map submission summary row")
   void shouldMapSubmissionSummaryRow() {
     // Given
-    GetSubmission200Response submission200Response =
-        GetSubmission200Response.builder()
+    SubmissionResponse submission200Response =
+        SubmissionResponse.builder()
             .submitted(LocalDate.of(2020, 5, 1))
             .submissionId(UUID.fromString("ee92c4ac-0ff9-4896-8bbe-c58fa04206e3"))
             .officeAccountNumber("1234567890")

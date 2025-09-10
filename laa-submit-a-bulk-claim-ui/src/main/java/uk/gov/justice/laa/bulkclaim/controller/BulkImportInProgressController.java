@@ -20,8 +20,8 @@ import org.springframework.web.reactive.function.client.WebClientResponseExcepti
 import uk.gov.justice.laa.bulkclaim.dto.UploadInProgressSummary;
 import uk.gov.justice.laa.bulkclaim.exception.SubmitBulkClaimException;
 import uk.gov.justice.laa.bulkclaim.service.claims.DataClaimsRestService;
-import uk.gov.justice.laa.claims.model.GetSubmission200Response;
-import uk.gov.justice.laa.claims.model.SubmissionStatus;
+import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionResponse;
+import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionStatus;
 
 /**
  * Controller for handling the import in progress page after a user has submitted a bulk claim.
@@ -56,7 +56,7 @@ public class BulkImportInProgressController {
       SessionStatus sessionStatus) {
 
     // Check submission exists otherwise they will be stuck in a loop on this page.
-    GetSubmission200Response submission;
+    SubmissionResponse submission;
 
     // Get summary
     UploadInProgressSummary summary =

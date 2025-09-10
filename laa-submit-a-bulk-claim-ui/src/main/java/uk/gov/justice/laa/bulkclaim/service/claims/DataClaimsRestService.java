@@ -14,12 +14,12 @@ import org.springframework.web.service.annotation.GetExchange;
 import org.springframework.web.service.annotation.HttpExchange;
 import org.springframework.web.service.annotation.PostExchange;
 import reactor.core.publisher.Mono;
-import uk.gov.justice.laa.claims.model.ClaimFields;
-import uk.gov.justice.laa.claims.model.ClaimValidationError;
-import uk.gov.justice.laa.claims.model.CreateBulkSubmission201Response;
-import uk.gov.justice.laa.claims.model.GetSubmission200Response;
-import uk.gov.justice.laa.claims.model.MatterStartGet;
-import uk.gov.justice.laa.claims.model.SubmissionsResultSet;
+import uk.gov.justice.laa.dstew.payments.claimsdata.model.ClaimResponse;
+import uk.gov.justice.laa.dstew.payments.claimsdata.model.ClaimValidationError;
+import uk.gov.justice.laa.dstew.payments.claimsdata.model.CreateBulkSubmission201Response;
+import uk.gov.justice.laa.dstew.payments.claimsdata.model.MatterStartGet;
+import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionResponse;
+import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionsResultSet;
 
 /**
  * REST Service interface for interacting with the Claims API.
@@ -65,7 +65,7 @@ public interface DataClaimsRestService {
    * @throws WebClientResponseException if status other than 2xx is returned
    */
   @GetExchange(value = "/submissions/{submissionId}")
-  Mono<GetSubmission200Response> getSubmission(@PathVariable("submissionId") UUID submissionId)
+  Mono<SubmissionResponse> getSubmission(@PathVariable("submissionId") UUID submissionId)
       throws WebClientResponseException;
 
   /**
@@ -77,7 +77,7 @@ public interface DataClaimsRestService {
    * @throws WebClientResponseException if status other than 2xx is returned
    */
   @GetExchange(value = "/submissions/{submission-id}/claims/{claim-id}")
-  Mono<ClaimFields> getSubmissionClaim(
+  Mono<ClaimResponse> getSubmissionClaim(
       @PathVariable("submission-id") UUID submissionId, @PathVariable("claim-id") UUID claimId);
 
   @GetExchange(value = "/submissions/{submission-id}/matter-starts/{matter-starts-id}")

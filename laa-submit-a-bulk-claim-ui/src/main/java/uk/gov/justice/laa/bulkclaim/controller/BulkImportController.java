@@ -22,7 +22,7 @@ import uk.gov.justice.laa.bulkclaim.dto.FileUploadForm;
 import uk.gov.justice.laa.bulkclaim.service.claims.DataClaimsRestService;
 import uk.gov.justice.laa.bulkclaim.validation.BulkImportFileValidator;
 import uk.gov.justice.laa.bulkclaim.validation.BulkImportFileVirusValidator;
-import uk.gov.justice.laa.claims.model.CreateBulkSubmission201Response;
+import uk.gov.justice.laa.dstew.payments.claimsdata.model.CreateBulkSubmission201Response;
 
 /** Controller for handling the bulk upload requests. */
 @Slf4j

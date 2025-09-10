@@ -12,8 +12,8 @@ import uk.gov.justice.laa.bulkclaim.dto.summary.SubmissionSummaryClaimErrorRow;
 import uk.gov.justice.laa.bulkclaim.dto.summary.SubmissionSummaryRow;
 import uk.gov.justice.laa.bulkclaim.mapper.BulkClaimImportSummaryMapper;
 import uk.gov.justice.laa.bulkclaim.service.claims.DataClaimsRestService;
-import uk.gov.justice.laa.claims.model.ClaimValidationError;
-import uk.gov.justice.laa.claims.model.GetSubmission200Response;
+import uk.gov.justice.laa.dstew.payments.claimsdata.model.ClaimValidationError;
+import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionResponse;
 
 /**
  * Builder class for constructing a {@link BulkClaimImportSummary} object used for displaying
@@ -29,12 +29,12 @@ public class BulkClaimSummaryBuilder {
   private final BulkClaimImportSummaryMapper bulkClaimImportSummaryMapper;
 
   /**
-   * Builds a {@link BulkClaimImportSummary} using a {@link GetSubmission200Response}.
+   * Builds a {@link BulkClaimImportSummary} using a {@link SubmissionResponse}.
    *
    * @param submissionResponse The source submission response..
    * @return The built {@link BulkClaimImportSummary}.
    */
-  public BulkClaimImportSummary build(List<GetSubmission200Response> submissionResponse) {
+  public BulkClaimImportSummary build(List<SubmissionResponse> submissionResponse) {
 
     // Get all summary rows
     List<SubmissionSummaryRow> summaryRows =

@@ -17,7 +17,7 @@ import uk.gov.justice.laa.bulkclaim.builder.BulkClaimSummaryBuilder;
 import uk.gov.justice.laa.bulkclaim.dto.summary.BulkClaimImportSummary;
 import uk.gov.justice.laa.bulkclaim.exception.SubmitBulkClaimException;
 import uk.gov.justice.laa.bulkclaim.service.claims.DataClaimsRestService;
-import uk.gov.justice.laa.claims.model.GetSubmission200Response;
+import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionResponse;
 
 /**
  * Controller which allows the user to view their submitted submissions and their errors if there
@@ -55,7 +55,8 @@ public class BulkSubmissionImportedController {
     // Map submission summary to model
     BulkClaimImportSummary bulkClaimImportSummary =
         bulkClaimSummaryBuilder.build(
-            Collections.singletonList((GetSubmission200Response) model.getAttribute(SUBMISSION)));
+            Collections.singletonList(
+                (SubmissionResponse) model.getAttribute(SUBMISSION)));
     model.addAttribute("bulkClaimImportSummary", bulkClaimImportSummary);
     return "pages/view-submission-imported-summary";
   }

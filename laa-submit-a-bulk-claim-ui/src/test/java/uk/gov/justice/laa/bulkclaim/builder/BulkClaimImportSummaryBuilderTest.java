@@ -22,8 +22,9 @@ import uk.gov.justice.laa.bulkclaim.dto.summary.SubmissionSummaryClaimErrorRow;
 import uk.gov.justice.laa.bulkclaim.dto.summary.SubmissionSummaryRow;
 import uk.gov.justice.laa.bulkclaim.mapper.BulkClaimImportSummaryMapper;
 import uk.gov.justice.laa.bulkclaim.service.claims.DataClaimsRestService;
-import uk.gov.justice.laa.claims.model.ClaimValidationError;
-import uk.gov.justice.laa.claims.model.GetSubmission200Response;
+import uk.gov.justice.laa.dstew.payments.claimsdata.model.ClaimValidationError;
+import uk.gov.justice.laa.dstew.payments.claimsdata.model.GetSubmission200Response;
+import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionResponse;
 
 @ExtendWith(MockitoExtension.class)
 @DisplayName("Submission summary builder test")
@@ -48,8 +49,8 @@ class BulkClaimImportSummaryBuilderTest {
     void shouldBuildSummaryWithNoErrors() {
       // Given
       UUID submissionId = UUID.fromString("2528e557-6c24-4725-b659-6346399bf021");
-      GetSubmission200Response submission200Response =
-          GetSubmission200Response.builder().submissionId(submissionId).build();
+      SubmissionResponse submissionResponse =
+          SubmissionResponse.builder().submissionId(submissionId).build();
       SubmissionSummaryRow expectedSubmissionSummaryRow =
           new SubmissionSummaryRow(
               LocalDateTime.of(2020, 5, 1, 12, 0, 0),
@@ -58,11 +59,11 @@ class BulkClaimImportSummaryBuilderTest {
               "Area of Law",
               LocalDate.of(2020, 5, 1),
               1);
-      when(bulkClaimImportSummaryMapper.toSubmissionSummaryRows(List.of(submission200Response)))
+      when(bulkClaimImportSummaryMapper.toSubmissionSummaryRows(List.of(submissionResponse)))
           .thenReturn(List.of(expectedSubmissionSummaryRow));
       when(dataClaimsRestService.getValidationErrors(submissionId)).thenReturn(Mono.empty());
       // When
-      BulkClaimImportSummary result = builder.build(singletonList(submission200Response));
+      BulkClaimImportSummary result = builder.build(singletonList(submissionResponse));
       // Then
       assertThat(result.submissions().getFirst()).isEqualTo(expectedSubmissionSummaryRow);
       assertThat(result.claimErrors().isEmpty()).isTrue();
@@ -73,8 +74,8 @@ class BulkClaimImportSummaryBuilderTest {
     void shouldBuildSummaryWithErrors() {
       // Given
       UUID submissionId = UUID.fromString("2528e557-6c24-4725-b659-6346399bf021");
-      GetSubmission200Response submission200Response =
-          GetSubmission200Response.builder().submissionId(submissionId).build();
+      SubmissionResponse submissionResponse =
+          SubmissionResponse.builder().submissionId(submissionId).build();
       SubmissionSummaryRow expectedSubmissionSummaryRow =
           new SubmissionSummaryRow(
               LocalDateTime.of(2020, 5, 1, 12, 0, 0),
@@ -83,7 +84,7 @@ class BulkClaimImportSummaryBuilderTest {
               "Area of Law",
               LocalDate.of(2020, 5, 1),
               1);
-      when(bulkClaimImportSummaryMapper.toSubmissionSummaryRows(List.of(submission200Response)))
+      when(bulkClaimImportSummaryMapper.toSubmissionSummaryRows(List.of(submissionResponse)))
           .thenReturn(List.of(expectedSubmissionSummaryRow));
       when(dataClaimsRestService.getValidationErrors(submissionId))
           .thenReturn(Mono.just(singletonList(new ClaimValidationError())));
@@ -92,7 +93,7 @@ class BulkClaimImportSummaryBuilderTest {
       when(bulkClaimImportSummaryMapper.toSubmissionSummaryClaimError(any(), any()))
           .thenReturn(claimError);
       // When
-      BulkClaimImportSummary result = builder.build(singletonList(submission200Response));
+      BulkClaimImportSummary result = builder.build(singletonList(submissionResponse));
       // Then
       assertThat(result.submissions().getFirst()).isEqualTo(expectedSubmissionSummaryRow);
       assertThat(result.claimErrors().getFirst()).isEqualTo(claimError);

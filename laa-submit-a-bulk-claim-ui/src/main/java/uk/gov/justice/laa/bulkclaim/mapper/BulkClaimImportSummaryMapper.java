@@ -12,13 +12,13 @@ import org.mapstruct.Mapping;
 import org.mapstruct.Named;
 import uk.gov.justice.laa.bulkclaim.dto.summary.SubmissionSummaryClaimErrorRow;
 import uk.gov.justice.laa.bulkclaim.dto.summary.SubmissionSummaryRow;
-import uk.gov.justice.laa.claims.model.ClaimFields;
-import uk.gov.justice.laa.claims.model.ClaimValidationError;
-import uk.gov.justice.laa.claims.model.GetSubmission200Response;
+import uk.gov.justice.laa.dstew.payments.claimsdata.model.ClaimResponse;
+import uk.gov.justice.laa.dstew.payments.claimsdata.model.ClaimValidationError;
+import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionResponse;
 
 /**
- * Maps between {@link GetSubmission200Response} and {@link SubmissionSummaryRow}, and {@link
- * ClaimFields} and {@link SubmissionSummaryClaimErrorRow}.
+ * Maps between {@link SubmissionResponse} and {@link SubmissionSummaryRow}, and {@link
+ * ClaimResponse} and {@link SubmissionSummaryClaimErrorRow}.
  *
  * @author Jamie Briggs
  */
@@ -26,7 +26,7 @@ import uk.gov.justice.laa.claims.model.GetSubmission200Response;
 public interface BulkClaimImportSummaryMapper {
 
   /**
-   * Maps a {@link GetSubmission200Response} to a {@link SubmissionSummaryRow}.
+   * Maps a {@link SubmissionResponse} to a {@link SubmissionSummaryRow}.
    *
    * @param submissionResponse The response to map.
    * @return The mapped {@link SubmissionSummaryRow}.
@@ -40,10 +40,10 @@ public interface BulkClaimImportSummaryMapper {
       source = "submissionPeriod",
       qualifiedByName = "toSubmissionPeriod")
   @Mapping(target = "totalClaims", source = "numberOfClaims")
-  SubmissionSummaryRow toSubmissionSummaryRow(GetSubmission200Response submissionResponse);
+  SubmissionSummaryRow toSubmissionSummaryRow(SubmissionResponse submissionResponse);
 
   List<SubmissionSummaryRow> toSubmissionSummaryRows(
-      List<GetSubmission200Response> submissionResponses);
+      List<SubmissionResponse> submissionResponses);
 
   /**
    * Returns a {@link LocalDate} from a submission period string.
@@ -64,7 +64,7 @@ public interface BulkClaimImportSummaryMapper {
   }
 
   /**
-   * Maps a {@link ClaimFields} to a {@link SubmissionSummaryClaimErrorRow}, whilst also including a
+   * Maps a {@link ClaimResponse} to a {@link SubmissionSummaryClaimErrorRow}, whilst also including a
    * submission reference.
    *
    * @param submissionReference The submission reference.
