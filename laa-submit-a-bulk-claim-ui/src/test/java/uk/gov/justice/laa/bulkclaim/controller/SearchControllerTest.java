@@ -132,6 +132,10 @@ class SearchControllerTest {
             new SubmissionsSearchForm(submissionId, null, null),
             bindingResult,
             model,
+            null,
+            null,
+            null,
+            0,
             getDefaultOidcUser());
 
     assertEquals(0, bindingResult.getErrorCount());

@@ -1,6 +1,6 @@
 <!DOCTYPE HTML>
 <html lang="en" class="govuk-template" xmlns:th="http://www.thymeleaf.org"
-      th:replace="~{ layout/main-layout :: layout(~{::title},~{::main}, ~{})}">
+      th:replace="~{ layout/main-layout :: layout(#{search.title},~{::main}, ~{}, 'search-submissions')}">
 <main class="govuk-main-wrapper" id="main-content">
   <div class="govuk-width-container">
     <div class="govuk-grid-row govuk-body">
@@ -8,7 +8,7 @@
           <h1 class="govuk-heading-l" th:text="#{search.title}"></h1>
           <p th:text="#{search.intro}"></p>
           <div class="search-panel govuk-!-margin-bottom-6">
-            <form id="claims-search-form" th:action="#{search.url}" th:object="${submissionsSearchForm}" method="post">
+            <form id="claims-search-form" th:action="@{/submissions/search/results}" th:object="${submissionsSearchForm}" method="GET">
               <div th:if="${errors}" >
                 <p class="govuk-error-message" th:each="error : ${errors}" th:text="#{search.error.criteria.required}"></p>
               </div>
@@ -60,7 +60,7 @@
                   Search
                 </button>
 
-                <a class="govuk-link" th:href="#{search.url}">Clear all</a>
+                <a class="govuk-link" th:href="@{/submissions/search}">Clear all</a>
               </div>
             </form>
           </div>

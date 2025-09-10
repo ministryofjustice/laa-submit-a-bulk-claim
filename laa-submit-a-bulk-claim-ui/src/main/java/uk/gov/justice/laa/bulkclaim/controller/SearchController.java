@@ -1,7 +1,6 @@
 package uk.gov.justice.laa.bulkclaim.controller;
 
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -19,6 +18,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.client.HttpClientErrorException;
 import uk.gov.justice.laa.bulkclaim.dto.SubmissionsSearchForm;
 import uk.gov.justice.laa.bulkclaim.helper.ProviderHelper;
@@ -63,15 +63,17 @@ public class SearchController {
    * @param oidcUser currently authenticated user
    * @return search results view
    */
-  @PostMapping("/submissions/search")
+  @GetMapping("/submissions/search/results")
   public String handleSearch(
       @ModelAttribute("submissionsSearchForm") SubmissionsSearchForm submissionsSearchForm,
       BindingResult bindingResult,
       Model model,
+      @RequestParam(required = false) String submissionIdParam,
+      @RequestParam(required = false) String submittedDateFromParam,
+      @RequestParam(required = false) String submittedDateToParam,
+      @RequestParam(required = false) Integer page,
       @AuthenticationPrincipal OidcUser oidcUser) {
 
-    Map<String, String> errors = new LinkedHashMap<>();
-    final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
     String submissionId =
         StringUtils.hasText(submissionsSearchForm.submissionId())
             ? submissionsSearchForm.submissionId().trim()
@@ -85,7 +87,7 @@ public class SearchController {
       return "pages/submissions-search";
     }
 
-    // List<String> offices = oidcUser.getUserInfo().getClaim("provider");
+    //  List<String> offices = oidcUser.getUserInfo().getClaim("provider");
     List<String> offices = List.of("1");
 
     try {

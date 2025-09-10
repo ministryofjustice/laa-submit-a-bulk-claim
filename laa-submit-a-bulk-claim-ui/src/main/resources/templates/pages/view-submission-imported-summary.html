@@ -2,7 +2,7 @@
 <html lang="en" class="govuk-template" xmlns:th="http://www.thymeleaf.org"
       th:replace="~{ layout/main-layout :: layout(${bulkClaimImportSummary.containsErrors()} ?
       #{bulkClaimImportSummary.failed.heading} :
-      #{bulkClaimImportSummary.success.heading},~{::main}, ~{})}">
+      #{bulkClaimImportSummary.success.heading},~{::main}, ~{},~{})}">
 <main class="govuk-main-wrapper" id="main-content">
 
   <div class="govuk-grid-row">

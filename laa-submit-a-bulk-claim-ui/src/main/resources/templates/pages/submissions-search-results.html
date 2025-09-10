@@ -1,11 +1,11 @@
 <!DOCTYPE HTML>
 <html lang="en" class="govuk-template" xmlns:th="http://www.thymeleaf.org"
-      th:replace="~{ layout/main-layout :: layout(~{::title},~{::main},~{})}">
+      th:replace="~{ layout/main-layout :: layout(#{search.title},~{::main},~{}, 'search-submissions')}">
 <main class="govuk-main-wrapper" id="main-content">
     <div class="govuk-width-container">
         <div class="govuk-grid-row">
             <div class="govuk-grid-column-one-half">
-                <a th:href="#{search.url}" class="govuk-back-link">Back</a>
+                <a id="back-link" th:href="@{/submissions/search}" class="govuk-back-link">Back</a>
             </div>
             <div class="govuk-grid-column-one-half govuk-!-text-align-right">
                 <button type="button" class="govuk-button govuk-button--secondary" data-module="govuk-button" id="print-button"
@@ -39,12 +39,12 @@
                         <tr class="govuk-table__row" th:each="submission : ${submissions.getContent}" >
                             <td class="govuk-table__cell">
                                 <a th:href="@{/submission/{submission_ref}(submission_ref=${submission.getSubmissionId})}" th:text="${ #strings.substring(submission.getSubmissionId, 0, 7)}" class="govuk-link--no-visited-state"></a></td>
-                            <td class="govuk-table__cell" th:text="${submission.getOfficeAccountNumber}">ACC001234</td>
+                            <td class="govuk-table__cell" th:text="${submission.getOfficeAccountNumber}"></td>
                             <td class="govuk-table__cell" th:text="${submission.getSubmitted != null ? #temporals.format(submission.getSubmitted, 'dd MMM yyyy') : '-'}">
                             </td>
-                            <td class="govuk-table__cell" th:text="${submission.getAreaOfLaw != null ? #strings.capitalize(#strings.toLowerCase(submission.getAreaOfLaw)) : '-' }">Type</td>
+                            <td class="govuk-table__cell" th:text="${submission.getAreaOfLaw != null ? #strings.capitalize(#strings.toLowerCase(submission.getAreaOfLaw)) : '-' }"></td>
                             <td class="govuk-table__cell" th:text="${submission.getStatus != null ?
-                             #strings.replace(#strings.capitalize(#strings.toLowerCase(submission.getStatus)), '_', ' ') : '-' }">Status</td>
+                             #strings.replace(#strings.capitalize(#strings.toLowerCase(submission.getStatus)), '_', ' ') : '-' }"></td>
                         </tr>
                         </tbody>
                     </table>

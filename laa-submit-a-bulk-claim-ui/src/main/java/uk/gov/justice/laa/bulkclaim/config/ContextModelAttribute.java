@@ -12,17 +12,21 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 public class ContextModelAttribute {
 
   /**
-   * Add a context path to the view model.
+   * Adds the current Url to the view model.
    *
-   * @param model The view model.
+   * @param model view model.
+   * @param request current request.
    */
-  @ModelAttribute("contextPath")
-  public void addContextPath(Model model, HttpServletRequest request) {
-    log.debug("Adding contextPath to model: {}", model.getAttribute("contextPath"));
-    if (!model.containsAttribute("contextPath")) {
-      model.addAttribute("contextPath", "/");
+  @ModelAttribute("currentUrl")
+  public void currentUrl(Model model, HttpServletRequest request) {
+    if (!model.containsAttribute("currentUrl")) {
+      String currentUrl =
+          (request.getQueryString() != null && request.getQueryString().isEmpty())
+              ? request.getRequestURI()
+              : request.getRequestURI() + "?" + request.getQueryString();
+      currentUrl = currentUrl.replaceAll("&?page=[0-9]+", "");
+      model.addAttribute("currentUrl", currentUrl);
+      log.info("Adding currentUrl to model: {}", model.getAttribute("currentUrl"));
     }
-
-    model.addAttribute("contextPath", request.getServletPath());
   }
 }

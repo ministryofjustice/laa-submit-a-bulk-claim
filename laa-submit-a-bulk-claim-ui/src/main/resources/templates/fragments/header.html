@@ -5,7 +5,7 @@
   <meta charset="UTF-8"/>
 </head>
 <body>
-<header th:fragment="header" role="banner">
+<header th:fragment="header(pageCategory)" role="banner">
   <div class="moj-header">
     <div class="moj-header__container">
       <div class="moj-header__logo">
@@ -86,7 +86,7 @@
     </div>
   </div>
   <div
-       th:replace="~{fragments/service-navigation :: service-navigation}"/>
+       th:replace="~{fragments/service-navigation :: service-navigation(${pageCategory})}"/>
 
 </header>
 </body>
