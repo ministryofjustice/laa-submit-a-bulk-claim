@@ -23,7 +23,7 @@
 
         <ul class="govuk-service-navigation__list" id="navigation">
           <li class="govuk-service-navigation__item"
-              th:classappend="${package == null} ? 'govuk-service-navigation__item--active' : ''">
+              th:classappend="${#strings.isEmpty(package)} ? 'govuk-service-navigation__item--active' : ${package}">
             <a class="govuk-service-navigation__link" th:href="@{/}"
                id="import-claims-link"
                aria-current="true">
