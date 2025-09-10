@@ -1,7 +1,7 @@
 package uk.gov.justice.laa.bulkclaim.builder;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import uk.gov.justice.laa.bulkclaim.dto.summary.BulkClaimImportSummary;
@@ -10,6 +10,7 @@ import uk.gov.justice.laa.bulkclaim.dto.summary.SubmissionSummaryRow;
 import uk.gov.justice.laa.bulkclaim.mapper.BulkClaimImportSummaryMapper;
 import uk.gov.justice.laa.bulkclaim.service.claims.DataClaimsRestService;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionResponse;
+import uk.gov.justice.laa.dstew.payments.claimsdata.model.ValidationErrorsResponse;
 
 /**
  * Builder class for constructing a {@link BulkClaimImportSummary} object used for displaying
@@ -37,33 +38,32 @@ public class BulkClaimSummaryBuilder {
         bulkClaimImportSummaryMapper.toSubmissionSummaryRows(submissionResponse);
 
     // Get all errors using the data claims rest service.
-    //    Map<UUID, List<ClaimValidationError>> errorMap =
-    //        summaryRows.stream()
-    //            .collect(
-    //                Collectors.toMap(
-    //                    SubmissionSummaryRow::submissionReference, // Key: submissionReference
-    //                    row ->
-    //                        dataClaimsRestService
-    //                            .getValidationErrors(row.submissionReference()) // Value: List of
-    // errors
-    //                            .blockOptional()
-    //                            .orElse(List.of()) // Handle empty results
-    //                    ));
+    // we only currently support one submission at a time so get the first one
+    ValidationErrorsResponse errorResponse =
+        dataClaimsRestService
+            .getValidationErrors(summaryRows.getFirst().submissionReference())
+            .block();
+
+    // todo call the get claims endpoint for ufn,ucn and client name.
 
     // Loop through an error map and add claims
-    List<SubmissionSummaryClaimErrorRow> errorList = new ArrayList<>();
-    //    errorMap
-    //        .keySet()
-    //        .forEach(
-    //            submissionReference ->
-    //                errorList.addAll(
-    //                    errorMap.get(submissionReference).stream()
-    //                        .map(
-    //                            x ->
-    //                                bulkClaimImportSummaryMapper.toSubmissionSummaryClaimError(
-    //                                    submissionReference, x))
-    //                        .toList()));
+    List<SubmissionSummaryClaimErrorRow> errorList =
+        Optional.ofNullable(errorResponse)
+            .map(ValidationErrorsResponse::getContent)
+            .orElseGet(List::of) // safe empty list
+            .stream()
+            .map(bulkClaimImportSummaryMapper::toSubmissionSummaryClaimError)
+            .toList();
 
-    return new BulkClaimImportSummary(summaryRows, errorList);
+    int totalErrorCount =
+        Optional.ofNullable(errorResponse)
+            .map(ValidationErrorsResponse::getTotalElements)
+            .orElse(0);
+
+    int totalClaimsWithErrors =
+        Optional.ofNullable(errorResponse).map(ValidationErrorsResponse::getTotalClaims).orElse(0);
+
+    return new BulkClaimImportSummary(
+        summaryRows, errorList, totalErrorCount, totalClaimsWithErrors);
   }
 }

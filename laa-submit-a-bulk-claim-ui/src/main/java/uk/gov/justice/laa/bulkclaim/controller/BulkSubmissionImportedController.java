@@ -60,4 +60,11 @@ public class BulkSubmissionImportedController {
     model.addAttribute("bulkClaimImportSummary", bulkClaimImportSummary);
     return "pages/view-submission-imported-summary";
   }
+
+  @GetMapping("/test")
+  public String test(HttpSession session) {
+    session.setAttribute(SUBMISSION_ID, UUID.fromString("3e3da7fb-93d4-4a6a-9dfd-490b8cb6dc34"));
+
+    return "redirect:/view-submission-summary";
+  }
 }

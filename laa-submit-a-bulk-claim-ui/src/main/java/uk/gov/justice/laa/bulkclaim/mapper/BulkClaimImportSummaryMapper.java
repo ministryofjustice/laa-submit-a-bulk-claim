@@ -13,6 +13,7 @@ import uk.gov.justice.laa.bulkclaim.dto.summary.SubmissionSummaryClaimErrorRow;
 import uk.gov.justice.laa.bulkclaim.dto.summary.SubmissionSummaryRow;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.ClaimResponse;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionResponse;
+import uk.gov.justice.laa.dstew.payments.claimsdata.model.ValidationErrorFields;
 
 /**
  * Maps between {@link SubmissionResponse} and {@link SubmissionSummaryRow}, and {@link
@@ -60,17 +61,10 @@ public interface BulkClaimImportSummaryMapper {
     return yearMonth.atDay(1);
   }
 
-  //  /**
-  //   * Maps a {@link ClaimResponse} to a {@link SubmissionSummaryClaimErrorRow}, whilst also
-  // including a
-  //   * submission reference.
-  //   *
-  //   * @param submissionReference The submission reference.
-  //   * @param claimFields The claim fields to map.
-  //   * @return The mapped {@link SubmissionSummaryClaimErrorRow}.
-  //   */
-  //  @Mapping(target = "ufn", source = "claimFields.uniqueFileNumber")
-  //  @Mapping(target = "ucn", source = "claimFields.uniqueClientNumber")
-  //  SubmissionSummaryClaimErrorRow toSubmissionSummaryClaimError(
-  //      UUID submissionReference, ClaimValidationError claimFields);
+  @Mapping(target = "ufn", ignore = true)
+  @Mapping(target = "ucn", ignore = true)
+  @Mapping(target = "client", ignore = true)
+  @Mapping(target = "submissionReference", source = "submissionId")
+  @Mapping(target = "errorDescription", source = "errorDescription")
+  SubmissionSummaryClaimErrorRow toSubmissionSummaryClaimError(ValidationErrorFields errors);
 }

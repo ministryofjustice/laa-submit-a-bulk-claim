@@ -27,7 +27,7 @@
         </div>
         <div class="moj-alert__content">
           <h2 class="moj-alert__heading"
-              th:text="#{bulkClaimImportSummary.errorsFoundModal.heading(${bulkClaimImportSummary.totalErrors()})}"/>
+              th:text="#{bulkClaimImportSummary.errorsFoundModal.heading(${bulkClaimImportSummary.totalClaimsWithErrors()})}"/>
           <th:block
               th:text="#{bulkClaimImportSummary.errorsFoundModal.message}"/>
         </div>
