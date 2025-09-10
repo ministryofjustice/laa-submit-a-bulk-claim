@@ -36,7 +36,7 @@ class SubmissionClaimMapperTest {
             .clientSurname("name")
             .standardFeeCategoryCode("Family")
             .matterTypeCode("FAMD:FRES")
-            .caseConcludedDate(LocalDate.of(2025, 3, 18))
+            .caseConcludedDate(LocalDate.of(2025, 3, 18).toString())
             // TODO: Check this is how the claim value is made up
             .netProfitCostsAmount(new BigDecimal("100.10"))
             .netCounselCostsAmount(new BigDecimal("100.10"))

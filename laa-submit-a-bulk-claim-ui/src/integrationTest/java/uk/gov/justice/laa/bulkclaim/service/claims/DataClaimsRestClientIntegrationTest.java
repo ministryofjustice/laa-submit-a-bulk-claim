@@ -188,9 +188,7 @@ class DataClaimsRestClientIntegrationTest extends MockServerIntegrationTest {
       LocalDate to = LocalDate.of(2025, 8, 31);
 
       SubmissionsResultSet response =
-          dataClaimsRestClient
-              .search(offices, submissionId, from, to)
-              .block(Duration.ofSeconds(2));
+          dataClaimsRestClient.search(offices, submissionId, from, to).block(Duration.ofSeconds(2));
       assertThat(response.toString()).isNotEmpty();
       assertThat(response.getContent().getFirst().getSubmissionId().toString())
           .isEqualTo(expectedSubmissionId);
@@ -270,8 +268,7 @@ class DataClaimsRestClientIntegrationTest extends MockServerIntegrationTest {
           .respond(response().withStatusCode(403).withHeader("Content-Type", "application/json"));
 
       // When
-      assertThrows(
-          Forbidden.class, () -> dataClaimsRestClient.getSubmission(submissionId).block());
+      assertThrows(Forbidden.class, () -> dataClaimsRestClient.getSubmission(submissionId).block());
     }
 
     @Test
@@ -473,9 +470,7 @@ class DataClaimsRestClientIntegrationTest extends MockServerIntegrationTest {
       assertThrows(
           BadRequest.class,
           () ->
-              dataClaimsRestClient
-                  .getSubmissionMatterStarts(submissionId, matterStartsId)
-                  .block());
+              dataClaimsRestClient.getSubmissionMatterStarts(submissionId, matterStartsId).block());
     }
 
     @Test
@@ -513,9 +508,7 @@ class DataClaimsRestClientIntegrationTest extends MockServerIntegrationTest {
       assertThrows(
           Forbidden.class,
           () ->
-              dataClaimsRestClient
-                  .getSubmissionMatterStarts(submissionId, matterStartsId)
-                  .block());
+              dataClaimsRestClient.getSubmissionMatterStarts(submissionId, matterStartsId).block());
     }
 
     @Test
@@ -553,9 +546,7 @@ class DataClaimsRestClientIntegrationTest extends MockServerIntegrationTest {
       assertThrows(
           InternalServerError.class,
           () ->
-              dataClaimsRestClient
-                  .getSubmissionMatterStarts(submissionId, matterStartsId)
-                  .block());
+              dataClaimsRestClient.getSubmissionMatterStarts(submissionId, matterStartsId).block());
     }
   }
 
@@ -628,8 +619,7 @@ class DataClaimsRestClientIntegrationTest extends MockServerIntegrationTest {
 
       // When
       assertThrows(
-          Unauthorized.class,
-          () -> dataClaimsRestClient.getValidationErrors(submissionId).block());
+          Unauthorized.class, () -> dataClaimsRestClient.getValidationErrors(submissionId).block());
     }
 
     @Test

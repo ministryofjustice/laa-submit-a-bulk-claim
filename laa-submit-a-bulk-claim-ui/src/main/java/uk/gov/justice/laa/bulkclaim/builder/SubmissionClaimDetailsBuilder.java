@@ -4,11 +4,11 @@ import java.math.BigDecimal;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
+import uk.gov.justice.laa.bulkclaim.client.DataClaimsRestClient;
 import uk.gov.justice.laa.bulkclaim.dto.submission.SubmissionClaimDetails;
 import uk.gov.justice.laa.bulkclaim.dto.submission.SubmissionClaimRow;
 import uk.gov.justice.laa.bulkclaim.dto.submission.SubmissionCostsSummary;
 import uk.gov.justice.laa.bulkclaim.mapper.SubmissionClaimMapper;
-import uk.gov.justice.laa.bulkclaim.client.DataClaimsRestClient;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionResponse;
 
 /**

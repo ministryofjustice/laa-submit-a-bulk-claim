@@ -3,7 +3,6 @@ package uk.gov.justice.laa.bulkclaim.controller;
 import static uk.gov.justice.laa.bulkclaim.constants.SessionConstants.SUBMISSION;
 import static uk.gov.justice.laa.bulkclaim.constants.SessionConstants.SUBMISSION_ID;
 
-import jakarta.servlet.http.HttpSession;
 import java.util.Collections;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
@@ -15,9 +14,9 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.SessionAttributes;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
 import uk.gov.justice.laa.bulkclaim.builder.BulkClaimSummaryBuilder;
+import uk.gov.justice.laa.bulkclaim.client.DataClaimsRestClient;
 import uk.gov.justice.laa.bulkclaim.dto.summary.BulkClaimImportSummary;
 import uk.gov.justice.laa.bulkclaim.exception.SubmitBulkClaimException;
-import uk.gov.justice.laa.bulkclaim.client.DataClaimsRestClient;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionResponse;
 
 /**
@@ -59,12 +58,5 @@ public class BulkSubmissionImportedController {
             Collections.singletonList((SubmissionResponse) model.getAttribute(SUBMISSION)));
     model.addAttribute("bulkClaimImportSummary", bulkClaimImportSummary);
     return "pages/view-submission-imported-summary";
-  }
-
-  @GetMapping("/test")
-  public String test(HttpSession session) {
-    session.setAttribute(SUBMISSION_ID, UUID.fromString("20d83a66-8ff8-4dcb-b00d-04e40ef3b1cb"));
-
-    return "redirect:/view-submission-summary";
   }
 }

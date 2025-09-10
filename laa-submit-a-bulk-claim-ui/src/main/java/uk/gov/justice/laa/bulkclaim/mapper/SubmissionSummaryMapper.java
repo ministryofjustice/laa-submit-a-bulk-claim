@@ -46,13 +46,13 @@ public interface SubmissionSummaryMapper {
   @Named("toSubmissionPeriod")
   default LocalDate toSubmissionPeriod(final String submissionPeriod) {
     // Assumes that API returns MMM-yyyy format.
-    DateTimeFormatter mmmYYYY =
+    DateTimeFormatter dateFormat =
         new DateTimeFormatterBuilder()
             .parseCaseInsensitive()
             .appendPattern("MMM-yyyy")
             .toFormatter(Locale.ENGLISH);
 
-    YearMonth yearMonth = YearMonth.parse(submissionPeriod, mmmYYYY);
+    YearMonth yearMonth = YearMonth.parse(submissionPeriod, dateFormat);
     return yearMonth.atDay(1);
   }
 }

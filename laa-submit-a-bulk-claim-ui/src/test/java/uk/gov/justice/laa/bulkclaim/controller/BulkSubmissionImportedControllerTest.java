@@ -10,7 +10,8 @@ import static uk.gov.justice.laa.bulkclaim.constants.SessionConstants.BULK_SUBMI
 import static uk.gov.justice.laa.bulkclaim.constants.SessionConstants.BULK_SUBMISSION_ID;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
 import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
@@ -29,12 +30,12 @@ import org.springframework.test.web.servlet.assertj.MockMvcTester;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
 import reactor.core.publisher.Mono;
 import uk.gov.justice.laa.bulkclaim.builder.BulkClaimSummaryBuilder;
+import uk.gov.justice.laa.bulkclaim.client.DataClaimsRestClient;
 import uk.gov.justice.laa.bulkclaim.config.WebMvcTestConfig;
 import uk.gov.justice.laa.bulkclaim.dto.summary.BulkClaimImportSummary;
 import uk.gov.justice.laa.bulkclaim.dto.summary.SubmissionSummaryClaimErrorRow;
 import uk.gov.justice.laa.bulkclaim.dto.summary.SubmissionSummaryRow;
 import uk.gov.justice.laa.bulkclaim.exception.SubmitBulkClaimException;
-import uk.gov.justice.laa.bulkclaim.client.DataClaimsRestClient;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionResponse;
 
 @WebMvcTest(BulkSubmissionImportedController.class)
@@ -128,7 +129,7 @@ class BulkSubmissionImportedControllerTest {
       UUID submissionReference) {
     SubmissionSummaryRow summaryRow =
         new SubmissionSummaryRow(
-            LocalDateTime.of(2025, 5, 10, 10, 10, 10),
+            OffsetDateTime.of(2025, 1, 1, 10, 10, 10, 0, ZoneOffset.UTC),
             submissionReference,
             "AQB2C3",
             "Legal help",
@@ -142,6 +143,6 @@ class BulkSubmissionImportedControllerTest {
                 "UCN2",
                 "Client",
                 "This is an error which is found on your claim!"));
-    return new BulkClaimImportSummary(Collections.singletonList(summaryRow), errors);
+    return new BulkClaimImportSummary(Collections.singletonList(summaryRow), errors, 1, 1);
   }
 }

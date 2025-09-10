@@ -6,10 +6,10 @@ import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
+import uk.gov.justice.laa.bulkclaim.client.DataClaimsRestClient;
 import uk.gov.justice.laa.bulkclaim.dto.submission.SubmissionMatterStartsDetails;
 import uk.gov.justice.laa.bulkclaim.dto.submission.SubmissionMatterStartsRow;
 import uk.gov.justice.laa.bulkclaim.mapper.SubmissionMatterStartsMapper;
-import uk.gov.justice.laa.bulkclaim.client.DataClaimsRestClient;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionResponse;
 
 /**
@@ -33,8 +33,7 @@ public class SubmissionMatterStartsDetailsBuilder {
   public SubmissionMatterStartsDetails build(SubmissionResponse response) {
     List<SubmissionMatterStartsRow> list =
         response.getMatterStarts().stream()
-            .map(
-                x -> dataClaimsRestClient.getSubmissionMatterStarts(response.getSubmissionId(), x))
+            .map(x -> dataClaimsRestClient.getSubmissionMatterStarts(response.getSubmissionId(), x))
             .map(Mono::block)
             .map(mapper::toSubmissionMatterTypesRow)
             .toList();

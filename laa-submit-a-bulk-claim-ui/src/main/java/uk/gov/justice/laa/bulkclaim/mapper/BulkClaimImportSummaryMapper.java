@@ -61,17 +61,27 @@ public interface BulkClaimImportSummaryMapper {
     return yearMonth.atDay(1);
   }
 
+  /**
+   * Maps claim response and validation error fields to a submission summary claim error row.
+   *
+   * @param errors the validation error fields
+   * @param claimResponse the claim response containing client and claim details
+   * @return a mapped SubmissionSummaryClaimErrorRow
+   */
   @Mapping(target = "ufn", source = "claimResponse.uniqueFileNumber")
   @Mapping(target = "ucn", source = "claimResponse.uniqueClientNumber")
   @Mapping(target = "client", expression = "java(buildClientName(claimResponse))")
   @Mapping(target = "submissionReference", source = "errors.submissionId")
   @Mapping(target = "errorDescription", source = "errors.errorDescription")
   SubmissionSummaryClaimErrorRow toSubmissionSummaryClaimError(
-      ValidationErrorFields errors,
-      ClaimResponse claimResponse
-  );
+      ValidationErrorFields errors, ClaimResponse claimResponse);
 
-
+  /**
+   * Builds a client name from the claim response, preferring the primary client if available.
+   *
+   * @param claimResponse the claim response containing client name fields
+   * @return the full client name or null if none is available
+   */
   default String buildClientName(ClaimResponse claimResponse) {
     if (claimResponse == null) {
       return null;
@@ -89,8 +99,7 @@ public interface BulkClaimImportSummaryMapper {
       return null; // no usable name at all
     }
 
-    return String.format("%s %s",
-        forename != null ? forename : "",
-        surname != null ? surname : "").trim();
+    return String.format("%s %s", forename != null ? forename : "", surname != null ? surname : "")
+        .trim();
   }
 }

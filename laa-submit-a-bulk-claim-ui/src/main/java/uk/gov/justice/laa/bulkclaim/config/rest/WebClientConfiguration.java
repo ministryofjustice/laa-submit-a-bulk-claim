@@ -23,12 +23,13 @@ import uk.gov.justice.laa.bulkclaim.client.DataClaimsRestClient;
 public class WebClientConfiguration {
 
   /**
-   * Creates a {@link uk.gov.justice.laa.bulkclaim.client.DataClaimsRestClient} bean to communicate with the Claims API using a
-   * WebClient instance.
+   * Creates a {@link uk.gov.justice.laa.bulkclaim.client.DataClaimsRestClient} bean to communicate
+   * with the Claims API using a WebClient instance.
    *
    * @param properties The configuration properties required to initialize the WebClient, including
    *     the base URL and access token for the Provider Details API.
-   * @return An instance of {@link uk.gov.justice.laa.bulkclaim.client.DataClaimsRestClient} for interacting with the Claims API.
+   * @return An instance of {@link uk.gov.justice.laa.bulkclaim.client.DataClaimsRestClient} for
+   *     interacting with the Claims API.
    */
   @Bean
   public DataClaimsRestClient claimsApiClient(final ClaimsApiProperties properties) {

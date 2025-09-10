@@ -10,7 +10,8 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.UUID;
@@ -27,13 +28,13 @@ import reactor.core.publisher.Mono;
 import uk.gov.justice.laa.bulkclaim.builder.SubmissionClaimDetailsBuilder;
 import uk.gov.justice.laa.bulkclaim.builder.SubmissionMatterStartsDetailsBuilder;
 import uk.gov.justice.laa.bulkclaim.builder.SubmissionSummaryBuilder;
+import uk.gov.justice.laa.bulkclaim.client.DataClaimsRestClient;
 import uk.gov.justice.laa.bulkclaim.config.WebMvcTestConfig;
 import uk.gov.justice.laa.bulkclaim.dto.submission.SubmissionClaimDetails;
 import uk.gov.justice.laa.bulkclaim.dto.submission.SubmissionCostsSummary;
 import uk.gov.justice.laa.bulkclaim.dto.submission.SubmissionMatterStartsDetails;
 import uk.gov.justice.laa.bulkclaim.dto.submission.SubmissionMatterStartsRow;
 import uk.gov.justice.laa.bulkclaim.dto.submission.SubmissionSummary;
-import uk.gov.justice.laa.bulkclaim.client.DataClaimsRestClient;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionResponse;
 
 @WebMvcTest(SubmissionDetailController.class)
@@ -88,7 +89,7 @@ class SubmissionDetailControllerTest {
                   "AQ2B3C",
                   new BigDecimal("100.50"),
                   "Legal aid",
-                  LocalDateTime.of(2025, 1, 1, 10, 10, 10)));
+                  OffsetDateTime.of(2025, 1, 1, 10, 10, 10, 0, ZoneOffset.UTC)));
       when(submissionClaimDetailsBuilder.build(any()))
           .thenReturn(
               new SubmissionClaimDetails(
@@ -127,7 +128,7 @@ class SubmissionDetailControllerTest {
                   "AQ2B3C",
                   new BigDecimal("100.50"),
                   "Legal aid",
-                  LocalDateTime.of(2025, 1, 1, 10, 10, 10)));
+                  OffsetDateTime.of(2025, 1, 1, 10, 10, 10, 0, ZoneOffset.UTC)));
       when(submissionClaimDetailsBuilder.build(any()))
           .thenReturn(
               new SubmissionClaimDetails(
@@ -166,7 +167,7 @@ class SubmissionDetailControllerTest {
                   "AQ2B3C",
                   new BigDecimal("100.50"),
                   "Legal aid",
-                  LocalDateTime.of(2025, 1, 1, 10, 10, 10)));
+                  OffsetDateTime.of(2025, 1, 1, 10, 10, 10, 0, ZoneOffset.UTC)));
       HashMap<SubmissionMatterStartsRow, Long> matterTypes = new HashMap<>();
       matterTypes.put(new SubmissionMatterStartsRow("Description"), 1L);
       when(submissionMatterStartsDetailsBuilder.build(any()))

@@ -13,10 +13,10 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import reactor.core.publisher.Mono;
+import uk.gov.justice.laa.bulkclaim.client.DataClaimsRestClient;
 import uk.gov.justice.laa.bulkclaim.dto.submission.SubmissionMatterStartsDetails;
 import uk.gov.justice.laa.bulkclaim.dto.submission.SubmissionMatterStartsRow;
 import uk.gov.justice.laa.bulkclaim.mapper.SubmissionMatterStartsMapper;
-import uk.gov.justice.laa.bulkclaim.client.DataClaimsRestClient;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.MatterStartGet;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionResponse;
 
@@ -26,8 +26,7 @@ class SubmissionMatterStartsDetailsBuilderTest {
 
   private SubmissionMatterStartsDetailsBuilder builder;
 
-  @Mock
-  DataClaimsRestClient dataClaimsRestClient;
+  @Mock DataClaimsRestClient dataClaimsRestClient;
   @Mock SubmissionMatterStartsMapper mapper;
 
   @BeforeEach
@@ -46,8 +45,7 @@ class SubmissionMatterStartsDetailsBuilderTest {
             .submissionId(submissionReference)
             .matterStarts(Collections.singletonList(matterStartsReference))
             .build();
-    when(dataClaimsRestClient.getSubmissionMatterStarts(
-            submissionReference, matterStartsReference))
+    when(dataClaimsRestClient.getSubmissionMatterStarts(submissionReference, matterStartsReference))
         .thenReturn(Mono.just(MatterStartGet.builder().build()));
     SubmissionMatterStartsRow expected = new SubmissionMatterStartsRow("Description");
     when(mapper.toSubmissionMatterTypesRow(any())).thenReturn(expected);

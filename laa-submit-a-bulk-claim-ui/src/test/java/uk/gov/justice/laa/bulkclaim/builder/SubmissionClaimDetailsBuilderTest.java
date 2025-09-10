@@ -15,11 +15,11 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import reactor.core.publisher.Mono;
+import uk.gov.justice.laa.bulkclaim.client.DataClaimsRestClient;
 import uk.gov.justice.laa.bulkclaim.dto.submission.SubmissionClaimDetails;
 import uk.gov.justice.laa.bulkclaim.dto.submission.SubmissionClaimRow;
 import uk.gov.justice.laa.bulkclaim.dto.submission.SubmissionClaimRowCostsDetails;
 import uk.gov.justice.laa.bulkclaim.mapper.SubmissionClaimMapper;
-import uk.gov.justice.laa.bulkclaim.client.DataClaimsRestClient;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.ClaimResponse;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionClaim;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionResponse;
@@ -30,8 +30,7 @@ class SubmissionClaimDetailsBuilderTest {
 
   private SubmissionClaimDetailsBuilder builder;
 
-  @Mock
-  DataClaimsRestClient dataClaimsRestClient;
+  @Mock DataClaimsRestClient dataClaimsRestClient;
   @Mock SubmissionClaimMapper submissionClaimMapper;
 
   @BeforeEach
