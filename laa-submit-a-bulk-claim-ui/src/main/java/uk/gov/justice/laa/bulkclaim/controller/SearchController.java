@@ -20,12 +20,12 @@ import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.client.HttpClientErrorException;
+import uk.gov.justice.laa.bulkclaim.client.DataClaimsRestClient;
 import uk.gov.justice.laa.bulkclaim.dto.SubmissionsSearchForm;
 import uk.gov.justice.laa.bulkclaim.response.CwaUploadErrorResponseDto;
 import uk.gov.justice.laa.bulkclaim.response.CwaUploadSummaryResponseDto;
-import uk.gov.justice.laa.bulkclaim.service.claims.DataClaimsRestService;
 import uk.gov.justice.laa.bulkclaim.validation.SubmissionSearchValidator;
-import uk.gov.justice.laa.claims.model.SubmissionsResultSet;
+import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionsResultSet;
 
 /** Controller for handling search requests related to bulk uploads. */
 @Slf4j
@@ -33,7 +33,7 @@ import uk.gov.justice.laa.claims.model.SubmissionsResultSet;
 @Controller
 public class SearchController {
 
-  private final DataClaimsRestService claimsRestService;
+  private final DataClaimsRestClient claimsRestService;
   private final SubmissionSearchValidator submissionSearchValidator;
 
   @InitBinder("submissionsSearchForm")

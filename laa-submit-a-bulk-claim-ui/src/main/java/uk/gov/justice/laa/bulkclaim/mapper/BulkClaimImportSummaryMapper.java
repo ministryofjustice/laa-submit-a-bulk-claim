@@ -3,20 +3,21 @@ package uk.gov.justice.laa.bulkclaim.mapper;
 import java.time.LocalDate;
 import java.time.YearMonth;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeFormatterBuilder;
 import java.util.List;
-import java.util.UUID;
+import java.util.Locale;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Named;
 import uk.gov.justice.laa.bulkclaim.dto.summary.SubmissionSummaryClaimErrorRow;
 import uk.gov.justice.laa.bulkclaim.dto.summary.SubmissionSummaryRow;
-import uk.gov.justice.laa.claims.model.ClaimFields;
-import uk.gov.justice.laa.claims.model.ClaimValidationError;
-import uk.gov.justice.laa.claims.model.GetSubmission200Response;
+import uk.gov.justice.laa.dstew.payments.claimsdata.model.ClaimResponse;
+import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionResponse;
+import uk.gov.justice.laa.dstew.payments.claimsdata.model.ValidationErrorFields;
 
 /**
- * Maps between {@link GetSubmission200Response} and {@link SubmissionSummaryRow}, and {@link
- * ClaimFields} and {@link SubmissionSummaryClaimErrorRow}.
+ * Maps between {@link SubmissionResponse} and {@link SubmissionSummaryRow}, and {@link
+ * ClaimResponse} and {@link SubmissionSummaryClaimErrorRow}.
  *
  * @author Jamie Briggs
  */
@@ -24,7 +25,7 @@ import uk.gov.justice.laa.claims.model.GetSubmission200Response;
 public interface BulkClaimImportSummaryMapper {
 
   /**
-   * Maps a {@link GetSubmission200Response} to a {@link SubmissionSummaryRow}.
+   * Maps a {@link SubmissionResponse} to a {@link SubmissionSummaryRow}.
    *
    * @param submissionResponse The response to map.
    * @return The mapped {@link SubmissionSummaryRow}.
@@ -38,10 +39,9 @@ public interface BulkClaimImportSummaryMapper {
       source = "submissionPeriod",
       qualifiedByName = "toSubmissionPeriod")
   @Mapping(target = "totalClaims", source = "numberOfClaims")
-  SubmissionSummaryRow toSubmissionSummaryRow(GetSubmission200Response submissionResponse);
+  SubmissionSummaryRow toSubmissionSummaryRow(SubmissionResponse submissionResponse);
 
-  List<SubmissionSummaryRow> toSubmissionSummaryRows(
-      List<GetSubmission200Response> submissionResponses);
+  List<SubmissionSummaryRow> toSubmissionSummaryRows(List<SubmissionResponse> submissionResponses);
 
   /**
    * Returns a {@link LocalDate} from a submission period string.
@@ -51,22 +51,55 @@ public interface BulkClaimImportSummaryMapper {
    */
   @Named("toSubmissionPeriod")
   default LocalDate toSubmissionPeriod(final String submissionPeriod) {
-    // Assumes that API returns YYYY-MM format.
-    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM");
+    DateTimeFormatter formatter =
+        new DateTimeFormatterBuilder()
+            .parseCaseInsensitive()
+            .appendPattern("MMM-yyyy")
+            .toFormatter(Locale.ENGLISH);
+
     YearMonth yearMonth = YearMonth.parse(submissionPeriod, formatter);
     return yearMonth.atDay(1);
   }
 
   /**
-   * Maps a {@link ClaimFields} to a {@link SubmissionSummaryClaimErrorRow}, whilst also including a
-   * submission reference.
+   * Maps claim response and validation error fields to a submission summary claim error row.
    *
-   * @param submissionReference The submission reference.
-   * @param claimFields The claim fields to map.
-   * @return The mapped {@link SubmissionSummaryClaimErrorRow}.
+   * @param errors the validation error fields
+   * @param claimResponse the claim response containing client and claim details
+   * @return a mapped SubmissionSummaryClaimErrorRow
    */
-  @Mapping(target = "ufn", source = "claimFields.uniqueFileNumber")
-  @Mapping(target = "ucn", source = "claimFields.uniqueClientNumber")
+  @Mapping(target = "ufn", source = "claimResponse.uniqueFileNumber")
+  @Mapping(target = "ucn", source = "claimResponse.uniqueClientNumber")
+  @Mapping(target = "client", expression = "java(buildClientName(claimResponse))")
+  @Mapping(target = "submissionReference", source = "errors.submissionId")
+  @Mapping(target = "errorDescription", source = "errors.errorDescription")
   SubmissionSummaryClaimErrorRow toSubmissionSummaryClaimError(
-      UUID submissionReference, ClaimValidationError claimFields);
+      ValidationErrorFields errors, ClaimResponse claimResponse);
+
+  /**
+   * Builds a client name from the claim response, preferring the primary client if available.
+   *
+   * @param claimResponse the claim response containing client name fields
+   * @return the full client name or null if none is available
+   */
+  default String buildClientName(ClaimResponse claimResponse) {
+    if (claimResponse == null) {
+      return null;
+    }
+
+    // Prefer client1, fallback to client2
+    String forename = claimResponse.getClientForename();
+    String surname = claimResponse.getClientSurname();
+    if ((forename == null || forename.isBlank()) && (surname == null || surname.isBlank())) {
+      forename = claimResponse.getClient2Forename();
+      surname = claimResponse.getClient2Surname();
+    }
+
+    if ((forename == null || forename.isBlank()) && (surname == null || surname.isBlank())) {
+      return null; // no usable name at all
+    }
+
+    return String.format("%s %s", forename != null ? forename : "", surname != null ? surname : "")
+        .trim();
+  }
 }

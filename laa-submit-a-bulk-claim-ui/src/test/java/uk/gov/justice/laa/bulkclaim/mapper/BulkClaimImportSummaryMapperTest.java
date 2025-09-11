@@ -1,7 +1,7 @@
 package uk.gov.justice.laa.bulkclaim.mapper;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
 import java.util.List;
 import java.util.UUID;
 import org.assertj.core.api.SoftAssertions;
@@ -12,8 +12,9 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.justice.laa.bulkclaim.dto.summary.SubmissionSummaryClaimErrorRow;
 import uk.gov.justice.laa.bulkclaim.dto.summary.SubmissionSummaryRow;
-import uk.gov.justice.laa.claims.model.ClaimValidationError;
-import uk.gov.justice.laa.claims.model.GetSubmission200Response;
+import uk.gov.justice.laa.dstew.payments.claimsdata.model.ClaimResponse;
+import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionResponse;
+import uk.gov.justice.laa.dstew.payments.claimsdata.model.ValidationErrorFields;
 
 @ExtendWith(SpringExtension.class)
 @DisplayName("Bulk claim summary mapper test")
@@ -30,13 +31,13 @@ class BulkClaimImportSummaryMapperTest {
   @DisplayName("Should map submission summary row")
   void shouldMapSubmissionSummaryRow() {
     // Given
-    GetSubmission200Response submission200Response =
-        GetSubmission200Response.builder()
-            .submitted(LocalDate.of(2020, 5, 1))
+    SubmissionResponse submission200Response =
+        SubmissionResponse.builder()
+            .submitted(OffsetDateTime.of(2025, 1, 1, 10, 10, 10, 0, ZoneOffset.UTC))
             .submissionId(UUID.fromString("ee92c4ac-0ff9-4896-8bbe-c58fa04206e3"))
             .officeAccountNumber("1234567890")
             .areaOfLaw("Civil Law")
-            .submissionPeriod("2020-05")
+            .submissionPeriod("MAY-2020")
             .numberOfClaims(123)
             .build();
     // When
@@ -46,7 +47,9 @@ class BulkClaimImportSummaryMapperTest {
     SoftAssertions.assertSoftly(
         softly -> {
           SubmissionSummaryRow result = resultList.getFirst();
-          softly.assertThat(result.submitted()).isEqualTo(LocalDateTime.of(2020, 5, 1, 0, 0, 0));
+          softly
+              .assertThat(result.submitted())
+              .isEqualTo(OffsetDateTime.of(2025, 1, 1, 10, 10, 10, 0, ZoneOffset.UTC));
           softly
               .assertThat(result.submissionReference())
               .isEqualTo(UUID.fromString("ee92c4ac-0ff9-4896-8bbe-c58fa04206e3"));
@@ -58,30 +61,71 @@ class BulkClaimImportSummaryMapperTest {
   }
 
   @Test
-  @DisplayName("Should map submission summary claim errors")
-  void shouldMapSubmissionSummaryClaimErrors() {
-    // Given
-    ClaimValidationError claimValidationError =
-        ClaimValidationError.builder()
-            .uniqueFileNumber("F123")
-            .uniqueClientNumber("C123")
-            .client("First Last")
-            .errorDescription("This is an error!")
-            .build();
-    // When
+  @DisplayName("Should map submission summary claim errors when primary client name is present")
+  void shouldMapSubmissionSummaryClaimErrorsWithPrimaryClient() {
+    UUID submissionId = UUID.fromString("ee92c4ac-0ff9-4896-8bbe-c58fa04206e3");
+
+    ValidationErrorFields errors =
+        new ValidationErrorFields()
+            .submissionId(submissionId)
+            .errorDescription("This is an error!");
+
+    ClaimResponse claimResponse = new ClaimResponse();
+    claimResponse.setUniqueFileNumber("F123");
+    claimResponse.setUniqueClientNumber("C123");
+    claimResponse.setClientForename("First");
+    claimResponse.setClientSurname("Last");
+
     SubmissionSummaryClaimErrorRow result =
-        mapper.toSubmissionSummaryClaimError(
-            UUID.fromString("ee92c4ac-0ff9-4896-8bbe-c58fa04206e3"), claimValidationError);
-    // Then
+        mapper.toSubmissionSummaryClaimError(errors, claimResponse);
+
     SoftAssertions.assertSoftly(
         softly -> {
-          softly
-              .assertThat(result.submissionReference())
-              .isEqualTo(UUID.fromString("ee92c4ac-0ff9-4896-8bbe-c58fa04206e3"));
+          softly.assertThat(result.submissionReference()).isEqualTo(submissionId);
           softly.assertThat(result.ufn()).isEqualTo("F123");
           softly.assertThat(result.ucn()).isEqualTo("C123");
           softly.assertThat(result.client()).isEqualTo("First Last");
           softly.assertThat(result.errorDescription()).isEqualTo("This is an error!");
+        });
+  }
+
+  @Test
+  @DisplayName("Should fallback to secondary client when primary client name is blank")
+  void shouldFallbackToSecondaryClient() {
+    ValidationErrorFields errors =
+        new ValidationErrorFields().submissionId(UUID.randomUUID()).errorDescription("Error!");
+
+    ClaimResponse claimResponse = new ClaimResponse();
+    claimResponse.setClientForename("");
+    claimResponse.setClientSurname("");
+    claimResponse.setClient2Forename("Second");
+    claimResponse.setClient2Surname("Client");
+
+    SubmissionSummaryClaimErrorRow result =
+        mapper.toSubmissionSummaryClaimError(errors, claimResponse);
+
+    SoftAssertions.assertSoftly(
+        softly -> {
+          softly.assertThat(result.client()).isEqualTo("Second Client");
+          softly.assertThat(result.errorDescription()).isEqualTo("Error!");
+        });
+  }
+
+  @Test
+  @DisplayName("Should return null client name when no names are provided")
+  void shouldReturnNullClientNameWhenNoNames() {
+    ValidationErrorFields errors =
+        new ValidationErrorFields().submissionId(UUID.randomUUID()).errorDescription("Error!");
+
+    ClaimResponse claimResponse = new ClaimResponse();
+
+    SubmissionSummaryClaimErrorRow result =
+        mapper.toSubmissionSummaryClaimError(errors, claimResponse);
+
+    SoftAssertions.assertSoftly(
+        softly -> {
+          softly.assertThat(result.client()).isNull();
+          softly.assertThat(result.errorDescription()).isEqualTo("Error!");
         });
   }
 }

@@ -3,7 +3,7 @@ package uk.gov.justice.laa.bulkclaim.mapper;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import uk.gov.justice.laa.bulkclaim.dto.submission.SubmissionMatterStartsRow;
-import uk.gov.justice.laa.claims.model.MatterStartGet;
+import uk.gov.justice.laa.dstew.payments.claimsdata.model.MatterStartGet;
 
 /**
  * Maps between {@link MatterStartGet} and {@link SubmissionMatterStartsRow}.

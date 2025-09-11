@@ -4,12 +4,12 @@ import java.math.BigDecimal;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
+import uk.gov.justice.laa.bulkclaim.client.DataClaimsRestClient;
 import uk.gov.justice.laa.bulkclaim.dto.submission.SubmissionClaimDetails;
 import uk.gov.justice.laa.bulkclaim.dto.submission.SubmissionClaimRow;
 import uk.gov.justice.laa.bulkclaim.dto.submission.SubmissionCostsSummary;
 import uk.gov.justice.laa.bulkclaim.mapper.SubmissionClaimMapper;
-import uk.gov.justice.laa.bulkclaim.service.claims.DataClaimsRestService;
-import uk.gov.justice.laa.claims.model.GetSubmission200Response;
+import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionResponse;
 
 /**
  * Builder class for constructing a {@link SubmissionClaimDetails} object used for displaying a
@@ -21,7 +21,7 @@ import uk.gov.justice.laa.claims.model.GetSubmission200Response;
 @RequiredArgsConstructor
 public class SubmissionClaimDetailsBuilder {
 
-  private final DataClaimsRestService dataClaimsRestService;
+  private final DataClaimsRestClient dataClaimsRestClient;
   private final SubmissionClaimMapper submissionClaimMapper;
 
   /**
@@ -31,14 +31,14 @@ public class SubmissionClaimDetailsBuilder {
    * @param submissionResponse The source submission response.
    * @return The built {@link SubmissionClaimDetails} object.
    */
-  public SubmissionClaimDetails build(GetSubmission200Response submissionResponse) {
+  public SubmissionClaimDetails build(SubmissionResponse submissionResponse) {
 
     // Get all claims from data claims service
     List<SubmissionClaimRow> submissionClaimRows =
         submissionResponse.getClaims().stream()
             .map(
                 x ->
-                    dataClaimsRestService.getSubmissionClaim(
+                    dataClaimsRestClient.getSubmissionClaim(
                         submissionResponse.getSubmissionId(), x.getClaimId()))
             .map(x -> submissionClaimMapper.toSubmissionClaimRow(x.block()))
             .toList();

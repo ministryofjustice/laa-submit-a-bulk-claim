@@ -27,12 +27,12 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.validation.Errors;
 import reactor.core.publisher.Mono;
+import uk.gov.justice.laa.bulkclaim.client.DataClaimsRestClient;
 import uk.gov.justice.laa.bulkclaim.config.WebMvcTestConfig;
 import uk.gov.justice.laa.bulkclaim.dto.FileUploadForm;
-import uk.gov.justice.laa.bulkclaim.service.claims.DataClaimsRestService;
 import uk.gov.justice.laa.bulkclaim.validation.BulkImportFileValidator;
 import uk.gov.justice.laa.bulkclaim.validation.BulkImportFileVirusValidator;
-import uk.gov.justice.laa.claims.model.CreateBulkSubmission201Response;
+import uk.gov.justice.laa.dstew.payments.claimsdata.model.CreateBulkSubmission201Response;
 
 @WebMvcTest(BulkImportController.class)
 @AutoConfigureMockMvc
@@ -45,7 +45,7 @@ class BulkImportControllerTest {
 
   @MockitoBean private BulkImportFileValidator bulkImportFileValidator;
   @MockitoBean private BulkImportFileVirusValidator bulkImportFileVirusValidator;
-  @MockitoBean private DataClaimsRestService dataClaimsRestService;
+  @MockitoBean private DataClaimsRestClient dataClaimsRestClient;
 
   @Nested
   @DisplayName("GET: /upload")
@@ -123,7 +123,7 @@ class BulkImportControllerTest {
           new MockMultipartFile("fileUpload", "test.csv", "text/csv", "text".getBytes());
       FileUploadForm input = new FileUploadForm(file);
 
-      when(dataClaimsRestService.upload(any(), any()))
+      when(dataClaimsRestClient.upload(any(), any()))
           .thenThrow(new RuntimeException("Unexpected error"));
 
       mockMvc
@@ -143,7 +143,7 @@ class BulkImportControllerTest {
           new MockMultipartFile("fileUpload", "test.csv", "text/csv", "text".getBytes());
       FileUploadForm input = new FileUploadForm(file);
 
-      when(dataClaimsRestService.upload(any(), any()))
+      when(dataClaimsRestClient.upload(any(), any()))
           .thenReturn(
               Mono.just(
                   ResponseEntity.of(

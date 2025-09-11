@@ -15,7 +15,7 @@
           <div class="govuk-summary-list__row">
             <dt class="govuk-summary-list__key" th:text="#{submission.properties.submissionDateTimeAbbreviated}"/>
             <dd class="govuk-summary-list__value govuk-!-font-weight-bold"
-                th:text="|${#temporals.format(submissionSummary.submitted,'d MMM yyyy')} at ${#temporals.format(submissionSummary.submitted(),'hh:MM:SS')}|"/>
+                th:text="|${#temporals.format(submissionSummary.submitted,'d MMM yyyy')} at ${#temporals.format(submissionSummary.submitted(),'HH:mm:ss')}|"/>
           </div>
           <div class="govuk-summary-list__row">
             <dt class="govuk-summary-list__key" th:text="#{submission.properties.submissionPeriod}"/>

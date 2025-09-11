@@ -27,13 +27,13 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.assertj.MockMvcTester;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
 import reactor.core.publisher.Mono;
+import uk.gov.justice.laa.bulkclaim.client.DataClaimsRestClient;
 import uk.gov.justice.laa.bulkclaim.config.WebMvcTestConfig;
 import uk.gov.justice.laa.bulkclaim.exception.SubmitBulkClaimException;
-import uk.gov.justice.laa.bulkclaim.service.claims.DataClaimsRestService;
-import uk.gov.justice.laa.claims.model.GetSubmission200Response;
-import uk.gov.justice.laa.claims.model.GetSubmission200ResponseClaimsInner;
-import uk.gov.justice.laa.claims.model.GetSubmission200ResponseClaimsInner.StatusEnum;
-import uk.gov.justice.laa.claims.model.SubmissionStatus;
+import uk.gov.justice.laa.dstew.payments.claimsdata.model.ClaimStatus;
+import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionClaim;
+import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionResponse;
+import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionStatus;
 
 @WebMvcTest(BulkImportInProgressController.class)
 @AutoConfigureMockMvc
@@ -42,7 +42,7 @@ public class BulkImportInProgressControllerTest {
 
   @Autowired private MockMvcTester mockMvc;
 
-  @MockitoBean private DataClaimsRestService dataClaimsRestService;
+  @MockitoBean private DataClaimsRestClient dataClaimsRestClient;
 
   @Nested
   @DisplayName("GET: /import-in-progress")
@@ -53,16 +53,14 @@ public class BulkImportInProgressControllerTest {
     void shouldReturnExpectedResult() {
       // Given
       UUID submissionId = UUID.fromString("5933fc67-bac7-4f48-81ed-61c8c463f054");
-      when(dataClaimsRestService.getSubmission(submissionId))
+      when(dataClaimsRestClient.getSubmission(submissionId))
           .thenReturn(
               Mono.just(
-                  GetSubmission200Response.builder()
+                  SubmissionResponse.builder()
                       .status(SubmissionStatus.READY_FOR_VALIDATION)
                       .claims(
                           Collections.singletonList(
-                              GetSubmission200ResponseClaimsInner.builder()
-                                  .status(StatusEnum.VALID)
-                                  .build()))
+                              SubmissionClaim.builder().status(ClaimStatus.VALID).build()))
                       .build()));
 
       assertThat(
@@ -81,7 +79,7 @@ public class BulkImportInProgressControllerTest {
     void shouldReturnExpectedResultWhenSubmissionNotFound() {
       // Given
       UUID submissionId = UUID.fromString("5933fc67-bac7-4f48-81ed-61c8c463f054");
-      when(dataClaimsRestService.getSubmission(submissionId))
+      when(dataClaimsRestClient.getSubmission(submissionId))
           .thenThrow(
               new WebClientResponseException(
                   HttpStatusCode.valueOf(404), "Submission not found", null, null, null, null));
@@ -105,19 +103,15 @@ public class BulkImportInProgressControllerTest {
     void shouldRedirectWhenMultipleClaimsHasImported(SubmissionStatus status) {
       // Given
       UUID submissionId = UUID.fromString("5933fc67-bac7-4f48-81ed-61c8c463f054");
-      when(dataClaimsRestService.getSubmission(submissionId))
+      when(dataClaimsRestClient.getSubmission(submissionId))
           .thenReturn(
               Mono.just(
-                  GetSubmission200Response.builder()
+                  SubmissionResponse.builder()
                       .status(status)
                       .claims(
                           Arrays.asList(
-                              GetSubmission200ResponseClaimsInner.builder()
-                                  .status(StatusEnum.VALID)
-                                  .build(),
-                              GetSubmission200ResponseClaimsInner.builder()
-                                  .status(StatusEnum.INVALID)
-                                  .build()))
+                              SubmissionClaim.builder().status(ClaimStatus.VALID).build(),
+                              SubmissionClaim.builder().status(ClaimStatus.INVALID).build()))
                       .build()));
 
       assertThat(
@@ -139,10 +133,9 @@ public class BulkImportInProgressControllerTest {
     void shouldRedirectWhenNilSubmission(SubmissionStatus status) {
       // Given
       UUID submissionId = UUID.fromString("5933fc67-bac7-4f48-81ed-61c8c463f054");
-      when(dataClaimsRestService.getSubmission(submissionId))
+      when(dataClaimsRestClient.getSubmission(submissionId))
           .thenReturn(
-              Mono.just(
-                  GetSubmission200Response.builder().isNilSubmission(true).status(status).build()));
+              Mono.just(SubmissionResponse.builder().isNilSubmission(true).status(status).build()));
 
       assertThat(
               mockMvc.perform(
@@ -161,7 +154,7 @@ public class BulkImportInProgressControllerTest {
     void shouldThrowErrorWhenExceptionThrownByClaimsRestService(int statusCode) {
       // Given
       UUID submissionId = UUID.fromString("5933fc67-bac7-4f48-81ed-61c8c463f054");
-      when(dataClaimsRestService.getSubmission(submissionId))
+      when(dataClaimsRestClient.getSubmission(submissionId))
           .thenThrow(new WebClientResponseException(statusCode, "Error", null, null, null, null));
 
       assertThat(

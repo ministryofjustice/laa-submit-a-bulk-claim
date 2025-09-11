@@ -26,25 +26,26 @@ import org.springframework.web.reactive.function.client.WebClientResponseExcepti
 import org.springframework.web.reactive.function.client.WebClientResponseException.NotFound;
 import org.springframework.web.reactive.function.client.WebClientResponseException.Unauthorized;
 import reactor.core.publisher.Mono;
+import uk.gov.justice.laa.bulkclaim.client.DataClaimsRestClient;
 import uk.gov.justice.laa.bulkclaim.config.WebMvcTestConfig;
 import uk.gov.justice.laa.bulkclaim.helper.MockServerIntegrationTest;
-import uk.gov.justice.laa.claims.model.*;
+import uk.gov.justice.laa.dstew.payments.claimsdata.model.*;
 
 /**
- * Integration tests for the {@link DataClaimsRestService}.
+ * Integration tests for the {@link uk.gov.justice.laa.bulkclaim.client.DataClaimsRestClient}.
  *
  * @author Jamie Briggs
  */
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureMockMvc(addFilters = false)
 @Import(WebMvcTestConfig.class)
-class DataClaimsRestServiceIntegrationTest extends MockServerIntegrationTest {
+class DataClaimsRestClientIntegrationTest extends MockServerIntegrationTest {
 
-  protected DataClaimsRestService dataClaimsRestService;
+  protected DataClaimsRestClient dataClaimsRestClient;
 
   @BeforeEach
   void setUp() {
-    dataClaimsRestService = createClient(DataClaimsRestService.class);
+    dataClaimsRestClient = createClient(DataClaimsRestClient.class);
   }
 
   @Nested
@@ -77,7 +78,7 @@ class DataClaimsRestServiceIntegrationTest extends MockServerIntegrationTest {
 
       // When
       Mono<ResponseEntity<CreateBulkSubmission201Response>> upload =
-          dataClaimsRestService.upload(file, "test-user");
+          dataClaimsRestClient.upload(file, "test-user");
       ResponseEntity<CreateBulkSubmission201Response> block = upload.block();
       CreateBulkSubmission201Response result = block.getBody();
       String locationHeader = block.getHeaders().getFirst(HttpHeaders.LOCATION);
@@ -101,7 +102,7 @@ class DataClaimsRestServiceIntegrationTest extends MockServerIntegrationTest {
           .respond(response().withStatusCode(400).withHeader("Content-Type", "application/json"));
 
       // When
-      assertThrows(BadRequest.class, () -> dataClaimsRestService.upload(file, "test-user").block());
+      assertThrows(BadRequest.class, () -> dataClaimsRestClient.upload(file, "test-user").block());
     }
 
     @Test
@@ -116,7 +117,7 @@ class DataClaimsRestServiceIntegrationTest extends MockServerIntegrationTest {
 
       // When
       assertThrows(
-          Unauthorized.class, () -> dataClaimsRestService.upload(file, "test-user").block());
+          Unauthorized.class, () -> dataClaimsRestClient.upload(file, "test-user").block());
     }
 
     @Test
@@ -130,7 +131,7 @@ class DataClaimsRestServiceIntegrationTest extends MockServerIntegrationTest {
           .respond(response().withStatusCode(403).withHeader("Content-Type", "application/json"));
 
       // When
-      assertThrows(Forbidden.class, () -> dataClaimsRestService.upload(file, "test-user").block());
+      assertThrows(Forbidden.class, () -> dataClaimsRestClient.upload(file, "test-user").block());
     }
 
     @Test
@@ -145,7 +146,7 @@ class DataClaimsRestServiceIntegrationTest extends MockServerIntegrationTest {
 
       // When
       assertThrows(
-          InternalServerError.class, () -> dataClaimsRestService.upload(file, "test-user").block());
+          InternalServerError.class, () -> dataClaimsRestClient.upload(file, "test-user").block());
     }
   }
 
@@ -187,9 +188,7 @@ class DataClaimsRestServiceIntegrationTest extends MockServerIntegrationTest {
       LocalDate to = LocalDate.of(2025, 8, 31);
 
       SubmissionsResultSet response =
-          dataClaimsRestService
-              .search(offices, submissionId, from, to)
-              .block(Duration.ofSeconds(2));
+          dataClaimsRestClient.search(offices, submissionId, from, to).block(Duration.ofSeconds(2));
       assertThat(response.toString()).isNotEmpty();
       assertThat(response.getContent().getFirst().getSubmissionId().toString())
           .isEqualTo(expectedSubmissionId);
@@ -217,7 +216,7 @@ class DataClaimsRestServiceIntegrationTest extends MockServerIntegrationTest {
                   .withHeader("Content-Type", "application/json")
                   .withBody(expectJson));
       // Then
-      GetSubmission200Response block = dataClaimsRestService.getSubmission(submissionId).block();
+      GetSubmission200Response block = dataClaimsRestClient.getSubmission(submissionId).block();
       String result = objectMapper.writeValueAsString(block);
       assertThatJsonMatches(expectJson, result);
     }
@@ -236,7 +235,7 @@ class DataClaimsRestServiceIntegrationTest extends MockServerIntegrationTest {
 
       // When
       assertThrows(
-          BadRequest.class, () -> dataClaimsRestService.getSubmission(submissionId).block());
+          BadRequest.class, () -> dataClaimsRestClient.getSubmission(submissionId).block());
     }
 
     @Test
@@ -253,7 +252,7 @@ class DataClaimsRestServiceIntegrationTest extends MockServerIntegrationTest {
 
       // When
       assertThrows(
-          Unauthorized.class, () -> dataClaimsRestService.getSubmission(submissionId).block());
+          Unauthorized.class, () -> dataClaimsRestClient.getSubmission(submissionId).block());
     }
 
     @Test
@@ -269,8 +268,7 @@ class DataClaimsRestServiceIntegrationTest extends MockServerIntegrationTest {
           .respond(response().withStatusCode(403).withHeader("Content-Type", "application/json"));
 
       // When
-      assertThrows(
-          Forbidden.class, () -> dataClaimsRestService.getSubmission(submissionId).block());
+      assertThrows(Forbidden.class, () -> dataClaimsRestClient.getSubmission(submissionId).block());
     }
 
     @Test
@@ -286,7 +284,7 @@ class DataClaimsRestServiceIntegrationTest extends MockServerIntegrationTest {
           .respond(response().withStatusCode(404).withHeader("Content-Type", "application/json"));
 
       // When
-      assertThrows(NotFound.class, () -> dataClaimsRestService.getSubmission(submissionId).block());
+      assertThrows(NotFound.class, () -> dataClaimsRestClient.getSubmission(submissionId).block());
     }
 
     @Test
@@ -304,7 +302,7 @@ class DataClaimsRestServiceIntegrationTest extends MockServerIntegrationTest {
       // When
       assertThrows(
           InternalServerError.class,
-          () -> dataClaimsRestService.getSubmission(submissionId).block());
+          () -> dataClaimsRestClient.getSubmission(submissionId).block());
     }
   }
 
@@ -330,7 +328,7 @@ class DataClaimsRestServiceIntegrationTest extends MockServerIntegrationTest {
                   .withHeader("Content-Type", "application/json")
                   .withBody(expectJson));
       // Then
-      ClaimFields block = dataClaimsRestService.getSubmissionClaim(submissionId, claimId).block();
+      ClaimFields block = dataClaimsRestClient.getSubmissionClaim(submissionId, claimId).block();
       String result = objectMapper.writeValueAsString(block);
       assertThatJsonMatches(expectJson, result);
     }
@@ -350,7 +348,7 @@ class DataClaimsRestServiceIntegrationTest extends MockServerIntegrationTest {
       // When
       assertThrows(
           BadRequest.class,
-          () -> dataClaimsRestService.getSubmissionClaim(submissionId, claimId).block());
+          () -> dataClaimsRestClient.getSubmissionClaim(submissionId, claimId).block());
     }
 
     @Test
@@ -368,7 +366,7 @@ class DataClaimsRestServiceIntegrationTest extends MockServerIntegrationTest {
       // When
       assertThrows(
           Unauthorized.class,
-          () -> dataClaimsRestService.getSubmissionClaim(submissionId, claimId).block());
+          () -> dataClaimsRestClient.getSubmissionClaim(submissionId, claimId).block());
     }
 
     @Test
@@ -386,7 +384,7 @@ class DataClaimsRestServiceIntegrationTest extends MockServerIntegrationTest {
       // When
       assertThrows(
           Forbidden.class,
-          () -> dataClaimsRestService.getSubmissionClaim(submissionId, claimId).block());
+          () -> dataClaimsRestClient.getSubmissionClaim(submissionId, claimId).block());
     }
 
     @Test
@@ -404,7 +402,7 @@ class DataClaimsRestServiceIntegrationTest extends MockServerIntegrationTest {
       // When
       assertThrows(
           NotFound.class,
-          () -> dataClaimsRestService.getSubmissionClaim(submissionId, claimId).block());
+          () -> dataClaimsRestClient.getSubmissionClaim(submissionId, claimId).block());
     }
 
     @Test
@@ -422,7 +420,7 @@ class DataClaimsRestServiceIntegrationTest extends MockServerIntegrationTest {
       // When
       assertThrows(
           InternalServerError.class,
-          () -> dataClaimsRestService.getSubmissionClaim(submissionId, claimId).block());
+          () -> dataClaimsRestClient.getSubmissionClaim(submissionId, claimId).block());
     }
   }
 
@@ -450,7 +448,7 @@ class DataClaimsRestServiceIntegrationTest extends MockServerIntegrationTest {
                   .withBody(expectJson));
       // Then
       MatterStartGet block =
-          dataClaimsRestService.getSubmissionMatterStarts(submissionId, matterStartsId).block();
+          dataClaimsRestClient.getSubmissionMatterStarts(submissionId, matterStartsId).block();
       String result = objectMapper.writeValueAsString(block);
       assertThatJsonMatches(expectJson, result);
     }
@@ -472,9 +470,7 @@ class DataClaimsRestServiceIntegrationTest extends MockServerIntegrationTest {
       assertThrows(
           BadRequest.class,
           () ->
-              dataClaimsRestService
-                  .getSubmissionMatterStarts(submissionId, matterStartsId)
-                  .block());
+              dataClaimsRestClient.getSubmissionMatterStarts(submissionId, matterStartsId).block());
     }
 
     @Test
@@ -492,7 +488,7 @@ class DataClaimsRestServiceIntegrationTest extends MockServerIntegrationTest {
       // When
       assertThrows(
           Unauthorized.class,
-          () -> dataClaimsRestService.getSubmissionClaim(submissionId, matterStartsId).block());
+          () -> dataClaimsRestClient.getSubmissionClaim(submissionId, matterStartsId).block());
     }
 
     @Test
@@ -512,9 +508,7 @@ class DataClaimsRestServiceIntegrationTest extends MockServerIntegrationTest {
       assertThrows(
           Forbidden.class,
           () ->
-              dataClaimsRestService
-                  .getSubmissionMatterStarts(submissionId, matterStartsId)
-                  .block());
+              dataClaimsRestClient.getSubmissionMatterStarts(submissionId, matterStartsId).block());
     }
 
     @Test
@@ -532,7 +526,7 @@ class DataClaimsRestServiceIntegrationTest extends MockServerIntegrationTest {
       // When
       assertThrows(
           NotFound.class,
-          () -> dataClaimsRestService.getSubmissionClaim(submissionId, claimId).block());
+          () -> dataClaimsRestClient.getSubmissionClaim(submissionId, claimId).block());
     }
 
     @Test
@@ -552,9 +546,7 @@ class DataClaimsRestServiceIntegrationTest extends MockServerIntegrationTest {
       assertThrows(
           InternalServerError.class,
           () ->
-              dataClaimsRestService
-                  .getSubmissionMatterStarts(submissionId, matterStartsId)
-                  .block());
+              dataClaimsRestClient.getSubmissionMatterStarts(submissionId, matterStartsId).block());
     }
   }
 
@@ -577,7 +569,7 @@ class DataClaimsRestServiceIntegrationTest extends MockServerIntegrationTest {
                   .withBody(expectJson));
       // Then
       List<ClaimValidationError> block =
-          dataClaimsRestService.getValidationErrors(submissionId).block();
+          dataClaimsRestClient.getValidationErrors(submissionId).block();
       String result = objectMapper.writeValueAsString(block);
       assertThatJsonMatches(expectJson, result);
     }
@@ -597,7 +589,7 @@ class DataClaimsRestServiceIntegrationTest extends MockServerIntegrationTest {
                   .withBody(expectJson));
       // Then
       List<ClaimValidationError> block =
-          dataClaimsRestService.getValidationErrors(submissionId).block();
+          dataClaimsRestClient.getValidationErrors(submissionId).block();
       String result = objectMapper.writeValueAsString(block);
       assertThatJsonMatches(expectJson, result);
     }
@@ -613,7 +605,7 @@ class DataClaimsRestServiceIntegrationTest extends MockServerIntegrationTest {
 
       // When
       assertThrows(
-          BadRequest.class, () -> dataClaimsRestService.getValidationErrors(submissionId).block());
+          BadRequest.class, () -> dataClaimsRestClient.getValidationErrors(submissionId).block());
     }
 
     @Test
@@ -627,8 +619,7 @@ class DataClaimsRestServiceIntegrationTest extends MockServerIntegrationTest {
 
       // When
       assertThrows(
-          Unauthorized.class,
-          () -> dataClaimsRestService.getValidationErrors(submissionId).block());
+          Unauthorized.class, () -> dataClaimsRestClient.getValidationErrors(submissionId).block());
     }
 
     @Test
@@ -642,7 +633,7 @@ class DataClaimsRestServiceIntegrationTest extends MockServerIntegrationTest {
 
       // When
       assertThrows(
-          Forbidden.class, () -> dataClaimsRestService.getValidationErrors(submissionId).block());
+          Forbidden.class, () -> dataClaimsRestClient.getValidationErrors(submissionId).block());
     }
 
     @Test
@@ -656,7 +647,7 @@ class DataClaimsRestServiceIntegrationTest extends MockServerIntegrationTest {
 
       // When
       assertThrows(
-          NotFound.class, () -> dataClaimsRestService.getValidationErrors(submissionId).block());
+          NotFound.class, () -> dataClaimsRestClient.getValidationErrors(submissionId).block());
     }
 
     @Test
@@ -671,7 +662,7 @@ class DataClaimsRestServiceIntegrationTest extends MockServerIntegrationTest {
       // When
       assertThrows(
           InternalServerError.class,
-          () -> dataClaimsRestService.getValidationErrors(submissionId).block());
+          () -> dataClaimsRestClient.getValidationErrors(submissionId).block());
     }
   }
 }

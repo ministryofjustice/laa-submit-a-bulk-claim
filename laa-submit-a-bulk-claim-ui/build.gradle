@@ -18,13 +18,13 @@ dependencyManagement {
 }
 
 dependencies {
-    implementation project(':claims-api-reference')
-
     /**
      * Upgrades to resolve vulnerabilities
      */
     // Upgrade to fix CVE-2025-48924
     implementation 'org.apache.commons:commons-lang3:3.18.0'
+
+    implementation 'uk.gov.justice.laa.datastewardship.payments:data-claims-api-models:92a27e9-SNAPSHOT'
 
     implementation 'org.springframework.boot:spring-boot-starter-cache'
     implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'

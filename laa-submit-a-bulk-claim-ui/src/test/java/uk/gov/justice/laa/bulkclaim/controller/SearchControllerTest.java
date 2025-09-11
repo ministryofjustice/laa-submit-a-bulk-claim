@@ -25,13 +25,13 @@ import org.springframework.security.oauth2.core.oidc.user.DefaultOidcUser;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import reactor.core.publisher.Mono;
+import uk.gov.justice.laa.bulkclaim.client.DataClaimsRestClient;
 import uk.gov.justice.laa.bulkclaim.dto.SubmissionsSearchForm;
 import uk.gov.justice.laa.bulkclaim.response.CwaUploadErrorResponseDto;
 import uk.gov.justice.laa.bulkclaim.response.CwaUploadSummaryResponseDto;
 import uk.gov.justice.laa.bulkclaim.service.CwaUploadService;
-import uk.gov.justice.laa.bulkclaim.service.claims.DataClaimsRestService;
-import uk.gov.justice.laa.claims.model.SubmissionFields;
-import uk.gov.justice.laa.claims.model.SubmissionsResultSet;
+import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionBase;
+import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionsResultSet;
 
 @AutoConfigureMockMvc(addFilters = false)
 class SearchControllerTest {
@@ -43,7 +43,7 @@ class SearchControllerTest {
   @Mock private CwaUploadService cwaUploadService;
   @Mock private Model model;
   @Mock private Principal principal;
-  @Mock private DataClaimsRestService claimsRestService;
+  @Mock private DataClaimsRestClient claimsRestService;
   @Mock private BindingResult bindingResult;
 
   @InjectMocks private SearchController searchController;
@@ -114,7 +114,7 @@ class SearchControllerTest {
   @Test
   @DisplayName("Search form should return submissions when parameters are valid.")
   void submissionsSearchShouldReturnSubmissionResults_whenNoErrors() {
-    List<SubmissionFields> submissions = Collections.emptyList();
+    List<SubmissionBase> submissions = Collections.emptyList();
     String submissionId = "1234";
 
     SubmissionsResultSet response = new SubmissionsResultSet();

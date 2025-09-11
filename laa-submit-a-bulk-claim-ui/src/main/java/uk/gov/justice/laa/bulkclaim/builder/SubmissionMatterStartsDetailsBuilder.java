@@ -6,11 +6,11 @@ import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
+import uk.gov.justice.laa.bulkclaim.client.DataClaimsRestClient;
 import uk.gov.justice.laa.bulkclaim.dto.submission.SubmissionMatterStartsDetails;
 import uk.gov.justice.laa.bulkclaim.dto.submission.SubmissionMatterStartsRow;
 import uk.gov.justice.laa.bulkclaim.mapper.SubmissionMatterStartsMapper;
-import uk.gov.justice.laa.bulkclaim.service.claims.DataClaimsRestService;
-import uk.gov.justice.laa.claims.model.GetSubmission200Response;
+import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionResponse;
 
 /**
  * Builder class responsible for creating instances of SubmissionMatterStartsDetails.
@@ -21,7 +21,7 @@ import uk.gov.justice.laa.claims.model.GetSubmission200Response;
 @RequiredArgsConstructor
 public class SubmissionMatterStartsDetailsBuilder {
 
-  private final DataClaimsRestService dataClaimsRestService;
+  private final DataClaimsRestClient dataClaimsRestClient;
   private final SubmissionMatterStartsMapper mapper;
 
   /**
@@ -30,11 +30,10 @@ public class SubmissionMatterStartsDetailsBuilder {
    * @param response The source submission response.
    * @return The built {@link SubmissionMatterStartsDetails} object.
    */
-  public SubmissionMatterStartsDetails build(GetSubmission200Response response) {
+  public SubmissionMatterStartsDetails build(SubmissionResponse response) {
     List<SubmissionMatterStartsRow> list =
         response.getMatterStarts().stream()
-            .map(
-                x -> dataClaimsRestService.getSubmissionMatterStarts(response.getSubmissionId(), x))
+            .map(x -> dataClaimsRestClient.getSubmissionMatterStarts(response.getSubmissionId(), x))
             .map(Mono::block)
             .map(mapper::toSubmissionMatterTypesRow)
             .toList();
