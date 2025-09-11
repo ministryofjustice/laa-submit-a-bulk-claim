@@ -7,6 +7,7 @@ import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import jakarta.servlet.http.HttpServletRequest;
 import java.security.Principal;
 import java.util.Collections;
 import java.util.List;
@@ -45,6 +46,7 @@ class SearchControllerTest {
   @Mock private Principal principal;
   @Mock private DataClaimsRestClient claimsRestService;
   @Mock private BindingResult bindingResult;
+  @Mock private HttpServletRequest request;
 
   @InjectMocks private SearchController searchController;
 
@@ -121,16 +123,23 @@ class SearchControllerTest {
     response.content(submissions);
     when(claimsRestService.search(eq(List.of("1")), eq(submissionId), isNull(), isNull()))
         .thenReturn(Mono.just(response));
+    when(request.getQueryString()).thenReturn("submissionId=" + submissionId);
+    when(request.getRequestURI()).thenReturn("/submissions/search/results");
 
     String view =
         searchController.handleSearch(
             new SubmissionsSearchForm(submissionId, null, null),
             bindingResult,
             model,
+            null,
+            null,
+            null,
+            0,
+            request,
             getDefaultOidcUser());
 
     assertEquals(0, bindingResult.getErrorCount());
-    verify(model).addAttribute(eq("submissions"), eq(submissions));
+    verify(model).addAttribute(eq("submissions"), eq(response));
     assertEquals("pages/submissions-search-results", view);
   }
 }

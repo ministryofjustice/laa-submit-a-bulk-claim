@@ -1,5 +1,5 @@
 <!DOCTYPE HTML>
-<html th:fragment="layout(title, main, backLink)" lang="en" class="govuk-template govuk-template--rebranded"
+<html th:fragment="layout(title, main, backLink, pageCategory)" lang="en" class="govuk-template govuk-template--rebranded"
       xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml">
 <head>
   <title th:text="|#{service.name} - ${title}|"/>
@@ -15,7 +15,7 @@
 </head>
 <body class="govuk-template__body">
 <script>document.body.className += ' js-enabled' + ('noModule' in HTMLScriptElement.prototype ? ' govuk-frontend-supported' : '');</script>
-<header th:replace="~{fragments/header :: header}"/>
+<header th:replace="~{fragments/header :: header(${pageCategory})}"/>
 
 <div class="govuk-width-container">
   <div class="govuk-phase-banner">

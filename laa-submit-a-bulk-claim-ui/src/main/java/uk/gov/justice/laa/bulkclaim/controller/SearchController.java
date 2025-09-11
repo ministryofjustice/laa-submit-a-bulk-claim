@@ -1,7 +1,7 @@
 package uk.gov.justice.laa.bulkclaim.controller;
 
+import jakarta.servlet.http.HttpServletRequest;
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.client.HttpClientErrorException;
 import uk.gov.justice.laa.bulkclaim.client.DataClaimsRestClient;
 import uk.gov.justice.laa.bulkclaim.dto.SubmissionsSearchForm;
@@ -61,15 +62,18 @@ public class SearchController {
    * @param oidcUser currently authenticated user
    * @return search results view
    */
-  @PostMapping("/submissions/search")
+  @GetMapping("/submissions/search/results")
   public String handleSearch(
       @ModelAttribute("submissionsSearchForm") SubmissionsSearchForm submissionsSearchForm,
       BindingResult bindingResult,
       Model model,
+      @RequestParam(required = false) String submissionIdParam,
+      @RequestParam(required = false) String submittedDateFromParam,
+      @RequestParam(required = false) String submittedDateToParam,
+      @RequestParam(required = false) Integer page,
+      HttpServletRequest request,
       @AuthenticationPrincipal OidcUser oidcUser) {
 
-    Map<String, String> errors = new LinkedHashMap<>();
-    final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
     String submissionId =
         StringUtils.hasText(submissionsSearchForm.submissionId())
             ? submissionsSearchForm.submissionId().trim()
@@ -83,7 +87,7 @@ public class SearchController {
       return "pages/submissions-search";
     }
 
-    // List<String> offices = oidcUser.getUserInfo().getClaim("provider");
+    //  List<String> offices = oidcUser.getUserInfo().getClaim("provider");
     List<String> offices = List.of("1");
 
     try {
@@ -91,8 +95,19 @@ public class SearchController {
           claimsRestService
               .search(offices, submissionId, submittedDateFrom, submittedDateTo)
               .block();
-      log.info("Returning response from claims search: {}", response);
-      model.addAttribute("submissions", response.getContent());
+      log.debug("Response from claims search: {}", response);
+      model.addAttribute("submissions", response);
+
+      // set current url for pagination
+      if (!model.containsAttribute("currentUrl")) {
+        String currentUrl =
+            (request.getQueryString() != null && request.getQueryString().isEmpty())
+                ? request.getRequestURI()
+                : request.getRequestURI() + "?" + request.getQueryString();
+        currentUrl = currentUrl.replaceAll("&?page=[0-9]+", "");
+        model.addAttribute("currentUrl", currentUrl);
+        log.debug("Adding currentUrl to model: {}", request.getServletPath());
+      }
 
       return "pages/submissions-search-results";
     } catch (HttpClientErrorException e) {
