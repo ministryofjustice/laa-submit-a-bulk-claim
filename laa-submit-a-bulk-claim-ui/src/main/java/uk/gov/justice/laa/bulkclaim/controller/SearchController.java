@@ -1,5 +1,6 @@
 package uk.gov.justice.laa.bulkclaim.controller;
 
+import jakarta.servlet.http.HttpServletRequest;
 import java.time.LocalDate;
 import java.util.Collections;
 import java.util.LinkedHashMap;
@@ -70,6 +71,7 @@ public class SearchController {
       @RequestParam(required = false) String submittedDateFromParam,
       @RequestParam(required = false) String submittedDateToParam,
       @RequestParam(required = false) Integer page,
+      HttpServletRequest request,
       @AuthenticationPrincipal OidcUser oidcUser) {
 
     String submissionId =
@@ -93,8 +95,19 @@ public class SearchController {
           claimsRestService
               .search(offices, submissionId, submittedDateFrom, submittedDateTo)
               .block();
-      log.info("Returning response from claims search: {}", response);
+      log.debug("Response from claims search: {}", response);
       model.addAttribute("submissions", response);
+
+      // set current url for pagination
+      if (!model.containsAttribute("currentUrl")) {
+        String currentUrl =
+            (request.getQueryString() != null && request.getQueryString().isEmpty())
+                ? request.getRequestURI()
+                : request.getRequestURI() + "?" + request.getQueryString();
+        currentUrl = currentUrl.replaceAll("&?page=[0-9]+", "");
+        model.addAttribute("currentUrl", currentUrl);
+        log.debug("Adding currentUrl to model: {}", request.getServletPath());
+      }
 
       return "pages/submissions-search-results";
     } catch (HttpClientErrorException e) {
