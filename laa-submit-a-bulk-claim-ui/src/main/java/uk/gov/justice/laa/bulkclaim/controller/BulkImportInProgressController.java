@@ -77,13 +77,11 @@ public class BulkImportInProgressController {
     // Check for NIL submission
     if (Boolean.TRUE.equals(submission.getIsNilSubmission())) {
       log.info("NIL submission found, will redirect: %s".formatted(submissionId.toString()));
-      sessionStatus.setComplete();
       return "redirect:/view-submission-summary";
     }
 
     // Redirect if submission is complete
     if (completedStatuses.contains(submission.getStatus())) {
-      sessionStatus.setComplete();
       return "redirect:/view-submission-summary";
     }
 

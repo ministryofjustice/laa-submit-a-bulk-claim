@@ -44,9 +44,14 @@ public class BulkSubmissionImportedController {
   public String getSubmission(Model model, @ModelAttribute(SUBMISSION_ID) UUID submissionId) {
 
     // Add bulk submission to session if it does not exist
-    if (!model.containsAttribute(SUBMISSION)) {
+    SubmissionResponse submission = (SubmissionResponse) model.getAttribute(SUBMISSION);
+
+    // Add submission to session if it does not exist OR the id is different
+    if (submission == null || !submissionId.equals(submission.getSubmissionId())) {
       try {
-        model.addAttribute(SUBMISSION, dataClaimsRestClient.getSubmission(submissionId).block());
+        SubmissionResponse freshSubmission =
+            dataClaimsRestClient.getSubmission(submissionId).block();
+        model.addAttribute(SUBMISSION, freshSubmission);
       } catch (WebClientResponseException e) {
         throw new SubmitBulkClaimException("Error retrieving submission from data claims API.", e);
       }
