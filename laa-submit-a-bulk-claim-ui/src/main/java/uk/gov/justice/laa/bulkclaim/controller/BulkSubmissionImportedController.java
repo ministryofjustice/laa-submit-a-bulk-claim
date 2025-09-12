@@ -43,6 +43,9 @@ public class BulkSubmissionImportedController {
   @GetMapping("/view-submission-summary")
   public String getSubmission(Model model, @ModelAttribute(SUBMISSION_ID) UUID submissionId) {
 
+    // todo pass through page number when pagination is added
+    int page = 0;
+
     // Add bulk submission to session if it does not exist
     SubmissionResponse submission = (SubmissionResponse) model.getAttribute(SUBMISSION);
 
@@ -60,7 +63,7 @@ public class BulkSubmissionImportedController {
     // Map submission summary to model
     BulkClaimImportSummary bulkClaimImportSummary =
         bulkClaimSummaryBuilder.build(
-            Collections.singletonList((SubmissionResponse) model.getAttribute(SUBMISSION)));
+            Collections.singletonList((SubmissionResponse) model.getAttribute(SUBMISSION)), page);
     model.addAttribute("bulkClaimImportSummary", bulkClaimImportSummary);
     return "pages/view-submission-imported-summary";
   }

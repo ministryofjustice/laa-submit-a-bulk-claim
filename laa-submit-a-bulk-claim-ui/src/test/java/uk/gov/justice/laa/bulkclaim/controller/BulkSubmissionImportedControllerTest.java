@@ -60,7 +60,7 @@ class BulkSubmissionImportedControllerTest {
       SubmissionResponse submissionResponse =
           SubmissionResponse.builder().submissionId(submissionId).build();
       BulkClaimImportSummary bulkClaimImportSummary = getTestSubmissionSummary(submissionId);
-      when(bulkClaimSummaryBuilder.build(List.of(submissionResponse)))
+      when(bulkClaimSummaryBuilder.build(List.of(submissionResponse), 0))
           .thenReturn(bulkClaimImportSummary);
       // When / Then
       assertThat(
@@ -74,7 +74,7 @@ class BulkSubmissionImportedControllerTest {
           .model()
           .hasFieldOrProperty(SUBMISSION)
           .hasFieldOrProperty(SUBMISSION_ID);
-      verify(bulkClaimSummaryBuilder, times(1)).build(List.of(submissionResponse));
+      verify(bulkClaimSummaryBuilder, times(1)).build(List.of(submissionResponse), 0);
       verify(dataClaimsRestClient, times(0)).getSubmission(submissionId);
     }
 
@@ -88,7 +88,7 @@ class BulkSubmissionImportedControllerTest {
       BulkClaimImportSummary bulkClaimImportSummary = getTestSubmissionSummary(submissionId);
       when(dataClaimsRestClient.getSubmission(submissionId))
           .thenReturn(Mono.just(submissionResponse));
-      when(bulkClaimSummaryBuilder.build(List.of(submissionResponse)))
+      when(bulkClaimSummaryBuilder.build(List.of(submissionResponse), 0))
           .thenReturn(bulkClaimImportSummary);
       // When / Then
       assertThat(
@@ -101,7 +101,7 @@ class BulkSubmissionImportedControllerTest {
           .model()
           .hasFieldOrProperty(SUBMISSION)
           .hasFieldOrProperty(SUBMISSION_ID);
-      verify(bulkClaimSummaryBuilder, times(1)).build(List.of(submissionResponse));
+      verify(bulkClaimSummaryBuilder, times(1)).build(List.of(submissionResponse), 0);
       verify(dataClaimsRestClient, times(1)).getSubmission(submissionId);
     }
   }

@@ -19,7 +19,7 @@ import uk.gov.justice.laa.dstew.payments.claimsdata.model.CreateBulkSubmission20
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.MatterStartGet;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionResponse;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionsResultSet;
-import uk.gov.justice.laa.dstew.payments.claimsdata.model.ValidationErrorsResponse;
+import uk.gov.justice.laa.dstew.payments.claimsdata.model.ValidationMessagesResponse;
 
 /**
  * REST Service interface for interacting with the Claims API.
@@ -91,7 +91,11 @@ public interface DataClaimsRestClient {
    * @param submissionId the submission ID
    * @return a Mono containing a list of validation errors for a submission.
    */
-  @GetExchange(value = "/validation-errors")
-  Mono<ValidationErrorsResponse> getValidationErrors(
-      @RequestParam("submission-id") UUID submissionId);
+  @GetExchange(value = "/validation-messages")
+  Mono<ValidationMessagesResponse> getValidationMessages(
+      @RequestParam("submission-id") UUID submissionId,
+      @RequestParam(value = "claim-id", required = false) UUID claimId,
+      @RequestParam(value = "type", required = false) String type,
+      @RequestParam(value = "source", required = false) String source,
+      @RequestParam(value = "page", required = false, defaultValue = "0") Integer page);
 }

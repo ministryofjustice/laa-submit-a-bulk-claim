@@ -119,8 +119,8 @@
               th:text="${error.client()}"/>
           <td class="govuk-table__cell"
               th:id="|error-description-${idx.index}|"
-              th:data-sort-value="${error.errorDescription()}"
-              th:text="${error.errorDescription()}"/>
+              th:data-sort-value="${error.message()}"
+              th:text="${error.message()}"/>
         </tr>
         </tbody>
       </table>
