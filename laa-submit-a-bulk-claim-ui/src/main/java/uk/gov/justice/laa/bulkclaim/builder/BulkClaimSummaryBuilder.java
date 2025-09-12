@@ -12,7 +12,8 @@ import uk.gov.justice.laa.bulkclaim.dto.summary.SubmissionSummaryRow;
 import uk.gov.justice.laa.bulkclaim.mapper.BulkClaimImportSummaryMapper;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.ClaimResponse;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionResponse;
-import uk.gov.justice.laa.dstew.payments.claimsdata.model.ValidationErrorsResponse;
+import uk.gov.justice.laa.dstew.payments.claimsdata.model.ValidationMessageType;
+import uk.gov.justice.laa.dstew.payments.claimsdata.model.ValidationMessagesResponse;
 
 /**
  * Builder class for constructing a {@link BulkClaimImportSummary} object used for displaying
@@ -33,7 +34,7 @@ public class BulkClaimSummaryBuilder {
    * @param submissionResponse The source submission response..
    * @return The built {@link BulkClaimImportSummary}.
    */
-  public BulkClaimImportSummary build(List<SubmissionResponse> submissionResponse) {
+  public BulkClaimImportSummary build(List<SubmissionResponse> submissionResponse, int page) {
 
     // Get all summary rows
     List<SubmissionSummaryRow> summaryRows =
@@ -41,43 +42,50 @@ public class BulkClaimSummaryBuilder {
 
     // Get all errors using the data claims rest service.
     // we only currently support one submission at a time so get the first one
-    ValidationErrorsResponse errorResponse =
+    ValidationMessagesResponse errorResponse =
         dataClaimsRestClient
-            .getValidationErrors(summaryRows.getFirst().submissionReference())
+            .getValidationMessages(
+                summaryRows.getFirst().submissionReference(),
+                null,
+                ValidationMessageType.ERROR.toString(),
+                null,
+                0)
             .block();
 
     // Loop through an error map and add claims
     List<SubmissionSummaryClaimErrorRow> errorList =
         Optional.ofNullable(errorResponse)
-            .map(ValidationErrorsResponse::getContent)
+            .map(ValidationMessagesResponse::getContent)
             .orElseGet(List::of)
             .stream()
             .map(
-                errors -> {
+                messages -> {
                   ClaimResponse claimResponse;
-                  if (errors.getClaimId() == null) {
+                  if (messages.getClaimId() == null) {
                     // no call if claimId is missing
                     claimResponse = new ClaimResponse();
                   } else {
                     claimResponse =
                         dataClaimsRestClient
-                            .getSubmissionClaim(errors.getSubmissionId(), errors.getClaimId())
+                            .getSubmissionClaim(messages.getSubmissionId(), messages.getClaimId())
                             .onErrorResume(ex -> Mono.just(new ClaimResponse()))
                             .switchIfEmpty(Mono.just(new ClaimResponse()))
                             .block();
                   }
-                  return bulkClaimImportSummaryMapper.toSubmissionSummaryClaimError(
-                      errors, claimResponse);
+                  return bulkClaimImportSummaryMapper.toSubmissionSummaryClaimMessage(
+                      messages, claimResponse);
                 })
             .toList();
 
     int totalErrorCount =
         Optional.ofNullable(errorResponse)
-            .map(ValidationErrorsResponse::getTotalElements)
+            .map(ValidationMessagesResponse::getTotalElements)
             .orElse(0);
 
     int totalClaimsWithErrors =
-        Optional.ofNullable(errorResponse).map(ValidationErrorsResponse::getTotalClaims).orElse(0);
+        Optional.ofNullable(errorResponse)
+            .map(ValidationMessagesResponse::getTotalClaims)
+            .orElse(0);
 
     return new BulkClaimImportSummary(
         summaryRows, errorList, totalErrorCount, totalClaimsWithErrors);

@@ -21,8 +21,9 @@ import uk.gov.justice.laa.bulkclaim.dto.summary.SubmissionSummaryRow;
 import uk.gov.justice.laa.bulkclaim.mapper.BulkClaimImportSummaryMapper;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.ClaimResponse;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionResponse;
-import uk.gov.justice.laa.dstew.payments.claimsdata.model.ValidationErrorFields;
-import uk.gov.justice.laa.dstew.payments.claimsdata.model.ValidationErrorsResponse;
+import uk.gov.justice.laa.dstew.payments.claimsdata.model.ValidationMessageBase;
+import uk.gov.justice.laa.dstew.payments.claimsdata.model.ValidationMessageType;
+import uk.gov.justice.laa.dstew.payments.claimsdata.model.ValidationMessagesResponse;
 
 @ExtendWith(MockitoExtension.class)
 class BulkClaimSummaryBuilderTest {
@@ -47,16 +48,17 @@ class BulkClaimSummaryBuilderTest {
     when(bulkClaimImportSummaryMapper.toSubmissionSummaryRows(List.of(submissionResponse)))
         .thenReturn(List.of(summaryRow));
 
-    ValidationErrorFields error =
-        new ValidationErrorFields()
+    ValidationMessageBase error =
+        new ValidationMessageBase()
             .submissionId(submissionId)
             .claimId(claimId)
-            .errorDescription("Invalid data");
+            .displayMessage("Invalid data");
 
-    ValidationErrorsResponse errorResponse =
-        new ValidationErrorsResponse().content(List.of(error)).totalElements(1).totalClaims(1);
+    ValidationMessagesResponse errorResponse =
+        new ValidationMessagesResponse().content(List.of(error)).totalElements(1).totalClaims(1);
 
-    when(dataClaimsRestClient.getValidationErrors(submissionId))
+    when(dataClaimsRestClient.getValidationMessages(
+            submissionId, null, ValidationMessageType.ERROR.toString(), null, 0))
         .thenReturn(Mono.just(errorResponse));
     when(dataClaimsRestClient.getSubmissionClaim(submissionId, claimId))
         .thenReturn(Mono.just(new ClaimResponse()));
@@ -65,10 +67,10 @@ class BulkClaimSummaryBuilderTest {
         new SubmissionSummaryClaimErrorRow(
             submissionId, "UFN123", "UCN456", "John Doe", "Invalid data");
 
-    when(bulkClaimImportSummaryMapper.toSubmissionSummaryClaimError(any(), any()))
+    when(bulkClaimImportSummaryMapper.toSubmissionSummaryClaimMessage(any(), any()))
         .thenReturn(mappedError);
 
-    BulkClaimImportSummary result = builder.build(List.of(submissionResponse));
+    BulkClaimImportSummary result = builder.build(List.of(submissionResponse), 0);
 
     assertThat(result.submissions()).hasSize(1);
     assertThat(result.claimErrors()).containsExactly(mappedError);
@@ -88,9 +90,11 @@ class BulkClaimSummaryBuilderTest {
     when(bulkClaimImportSummaryMapper.toSubmissionSummaryRows(List.of(submissionResponse)))
         .thenReturn(List.of(summaryRow));
 
-    when(dataClaimsRestClient.getValidationErrors(submissionId)).thenReturn(Mono.empty());
+    when(dataClaimsRestClient.getValidationMessages(
+            submissionId, null, ValidationMessageType.ERROR.toString(), null, 0))
+        .thenReturn(Mono.empty());
 
-    BulkClaimImportSummary result = builder.build(List.of(submissionResponse));
+    BulkClaimImportSummary result = builder.build(List.of(submissionResponse), 0);
 
     assertThat(result.submissions()).hasSize(1);
     assertThat(result.claimErrors()).isEmpty();
@@ -110,25 +114,26 @@ class BulkClaimSummaryBuilderTest {
     when(bulkClaimImportSummaryMapper.toSubmissionSummaryRows(List.of(submissionResponse)))
         .thenReturn(List.of(summaryRow));
 
-    ValidationErrorFields error =
-        new ValidationErrorFields()
+    ValidationMessageBase error =
+        new ValidationMessageBase()
             .submissionId(submissionId)
             .claimId(null)
-            .errorDescription("Missing claimId");
+            .displayMessage("Missing claimId");
 
-    ValidationErrorsResponse errorResponse =
-        new ValidationErrorsResponse().content(List.of(error)).totalElements(1).totalClaims(1);
+    ValidationMessagesResponse errorResponse =
+        new ValidationMessagesResponse().content(List.of(error)).totalElements(1).totalClaims(1);
 
-    when(dataClaimsRestClient.getValidationErrors(submissionId))
+    when(dataClaimsRestClient.getValidationMessages(
+            submissionId, null, ValidationMessageType.ERROR.toString(), null, 0))
         .thenReturn(Mono.just(errorResponse));
 
     SubmissionSummaryClaimErrorRow mappedError =
         new SubmissionSummaryClaimErrorRow(submissionId, null, null, null, "Missing claimId");
 
-    when(bulkClaimImportSummaryMapper.toSubmissionSummaryClaimError(any(), any()))
+    when(bulkClaimImportSummaryMapper.toSubmissionSummaryClaimMessage(any(), any()))
         .thenReturn(mappedError);
 
-    BulkClaimImportSummary result = builder.build(List.of(submissionResponse));
+    BulkClaimImportSummary result = builder.build(List.of(submissionResponse), 0);
 
     assertThat(result.submissions()).hasSize(1);
     assertThat(result.claimErrors()).containsExactly(mappedError);
