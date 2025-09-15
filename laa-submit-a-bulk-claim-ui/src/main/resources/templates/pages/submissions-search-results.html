@@ -20,9 +20,9 @@
                 <p class="govuk-body" th:if="${#lists.isEmpty(submissions)}">
                     No submissions were found.
                 </p>
-                <h3 class="govuk-heading-s govuk-!-margin-bottom-0" th:if="${!#lists.isEmpty(submissions)}">
+                <h2 class="govuk-heading-s govuk-!-margin-bottom-0" th:if="${!#lists.isEmpty(submissions)}">
                     Search results
-                </h3>
+                </h2>
                 <div class="upload-table" th:if="${!#lists.isEmpty(submissions)}">
                     <table class="govuk-table" data-module="moj-sortable-table">
                         <thead class="govuk-table__head">

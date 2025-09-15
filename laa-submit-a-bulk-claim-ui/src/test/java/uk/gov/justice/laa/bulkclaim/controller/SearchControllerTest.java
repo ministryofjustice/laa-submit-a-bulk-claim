@@ -25,6 +25,8 @@ import org.springframework.security.oauth2.core.oidc.OidcUserInfo;
 import org.springframework.security.oauth2.core.oidc.user.DefaultOidcUser;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import org.springframework.web.servlet.mvc.support.RedirectAttributesModelMap;
 import reactor.core.publisher.Mono;
 import uk.gov.justice.laa.bulkclaim.dto.SubmissionsSearchForm;
 import uk.gov.justice.laa.bulkclaim.response.CwaUploadErrorResponseDto;
@@ -120,26 +122,25 @@ class SearchControllerTest {
     String submissionId = "1234";
 
     SubmissionsResultSet response = new SubmissionsResultSet();
-    response.content(submissions);
+    response.setNumber(0);
+    response.setTotalPages(1);
+    response.setTotalElements(3);
+    response.setSize(3);
+    response.setContent(submissions);
     when(claimsRestService.search(eq(List.of("1")), eq(submissionId), isNull(), isNull()))
         .thenReturn(Mono.just(response));
     when(request.getQueryString()).thenReturn("submissionId=" + submissionId);
-    when(request.getRequestURI()).thenReturn("/submissions/search/results");
-
+    when(request.getRequestURI()).thenReturn("/submissions/search/");
+    RedirectAttributes redirectAttributes = new RedirectAttributesModelMap();
     String view =
         searchController.handleSearch(
             new SubmissionsSearchForm(submissionId, null, null),
             bindingResult,
             model,
-            null,
-            null,
-            null,
-            0,
-            request,
-            getDefaultOidcUser());
+            getDefaultOidcUser(),
+            redirectAttributes);
 
     assertEquals(0, bindingResult.getErrorCount());
-    verify(model).addAttribute(eq("submissions"), eq(response));
-    assertEquals("pages/submissions-search-results", view);
+    assertEquals("redirect:/submissions/search/results", view);
   }
 }
