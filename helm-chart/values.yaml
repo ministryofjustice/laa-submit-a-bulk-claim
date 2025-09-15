@@ -53,6 +53,18 @@ env:
         name: laa-submit-a-bulk-claim-secrets
         key: CWA_API_URL
 
+  - name: CLAIM_API_URL
+    valueFrom:
+      secretKeyRef:
+        name: laa-submit-a-bulk-claim-secrets
+        key: CLAIM_API_URL
+
+  - name: CLAIMS_API_ACCESS_TOKEN
+    valueFrom:
+      secretKeyRef:
+        name: laa-submit-a-bulk-claim-secrets
+        key: CLAIMS_API_ACCESS_TOKEN
+
   - name: SILAS_CLIENT_ID
     valueFrom:
       secretKeyRef:
