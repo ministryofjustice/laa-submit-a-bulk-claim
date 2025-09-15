@@ -12,7 +12,8 @@
       "Content-Type": "application/json"
     },
     "jsonBody": {
-      "status": "VALID",
+      "id": "b008c43e-2153-494d-8f14-651628cd23eb",
+      "status": "READY_TO_PROCESS",
       "schedule_reference": "string",
       "line_number": 1,
       "case_reference_number": "string",

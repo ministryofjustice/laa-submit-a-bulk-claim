@@ -13,20 +13,26 @@
     "headers": {
       "Content-Type": "application/json"
     },
-    "jsonBody": [
-      {
-        "unique_client_number": "C1234567",
-        "unique_file_number": "F1234567",
-        "client": "Client name",
-        "error_description": "Error description"
-      },
-      {
-        "unique_client_number": "C7654321",
-        "unique_file_number": "F7654321",
-        "client": "Second client name",
-        "error_description": "This is another error!"
-      }
-    ]
+    "jsonBody": {
+      "total_pages": 1,
+      "total_elements": 2,
+      "number": 2,
+      "size": 2,
+      "content": [
+        {
+          "unique_client_number": "C1234567",
+          "unique_file_number": "F1234567",
+          "client": "Client name",
+          "error_description": "Error description"
+        },
+        {
+          "unique_client_number": "C7654321",
+          "unique_file_number": "F7654321",
+          "client": "Second client name",
+          "error_description": "This is another error!"
+        }
+      ]
+    }
   }
 }
 
