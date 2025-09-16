@@ -1,4 +1,4 @@
-<nav th:fragment="pagination(page)" th:if="${page.totalPages > 1}" class="govuk-pagination"
+<nav th:fragment="pagination(currentUrl, page)" th:if="${page.totalPages > 1}" class="govuk-pagination"
      role="navigation" aria-label="results">
     <div th:if="${page.number > 0}" class="govuk-pagination__prev">
         <a class="govuk-link govuk-pagination__link"

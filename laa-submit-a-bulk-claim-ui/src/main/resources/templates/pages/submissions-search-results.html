@@ -48,7 +48,7 @@
                         </tr>
                         </tbody>
                     </table>
-                    <nav th:replace="~{fragments/pagination :: pagination(page=${submissions})}"></nav>
+                    <nav th:replace="~{fragments/pagination :: pagination(currentUrl='/submissions/search/results', page=${pagination})}"></nav>
                 </div>
 
             </div>

@@ -136,7 +136,6 @@ public class SearchController {
         submissionsResults != null ? submissionsResults.getTotalElements() : null);
 
     model.addAttribute("pagination", pagination);
-    model.addAttribute("currentUrl", request.getRequestURL());
     log.debug("Adding currentUrl to model: {}", request.getRequestURL());
 
     return "pages/submissions-search-results";
