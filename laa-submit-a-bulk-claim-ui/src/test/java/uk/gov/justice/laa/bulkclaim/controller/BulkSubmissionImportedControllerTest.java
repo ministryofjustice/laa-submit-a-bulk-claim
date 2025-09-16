@@ -33,6 +33,7 @@ import uk.gov.justice.laa.bulkclaim.builder.BulkClaimSummaryBuilder;
 import uk.gov.justice.laa.bulkclaim.client.DataClaimsRestClient;
 import uk.gov.justice.laa.bulkclaim.config.WebMvcTestConfig;
 import uk.gov.justice.laa.bulkclaim.dto.summary.BulkClaimImportSummary;
+import uk.gov.justice.laa.bulkclaim.dto.summary.ClaimErrorSummary;
 import uk.gov.justice.laa.bulkclaim.dto.summary.SubmissionSummaryClaimErrorRow;
 import uk.gov.justice.laa.bulkclaim.dto.summary.SubmissionSummaryRow;
 import uk.gov.justice.laa.bulkclaim.exception.SubmitBulkClaimException;
@@ -143,6 +144,8 @@ class BulkSubmissionImportedControllerTest {
                 "UCN2",
                 "Client",
                 "This is an error which is found on your claim!"));
-    return new BulkClaimImportSummary(Collections.singletonList(summaryRow), errors, 1, 1);
+
+    return new BulkClaimImportSummary(
+        Collections.singletonList(summaryRow), new ClaimErrorSummary(errors, 1, 1));
   }
 }

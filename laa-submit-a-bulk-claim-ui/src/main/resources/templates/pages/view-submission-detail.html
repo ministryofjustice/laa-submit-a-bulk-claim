@@ -64,6 +64,15 @@
                  th:text="#{viewSubmission.claims.subHeading}"/>
             </li>
 
+            <li class="moj-sub-navigation__item" th:if="${submissionSummary.status() == 'Invalid'}">
+              <a class="moj-sub-navigation__link"
+                 th:with="isCurrent=${navTab.toString() == 'CLAIM_ERRORS'},
+                  url=@{/view-submission-detail(navTab='CLAIM_ERRORS')}"
+                 th:attr="aria-current=${isCurrent ? 'page' : null}"
+                 th:href="${isCurrent ? '#claim-errors' : url}"
+                 th:text="#{viewSubmission.claimErrors.subHeading}"/>
+            </li>
+
             <li class="moj-sub-navigation__item">
               <a class="moj-sub-navigation__link"
                  th:with="isCurrent=${navTab.toString() == 'MATTER_STARTS'},
@@ -219,6 +228,13 @@
 
               </tbody>
             </table>
+        </div>
+      </th:block>
+
+
+      <th:block th:if="${navTab.toString() == 'CLAIM_ERRORS'}">
+        <div class="govuk-grid-column-full">
+          <div th:replace="fragments/claim-errors :: claimErrors(${claimErrorDetails})"></div>
         </div>
       </th:block>
 

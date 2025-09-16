@@ -10,6 +10,7 @@ import org.mapstruct.Mapping;
 import org.mapstruct.Named;
 import uk.gov.justice.laa.bulkclaim.dto.submission.SubmissionSummary;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionResponse;
+import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionStatus;
 
 /**
  * Maps between {@link SubmissionResponse} and {@link SubmissionSummary}.
@@ -32,10 +33,35 @@ public interface SubmissionSummaryMapper {
       target = "submissionPeriod",
       source = "submissionPeriod",
       qualifiedByName = "toSubmissionPeriod")
-  @Mapping(target = "status", constant = "Submitted")
+  @Mapping(target = "status", source = "status", qualifiedByName = "mapStatus")
   @Mapping(target = "submitted", source = "submitted")
   @Mapping(target = "submissionValue", constant = "50.52")
   SubmissionSummary toSubmissionSummary(SubmissionResponse submissionResponse);
+
+  /**
+   * Maps the {@link SubmissionStatus} to string.
+   *
+   * @param status The status to map.
+   * @return The mapped status string.
+   */
+  @Named("mapStatus")
+  default String mapStatus(SubmissionStatus status) {
+    if (status == null) {
+      return null;
+    }
+    switch (status) {
+      case VALIDATION_SUCCEEDED:
+        return "Submitted";
+      case VALIDATION_FAILED:
+        return "Invalid";
+      case CREATED:
+      case READY_FOR_VALIDATION:
+      case VALIDATION_IN_PROGRESS:
+        return "In progress";
+      default:
+        throw new IllegalArgumentException("Unexpected status: " + status);
+    }
+  }
 
   /**
    * Returns a {@link LocalDate} from a submission period string.

@@ -6,6 +6,7 @@ package uk.gov.justice.laa.bulkclaim.constants;
  * @author Jamie Briggs
  */
 public enum ViewSubmissionNavigationTab {
+  CLAIM_ERRORS,
   CLAIM_DETAILS,
   MATTER_STARTS
 }
