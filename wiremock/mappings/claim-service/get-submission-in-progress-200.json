@@ -1,7 +1,7 @@
 {
   "request": {
     "method": "GET",
-    "urlPath": "/api/v0/submissions/0561d67b-30ed-412e-8231-f6296a53538d"
+    "urlPathPattern": "/api/v0/submissions/[a-f0-9\\-]+"
   },
   "scenarioName": "Submission status alternator",
   "requiredScenarioState": "InProgress",
@@ -12,19 +12,17 @@
       "Content-Type": "application/json"
     },
     "jsonBody": {
-      "submission": {
-        "submitted": "2025-05-01T12:32:00Z",
-        "submission_id": "0561d67b-30ed-412e-8231-f6296a53538d",
-        "bulk_submission_id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
-        "status": "VALIDATION_IN_PROGRESS",
-        "office_account_number": "AQ2B3C",
-        "submission_period": "2025-05",
-        "area_of_law": "Legal help",
-        "schedule_number": "23456",
-        "previous_submission_id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
-        "is_nil_submission": false,
-        "number_of_claims": 30
-      },
+      "submission_id": "0561d67b-30ed-412e-8231-f6296a53538d",
+      "bulk_submission_id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+      "office_account_number": "AQ2B3C",
+      "submission_period": "MAY-2025",
+      "area_of_law": "Legal help",
+      "status": "VALIDATION_IN_PROGRESS",
+      "schedule_number": "23456",
+      "previous_submission_id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+      "is_nil_submission": false,
+      "number_of_claims": 30,
+      "submitted": "2025-05-01T12:32:00Z",
       "claims": [
         {
           "claim_id": "6850db96-fbb7-4859-a5a5-fc111cd205b2",
