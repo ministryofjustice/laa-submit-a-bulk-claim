@@ -10,7 +10,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.justice.laa.bulkclaim.dto.submission.SubmissionClaimRow;
 import uk.gov.justice.laa.bulkclaim.dto.submission.SubmissionClaimRowCostsDetails;
-import uk.gov.justice.laa.claims.model.ClaimFields;
+import uk.gov.justice.laa.dstew.payments.claimsdata.model.ClaimResponse;
 
 @DisplayName("Submission claim mapper test")
 @ExtendWith(SpringExtension.class)
@@ -27,8 +27,8 @@ class SubmissionClaimMapperTest {
   @DisplayName("Should map submission claim")
   void shouldMapSubmissionClaim() {
     // Given
-    ClaimFields claimFields =
-        ClaimFields.builder()
+    ClaimResponse claimResponse =
+        ClaimResponse.builder()
             .lineNumber(1)
             .uniqueFileNumber("UFN123")
             .uniqueClientNumber("UCN123")
@@ -36,7 +36,7 @@ class SubmissionClaimMapperTest {
             .clientSurname("name")
             .standardFeeCategoryCode("Family")
             .matterTypeCode("FAMD:FRES")
-            .caseConcludedDate(LocalDate.of(2025, 3, 18))
+            .caseConcludedDate(LocalDate.of(2025, 3, 18).toString())
             // TODO: Check this is how the claim value is made up
             .netProfitCostsAmount(new BigDecimal("100.10"))
             .netCounselCostsAmount(new BigDecimal("100.10"))
@@ -47,7 +47,7 @@ class SubmissionClaimMapperTest {
             .feeCode("Fee code")
             .build();
     // When
-    SubmissionClaimRow result = mapper.toSubmissionClaimRow(claimFields);
+    SubmissionClaimRow result = mapper.toSubmissionClaimRow(claimResponse);
     // Then
     SoftAssertions.assertSoftly(
         softAssertions -> {
@@ -70,8 +70,8 @@ class SubmissionClaimMapperTest {
   @DisplayName("Should map claim costs details")
   void shouldMapClaimCostsDetails() {
     // Given
-    ClaimFields claimFields =
-        ClaimFields.builder()
+    ClaimResponse claimResponse =
+        ClaimResponse.builder()
             .netProfitCostsAmount(new BigDecimal("100.10"))
             .netCounselCostsAmount(new BigDecimal("200.20"))
             .netDisbursementAmount(new BigDecimal("300.30"))
@@ -81,7 +81,7 @@ class SubmissionClaimMapperTest {
             .totalValue(new BigDecimal("1234.56"))
             .build();
     // When
-    SubmissionClaimRowCostsDetails result = mapper.toSubmissionClaimRowCostsDetails(claimFields);
+    SubmissionClaimRowCostsDetails result = mapper.toSubmissionClaimRowCostsDetails(claimResponse);
     // Then
     SoftAssertions.assertSoftly(
         softAssertions -> {

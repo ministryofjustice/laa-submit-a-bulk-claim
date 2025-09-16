@@ -12,7 +12,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.justice.laa.bulkclaim.dto.submission.SubmissionSummary;
 import uk.gov.justice.laa.bulkclaim.mapper.SubmissionSummaryMapper;
-import uk.gov.justice.laa.claims.model.GetSubmission200Response;
+import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionResponse;
 
 @ExtendWith(MockitoExtension.class)
 @DisplayName("Submission summary builder tests")
@@ -32,13 +32,13 @@ class SubmissionSummaryBuilderTest {
   void shouldReturnSubmissionSummary() {
     // Given
     UUID submissionReference = UUID.fromString("e20ca04b-09a4-4754-8e88-aea8820d1208");
-    GetSubmission200Response submission200Response =
-        GetSubmission200Response.builder().submissionId(submissionReference).build();
+    SubmissionResponse submissionResponse =
+        SubmissionResponse.builder().submissionId(submissionReference).build();
     SubmissionSummary expected =
         new SubmissionSummary(submissionReference, null, null, null, null, null, null);
-    when(submissionSummaryMapper.toSubmissionSummary(submission200Response)).thenReturn(expected);
+    when(submissionSummaryMapper.toSubmissionSummary(submissionResponse)).thenReturn(expected);
     // When
-    SubmissionSummary result = builder.build(submission200Response);
+    SubmissionSummary result = builder.build(submissionResponse);
     // Then
     assertThat(result).isEqualTo(expected);
   }

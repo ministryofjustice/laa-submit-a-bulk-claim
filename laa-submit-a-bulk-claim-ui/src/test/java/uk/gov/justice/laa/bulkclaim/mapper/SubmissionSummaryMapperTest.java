@@ -2,7 +2,8 @@ package uk.gov.justice.laa.bulkclaim.mapper;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
 import java.util.UUID;
 import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -11,7 +12,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.justice.laa.bulkclaim.dto.submission.SubmissionSummary;
-import uk.gov.justice.laa.claims.model.GetSubmission200Response;
+import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionResponse;
 
 @DisplayName("Submission summary mapper test")
 @ExtendWith(SpringExtension.class)
@@ -29,20 +30,19 @@ class SubmissionSummaryMapperTest {
   void shouldMapSubmissionSummary() {
     // Given
     UUID submissionReference = UUID.fromString("e20ca04b-09a4-4754-8e88-aea8820d1208");
-    GetSubmission200Response getSubmissionResponse =
-        GetSubmission200Response.builder()
+    SubmissionResponse submissionResponse =
+        SubmissionResponse.builder()
             .submissionId(submissionReference)
-            .submissionPeriod("2025-05")
+            .submissionPeriod("MAY-2025")
             .officeAccountNumber("1234567890")
             // TODO: Add submission value to specification
             .areaOfLaw("Civil Law")
-            .submitted(LocalDate.of(2025, 1, 1))
+            .submitted(OffsetDateTime.of(2025, 1, 1, 0, 0, 0, 0, ZoneOffset.UTC))
             .build();
 
     // When
-    SubmissionSummary result = mapper.toSubmissionSummary(getSubmissionResponse);
+    SubmissionSummary result = mapper.toSubmissionSummary(submissionResponse);
     // Then
-
     SoftAssertions.assertSoftly(
         softAssertions -> {
           softAssertions.assertThat(result.submissionReference()).isEqualTo(submissionReference);
@@ -53,7 +53,7 @@ class SubmissionSummaryMapperTest {
           softAssertions.assertThat(result.areaOfLaw()).isEqualTo("Civil Law");
           softAssertions
               .assertThat(result.submitted())
-              .isEqualTo(LocalDateTime.of(2025, 1, 1, 0, 0, 0));
+              .isEqualTo(OffsetDateTime.of(2025, 1, 1, 0, 0, 0, 0, ZoneOffset.UTC));
         });
   }
 }

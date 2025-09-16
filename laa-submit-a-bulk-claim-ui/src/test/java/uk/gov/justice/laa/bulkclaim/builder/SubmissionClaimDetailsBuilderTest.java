@@ -15,14 +15,14 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import reactor.core.publisher.Mono;
+import uk.gov.justice.laa.bulkclaim.client.DataClaimsRestClient;
 import uk.gov.justice.laa.bulkclaim.dto.submission.SubmissionClaimDetails;
 import uk.gov.justice.laa.bulkclaim.dto.submission.SubmissionClaimRow;
 import uk.gov.justice.laa.bulkclaim.dto.submission.SubmissionClaimRowCostsDetails;
 import uk.gov.justice.laa.bulkclaim.mapper.SubmissionClaimMapper;
-import uk.gov.justice.laa.bulkclaim.service.claims.DataClaimsRestService;
-import uk.gov.justice.laa.claims.model.ClaimFields;
-import uk.gov.justice.laa.claims.model.GetSubmission200Response;
-import uk.gov.justice.laa.claims.model.GetSubmission200ResponseClaimsInner;
+import uk.gov.justice.laa.dstew.payments.claimsdata.model.ClaimResponse;
+import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionClaim;
+import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionResponse;
 
 @ExtendWith(MockitoExtension.class)
 @DisplayName("Submission claim details builder tests")
@@ -30,12 +30,12 @@ class SubmissionClaimDetailsBuilderTest {
 
   private SubmissionClaimDetailsBuilder builder;
 
-  @Mock DataClaimsRestService dataClaimsRestService;
+  @Mock DataClaimsRestClient dataClaimsRestClient;
   @Mock SubmissionClaimMapper submissionClaimMapper;
 
   @BeforeEach
   void beforeEach() {
-    builder = new SubmissionClaimDetailsBuilder(dataClaimsRestService, submissionClaimMapper);
+    builder = new SubmissionClaimDetailsBuilder(dataClaimsRestClient, submissionClaimMapper);
   }
 
   @Test
@@ -44,13 +44,13 @@ class SubmissionClaimDetailsBuilderTest {
     // Given
     UUID submissionId = UUID.fromString("45bf06e5-2298-4163-adc0-a6134b48f213");
     UUID claimId = UUID.fromString("87fdac7e-6de4-4a98-a788-e89a9d1c0225");
-    GetSubmission200Response getSubmission200Response =
-        GetSubmission200Response.builder()
+    SubmissionResponse submissionResponse =
+        SubmissionResponse.builder()
             .submissionId(submissionId)
-            .claims(List.of(GetSubmission200ResponseClaimsInner.builder().claimId(claimId).build()))
+            .claims(List.of(SubmissionClaim.builder().claimId(claimId).build()))
             .build();
-    when(dataClaimsRestService.getSubmissionClaim(submissionId, claimId))
-        .thenReturn(Mono.just(ClaimFields.builder().build()));
+    when(dataClaimsRestClient.getSubmissionClaim(submissionId, claimId))
+        .thenReturn(Mono.just(ClaimResponse.builder().build()));
     SubmissionClaimRow expected =
         new SubmissionClaimRow(
             1,
@@ -72,7 +72,7 @@ class SubmissionClaimDetailsBuilderTest {
                 new BigDecimal("70.10")));
     when(submissionClaimMapper.toSubmissionClaimRow(any())).thenReturn(expected);
     // When
-    SubmissionClaimDetails result = builder.build(getSubmission200Response);
+    SubmissionClaimDetails result = builder.build(submissionResponse);
     // Then
     assertThat(result.submissionClaims().contains(expected)).isTrue();
   }
@@ -83,16 +83,16 @@ class SubmissionClaimDetailsBuilderTest {
     // Given
     UUID submissionId = UUID.fromString("45bf06e5-2298-4163-adc0-a6134b48f213");
     UUID claimId = UUID.fromString("87fdac7e-6de4-4a98-a788-e89a9d1c0225");
-    GetSubmission200Response getSubmission200Response =
-        GetSubmission200Response.builder()
+    SubmissionResponse submissionResponse =
+        SubmissionResponse.builder()
             .submissionId(submissionId)
             .claims(
                 List.of(
-                    GetSubmission200ResponseClaimsInner.builder().claimId(claimId).build(),
-                    GetSubmission200ResponseClaimsInner.builder().claimId(claimId).build()))
+                    SubmissionClaim.builder().claimId(claimId).build(),
+                    SubmissionClaim.builder().claimId(claimId).build()))
             .build();
-    when(dataClaimsRestService.getSubmissionClaim(submissionId, claimId))
-        .thenReturn(Mono.just(ClaimFields.builder().build()));
+    when(dataClaimsRestClient.getSubmissionClaim(submissionId, claimId))
+        .thenReturn(Mono.just(ClaimResponse.builder().build()));
     SubmissionClaimRow claimOne =
         new SubmissionClaimRow(
             1,
@@ -134,7 +134,7 @@ class SubmissionClaimDetailsBuilderTest {
     when(submissionClaimMapper.toSubmissionClaimRow(any())).thenReturn(claimOne);
     when(submissionClaimMapper.toSubmissionClaimRow(any())).thenReturn(claimTwo);
     // When
-    SubmissionClaimDetails result = builder.build(getSubmission200Response);
+    SubmissionClaimDetails result = builder.build(submissionResponse);
     // Then
     assertThat(result.costsSummary().profitCosts()).isEqualTo(new BigDecimal("22.20"));
     assertThat(result.costsSummary().disbursements()).isEqualTo(new BigDecimal("42.20"));

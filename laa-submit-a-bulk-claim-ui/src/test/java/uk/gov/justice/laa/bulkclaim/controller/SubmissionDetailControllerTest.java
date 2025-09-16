@@ -10,7 +10,8 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.UUID;
@@ -27,14 +28,14 @@ import reactor.core.publisher.Mono;
 import uk.gov.justice.laa.bulkclaim.builder.SubmissionClaimDetailsBuilder;
 import uk.gov.justice.laa.bulkclaim.builder.SubmissionMatterStartsDetailsBuilder;
 import uk.gov.justice.laa.bulkclaim.builder.SubmissionSummaryBuilder;
+import uk.gov.justice.laa.bulkclaim.client.DataClaimsRestClient;
 import uk.gov.justice.laa.bulkclaim.config.WebMvcTestConfig;
 import uk.gov.justice.laa.bulkclaim.dto.submission.SubmissionClaimDetails;
 import uk.gov.justice.laa.bulkclaim.dto.submission.SubmissionCostsSummary;
 import uk.gov.justice.laa.bulkclaim.dto.submission.SubmissionMatterStartsDetails;
 import uk.gov.justice.laa.bulkclaim.dto.submission.SubmissionMatterStartsRow;
 import uk.gov.justice.laa.bulkclaim.dto.submission.SubmissionSummary;
-import uk.gov.justice.laa.bulkclaim.service.claims.DataClaimsRestService;
-import uk.gov.justice.laa.claims.model.GetSubmission200Response;
+import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionResponse;
 
 @WebMvcTest(SubmissionDetailController.class)
 @AutoConfigureMockMvc
@@ -47,7 +48,7 @@ class SubmissionDetailControllerTest {
   @MockitoBean private SubmissionSummaryBuilder submissionSummaryBuilder;
   @MockitoBean private SubmissionClaimDetailsBuilder submissionClaimDetailsBuilder;
   @MockitoBean private SubmissionMatterStartsDetailsBuilder submissionMatterStartsDetailsBuilder;
-  @MockitoBean private DataClaimsRestService dataClaimsRestService;
+  @MockitoBean private DataClaimsRestClient dataClaimsRestClient;
 
   @Nested
   @DisplayName("GET: /submission/{submissionId}")
@@ -77,8 +78,8 @@ class SubmissionDetailControllerTest {
     void shouldReturnExpectedResult() {
       // Given
       UUID submissionReference = UUID.fromString("bceac49c-d756-4e05-8e28-3334b84b6fe8");
-      when(dataClaimsRestService.getSubmission(submissionReference))
-          .thenReturn(Mono.just(GetSubmission200Response.builder().build()));
+      when(dataClaimsRestClient.getSubmission(submissionReference))
+          .thenReturn(Mono.just(SubmissionResponse.builder().build()));
       when(submissionSummaryBuilder.build(any()))
           .thenReturn(
               new SubmissionSummary(
@@ -88,7 +89,7 @@ class SubmissionDetailControllerTest {
                   "AQ2B3C",
                   new BigDecimal("100.50"),
                   "Legal aid",
-                  LocalDateTime.of(2025, 1, 1, 10, 10, 10)));
+                  OffsetDateTime.of(2025, 1, 1, 10, 10, 10, 0, ZoneOffset.UTC)));
       when(submissionClaimDetailsBuilder.build(any()))
           .thenReturn(
               new SubmissionClaimDetails(
@@ -116,8 +117,8 @@ class SubmissionDetailControllerTest {
     void shouldReturnExpectedResultWithClaims() {
       // Given
       UUID submissionReference = UUID.fromString("bceac49c-d756-4e05-8e28-3334b84b6fe8");
-      when(dataClaimsRestService.getSubmission(submissionReference))
-          .thenReturn(Mono.just(GetSubmission200Response.builder().build()));
+      when(dataClaimsRestClient.getSubmission(submissionReference))
+          .thenReturn(Mono.just(SubmissionResponse.builder().build()));
       when(submissionSummaryBuilder.build(any()))
           .thenReturn(
               new SubmissionSummary(
@@ -127,7 +128,7 @@ class SubmissionDetailControllerTest {
                   "AQ2B3C",
                   new BigDecimal("100.50"),
                   "Legal aid",
-                  LocalDateTime.of(2025, 1, 1, 10, 10, 10)));
+                  OffsetDateTime.of(2025, 1, 1, 10, 10, 10, 0, ZoneOffset.UTC)));
       when(submissionClaimDetailsBuilder.build(any()))
           .thenReturn(
               new SubmissionClaimDetails(
@@ -155,8 +156,8 @@ class SubmissionDetailControllerTest {
     void shouldReturnExpectedResultWithMatterStarts() {
       // Given
       UUID submissionReference = UUID.fromString("bceac49c-d756-4e05-8e28-3334b84b6fe8");
-      when(dataClaimsRestService.getSubmission(submissionReference))
-          .thenReturn(Mono.just(GetSubmission200Response.builder().build()));
+      when(dataClaimsRestClient.getSubmission(submissionReference))
+          .thenReturn(Mono.just(SubmissionResponse.builder().build()));
       when(submissionSummaryBuilder.build(any()))
           .thenReturn(
               new SubmissionSummary(
@@ -166,7 +167,7 @@ class SubmissionDetailControllerTest {
                   "AQ2B3C",
                   new BigDecimal("100.50"),
                   "Legal aid",
-                  LocalDateTime.of(2025, 1, 1, 10, 10, 10)));
+                  OffsetDateTime.of(2025, 1, 1, 10, 10, 10, 0, ZoneOffset.UTC)));
       HashMap<SubmissionMatterStartsRow, Long> matterTypes = new HashMap<>();
       matterTypes.put(new SubmissionMatterStartsRow("Description"), 1L);
       when(submissionMatterStartsDetailsBuilder.build(any()))
@@ -188,7 +189,7 @@ class SubmissionDetailControllerTest {
     void shouldThrowExceptionWhenSubmissionDoesNotExist() {
       // Given
       UUID submissionReference = UUID.fromString("bceac49c-d756-4e05-8e28-3334b84b6fe8");
-      when(dataClaimsRestService.getSubmission(submissionReference)).thenReturn(Mono.empty());
+      when(dataClaimsRestClient.getSubmission(submissionReference)).thenReturn(Mono.empty());
       // When / Then
       assertThat(
               mockMvc.perform(

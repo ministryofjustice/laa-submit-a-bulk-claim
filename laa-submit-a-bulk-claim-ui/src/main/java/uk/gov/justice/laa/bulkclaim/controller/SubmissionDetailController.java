@@ -17,13 +17,13 @@ import org.springframework.web.bind.annotation.SessionAttributes;
 import uk.gov.justice.laa.bulkclaim.builder.SubmissionClaimDetailsBuilder;
 import uk.gov.justice.laa.bulkclaim.builder.SubmissionMatterStartsDetailsBuilder;
 import uk.gov.justice.laa.bulkclaim.builder.SubmissionSummaryBuilder;
+import uk.gov.justice.laa.bulkclaim.client.DataClaimsRestClient;
 import uk.gov.justice.laa.bulkclaim.constants.ViewSubmissionNavigationTab;
 import uk.gov.justice.laa.bulkclaim.dto.submission.SubmissionClaimDetails;
 import uk.gov.justice.laa.bulkclaim.dto.submission.SubmissionMatterStartsDetails;
 import uk.gov.justice.laa.bulkclaim.dto.submission.SubmissionSummary;
 import uk.gov.justice.laa.bulkclaim.exception.SubmitBulkClaimException;
-import uk.gov.justice.laa.bulkclaim.service.claims.DataClaimsRestService;
-import uk.gov.justice.laa.claims.model.GetSubmission200Response;
+import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionResponse;
 
 /**
  * Controller for handling viewing a submission.
@@ -39,7 +39,7 @@ public class SubmissionDetailController {
   private final SubmissionSummaryBuilder submissionSummaryBuilder;
   private final SubmissionClaimDetailsBuilder submissionClaimDetailsBuilder;
   private final SubmissionMatterStartsDetailsBuilder submissionMatterStartsDetailsBuilder;
-  private final DataClaimsRestService dataClaimsRestService;
+  private final DataClaimsRestClient dataClaimsRestClient;
 
   /**
    * Gets the submission reference, stores it in the session and redirects to the view submission.
@@ -68,8 +68,8 @@ public class SubmissionDetailController {
       @ModelAttribute(SUBMISSION_ID) UUID submissionId,
       @RequestParam(value = "navTab", required = false, defaultValue = "CLAIM_DETAILS")
           ViewSubmissionNavigationTab navigationTab) {
-    GetSubmission200Response submissionResponse =
-        dataClaimsRestService
+    SubmissionResponse submissionResponse =
+        dataClaimsRestClient
             .getSubmission(submissionId)
             .blockOptional()
             .orElseThrow(

@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import uk.gov.justice.laa.bulkclaim.dto.submission.SubmissionSummary;
 import uk.gov.justice.laa.bulkclaim.mapper.SubmissionSummaryMapper;
-import uk.gov.justice.laa.claims.model.GetSubmission200Response;
+import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionResponse;
 
 /**
  * Builder class for constructing a {@link SubmissionSummary} object used for displaying surface
@@ -24,7 +24,7 @@ public class SubmissionSummaryBuilder {
    * @param submissionResponse the source submission response.
    * @return the built {@link SubmissionSummary}.
    */
-  public SubmissionSummary build(GetSubmission200Response submissionResponse) {
+  public SubmissionSummary build(SubmissionResponse submissionResponse) {
     return submissionSummaryMapper.toSubmissionSummary(submissionResponse);
   }
 }

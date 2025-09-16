@@ -27,7 +27,7 @@
         </div>
         <div class="moj-alert__content">
           <h2 class="moj-alert__heading"
-              th:text="#{bulkClaimImportSummary.errorsFoundModal.heading(${bulkClaimImportSummary.totalErrors()})}"/>
+              th:text="#{bulkClaimImportSummary.errorsFoundModal.heading(${bulkClaimImportSummary.totalClaimsWithErrors()})}"/>
           <th:block
               th:text="#{bulkClaimImportSummary.errorsFoundModal.message}"/>
         </div>
@@ -42,7 +42,7 @@
           <dt class="govuk-summary-list__key" th:text="#{submission.properties.submissionDateTime}"/>
           <dd class="govuk-summary-list__value govuk-!-font-weight-bold"
               id="submission-date"
-              th:text="|${#temporals.format(submission.submitted,'d MMM yyyy')} at ${#temporals.format(submission.submitted(),'hh:MM:SS')}|"/>
+              th:text="|${#temporals.format(submission.submitted,'d MMM yyyy')} at ${#temporals.format(submission.submitted(),'HH:mm:ss')}|"/>
         </div>
         <div class="govuk-summary-list__row">
           <dt class="govuk-summary-list__key" th:text="#{submission.properties.totalClaims}"/>
@@ -69,7 +69,7 @@
               th:text="${submission.officeAccount}"/>
         </div>
         <div class="govuk-summary-list__row">
-          <dt class="govuk-summary-list__key" th:text="#{submission.properties.officeAccount}"/>
+          <dt class="govuk-summary-list__key" th:text="#{submission.properties.submissionReference}"/>
           <dd class="govuk-summary-list__value"
               id="submission-reference">
             <a th:href="@{/submission/{submissionId}(submissionId=${submission.submissionReference()})}"
@@ -134,7 +134,7 @@
             <path fill="currentColor" d="M0 0h13l20 20-20 20H0l20-20z"/>
           </svg>
         </a>
-        <a class="govuk-link" href="#"
+        <a class="govuk-link" href="/submissions/search"
            th:text="#{bulkClaimImportSummary.searchLink}"/>
       </div>
 

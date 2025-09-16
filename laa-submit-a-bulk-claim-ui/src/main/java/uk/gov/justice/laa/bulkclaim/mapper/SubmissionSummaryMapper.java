@@ -1,14 +1,18 @@
 package uk.gov.justice.laa.bulkclaim.mapper;
 
 import java.time.LocalDate;
+import java.time.YearMonth;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeFormatterBuilder;
+import java.util.Locale;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Named;
 import uk.gov.justice.laa.bulkclaim.dto.submission.SubmissionSummary;
-import uk.gov.justice.laa.claims.model.GetSubmission200Response;
+import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionResponse;
 
 /**
- * Maps between {@link GetSubmission200Response} and {@link SubmissionSummary}.
+ * Maps between {@link SubmissionResponse} and {@link SubmissionSummary}.
  *
  * @author Jamie Briggs
  */
@@ -16,7 +20,7 @@ import uk.gov.justice.laa.claims.model.GetSubmission200Response;
 public interface SubmissionSummaryMapper {
 
   /**
-   * Maps a {@link GetSubmission200Response} to a {@link SubmissionSummary}.
+   * Maps a {@link SubmissionResponse} to a {@link SubmissionSummary}.
    *
    * @param submissionResponse The response to map.
    * @return The mapped {@link SubmissionSummary}.
@@ -31,7 +35,7 @@ public interface SubmissionSummaryMapper {
   @Mapping(target = "status", constant = "Submitted")
   @Mapping(target = "submitted", source = "submitted")
   @Mapping(target = "submissionValue", constant = "50.52")
-  SubmissionSummary toSubmissionSummary(GetSubmission200Response submissionResponse);
+  SubmissionSummary toSubmissionSummary(SubmissionResponse submissionResponse);
 
   /**
    * Returns a {@link LocalDate} from a submission period string.
@@ -41,8 +45,14 @@ public interface SubmissionSummaryMapper {
    */
   @Named("toSubmissionPeriod")
   default LocalDate toSubmissionPeriod(final String submissionPeriod) {
-    // Assumes that API returns YYYY-MM format.
-    String[] periodArray = submissionPeriod.split("-");
-    return LocalDate.of(Integer.parseInt(periodArray[0]), Integer.parseInt(periodArray[1]), 1);
+    // Assumes that API returns MMM-yyyy format.
+    DateTimeFormatter dateFormat =
+        new DateTimeFormatterBuilder()
+            .parseCaseInsensitive()
+            .appendPattern("MMM-yyyy")
+            .toFormatter(Locale.ENGLISH);
+
+    YearMonth yearMonth = YearMonth.parse(submissionPeriod, dateFormat);
+    return yearMonth.atDay(1);
   }
 }
