@@ -6,7 +6,7 @@
 </head>
 <body>
 
-<section th:fragment="service-navigation" class="govuk-service-navigation"
+<section th:fragment="service-navigation(package)"  class="govuk-service-navigation"
      data-module="govuk-service-navigation">
   <div class="govuk-width-container">
     <div class="govuk-service-navigation__container">
@@ -22,7 +22,8 @@
           th:text="#{header.navigation.menu}"/>
 
         <ul class="govuk-service-navigation__list" id="navigation">
-          <li class="govuk-service-navigation__item govuk-service-navigation__item--active">
+          <li class="govuk-service-navigation__item"
+              th:classappend="${#strings.isEmpty(package)} ? 'govuk-service-navigation__item--active' : ${package}">
             <a class="govuk-service-navigation__link" th:href="@{/}"
                id="import-claims-link"
                aria-current="true">
@@ -31,7 +32,8 @@
             </a>
           </li>
 
-          <li class="govuk-service-navigation__item">
+          <li class="govuk-service-navigation__item"
+              th:classappend="${package == 'search-submissions'} ? 'govuk-service-navigation__item--active' : ''">
             <a class="govuk-service-navigation__link" th:href="@{/submissions/search}"
               id="search-link"
                th:text="#{header.navigation.search}"/>

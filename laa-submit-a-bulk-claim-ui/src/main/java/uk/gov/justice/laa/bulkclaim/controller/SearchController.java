@@ -1,7 +1,7 @@
 package uk.gov.justice.laa.bulkclaim.controller;
 
+import jakarta.servlet.http.HttpServletRequest;
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -14,17 +14,21 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.StringUtils;
 import org.springframework.validation.BindingResult;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import uk.gov.justice.laa.bulkclaim.client.DataClaimsRestClient;
 import uk.gov.justice.laa.bulkclaim.dto.SubmissionsSearchForm;
 import uk.gov.justice.laa.bulkclaim.response.CwaUploadErrorResponseDto;
 import uk.gov.justice.laa.bulkclaim.response.CwaUploadSummaryResponseDto;
 import uk.gov.justice.laa.bulkclaim.validation.SubmissionSearchValidator;
+import uk.gov.justice.laa.dstew.payments.claimsdata.model.Page;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionsResultSet;
 
 /** Controller for handling search requests related to bulk uploads. */
@@ -63,13 +67,13 @@ public class SearchController {
    */
   @PostMapping("/submissions/search")
   public String handleSearch(
-      @ModelAttribute("submissionsSearchForm") SubmissionsSearchForm submissionsSearchForm,
+      @Validated @ModelAttribute("submissionsSearchForm")
+          SubmissionsSearchForm submissionsSearchForm,
       BindingResult bindingResult,
       Model model,
-      @AuthenticationPrincipal OidcUser oidcUser) {
+      @AuthenticationPrincipal OidcUser oidcUser,
+      final RedirectAttributes redirectAttributes) {
 
-    Map<String, String> errors = new LinkedHashMap<>();
-    final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
     String submissionId =
         StringUtils.hasText(submissionsSearchForm.submissionId())
             ? submissionsSearchForm.submissionId().trim()
@@ -83,7 +87,7 @@ public class SearchController {
       return "pages/submissions-search";
     }
 
-    // List<String> offices = oidcUser.getUserInfo().getClaim("provider");
+    //  List<String> offices = oidcUser.getUserInfo().getClaim("provider");
     List<String> offices = List.of("1");
 
     try {
@@ -91,10 +95,10 @@ public class SearchController {
           claimsRestService
               .search(offices, submissionId, submittedDateFrom, submittedDateTo)
               .block();
-      log.info("Returning response from claims search: {}", response);
-      model.addAttribute("submissions", response.getContent());
+      log.debug("Response from claims search: {}", response);
+      redirectAttributes.addFlashAttribute("submissions", response);
 
-      return "pages/submissions-search-results";
+      return "redirect:/submissions/search/results";
     } catch (HttpClientErrorException e) {
       log.error("HTTP client error fetching submissions: {} ", e.getMessage());
 
@@ -103,6 +107,38 @@ public class SearchController {
       log.error("Error connecting to Claims API with message: {} ", e.getMessage());
       return "error";
     }
+  }
+
+  /**
+   * Handles Submission page results.
+   *
+   * @param submissionsResults submission search results.
+   * @param model view context model.
+   * @param request HttpServletRequest object.
+   * @return search results view.
+   */
+  @GetMapping("/submissions/search/results")
+  public String submissionsSearchResults(
+      @RequestParam(value = "page", defaultValue = "0") final int page,
+      @RequestParam(value = "size", defaultValue = "10") final int size,
+      @ModelAttribute("submissions") SubmissionsResultSet submissionsResults,
+      Model model,
+      HttpServletRequest request) {
+
+    Page pagination = new Page();
+
+    pagination.setNumber(
+        submissionsResults != null ? submissionsResults.getNumber() : (Integer) page);
+    pagination.setSize(submissionsResults != null ? submissionsResults.getSize() : (Integer) size);
+    pagination.setTotalPages(
+        submissionsResults != null ? submissionsResults.getTotalPages() : null);
+    pagination.setTotalElements(
+        submissionsResults != null ? submissionsResults.getTotalElements() : null);
+
+    model.addAttribute("pagination", pagination);
+    log.debug("Adding currentUrl to model: {}", request.getRequestURL());
+
+    return "pages/submissions-search-results";
   }
 
   /**
