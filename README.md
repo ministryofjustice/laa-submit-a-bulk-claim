@@ -1,4 +1,5 @@
 # Submit a Bulk Claim
+
 [![Ministry of Justice Repository Compliance Badge](https://github-community.service.justice.gov.uk/repository-standards/api/laa-cwa-bulk-upload/badge)](https://github-community.service.justice.gov.uk/repository-standards/laa-cwa-bulk-upload)
 
 A Spring Boot web application for securely uploading bulk claim files to the Legal Aid Agency. The application provides a user-friendly interface for file uploads, provider selection, virus scanning, and result tracking.
@@ -54,58 +55,33 @@ A Spring Boot web application for securely uploading bulk claim files to the Leg
 
 ### Prerequisites
 
-The project uses the `laa-ccms-spring-boot-gradle-plugin`. Please follow the steps in the [laa-ccms-spring-boot-common](https://github.com/ministryofjustice/laa-ccms-spring-boot-common?tab=readme-ov-file#provide-your-repository-credentials) repository to set up your Github Packages credentials locally before building the application.
+The project uses the `laa-ccms-spring-boot-gradle-plugin`. Please follow the steps in the [laa-ccms-spring-boot-common](https://github.com/ministryofjustice/laa-ccms-spring-boot-common?tab=readme-ov-file#provide-your-repository-credentials) repository to set up your GitHub Packages credentials locally before building the application.
 
 - Java 21 or higher
 - Gradle (or use the Gradle wrapper)
 - (Optional) Docker for running dependencies
 - Install Docker desktop (https://www.docker.com/products/docker-desktop)
 
-Ensure you have the following environment variables set for local development:
-
 ### Build
 
 Clone the repository and build the project:
 
 ```sh
-git clone git@github.com:ministryofjustice/submit-a-bulk-claim.git
-cd submit-a-bulk-claim
+git clone git@github.com:ministryofjustice/laa-amend-a-claim.git
+cd laa-amend-a-claim
 ./gradlew clean build
-```
-### Wiremock
-```
-export WIREMOCK_PORT=8090
-export WIREMOCK_HOST=localhost
-```
-All Wiremock stubs are located in `src/wiremock/mappings/cwa-service`
-Before running the application, ensure Wiremock is running on port 8090.
-You can start it using Docker compose  : `docker-compose up` (from the root of the project)
-Ensure cwa-api.url in your local application yaml is set to 'http://localhost:8090' to point to wiremock.
-
-### Local Application Properties
-```
-export CWA_API_URL=http://localhost:8090
 ```
 
 ### Run
 
-Start the application locally:
-
-```sh
-./gradlew bootRun
-```
-
-The app will be available at [http://localhost:8082](http://localhost:8082).
-
-### Configuration
-
-You can configure the maximum upload file size and other properties in `src/main/resources/application.properties`:
-
-```
-upload-max-file-size=10MB
-```
-
-Other configuration options (e.g., CWA API endpoints, authentication) can be added as needed.
+1. Run the [laa-oidc-mock-server](https://github.com/ministryofjustice/laa-oidc-mock-server), following the instructions in the README.
+2. Request the `application-local.yaml` file from one of the other developers. This contains values not suitable for version control. Store this in [resources](/laa-submit-a-bulk-claim-ui/src/main/resources/).
+3. Run `./gradlew bootRun --args='--spring.profiles.active=local'` to start the application.
+4. Redirect to [http://localhost:9000](http://localhost:9000).
+5. Enter these dummy credentials and submit:
+   1. Username: `provider.user@provider.com`
+   2. Password: `password`
+6. Redirect to [http://localhost:8082](http://localhost:8082).
 
 ## Usage
 
@@ -150,5 +126,7 @@ Pull requests are welcome! Please:
 ## License
 
 [MIT](LICENSE)
+
 ```
 This README provides a comprehensive overview for developers and users. Adjust project-specific details as needed.
+```
