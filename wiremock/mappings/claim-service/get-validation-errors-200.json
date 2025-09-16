@@ -13,20 +13,26 @@
     "headers": {
       "Content-Type": "application/json"
     },
-    "jsonBody": [
-      {
-        "unique_client_number": "C1234567",
-        "unique_file_number": "F1234567",
-        "client": "Client name",
-        "error_description": "Error description"
-      },
-      {
-        "unique_client_number": "C7654321",
-        "unique_file_number": "F7654321",
-        "client": "Second client name",
-        "error_description": "This is another error!"
-      }
-    ]
+    "jsonBody": {
+      "total_pages": 1,
+      "total_elements": 2,
+      "number": 2,
+      "size": 2,
+      "content": [
+        {
+          "id": "9d21c19c-4eab-4869-ad28-db537ba3e497",
+          "claim_id": "b008c43e-2153-494d-8f14-651628cd23eb",
+          "submission_id": "0561d67b-30ed-412e-8231-f6296a53538d",
+          "error_description": "Error description"
+        },
+        {
+          "id": "ed8b31e7-c3a3-45aa-a35b-2d756cee838b",
+          "claim_id": "395d5656-b3c9-415c-973b-ee1884770457",
+          "submission_id": "0561d67b-30ed-412e-8231-f6296a53538d",
+          "error_description": "This is another error!"
+        }
+      ]
+    }
   }
 }
 
