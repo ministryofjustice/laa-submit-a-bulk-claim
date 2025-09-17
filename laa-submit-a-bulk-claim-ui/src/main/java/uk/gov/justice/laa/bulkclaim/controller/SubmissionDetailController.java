@@ -2,6 +2,7 @@ package uk.gov.justice.laa.bulkclaim.controller;
 
 import static uk.gov.justice.laa.bulkclaim.constants.SessionConstants.SUBMISSION_ID;
 import static uk.gov.justice.laa.bulkclaim.constants.ViewSubmissionNavigationTab.CLAIM_DETAILS;
+import static uk.gov.justice.laa.bulkclaim.constants.ViewSubmissionNavigationTab.CLAIM_ERRORS;
 
 import jakarta.servlet.http.HttpSession;
 import java.util.UUID;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.SessionAttributes;
 import uk.gov.justice.laa.bulkclaim.builder.SubmissionClaimDetailsBuilder;
+import uk.gov.justice.laa.bulkclaim.builder.SubmissionClaimErrorsBuilder;
 import uk.gov.justice.laa.bulkclaim.builder.SubmissionMatterStartsDetailsBuilder;
 import uk.gov.justice.laa.bulkclaim.builder.SubmissionSummaryBuilder;
 import uk.gov.justice.laa.bulkclaim.client.DataClaimsRestClient;
@@ -22,6 +24,7 @@ import uk.gov.justice.laa.bulkclaim.constants.ViewSubmissionNavigationTab;
 import uk.gov.justice.laa.bulkclaim.dto.submission.SubmissionClaimDetails;
 import uk.gov.justice.laa.bulkclaim.dto.submission.SubmissionMatterStartsDetails;
 import uk.gov.justice.laa.bulkclaim.dto.submission.SubmissionSummary;
+import uk.gov.justice.laa.bulkclaim.dto.summary.ClaimErrorSummary;
 import uk.gov.justice.laa.bulkclaim.exception.SubmitBulkClaimException;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionResponse;
 
@@ -38,6 +41,7 @@ public class SubmissionDetailController {
 
   private final SubmissionSummaryBuilder submissionSummaryBuilder;
   private final SubmissionClaimDetailsBuilder submissionClaimDetailsBuilder;
+  private final SubmissionClaimErrorsBuilder submissionClaimErrorsBuilder;
   private final SubmissionMatterStartsDetailsBuilder submissionMatterStartsDetailsBuilder;
   private final DataClaimsRestClient dataClaimsRestClient;
 
@@ -78,9 +82,15 @@ public class SubmissionDetailController {
                         "Submission %s does not exist".formatted(submissionId.toString())));
 
     SubmissionSummary submissionSummary = submissionSummaryBuilder.build(submissionResponse);
+
     if (CLAIM_DETAILS.equals(navigationTab)) {
       SubmissionClaimDetails claimDetails = submissionClaimDetailsBuilder.build(submissionResponse);
       model.addAttribute("claimDetails", claimDetails);
+    } else if (CLAIM_ERRORS.equals(navigationTab)) {
+      int claimErrorPage = 0; // todo add pagination in later PR
+      ClaimErrorSummary claimErrorSummary =
+          submissionClaimErrorsBuilder.build(submissionId, claimErrorPage);
+      model.addAttribute("claimErrorDetails", claimErrorSummary);
     } else {
       SubmissionMatterStartsDetails build =
           submissionMatterStartsDetailsBuilder.build(submissionResponse);

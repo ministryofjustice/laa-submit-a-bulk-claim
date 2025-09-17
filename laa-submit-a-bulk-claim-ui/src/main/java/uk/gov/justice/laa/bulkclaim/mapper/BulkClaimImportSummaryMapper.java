@@ -13,7 +13,7 @@ import uk.gov.justice.laa.bulkclaim.dto.summary.SubmissionSummaryClaimErrorRow;
 import uk.gov.justice.laa.bulkclaim.dto.summary.SubmissionSummaryRow;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.ClaimResponse;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionResponse;
-import uk.gov.justice.laa.dstew.payments.claimsdata.model.ValidationErrorFields;
+import uk.gov.justice.laa.dstew.payments.claimsdata.model.ValidationMessageBase;
 
 /**
  * Maps between {@link SubmissionResponse} and {@link SubmissionSummaryRow}, and {@link
@@ -64,17 +64,17 @@ public interface BulkClaimImportSummaryMapper {
   /**
    * Maps claim response and validation error fields to a submission summary claim error row.
    *
-   * @param errors the validation error fields
+   * @param message the validation message base
    * @param claimResponse the claim response containing client and claim details
    * @return a mapped SubmissionSummaryClaimErrorRow
    */
   @Mapping(target = "ufn", source = "claimResponse.uniqueFileNumber")
   @Mapping(target = "ucn", source = "claimResponse.uniqueClientNumber")
   @Mapping(target = "client", expression = "java(buildClientName(claimResponse))")
-  @Mapping(target = "submissionReference", source = "errors.submissionId")
-  @Mapping(target = "errorDescription", source = "errors.errorDescription")
-  SubmissionSummaryClaimErrorRow toSubmissionSummaryClaimError(
-      ValidationErrorFields errors, ClaimResponse claimResponse);
+  @Mapping(target = "submissionReference", source = "message.submissionId")
+  @Mapping(target = "message", source = "message.displayMessage")
+  SubmissionSummaryClaimErrorRow toSubmissionSummaryClaimMessage(
+      ValidationMessageBase message, ClaimResponse claimResponse);
 
   /**
    * Builds a client name from the claim response, preferring the primary client if available.

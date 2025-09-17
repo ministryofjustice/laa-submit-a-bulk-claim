@@ -1,20 +1,21 @@
 <!DOCTYPE HTML>
 <html lang="en" class="govuk-template" xmlns:th="http://www.thymeleaf.org"
-      th:replace="~{ layout/main-layout :: layout(${bulkClaimImportSummary.containsErrors()} ?
+      th:replace="~{ layout/main-layout :: layout(${bulkClaimImportSummary.claimErrorSummary.containsErrors()} ?
       #{bulkClaimImportSummary.failed.heading} :
-      #{bulkClaimImportSummary.success.heading},~{::main}, ~{},~{})}">
+      #{bulkClaimImportSummary.success.heading},~{::main}, ~{},~{})}"
+      xmlns:dth="http://www.thymeleaf.org">
 <main class="govuk-main-wrapper" id="main-content">
 
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds-from-desktop">
 
-      <h1 class="govuk-heading-l" id="header" th:text="${bulkClaimImportSummary.containsErrors()} ?
+      <h1 class="govuk-heading-l" id="header" th:text="${bulkClaimImportSummary.claimErrorSummary.containsErrors()} ?
       #{bulkClaimImportSummary.failed.heading} :
       #{bulkClaimImportSummary.success.heading}"/>
 
       <!--Error summary-->
       <div role="region" class="moj-alert moj-alert--warning moj-alert--with-heading"
-           th:if="${bulkClaimImportSummary.containsErrors()}"
+           th:if="${bulkClaimImportSummary.claimErrorSummary.containsErrors()}"
            th:aria-label="|#{common.warning}: #{bulkClaimImportSummary.errorsFoundModal.heading}|"
            aria-label="warning: Some information could not be imported" data-module="moj-alert">
         <div>
@@ -27,7 +28,7 @@
         </div>
         <div class="moj-alert__content">
           <h2 class="moj-alert__heading"
-              th:text="#{bulkClaimImportSummary.errorsFoundModal.heading(${bulkClaimImportSummary.totalClaimsWithErrors()})}"/>
+              th:text="#{bulkClaimImportSummary.errorsFoundModal.heading(${bulkClaimImportSummary.claimErrorSummary.totalClaimsWithErrors()})}"/>
           <th:block
               th:text="#{bulkClaimImportSummary.errorsFoundModal.message}"/>
         </div>
@@ -50,11 +51,11 @@
               id="submission-total-claims"
               th:text="${submission.totalClaims}"/>
         </div>
-        <div class="govuk-summary-list__row" th:if="${bulkClaimImportSummary.containsErrors()}">
+        <div class="govuk-summary-list__row" th:if="${bulkClaimImportSummary.claimErrorSummary.containsErrors}">
           <dt class="govuk-summary-list__key" th:text="#{submission.properties.totalErrors}"/>
           <dd class="govuk-summary-list__value"
               id="submission-total-errors"
-              th:text="${bulkClaimImportSummary.totalErrors()}"/>
+              th:text="${bulkClaimImportSummary.claimErrorSummary.totalErrors}"/>
         </div>
         <div class="govuk-summary-list__row">
           <dt class="govuk-summary-list__key" th:text="#{submission.properties.areaOfLaw}"/>
@@ -81,49 +82,7 @@
     </div>
     <div class="govuk-grid-column-full">
 
-      <!--Claim errors-->
-      <table class="govuk-table" th:if="${bulkClaimImportSummary.containsErrors()}"
-             data-module="moj-sortable-table">
-
-        <caption class="govuk-table__caption"
-                 th:text="#{bulkClaimImportSummary.claimErrors.caption}"/>
-
-        <thead class="govuk-table__head">
-        <tr class="govuk-table__row">
-          <th scope="col" class="govuk-table__header" aria-sort="none"
-              th:text="#{submission.claim.properties.ufn}"/>
-          <th scope="col" class="govuk-table__header" aria-sort="none"
-              th:text="#{submission.claim.properties.ucn}"/>
-          <th scope="col" class="govuk-table__header" aria-sort="none"
-              th:text="#{submission.claim.properties.client}"/>
-          <th scope="col" class="govuk-table__header" aria-sort="none"
-              th:text="#{submission.claim.properties.errorDescription}"/>
-        </tr>
-        </thead>
-
-        <tbody class="govuk-table__body">
-
-        <tr class="govuk-table__row" th:each="error, idx : ${bulkClaimImportSummary.claimErrors()}"
-            th:id="|claim-error-${idx.index}|">
-          <td class="govuk-table__cell"
-              th:id="|error-ufn|"
-              th:data-sort-value="${error.ufn()}"
-              th:text="${error.ufn()}"/>
-          <td class="govuk-table__cell"
-              th:id="|error-ucn-${idx.index}|"
-              th:data-sort-value="${error.ucn()}"
-              th:text="${error.ucn()}"/>
-          <td class="govuk-table__cell"
-              th:id="|error-client-${idx.index}|"
-              th:data-sort-value="${error.client()}"
-              th:text="${error.client()}"/>
-          <td class="govuk-table__cell"
-              th:id="|error-description-${idx.index}|"
-              th:data-sort-value="${error.errorDescription()}"
-              th:text="${error.errorDescription()}"/>
-        </tr>
-        </tbody>
-      </table>
+      <th:block th:replace="fragments/claim-errors :: claimErrors(${bulkClaimImportSummary.claimErrorSummary()})"></th:block>
 
       <div class="govuk-button-group">
         <a th:href="@{/}" role="button" draggable="false" class="govuk-button govuk-button--start"

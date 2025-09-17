@@ -33,6 +33,7 @@ import uk.gov.justice.laa.bulkclaim.builder.BulkClaimSummaryBuilder;
 import uk.gov.justice.laa.bulkclaim.client.DataClaimsRestClient;
 import uk.gov.justice.laa.bulkclaim.config.WebMvcTestConfig;
 import uk.gov.justice.laa.bulkclaim.dto.summary.BulkClaimImportSummary;
+import uk.gov.justice.laa.bulkclaim.dto.summary.ClaimErrorSummary;
 import uk.gov.justice.laa.bulkclaim.dto.summary.SubmissionSummaryClaimErrorRow;
 import uk.gov.justice.laa.bulkclaim.dto.summary.SubmissionSummaryRow;
 import uk.gov.justice.laa.bulkclaim.exception.SubmitBulkClaimException;
@@ -60,7 +61,7 @@ class BulkSubmissionImportedControllerTest {
       SubmissionResponse submissionResponse =
           SubmissionResponse.builder().submissionId(submissionId).build();
       BulkClaimImportSummary bulkClaimImportSummary = getTestSubmissionSummary(submissionId);
-      when(bulkClaimSummaryBuilder.build(List.of(submissionResponse)))
+      when(bulkClaimSummaryBuilder.build(List.of(submissionResponse), 0))
           .thenReturn(bulkClaimImportSummary);
       // When / Then
       assertThat(
@@ -74,7 +75,7 @@ class BulkSubmissionImportedControllerTest {
           .model()
           .hasFieldOrProperty(SUBMISSION)
           .hasFieldOrProperty(SUBMISSION_ID);
-      verify(bulkClaimSummaryBuilder, times(1)).build(List.of(submissionResponse));
+      verify(bulkClaimSummaryBuilder, times(1)).build(List.of(submissionResponse), 0);
       verify(dataClaimsRestClient, times(0)).getSubmission(submissionId);
     }
 
@@ -88,7 +89,7 @@ class BulkSubmissionImportedControllerTest {
       BulkClaimImportSummary bulkClaimImportSummary = getTestSubmissionSummary(submissionId);
       when(dataClaimsRestClient.getSubmission(submissionId))
           .thenReturn(Mono.just(submissionResponse));
-      when(bulkClaimSummaryBuilder.build(List.of(submissionResponse)))
+      when(bulkClaimSummaryBuilder.build(List.of(submissionResponse), 0))
           .thenReturn(bulkClaimImportSummary);
       // When / Then
       assertThat(
@@ -101,7 +102,7 @@ class BulkSubmissionImportedControllerTest {
           .model()
           .hasFieldOrProperty(SUBMISSION)
           .hasFieldOrProperty(SUBMISSION_ID);
-      verify(bulkClaimSummaryBuilder, times(1)).build(List.of(submissionResponse));
+      verify(bulkClaimSummaryBuilder, times(1)).build(List.of(submissionResponse), 0);
       verify(dataClaimsRestClient, times(1)).getSubmission(submissionId);
     }
   }
@@ -143,6 +144,8 @@ class BulkSubmissionImportedControllerTest {
                 "UCN2",
                 "Client",
                 "This is an error which is found on your claim!"));
-    return new BulkClaimImportSummary(Collections.singletonList(summaryRow), errors, 1, 1);
+
+    return new BulkClaimImportSummary(
+        Collections.singletonList(summaryRow), new ClaimErrorSummary(errors, 1, 1));
   }
 }
