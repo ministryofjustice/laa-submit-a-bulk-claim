@@ -14,6 +14,9 @@ dependencyManagement {
     imports {
         // Upgrade to fix vulnerabilities in netty
         mavenBom('io.netty:netty-bom:4.2.5.Final')
+
+        // Upgrade Spring Security to patched version
+        mavenBom "org.springframework.security:spring-security-bom:6.5.4"
     }
 }
 
