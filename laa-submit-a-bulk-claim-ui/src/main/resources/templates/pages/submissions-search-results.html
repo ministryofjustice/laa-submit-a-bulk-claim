@@ -17,13 +17,13 @@
         <div class="govuk-grid-row">
             <div class="govuk-grid-column-full">
                 <h1 class="govuk-heading-l" th:text="#{search.title}"></h1>
-                <p class="govuk-body" th:if="${#lists.isEmpty(submissions)}">
+                <p class="govuk-body" th:if="${#lists.isEmpty(submissions.content)}">
                     No submissions were found.
                 </p>
-                <h2 class="govuk-heading-s govuk-!-margin-bottom-0" th:if="${!#lists.isEmpty(submissions)}">
-                    Search results
+                <h2 class="govuk-heading-s govuk-!-margin-bottom-0" th:if="${!#lists.isEmpty(submissions.content)}">
+                    Search result
                 </h2>
-                <div class="upload-table" th:if="${!#lists.isEmpty(submissions)}">
+                <div class="upload-table" th:if="${!#lists.isEmpty(submissions.content)}">
                     <table class="govuk-table" data-module="moj-sortable-table">
                         <thead class="govuk-table__head">
                         <tr class="govuk-table__row">

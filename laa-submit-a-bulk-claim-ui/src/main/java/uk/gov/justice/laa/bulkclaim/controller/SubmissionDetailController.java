@@ -87,7 +87,9 @@ public class SubmissionDetailController {
       SubmissionClaimDetails claimDetails = submissionClaimDetailsBuilder.build(submissionResponse);
       model.addAttribute("claimDetails", claimDetails);
     } else if (CLAIM_ERRORS.equals(navigationTab)) {
-      ClaimErrorSummary claimErrorSummary = submissionClaimErrorsBuilder.build(submissionId, 0);
+      int claimErrorPage = 0; // todo add pagination in later PR
+      ClaimErrorSummary claimErrorSummary =
+          submissionClaimErrorsBuilder.build(submissionId, claimErrorPage);
       model.addAttribute("claimErrorDetails", claimErrorSummary);
     } else {
       SubmissionMatterStartsDetails build =

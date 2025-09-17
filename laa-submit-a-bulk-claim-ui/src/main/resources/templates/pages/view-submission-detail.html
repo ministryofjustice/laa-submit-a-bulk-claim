@@ -234,7 +234,7 @@
 
       <th:block th:if="${navTab.toString() == 'CLAIM_ERRORS'}">
         <div class="govuk-grid-column-full">
-          <div th:replace="fragments/claim-errors :: claimErrors(${claimErrorDetails})"></div>
+          <th:block th:replace="fragments/claim-errors :: claimErrors(${claimErrorDetails})"></th:block>
         </div>
       </th:block>
 

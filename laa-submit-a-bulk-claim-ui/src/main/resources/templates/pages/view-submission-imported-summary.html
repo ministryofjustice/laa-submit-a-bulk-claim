@@ -2,7 +2,8 @@
 <html lang="en" class="govuk-template" xmlns:th="http://www.thymeleaf.org"
       th:replace="~{ layout/main-layout :: layout(${bulkClaimImportSummary.claimErrorSummary.containsErrors()} ?
       #{bulkClaimImportSummary.failed.heading} :
-      #{bulkClaimImportSummary.success.heading},~{::main}, ~{},~{})}">
+      #{bulkClaimImportSummary.success.heading},~{::main}, ~{},~{})}"
+      xmlns:dth="http://www.thymeleaf.org">
 <main class="govuk-main-wrapper" id="main-content">
 
   <div class="govuk-grid-row">
@@ -81,7 +82,7 @@
     </div>
     <div class="govuk-grid-column-full">
 
-      <div th:replace="fragments/claim-errors :: claimErrors(${bulkClaimImportSummary.claimErrorSummary()})"></div>
+      <th:block th:replace="fragments/claim-errors :: claimErrors(${bulkClaimImportSummary.claimErrorSummary()})"></th:block>
 
       <div class="govuk-button-group">
         <a th:href="@{/}" role="button" draggable="false" class="govuk-button govuk-button--start"

@@ -23,8 +23,10 @@ dependencies {
      */
     // Upgrade to fix CVE-2025-48924
     implementation 'org.apache.commons:commons-lang3:3.18.0'
+    // Upgrade to fix vulnerabilities in spring-core
+    implementation 'org.springframework:spring-core:6.2.11'
 
-    implementation 'uk.gov.justice.laa.datastewardship.payments:data-claims-api-models:0f92a47-SNAPSHOT'
+    implementation 'uk.gov.justice.laa.datastewardship.payments:data-claims-api-models:d0ea514'
 
     implementation 'org.springframework.boot:spring-boot-starter-cache'
     implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'

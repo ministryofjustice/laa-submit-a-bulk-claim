@@ -48,18 +48,16 @@ public class SubmissionClaimErrorsBuilder {
             .stream()
             .map(
                 messages -> {
-                  ClaimResponse claimResponse;
-                  if (messages.getClaimId() == null) {
-                    // no call if claimId is missing
-                    claimResponse = new ClaimResponse();
-                  } else {
-                    claimResponse =
-                        dataClaimsRestClient
-                            .getSubmissionClaim(messages.getSubmissionId(), messages.getClaimId())
-                            .onErrorResume(ex -> Mono.just(new ClaimResponse()))
-                            .switchIfEmpty(Mono.just(new ClaimResponse()))
-                            .block();
-                  }
+                  ClaimResponse claimResponse =
+                      Optional.ofNullable(messages.getClaimId())
+                          .map(
+                              claimId ->
+                                  dataClaimsRestClient
+                                      .getSubmissionClaim(messages.getSubmissionId(), claimId)
+                                      .onErrorResume(ex -> Mono.just(new ClaimResponse()))
+                                      .switchIfEmpty(Mono.just(new ClaimResponse()))
+                                      .block())
+                          .orElseGet(ClaimResponse::new);
                   return bulkClaimImportSummaryMapper.toSubmissionSummaryClaimMessage(
                       messages, claimResponse);
                 })
