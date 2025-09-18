@@ -27,6 +27,6 @@ public class ClaimDetailController {
 
   @GetMapping("/view-claim-detail")
   public String getClaimDetail(HttpSession httpSession) {
-    return "";
+    return "pages/view-claim-detail";
   }
 }

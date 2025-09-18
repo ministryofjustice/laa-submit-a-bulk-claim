@@ -1,10 +1,12 @@
 package uk.gov.justice.laa.bulkclaim.dto.submission;
 
 import java.time.LocalDate;
+import java.util.UUID;
 
 /**
  * Holds information about a claim in a submission. Intended for a table of data.
  *
+ * @param id the UUID ID for the claim
  * @param lineNumber the line number for the claim
  * @param ufn the unique file number
  * @param ucn the unique client number
@@ -18,6 +20,7 @@ import java.time.LocalDate;
  * @author Jamie Briggs
  */
 public record SubmissionClaimRow(
+    UUID id,
     int lineNumber,
     String ufn,
     String ucn,

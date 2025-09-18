@@ -53,6 +53,7 @@ class SubmissionClaimDetailsBuilderTest {
         .thenReturn(Mono.just(ClaimResponse.builder().build()));
     SubmissionClaimRow expected =
         new SubmissionClaimRow(
+            UUID.fromString("5146e93f-92c8-4c56-bd25-0cb6953f534d"),
             1,
             "ufn",
             "ucn",
@@ -95,6 +96,7 @@ class SubmissionClaimDetailsBuilderTest {
         .thenReturn(Mono.just(ClaimResponse.builder().build()));
     SubmissionClaimRow claimOne =
         new SubmissionClaimRow(
+            UUID.fromString("5146e93f-92c8-4c56-bd25-0cb6953f534d"),
             1,
             "ufn",
             "ucn",
@@ -114,6 +116,7 @@ class SubmissionClaimDetailsBuilderTest {
                 new BigDecimal("70.10")));
     SubmissionClaimRow claimTwo =
         new SubmissionClaimRow(
+            UUID.fromString("5146e93f-92c8-4c56-bd25-0cb6953f534d"),
             1,
             "ufn",
             "ucn",

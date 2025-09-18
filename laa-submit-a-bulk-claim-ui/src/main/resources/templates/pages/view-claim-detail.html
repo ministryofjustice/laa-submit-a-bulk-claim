@@ -1,0 +1,16 @@
+<!DOCTYPE HTML>
+<html lang="en" class="govuk-template" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{ layout/main-layout :: layout(#{viewClaim.heading},~{::main},~{::#back-link},~{})}">
+<th:block id="back-link">
+  <a th:href="@{/submission/{submissionId}(submissionId=${submissionId})}" class="govuk-back-link"
+     th:text="#{common.back}"/>
+</th:block>
+<main class="govuk-main-wrapper" id="main-content">
+  <div class="govuk-width-container">
+    <div class="govuk-grid-row">
+      <h1 class="govuk-heading-l"
+          th:text="#{viewClaim.heading}"/>
+    </div>
+  </div>
+</main>
+</html>

@@ -2,6 +2,7 @@ package uk.gov.justice.laa.bulkclaim.mapper;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.UUID;
 import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -29,6 +30,7 @@ class SubmissionClaimMapperTest {
     // Given
     ClaimResponse claimResponse =
         ClaimResponse.builder()
+            .id("5146e93f-92c8-4c56-bd25-0cb6953f534")
             .lineNumber(1)
             .uniqueFileNumber("UFN123")
             .uniqueClientNumber("UCN123")
@@ -51,6 +53,9 @@ class SubmissionClaimMapperTest {
     // Then
     SoftAssertions.assertSoftly(
         softAssertions -> {
+          softAssertions
+              .assertThat(result.id())
+              .isEqualTo(UUID.fromString("5146e93f-92c8-4c56-bd25-0cb6953f534"));
           softAssertions.assertThat(result.lineNumber()).isEqualTo(1);
           softAssertions.assertThat(result.ufn()).isEqualTo("UFN123");
           softAssertions.assertThat(result.ucn()).isEqualTo("UCN123");

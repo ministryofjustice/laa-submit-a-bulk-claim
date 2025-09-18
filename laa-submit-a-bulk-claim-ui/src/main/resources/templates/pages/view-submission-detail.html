@@ -188,8 +188,10 @@
                     th:text="${claim.lineNumber}"/>
                 <td class="govuk-table__cell"
                     th:id="|unique-file-number-${idx.index}|"
-                    th:data-sort-value="${claim.ufn}"
-                    th:text="${claim.ufn}"/>
+                    th:data-sort-value="${claim.ufn}">
+                  <a th:href="@{/submission/claim/{id}(id=${claim.id})}"
+                      th:text="${claim.ufn}"/>
+                </td>
                 <td class="govuk-table__cell"
                     th:id="|unique-client-number-${idx.index}|"
                     th:data-sort-value="${claim.ucn}"
