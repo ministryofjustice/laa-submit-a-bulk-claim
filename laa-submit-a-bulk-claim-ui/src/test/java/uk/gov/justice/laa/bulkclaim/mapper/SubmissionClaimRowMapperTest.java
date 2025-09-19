@@ -9,19 +9,19 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import uk.gov.justice.laa.bulkclaim.dto.submission.SubmissionClaimRow;
-import uk.gov.justice.laa.bulkclaim.dto.submission.SubmissionClaimRowCostsDetails;
+import uk.gov.justice.laa.bulkclaim.dto.submission.claim.SubmissionClaimRow;
+import uk.gov.justice.laa.bulkclaim.dto.submission.claim.SubmissionClaimRowCostsDetails;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.ClaimResponse;
 
-@DisplayName("Submission claim mapper test")
+@DisplayName("Submission claim row mapper test")
 @ExtendWith(SpringExtension.class)
-class SubmissionClaimMapperTest {
+class SubmissionClaimRowMapperTest {
 
-  private SubmissionClaimMapper mapper;
+  private SubmissionClaimRowMapper mapper;
 
   @BeforeEach
   void setup() {
-    mapper = new SubmissionClaimMapperImpl();
+    mapper = new SubmissionClaimRowMapperImpl();
   }
 
   @Test

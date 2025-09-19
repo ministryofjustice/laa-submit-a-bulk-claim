@@ -1,4 +1,4 @@
-package uk.gov.justice.laa.bulkclaim.dto.submission;
+package uk.gov.justice.laa.bulkclaim.dto.submission.claim;
 
 import java.time.LocalDate;
 import java.util.UUID;

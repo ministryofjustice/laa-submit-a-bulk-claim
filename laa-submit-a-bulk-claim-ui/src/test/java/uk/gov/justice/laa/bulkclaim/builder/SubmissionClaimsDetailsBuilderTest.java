@@ -16,26 +16,26 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import reactor.core.publisher.Mono;
 import uk.gov.justice.laa.bulkclaim.client.DataClaimsRestClient;
-import uk.gov.justice.laa.bulkclaim.dto.submission.SubmissionClaimDetails;
-import uk.gov.justice.laa.bulkclaim.dto.submission.SubmissionClaimRow;
-import uk.gov.justice.laa.bulkclaim.dto.submission.SubmissionClaimRowCostsDetails;
-import uk.gov.justice.laa.bulkclaim.mapper.SubmissionClaimMapper;
+import uk.gov.justice.laa.bulkclaim.dto.submission.claim.SubmissionClaimRow;
+import uk.gov.justice.laa.bulkclaim.dto.submission.claim.SubmissionClaimRowCostsDetails;
+import uk.gov.justice.laa.bulkclaim.dto.submission.claim.SubmissionClaimsDetails;
+import uk.gov.justice.laa.bulkclaim.mapper.SubmissionClaimRowMapper;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.ClaimResponse;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionClaim;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionResponse;
 
 @ExtendWith(MockitoExtension.class)
 @DisplayName("Submission claim details builder tests")
-class SubmissionClaimDetailsBuilderTest {
+class SubmissionClaimsDetailsBuilderTest {
 
   private SubmissionClaimDetailsBuilder builder;
 
   @Mock DataClaimsRestClient dataClaimsRestClient;
-  @Mock SubmissionClaimMapper submissionClaimMapper;
+  @Mock SubmissionClaimRowMapper submissionClaimRowMapper;
 
   @BeforeEach
   void beforeEach() {
-    builder = new SubmissionClaimDetailsBuilder(dataClaimsRestClient, submissionClaimMapper);
+    builder = new SubmissionClaimDetailsBuilder(dataClaimsRestClient, submissionClaimRowMapper);
   }
 
   @Test
@@ -71,9 +71,9 @@ class SubmissionClaimDetailsBuilderTest {
                 new BigDecimal("50.10"),
                 new BigDecimal("60.10"),
                 new BigDecimal("70.10")));
-    when(submissionClaimMapper.toSubmissionClaimRow(any())).thenReturn(expected);
+    when(submissionClaimRowMapper.toSubmissionClaimRow(any())).thenReturn(expected);
     // When
-    SubmissionClaimDetails result = builder.build(submissionResponse);
+    SubmissionClaimsDetails result = builder.build(submissionResponse);
     // Then
     assertThat(result.submissionClaims().contains(expected)).isTrue();
   }
@@ -134,10 +134,10 @@ class SubmissionClaimDetailsBuilderTest {
                 new BigDecimal("51.10"),
                 new BigDecimal("61.10"),
                 new BigDecimal("71.10")));
-    when(submissionClaimMapper.toSubmissionClaimRow(any())).thenReturn(claimOne);
-    when(submissionClaimMapper.toSubmissionClaimRow(any())).thenReturn(claimTwo);
+    when(submissionClaimRowMapper.toSubmissionClaimRow(any())).thenReturn(claimOne);
+    when(submissionClaimRowMapper.toSubmissionClaimRow(any())).thenReturn(claimTwo);
     // When
-    SubmissionClaimDetails result = builder.build(submissionResponse);
+    SubmissionClaimsDetails result = builder.build(submissionResponse);
     // Then
     assertThat(result.costsSummary().profitCosts()).isEqualTo(new BigDecimal("22.20"));
     assertThat(result.costsSummary().disbursements()).isEqualTo(new BigDecimal("42.20"));
