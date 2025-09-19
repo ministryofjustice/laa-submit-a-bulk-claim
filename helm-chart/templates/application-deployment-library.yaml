@@ -198,8 +198,10 @@ metadata:
     {{- end }}
     external-dns.alpha.kubernetes.io/set-identifier: {{ .Release.Name }}-{{ .Chart.Name }}-{{ .Release.Namespace }}-green
     external-dns.alpha.kubernetes.io/aws-weight: "100"
+    nginx.ingress.kubernetes.io/enable-modsecurity: {{ .Values.ingress.annotations.nginx.ingress.kubernetes.io/enable-modsecurity }}
+    nginx.ingress.kubernetes.io/modsecurity-snippet: {{ .Values.ingress.annotations.nginx.ingress.kubernetes.io/modsecurity-snippet }}
 spec:
-  ingressClassName: default
+  ingressClassName: {{ .Values.ingress.className }}
   tls:
     - hosts:
         - {{ .Release.Name }}-{{ .Chart.Name }}-{{ .Release.Namespace }}.{{ .Values.global.clusterDomain }}
