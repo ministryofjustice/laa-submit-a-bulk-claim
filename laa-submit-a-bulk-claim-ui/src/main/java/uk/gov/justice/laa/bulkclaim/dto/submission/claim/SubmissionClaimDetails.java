@@ -1,6 +1,7 @@
 package uk.gov.justice.laa.bulkclaim.dto.submission.claim;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.UUID;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.ClaimStatus;
 
@@ -11,8 +12,8 @@ public record SubmissionClaimDetails(
     Integer lineNumber,
     String caseReferenceNumber,
     String uniqueFileNumber,
-    String caseStartDate,
-    String caseConcludedDate,
+    LocalDate caseStartDate,
+    LocalDate caseConcludedDate,
     String matterTypeCode,
     String crimeMatterTypeCode,
     String feeSchemeCode,
@@ -20,7 +21,7 @@ public record SubmissionClaimDetails(
     String procurementAreaCode,
     String accessPointCode,
     String deliveryLocation,
-    String representationOrderDate,
+    LocalDate representationOrderDate,
     Integer suspectsDefendantsCount,
     Integer policeStationCourtAttendancesCount,
     String policeStationCourtPrisonId,
@@ -37,7 +38,7 @@ public record SubmissionClaimDetails(
     BigDecimal totalValue,
     String clientForename,
     String clientSurname,
-    String clientDateOfBirth,
+    LocalDate clientDateOfBirth,
     String uniqueClientNumber,
     String clientPostcode,
     String genderCode,
@@ -50,7 +51,7 @@ public record SubmissionClaimDetails(
     String claExemptionCode,
     String client2Forename,
     String client2Surname,
-    String client2DateOfBirth,
+    LocalDate client2DateOfBirth,
     String client2Ucn,
     String client2Postcode,
     String client2GenderCode,
@@ -69,7 +70,7 @@ public record SubmissionClaimDetails(
     String mentalHealthTribunalReference,
     Boolean isNrmAdvice,
     String followOnWork,
-    String transferDate,
+    LocalDate transferDate,
     String exemptionCriteriaSatisfied,
     String exceptionalCaseFundingReference,
     Boolean isLegacyCase,
@@ -97,7 +98,7 @@ public record SubmissionClaimDetails(
     String adviceTypeCode,
     Integer medicalReportsCount,
     Boolean isIrcSurgery,
-    String surgeryDate,
+    LocalDate surgeryDate,
     Integer surgeryClientsCount,
     Integer surgeryMattersCount,
     Integer cmrhOralCount,

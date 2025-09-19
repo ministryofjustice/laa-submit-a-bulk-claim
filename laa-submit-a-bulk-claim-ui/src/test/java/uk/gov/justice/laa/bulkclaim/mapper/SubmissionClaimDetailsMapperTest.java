@@ -45,8 +45,8 @@ class SubmissionClaimDetailsMapperTest {
               .assertThat(result.caseReferenceNumber())
               .isEqualTo("case-reference-number");
           softAssertions.assertThat(result.uniqueFileNumber()).isEqualTo("unique-file-number");
-          softAssertions.assertThat(result.caseStartDate()).isEqualTo("case-start-date");
-          softAssertions.assertThat(result.caseConcludedDate()).isEqualTo("case-concluded-date");
+          softAssertions.assertThat(result.caseStartDate()).isEqualTo("2025-09-19");
+          softAssertions.assertThat(result.caseConcludedDate()).isEqualTo("2026-10-20");
           softAssertions.assertThat(result.matterTypeCode()).isEqualTo("matter-type-code");
           softAssertions
               .assertThat(result.crimeMatterTypeCode())
@@ -58,9 +58,7 @@ class SubmissionClaimDetailsMapperTest {
               .isEqualTo("procurement-area-code");
           softAssertions.assertThat(result.accessPointCode()).isEqualTo("access-point-code");
           softAssertions.assertThat(result.deliveryLocation()).isEqualTo("delivery-location-value");
-          softAssertions
-              .assertThat(result.representationOrderDate())
-              .isEqualTo("representation-order-date");
+          softAssertions.assertThat(result.representationOrderDate()).isEqualTo("2027-11-21");
           softAssertions.assertThat(result.suspectsDefendantsCount()).isEqualTo(2);
           softAssertions.assertThat(result.policeStationCourtAttendancesCount()).isEqualTo(3);
           softAssertions
@@ -81,7 +79,7 @@ class SubmissionClaimDetailsMapperTest {
           softAssertions.assertThat(result.totalValue()).isEqualTo(new BigDecimal("1234.56"));
           softAssertions.assertThat(result.clientForename()).isEqualTo("client-forename");
           softAssertions.assertThat(result.clientSurname()).isEqualTo("client-surname");
-          softAssertions.assertThat(result.clientDateOfBirth()).isEqualTo("client-date-of-birth");
+          softAssertions.assertThat(result.clientDateOfBirth()).isEqualTo("1995-01-01");
           softAssertions.assertThat(result.uniqueClientNumber()).isEqualTo("unique-client-number");
           softAssertions.assertThat(result.clientPostcode()).isEqualTo("client-postcode");
           softAssertions.assertThat(result.genderCode()).isEqualTo("gender-code");
@@ -96,9 +94,7 @@ class SubmissionClaimDetailsMapperTest {
           softAssertions.assertThat(result.claExemptionCode()).isEqualTo("cla-exemption-code");
           softAssertions.assertThat(result.client2Forename()).isEqualTo("client-2-forename");
           softAssertions.assertThat(result.client2Surname()).isEqualTo("client-2-surname");
-          softAssertions
-              .assertThat(result.client2DateOfBirth())
-              .isEqualTo("client-2-date-of-birth");
+          softAssertions.assertThat(result.client2DateOfBirth()).isEqualTo("1999-05-02");
           softAssertions.assertThat(result.client2Ucn()).isEqualTo("client-2-ucn");
           softAssertions.assertThat(result.client2Postcode()).isEqualTo("client-2-postcode");
           softAssertions.assertThat(result.client2GenderCode()).isEqualTo("client-2-gender-code");
@@ -127,7 +123,7 @@ class SubmissionClaimDetailsMapperTest {
               .isEqualTo("mental-health-tribunal-reference");
           softAssertions.assertThat(result.isNrmAdvice()).isTrue();
           softAssertions.assertThat(result.followOnWork()).isEqualTo("follow-on-work");
-          softAssertions.assertThat(result.transferDate()).isEqualTo("transfer-date");
+          softAssertions.assertThat(result.transferDate()).isEqualTo("2027-04-24");
           softAssertions
               .assertThat(result.exemptionCriteriaSatisfied())
               .isEqualTo("exemption-criteria-satisfied");
@@ -181,7 +177,7 @@ class SubmissionClaimDetailsMapperTest {
           softAssertions.assertThat(result.adviceTypeCode()).isEqualTo("advice-type-code");
           softAssertions.assertThat(result.medicalReportsCount()).isEqualTo(5);
           softAssertions.assertThat(result.isIrcSurgery()).isTrue();
-          softAssertions.assertThat(result.surgeryDate()).isEqualTo("surgery-date");
+          softAssertions.assertThat(result.surgeryDate()).isEqualTo("2017-04-23");
           softAssertions.assertThat(result.surgeryClientsCount()).isEqualTo(6);
           softAssertions.assertThat(result.surgeryMattersCount()).isEqualTo(7);
           softAssertions.assertThat(result.cmrhOralCount()).isEqualTo(1);
@@ -206,8 +202,8 @@ class SubmissionClaimDetailsMapperTest {
         .lineNumber(1)
         .caseReferenceNumber("case-reference-number")
         .uniqueFileNumber("unique-file-number")
-        .caseStartDate("case-start-date")
-        .caseConcludedDate("case-concluded-date")
+        .caseStartDate("2025-09-19")
+        .caseConcludedDate("2026-10-20")
         .matterTypeCode("matter-type-code")
         .crimeMatterTypeCode("crime-matter-type-code")
         .feeSchemeCode("fee-scheme-code")
@@ -215,7 +211,7 @@ class SubmissionClaimDetailsMapperTest {
         .procurementAreaCode("procurement-area-code")
         .accessPointCode("access-point-code")
         .deliveryLocation("delivery-location-value")
-        .representationOrderDate("representation-order-date")
+        .representationOrderDate("2027-11-21")
         .suspectsDefendantsCount(2)
         .policeStationCourtAttendancesCount(3)
         .policeStationCourtPrisonId("police-station-court-prison-id")
@@ -232,7 +228,7 @@ class SubmissionClaimDetailsMapperTest {
         .totalValue(new BigDecimal("1234.56"))
         .clientForename("client-forename")
         .clientSurname("client-surname")
-        .clientDateOfBirth("client-date-of-birth")
+        .clientDateOfBirth("1995-01-01")
         .uniqueClientNumber("unique-client-number")
         .clientPostcode("client-postcode")
         .genderCode("gender-code")
@@ -245,7 +241,7 @@ class SubmissionClaimDetailsMapperTest {
         .claExemptionCode("cla-exemption-code")
         .client2Forename("client-2-forename")
         .client2Surname("client-2-surname")
-        .client2DateOfBirth("client-2-date-of-birth")
+        .client2DateOfBirth("1999-05-02")
         .client2Ucn("client-2-ucn")
         .client2Postcode("client-2-postcode")
         .client2GenderCode("client-2-gender-code")
@@ -264,7 +260,7 @@ class SubmissionClaimDetailsMapperTest {
         .mentalHealthTribunalReference("mental-health-tribunal-reference")
         .isNrmAdvice(true)
         .followOnWork("follow-on-work")
-        .transferDate("transfer-date")
+        .transferDate("2027-04-24")
         .exemptionCriteriaSatisfied("exemption-criteria-satisfied")
         .exceptionalCaseFundingReference("exceptional-case-funding-reference")
         .isLegacyCase(true)
@@ -292,7 +288,7 @@ class SubmissionClaimDetailsMapperTest {
         .adviceTypeCode("advice-type-code")
         .medicalReportsCount(5)
         .isIrcSurgery(true)
-        .surgeryDate("surgery-date")
+        .surgeryDate("2017-04-23")
         .surgeryClientsCount(6)
         .surgeryMattersCount(7)
         .cmrhOralCount(1)
