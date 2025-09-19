@@ -187,7 +187,7 @@ class SubmissionDetailControllerTest {
     }
 
     @Test
-    @DisplayName("Should throw exception when submission reference is null")
+    @DisplayName("Should throw exception when submission does not exist")
     void shouldThrowExceptionWhenSubmissionDoesNotExist() {
       // Given
       UUID submissionReference = UUID.fromString("bceac49c-d756-4e05-8e28-3334b84b6fe8");

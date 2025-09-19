@@ -9,6 +9,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.justice.laa.bulkclaim.dto.submission.claim.SubmissionClaimDetails;
+import uk.gov.justice.laa.bulkclaim.helper.TestObjectCreator;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.ClaimResponse;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.ClaimStatus;
 
@@ -27,7 +28,7 @@ class SubmissionClaimDetailsMapperTest {
   @DisplayName("Should map submission claim details")
   void shouldMapSubmissionClaim() {
     // Given
-    ClaimResponse claimResponse = buildClaimResponse();
+    ClaimResponse claimResponse = TestObjectCreator.buildClaimResponse();
     // When
     SubmissionClaimDetails result = mapper.toSubmissionClaimDetails(claimResponse);
     // Then
@@ -191,112 +192,5 @@ class SubmissionClaimDetailsMapperTest {
               .assertThat(result.localAuthorityNumber())
               .isEqualTo("local-authority-number");
         });
-  }
-
-  public static ClaimResponse buildClaimResponse() {
-
-    return ClaimResponse.builder()
-        .id("6d10189b-b020-4cc5-891b-e53bbefa501a")
-        .status(ClaimStatus.READY_TO_PROCESS)
-        .scheduleReference("schedule-reference-value")
-        .lineNumber(1)
-        .caseReferenceNumber("case-reference-number")
-        .uniqueFileNumber("unique-file-number")
-        .caseStartDate("2025-09-19")
-        .caseConcludedDate("2026-10-20")
-        .matterTypeCode("matter-type-code")
-        .crimeMatterTypeCode("crime-matter-type-code")
-        .feeSchemeCode("fee-scheme-code")
-        .feeCode("fee-code")
-        .procurementAreaCode("procurement-area-code")
-        .accessPointCode("access-point-code")
-        .deliveryLocation("delivery-location-value")
-        .representationOrderDate("2027-11-21")
-        .suspectsDefendantsCount(2)
-        .policeStationCourtAttendancesCount(3)
-        .policeStationCourtPrisonId("police-station-court-prison-id")
-        .dsccNumber("dscc-number")
-        .maatId("maat-id")
-        .prisonLawPriorApprovalNumber("prison-law-prior-approval-number")
-        .isDutySolicitor(true)
-        .isYouthCourt(true)
-        .schemeId("scheme-id")
-        .mediationSessionsCount(4)
-        .mediationTimeMinutes(5)
-        .outreachLocation("outreach-location")
-        .referralSource("referral-source")
-        .totalValue(new BigDecimal("1234.56"))
-        .clientForename("client-forename")
-        .clientSurname("client-surname")
-        .clientDateOfBirth("1995-01-01")
-        .uniqueClientNumber("unique-client-number")
-        .clientPostcode("client-postcode")
-        .genderCode("gender-code")
-        .ethnicityCode("ethnicity-code")
-        .disabilityCode("disability-code")
-        .isLegallyAided(true)
-        .clientTypeCode("client-type-code")
-        .homeOfficeClientNumber("home-office-client-number")
-        .claReferenceNumber("cla-reference-number")
-        .claExemptionCode("cla-exemption-code")
-        .client2Forename("client-2-forename")
-        .client2Surname("client-2-surname")
-        .client2DateOfBirth("1999-05-02")
-        .client2Ucn("client-2-ucn")
-        .client2Postcode("client-2-postcode")
-        .client2GenderCode("client-2-gender-code")
-        .client2EthnicityCode("client-2-ethnicity-code")
-        .client2DisabilityCode("client-2-disability-code")
-        .client2IsLegallyAided(true)
-        .caseId("case-id")
-        .uniqueCaseId("unique-case-id")
-        .caseStageCode("case-stage-code")
-        .stageReachedCode("stage-reached-code")
-        .standardFeeCategoryCode("standard-fee-category-code")
-        .outcomeCode("outcome-code")
-        .designatedAccreditedRepresentativeCode("designated-accredited-representative-code")
-        .isPostalApplicationAccepted(true)
-        .isClient2PostalApplicationAccepted(true)
-        .mentalHealthTribunalReference("mental-health-tribunal-reference")
-        .isNrmAdvice(true)
-        .followOnWork("follow-on-work")
-        .transferDate("2027-04-24")
-        .exemptionCriteriaSatisfied("exemption-criteria-satisfied")
-        .exceptionalCaseFundingReference("exceptional-case-funding-reference")
-        .isLegacyCase(true)
-        .adviceTime(6)
-        .travelTime(7)
-        .waitingTime(8)
-        .netProfitCostsAmount(new BigDecimal("100.10"))
-        .netDisbursementAmount(new BigDecimal("200.20"))
-        .netCounselCostsAmount(new BigDecimal("300.30"))
-        .disbursementsVatAmount(new BigDecimal("17.50"))
-        .travelWaitingCostsAmount(new BigDecimal("500.50"))
-        .netWaitingCostsAmount(new BigDecimal("400.40"))
-        .isVatApplicable(true)
-        .isToleranceApplicable(true)
-        .priorAuthorityReference("prior-authority-reference")
-        .isLondonRate(true)
-        .adjournedHearingFeeAmount(9)
-        .isAdditionalTravelPayment(true)
-        .costsDamagesRecoveredAmount(new BigDecimal("600.60"))
-        .meetingsAttendedCode("meetings-attended-code")
-        .detentionTravelWaitingCostsAmount(new BigDecimal("700.70"))
-        .jrFormFillingAmount(new BigDecimal("800.80"))
-        .isEligibleClient(true)
-        .courtLocationCode("court-location-code")
-        .adviceTypeCode("advice-type-code")
-        .medicalReportsCount(5)
-        .isIrcSurgery(true)
-        .surgeryDate("2017-04-23")
-        .surgeryClientsCount(6)
-        .surgeryMattersCount(7)
-        .cmrhOralCount(1)
-        .cmrhTelephoneCount(2)
-        .aitHearingCentreCode("ait-hearing-centre-code")
-        .isSubstantiveHearing(true)
-        .hoInterview(3)
-        .localAuthorityNumber("local-authority-number")
-        .build();
   }
 }
