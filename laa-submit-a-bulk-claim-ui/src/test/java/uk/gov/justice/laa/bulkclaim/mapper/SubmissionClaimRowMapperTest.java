@@ -2,25 +2,26 @@ package uk.gov.justice.laa.bulkclaim.mapper;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.UUID;
 import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import uk.gov.justice.laa.bulkclaim.dto.submission.SubmissionClaimRow;
-import uk.gov.justice.laa.bulkclaim.dto.submission.SubmissionClaimRowCostsDetails;
+import uk.gov.justice.laa.bulkclaim.dto.submission.claim.SubmissionClaimRow;
+import uk.gov.justice.laa.bulkclaim.dto.submission.claim.SubmissionClaimRowCostsDetails;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.ClaimResponse;
 
-@DisplayName("Submission claim mapper test")
+@DisplayName("Submission claim row mapper test")
 @ExtendWith(SpringExtension.class)
-class SubmissionClaimMapperTest {
+class SubmissionClaimRowMapperTest {
 
-  private SubmissionClaimMapper mapper;
+  private SubmissionClaimRowMapper mapper;
 
   @BeforeEach
   void setup() {
-    mapper = new SubmissionClaimMapperImpl();
+    mapper = new SubmissionClaimRowMapperImpl();
   }
 
   @Test
@@ -29,6 +30,7 @@ class SubmissionClaimMapperTest {
     // Given
     ClaimResponse claimResponse =
         ClaimResponse.builder()
+            .id("5146e93f-92c8-4c56-bd25-0cb6953f534")
             .lineNumber(1)
             .uniqueFileNumber("UFN123")
             .uniqueClientNumber("UCN123")
@@ -51,6 +53,9 @@ class SubmissionClaimMapperTest {
     // Then
     SoftAssertions.assertSoftly(
         softAssertions -> {
+          softAssertions
+              .assertThat(result.id())
+              .isEqualTo(UUID.fromString("5146e93f-92c8-4c56-bd25-0cb6953f534"));
           softAssertions.assertThat(result.lineNumber()).isEqualTo(1);
           softAssertions.assertThat(result.ufn()).isEqualTo("UFN123");
           softAssertions.assertThat(result.ucn()).isEqualTo("UCN123");

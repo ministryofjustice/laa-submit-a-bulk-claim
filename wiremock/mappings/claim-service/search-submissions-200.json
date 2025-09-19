@@ -24,7 +24,7 @@
           "number_of_claims": 4,
           "area_of_law": "CRIME",
           "status": "CREATED",
-          "submitted": "2025-08-20"
+          "submitted": "2025-08-20T00:00:00Z"
         },
         {
           "submission_id": "660e8400-e29b-41d4-a716-446655440000",
@@ -36,7 +36,7 @@
           "number_of_claims": 2,
           "area_of_law": "CIVIL",
           "status": "CREATED",
-          "submitted": "2025-08-21"
+          "submitted": "2025-08-21T00:00:00Z"
         },
         {
           "submission_id": "770e8400-e29b-41d4-a716-428925984520",
@@ -48,7 +48,7 @@
           "number_of_claims": 10,
           "area_of_law": "CIVIL",
           "status": "READY_FOR_VALIDATION",
-          "submitted": "2025-09-21"
+          "submitted": "2025-09-21T00:00:00Z"
         }
       ]
     }

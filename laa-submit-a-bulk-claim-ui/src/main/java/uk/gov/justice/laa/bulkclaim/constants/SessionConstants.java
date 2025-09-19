@@ -16,4 +16,5 @@ public final class SessionConstants {
   public static final String SUBMISSION_DATE_TIME = "submissionDateTime";
   public static final String UPLOADED_FILENAME = "uploadedFilename";
   public static final String SUBMISSION = "claimSubmission";
+  public static final String CLAIM_ID = "claimId";
 }

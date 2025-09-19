@@ -31,11 +31,11 @@ import uk.gov.justice.laa.bulkclaim.builder.SubmissionMatterStartsDetailsBuilder
 import uk.gov.justice.laa.bulkclaim.builder.SubmissionSummaryBuilder;
 import uk.gov.justice.laa.bulkclaim.client.DataClaimsRestClient;
 import uk.gov.justice.laa.bulkclaim.config.WebMvcTestConfig;
-import uk.gov.justice.laa.bulkclaim.dto.submission.SubmissionClaimDetails;
 import uk.gov.justice.laa.bulkclaim.dto.submission.SubmissionCostsSummary;
 import uk.gov.justice.laa.bulkclaim.dto.submission.SubmissionMatterStartsDetails;
 import uk.gov.justice.laa.bulkclaim.dto.submission.SubmissionMatterStartsRow;
 import uk.gov.justice.laa.bulkclaim.dto.submission.SubmissionSummary;
+import uk.gov.justice.laa.bulkclaim.dto.submission.claim.SubmissionClaimsDetails;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionResponse;
 
 @WebMvcTest(SubmissionDetailController.class)
@@ -94,7 +94,7 @@ class SubmissionDetailControllerTest {
                   OffsetDateTime.of(2025, 1, 1, 10, 10, 10, 0, ZoneOffset.UTC)));
       when(submissionClaimDetailsBuilder.build(any()))
           .thenReturn(
-              new SubmissionClaimDetails(
+              new SubmissionClaimsDetails(
                   new SubmissionCostsSummary(
                       new BigDecimal("100.00"),
                       new BigDecimal("100.50"),
@@ -133,7 +133,7 @@ class SubmissionDetailControllerTest {
                   OffsetDateTime.of(2025, 1, 1, 10, 10, 10, 0, ZoneOffset.UTC)));
       when(submissionClaimDetailsBuilder.build(any()))
           .thenReturn(
-              new SubmissionClaimDetails(
+              new SubmissionClaimsDetails(
                   new SubmissionCostsSummary(
                       new BigDecimal("100.00"),
                       new BigDecimal("100.50"),
@@ -187,7 +187,7 @@ class SubmissionDetailControllerTest {
     }
 
     @Test
-    @DisplayName("Should throw exception when submission reference is null")
+    @DisplayName("Should throw exception when submission does not exist")
     void shouldThrowExceptionWhenSubmissionDoesNotExist() {
       // Given
       UUID submissionReference = UUID.fromString("bceac49c-d756-4e05-8e28-3334b84b6fe8");

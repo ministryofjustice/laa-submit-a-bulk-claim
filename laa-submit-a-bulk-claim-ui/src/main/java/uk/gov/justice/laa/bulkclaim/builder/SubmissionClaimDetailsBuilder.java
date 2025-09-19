@@ -5,14 +5,14 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import uk.gov.justice.laa.bulkclaim.client.DataClaimsRestClient;
-import uk.gov.justice.laa.bulkclaim.dto.submission.SubmissionClaimDetails;
-import uk.gov.justice.laa.bulkclaim.dto.submission.SubmissionClaimRow;
 import uk.gov.justice.laa.bulkclaim.dto.submission.SubmissionCostsSummary;
-import uk.gov.justice.laa.bulkclaim.mapper.SubmissionClaimMapper;
+import uk.gov.justice.laa.bulkclaim.dto.submission.claim.SubmissionClaimRow;
+import uk.gov.justice.laa.bulkclaim.dto.submission.claim.SubmissionClaimsDetails;
+import uk.gov.justice.laa.bulkclaim.mapper.SubmissionClaimRowMapper;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionResponse;
 
 /**
- * Builder class for constructing a {@link SubmissionClaimDetails} object used for displaying a
+ * Builder class for constructing a {@link SubmissionClaimsDetails} object used for displaying a
  * table of claim details to the user.
  *
  * @author Jamie Briggs
@@ -22,16 +22,16 @@ import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionResponse;
 public class SubmissionClaimDetailsBuilder {
 
   private final DataClaimsRestClient dataClaimsRestClient;
-  private final SubmissionClaimMapper submissionClaimMapper;
+  private final SubmissionClaimRowMapper submissionClaimRowMapper;
 
   /**
-   * Builds a {@link SubmissionClaimDetails} object. This object contains a summary of the costs
+   * Builds a {@link SubmissionClaimsDetails} object. This object contains a summary of the costs
    * constructed using the claims attached to the submission.
    *
    * @param submissionResponse The source submission response.
-   * @return The built {@link SubmissionClaimDetails} object.
+   * @return The built {@link SubmissionClaimsDetails} object.
    */
-  public SubmissionClaimDetails build(SubmissionResponse submissionResponse) {
+  public SubmissionClaimsDetails build(SubmissionResponse submissionResponse) {
 
     // Get all claims from data claims service
     List<SubmissionClaimRow> submissionClaimRows =
@@ -40,7 +40,7 @@ public class SubmissionClaimDetailsBuilder {
                 x ->
                     dataClaimsRestClient.getSubmissionClaim(
                         submissionResponse.getSubmissionId(), x.getClaimId()))
-            .map(x -> submissionClaimMapper.toSubmissionClaimRow(x.block()))
+            .map(x -> submissionClaimRowMapper.toSubmissionClaimRow(x.block()))
             .toList();
 
     BigDecimal totalProfitCosts =
@@ -69,6 +69,6 @@ public class SubmissionClaimDetailsBuilder {
             // TODO: Where is fixed fee from?
             BigDecimal.ZERO,
             submissionValue);
-    return new SubmissionClaimDetails(costSummary, submissionClaimRows);
+    return new SubmissionClaimsDetails(costSummary, submissionClaimRows);
   }
 }

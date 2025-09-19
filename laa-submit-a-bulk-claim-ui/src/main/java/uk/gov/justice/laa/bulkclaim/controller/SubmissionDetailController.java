@@ -21,9 +21,9 @@ import uk.gov.justice.laa.bulkclaim.builder.SubmissionMatterStartsDetailsBuilder
 import uk.gov.justice.laa.bulkclaim.builder.SubmissionSummaryBuilder;
 import uk.gov.justice.laa.bulkclaim.client.DataClaimsRestClient;
 import uk.gov.justice.laa.bulkclaim.constants.ViewSubmissionNavigationTab;
-import uk.gov.justice.laa.bulkclaim.dto.submission.SubmissionClaimDetails;
 import uk.gov.justice.laa.bulkclaim.dto.submission.SubmissionMatterStartsDetails;
 import uk.gov.justice.laa.bulkclaim.dto.submission.SubmissionSummary;
+import uk.gov.justice.laa.bulkclaim.dto.submission.claim.SubmissionClaimsDetails;
 import uk.gov.justice.laa.bulkclaim.dto.summary.ClaimErrorSummary;
 import uk.gov.justice.laa.bulkclaim.exception.SubmitBulkClaimException;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionResponse;
@@ -84,7 +84,8 @@ public class SubmissionDetailController {
     SubmissionSummary submissionSummary = submissionSummaryBuilder.build(submissionResponse);
 
     if (CLAIM_DETAILS.equals(navigationTab)) {
-      SubmissionClaimDetails claimDetails = submissionClaimDetailsBuilder.build(submissionResponse);
+      SubmissionClaimsDetails claimDetails =
+          submissionClaimDetailsBuilder.build(submissionResponse);
       model.addAttribute("claimDetails", claimDetails);
     } else if (CLAIM_ERRORS.equals(navigationTab)) {
       int claimErrorPage = 0; // todo add pagination in later PR
