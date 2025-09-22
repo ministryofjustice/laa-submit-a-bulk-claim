@@ -33,6 +33,7 @@ import uk.gov.justice.laa.bulkclaim.dto.SubmissionsSearchForm;
 import uk.gov.justice.laa.bulkclaim.response.CwaUploadErrorResponseDto;
 import uk.gov.justice.laa.bulkclaim.response.CwaUploadSummaryResponseDto;
 import uk.gov.justice.laa.bulkclaim.service.CwaUploadService;
+import uk.gov.justice.laa.bulkclaim.validation.SubmissionSearchValidator;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionBase;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionsResultSet;
 
@@ -49,6 +50,7 @@ class SearchControllerTest {
   @Mock private DataClaimsRestClient claimsRestService;
   @Mock private BindingResult bindingResult;
   @Mock private HttpServletRequest request;
+  @Mock private SubmissionSearchValidator submissionSearchValidator;
 
   @InjectMocks private SearchController searchController;
 
@@ -131,14 +133,12 @@ class SearchControllerTest {
         .thenReturn(Mono.just(response));
     when(request.getQueryString()).thenReturn("submissionId=" + submissionId);
     when(request.getRequestURI()).thenReturn("/submissions/search/");
+    SubmissionsSearchForm submissionsSearchForm =
+        new SubmissionsSearchForm(submissionId, null, null);
     RedirectAttributes redirectAttributes = new RedirectAttributesModelMap();
     String view =
         searchController.handleSearch(
-            new SubmissionsSearchForm(submissionId, null, null),
-            bindingResult,
-            model,
-            getDefaultOidcUser(),
-            redirectAttributes);
+            submissionsSearchForm, bindingResult, model, getDefaultOidcUser(), redirectAttributes);
 
     assertEquals(0, bindingResult.getErrorCount());
     assertEquals("redirect:/submissions/search/results", view);

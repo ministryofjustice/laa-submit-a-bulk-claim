@@ -9,15 +9,14 @@
           <p th:text="#{search.intro}"></p>
           <div class="search-panel govuk-!-margin-bottom-6">
             <form id="claims-search-form" th:action="@{/submissions/search}" th:object="${submissionsSearchForm}" method="POST">
-              <div th:if="${errors}" >
-                <p class="govuk-error-message" th:each="error : ${errors}" th:text="#{search.error.criteria.required}"></p>
-              </div>
+              <div th:replace="~{fragments/error-components :: error-summary}"/>
               <div class="govuk-form-group govuk-!-width-two-thirds" role="search">
                 <h2 class="govuk-label-wrapper">
-                  <label class="govuk-label govuk-label--s" for="submissionId" th:text="#{search.submissionId.label}">
+                  <label class="govuk-label govuk-label--s" for="submissionId-input" th:text="#{search.submissionId.label}">
                   </label>
                 </h2>
-                <input class="govuk-input" id="submissionId" name="submissionId" type="search" aria-description="submission id search criteria">
+                <input class="govuk-input" id="submissionId-input" name="submissionId" type="search" aria-description="submission id search criteria"
+                th:value="${submissionsSearchForm.submissionId}">
               </div>
               <fieldset class="govuk-fieldset">
                 <legend class="govuk-fieldset__legend govuk-fieldset__legend--s" th:text="#{search.legend}"></legend>
@@ -32,9 +31,10 @@
                          >
 
                       <div class="govuk-form-group">
-                        <label class="govuk-label" for="submittedDateFrom" th:text="#{search.submittedDateFrom.label}">
+                        <label class="govuk-label" for="submittedDateFrom-input" th:text="#{search.submittedDateFrom.label}">
                         </label>
-                        <input class="govuk-input moj-js-datepicker-input " id="submittedDateFrom" name="submittedDateFrom" type="text" aria-describedby="date-hint" autocomplete="off">
+                        <input class="govuk-input moj-js-datepicker-input " id="submittedDateFrom-input" name="submittedDateFrom" type="text" aria-describedby="date-hint" autocomplete="off"
+                        th:value="${submissionsSearchForm.submittedDateFrom}">
                       </div>
 
                     </div>
@@ -47,9 +47,10 @@
                          data-excluded-days=#{search.date.excludedDays}"
                     >
                       <div class="govuk-form-group">
-                        <label class="govuk-label" for="submittedDateTo" th:text="#{search.submittedDateTo.label}">
+                        <label class="govuk-label" for="submittedDateTo-input" th:text="#{search.submittedDateTo.label}">
                         </label>
-                        <input class="govuk-input moj-js-datepicker-input " id="submittedDateTo" name="submittedDateTo" type="text" aria-describedby="date-hint" autocomplete="off">
+                        <input class="govuk-input moj-js-datepicker-input " id="submittedDateTo-input" name="submittedDateTo" type="text" aria-describedby="date-hint" autocomplete="off"
+                        th:value="${submissionsSearchForm.submittedDateTo}">
                       </div>
                     </div>
                   </div>
