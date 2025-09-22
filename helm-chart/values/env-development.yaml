@@ -7,12 +7,4 @@ ingress:
     includeProdAwsWorkspace: true
     includeLondonProdNatGatewayWorkspaces: true
     includePrismaAccess: true
-  enabled: true
   className: modsec-non-prod
-  annotations:
-    external-dns.alpha.kubernetes.io/aws-weight: "100"
-    nginx.ingress.kubernetes.io/enable-modsecurity: "true"
-    nginx.ingress.kubernetes.io/modsecurity-snippet: |
-      SecRuleEngine On
-      SecDefaultAction "phase:2,pass,log,tag:github_team=laa-submit-a-bulk-claim"
-  hosts: [ ]
