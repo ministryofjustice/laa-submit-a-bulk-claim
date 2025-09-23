@@ -7,3 +7,4 @@ ingress:
     includeProdAwsWorkspace: true
     includeLondonProdNatGatewayWorkspaces: true
     includePrismaAccess: true
+  className: modsec-non-prod

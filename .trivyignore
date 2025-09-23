@@ -4,4 +4,5 @@ CVE-2025-53864
 # stdlib issue inside buildpack
 CVE-2025-47907
 
-
+# libc6
+CVE-2025-8058

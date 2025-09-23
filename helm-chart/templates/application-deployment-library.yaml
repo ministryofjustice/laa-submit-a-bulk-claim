@@ -198,18 +198,24 @@ metadata:
     {{- end }}
     external-dns.alpha.kubernetes.io/set-identifier: {{ .Release.Name }}-{{ .Chart.Name }}-{{ .Release.Namespace }}-green
     external-dns.alpha.kubernetes.io/aws-weight: "100"
+    {{- if or (eq .Values.ingress.className "modsec") (eq .Values.ingress.className "modsec-non-prod") }}
+    nginx.ingress.kubernetes.io/enable-modsecurity: "true"
+    nginx.ingress.kubernetes.io/modsecurity-snippet: |
+      SecRuleEngine On
+      SecDefaultAction "phase:2,pass,log,tag:github_team=laa-submit-a-bulk-claim"
+    {{- end }}
 spec:
-  ingressClassName: default
+  ingressClassName: {{ .Values.ingress.className }}
   tls:
     - hosts:
         - {{ .Release.Name }}-{{ .Chart.Name }}-{{ .Release.Namespace }}.{{ .Values.global.clusterDomain }}
-    {{- if .Values.ingress.externalRoute.hostname }}
-    {{- if eq .Values.ingress.externalRoute.hostname.enabled true }}
+      {{- if .Values.ingress.externalRoute.hostname }}
+      {{- if eq .Values.ingress.externalRoute.hostname.enabled true }}
     - hosts:
-    - {{ required "hostname value must be provided when hostname is enabled." .Values.ingress.externalRoute.hostname.value }}
-    secretName: {{ required "hostname certSecretName must be provided when hostname is enabled." .Values.ingress.externalRoute.hostname.certSecretName }}
-    {{ end }}
-    {{ end }}
+        - {{ required "hostname value must be provided when hostname is enabled." .Values.ingress.externalRoute.hostname.value }}
+      secretName: {{ required "hostname certSecretName must be provided when hostname is enabled." .Values.ingress.externalRoute.hostname.certSecretName }}
+      {{ end }}
+      {{ end }}
   rules:
     - host: {{ .Release.Name }}-{{ .Chart.Name }}-{{ .Release.Namespace }}.{{ .Values.global.clusterDomain }}
       http:
