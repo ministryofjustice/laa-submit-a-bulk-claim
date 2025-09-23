@@ -9,6 +9,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.justice.laa.bulkclaim.dto.submission.claim.SubmissionClaimDetails;
+import uk.gov.justice.laa.bulkclaim.dto.submission.claim.SubmissionClaimFeeCalculationDetails;
 import uk.gov.justice.laa.bulkclaim.helper.TestObjectCreator;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.ClaimResponse;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.ClaimStatus;
@@ -132,6 +133,46 @@ class SubmissionClaimDetailsMapperTest {
               .assertThat(result.exceptionalCaseFundingReference())
               .isEqualTo("exceptional-case-funding-reference");
           softAssertions.assertThat(result.isLegacyCase()).isTrue();
+          softAssertions.assertThat(result.isToleranceApplicable()).isTrue();
+          softAssertions
+              .assertThat(result.priorAuthorityReference())
+              .isEqualTo("prior-authority-reference");
+          softAssertions.assertThat(result.isAdditionalTravelPayment()).isTrue();
+          softAssertions
+              .assertThat(result.meetingsAttendedCode())
+              .isEqualTo("meetings-attended-code");
+          softAssertions.assertThat(result.isEligibleClient()).isTrue();
+          softAssertions.assertThat(result.courtLocationCode()).isEqualTo("court-location-code");
+          softAssertions.assertThat(result.adviceTypeCode()).isEqualTo("advice-type-code");
+          softAssertions.assertThat(result.medicalReportsCount()).isEqualTo(5);
+          softAssertions.assertThat(result.isIrcSurgery()).isTrue();
+          softAssertions.assertThat(result.surgeryDate()).isEqualTo("2017-04-23");
+          softAssertions.assertThat(result.surgeryClientsCount()).isEqualTo(6);
+          softAssertions.assertThat(result.surgeryMattersCount()).isEqualTo(7);
+          softAssertions.assertThat(result.cmrhOralCount()).isEqualTo(1);
+          softAssertions.assertThat(result.cmrhTelephoneCount()).isEqualTo(2);
+          softAssertions
+              .assertThat(result.aitHearingCentreCode())
+              .isEqualTo("ait-hearing-centre-code");
+          softAssertions.assertThat(result.isSubstantiveHearing()).isTrue();
+          softAssertions.assertThat(result.hoInterview()).isEqualTo(3);
+          softAssertions
+              .assertThat(result.localAuthorityNumber())
+              .isEqualTo("local-authority-number");
+        });
+  }
+
+  @Test
+  @DisplayName("Should map fee calculation details")
+  void shouldMapFeeCalculationDetails() {
+    // Given
+    ClaimResponse claimResponse = TestObjectCreator.buildClaimResponse();
+    // When
+    SubmissionClaimFeeCalculationDetails result = mapper.toFeeCalculationDetails(claimResponse);
+    // Then
+    SoftAssertions.assertSoftly(
+        softAssertions -> {
+          softAssertions.assertThat(result.totalValue()).isEqualTo(new BigDecimal("1234.56"));
           softAssertions.assertThat(result.adviceTime()).isEqualTo(6);
           softAssertions.assertThat(result.travelTime()).isEqualTo(7);
           softAssertions.assertThat(result.waitingTime()).isEqualTo(8);
@@ -154,43 +195,17 @@ class SubmissionClaimDetailsMapperTest {
               .assertThat(result.netWaitingCostsAmount())
               .isEqualTo(new BigDecimal("400.40"));
           softAssertions.assertThat(result.isVatApplicable()).isTrue();
-          softAssertions.assertThat(result.isToleranceApplicable()).isTrue();
-          softAssertions
-              .assertThat(result.priorAuthorityReference())
-              .isEqualTo("prior-authority-reference");
           softAssertions.assertThat(result.isLondonRate()).isTrue();
           softAssertions.assertThat(result.adjournedHearingFeeAmount()).isEqualTo(9);
-          softAssertions.assertThat(result.isAdditionalTravelPayment()).isTrue();
           softAssertions
               .assertThat(result.costsDamagesRecoveredAmount())
               .isEqualTo(new BigDecimal("600.60"));
-          softAssertions
-              .assertThat(result.meetingsAttendedCode())
-              .isEqualTo("meetings-attended-code");
           softAssertions
               .assertThat(result.detentionTravelWaitingCostsAmount())
               .isEqualTo(new BigDecimal("700.70"));
           softAssertions
               .assertThat(result.jrFormFillingAmount())
               .isEqualTo(new BigDecimal("800.80"));
-          softAssertions.assertThat(result.isEligibleClient()).isTrue();
-          softAssertions.assertThat(result.courtLocationCode()).isEqualTo("court-location-code");
-          softAssertions.assertThat(result.adviceTypeCode()).isEqualTo("advice-type-code");
-          softAssertions.assertThat(result.medicalReportsCount()).isEqualTo(5);
-          softAssertions.assertThat(result.isIrcSurgery()).isTrue();
-          softAssertions.assertThat(result.surgeryDate()).isEqualTo("2017-04-23");
-          softAssertions.assertThat(result.surgeryClientsCount()).isEqualTo(6);
-          softAssertions.assertThat(result.surgeryMattersCount()).isEqualTo(7);
-          softAssertions.assertThat(result.cmrhOralCount()).isEqualTo(1);
-          softAssertions.assertThat(result.cmrhTelephoneCount()).isEqualTo(2);
-          softAssertions
-              .assertThat(result.aitHearingCentreCode())
-              .isEqualTo("ait-hearing-centre-code");
-          softAssertions.assertThat(result.isSubstantiveHearing()).isTrue();
-          softAssertions.assertThat(result.hoInterview()).isEqualTo(3);
-          softAssertions
-              .assertThat(result.localAuthorityNumber())
-              .isEqualTo("local-authority-number");
         });
   }
 }

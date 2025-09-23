@@ -77,25 +77,10 @@ import uk.gov.justice.laa.dstew.payments.claimsdata.model.ClaimStatus;
  * @param exemptionCriteriaSatisfied the exemption criteria satisfied
  * @param exceptionalCaseFundingReference the exceptional case funding reference
  * @param isLegacyCase the legacy case flag
- * @param adviceTime the advice time
- * @param travelTime the travel time
- * @param waitingTime the waiting time
- * @param netProfitCostsAmount the net profit costs amount
- * @param netDisbursementAmount the net disbursement amount
- * @param netCounselCostsAmount the net counsel costs amount
- * @param disbursementsVatAmount the disbursements VAT amount
- * @param travelWaitingCostsAmount the travel waiting costs amount
- * @param netWaitingCostsAmount the net waiting costs amount
- * @param isVatApplicable the VAT applicable flag
  * @param isToleranceApplicable the tolerance applicable flag
  * @param priorAuthorityReference the prior authority reference
- * @param isLondonRate the London rate flag
- * @param adjournedHearingFeeAmount the adjourned hearing fee amount
  * @param isAdditionalTravelPayment the additional travel payment flag
- * @param costsDamagesRecoveredAmount the costs damages recovered amount
  * @param meetingsAttendedCode the meetings attended code
- * @param detentionTravelWaitingCostsAmount the detention travel waiting costs amount
- * @param jrFormFillingAmount the JR form filling amount
  * @param isEligibleClient the eligible client flag
  * @param courtLocationCode the court location code
  * @param adviceTypeCode the advice type code
@@ -181,25 +166,10 @@ public record SubmissionClaimDetails(
     String exemptionCriteriaSatisfied,
     String exceptionalCaseFundingReference,
     Boolean isLegacyCase,
-    Integer adviceTime,
-    Integer travelTime,
-    Integer waitingTime,
-    BigDecimal netProfitCostsAmount,
-    BigDecimal netDisbursementAmount,
-    BigDecimal netCounselCostsAmount,
-    BigDecimal disbursementsVatAmount,
-    BigDecimal travelWaitingCostsAmount,
-    BigDecimal netWaitingCostsAmount,
-    Boolean isVatApplicable,
     Boolean isToleranceApplicable,
     String priorAuthorityReference,
-    Boolean isLondonRate,
-    Integer adjournedHearingFeeAmount,
     Boolean isAdditionalTravelPayment,
-    BigDecimal costsDamagesRecoveredAmount,
     String meetingsAttendedCode,
-    BigDecimal detentionTravelWaitingCostsAmount,
-    BigDecimal jrFormFillingAmount,
     Boolean isEligibleClient,
     String courtLocationCode,
     String adviceTypeCode,

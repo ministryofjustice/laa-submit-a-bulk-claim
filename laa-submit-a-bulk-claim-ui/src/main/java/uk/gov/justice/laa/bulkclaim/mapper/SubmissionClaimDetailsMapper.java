@@ -2,6 +2,7 @@ package uk.gov.justice.laa.bulkclaim.mapper;
 
 import org.mapstruct.Mapper;
 import uk.gov.justice.laa.bulkclaim.dto.submission.claim.SubmissionClaimDetails;
+import uk.gov.justice.laa.bulkclaim.dto.submission.claim.SubmissionClaimFeeCalculationDetails;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.ClaimResponse;
 
 /**
@@ -13,4 +14,6 @@ import uk.gov.justice.laa.dstew.payments.claimsdata.model.ClaimResponse;
 public interface SubmissionClaimDetailsMapper {
 
   SubmissionClaimDetails toSubmissionClaimDetails(ClaimResponse claimFields);
+
+  SubmissionClaimFeeCalculationDetails toFeeCalculationDetails(ClaimResponse claimFields);
 }

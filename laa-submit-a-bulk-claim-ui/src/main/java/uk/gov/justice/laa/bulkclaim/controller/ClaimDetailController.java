@@ -18,10 +18,10 @@ import uk.gov.justice.laa.bulkclaim.builder.SubmissionClaimMessagesBuilder;
 import uk.gov.justice.laa.bulkclaim.client.DataClaimsRestClient;
 import uk.gov.justice.laa.bulkclaim.constants.ViewClaimNavigationTab;
 import uk.gov.justice.laa.bulkclaim.dto.submission.claim.SubmissionClaimDetails;
+import uk.gov.justice.laa.bulkclaim.dto.submission.claim.SubmissionClaimFeeCalculationDetails;
 import uk.gov.justice.laa.bulkclaim.dto.summary.ClaimMessagesSummary;
 import uk.gov.justice.laa.bulkclaim.exception.SubmitBulkClaimException;
 import uk.gov.justice.laa.bulkclaim.mapper.SubmissionClaimDetailsMapper;
-import uk.gov.justice.laa.dstew.payments.claimsdata.model.ClaimResponse;
 
 /**
  * Controller for handling viewing a claim from a submission.
@@ -32,7 +32,7 @@ import uk.gov.justice.laa.dstew.payments.claimsdata.model.ClaimResponse;
 @Controller
 @RequiredArgsConstructor
 @SessionAttributes({SUBMISSION_ID, CLAIM_ID})
-public class ClaimDetailController {
+public final class ClaimDetailController {
 
   private final DataClaimsRestClient dataClaimsRestClient;
   private final SubmissionClaimDetailsMapper submissionClaimDetailsMapper;
@@ -71,28 +71,48 @@ public class ClaimDetailController {
       @ModelAttribute(SUBMISSION_ID) final UUID submissionId,
       @ModelAttribute(CLAIM_ID) final UUID claimId) {
 
-    if (ViewClaimNavigationTab.CLAIM_DETAILS.equals(navigationTab)) {
-
-      ClaimResponse submissionClaim =
-          dataClaimsRestClient
-              .getSubmissionClaim(submissionId, claimId)
-              .blockOptional()
-              .orElseThrow(
-                  () ->
-                      new SubmitBulkClaimException(
-                          "Claim %s does not exist for submission %s"
-                              .formatted(claimId.toString(), submissionId.toString())));
-      SubmissionClaimDetails submissionClaimDetails =
-          submissionClaimDetailsMapper.toSubmissionClaimDetails(submissionClaim);
-      model.addAttribute("claimDetails", submissionClaimDetails);
-    } else if (ViewClaimNavigationTab.CLAIM_MESSAGES.equals(navigationTab)) {
-      // Claim warnings & errors
-      ClaimMessagesSummary claimMessagesSummary =
-          submissionClaimMessagesBuilder.build(submissionId, claimId, page, null);
-      model.addAttribute("claimMessages", claimMessagesSummary);
+    switch (navigationTab) {
+      case CLAIM_MESSAGES -> addClaimMessages(model, page, submissionId, claimId);
+      case FEE_CALCULATION -> addFeeCalculationDetails(model, submissionId, claimId);
+      default -> addClaimDetails(model, submissionId, claimId);
     }
 
     model.addAttribute("navTab", navigationTab);
     return "pages/view-claim-detail";
+  }
+
+  private void addClaimDetails(Model model, UUID submissionId, UUID claimId) {
+    SubmissionClaimDetails submissionClaimDetails =
+        dataClaimsRestClient
+            .getSubmissionClaim(submissionId, claimId)
+            .blockOptional()
+            .map(submissionClaimDetailsMapper::toSubmissionClaimDetails)
+            .orElseThrow(
+                () ->
+                    new SubmitBulkClaimException(
+                        "Claim %s does not exist for submission %s"
+                            .formatted(claimId.toString(), submissionId.toString())));
+    model.addAttribute("claimDetails", submissionClaimDetails);
+  }
+
+  private void addFeeCalculationDetails(Model model, UUID submissionId, UUID claimId) {
+    SubmissionClaimFeeCalculationDetails feeCalculationDetails =
+        dataClaimsRestClient
+            .getSubmissionClaim(submissionId, claimId)
+            .blockOptional()
+            .map(submissionClaimDetailsMapper::toFeeCalculationDetails)
+            .orElseThrow(
+                () ->
+                    new SubmitBulkClaimException(
+                        "Claim %s does not exist for submission %s"
+                            .formatted(claimId.toString(), submissionId.toString())));
+    model.addAttribute("feeCalculationDetails", feeCalculationDetails);
+  }
+
+  private void addClaimMessages(Model model, int page, UUID submissionId, UUID claimId) {
+    // Claim warnings & errors
+    ClaimMessagesSummary claimMessagesSummary =
+        submissionClaimMessagesBuilder.build(submissionId, claimId, page, null);
+    model.addAttribute("claimMessages", claimMessagesSummary);
   }
 }

@@ -53,14 +53,15 @@
       </div>
 
       <div class="govuk-grid-column-two-thirds" th:if="${navTab.toString() == 'CLAIM_MESSAGES'}">
-          <th:block th:replace="~{fragments/claim-messages :: messagesTable(messageDetails=${claimMessages}, errorsAndWarnings=true)}"/>
+        <th:block
+            th:replace="~{fragments/claim-messages :: messagesTable(messageDetails=${claimMessages}, errorsAndWarnings=true)}"/>
       </div>
       <div class="govuk-grid-column-two-thirds" th:if="${navTab.toString() == 'CLAIM_DETAILS'}">
 
         <div class="govuk-summary-card" id="claim-details">
           <div class="govuk-summary-card__title-wrapper">
             <h2 class="govuk-summary-card__title"
-              th:text="#{viewClaim.claimDetails.section.base}"/>
+                th:text="#{viewClaim.claimDetails.section.base}"/>
           </div>
           <div class="govuk-summary-card__content">
             <dl class="govuk-summary-list">
@@ -131,7 +132,8 @@
                     th:text="${claimDetails.feeSchemeCode}"/>
               </div>
               <div class="govuk-summary-list__row">
-                <dt class="govuk-summary-list__key" th:text="#{submission.claim.properties.feeCode}"/>
+                <dt class="govuk-summary-list__key"
+                    th:text="#{submission.claim.properties.feeCode}"/>
                 <dd class="govuk-summary-list__value" id="claim-fee-code-value"
                     th:text="${claimDetails.feeCode}"/>
               </div>
@@ -169,7 +171,8 @@
 
 
               <div class="govuk-summary-list__row">
-                <dt class="govuk-summary-list__key" th:text="#{submission.claim.properties.caseId}"/>
+                <dt class="govuk-summary-list__key"
+                    th:text="#{submission.claim.properties.caseId}"/>
                 <dd class="govuk-summary-list__value" id="claim-case-id"
                     th:text="${claimDetails.caseId}"/>
               </div>
@@ -350,6 +353,33 @@
                 <dd class="govuk-summary-list__value" id="claim-local-authority-number"
                     th:text="${claimDetails.localAuthorityNumber}"/>
               </div>
+              <div class="govuk-summary-list__row">
+                <dt class="govuk-summary-list__key"
+                    th:text="#{submission.claim.properties.isToleranceApplicable}"/>
+                <dd class="govuk-summary-list__value" id="claim-is-tolerance-applicable"
+                    th:text="${claimDetails.isToleranceApplicable}"/>
+              </div>
+
+              <div class="govuk-summary-list__row">
+                <dt class="govuk-summary-list__key"
+                    th:text="#{submission.claim.properties.priorAuthorityReference}"/>
+                <dd class="govuk-summary-list__value" id="claim-prior-authority-reference"
+                    th:text="${claimDetails.priorAuthorityReference}"/>
+              </div>
+
+              <div class="govuk-summary-list__row">
+                <dt class="govuk-summary-list__key"
+                    th:text="#{submission.claim.properties.isAdditionalTravelPayment}"/>
+                <dd class="govuk-summary-list__value" id="claim-is-additional-travel-payment"
+                    th:text="${claimDetails.isAdditionalTravelPayment}"/>
+              </div>
+
+              <div class="govuk-summary-list__row">
+                <dt class="govuk-summary-list__key"
+                    th:text="#{submission.claim.properties.meetingsAttendedCode}"/>
+                <dd class="govuk-summary-list__value" id="claim-meetings-attended-code"
+                    th:text="${claimDetails.meetingsAttendedCode}"/>
+              </div>
 
             </dl>
           </div>
@@ -358,7 +388,8 @@
         <!--Client details-->
         <div class="govuk-summary-card">
           <div class="govuk-summary-card__title-wrapper">
-            <h2 class="govuk-summary-card__title" th:text="#{viewClaim.claimDetails.section.client}"/>
+            <h2 class="govuk-summary-card__title"
+                th:text="#{viewClaim.claimDetails.section.client}"/>
           </div>
           <div class="govuk-summary-card__content">
             <dl class="govuk-summary-list">
@@ -447,7 +478,8 @@
         <!--Client details 2-->
         <div class="govuk-summary-card">
           <div class="govuk-summary-card__title-wrapper">
-            <h2 class="govuk-summary-card__title" th:text="#{viewClaim.claimDetails.section.clientTwo}"/>
+            <h2 class="govuk-summary-card__title"
+                th:text="#{viewClaim.claimDetails.section.clientTwo}"/>
           </div>
           <div class="govuk-summary-card__content">
             <dl class="govuk-summary-list">
@@ -513,7 +545,7 @@
         <div class="govuk-summary-card">
           <div class="govuk-summary-card__title-wrapper">
             <h2 class="govuk-summary-card__title"
-              th:text="#{viewClaim.claimDetails.section.legal}"/>
+                th:text="#{viewClaim.claimDetails.section.legal}"/>
           </div>
           <div class="govuk-summary-card__content">
             <dl class="govuk-summary-list">
@@ -544,7 +576,8 @@
                     th:text="${claimDetails.dsccNumber}"/>
               </div>
               <div class="govuk-summary-list__row">
-                <dt class="govuk-summary-list__key" th:text="#{submission.claim.properties.maatId}"/>
+                <dt class="govuk-summary-list__key"
+                    th:text="#{submission.claim.properties.maatId}"/>
                 <dd class="govuk-summary-list__value" id="claim-maat-id-value"
                     th:text="${claimDetails.maatId}"/>
               </div>
@@ -568,7 +601,8 @@
                     th:text="${claimDetails.isYouthCourt}"/>
               </div>
               <div class="govuk-summary-list__row">
-                <dt class="govuk-summary-list__key" th:text="#{submission.claim.properties.schemeId}"/>
+                <dt class="govuk-summary-list__key"
+                    th:text="#{submission.claim.properties.schemeId}"/>
                 <dd class="govuk-summary-list__value" id="claim-scheme-id-value"
                     th:text="${claimDetails.schemeId}"/>
               </div>
@@ -600,128 +634,124 @@
           </div>
         </div>
 
-        <!--Cost details-->
+      </div>
+
+      <div class="govuk-grid-column-two-thirds-from-desktop"
+           th:if="${navTab.toString() == 'FEE_CALCULATION'}">
+
         <div class="govuk-summary-card">
           <div class="govuk-summary-card__title-wrapper">
             <h2 class="govuk-summary-card__title"
-              th:text="#{viewClaim.claimDetails.section.cost}"/>
+              th:text="#{viewClaim.feeCalculation.relatedInformation.subheading}"/>
+          </div>
+          <div class="govuk-summary-card__content">
+            <dl class="govuk-summary-list">
+              <div class="govuk-summary-list__row">
+                <dt class="govuk-summary-list__key"
+                    th:text="#{submission.claim.properties.isVatApplicable}"/>
+                <dd class="govuk-summary-list__value"
+                    th:text="${feeCalculationDetails.isVatApplicable ? 'Yes' : 'No'}"/>
+              </div>
+              <div class="govuk-summary-list__row">
+                <dt class="govuk-summary-list__key"
+                    th:text="#{submission.claim.properties.isLondonRate}"/>
+                <dd class="govuk-summary-list__value"
+                    th:text="${feeCalculationDetails.isLondonRate ? 'Yes' : 'No'}"/>
+              </div>
+              <div class="govuk-summary-list__row">
+                <dt class="govuk-summary-list__key"
+                    th:text="#{submission.claim.properties.adviceTime}"/>
+                <dd class="govuk-summary-list__value"
+                    th:text="|${feeCalculationDetails.adviceTime} #{common.minutes}|"/>
+              </div>
+              <div class="govuk-summary-list__row">
+                <dt class="govuk-summary-list__key"
+                    th:text="#{submission.claim.properties.travelTime}"/>
+                <dd class="govuk-summary-list__value"
+                    th:text="|${feeCalculationDetails.travelTime} #{common.minutes}|"/>
+              </div>
+              <div class="govuk-summary-list__row">
+                <dt class="govuk-summary-list__key"
+                    th:text="#{submission.claim.properties.waitingTime}"/>
+                <dd class="govuk-summary-list__value"
+                    th:text="|${feeCalculationDetails.waitingTime} #{common.minutes}|"/>
+              </div>
+            </dl>
+          </div>
+        </div>
+
+        <div class="govuk-summary-card">
+          <div class="govuk-summary-card__title-wrapper">
+            <h2 class="govuk-summary-card__title"
+                th:text="#{viewClaim.feeCalculation.calculationDetails.subheading}"/>
           </div>
           <div class="govuk-summary-card__content">
             <dl class="govuk-summary-list">
               <div class="govuk-summary-list__row">
                 <dt class="govuk-summary-list__key"
                     th:text="#{submission.claim.properties.netProfitCostsAmount}"/>
-                <dd class="govuk-summary-list__value" id="claim-net-profit-costs-amount"
-                    th:text="'£' + ${claimDetails.netProfitCostsAmount}"/>
+                <dd class="govuk-summary-list__value"
+                    th:text="'£' + ${feeCalculationDetails.netProfitCostsAmount}"/>
               </div>
               <div class="govuk-summary-list__row">
                 <dt class="govuk-summary-list__key"
                     th:text="#{submission.claim.properties.netDisbursementAmount}"/>
-                <dd class="govuk-summary-list__value" id="claim-net-disbursement-amount"
-                    th:text="'£' + ${claimDetails.netDisbursementAmount}"/>
+                <dd class="govuk-summary-list__value"
+                    th:text="'£' + ${feeCalculationDetails.netDisbursementAmount}"/>
               </div>
               <div class="govuk-summary-list__row">
                 <dt class="govuk-summary-list__key"
                     th:text="#{submission.claim.properties.netCounselCostsAmount}"/>
-                <dd class="govuk-summary-list__value" id="claim-net-counsel-costs-amount"
-                    th:text="'£' + ${claimDetails.netCounselCostsAmount}"/>
+                <dd class="govuk-summary-list__value"
+                    th:text="'£' + ${feeCalculationDetails.netCounselCostsAmount}"/>
               </div>
               <div class="govuk-summary-list__row">
                 <dt class="govuk-summary-list__key"
                     th:text="#{submission.claim.properties.disbursementsVatAmount}"/>
-                <dd class="govuk-summary-list__value" id="claim-disbursements-vat-amount"
-                    th:text="'£' + ${claimDetails.disbursementsVatAmount}"/>
+                <dd class="govuk-summary-list__value"
+                    th:text="'£' + ${feeCalculationDetails.disbursementsVatAmount}"/>
               </div>
               <div class="govuk-summary-list__row">
                 <dt class="govuk-summary-list__key"
                     th:text="#{submission.claim.properties.travelWaitingCostsAmount}"/>
-                <dd class="govuk-summary-list__value" id="claim-travel-waiting-costs-amount"
-                    th:text="'£' + ${claimDetails.travelWaitingCostsAmount}"/>
+                <dd class="govuk-summary-list__value"
+                    th:text="'£' + ${feeCalculationDetails.travelWaitingCostsAmount}"/>
               </div>
               <div class="govuk-summary-list__row">
                 <dt class="govuk-summary-list__key"
                     th:text="#{submission.claim.properties.netWaitingCostsAmount}"/>
-                <dd class="govuk-summary-list__value" id="claim-net-waiting-costs-amount"
-                    th:text="'£' + ${claimDetails.netWaitingCostsAmount}"/>
-              </div>
-              <div class="govuk-summary-list__row">
-                <dt class="govuk-summary-list__key"
-                    th:text="#{submission.claim.properties.isVatApplicable}"/>
-                <dd class="govuk-summary-list__value" id="claim-is-vat-applicable"
-                    th:text="${claimDetails.isVatApplicable}"/>
-              </div>
-              <div class="govuk-summary-list__row">
-                <dt class="govuk-summary-list__key"
-                    th:text="#{submission.claim.properties.isToleranceApplicable}"/>
-                <dd class="govuk-summary-list__value" id="claim-is-tolerance-applicable"
-                    th:text="${claimDetails.isToleranceApplicable}"/>
-              </div>
-              <div class="govuk-summary-list__row">
-                <dt class="govuk-summary-list__key"
-                    th:text="#{submission.claim.properties.adviceTime}"/>
-                <dd class="govuk-summary-list__value" id="claim-advice-time"
-                    th:text="${claimDetails.adviceTime}"/>
-              </div>
-              <div class="govuk-summary-list__row">
-                <dt class="govuk-summary-list__key"
-                    th:text="#{submission.claim.properties.travelTime}"/>
-                <dd class="govuk-summary-list__value" id="claim-travel-time"
-                    th:text="${claimDetails.travelTime}"/>
-              </div>
-              <div class="govuk-summary-list__row">
-                <dt class="govuk-summary-list__key"
-                    th:text="#{submission.claim.properties.waitingTime}"/>
-                <dd class="govuk-summary-list__value" id="claim-waiting-time"
-                    th:text="${claimDetails.waitingTime}"/>
-              </div>
-              <div class="govuk-summary-list__row">
-                <dt class="govuk-summary-list__key"
-                    th:text="#{submission.claim.properties.priorAuthorityReference}"/>
-                <dd class="govuk-summary-list__value" id="claim-prior-authority-reference"
-                    th:text="${claimDetails.priorAuthorityReference}"/>
-              </div>
-              <div class="govuk-summary-list__row">
-                <dt class="govuk-summary-list__key"
-                    th:text="#{submission.claim.properties.isLondonRate}"/>
-                <dd class="govuk-summary-list__value" id="claim-is-london-rate"
-                    th:text="${claimDetails.isLondonRate}"/>
-              </div>
-              <div class="govuk-summary-list__row">
-                <dt class="govuk-summary-list__key"
-                    th:text="#{submission.claim.properties.adjournedHearingFeeAmount}"/>
-                <dd class="govuk-summary-list__value" id="claim-adjourned-hearing-fee-amount"
-                    th:text="'£' + ${claimDetails.adjournedHearingFeeAmount}"/>
-              </div>
-              <div class="govuk-summary-list__row">
-                <dt class="govuk-summary-list__key"
-                    th:text="#{submission.claim.properties.isAdditionalTravelPayment}"/>
-                <dd class="govuk-summary-list__value" id="claim-is-additional-travel-payment"
-                    th:text="${claimDetails.isAdditionalTravelPayment}"/>
+                <dd class="govuk-summary-list__value"
+                    th:text="'£' + ${feeCalculationDetails.netWaitingCostsAmount}"/>
               </div>
               <div class="govuk-summary-list__row">
                 <dt class="govuk-summary-list__key"
                     th:text="#{submission.claim.properties.costsDamagesRecoveredAmount}"/>
-                <dd class="govuk-summary-list__value" id="claim-costs-damages-recovered-amount"
-                    th:text="'£' + ${claimDetails.costsDamagesRecoveredAmount}"/>
-              </div>
-              <div class="govuk-summary-list__row">
-                <dt class="govuk-summary-list__key"
-                    th:text="#{submission.claim.properties.meetingsAttendedCode}"/>
-                <dd class="govuk-summary-list__value" id="claim-meetings-attended-code"
-                    th:text="${claimDetails.meetingsAttendedCode}"/>
+                <dd class="govuk-summary-list__value"
+                    th:text="'£' + ${feeCalculationDetails.costsDamagesRecoveredAmount}"/>
               </div>
               <div class="govuk-summary-list__row">
                 <dt class="govuk-summary-list__key"
                     th:text="#{submission.claim.properties.detentionTravelWaitingCostsAmount}"/>
                 <dd class="govuk-summary-list__value"
-                    id="claim-detention-travel-waiting-costs-amount"
-                    th:text="'£' + ${claimDetails.detentionTravelWaitingCostsAmount}"/>
+                    th:text="'£' + ${feeCalculationDetails.detentionTravelWaitingCostsAmount}"/>
               </div>
               <div class="govuk-summary-list__row">
                 <dt class="govuk-summary-list__key"
                     th:text="#{submission.claim.properties.jrFormFillingAmount}"/>
-                <dd class="govuk-summary-list__value" id="claim-jr-form-filling-amount"
-                    th:text="'£' + ${claimDetails.jrFormFillingAmount}"/>
+                <dd class="govuk-summary-list__value"
+                    th:text="'£' + ${feeCalculationDetails.jrFormFillingAmount}"/>
+              </div>
+              <div class="govuk-summary-list__row">
+                <dt class="govuk-summary-list__key"
+                    th:text="#{submission.claim.properties.adjournedHearingFeeAmount}"/>
+                <dd class="govuk-summary-list__value"
+                    th:text="'£' + ${feeCalculationDetails.adjournedHearingFeeAmount}"/>
+              </div>
+              <div class="govuk-summary-list__row">
+                <dt class="govuk-summary-list__key"
+                    th:text="#{submission.claim.properties.totalValue}"/>
+                <dd class="govuk-summary-list__value govuk-!-font-weight-bold"
+                    th:text="'£' + ${feeCalculationDetails.totalValue}"/>
               </div>
             </dl>
           </div>
