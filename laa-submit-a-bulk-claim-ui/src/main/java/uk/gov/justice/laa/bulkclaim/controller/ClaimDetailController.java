@@ -23,6 +23,11 @@ import uk.gov.justice.laa.bulkclaim.exception.SubmitBulkClaimException;
 import uk.gov.justice.laa.bulkclaim.mapper.SubmissionClaimDetailsMapper;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.ClaimResponse;
 
+/**
+ * Controller for handling viewing a claim from a submission.
+ *
+ * @author Jamie Briggs
+ */
 @Slf4j
 @Controller
 @RequiredArgsConstructor
@@ -33,6 +38,13 @@ public class ClaimDetailController {
   private final SubmissionClaimDetailsMapper submissionClaimDetailsMapper;
   private final SubmissionClaimMessagesBuilder submissionClaimMessagesBuilder;
 
+  /**
+   * Gets the claim reference, stores it in the session and redirects to the view claim detail page.
+   *
+   * @param claimReference the claim reference
+   * @param httpSession the http session
+   * @return the redirect to view a claim detail
+   */
   @GetMapping("/submission/claim/{claimReference}")
   public String getClaimDetail(
       @PathVariable("claimReference") UUID claimReference, HttpSession httpSession) {
@@ -40,6 +52,16 @@ public class ClaimDetailController {
     return "redirect:/view-claim-detail";
   }
 
+  /**
+   * Views the submission detail page.
+   *
+   * @param model the spring model
+   * @param page the page number for messages (default = 0)
+   * @param navigationTab the navigation tab (default = CLAIM_DETAILS)
+   * @param submissionId the submission id in the session
+   * @param claimId the claim id in the session
+   * @return the view claim detail page
+   */
   @GetMapping("/view-claim-detail")
   public String getClaimDetail(
       Model model,

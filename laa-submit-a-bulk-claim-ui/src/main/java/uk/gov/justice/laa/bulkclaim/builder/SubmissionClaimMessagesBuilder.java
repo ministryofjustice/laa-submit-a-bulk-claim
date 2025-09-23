@@ -52,7 +52,7 @@ public class SubmissionClaimMessagesBuilder {
    * Builds a {@link ClaimMessagesSummary} for a given submission ID and claim ID.
    *
    * @param submissionId the submission ID to fetch messages for.
-   * @param submissionId the claim ID to fetch messages for.
+   * @param claimId the claim ID to fetch messages for.
    * @param page the page number to fetch messages for.
    * @return the built {@link ClaimMessagesSummary}.
    */
