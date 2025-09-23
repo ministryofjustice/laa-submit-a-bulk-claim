@@ -1,7 +1,6 @@
 package uk.gov.justice.laa.bulkclaim.controller;
 
 import jakarta.servlet.http.HttpServletRequest;
-import java.time.LocalDate;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -74,16 +73,8 @@ public class SearchController {
       @AuthenticationPrincipal OidcUser oidcUser,
       final RedirectAttributes redirectAttributes) {
 
-    String submissionId =
-        StringUtils.hasText(submissionsSearchForm.submissionId())
-            ? submissionsSearchForm.submissionId().trim()
-            : null;
-
-    LocalDate submittedDateFrom = submissionsSearchForm.submittedDateFrom();
-    LocalDate submittedDateTo = submissionsSearchForm.submittedDateTo();
-
     if (bindingResult.hasErrors()) {
-      model.addAttribute("errors", bindingResult.getFieldErrors());
+      model.addAttribute("submissionsSearchForm", submissionsSearchForm);
       return "pages/submissions-search";
     }
 
@@ -93,7 +84,11 @@ public class SearchController {
     try {
       SubmissionsResultSet response =
           claimsRestService
-              .search(offices, submissionId, submittedDateFrom, submittedDateTo)
+              .search(
+                  offices,
+                  submissionsSearchForm.submissionId(),
+                  submissionsSearchForm.submittedDateFrom(),
+                  submissionsSearchForm.submittedDateTo())
               .block();
       log.debug("Response from claims search: {}", response);
       redirectAttributes.addFlashAttribute("submissions", response);
