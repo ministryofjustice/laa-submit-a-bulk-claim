@@ -26,7 +26,7 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.assertj.MockMvcTester;
 import reactor.core.publisher.Mono;
 import uk.gov.justice.laa.bulkclaim.builder.SubmissionClaimDetailsBuilder;
-import uk.gov.justice.laa.bulkclaim.builder.SubmissionClaimErrorsBuilder;
+import uk.gov.justice.laa.bulkclaim.builder.SubmissionClaimMessagesBuilder;
 import uk.gov.justice.laa.bulkclaim.builder.SubmissionMatterStartsDetailsBuilder;
 import uk.gov.justice.laa.bulkclaim.builder.SubmissionSummaryBuilder;
 import uk.gov.justice.laa.bulkclaim.client.DataClaimsRestClient;
@@ -50,7 +50,7 @@ class SubmissionDetailControllerTest {
   @MockitoBean private SubmissionClaimDetailsBuilder submissionClaimDetailsBuilder;
   @MockitoBean private SubmissionMatterStartsDetailsBuilder submissionMatterStartsDetailsBuilder;
   @MockitoBean private DataClaimsRestClient dataClaimsRestClient;
-  @MockitoBean private SubmissionClaimErrorsBuilder submissionClaimErrorsBuilder;
+  @MockitoBean private SubmissionClaimMessagesBuilder submissionClaimMessagesBuilder;
 
   @Nested
   @DisplayName("GET: /submission/{submissionId}")

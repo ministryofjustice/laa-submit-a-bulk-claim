@@ -14,8 +14,8 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import reactor.core.publisher.Mono;
 import uk.gov.justice.laa.bulkclaim.client.DataClaimsRestClient;
-import uk.gov.justice.laa.bulkclaim.dto.summary.ClaimErrorSummary;
-import uk.gov.justice.laa.bulkclaim.dto.summary.SubmissionSummaryClaimErrorRow;
+import uk.gov.justice.laa.bulkclaim.dto.summary.ClaimMessagesSummary;
+import uk.gov.justice.laa.bulkclaim.dto.summary.SubmissionSummaryClaimMessageRow;
 import uk.gov.justice.laa.bulkclaim.mapper.BulkClaimImportSummaryMapper;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.ClaimResponse;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.ValidationMessageBase;
@@ -23,12 +23,12 @@ import uk.gov.justice.laa.dstew.payments.claimsdata.model.ValidationMessageType;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.ValidationMessagesResponse;
 
 @ExtendWith(MockitoExtension.class)
-class SubmissionClaimErrorsBuilderTest {
+class SubmissionClaimMessagesBuilderTest {
 
   @Mock private DataClaimsRestClient dataClaimsRestClient;
   @Mock private BulkClaimImportSummaryMapper bulkClaimImportSummaryMapper;
 
-  @InjectMocks private SubmissionClaimErrorsBuilder builder;
+  @InjectMocks private SubmissionClaimMessagesBuilder builder;
 
   @Test
   @DisplayName("should build claim error summary with errors when claimId present")
@@ -52,17 +52,17 @@ class SubmissionClaimErrorsBuilderTest {
     when(dataClaimsRestClient.getSubmissionClaim(submissionId, claimId))
         .thenReturn(Mono.just(new ClaimResponse()));
 
-    SubmissionSummaryClaimErrorRow mappedError =
-        new SubmissionSummaryClaimErrorRow(
-            submissionId, "UFN123", "UCN456", "John Doe", "Invalid data");
+    SubmissionSummaryClaimMessageRow mappedError =
+        new SubmissionSummaryClaimMessageRow(
+            submissionId, "UFN123", "UCN456", "John Doe", "Invalid data", "ERROR");
 
     when(bulkClaimImportSummaryMapper.toSubmissionSummaryClaimMessage(any(), any()))
         .thenReturn(mappedError);
 
-    ClaimErrorSummary result = builder.build(submissionId, 0);
+    ClaimMessagesSummary result = builder.buildErrors(submissionId, 0);
 
-    assertThat(result.claimErrors()).containsExactly(mappedError);
-    assertThat(result.totalErrorCount()).isEqualTo(1);
+    assertThat(result.claimMessages()).containsExactly(mappedError);
+    assertThat(result.totalMessageCount()).isEqualTo(1);
     assertThat(result.totalClaimsWithErrors()).isEqualTo(1);
   }
 
@@ -75,10 +75,10 @@ class SubmissionClaimErrorsBuilderTest {
             submissionId, null, ValidationMessageType.ERROR.toString(), null, 0))
         .thenReturn(Mono.empty());
 
-    ClaimErrorSummary result = builder.build(submissionId, 0);
+    ClaimMessagesSummary result = builder.buildErrors(submissionId, 0);
 
-    assertThat(result.claimErrors()).isEmpty();
-    assertThat(result.totalErrorCount()).isZero();
+    assertThat(result.claimMessages()).isEmpty();
+    assertThat(result.totalMessageCount()).isZero();
     assertThat(result.totalClaimsWithErrors()).isZero();
   }
 
@@ -100,16 +100,17 @@ class SubmissionClaimErrorsBuilderTest {
             submissionId, null, ValidationMessageType.ERROR.toString(), null, 0))
         .thenReturn(Mono.just(errorResponse));
 
-    SubmissionSummaryClaimErrorRow mappedError =
-        new SubmissionSummaryClaimErrorRow(submissionId, null, null, null, "Missing claimId");
+    SubmissionSummaryClaimMessageRow mappedError =
+        new SubmissionSummaryClaimMessageRow(
+            submissionId, null, null, null, "Missing claimId", "ERROR");
 
     when(bulkClaimImportSummaryMapper.toSubmissionSummaryClaimMessage(any(), any()))
         .thenReturn(mappedError);
 
-    ClaimErrorSummary result = builder.build(submissionId, 0);
+    ClaimMessagesSummary result = builder.buildErrors(submissionId, 0);
 
-    assertThat(result.claimErrors()).containsExactly(mappedError);
-    assertThat(result.totalErrorCount()).isEqualTo(1);
+    assertThat(result.claimMessages()).containsExactly(mappedError);
+    assertThat(result.totalMessageCount()).isEqualTo(1);
     assertThat(result.totalClaimsWithErrors()).isEqualTo(1);
   }
 }

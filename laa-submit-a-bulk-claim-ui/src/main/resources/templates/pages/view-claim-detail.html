@@ -10,14 +10,57 @@
     <div class="govuk-grid-row">
 
       <div class="govuk-grid-column-two-thirds">
-
         <h1 class="govuk-heading-l"
             th:text="#{viewClaim.heading}"/>
+      </div>
 
-        <div class="govuk-summary-card">
+      <div class="govuk-grid-column-full">
+        <nav class="moj-sub-navigation" aria-label="Sub navigation">
+
+          <ul class="moj-sub-navigation__list">
+            <!--/*@thymesVar id="navTab" type="uk.gov.justice.laa.bulkclaim.constants.ViewClaimNavigationTab"*/-->
+            <li class="moj-sub-navigation__item">
+              <a class="moj-sub-navigation__link"
+                 th:with="isCurrent=${navTab.toString() == 'CLAIM_DETAILS'},
+                  url=@{/view-claim-detail(navTab='CLAIM_DETAILS')}"
+                 th:attr="aria-current=${isCurrent ? 'page' : null}"
+                 th:href="${isCurrent ? '#claims' : url}"
+                 th:text="#{viewClaim.claimDetails.subheading}"/>
+            </li>
+
+            <li class="moj-sub-navigation__item">
+              <a class="moj-sub-navigation__link"
+                 th:with="isCurrent=${navTab.toString() == 'CLAIM_MESSAGES'},
+                  url=@{/view-claim-detail(navTab='CLAIM_MESSAGES')}"
+                 th:attr="aria-current=${isCurrent ? 'page' : null}"
+                 th:href="${isCurrent ? '#claim-errors' : url}"
+                 th:text="#{viewClaim.claimMessages.subheading}"/>
+            </li>
+
+            <li class="moj-sub-navigation__item">
+              <a class="moj-sub-navigation__link"
+                 th:with="isCurrent=${navTab.toString() == 'FEE_CALCULATION'},
+                  url=@{/view-claim-detail(navTab='FEE_CALCULATION')}"
+                 th:attr="aria-current=${isCurrent ? 'page' : null}"
+                 th:href="${isCurrent ? '#matter-starts' : url}"
+                 th:text="#{viewClaim.feeCalculation.subheading}"/>
+            </li>
+
+          </ul>
+
+        </nav>
+
+      </div>
+
+      <div class="govuk-grid-column-two-thirds" th:if="${navTab.toString() == 'CLAIM_MESSAGES'}">
+          <th:block th:replace="~{fragments/claim-messages :: messagesTable(messageDetails=${claimMessages}, errorsAndWarnings=true)}"/>
+      </div>
+      <div class="govuk-grid-column-two-thirds" th:if="${navTab.toString() == 'CLAIM_DETAILS'}">
+
+        <div class="govuk-summary-card" id="claim-details">
           <div class="govuk-summary-card__title-wrapper">
             <h2 class="govuk-summary-card__title"
-              th:text="#{viewClaim.section.base}"/>
+              th:text="#{viewClaim.claimDetails.section.base}"/>
           </div>
           <div class="govuk-summary-card__content">
             <dl class="govuk-summary-list">
@@ -315,7 +358,7 @@
         <!--Client details-->
         <div class="govuk-summary-card">
           <div class="govuk-summary-card__title-wrapper">
-            <h2 class="govuk-summary-card__title" th:text="#{viewClaim.section.client}"/>
+            <h2 class="govuk-summary-card__title" th:text="#{viewClaim.claimDetails.section.client}"/>
           </div>
           <div class="govuk-summary-card__content">
             <dl class="govuk-summary-list">
@@ -404,7 +447,7 @@
         <!--Client details 2-->
         <div class="govuk-summary-card">
           <div class="govuk-summary-card__title-wrapper">
-            <h2 class="govuk-summary-card__title" th:text="#{viewClaim.section.clientTwo}"/>
+            <h2 class="govuk-summary-card__title" th:text="#{viewClaim.claimDetails.section.clientTwo}"/>
           </div>
           <div class="govuk-summary-card__content">
             <dl class="govuk-summary-list">
@@ -470,7 +513,7 @@
         <div class="govuk-summary-card">
           <div class="govuk-summary-card__title-wrapper">
             <h2 class="govuk-summary-card__title"
-              th:text="#{viewClaim.section.legal}"/>
+              th:text="#{viewClaim.claimDetails.section.legal}"/>
           </div>
           <div class="govuk-summary-card__content">
             <dl class="govuk-summary-list">
@@ -561,7 +604,7 @@
         <div class="govuk-summary-card">
           <div class="govuk-summary-card__title-wrapper">
             <h2 class="govuk-summary-card__title"
-              th:text="#{viewClaim.section.cost}"/>
+              th:text="#{viewClaim.claimDetails.section.cost}"/>
           </div>
           <div class="govuk-summary-card__content">
             <dl class="govuk-summary-list">

@@ -1,0 +1,24 @@
+{
+  "request": {
+    "method": "GET",
+    "urlPath": "/api/v0/validation-messages"
+  },
+  "scenarioName": "Get validation messages",
+  "requiredScenarioState": "Started",
+  "newScenarioState": "Second",
+  "response": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json"
+    },
+    "jsonBody": {
+      "total_pages": 1,
+      "total_elements": 0,
+      "total_claims": 0,
+      "number": 0,
+      "size": 0,
+      "content": []
+    }
+  }
+}
+

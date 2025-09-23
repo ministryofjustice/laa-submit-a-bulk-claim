@@ -10,11 +10,12 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import uk.gov.justice.laa.bulkclaim.dto.summary.SubmissionSummaryClaimErrorRow;
+import uk.gov.justice.laa.bulkclaim.dto.summary.SubmissionSummaryClaimMessageRow;
 import uk.gov.justice.laa.bulkclaim.dto.summary.SubmissionSummaryRow;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.ClaimResponse;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionResponse;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.ValidationMessageBase;
+import uk.gov.justice.laa.dstew.payments.claimsdata.model.ValidationMessageType;
 
 @ExtendWith(SpringExtension.class)
 @DisplayName("Bulk claim summary mapper test")
@@ -66,7 +67,10 @@ class BulkClaimImportSummaryMapperTest {
     UUID submissionId = UUID.fromString("ee92c4ac-0ff9-4896-8bbe-c58fa04206e3");
 
     ValidationMessageBase errors =
-        new ValidationMessageBase().submissionId(submissionId).displayMessage("This is an error!");
+        new ValidationMessageBase()
+            .type(ValidationMessageType.ERROR)
+            .submissionId(submissionId)
+            .displayMessage("This is an error!");
 
     ClaimResponse claimResponse = new ClaimResponse();
     claimResponse.setUniqueFileNumber("F123");
@@ -74,7 +78,7 @@ class BulkClaimImportSummaryMapperTest {
     claimResponse.setClientForename("First");
     claimResponse.setClientSurname("Last");
 
-    SubmissionSummaryClaimErrorRow result =
+    SubmissionSummaryClaimMessageRow result =
         mapper.toSubmissionSummaryClaimMessage(errors, claimResponse);
 
     SoftAssertions.assertSoftly(
@@ -84,6 +88,38 @@ class BulkClaimImportSummaryMapperTest {
           softly.assertThat(result.ucn()).isEqualTo("C123");
           softly.assertThat(result.client()).isEqualTo("First Last");
           softly.assertThat(result.message()).isEqualTo("This is an error!");
+          softly.assertThat(result.type()).isEqualTo("ERROR");
+        });
+  }
+
+  @Test
+  @DisplayName("Should map submission summary claim warnings when primary client name is present")
+  void shouldMapSubmissionSummaryClaimWarningsWithPrimaryClient() {
+    UUID submissionId = UUID.fromString("ee92c4ac-0ff9-4896-8bbe-c58fa04206e3");
+
+    ValidationMessageBase errors =
+        new ValidationMessageBase()
+            .type(ValidationMessageType.WARNING)
+            .submissionId(submissionId)
+            .displayMessage("This is an error!");
+
+    ClaimResponse claimResponse = new ClaimResponse();
+    claimResponse.setUniqueFileNumber("F123");
+    claimResponse.setUniqueClientNumber("C123");
+    claimResponse.setClientForename("First");
+    claimResponse.setClientSurname("Last");
+
+    SubmissionSummaryClaimMessageRow result =
+        mapper.toSubmissionSummaryClaimMessage(errors, claimResponse);
+
+    SoftAssertions.assertSoftly(
+        softly -> {
+          softly.assertThat(result.submissionReference()).isEqualTo(submissionId);
+          softly.assertThat(result.ufn()).isEqualTo("F123");
+          softly.assertThat(result.ucn()).isEqualTo("C123");
+          softly.assertThat(result.client()).isEqualTo("First Last");
+          softly.assertThat(result.message()).isEqualTo("This is an error!");
+          softly.assertThat(result.type()).isEqualTo("WARNING");
         });
   }
 
@@ -99,7 +135,7 @@ class BulkClaimImportSummaryMapperTest {
     claimResponse.setClient2Forename("Second");
     claimResponse.setClient2Surname("Client");
 
-    SubmissionSummaryClaimErrorRow result =
+    SubmissionSummaryClaimMessageRow result =
         mapper.toSubmissionSummaryClaimMessage(errors, claimResponse);
 
     SoftAssertions.assertSoftly(
@@ -117,7 +153,7 @@ class BulkClaimImportSummaryMapperTest {
 
     ClaimResponse claimResponse = new ClaimResponse();
 
-    SubmissionSummaryClaimErrorRow result =
+    SubmissionSummaryClaimMessageRow result =
         mapper.toSubmissionSummaryClaimMessage(errors, claimResponse);
 
     SoftAssertions.assertSoftly(
