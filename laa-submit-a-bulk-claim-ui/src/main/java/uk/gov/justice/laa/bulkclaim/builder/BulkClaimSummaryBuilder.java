@@ -3,9 +3,9 @@ package uk.gov.justice.laa.bulkclaim.builder;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
+import uk.gov.justice.laa.bulkclaim.dto.submission.SubmissionSummaryRow;
+import uk.gov.justice.laa.bulkclaim.dto.submission.claim.ClaimMessagesSummary;
 import uk.gov.justice.laa.bulkclaim.dto.summary.BulkClaimImportSummary;
-import uk.gov.justice.laa.bulkclaim.dto.summary.ClaimMessagesSummary;
-import uk.gov.justice.laa.bulkclaim.dto.summary.SubmissionSummaryRow;
 import uk.gov.justice.laa.bulkclaim.mapper.BulkClaimImportSummaryMapper;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionResponse;
 
@@ -16,6 +16,7 @@ import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionResponse;
  * @author Jamie Briggs
  */
 @Component
+@Deprecated(since = "Will be removed when BulkSubmissionImportedController is removed", forRemoval = true)
 @RequiredArgsConstructor
 public class BulkClaimSummaryBuilder {
 

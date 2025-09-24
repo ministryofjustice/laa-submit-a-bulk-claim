@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.SessionAttributes;
 import uk.gov.justice.laa.bulkclaim.builder.SubmissionClaimMessagesBuilder;
 import uk.gov.justice.laa.bulkclaim.client.DataClaimsRestClient;
 import uk.gov.justice.laa.bulkclaim.constants.ViewClaimNavigationTab;
-import uk.gov.justice.laa.bulkclaim.dto.summary.ClaimMessagesSummary;
+import uk.gov.justice.laa.bulkclaim.dto.submission.claim.ClaimMessagesSummary;
 import uk.gov.justice.laa.bulkclaim.exception.SubmitBulkClaimException;
 import uk.gov.justice.laa.bulkclaim.mapper.SubmissionClaimDetailsMapper;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.ClaimResponse;
