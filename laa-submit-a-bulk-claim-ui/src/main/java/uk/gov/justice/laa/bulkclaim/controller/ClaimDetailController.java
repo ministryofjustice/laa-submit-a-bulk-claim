@@ -17,11 +17,10 @@ import org.springframework.web.bind.annotation.SessionAttributes;
 import uk.gov.justice.laa.bulkclaim.builder.SubmissionClaimMessagesBuilder;
 import uk.gov.justice.laa.bulkclaim.client.DataClaimsRestClient;
 import uk.gov.justice.laa.bulkclaim.constants.ViewClaimNavigationTab;
-import uk.gov.justice.laa.bulkclaim.dto.submission.claim.SubmissionClaimDetails;
-import uk.gov.justice.laa.bulkclaim.dto.submission.claim.SubmissionClaimFeeCalculationDetails;
 import uk.gov.justice.laa.bulkclaim.dto.summary.ClaimMessagesSummary;
 import uk.gov.justice.laa.bulkclaim.exception.SubmitBulkClaimException;
 import uk.gov.justice.laa.bulkclaim.mapper.SubmissionClaimDetailsMapper;
+import uk.gov.justice.laa.dstew.payments.claimsdata.model.ClaimResponse;
 
 /**
  * Controller for handling viewing a claim from a submission.
@@ -71,42 +70,36 @@ public final class ClaimDetailController {
       @ModelAttribute(SUBMISSION_ID) final UUID submissionId,
       @ModelAttribute(CLAIM_ID) final UUID claimId) {
 
+    ClaimResponse claimResponse =
+        dataClaimsRestClient
+            .getSubmissionClaim(submissionId, claimId)
+            .blockOptional()
+            .orElseThrow(
+                () ->
+                    new SubmitBulkClaimException(
+                        "Claim %s does not exist for submission %s"
+                            .formatted(claimId.toString(), submissionId.toString())));
+    model.addAttribute("ufn", claimResponse.getUniqueFileNumber());
+
     switch (navigationTab) {
       case CLAIM_MESSAGES -> addClaimMessages(model, page, submissionId, claimId);
-      case FEE_CALCULATION -> addFeeCalculationDetails(model, submissionId, claimId);
-      default -> addClaimDetails(model, submissionId, claimId);
+      case FEE_CALCULATION -> addFeeCalculationDetails(model, claimResponse);
+      default -> addClaimDetails(model, claimResponse);
     }
 
     model.addAttribute("navTab", navigationTab);
     return "pages/view-claim-detail";
   }
 
-  private void addClaimDetails(Model model, UUID submissionId, UUID claimId) {
-    SubmissionClaimDetails submissionClaimDetails =
-        dataClaimsRestClient
-            .getSubmissionClaim(submissionId, claimId)
-            .blockOptional()
-            .map(submissionClaimDetailsMapper::toSubmissionClaimDetails)
-            .orElseThrow(
-                () ->
-                    new SubmitBulkClaimException(
-                        "Claim %s does not exist for submission %s"
-                            .formatted(claimId.toString(), submissionId.toString())));
-    model.addAttribute("claimDetails", submissionClaimDetails);
+  private void addClaimDetails(Model model, ClaimResponse claimResponse) {
+    model.addAttribute(
+        "claimDetails", submissionClaimDetailsMapper.toSubmissionClaimDetails(claimResponse));
   }
 
-  private void addFeeCalculationDetails(Model model, UUID submissionId, UUID claimId) {
-    SubmissionClaimFeeCalculationDetails feeCalculationDetails =
-        dataClaimsRestClient
-            .getSubmissionClaim(submissionId, claimId)
-            .blockOptional()
-            .map(submissionClaimDetailsMapper::toFeeCalculationDetails)
-            .orElseThrow(
-                () ->
-                    new SubmitBulkClaimException(
-                        "Claim %s does not exist for submission %s"
-                            .formatted(claimId.toString(), submissionId.toString())));
-    model.addAttribute("feeCalculationDetails", feeCalculationDetails);
+  private void addFeeCalculationDetails(Model model, ClaimResponse claimResponse) {
+    model.addAttribute(
+        "feeCalculationDetails",
+        submissionClaimDetailsMapper.toFeeCalculationDetails(claimResponse));
   }
 
   private void addClaimMessages(Model model, int page, UUID submissionId, UUID claimId) {

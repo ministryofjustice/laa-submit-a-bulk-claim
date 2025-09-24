@@ -11,7 +11,7 @@
 
       <div class="govuk-grid-column-two-thirds">
         <h1 class="govuk-heading-l"
-            th:text="#{viewClaim.heading}"/>
+            th:text="#{viewClaim.heading(${ufn})}"/>
       </div>
 
       <div class="govuk-grid-column-full">
@@ -639,123 +639,127 @@
       <div class="govuk-grid-column-two-thirds-from-desktop"
            th:if="${navTab.toString() == 'FEE_CALCULATION'}">
 
-        <div class="govuk-summary-card">
-          <div class="govuk-summary-card__title-wrapper">
-            <h2 class="govuk-summary-card__title"
-              th:text="#{viewClaim.feeCalculation.relatedInformation.subheading}"/>
-          </div>
-          <div class="govuk-summary-card__content">
-            <dl class="govuk-summary-list">
-              <div class="govuk-summary-list__row">
-                <dt class="govuk-summary-list__key"
-                    th:text="#{submission.claim.properties.isVatApplicable}"/>
-                <dd class="govuk-summary-list__value"
-                    th:text="${feeCalculationDetails.isVatApplicable ? 'Yes' : 'No'}"/>
-              </div>
-              <div class="govuk-summary-list__row">
-                <dt class="govuk-summary-list__key"
-                    th:text="#{submission.claim.properties.isLondonRate}"/>
-                <dd class="govuk-summary-list__value"
-                    th:text="${feeCalculationDetails.isLondonRate ? 'Yes' : 'No'}"/>
-              </div>
-              <div class="govuk-summary-list__row">
-                <dt class="govuk-summary-list__key"
-                    th:text="#{submission.claim.properties.adviceTime}"/>
-                <dd class="govuk-summary-list__value"
-                    th:text="|${feeCalculationDetails.adviceTime} #{common.minutes}|"/>
-              </div>
-              <div class="govuk-summary-list__row">
-                <dt class="govuk-summary-list__key"
-                    th:text="#{submission.claim.properties.travelTime}"/>
-                <dd class="govuk-summary-list__value"
-                    th:text="|${feeCalculationDetails.travelTime} #{common.minutes}|"/>
-              </div>
-              <div class="govuk-summary-list__row">
-                <dt class="govuk-summary-list__key"
-                    th:text="#{submission.claim.properties.waitingTime}"/>
-                <dd class="govuk-summary-list__value"
-                    th:text="|${feeCalculationDetails.waitingTime} #{common.minutes}|"/>
-              </div>
-            </dl>
-          </div>
-        </div>
+        <table class="govuk-table">
+          <caption class="govuk-table__caption govuk-table__caption--m"
+                   th:text="#{viewClaim.feeCalculation.calculationDetails.subheading}"/>
+          <thead class="govuk-table__head">
+          <tr class="govuk-table__row">
+            <th scope="col" class="govuk-table__header">Description</th>
+            <th scope="col" class="govuk-table__header">Calculated</th>
+          </tr>
+          </thead>
+          <tbody class="govuk-table__body">
+          <tr class="govuk-table__row">
+            <th scope="row" class="govuk-table__header"
+                th:text="#{submission.claim.properties.netProfitCostsAmount}"/>
+            <td class="govuk-table__cell"
+                th:text="'£' + ${feeCalculationDetails.netProfitCostsAmount}"/>
+          </tr>
+          <tr class="govuk-table__row">
+            <th scope="row" class="govuk-table__header"
+                th:text="#{submission.claim.properties.netDisbursementAmount}"/>
+            <td class="govuk-table__cell"
+                th:text="'£' + ${feeCalculationDetails.netDisbursementAmount}"/>
+          </tr>
+          <tr class="govuk-table__row">
+            <th scope="row" class="govuk-table__header"
+                th:text="#{submission.claim.properties.netCounselCostsAmount}"/>
+            <td class="govuk-table__cell"
+                th:text="'£' + ${feeCalculationDetails.netCounselCostsAmount}"/>
+          </tr>
+          <tr class="govuk-table__row">
+            <th scope="row" class="govuk-table__header"
+                th:text="#{submission.claim.properties.disbursementsVatAmount}"/>
+            <td class="govuk-table__cell"
+                th:text="'£' + ${feeCalculationDetails.disbursementsVatAmount}"/>
+          </tr>
+          <tr class="govuk-table__row">
+            <th scope="row" class="govuk-table__header"
+                th:text="#{submission.claim.properties.travelWaitingCostsAmount}"/>
+            <td class="govuk-table__cell"
+                th:text="'£' + ${feeCalculationDetails.travelWaitingCostsAmount}"/>
+          </tr>
+          <tr class="govuk-table__row">
+            <th scope="row" class="govuk-table__header"
+                th:text="#{submission.claim.properties.netWaitingCostsAmount}"/>
+            <td class="govuk-table__cell"
+                th:text="'£' + ${feeCalculationDetails.netWaitingCostsAmount}"/>
+          </tr>
+          <tr class="govuk-table__row">
+            <th scope="row" class="govuk-table__header"
+                th:text="#{submission.claim.properties.costsDamagesRecoveredAmount}"/>
+            <td class="govuk-table__cell"
+                th:text="'£' + ${feeCalculationDetails.costsDamagesRecoveredAmount}"/>
+          </tr>
+          <tr class="govuk-table__row">
+            <th scope="row" class="govuk-table__header"
+                th:text="#{submission.claim.properties.costsDamagesRecoveredAmount}"/>
+            <td class="govuk-table__cell"
+                th:text="'£' + ${feeCalculationDetails.costsDamagesRecoveredAmount}"/>
+          </tr>
+          <tr class="govuk-table__row">
+            <th scope="row" class="govuk-table__header"
+                th:text="#{submission.claim.properties.detentionTravelWaitingCostsAmount}"/>
+            <td class="govuk-table__cell"
+                th:text="'£' + ${feeCalculationDetails.detentionTravelWaitingCostsAmount}"/>
+          </tr>
+          <tr class="govuk-table__row">
+            <th scope="row" class="govuk-table__header"
+                th:text="#{submission.claim.properties.jrFormFillingAmount}"/>
+            <td class="govuk-table__cell"
+                th:text="'£' + ${feeCalculationDetails.jrFormFillingAmount}"/>
+          </tr>
+          <tr class="govuk-table__row">
+            <th scope="row" class="govuk-table__header"
+                th:text="#{submission.claim.properties.adjournedHearingFeeAmount}"/>
+            <td class="govuk-table__cell"
+                th:text="'£' + ${feeCalculationDetails.adjournedHearingFeeAmount}"/>
+          </tr>
+          <tr class="govuk-table__row">
+            <th scope="row" class="govuk-table__header"
+                th:text="#{submission.claim.properties.totalValue}"/>
+            <td class="govuk-table__cell govuk-!-font-weight-bold"
+                th:text="'£' + ${feeCalculationDetails.totalValue()}"/>
+          </tr>
+          </tbody>
+        </table>
 
-        <div class="govuk-summary-card">
-          <div class="govuk-summary-card__title-wrapper">
-            <h2 class="govuk-summary-card__title"
-                th:text="#{viewClaim.feeCalculation.calculationDetails.subheading}"/>
+        <h2 class="govuk-heading-m"
+            th:text="#{viewClaim.feeCalculation.relatedInformation.subheading}"/>
+        <dl class="govuk-summary-list">
+          <div class="govuk-summary-list__row">
+            <dt class="govuk-summary-list__key"
+                th:text="#{submission.claim.properties.isVatApplicable}"/>
+            <dd class="govuk-summary-list__value"
+                th:text="${feeCalculationDetails.isVatApplicable == true ? 'Yes' : 'No'}"/>
           </div>
-          <div class="govuk-summary-card__content">
-            <dl class="govuk-summary-list">
-              <div class="govuk-summary-list__row">
-                <dt class="govuk-summary-list__key"
-                    th:text="#{submission.claim.properties.netProfitCostsAmount}"/>
-                <dd class="govuk-summary-list__value"
-                    th:text="'£' + ${feeCalculationDetails.netProfitCostsAmount}"/>
-              </div>
-              <div class="govuk-summary-list__row">
-                <dt class="govuk-summary-list__key"
-                    th:text="#{submission.claim.properties.netDisbursementAmount}"/>
-                <dd class="govuk-summary-list__value"
-                    th:text="'£' + ${feeCalculationDetails.netDisbursementAmount}"/>
-              </div>
-              <div class="govuk-summary-list__row">
-                <dt class="govuk-summary-list__key"
-                    th:text="#{submission.claim.properties.netCounselCostsAmount}"/>
-                <dd class="govuk-summary-list__value"
-                    th:text="'£' + ${feeCalculationDetails.netCounselCostsAmount}"/>
-              </div>
-              <div class="govuk-summary-list__row">
-                <dt class="govuk-summary-list__key"
-                    th:text="#{submission.claim.properties.disbursementsVatAmount}"/>
-                <dd class="govuk-summary-list__value"
-                    th:text="'£' + ${feeCalculationDetails.disbursementsVatAmount}"/>
-              </div>
-              <div class="govuk-summary-list__row">
-                <dt class="govuk-summary-list__key"
-                    th:text="#{submission.claim.properties.travelWaitingCostsAmount}"/>
-                <dd class="govuk-summary-list__value"
-                    th:text="'£' + ${feeCalculationDetails.travelWaitingCostsAmount}"/>
-              </div>
-              <div class="govuk-summary-list__row">
-                <dt class="govuk-summary-list__key"
-                    th:text="#{submission.claim.properties.netWaitingCostsAmount}"/>
-                <dd class="govuk-summary-list__value"
-                    th:text="'£' + ${feeCalculationDetails.netWaitingCostsAmount}"/>
-              </div>
-              <div class="govuk-summary-list__row">
-                <dt class="govuk-summary-list__key"
-                    th:text="#{submission.claim.properties.costsDamagesRecoveredAmount}"/>
-                <dd class="govuk-summary-list__value"
-                    th:text="'£' + ${feeCalculationDetails.costsDamagesRecoveredAmount}"/>
-              </div>
-              <div class="govuk-summary-list__row">
-                <dt class="govuk-summary-list__key"
-                    th:text="#{submission.claim.properties.detentionTravelWaitingCostsAmount}"/>
-                <dd class="govuk-summary-list__value"
-                    th:text="'£' + ${feeCalculationDetails.detentionTravelWaitingCostsAmount}"/>
-              </div>
-              <div class="govuk-summary-list__row">
-                <dt class="govuk-summary-list__key"
-                    th:text="#{submission.claim.properties.jrFormFillingAmount}"/>
-                <dd class="govuk-summary-list__value"
-                    th:text="'£' + ${feeCalculationDetails.jrFormFillingAmount}"/>
-              </div>
-              <div class="govuk-summary-list__row">
-                <dt class="govuk-summary-list__key"
-                    th:text="#{submission.claim.properties.adjournedHearingFeeAmount}"/>
-                <dd class="govuk-summary-list__value"
-                    th:text="'£' + ${feeCalculationDetails.adjournedHearingFeeAmount}"/>
-              </div>
-              <div class="govuk-summary-list__row">
-                <dt class="govuk-summary-list__key"
-                    th:text="#{submission.claim.properties.totalValue}"/>
-                <dd class="govuk-summary-list__value govuk-!-font-weight-bold"
-                    th:text="'£' + ${feeCalculationDetails.totalValue}"/>
-              </div>
-            </dl>
+          <div class="govuk-summary-list__row">
+            <dt class="govuk-summary-list__key"
+                th:text="#{submission.claim.properties.isLondonRate}"/>
+            <dd class="govuk-summary-list__value"
+                th:text="${feeCalculationDetails.isLondonRate == true ? 'Yes' : 'No'}"/>
           </div>
-        </div>
+          <div class="govuk-summary-list__row">
+            <dt class="govuk-summary-list__key"
+                th:text="#{submission.claim.properties.adviceTime}"/>
+            <dd class="govuk-summary-list__value"
+                th:text="|${feeCalculationDetails.adviceTime} #{common.minutes}|"/>
+          </div>
+          <div class="govuk-summary-list__row">
+            <dt class="govuk-summary-list__key"
+                th:text="#{submission.claim.properties.travelTime}"/>
+            <dd class="govuk-summary-list__value"
+                th:text="|${feeCalculationDetails.travelTime} #{common.minutes}|"/>
+          </div>
+          <div class="govuk-summary-list__row">
+            <dt class="govuk-summary-list__key"
+                th:text="#{submission.claim.properties.waitingTime}"/>
+            <dd class="govuk-summary-list__value"
+                th:text="|${feeCalculationDetails.waitingTime} #{common.minutes}|"/>
+          </div>
+        </dl>
+
+
       </div>
     </div>
   </div>

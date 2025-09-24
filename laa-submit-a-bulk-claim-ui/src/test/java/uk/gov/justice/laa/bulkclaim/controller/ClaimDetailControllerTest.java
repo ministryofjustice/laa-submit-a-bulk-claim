@@ -11,7 +11,6 @@ import static uk.gov.justice.laa.bulkclaim.constants.SessionConstants.SUBMISSION
 
 import java.util.Collections;
 import java.util.UUID;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -26,6 +25,7 @@ import uk.gov.justice.laa.bulkclaim.builder.SubmissionClaimMessagesBuilder;
 import uk.gov.justice.laa.bulkclaim.client.DataClaimsRestClient;
 import uk.gov.justice.laa.bulkclaim.config.WebMvcTestConfig;
 import uk.gov.justice.laa.bulkclaim.dto.submission.claim.SubmissionClaimDetails;
+import uk.gov.justice.laa.bulkclaim.dto.submission.claim.SubmissionClaimFeeCalculationDetails;
 import uk.gov.justice.laa.bulkclaim.dto.summary.ClaimMessagesSummary;
 import uk.gov.justice.laa.bulkclaim.helper.TestObjectCreator;
 import uk.gov.justice.laa.bulkclaim.mapper.SubmissionClaimDetailsMapper;
@@ -125,7 +125,9 @@ class ClaimDetailControllerTest {
       // Given
       UUID claimId = UUID.fromString("244fcb9f-50ab-4af8-b635-76bd30e0e97d");
       UUID submissionId = UUID.fromString("244fcb9f-50ab-4af8-b635-76bd30e0e97d");
-
+      ClaimResponse claimResponse = TestObjectCreator.buildClaimResponse();
+      when(dataClaimsRestClient.getSubmissionClaim(submissionId, claimId))
+          .thenReturn(Mono.just(claimResponse));
       when(submissionClaimMessagesBuilder.build(submissionId, claimId, 0, null))
           .thenReturn(new ClaimMessagesSummary(Collections.emptyList(), 0, 0));
 
@@ -144,15 +146,16 @@ class ClaimDetailControllerTest {
     }
 
     @Test
-    @Disabled("Disabled until content added to calculated fee details tab")
     @DisplayName("Should return expected result with calculated fee details tab")
     void shouldReturnExpectedResultWithCalculatedFeeDetailsTab() {
       // Given
       UUID claimId = UUID.fromString("244fcb9f-50ab-4af8-b635-76bd30e0e97d");
       UUID submissionId = UUID.fromString("244fcb9f-50ab-4af8-b635-76bd30e0e97d");
-
-      when(submissionClaimMessagesBuilder.build(submissionId, claimId, 0, null))
-          .thenReturn(new ClaimMessagesSummary(Collections.emptyList(), 0, 0));
+      ClaimResponse claimResponse = TestObjectCreator.buildClaimResponse();
+      when(dataClaimsRestClient.getSubmissionClaim(submissionId, claimId))
+          .thenReturn(Mono.just(claimResponse));
+      when(submissionClaimDetailsMapper.toFeeCalculationDetails(claimResponse))
+          .thenReturn(SubmissionClaimFeeCalculationDetails.builder().build());
 
       // When / Then
       assertThat(
@@ -164,6 +167,7 @@ class ClaimDetailControllerTest {
                       .sessionAttr(CLAIM_ID, claimId)))
           .hasStatusOk()
           .hasViewName("pages/view-claim-detail");
+      verify(submissionClaimDetailsMapper, times(1)).toFeeCalculationDetails(claimResponse);
     }
 
     @Test

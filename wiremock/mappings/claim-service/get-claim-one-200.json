@@ -17,7 +17,7 @@
       "schedule_reference": "string",
       "line_number": 1,
       "case_reference_number": "string",
-      "unique_file_number": "010113",
+      "unique_file_number": "010113/123",
       "case_start_date": "2025-08-14",
       "case_concluded_date": "2025-08-14",
       "matter_type_code": "FAMD:FRES",
@@ -79,9 +79,9 @@
       "exemption_criteria_satisfied": "string",
       "exceptional_case_funding_reference": "string",
       "is_legacy_case": true,
-      "advice_time": 0,
-      "travel_time": 0,
-      "waiting_time": 0,
+      "advice_time": 123,
+      "travel_time": 62,
+      "waiting_time": 24,
       "net_profit_costs_amount": 1052.32,
       "net_disbursement_amount": 23.54,
       "net_counsel_costs_amount": 89.42,
@@ -112,7 +112,7 @@
       "is_substantive_hearing": true,
       "ho_interview": 0,
       "local_authority_number": "string",
-      "total_value": "23.45"
+      "total_value": "1197.78"
     }
   }
 }
