@@ -23,29 +23,19 @@
                 <p th:text="#{search.dateHint}"></p>
                 <div id="date-filters" class="govuk-date-input">
                   <div class="govuk-date-input__item">
-                    <div class="moj-datepicker" data-module="moj-date-picker"
-                         th:attr="data-min-date=#{search.date.min},
-                         data-max-date=#{search.date.max},
-                         data-excluded-dates=#{search.date.excludedDates},
-                         data-excluded-days=#{search.date.excludedDays}"
-                         >
+                    <div class="moj-datepicker" data-module="moj-date-picker" >
 
                       <div class="govuk-form-group">
                         <label class="govuk-label" for="submittedDateFrom-input" th:text="#{search.submittedDateFrom.label}">
                         </label>
-                        <input class="govuk-input moj-js-datepicker-input " id="submittedDateFrom-input" name="submittedDateFrom" type="text" aria-describedby="date-hint" autocomplete="off"
+                        <input class="govuk-input moj-js-datepicker-input" id="submittedDateFrom-input" name="submittedDateFrom" type="text" aria-describedby="date-hint" autocomplete="off"
                         th:value="${submissionsSearchForm.submittedDateFrom}">
                       </div>
 
                     </div>
                   </div>
                   <div class="govuk-date-input__item">
-                    <div class="moj-datepicker" data-module="moj-date-picker"
-                         th:attr="data-min-date=#{search.date.min},
-                         data-max-date=#{search.date.max},
-                         data-excluded-dates=#{search.date.excludedDates},
-                         data-excluded-days=#{search.date.excludedDays}"
-                    >
+                    <div class="moj-datepicker" data-module="moj-date-picker" >
                       <div class="govuk-form-group">
                         <label class="govuk-label" for="submittedDateTo-input" th:text="#{search.submittedDateTo.label}">
                         </label>
