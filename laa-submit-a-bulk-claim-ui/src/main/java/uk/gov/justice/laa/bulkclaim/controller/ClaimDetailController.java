@@ -104,7 +104,7 @@ public final class ClaimDetailController {
 
   private void addClaimMessages(Model model, int page, UUID submissionId, UUID claimId) {
     // Claim warnings & errors
-    ClaimMessagesSummary claimMessagesSummary =
+    final ClaimMessagesSummary claimMessagesSummary =
         submissionClaimMessagesBuilder.build(submissionId, claimId, page, null);
     model.addAttribute("claimMessages", claimMessagesSummary);
   }

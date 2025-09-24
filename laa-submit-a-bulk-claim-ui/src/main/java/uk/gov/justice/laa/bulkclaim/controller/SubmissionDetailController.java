@@ -72,7 +72,7 @@ public class SubmissionDetailController {
       @ModelAttribute(SUBMISSION_ID) UUID submissionId,
       @RequestParam(value = "navTab", required = false, defaultValue = "CLAIM_DETAILS")
           ViewSubmissionNavigationTab navigationTab) {
-    SubmissionResponse submissionResponse =
+    final SubmissionResponse submissionResponse =
         dataClaimsRestClient
             .getSubmission(submissionId)
             .blockOptional()
@@ -81,19 +81,19 @@ public class SubmissionDetailController {
                     new SubmitBulkClaimException(
                         "Submission %s does not exist".formatted(submissionId.toString())));
 
-    SubmissionSummary submissionSummary = submissionSummaryBuilder.build(submissionResponse);
+    final SubmissionSummary submissionSummary = submissionSummaryBuilder.build(submissionResponse);
 
     if (CLAIM_DETAILS.equals(navigationTab)) {
-      SubmissionClaimsDetails claimDetails =
+      final SubmissionClaimsDetails claimDetails =
           submissionClaimDetailsBuilder.build(submissionResponse);
       model.addAttribute("claimDetails", claimDetails);
     } else if (CLAIM_ERRORS.equals(navigationTab)) {
       int claimErrorPage = 0; // todo add pagination in later PR
-      ClaimMessagesSummary claimErrorSummary =
+      final ClaimMessagesSummary claimErrorSummary =
           submissionClaimMessagesBuilder.buildErrors(submissionId, claimErrorPage);
       model.addAttribute("claimErrorDetails", claimErrorSummary);
     } else {
-      SubmissionMatterStartsDetails build =
+      final SubmissionMatterStartsDetails build =
           submissionMatterStartsDetailsBuilder.build(submissionResponse);
       model.addAttribute("matterStartsDetails", build);
     }

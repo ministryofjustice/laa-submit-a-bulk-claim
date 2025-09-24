@@ -59,13 +59,13 @@ public class SubmissionClaimMessagesBuilder {
   public ClaimMessagesSummary build(
       UUID submissionId, UUID claimId, int page, ValidationMessageType type) {
     String submissionType = type != null ? type.toString() : null;
-    ValidationMessagesResponse messagesResponse =
+    final ValidationMessagesResponse messagesResponse =
         dataClaimsRestClient
             .getValidationMessages(submissionId, claimId, submissionType, null, page)
             .block();
 
     // Loop through an error map and add claims
-    List<SubmissionSummaryClaimMessageRow> errorList =
+    final List<SubmissionSummaryClaimMessageRow> errorList =
         Optional.ofNullable(messagesResponse)
             .map(ValidationMessagesResponse::getContent)
             .orElseGet(List::of)
@@ -87,12 +87,12 @@ public class SubmissionClaimMessagesBuilder {
                 })
             .toList();
 
-    int totalMessageCount =
+    final int totalMessageCount =
         Optional.ofNullable(messagesResponse)
             .map(ValidationMessagesResponse::getTotalElements)
             .orElse(0);
 
-    int totalClaims =
+    final int totalClaims =
         Optional.ofNullable(messagesResponse)
             .map(ValidationMessagesResponse::getTotalClaims)
             .orElse(0);
