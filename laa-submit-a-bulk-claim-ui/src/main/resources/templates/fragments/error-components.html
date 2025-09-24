@@ -26,7 +26,7 @@
    th:if="${#fields.hasErrors(field)}"
    th:id="|field-error-message|"
    class="govuk-error-message"
-   th:each="err : ${#fields.errors('file')}">
+   th:each="err : ${#fields.errors(field)}">
     <span class="govuk-visually-hidden">Error:</span>
     <th:block th:text="${err}"></th:block>
 </p>

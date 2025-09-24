@@ -1,6 +1,6 @@
 <!DOCTYPE HTML>
 <html lang="en" class="govuk-template" xmlns:th="http://www.thymeleaf.org"
-      th:replace="~{ layout/main-layout :: layout(#{viewClaim.heading},~{::main},~{::#back-link},~{})}">
+      th:replace="~{ layout/main-layout :: layout(#{viewClaim.heading},~{::main},~{::#back-link},'search-submissions')}">
 <th:block id="back-link">
   <a th:href="@{/submission/{submissionId}(submissionId=${submissionId})}" class="govuk-back-link"
      th:text="#{common.back}"/>

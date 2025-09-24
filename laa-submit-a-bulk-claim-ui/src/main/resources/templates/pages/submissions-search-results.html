@@ -2,57 +2,77 @@
 <html lang="en" class="govuk-template" xmlns:th="http://www.thymeleaf.org"
       th:replace="~{ layout/main-layout :: layout(#{search.title},~{::main},~{}, 'search-submissions')}">
 <main class="govuk-main-wrapper" id="main-content">
-    <div class="govuk-width-container">
-        <div class="govuk-grid-row">
-            <div class="govuk-grid-column-one-half">
-                <a id="back-link" th:href="@{/submissions/search}" class="govuk-back-link">Back</a>
-            </div>
-            <div class="govuk-grid-column-one-half govuk-!-text-align-right">
-                <button type="button" class="govuk-button govuk-button--secondary" data-module="govuk-button" id="print-button"
-                        onclick="window.print()">
-                    Print this page
-                </button>
-            </div>
-        </div>
-        <div class="govuk-grid-row">
-            <div class="govuk-grid-column-full">
-                <h1 class="govuk-heading-l" th:text="#{search.title}"></h1>
-                <p class="govuk-body" th:if="${#lists.isEmpty(submissions.content)}">
-                    No submissions were found.
-                </p>
-                <h2 class="govuk-heading-s govuk-!-margin-bottom-0" th:if="${!#lists.isEmpty(submissions.content)}">
-                    Search result
-                </h2>
-                <div class="upload-table" th:if="${!#lists.isEmpty(submissions.content)}">
-                    <table class="govuk-table" data-module="moj-sortable-table">
-                        <thead class="govuk-table__head">
-                        <tr class="govuk-table__row">
-                            <th scope="col" class="govuk-table__header" aria-sort="ascending" th:text="#{search.result.header.reference}">
-                            <th scope="col" class="govuk-table__header" aria-sort="none" th:text="#{search.result.header.office}">
-                            <th scope="col" class="govuk-table__header" aria-sort="none" th:text="#{search.result.header.submission}">
-                            <th scope="col" class="govuk-table__header" aria-sort="none" th:text="#{search.result.header.type}">
-                            <th scope="col" class="govuk-table__header" aria-sort="none" th:text="#{common.status}">
-                        </tr>
-                        </thead>
-                        <tbody class="govuk-table__body">
-
-                        <tr class="govuk-table__row" th:each="submission : ${submissions.getContent}" >
-                            <td class="govuk-table__cell">
-                                <a th:href="@{/submission/{submission_ref}(submission_ref=${submission.getSubmissionId})}" th:text="${ #strings.substring(submission.getSubmissionId, 0, 7)}" class="govuk-link--no-visited-state"></a></td>
-                            <td class="govuk-table__cell" th:text="${submission.getOfficeAccountNumber}"></td>
-                            <td class="govuk-table__cell" th:text="${submission.getSubmitted != null ? #temporals.format(submission.getSubmitted, 'dd MMM yyyy') : '-'}">
-                            </td>
-                            <td class="govuk-table__cell" th:text="${submission.getAreaOfLaw != null ? #strings.capitalize(#strings.toLowerCase(submission.getAreaOfLaw)) : '-' }"></td>
-                            <td class="govuk-table__cell" th:text="${submission.getStatus != null ?
-                             #strings.replace(#strings.capitalize(#strings.toLowerCase(submission.getStatus)), '_', ' ') : '-' }"></td>
-                        </tr>
-                        </tbody>
-                    </table>
-                    <nav th:replace="~{fragments/pagination :: pagination(currentUrl='/submissions/search/results', page=${pagination})}"></nav>
-                </div>
-
-            </div>
-        </div>
+  <div class="govuk-width-container">
+    <div class="govuk-grid-row">
+      <div class="govuk-grid-column-full govuk-!-text-align-right">
+        <button type="button" class="govuk-button govuk-button--secondary"
+                data-module="govuk-button" id="print-button"
+                onclick="window.print()">
+          Print this page
+        </button>
+      </div>
     </div>
+    <div class="govuk-grid-row">
+      <div class="govuk-grid-column-full">
+        <form id="claims-search-form" th:action="@{/submissions/search}"
+              th:object="${submissionsSearchForm}" method="POST">
+          <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+
+          <div th:replace="~{fragments/error-components :: error-summary}"/>
+
+          <h1 class="govuk-heading-l" th:text="#{search.title}"></h1>
+
+          <th:block th:include="~{fragments/submission-search :: form(${submissionsSearchForm})}"/>
+
+        </form>
+
+        <p class="govuk-body" th:if="${#lists.isEmpty(submissions.content)}">
+          No submissions were found.
+        </p>
+        <h2 class="govuk-heading-s govuk-!-margin-bottom-0"
+            th:if="${!#lists.isEmpty(submissions.content)}">
+          Search result
+        </h2>
+        <div class="upload-table" th:if="${!#lists.isEmpty(submissions.content)}">
+          <table class="govuk-table" data-module="moj-sortable-table">
+            <thead class="govuk-table__head">
+            <tr class="govuk-table__row">
+              <th scope="col" class="govuk-table__header" aria-sort="ascending"
+                  th:text="#{search.result.header.reference}">
+              <th scope="col" class="govuk-table__header" aria-sort="none"
+                  th:text="#{search.result.header.office}">
+              <th scope="col" class="govuk-table__header" aria-sort="none"
+                  th:text="#{search.result.header.submission}">
+              <th scope="col" class="govuk-table__header" aria-sort="none"
+                  th:text="#{search.result.header.type}">
+              <th scope="col" class="govuk-table__header" aria-sort="none"
+                  th:text="#{common.status}">
+            </tr>
+            </thead>
+            <tbody class="govuk-table__body">
+
+            <tr class="govuk-table__row" th:each="submission : ${submissions.getContent}">
+              <td class="govuk-table__cell">
+                <a th:href="@{/submission/{submission_ref}(submission_ref=${submission.getSubmissionId})}"
+                   th:text="${ #strings.substring(submission.getSubmissionId, 0, 7)}"
+                   class="govuk-link--no-visited-state"></a></td>
+              <td class="govuk-table__cell" th:text="${submission.getOfficeAccountNumber}"></td>
+              <td class="govuk-table__cell"
+                  th:text="${submission.getSubmitted != null ? #temporals.format(submission.getSubmitted, 'dd MMM yyyy') : '-'}">
+              </td>
+              <td class="govuk-table__cell"
+                  th:text="${submission.getAreaOfLaw != null ? #strings.capitalize(#strings.toLowerCase(submission.getAreaOfLaw)) : '-' }"></td>
+              <td class="govuk-table__cell" th:text="${submission.getStatus != null ?
+                             #strings.replace(#strings.capitalize(#strings.toLowerCase(submission.getStatus)), '_', ' ') : '-' }"></td>
+            </tr>
+            </tbody>
+          </table>
+          <nav
+              th:replace="~{fragments/pagination :: pagination(currentUrl='/submissions/search/results', page=${pagination})}"></nav>
+        </div>
+
+      </div>
+    </div>
+  </div>
 </main>
 </html>

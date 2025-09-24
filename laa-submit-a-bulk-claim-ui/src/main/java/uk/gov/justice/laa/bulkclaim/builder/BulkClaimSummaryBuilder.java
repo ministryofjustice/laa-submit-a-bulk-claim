@@ -16,7 +16,9 @@ import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionResponse;
  * @author Jamie Briggs
  */
 @Component
-@Deprecated(since = "Will be removed when BulkSubmissionImportedController is removed", forRemoval = true)
+@Deprecated(
+    since = "Will be removed when BulkSubmissionImportedController is removed",
+    forRemoval = true)
 @RequiredArgsConstructor
 public class BulkClaimSummaryBuilder {
 
