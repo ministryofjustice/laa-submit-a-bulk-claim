@@ -46,7 +46,7 @@ public class SubmissionSearchValidator implements Validator {
       errors.rejectValue(
           "submittedDateFrom", "date.range.invalid", "From date must be on or before To date.");
       errors.rejectValue(
-          "submittedDateTo", "date.range.invalid", "From date must be on or before To date.");
+          "submittedDateTo", "date.range.invalid", "To date must be on or after From date.");
     }
 
     // Optional conservative guard on submission id size
