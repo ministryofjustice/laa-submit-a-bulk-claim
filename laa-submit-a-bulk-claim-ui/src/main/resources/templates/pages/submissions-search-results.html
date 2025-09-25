@@ -3,29 +3,32 @@
       th:replace="~{ layout/main-layout :: layout(#{search.title},~{::main},~{}, 'search-submissions')}">
 <main class="govuk-main-wrapper" id="main-content">
   <div class="govuk-width-container">
-    <div class="govuk-grid-row">
-      <div class="govuk-grid-column-full govuk-!-text-align-right">
-        <button type="button" class="govuk-button govuk-button--secondary"
-                data-module="govuk-button" id="print-button"
-                onclick="window.print()">
-          Print this page
-        </button>
-      </div>
-    </div>
-    <div class="govuk-grid-row">
-      <div class="govuk-grid-column-full">
-        <form id="claims-search-form" th:action="@{/submissions/search}"
-              th:object="${submissionsSearchForm}" method="POST">
-          <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
 
+    <div class="govuk-grid-row">
+      <form id="claims-search-form" th:action="@{/submissions/search}"
+            th:object="${submissionsSearchForm}" method="POST">
+        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+
+        <div class="govuk-grid-column-full">
           <div th:replace="~{fragments/error-components :: error-summary}"/>
-
+        </div>
+        <div class="govuk-grid-column-one-half">
           <h1 class="govuk-heading-l" th:text="#{search.title}"></h1>
+        </div>
+        <div class="govuk-grid-column-one-half govuk-!-text-align-right">
+          <button type="button" class="govuk-button govuk-button--secondary"
+                  data-module="govuk-button" id="print-button"
+                  onclick="window.print()">
+            Print this page
+          </button>
+        </div>
 
-          <th:block th:include="~{fragments/submission-search :: form(${submissionsSearchForm})}"/>
+        <div class="govuk-grid-column-full">
+          <th:block th:insert="~{fragments/submission-search :: form(${submissionsSearchForm})}"/>
+        </div>
+      </form>
 
-        </form>
-
+      <div class="govuk-grid-column-full">
         <p class="govuk-body" th:if="${#lists.isEmpty(submissions.content)}">
           No submissions were found.
         </p>
@@ -73,6 +76,9 @@
 
       </div>
     </div>
+
+
+  </div>
   </div>
 </main>
 </html>

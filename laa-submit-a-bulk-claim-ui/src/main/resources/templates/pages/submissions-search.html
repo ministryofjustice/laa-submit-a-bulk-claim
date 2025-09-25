@@ -14,7 +14,7 @@
 
           <h1 class="govuk-heading-l" th:text="#{search.title}"></h1>
 
-          <th:block th:include="~{fragments/submission-search :: form(${submissionsSearchForm})}"/>
+          <th:block th:insert="~{fragments/submission-search :: form(${submissionsSearchForm})}"/>
 
         </form>
 
