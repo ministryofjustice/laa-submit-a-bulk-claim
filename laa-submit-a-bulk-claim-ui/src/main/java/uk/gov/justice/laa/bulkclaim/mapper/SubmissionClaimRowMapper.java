@@ -27,6 +27,8 @@ public interface SubmissionClaimRowMapper {
   // TODO: Add fee type to the OpenAPI spec.
   @Mapping(target = "feeType", constant = "Fee type")
   @Mapping(target = "costsDetails", source = "claimFields")
+  // TODO: Add total messages to the OpenAPI spec.
+  @Mapping(target = "totalMessages", constant = "1")
   SubmissionClaimRow toSubmissionClaimRow(ClaimResponse claimFields);
 
   @Mapping(target = "claimValue", source = "claimFields.totalValue")

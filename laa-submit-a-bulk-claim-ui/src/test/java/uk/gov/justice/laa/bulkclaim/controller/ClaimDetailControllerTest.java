@@ -30,6 +30,7 @@ import uk.gov.justice.laa.bulkclaim.dto.submission.claim.SubmissionClaimFeeCalcu
 import uk.gov.justice.laa.bulkclaim.helper.TestObjectCreator;
 import uk.gov.justice.laa.bulkclaim.mapper.SubmissionClaimDetailsMapper;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.ClaimResponse;
+import uk.gov.justice.laa.dstew.payments.claimsdata.model.ValidationMessageType;
 
 @WebMvcTest(ClaimDetailController.class)
 @AutoConfigureMockMvc
@@ -142,7 +143,8 @@ class ClaimDetailControllerTest {
           .hasStatusOk()
           .hasViewName("pages/view-claim-detail");
 
-      verify(submissionClaimMessagesBuilder, times(1)).build(submissionId, claimId, 0, null);
+      verify(submissionClaimMessagesBuilder, times(1))
+          .build(submissionId, claimId, 0, ValidationMessageType.WARNING);
     }
 
     @Test

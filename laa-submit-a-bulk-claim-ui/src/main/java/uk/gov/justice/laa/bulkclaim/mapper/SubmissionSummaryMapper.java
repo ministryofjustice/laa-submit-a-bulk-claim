@@ -53,6 +53,7 @@ public interface SubmissionSummaryMapper {
       case VALIDATION_SUCCEEDED:
         return "Submitted";
       case VALIDATION_FAILED:
+      case REPLACED:
         return "Invalid";
       case CREATED:
       case READY_FOR_VALIDATION:

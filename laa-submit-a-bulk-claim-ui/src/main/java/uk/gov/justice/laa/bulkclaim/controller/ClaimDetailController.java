@@ -21,6 +21,7 @@ import uk.gov.justice.laa.bulkclaim.dto.submission.claim.ClaimMessagesSummary;
 import uk.gov.justice.laa.bulkclaim.exception.SubmitBulkClaimException;
 import uk.gov.justice.laa.bulkclaim.mapper.SubmissionClaimDetailsMapper;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.ClaimResponse;
+import uk.gov.justice.laa.dstew.payments.claimsdata.model.ValidationMessageType;
 
 /**
  * Controller for handling viewing a claim from a submission.
@@ -38,10 +39,11 @@ public final class ClaimDetailController {
   private final SubmissionClaimMessagesBuilder submissionClaimMessagesBuilder;
 
   /**
-   * Gets the claim reference, stores it in the session and redirects to the view claim detail page.
+   * Gets the claim reference, stores it in the session and redirects to the view claim detail
+   * page.
    *
    * @param claimReference the claim reference
-   * @param httpSession the http session
+   * @param httpSession    the http session
    * @return the redirect to view a claim detail
    */
   @GetMapping("/submission/claim/{claimReference}")
@@ -54,11 +56,11 @@ public final class ClaimDetailController {
   /**
    * Views the submission detail page.
    *
-   * @param model the spring model
-   * @param page the page number for messages (default = 0)
+   * @param model         the spring model
+   * @param page          the page number for messages (default = 0)
    * @param navigationTab the navigation tab (default = CLAIM_DETAILS)
-   * @param submissionId the submission id in the session
-   * @param claimId the claim id in the session
+   * @param submissionId  the submission id in the session
+   * @param claimId       the claim id in the session
    * @return the view claim detail page
    */
   @GetMapping("/view-claim-detail")
@@ -66,7 +68,7 @@ public final class ClaimDetailController {
       Model model,
       @RequestParam(value = "page", defaultValue = "0") final int page,
       @RequestParam(value = "navTab", required = false, defaultValue = "CLAIM_DETAILS")
-          final ViewClaimNavigationTab navigationTab,
+      final ViewClaimNavigationTab navigationTab,
       @ModelAttribute(SUBMISSION_ID) final UUID submissionId,
       @ModelAttribute(CLAIM_ID) final UUID claimId) {
 
@@ -91,6 +93,21 @@ public final class ClaimDetailController {
     return "pages/view-claim-detail";
   }
 
+  /**
+   * Gets the claim reference, stores it in the session and redirects to the view claim detail
+   * page.
+   *
+   * @param claimReference the claim reference
+   * @param httpSession    the http session
+   * @return the redirect to view a claim detail
+   */
+  @GetMapping("/submission/claim/{claimReference}/messages")
+  public String getClaimDetailMessages(
+      @PathVariable("claimReference") UUID claimReference, HttpSession httpSession) {
+    httpSession.setAttribute(CLAIM_ID, claimReference);
+    return "redirect:/view-claim-detail?navTab=CLAIM_MESSAGES";
+  }
+
   private void addClaimDetails(Model model, ClaimResponse claimResponse) {
     model.addAttribute(
         "claimDetails", submissionClaimDetailsMapper.toSubmissionClaimDetails(claimResponse));
@@ -105,7 +122,8 @@ public final class ClaimDetailController {
   private void addClaimMessages(Model model, int page, UUID submissionId, UUID claimId) {
     // Claim warnings & errors
     final ClaimMessagesSummary claimMessagesSummary =
-        submissionClaimMessagesBuilder.build(submissionId, claimId, page, null);
+        submissionClaimMessagesBuilder.build(submissionId, claimId, page,
+            ValidationMessageType.WARNING);
     model.addAttribute("claimMessages", claimMessagesSummary);
   }
 }

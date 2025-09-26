@@ -2,6 +2,7 @@ package uk.gov.justice.laa.bulkclaim.controller;
 
 import jakarta.servlet.http.HttpServletRequest;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -87,12 +88,14 @@ public class SearchController {
     }
 
     LocalDate submittedDateFrom = null;
+    DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("d/M/yyyy");
     if (StringUtils.hasText(submissionsSearchForm.submittedDateFrom())) {
-      submittedDateFrom = LocalDate.parse(submissionsSearchForm.submittedDateFrom());
+      submittedDateFrom =
+          LocalDate.parse(submissionsSearchForm.submittedDateFrom(), dateTimeFormatter);
     }
     LocalDate submittedDateTo = null;
     if (StringUtils.hasText(submissionsSearchForm.submittedDateTo())) {
-      submittedDateTo = LocalDate.parse(submissionsSearchForm.submittedDateTo());
+      submittedDateTo = LocalDate.parse(submissionsSearchForm.submittedDateTo(), dateTimeFormatter);
     }
 
     // TODO: Enable getting office ID from OIDC

@@ -61,6 +61,7 @@ class SubmissionClaimsDetailsBuilderTest {
             "cat",
             "matter",
             LocalDate.of(2025, 5, 1),
+            1,
             "feeType",
             "feeCode",
             new SubmissionClaimRowCostsDetails(
@@ -104,6 +105,7 @@ class SubmissionClaimsDetailsBuilderTest {
             "cat",
             "matter",
             LocalDate.of(2025, 5, 1),
+            1,
             "feeType",
             "feeCode",
             new SubmissionClaimRowCostsDetails(
@@ -124,6 +126,7 @@ class SubmissionClaimsDetailsBuilderTest {
             "cat",
             "matter",
             LocalDate.of(2025, 5, 1),
+            1,
             "feeType",
             "feeCode",
             new SubmissionClaimRowCostsDetails(

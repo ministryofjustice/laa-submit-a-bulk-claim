@@ -1,6 +1,7 @@
 package uk.gov.justice.laa.bulkclaim.validation;
 
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;
@@ -47,9 +48,11 @@ public class SubmissionSearchValidator implements Validator {
     // Check date formats
     LocalDate dateFrom = null;
     LocalDate dateTo = null;
+
+    DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("d/M/yyyy");
     if (StringUtils.isNotEmpty(from)) {
       try {
-        dateFrom = LocalDate.parse(from);
+        dateFrom = LocalDate.parse(from, dateTimeFormatter);
       } catch (Exception e) {
         errors.rejectValue(
             SUBMITTED_DATE_FROM, "search.error.date.from.invalid", "Invalid date format.");
@@ -58,7 +61,7 @@ public class SubmissionSearchValidator implements Validator {
 
     if (StringUtils.isNotEmpty(to)) {
       try {
-        dateTo = LocalDate.parse(to);
+        dateTo = LocalDate.parse(to, dateTimeFormatter);
       } catch (Exception e) {
         errors.rejectValue(
             SUBMITTED_DATE_TO, "search.error.date.to.invalid", "Invalid date format.");

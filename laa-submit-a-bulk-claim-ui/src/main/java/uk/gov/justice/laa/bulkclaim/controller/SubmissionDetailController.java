@@ -2,7 +2,6 @@ package uk.gov.justice.laa.bulkclaim.controller;
 
 import static uk.gov.justice.laa.bulkclaim.constants.SessionConstants.SUBMISSION_ID;
 import static uk.gov.justice.laa.bulkclaim.constants.ViewSubmissionNavigationTab.CLAIM_DETAILS;
-import static uk.gov.justice.laa.bulkclaim.constants.ViewSubmissionNavigationTab.CLAIM_ERRORS;
 
 import jakarta.servlet.http.HttpSession;
 import java.util.UUID;
@@ -83,15 +82,16 @@ public class SubmissionDetailController {
 
     final SubmissionSummary submissionSummary = submissionSummaryBuilder.build(submissionResponse);
 
-    if (CLAIM_DETAILS.equals(navigationTab)) {
-      final SubmissionClaimsDetails claimDetails =
-          submissionClaimDetailsBuilder.build(submissionResponse);
-      model.addAttribute("claimDetails", claimDetails);
-    } else if (CLAIM_ERRORS.equals(navigationTab)) {
+    if ("invalid".equalsIgnoreCase(submissionSummary.status())) {
       int claimErrorPage = 0; // todo add pagination in later PR
       final ClaimMessagesSummary claimErrorSummary =
           submissionClaimMessagesBuilder.buildErrors(submissionId, claimErrorPage);
       model.addAttribute("claimErrorDetails", claimErrorSummary);
+    }
+    if (CLAIM_DETAILS.equals(navigationTab)) {
+      final SubmissionClaimsDetails claimDetails =
+          submissionClaimDetailsBuilder.build(submissionResponse);
+      model.addAttribute("claimDetails", claimDetails);
     } else {
       final SubmissionMatterStartsDetails build =
           submissionMatterStartsDetailsBuilder.build(submissionResponse);
