@@ -1,6 +1,7 @@
-package uk.gov.justice.laa.bulkclaim.dto.submission;
+package uk.gov.justice.laa.bulkclaim.dto.submission.claim;
 
 import java.util.List;
+import uk.gov.justice.laa.bulkclaim.dto.submission.SubmissionCostsSummary;
 
 /**
  * Holds claim information about a submission created by a bulk submission, including a summary of
@@ -10,5 +11,5 @@ import java.util.List;
  * @param submissionClaims the claims attached to the submission
  * @author Jamie Briggs
  */
-public record SubmissionClaimDetails(
+public record SubmissionClaimsDetails(
     SubmissionCostsSummary costsSummary, List<SubmissionClaimRow> submissionClaims) {}

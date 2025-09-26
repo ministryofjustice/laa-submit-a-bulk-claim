@@ -1,0 +1,111 @@
+package uk.gov.justice.laa.bulkclaim.controller;
+
+import static uk.gov.justice.laa.bulkclaim.constants.SessionConstants.CLAIM_ID;
+import static uk.gov.justice.laa.bulkclaim.constants.SessionConstants.SUBMISSION_ID;
+
+import jakarta.servlet.http.HttpSession;
+import java.util.UUID;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.SessionAttributes;
+import uk.gov.justice.laa.bulkclaim.builder.SubmissionClaimMessagesBuilder;
+import uk.gov.justice.laa.bulkclaim.client.DataClaimsRestClient;
+import uk.gov.justice.laa.bulkclaim.constants.ViewClaimNavigationTab;
+import uk.gov.justice.laa.bulkclaim.dto.summary.ClaimMessagesSummary;
+import uk.gov.justice.laa.bulkclaim.exception.SubmitBulkClaimException;
+import uk.gov.justice.laa.bulkclaim.mapper.SubmissionClaimDetailsMapper;
+import uk.gov.justice.laa.dstew.payments.claimsdata.model.ClaimResponse;
+
+/**
+ * Controller for handling viewing a claim from a submission.
+ *
+ * @author Jamie Briggs
+ */
+@Slf4j
+@Controller
+@RequiredArgsConstructor
+@SessionAttributes({SUBMISSION_ID, CLAIM_ID})
+public final class ClaimDetailController {
+
+  private final DataClaimsRestClient dataClaimsRestClient;
+  private final SubmissionClaimDetailsMapper submissionClaimDetailsMapper;
+  private final SubmissionClaimMessagesBuilder submissionClaimMessagesBuilder;
+
+  /**
+   * Gets the claim reference, stores it in the session and redirects to the view claim detail page.
+   *
+   * @param claimReference the claim reference
+   * @param httpSession the http session
+   * @return the redirect to view a claim detail
+   */
+  @GetMapping("/submission/claim/{claimReference}")
+  public String getClaimDetail(
+      @PathVariable("claimReference") UUID claimReference, HttpSession httpSession) {
+    httpSession.setAttribute(CLAIM_ID, claimReference);
+    return "redirect:/view-claim-detail";
+  }
+
+  /**
+   * Views the submission detail page.
+   *
+   * @param model the spring model
+   * @param page the page number for messages (default = 0)
+   * @param navigationTab the navigation tab (default = CLAIM_DETAILS)
+   * @param submissionId the submission id in the session
+   * @param claimId the claim id in the session
+   * @return the view claim detail page
+   */
+  @GetMapping("/view-claim-detail")
+  public String getClaimDetail(
+      Model model,
+      @RequestParam(value = "page", defaultValue = "0") final int page,
+      @RequestParam(value = "navTab", required = false, defaultValue = "CLAIM_DETAILS")
+          final ViewClaimNavigationTab navigationTab,
+      @ModelAttribute(SUBMISSION_ID) final UUID submissionId,
+      @ModelAttribute(CLAIM_ID) final UUID claimId) {
+
+    ClaimResponse claimResponse =
+        dataClaimsRestClient
+            .getSubmissionClaim(submissionId, claimId)
+            .blockOptional()
+            .orElseThrow(
+                () ->
+                    new SubmitBulkClaimException(
+                        "Claim %s does not exist for submission %s"
+                            .formatted(claimId.toString(), submissionId.toString())));
+    model.addAttribute("ufn", claimResponse.getUniqueFileNumber());
+
+    switch (navigationTab) {
+      case CLAIM_MESSAGES -> addClaimMessages(model, page, submissionId, claimId);
+      case FEE_CALCULATION -> addFeeCalculationDetails(model, claimResponse);
+      default -> addClaimDetails(model, claimResponse);
+    }
+
+    model.addAttribute("navTab", navigationTab);
+    return "pages/view-claim-detail";
+  }
+
+  private void addClaimDetails(Model model, ClaimResponse claimResponse) {
+    model.addAttribute(
+        "claimDetails", submissionClaimDetailsMapper.toSubmissionClaimDetails(claimResponse));
+  }
+
+  private void addFeeCalculationDetails(Model model, ClaimResponse claimResponse) {
+    model.addAttribute(
+        "feeCalculationDetails",
+        submissionClaimDetailsMapper.toFeeCalculationDetails(claimResponse));
+  }
+
+  private void addClaimMessages(Model model, int page, UUID submissionId, UUID claimId) {
+    // Claim warnings & errors
+    final ClaimMessagesSummary claimMessagesSummary =
+        submissionClaimMessagesBuilder.build(submissionId, claimId, page, null);
+    model.addAttribute("claimMessages", claimMessagesSummary);
+  }
+}

@@ -33,8 +33,8 @@ import uk.gov.justice.laa.bulkclaim.builder.BulkClaimSummaryBuilder;
 import uk.gov.justice.laa.bulkclaim.client.DataClaimsRestClient;
 import uk.gov.justice.laa.bulkclaim.config.WebMvcTestConfig;
 import uk.gov.justice.laa.bulkclaim.dto.summary.BulkClaimImportSummary;
-import uk.gov.justice.laa.bulkclaim.dto.summary.ClaimErrorSummary;
-import uk.gov.justice.laa.bulkclaim.dto.summary.SubmissionSummaryClaimErrorRow;
+import uk.gov.justice.laa.bulkclaim.dto.summary.ClaimMessagesSummary;
+import uk.gov.justice.laa.bulkclaim.dto.summary.SubmissionSummaryClaimMessageRow;
 import uk.gov.justice.laa.bulkclaim.dto.summary.SubmissionSummaryRow;
 import uk.gov.justice.laa.bulkclaim.exception.SubmitBulkClaimException;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionResponse;
@@ -136,16 +136,17 @@ class BulkSubmissionImportedControllerTest {
             "Legal help",
             LocalDate.of(2025, 5, 10),
             30);
-    List<SubmissionSummaryClaimErrorRow> errors =
+    List<SubmissionSummaryClaimMessageRow> errors =
         List.of(
-            new SubmissionSummaryClaimErrorRow(
+            new SubmissionSummaryClaimMessageRow(
                 submissionReference,
                 "UFN1",
                 "UCN2",
                 "Client",
-                "This is an error which is found on your claim!"));
+                "This is an error which is found on your claim!",
+                "ERROR"));
 
     return new BulkClaimImportSummary(
-        Collections.singletonList(summaryRow), new ClaimErrorSummary(errors, 1, 1));
+        Collections.singletonList(summaryRow), new ClaimMessagesSummary(errors, 1, 1));
   }
 }

@@ -12,9 +12,9 @@ import java.math.BigDecimal;
  * @author Jamie Briggs
  */
 public record SubmissionCostsSummary(
+    // TODO: Update the submission costs summary after DSTEW-431 has been completed
     BigDecimal profitCosts,
     BigDecimal disbursements,
     BigDecimal additionalPayments,
-    // TODO: Where is fixed fee from?
     BigDecimal fixedFee,
     BigDecimal submissionValue) {}

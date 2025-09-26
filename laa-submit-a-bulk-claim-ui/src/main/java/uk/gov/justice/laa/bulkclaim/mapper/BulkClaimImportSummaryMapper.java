@@ -9,7 +9,7 @@ import java.util.Locale;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Named;
-import uk.gov.justice.laa.bulkclaim.dto.summary.SubmissionSummaryClaimErrorRow;
+import uk.gov.justice.laa.bulkclaim.dto.summary.SubmissionSummaryClaimMessageRow;
 import uk.gov.justice.laa.bulkclaim.dto.summary.SubmissionSummaryRow;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.ClaimResponse;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionResponse;
@@ -17,7 +17,7 @@ import uk.gov.justice.laa.dstew.payments.claimsdata.model.ValidationMessageBase;
 
 /**
  * Maps between {@link SubmissionResponse} and {@link SubmissionSummaryRow}, and {@link
- * ClaimResponse} and {@link SubmissionSummaryClaimErrorRow}.
+ * ClaimResponse} and {@link SubmissionSummaryClaimMessageRow}.
  *
  * @author Jamie Briggs
  */
@@ -66,14 +66,15 @@ public interface BulkClaimImportSummaryMapper {
    *
    * @param message the validation message base
    * @param claimResponse the claim response containing client and claim details
-   * @return a mapped SubmissionSummaryClaimErrorRow
+   * @return a mapped SubmissionSummaryClaimMessageRow
    */
   @Mapping(target = "ufn", source = "claimResponse.uniqueFileNumber")
   @Mapping(target = "ucn", source = "claimResponse.uniqueClientNumber")
   @Mapping(target = "client", expression = "java(buildClientName(claimResponse))")
   @Mapping(target = "submissionReference", source = "message.submissionId")
   @Mapping(target = "message", source = "message.displayMessage")
-  SubmissionSummaryClaimErrorRow toSubmissionSummaryClaimMessage(
+  @Mapping(target = "type", source = "message.type")
+  SubmissionSummaryClaimMessageRow toSubmissionSummaryClaimMessage(
       ValidationMessageBase message, ClaimResponse claimResponse);
 
   /**

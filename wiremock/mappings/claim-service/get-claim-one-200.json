@@ -17,7 +17,7 @@
       "schedule_reference": "string",
       "line_number": 1,
       "case_reference_number": "string",
-      "unique_file_number": "010113",
+      "unique_file_number": "010113/123",
       "case_start_date": "2025-08-14",
       "case_concluded_date": "2025-08-14",
       "matter_type_code": "FAMD:FRES",
@@ -27,7 +27,7 @@
       "procurement_area_code": "string",
       "access_point_code": "string",
       "delivery_location": "string",
-      "representation_order_date": "2025-08-14",
+      "representation_order_date": "2026-02-24",
       "suspects_defendants_count": 0,
       "police_station_court_attendances_count": 0,
       "police_station_court_prison_id": "string",
@@ -43,7 +43,7 @@
       "referral_source": "string",
       "client_forename": "Giordano",
       "client_surname": "Giord",
-      "client_date_of_birth": "2025-08-14",
+      "client_date_of_birth": "1995-04-23",
       "unique_client_number": "29384",
       "client_postcode": "string",
       "gender_code": "string",
@@ -56,7 +56,7 @@
       "cla_exemption_code": "string",
       "client_2_forename": "string",
       "client_2_surname": "string",
-      "client_2_date_of_birth": "2025-08-14",
+      "client_2_date_of_birth": "1999-12-26",
       "client_2_ucn": "string",
       "client_2_postcode": "string",
       "client_2_gender_code": "string",
@@ -79,9 +79,9 @@
       "exemption_criteria_satisfied": "string",
       "exceptional_case_funding_reference": "string",
       "is_legacy_case": true,
-      "advice_time": 0,
-      "travel_time": 0,
-      "waiting_time": 0,
+      "advice_time": 123,
+      "travel_time": 62,
+      "waiting_time": 24,
       "net_profit_costs_amount": 1052.32,
       "net_disbursement_amount": 23.54,
       "net_counsel_costs_amount": 89.42,
@@ -112,7 +112,7 @@
       "is_substantive_hearing": true,
       "ho_interview": 0,
       "local_authority_number": "string",
-      "total_value": "23.45"
+      "total_value": "1197.78"
     }
   }
 }

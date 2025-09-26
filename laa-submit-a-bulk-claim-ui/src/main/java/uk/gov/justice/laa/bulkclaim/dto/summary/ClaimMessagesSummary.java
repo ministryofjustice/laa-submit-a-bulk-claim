@@ -5,13 +5,13 @@ import java.util.List;
 /**
  * Summary of claim errors.
  *
- * @param claimErrors list of claim error rows
- * @param totalErrorCount total number of errors found
+ * @param claimMessages list of claim messages rows
+ * @param totalMessageCount total number of errors found
  * @param totalClaimsWithErrors total number of unique claims with errors
  */
-public record ClaimErrorSummary(
-    List<SubmissionSummaryClaimErrorRow> claimErrors,
-    int totalErrorCount,
+public record ClaimMessagesSummary(
+    List<SubmissionSummaryClaimMessageRow> claimMessages,
+    int totalMessageCount,
     int totalClaimsWithErrors) {
 
   /**
@@ -20,7 +20,7 @@ public record ClaimErrorSummary(
    * @return true if total error count is greater than zero
    */
   public boolean containsErrors() {
-    return totalErrorCount > 0;
+    return totalErrors() > 0;
   }
 
   /**
@@ -28,8 +28,8 @@ public record ClaimErrorSummary(
    *
    * @return the total error count
    */
-  public int totalErrors() {
-    return totalErrorCount;
+  public long totalErrors() {
+    return claimMessages.stream().filter(x -> "error".equalsIgnoreCase(x.type())).count();
   }
 
   /**

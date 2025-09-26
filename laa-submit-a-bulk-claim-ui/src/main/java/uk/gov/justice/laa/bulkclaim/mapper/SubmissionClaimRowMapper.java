@@ -3,8 +3,8 @@ package uk.gov.justice.laa.bulkclaim.mapper;
 import java.math.BigDecimal;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
-import uk.gov.justice.laa.bulkclaim.dto.submission.SubmissionClaimRow;
-import uk.gov.justice.laa.bulkclaim.dto.submission.SubmissionClaimRowCostsDetails;
+import uk.gov.justice.laa.bulkclaim.dto.submission.claim.SubmissionClaimRow;
+import uk.gov.justice.laa.bulkclaim.dto.submission.claim.SubmissionClaimRowCostsDetails;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.ClaimResponse;
 
 /**
@@ -13,7 +13,7 @@ import uk.gov.justice.laa.dstew.payments.claimsdata.model.ClaimResponse;
  * @author Jamie Briggs
  */
 @Mapper(componentModel = "spring")
-public interface SubmissionClaimMapper {
+public interface SubmissionClaimRowMapper {
 
   @Mapping(target = "ufn", source = "uniqueFileNumber")
   @Mapping(target = "ucn", source = "uniqueClientNumber")

@@ -17,7 +17,7 @@
       "office_account_number": "AQ2B3C",
       "submission_period": "MAY-2025",
       "area_of_law": "Legal help",
-      "status": "VALIDATION_SUCCEEDED",
+      "status": "VALIDATION_FAILED",
       "schedule_number": "23456",
       "previous_submission_id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
       "is_nil_submission": false,
