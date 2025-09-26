@@ -53,9 +53,9 @@ public interface DataClaimsRestClient {
   @GetExchange(url = "/submissions", accept = MediaType.APPLICATION_JSON_VALUE)
   Mono<SubmissionsResultSet> search(
       @RequestParam(required = true) List<String> offices,
-      @RequestParam String submissionId,
-      @RequestParam LocalDate dateFrom,
-      @RequestParam LocalDate dateTo);
+      @RequestParam(required = false) String submissionId,
+      @RequestParam(required = false) LocalDate dateFrom,
+      @RequestParam(required = false) LocalDate dateTo);
 
   /**
    * Gets a submission by its ID.

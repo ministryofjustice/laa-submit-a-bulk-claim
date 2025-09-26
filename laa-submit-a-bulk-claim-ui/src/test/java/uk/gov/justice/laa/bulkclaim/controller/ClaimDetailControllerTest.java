@@ -24,12 +24,13 @@ import reactor.core.publisher.Mono;
 import uk.gov.justice.laa.bulkclaim.builder.SubmissionClaimMessagesBuilder;
 import uk.gov.justice.laa.bulkclaim.client.DataClaimsRestClient;
 import uk.gov.justice.laa.bulkclaim.config.WebMvcTestConfig;
+import uk.gov.justice.laa.bulkclaim.dto.submission.claim.ClaimMessagesSummary;
 import uk.gov.justice.laa.bulkclaim.dto.submission.claim.SubmissionClaimDetails;
 import uk.gov.justice.laa.bulkclaim.dto.submission.claim.SubmissionClaimFeeCalculationDetails;
-import uk.gov.justice.laa.bulkclaim.dto.summary.ClaimMessagesSummary;
 import uk.gov.justice.laa.bulkclaim.helper.TestObjectCreator;
 import uk.gov.justice.laa.bulkclaim.mapper.SubmissionClaimDetailsMapper;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.ClaimResponse;
+import uk.gov.justice.laa.dstew.payments.claimsdata.model.ValidationMessageType;
 
 @WebMvcTest(ClaimDetailController.class)
 @AutoConfigureMockMvc
@@ -142,7 +143,8 @@ class ClaimDetailControllerTest {
           .hasStatusOk()
           .hasViewName("pages/view-claim-detail");
 
-      verify(submissionClaimMessagesBuilder, times(1)).build(submissionId, claimId, 0, null);
+      verify(submissionClaimMessagesBuilder, times(1))
+          .build(submissionId, claimId, 0, ValidationMessageType.WARNING);
     }
 
     @Test

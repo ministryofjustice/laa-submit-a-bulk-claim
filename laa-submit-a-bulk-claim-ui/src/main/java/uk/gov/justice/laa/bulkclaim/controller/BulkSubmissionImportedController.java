@@ -7,7 +7,6 @@ import java.util.Collections;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -26,7 +25,8 @@ import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionResponse;
  * @author Jamie Briggs
  */
 @Slf4j
-@Controller
+// @Controller
+@Deprecated(since = "Will be removed once final agreed happy path decided", forRemoval = true)
 @RequiredArgsConstructor
 @SessionAttributes({SUBMISSION_ID, SUBMISSION})
 public class BulkSubmissionImportedController {

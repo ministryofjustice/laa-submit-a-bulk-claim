@@ -4,12 +4,15 @@ import java.math.BigDecimal;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
+import reactor.core.publisher.Mono;
 import uk.gov.justice.laa.bulkclaim.client.DataClaimsRestClient;
 import uk.gov.justice.laa.bulkclaim.dto.submission.SubmissionCostsSummary;
 import uk.gov.justice.laa.bulkclaim.dto.submission.claim.SubmissionClaimRow;
 import uk.gov.justice.laa.bulkclaim.dto.submission.claim.SubmissionClaimsDetails;
 import uk.gov.justice.laa.bulkclaim.mapper.SubmissionClaimRowMapper;
+import uk.gov.justice.laa.dstew.payments.claimsdata.model.ClaimResponse;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionResponse;
+import uk.gov.justice.laa.dstew.payments.claimsdata.model.ValidationMessageType;
 
 /**
  * Builder class for constructing a {@link SubmissionClaimsDetails} object used for displaying a
@@ -37,10 +40,27 @@ public class SubmissionClaimDetailsBuilder {
     List<SubmissionClaimRow> submissionClaimRows =
         submissionResponse.getClaims().stream()
             .map(
+                x -> {
+                  ClaimResponse submissionClaim =
+                      dataClaimsRestClient
+                          .getSubmissionClaim(submissionResponse.getSubmissionId(), x.getClaimId())
+                          .block();
+                  Integer totalElements =
+                      dataClaimsRestClient
+                          .getValidationMessages(
+                              submissionResponse.getSubmissionId(),
+                              x.getClaimId(),
+                              ValidationMessageType.WARNING.getValue(),
+                              null,
+                              0)
+                          .block()
+                          .getTotalElements();
+                  return Mono.zip(Mono.just(submissionClaim), Mono.just(totalElements));
+                })
+            .map(
                 x ->
-                    dataClaimsRestClient.getSubmissionClaim(
-                        submissionResponse.getSubmissionId(), x.getClaimId()))
-            .map(x -> submissionClaimRowMapper.toSubmissionClaimRow(x.block()))
+                    submissionClaimRowMapper.toSubmissionClaimRow(
+                        x.block().getT1(), x.block().getT2()))
             .toList();
 
     BigDecimal totalProfitCosts =

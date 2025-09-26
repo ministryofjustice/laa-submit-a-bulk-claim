@@ -1,4 +1,4 @@
-package uk.gov.justice.laa.bulkclaim.dto.summary;
+package uk.gov.justice.laa.bulkclaim.dto.submission;
 
 import java.time.LocalDate;
 import java.time.OffsetDateTime;

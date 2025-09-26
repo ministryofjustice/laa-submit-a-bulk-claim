@@ -1,8 +1,5 @@
 package uk.gov.justice.laa.bulkclaim.dto;
 
-import java.time.LocalDate;
-import org.springframework.format.annotation.DateTimeFormat;
-
 /**
  * DTO to hold claims search form values.
  *
@@ -11,6 +8,4 @@ import org.springframework.format.annotation.DateTimeFormat;
  * @param submittedDateTo submitted date range to
  */
 public record SubmissionsSearchForm(
-    String submissionId,
-    @DateTimeFormat(pattern = "dd/M/yyyy") LocalDate submittedDateFrom,
-    @DateTimeFormat(pattern = "dd/M/yyyy") LocalDate submittedDateTo) {}
+    String submissionId, String submittedDateFrom, String submittedDateTo) {}

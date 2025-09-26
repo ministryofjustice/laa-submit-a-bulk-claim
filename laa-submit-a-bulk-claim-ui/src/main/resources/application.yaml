@@ -40,9 +40,6 @@ spring:
 sds-api:
   url: ${SDS_API_URL}
 
-cwa-api:
-  url: ${CWA_API_URL}
-
 claims-api:
   url: ${CLAIM_API_URL}
   accessToken: ${CLAIMS_API_ACCESS_TOKEN}

@@ -17,10 +17,11 @@ import org.springframework.web.bind.annotation.SessionAttributes;
 import uk.gov.justice.laa.bulkclaim.builder.SubmissionClaimMessagesBuilder;
 import uk.gov.justice.laa.bulkclaim.client.DataClaimsRestClient;
 import uk.gov.justice.laa.bulkclaim.constants.ViewClaimNavigationTab;
-import uk.gov.justice.laa.bulkclaim.dto.summary.ClaimMessagesSummary;
+import uk.gov.justice.laa.bulkclaim.dto.submission.claim.ClaimMessagesSummary;
 import uk.gov.justice.laa.bulkclaim.exception.SubmitBulkClaimException;
 import uk.gov.justice.laa.bulkclaim.mapper.SubmissionClaimDetailsMapper;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.ClaimResponse;
+import uk.gov.justice.laa.dstew.payments.claimsdata.model.ValidationMessageType;
 
 /**
  * Controller for handling viewing a claim from a submission.
@@ -91,6 +92,20 @@ public final class ClaimDetailController {
     return "pages/view-claim-detail";
   }
 
+  /**
+   * Gets the claim reference, stores it in the session and redirects to the view claim detail page.
+   *
+   * @param claimReference the claim reference
+   * @param httpSession the http session
+   * @return the redirect to view a claim detail
+   */
+  @GetMapping("/submission/claim/{claimReference}/messages")
+  public String getClaimDetailMessages(
+      @PathVariable("claimReference") UUID claimReference, HttpSession httpSession) {
+    httpSession.setAttribute(CLAIM_ID, claimReference);
+    return "redirect:/view-claim-detail?navTab=CLAIM_MESSAGES";
+  }
+
   private void addClaimDetails(Model model, ClaimResponse claimResponse) {
     model.addAttribute(
         "claimDetails", submissionClaimDetailsMapper.toSubmissionClaimDetails(claimResponse));
@@ -105,7 +120,8 @@ public final class ClaimDetailController {
   private void addClaimMessages(Model model, int page, UUID submissionId, UUID claimId) {
     // Claim warnings & errors
     final ClaimMessagesSummary claimMessagesSummary =
-        submissionClaimMessagesBuilder.build(submissionId, claimId, page, null);
+        submissionClaimMessagesBuilder.build(
+            submissionId, claimId, page, ValidationMessageType.WARNING);
     model.addAttribute("claimMessages", claimMessagesSummary);
   }
 }
