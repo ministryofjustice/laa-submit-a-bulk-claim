@@ -38,6 +38,13 @@
         th:data-sort-value="${message.client()}"
         th:text="${message.client()}"></td>
     <td class="govuk-table__cell"
+        th:if="${errorsAndWarnings}"
+        th:id="|message-type-${idx.index}|"
+        th:data-sort-value="${message.type()}">
+      <span th:if="${message.type() == 'ERROR'}" class="moj-badge moj-badge--red">Error</span>
+      <span th:if="${message.type() == 'WARNING'}" class="moj-badge moj-badge--bright-purple">Warning</span>
+    </td>
+    <td class="govuk-table__cell"
         th:id="|message-description-${idx.index}|"
         th:data-sort-value="${message.message()}"
         th:text="${message.message()}"></td>

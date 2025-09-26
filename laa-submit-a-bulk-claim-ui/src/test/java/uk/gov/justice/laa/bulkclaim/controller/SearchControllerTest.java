@@ -24,6 +24,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributesModelMap;
 import reactor.core.publisher.Mono;
 import uk.gov.justice.laa.bulkclaim.client.DataClaimsRestClient;
 import uk.gov.justice.laa.bulkclaim.dto.SubmissionsSearchForm;
+import uk.gov.justice.laa.bulkclaim.validation.SubmissionSearchValidator;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionBase;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionsResultSet;
 
@@ -39,6 +40,7 @@ class SearchControllerTest {
   @Mock private DataClaimsRestClient claimsRestService;
   @Mock private BindingResult bindingResult;
   @Mock private HttpServletRequest request;
+  @Mock private SubmissionSearchValidator submissionSearchValidator;
 
   @InjectMocks private SearchController searchController;
 
@@ -65,6 +67,8 @@ class SearchControllerTest {
         .thenReturn(Mono.just(response));
     when(request.getQueryString()).thenReturn("submissionId=" + submissionId);
     when(request.getRequestURI()).thenReturn("/submissions/search/");
+    SubmissionsSearchForm submissionsSearchForm =
+        new SubmissionsSearchForm(submissionId, null, null);
     RedirectAttributes redirectAttributes = new RedirectAttributesModelMap();
     String view =
         searchController.handleSearch(

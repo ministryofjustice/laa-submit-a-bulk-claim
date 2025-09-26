@@ -11,5 +11,5 @@ import org.springframework.format.annotation.DateTimeFormat;
  */
 public record SubmissionsSearchForm(
     String submissionId,
-    @DateTimeFormat(pattern = "dd/MM/yyyy") String submittedDateFrom,
-    @DateTimeFormat(pattern = "dd/MM/yyyy") String submittedDateTo) {}
+    @DateTimeFormat(pattern = "d/M/yyyy") String submittedDateFrom,
+    @DateTimeFormat(pattern = "d/M/yyyy") String submittedDateTo) {}

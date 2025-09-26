@@ -18,6 +18,8 @@ global:
   ingress:
     externalRoute:
       mojDigitalVpnRequired: false
+    enabled: true
+    className: modsec
 
 env:
   - name: AUTH_CLIENT_ID
