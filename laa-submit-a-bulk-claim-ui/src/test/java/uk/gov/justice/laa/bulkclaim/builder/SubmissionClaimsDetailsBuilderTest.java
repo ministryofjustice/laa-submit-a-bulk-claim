@@ -2,6 +2,7 @@ package uk.gov.justice.laa.bulkclaim.builder;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.when;
 
 import java.math.BigDecimal;
@@ -23,6 +24,7 @@ import uk.gov.justice.laa.bulkclaim.mapper.SubmissionClaimRowMapper;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.ClaimResponse;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionClaim;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionResponse;
+import uk.gov.justice.laa.dstew.payments.claimsdata.model.ValidationMessagesResponse;
 
 @ExtendWith(MockitoExtension.class)
 @DisplayName("Submission claim details builder tests")
@@ -72,7 +74,9 @@ class SubmissionClaimsDetailsBuilderTest {
                 new BigDecimal("50.10"),
                 new BigDecimal("60.10"),
                 new BigDecimal("70.10")));
-    when(submissionClaimRowMapper.toSubmissionClaimRow(any())).thenReturn(expected);
+    when(dataClaimsRestClient.getValidationMessages(any(), any(), any(), any(), anyInt()))
+        .thenReturn(Mono.just(ValidationMessagesResponse.builder().totalElements(2).build()));
+    when(submissionClaimRowMapper.toSubmissionClaimRow(any(), anyInt())).thenReturn(expected);
     // When
     SubmissionClaimsDetails result = builder.build(submissionResponse);
     // Then
@@ -137,8 +141,10 @@ class SubmissionClaimsDetailsBuilderTest {
                 new BigDecimal("51.10"),
                 new BigDecimal("61.10"),
                 new BigDecimal("71.10")));
-    when(submissionClaimRowMapper.toSubmissionClaimRow(any())).thenReturn(claimOne);
-    when(submissionClaimRowMapper.toSubmissionClaimRow(any())).thenReturn(claimTwo);
+    when(dataClaimsRestClient.getValidationMessages(any(), any(), any(), any(), anyInt()))
+        .thenReturn(Mono.just(ValidationMessagesResponse.builder().totalElements(2).build()));
+    when(submissionClaimRowMapper.toSubmissionClaimRow(any(), anyInt())).thenReturn(claimOne);
+    when(submissionClaimRowMapper.toSubmissionClaimRow(any(), anyInt())).thenReturn(claimTwo);
     // When
     SubmissionClaimsDetails result = builder.build(submissionResponse);
     // Then

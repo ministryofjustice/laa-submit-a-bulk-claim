@@ -49,7 +49,7 @@ class SubmissionClaimRowMapperTest {
             .feeCode("Fee code")
             .build();
     // When
-    SubmissionClaimRow result = mapper.toSubmissionClaimRow(claimResponse);
+    SubmissionClaimRow result = mapper.toSubmissionClaimRow(claimResponse, 2);
     // Then
     SoftAssertions.assertSoftly(
         softAssertions -> {
@@ -68,6 +68,7 @@ class SubmissionClaimRowMapperTest {
           softAssertions.assertThat(result.feeType()).isEqualTo("Fee type");
           softAssertions.assertThat(result.feeCode()).isEqualTo("Fee code");
           softAssertions.assertThat(result.costsDetails()).isNotNull();
+          softAssertions.assertThat(result.totalMessages()).isEqualTo(2);
         });
   }
 

@@ -8,6 +8,4 @@ package uk.gov.justice.laa.bulkclaim.dto;
  * @param submittedDateTo submitted date range to
  */
 public record SubmissionsSearchForm(
-    String submissionId,
-    String submittedDateFrom,
-    String submittedDateTo) {}
+    String submissionId, String submittedDateFrom, String submittedDateTo) {}
