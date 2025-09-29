@@ -122,7 +122,7 @@ public class BulkImportInProgressControllerTest {
                       .sessionAttr(SUBMISSION_DATE_TIME, LocalDateTime.now())
                       .sessionAttr(UPLOADED_FILENAME, "fileName.csv")))
           .hasStatus3xxRedirection()
-          .hasRedirectedUrl("/view-submission-summary");
+          .hasRedirectedUrl("/submission/5933fc67-bac7-4f48-81ed-61c8c463f054");
     }
 
     @ParameterizedTest
@@ -145,7 +145,7 @@ public class BulkImportInProgressControllerTest {
                       .sessionAttr(SUBMISSION_DATE_TIME, LocalDateTime.now())
                       .sessionAttr(UPLOADED_FILENAME, "fileName.csv")))
           .hasStatus3xxRedirection()
-          .hasRedirectedUrl("/view-submission-summary");
+          .hasRedirectedUrl("/submission/5933fc67-bac7-4f48-81ed-61c8c463f054");
     }
 
     @ParameterizedTest

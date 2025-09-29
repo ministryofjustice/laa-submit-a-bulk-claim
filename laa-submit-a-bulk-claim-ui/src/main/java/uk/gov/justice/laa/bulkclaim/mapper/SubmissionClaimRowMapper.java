@@ -15,19 +15,20 @@ import uk.gov.justice.laa.dstew.payments.claimsdata.model.ClaimResponse;
 @Mapper(componentModel = "spring")
 public interface SubmissionClaimRowMapper {
 
-  @Mapping(target = "ufn", source = "uniqueFileNumber")
-  @Mapping(target = "ucn", source = "uniqueClientNumber")
+  @Mapping(target = "ufn", source = "claimFields.uniqueFileNumber")
+  @Mapping(target = "ucn", source = "claimFields.uniqueClientNumber")
   @Mapping(
       target = "client",
       expression =
           "java(claimFields.getClientForename() + \" \" + " + "claimFields.getClientSurname())")
-  @Mapping(target = "category", source = "standardFeeCategoryCode")
-  @Mapping(target = "matter", source = "matterTypeCode")
-  @Mapping(target = "concludedOrClaimedDate", source = "caseConcludedDate")
+  @Mapping(target = "category", source = "claimFields.standardFeeCategoryCode")
+  @Mapping(target = "matter", source = "claimFields.matterTypeCode")
+  @Mapping(target = "concludedOrClaimedDate", source = "claimFields.caseConcludedDate")
   // TODO: Add fee type to the OpenAPI spec.
   @Mapping(target = "feeType", constant = "Fee type")
   @Mapping(target = "costsDetails", source = "claimFields")
-  SubmissionClaimRow toSubmissionClaimRow(ClaimResponse claimFields);
+  @Mapping(target = "totalMessages", source = "totalMessages")
+  SubmissionClaimRow toSubmissionClaimRow(ClaimResponse claimFields, int totalMessages);
 
   @Mapping(target = "claimValue", source = "claimFields.totalValue")
   SubmissionClaimRowCostsDetails toSubmissionClaimRowCostsDetails(ClaimResponse claimFields);

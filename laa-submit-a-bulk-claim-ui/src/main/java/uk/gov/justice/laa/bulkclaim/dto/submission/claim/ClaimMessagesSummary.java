@@ -1,4 +1,4 @@
-package uk.gov.justice.laa.bulkclaim.dto.summary;
+package uk.gov.justice.laa.bulkclaim.dto.submission.claim;
 
 import java.util.List;
 
@@ -24,7 +24,7 @@ public record ClaimMessagesSummary(
   }
 
   /**
-   * Returns the total number of errors found in the bulk claim.
+   * Returns the total number of messages found in the bulk claim.
    *
    * @return the total error count
    */

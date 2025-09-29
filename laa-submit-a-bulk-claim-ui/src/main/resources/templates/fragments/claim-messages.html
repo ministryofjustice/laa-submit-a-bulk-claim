@@ -1,10 +1,10 @@
 <table class="govuk-table"
-       th:if="${messageDetails.containsErrors()}"
+       th:if="${messageDetails?.containsErrors()}"
        data-module="moj-sortable-table"
-       th:with="errorsAndWarnings=${errorsAndWarnings?:false}"
+       th:with="justWarnings=${justWarnings?:false}"
        th:fragment="messagesTable(messageDetails)">
   <caption class="govuk-table__caption govuk-table__caption--m"
-           th:text="${errorsAndWarnings}? #{bulkClaimImportSummary.claimMessages.caption} : #{bulkClaimImportSummary.claimErrors.caption}"/>
+           th:text="${justWarnings}? #{bulkClaimImportSummary.claimMessages.caption} : #{bulkClaimImportSummary.claimErrors.caption}"/>
 
   <thead class="govuk-table__head">
   <tr class="govuk-table__row">
@@ -14,11 +14,9 @@
         th:text="#{submission.claim.properties.ucn}"/>
     <th scope="col" class="govuk-table__header" aria-sort="none"
         th:text="#{submission.claim.properties.client}"/>
-    <th th:if="${errorsAndWarnings}" scope="col" class="govuk-table__header" aria-sort="none"
-        th:text="#{submission.claim.properties.messageType}"/>
-    <th th:unless="${errorsAndWarnings}" scope="col" class="govuk-table__header" aria-sort="none"
+    <th th:unless="${justWarnings}" scope="col" class="govuk-table__header" aria-sort="none"
         th:text="#{submission.claim.properties.errorDescription}"/>
-    <th th:if="${errorsAndWarnings}" scope="col" class="govuk-table__header" aria-sort="none"
+    <th th:if="${justWarnings}" scope="col" class="govuk-table__header" aria-sort="none"
         th:text="#{submission.claim.properties.messageDescription}"/>
   </tr>
   </thead>
