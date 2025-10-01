@@ -17,6 +17,7 @@ import uk.gov.justice.laa.bulkclaim.client.DataClaimsRestClient;
 import uk.gov.justice.laa.bulkclaim.dto.submission.claim.ClaimMessagesSummary;
 import uk.gov.justice.laa.bulkclaim.dto.submission.claim.SubmissionSummaryClaimMessageRow;
 import uk.gov.justice.laa.bulkclaim.mapper.BulkClaimImportSummaryMapper;
+import uk.gov.justice.laa.bulkclaim.util.PaginationUtil;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.ClaimResponse;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.ValidationMessageBase;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.ValidationMessageType;
@@ -27,6 +28,7 @@ class SubmissionClaimMessagesBuilderTest {
 
   @Mock private DataClaimsRestClient dataClaimsRestClient;
   @Mock private BulkClaimImportSummaryMapper bulkClaimImportSummaryMapper;
+  @Mock private PaginationUtil paginationUtil;
 
   @InjectMocks private SubmissionClaimMessagesBuilder builder;
 
@@ -59,7 +61,7 @@ class SubmissionClaimMessagesBuilderTest {
     when(bulkClaimImportSummaryMapper.toSubmissionSummaryClaimMessage(any(), any()))
         .thenReturn(mappedError);
 
-    ClaimMessagesSummary result = builder.buildErrors(submissionId, 0);
+    ClaimMessagesSummary result = builder.buildErrors(submissionId, 0, 10);
 
     assertThat(result.claimMessages()).containsExactly(mappedError);
     assertThat(result.totalMessageCount()).isEqualTo(1);
@@ -75,7 +77,7 @@ class SubmissionClaimMessagesBuilderTest {
             submissionId, null, ValidationMessageType.ERROR.toString(), null, 0))
         .thenReturn(Mono.empty());
 
-    ClaimMessagesSummary result = builder.buildErrors(submissionId, 0);
+    ClaimMessagesSummary result = builder.buildErrors(submissionId, 0, 10);
 
     assertThat(result.claimMessages()).isEmpty();
     assertThat(result.totalMessageCount()).isZero();
@@ -107,7 +109,7 @@ class SubmissionClaimMessagesBuilderTest {
     when(bulkClaimImportSummaryMapper.toSubmissionSummaryClaimMessage(any(), any()))
         .thenReturn(mappedError);
 
-    ClaimMessagesSummary result = builder.buildErrors(submissionId, 0);
+    ClaimMessagesSummary result = builder.buildErrors(submissionId, 0, 10);
 
     assertThat(result.claimMessages()).containsExactly(mappedError);
     assertThat(result.totalMessageCount()).isEqualTo(1);

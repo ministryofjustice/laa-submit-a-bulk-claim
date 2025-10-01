@@ -30,6 +30,7 @@ import uk.gov.justice.laa.bulkclaim.dto.submission.claim.SubmissionClaimFeeCalcu
 import uk.gov.justice.laa.bulkclaim.helper.TestObjectCreator;
 import uk.gov.justice.laa.bulkclaim.mapper.SubmissionClaimDetailsMapper;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.ClaimResponse;
+import uk.gov.justice.laa.dstew.payments.claimsdata.model.Page;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.ValidationMessageType;
 
 @WebMvcTest(ClaimDetailController.class)
@@ -51,9 +52,8 @@ class ClaimDetailControllerTest {
     @Test
     @DisplayName("Should expect redirect")
     void shouldExpectRedirect() {
-      // Given
       UUID claimId = UUID.fromString("244fcb9f-50ab-4af8-b635-76bd30e0e97d");
-      // When / Then
+
       assertThat(
               mockMvc.perform(
                   get("/submission/claim/" + claimId)
@@ -70,17 +70,16 @@ class ClaimDetailControllerTest {
     @Test
     @DisplayName("Should return expected result with default tab")
     void shouldReturnExpectedResultWithDefaultTab() {
-      // Given
       UUID claimId = UUID.fromString("244fcb9f-50ab-4af8-b635-76bd30e0e97d");
       UUID submissionId = UUID.fromString("244fcb9f-50ab-4af8-b635-76bd30e0e97d");
       ClaimResponse claimResponse = TestObjectCreator.buildClaimResponse();
+
       when(dataClaimsRestClient.getSubmissionClaim(submissionId, claimId))
           .thenReturn(Mono.just(claimResponse));
       SubmissionClaimDetails submissionClaimDetails = TestObjectCreator.buildClaimDetails();
       when(submissionClaimDetailsMapper.toSubmissionClaimDetails(claimResponse))
           .thenReturn(submissionClaimDetails);
 
-      // When / Then
       assertThat(
               mockMvc.perform(
                   get("/view-claim-detail")
@@ -96,17 +95,16 @@ class ClaimDetailControllerTest {
     @Test
     @DisplayName("Should return expected result with claim details tab")
     void shouldReturnExpectedResultWithClaimDetailsTab() {
-      // Given
       UUID claimId = UUID.fromString("244fcb9f-50ab-4af8-b635-76bd30e0e97d");
       UUID submissionId = UUID.fromString("244fcb9f-50ab-4af8-b635-76bd30e0e97d");
       ClaimResponse claimResponse = TestObjectCreator.buildClaimResponse();
+
       when(dataClaimsRestClient.getSubmissionClaim(submissionId, claimId))
           .thenReturn(Mono.just(claimResponse));
       SubmissionClaimDetails submissionClaimDetails = TestObjectCreator.buildClaimDetails();
       when(submissionClaimDetailsMapper.toSubmissionClaimDetails(claimResponse))
           .thenReturn(submissionClaimDetails);
 
-      // When / Then
       assertThat(
               mockMvc.perform(
                   get("/view-claim-detail")
@@ -123,16 +121,20 @@ class ClaimDetailControllerTest {
     @Test
     @DisplayName("Should return expected result with claim messages tab")
     void shouldReturnExpectedResultWithClaimMessagesTab() {
-      // Given
       UUID claimId = UUID.fromString("244fcb9f-50ab-4af8-b635-76bd30e0e97d");
       UUID submissionId = UUID.fromString("244fcb9f-50ab-4af8-b635-76bd30e0e97d");
       ClaimResponse claimResponse = TestObjectCreator.buildClaimResponse();
+
       when(dataClaimsRestClient.getSubmissionClaim(submissionId, claimId))
           .thenReturn(Mono.just(claimResponse));
-      when(submissionClaimMessagesBuilder.build(submissionId, claimId, 0, null))
-          .thenReturn(new ClaimMessagesSummary(Collections.emptyList(), 0, 0));
 
-      // When / Then
+      // Build a Page object for pagination
+      Page pagination = Page.builder().totalPages(1).totalElements(0).number(0).size(10).build();
+
+      when(submissionClaimMessagesBuilder.build(
+              submissionId, claimId, 0, ValidationMessageType.WARNING, 10))
+          .thenReturn(new ClaimMessagesSummary(Collections.emptyList(), 0, 0, pagination));
+
       assertThat(
               mockMvc.perform(
                   get("/view-claim-detail")
@@ -144,22 +146,21 @@ class ClaimDetailControllerTest {
           .hasViewName("pages/view-claim-detail");
 
       verify(submissionClaimMessagesBuilder, times(1))
-          .build(submissionId, claimId, 0, ValidationMessageType.WARNING);
+          .build(submissionId, claimId, 0, ValidationMessageType.WARNING, 10);
     }
 
     @Test
     @DisplayName("Should return expected result with calculated fee details tab")
     void shouldReturnExpectedResultWithCalculatedFeeDetailsTab() {
-      // Given
       UUID claimId = UUID.fromString("244fcb9f-50ab-4af8-b635-76bd30e0e97d");
       UUID submissionId = UUID.fromString("244fcb9f-50ab-4af8-b635-76bd30e0e97d");
       ClaimResponse claimResponse = TestObjectCreator.buildClaimResponse();
+
       when(dataClaimsRestClient.getSubmissionClaim(submissionId, claimId))
           .thenReturn(Mono.just(claimResponse));
       when(submissionClaimDetailsMapper.toFeeCalculationDetails(claimResponse))
           .thenReturn(SubmissionClaimFeeCalculationDetails.builder().build());
 
-      // When / Then
       assertThat(
               mockMvc.perform(
                   get("/view-claim-detail")
@@ -169,16 +170,15 @@ class ClaimDetailControllerTest {
                       .sessionAttr(CLAIM_ID, claimId)))
           .hasStatusOk()
           .hasViewName("pages/view-claim-detail");
+
       verify(submissionClaimDetailsMapper, times(1)).toFeeCalculationDetails(claimResponse);
     }
 
     @Test
     @DisplayName("Should throw exception when submissionId is missing")
     void shouldThrowExceptionWhenSubmissionIdIsMissing() {
-      // Given
       UUID claimId = UUID.fromString("244fcb9f-50ab-4af8-b635-76bd30e0e97d");
 
-      // When / Then
       assertThat(
               mockMvc.perform(
                   get("/view-claim-detail")
@@ -191,10 +191,8 @@ class ClaimDetailControllerTest {
     @Test
     @DisplayName("Should throw exception when claimId is missing")
     void shouldThrowExceptionWhenClaimIdIsMissing() {
-      // Given
       UUID submissionId = UUID.fromString("244fcb9f-50ab-4af8-b635-76bd30e0e97d");
 
-      // When / Then
       assertThat(
               mockMvc.perform(
                   get("/view-claim-detail")
@@ -207,11 +205,9 @@ class ClaimDetailControllerTest {
     @Test
     @DisplayName("Should throw exception when unexpected value passed for nav tab")
     void shouldThrowExceptionWhenUnexpectedValuePassedForNavTab() {
-      // Given
       UUID claimId = UUID.fromString("244fcb9f-50ab-4af8-b635-76bd30e0e97d");
       UUID submissionId = UUID.fromString("244fcb9f-50ab-4af8-b635-76bd30e0e97d");
 
-      // When / Then
       assertThat(
               mockMvc.perform(
                   get("/view-claim-detail")
@@ -227,13 +223,11 @@ class ClaimDetailControllerTest {
     @Test
     @DisplayName("Should throw exception when claim was not found")
     void shouldThrowExceptionWhenClaimWasNotFound() {
-      // Given
       UUID claimId = UUID.fromString("59930faa-3f38-4ee1-b5bd-08dce5a4fdbc");
       UUID submissionId = UUID.fromString("244fcb9f-50ab-4af8-b635-76bd30e0e97d");
-      ClaimResponse claimResponse = TestObjectCreator.buildClaimResponse();
+
       when(dataClaimsRestClient.getSubmissionClaim(submissionId, claimId)).thenReturn(Mono.empty());
 
-      // When / Then
       assertThat(
               mockMvc.perform(
                   get("/view-claim-detail")

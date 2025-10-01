@@ -16,6 +16,7 @@ import uk.gov.justice.laa.bulkclaim.dto.submission.SubmissionSummaryRow;
 import uk.gov.justice.laa.bulkclaim.dto.submission.claim.ClaimMessagesSummary;
 import uk.gov.justice.laa.bulkclaim.dto.summary.BulkClaimImportSummary;
 import uk.gov.justice.laa.bulkclaim.mapper.BulkClaimImportSummaryMapper;
+import uk.gov.justice.laa.dstew.payments.claimsdata.model.Page;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionResponse;
 
 @ExtendWith(MockitoExtension.class)
@@ -36,12 +37,14 @@ class BulkClaimSummaryBuilderTest {
     SubmissionSummaryRow summaryRow =
         new SubmissionSummaryRow(OffsetDateTime.now(), submissionId, "12345", "Civil", null, 5);
 
+    Page pagination = Page.builder().totalPages(1).totalElements(0).number(0).size(10).build();
+
     when(bulkClaimImportSummaryMapper.toSubmissionSummaryRows(List.of(submissionResponse)))
         .thenReturn(List.of(summaryRow));
 
-    ClaimMessagesSummary errorSummary = new ClaimMessagesSummary(List.of(), 0, 0);
+    ClaimMessagesSummary errorSummary = new ClaimMessagesSummary(List.of(), 0, 0, pagination);
 
-    when(submissionClaimMessagesBuilder.buildErrors(submissionId, 0)).thenReturn(errorSummary);
+    when(submissionClaimMessagesBuilder.buildErrors(submissionId, 0, 10)).thenReturn(errorSummary);
 
     BulkClaimImportSummary result = builder.build(List.of(submissionResponse), 0);
 
