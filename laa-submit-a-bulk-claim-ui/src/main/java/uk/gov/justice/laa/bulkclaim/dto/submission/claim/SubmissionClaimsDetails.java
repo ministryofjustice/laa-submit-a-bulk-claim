@@ -2,6 +2,7 @@ package uk.gov.justice.laa.bulkclaim.dto.submission.claim;
 
 import java.util.List;
 import uk.gov.justice.laa.bulkclaim.dto.submission.SubmissionCostsSummary;
+import uk.gov.justice.laa.dstew.payments.claimsdata.model.Page;
 
 /**
  * Holds claim information about a submission created by a bulk submission, including a summary of
@@ -12,4 +13,6 @@ import uk.gov.justice.laa.bulkclaim.dto.submission.SubmissionCostsSummary;
  * @author Jamie Briggs
  */
 public record SubmissionClaimsDetails(
-    SubmissionCostsSummary costsSummary, List<SubmissionClaimRow> submissionClaims) {}
+    SubmissionCostsSummary costsSummary,
+    List<SubmissionClaimRow> submissionClaims,
+    Page pagination) {}

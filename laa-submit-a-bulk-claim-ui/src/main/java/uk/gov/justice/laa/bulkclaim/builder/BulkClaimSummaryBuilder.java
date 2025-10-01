@@ -22,6 +22,8 @@ import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionResponse;
 @RequiredArgsConstructor
 public class BulkClaimSummaryBuilder {
 
+  private static final int DEFAULT_PAGE_SIZE = 10;
+
   private final BulkClaimImportSummaryMapper bulkClaimImportSummaryMapper;
   private final SubmissionClaimMessagesBuilder submissionClaimMessagesBuilder;
 
@@ -39,7 +41,7 @@ public class BulkClaimSummaryBuilder {
 
     ClaimMessagesSummary claimErrorSummary =
         submissionClaimMessagesBuilder.buildErrors(
-            submissionResponse.getFirst().getSubmissionId(), page);
+            submissionResponse.getFirst().getSubmissionId(), page, DEFAULT_PAGE_SIZE);
 
     return new BulkClaimImportSummary(summaryRows, claimErrorSummary);
   }

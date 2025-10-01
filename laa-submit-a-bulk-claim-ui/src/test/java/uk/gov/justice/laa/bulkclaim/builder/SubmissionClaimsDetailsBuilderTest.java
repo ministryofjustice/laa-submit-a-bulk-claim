@@ -21,6 +21,7 @@ import uk.gov.justice.laa.bulkclaim.dto.submission.claim.SubmissionClaimRow;
 import uk.gov.justice.laa.bulkclaim.dto.submission.claim.SubmissionClaimRowCostsDetails;
 import uk.gov.justice.laa.bulkclaim.dto.submission.claim.SubmissionClaimsDetails;
 import uk.gov.justice.laa.bulkclaim.mapper.SubmissionClaimRowMapper;
+import uk.gov.justice.laa.bulkclaim.util.PaginationUtil;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.ClaimResponse;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionClaim;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionResponse;
@@ -34,10 +35,13 @@ class SubmissionClaimsDetailsBuilderTest {
 
   @Mock DataClaimsRestClient dataClaimsRestClient;
   @Mock SubmissionClaimRowMapper submissionClaimRowMapper;
+  @Mock PaginationUtil paginationUtil;
 
   @BeforeEach
   void beforeEach() {
-    builder = new SubmissionClaimDetailsBuilder(dataClaimsRestClient, submissionClaimRowMapper);
+    builder =
+        new SubmissionClaimDetailsBuilder(
+            dataClaimsRestClient, submissionClaimRowMapper, paginationUtil);
   }
 
   @Test
@@ -78,7 +82,7 @@ class SubmissionClaimsDetailsBuilderTest {
         .thenReturn(Mono.just(ValidationMessagesResponse.builder().totalElements(2).build()));
     when(submissionClaimRowMapper.toSubmissionClaimRow(any(), anyInt())).thenReturn(expected);
     // When
-    SubmissionClaimsDetails result = builder.build(submissionResponse);
+    SubmissionClaimsDetails result = builder.build(submissionResponse, 0, 10);
     // Then
     assertThat(result.submissionClaims().contains(expected)).isTrue();
   }
@@ -146,7 +150,7 @@ class SubmissionClaimsDetailsBuilderTest {
     when(submissionClaimRowMapper.toSubmissionClaimRow(any(), anyInt())).thenReturn(claimOne);
     when(submissionClaimRowMapper.toSubmissionClaimRow(any(), anyInt())).thenReturn(claimTwo);
     // When
-    SubmissionClaimsDetails result = builder.build(submissionResponse);
+    SubmissionClaimsDetails result = builder.build(submissionResponse, 0, 10);
     // Then
     assertThat(result.costsSummary().profitCosts()).isEqualTo(new BigDecimal("22.20"));
     assertThat(result.costsSummary().disbursements()).isEqualTo(new BigDecimal("42.20"));

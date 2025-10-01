@@ -1,5 +1,8 @@
 # Specify java runtime base image
-FROM eclipse-temurin:21
+FROM amazoncorretto:21-alpine
+
+# Update vulnerable system libraries
+RUN apk update && apk upgrade --no-cache && apk add --no-cache openssl
 
 # Set up working directory in the container
 RUN mkdir -p /opt/laa-submit-a-bulk-claim-ui/

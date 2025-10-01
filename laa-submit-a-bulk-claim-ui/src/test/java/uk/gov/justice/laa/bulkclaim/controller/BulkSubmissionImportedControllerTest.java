@@ -38,6 +38,7 @@ import uk.gov.justice.laa.bulkclaim.dto.submission.claim.ClaimMessagesSummary;
 import uk.gov.justice.laa.bulkclaim.dto.submission.claim.SubmissionSummaryClaimMessageRow;
 import uk.gov.justice.laa.bulkclaim.dto.summary.BulkClaimImportSummary;
 import uk.gov.justice.laa.bulkclaim.exception.SubmitBulkClaimException;
+import uk.gov.justice.laa.dstew.payments.claimsdata.model.Page;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionResponse;
 
 @Disabled("Will be removed when BulkSubmissionImportedController is removed")
@@ -148,7 +149,9 @@ class BulkSubmissionImportedControllerTest {
                 "This is an error which is found on your claim!",
                 "ERROR"));
 
+    Page pagination = Page.builder().totalPages(1).totalElements(0).number(0).size(10).build();
+
     return new BulkClaimImportSummary(
-        Collections.singletonList(summaryRow), new ClaimMessagesSummary(errors, 1, 1));
+        Collections.singletonList(summaryRow), new ClaimMessagesSummary(errors, 1, 1, pagination));
   }
 }

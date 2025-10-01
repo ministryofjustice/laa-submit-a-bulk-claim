@@ -2,8 +2,10 @@ package uk.gov.justice.laa.bulkclaim.controller;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.oidcLogin;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -36,6 +38,8 @@ import uk.gov.justice.laa.bulkclaim.dto.submission.SubmissionMatterStartsDetails
 import uk.gov.justice.laa.bulkclaim.dto.submission.SubmissionMatterStartsRow;
 import uk.gov.justice.laa.bulkclaim.dto.submission.SubmissionSummary;
 import uk.gov.justice.laa.bulkclaim.dto.submission.claim.SubmissionClaimsDetails;
+import uk.gov.justice.laa.bulkclaim.util.PaginationUtil;
+import uk.gov.justice.laa.dstew.payments.claimsdata.model.Page;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionResponse;
 
 @WebMvcTest(SubmissionDetailController.class)
@@ -51,6 +55,7 @@ class SubmissionDetailControllerTest {
   @MockitoBean private SubmissionMatterStartsDetailsBuilder submissionMatterStartsDetailsBuilder;
   @MockitoBean private DataClaimsRestClient dataClaimsRestClient;
   @MockitoBean private SubmissionClaimMessagesBuilder submissionClaimMessagesBuilder;
+  @MockitoBean private PaginationUtil paginationUtil;
 
   @Nested
   @DisplayName("GET: /submission/{submissionId}")
@@ -79,7 +84,9 @@ class SubmissionDetailControllerTest {
     @DisplayName("Should return expected result")
     void shouldReturnExpectedResult() {
       // Given
-      UUID submissionReference = UUID.fromString("bceac49c-d756-4e05-8e28-3334b84b6fe8");
+      final UUID submissionReference = UUID.fromString("bceac49c-d756-4e05-8e28-3334b84b6fe8");
+      final Page pagination =
+          Page.builder().totalPages(1).totalElements(0).number(0).size(10).build();
       when(dataClaimsRestClient.getSubmission(submissionReference))
           .thenReturn(Mono.just(SubmissionResponse.builder().build()));
       when(submissionSummaryBuilder.build(any()))
@@ -92,7 +99,7 @@ class SubmissionDetailControllerTest {
                   new BigDecimal("100.50"),
                   "Legal aid",
                   OffsetDateTime.of(2025, 1, 1, 10, 10, 10, 0, ZoneOffset.UTC)));
-      when(submissionClaimDetailsBuilder.build(any()))
+      when(submissionClaimDetailsBuilder.build(any(), anyInt(), anyInt()))
           .thenReturn(
               new SubmissionClaimsDetails(
                   new SubmissionCostsSummary(
@@ -101,7 +108,8 @@ class SubmissionDetailControllerTest {
                       new BigDecimal("100.85"),
                       new BigDecimal("100.90"),
                       new BigDecimal("123.45")),
-                  Collections.emptyList()));
+                  Collections.emptyList(),
+                  pagination));
       // When / Then
       assertThat(
               mockMvc.perform(
@@ -110,15 +118,17 @@ class SubmissionDetailControllerTest {
                       .sessionAttr("submissionId", submissionReference)))
           .hasStatusOk()
           .hasViewName("pages/view-submission-detail");
-      verify(submissionClaimDetailsBuilder, times(1)).build(any());
-      verify(submissionMatterStartsDetailsBuilder, times(0)).build(any());
+      verify(submissionClaimDetailsBuilder, times(1)).build(any(), anyInt(), anyInt());
+      verifyNoInteractions(submissionMatterStartsDetailsBuilder);
     }
 
     @Test
     @DisplayName("Should return expected result with claims")
     void shouldReturnExpectedResultWithClaims() {
       // Given
-      UUID submissionReference = UUID.fromString("bceac49c-d756-4e05-8e28-3334b84b6fe8");
+      final UUID submissionReference = UUID.fromString("bceac49c-d756-4e05-8e28-3334b84b6fe8");
+      final Page pagination =
+          Page.builder().totalPages(1).totalElements(0).number(0).size(10).build();
       when(dataClaimsRestClient.getSubmission(submissionReference))
           .thenReturn(Mono.just(SubmissionResponse.builder().build()));
       when(submissionSummaryBuilder.build(any()))
@@ -131,7 +141,7 @@ class SubmissionDetailControllerTest {
                   new BigDecimal("100.50"),
                   "Legal aid",
                   OffsetDateTime.of(2025, 1, 1, 10, 10, 10, 0, ZoneOffset.UTC)));
-      when(submissionClaimDetailsBuilder.build(any()))
+      when(submissionClaimDetailsBuilder.build(any(), anyInt(), anyInt()))
           .thenReturn(
               new SubmissionClaimsDetails(
                   new SubmissionCostsSummary(
@@ -140,7 +150,8 @@ class SubmissionDetailControllerTest {
                       new BigDecimal("100.85"),
                       new BigDecimal("100.90"),
                       new BigDecimal("123.45")),
-                  Collections.emptyList()));
+                  Collections.emptyList(),
+                  pagination));
       // When / Then
       assertThat(
               mockMvc.perform(
@@ -149,8 +160,9 @@ class SubmissionDetailControllerTest {
                       .sessionAttr("submissionId", submissionReference)))
           .hasStatusOk()
           .hasViewName("pages/view-submission-detail");
-      verify(submissionClaimDetailsBuilder, times(1)).build(any());
-      verify(submissionMatterStartsDetailsBuilder, times(0)).build(any());
+
+      verify(submissionClaimDetailsBuilder, times(1)).build(any(), anyInt(), anyInt());
+      verifyNoInteractions(submissionMatterStartsDetailsBuilder);
     }
 
     @Test
@@ -182,7 +194,7 @@ class SubmissionDetailControllerTest {
                       .sessionAttr("submissionId", submissionReference)))
           .hasStatusOk()
           .hasViewName("pages/view-submission-detail");
-      verify(submissionClaimDetailsBuilder, times(0)).build(any());
+      verifyNoInteractions(submissionClaimDetailsBuilder);
       verify(submissionMatterStartsDetailsBuilder, times(1)).build(any());
     }
 

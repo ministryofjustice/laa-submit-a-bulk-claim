@@ -1,5 +1,6 @@
 package uk.gov.justice.laa.bulkclaim.controller;
 
+import static org.springframework.beans.support.PagedListHolder.DEFAULT_PAGE_SIZE;
 import static uk.gov.justice.laa.bulkclaim.constants.SessionConstants.SUBMISSION_ID;
 import static uk.gov.justice.laa.bulkclaim.constants.ViewSubmissionNavigationTab.CLAIM_DETAILS;
 
@@ -68,6 +69,7 @@ public class SubmissionDetailController {
   @GetMapping("/view-submission-detail")
   public String getSubmissionDetail(
       Model model,
+      @RequestParam(value = "page", defaultValue = "0") final int page,
       @ModelAttribute(SUBMISSION_ID) UUID submissionId,
       @RequestParam(value = "navTab", required = false, defaultValue = "CLAIM_DETAILS")
           ViewSubmissionNavigationTab navigationTab) {
@@ -83,14 +85,13 @@ public class SubmissionDetailController {
     final SubmissionSummary submissionSummary = submissionSummaryBuilder.build(submissionResponse);
 
     if ("invalid".equalsIgnoreCase(submissionSummary.status())) {
-      int claimErrorPage = 0; // todo add pagination in later PR
       final ClaimMessagesSummary claimErrorSummary =
-          submissionClaimMessagesBuilder.buildErrors(submissionId, claimErrorPage);
+          submissionClaimMessagesBuilder.buildErrors(submissionId, page, DEFAULT_PAGE_SIZE);
       model.addAttribute("claimErrorDetails", claimErrorSummary);
     }
     if (CLAIM_DETAILS.equals(navigationTab)) {
       final SubmissionClaimsDetails claimDetails =
-          submissionClaimDetailsBuilder.build(submissionResponse);
+          submissionClaimDetailsBuilder.build(submissionResponse, page, DEFAULT_PAGE_SIZE);
       model.addAttribute("claimDetails", claimDetails);
     } else {
       final SubmissionMatterStartsDetails build =
