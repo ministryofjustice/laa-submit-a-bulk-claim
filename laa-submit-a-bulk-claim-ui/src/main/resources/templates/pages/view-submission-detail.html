@@ -239,6 +239,7 @@
                 </tbody>
               </table>
             </div>
+            <nav th:replace="~{fragments/pagination :: pagination(currentUrl='/view-submission-detail?navTab=CLAIM_DETAILS', page=${claimDetails.pagination})}"></nav>
           </div>
         </th:block>
 
@@ -266,6 +267,7 @@
         <div class="govuk-grid-column-full">
           <th:block
               th:replace="~{fragments/claim-messages :: messagesTable(${claimErrorDetails})}"/>
+          <nav th:replace="~{fragments/pagination :: pagination(currentUrl='/view-submission-detail', page=${claimErrorDetails.pagination})}"></nav>
         </div>
       </th:block>
     </div>

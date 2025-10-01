@@ -10,6 +10,7 @@ import uk.gov.justice.laa.bulkclaim.client.DataClaimsRestClient;
 import uk.gov.justice.laa.bulkclaim.dto.submission.claim.ClaimMessagesSummary;
 import uk.gov.justice.laa.bulkclaim.dto.submission.claim.SubmissionSummaryClaimMessageRow;
 import uk.gov.justice.laa.bulkclaim.mapper.BulkClaimImportSummaryMapper;
+import uk.gov.justice.laa.bulkclaim.util.PaginationUtil;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.ClaimResponse;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.ValidationMessageType;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.ValidationMessagesResponse;
@@ -24,6 +25,7 @@ public class SubmissionClaimMessagesBuilder {
 
   private final DataClaimsRestClient dataClaimsRestClient;
   private final BulkClaimImportSummaryMapper bulkClaimImportSummaryMapper;
+  private final PaginationUtil paginationUtil;
 
   /**
    * Builds a {@link ClaimMessagesSummary} for a given submission ID whilst only returning errors.
@@ -32,8 +34,8 @@ public class SubmissionClaimMessagesBuilder {
    * @param page The page number to fetch errors for.
    * @return The built {@link ClaimMessagesSummary}.
    */
-  public ClaimMessagesSummary buildErrors(UUID submissionId, int page) {
-    return build(submissionId, null, page, ValidationMessageType.ERROR);
+  public ClaimMessagesSummary buildErrors(UUID submissionId, int page, int size) {
+    return build(submissionId, null, page, ValidationMessageType.ERROR, size);
   }
 
   /**
@@ -44,8 +46,8 @@ public class SubmissionClaimMessagesBuilder {
    * @param page The page number to fetch errors for.
    * @return The built {@link ClaimMessagesSummary}.
    */
-  public ClaimMessagesSummary build(UUID submissionId, UUID claimId, int page) {
-    return build(submissionId, claimId, page, null);
+  public ClaimMessagesSummary build(UUID submissionId, UUID claimId, int page, int size) {
+    return build(submissionId, claimId, page, null, size);
   }
 
   /**
@@ -57,7 +59,7 @@ public class SubmissionClaimMessagesBuilder {
    * @return the built {@link ClaimMessagesSummary}.
    */
   public ClaimMessagesSummary build(
-      UUID submissionId, UUID claimId, int page, ValidationMessageType type) {
+      UUID submissionId, UUID claimId, int page, ValidationMessageType type, int size) {
     String submissionType = type != null ? type.toString() : null;
     final ValidationMessagesResponse messagesResponse =
         dataClaimsRestClient
@@ -97,6 +99,10 @@ public class SubmissionClaimMessagesBuilder {
             .map(ValidationMessagesResponse::getTotalClaims)
             .orElse(0);
 
-    return new ClaimMessagesSummary(errorList, totalMessageCount, totalClaims);
+    return new ClaimMessagesSummary(
+        errorList,
+        totalMessageCount,
+        totalClaims,
+        paginationUtil.fromValidationMessages(messagesResponse, page, size));
   }
 }

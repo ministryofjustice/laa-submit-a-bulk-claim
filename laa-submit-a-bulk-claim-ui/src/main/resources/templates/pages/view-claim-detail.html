@@ -55,6 +55,7 @@
       <div class="govuk-grid-column-two-thirds" th:if="${navTab.toString() == 'CLAIM_MESSAGES'}">
         <th:block
             th:replace="~{fragments/claim-messages :: messagesTable(messageDetails=${claimMessages}, justWarnings=true)}"/>
+        <nav th:replace="~{fragments/pagination :: pagination(currentUrl='/view-claim-detail?navTab=CLAIM_MESSAGES', page=${claimMessages.pagination})}"></nav>
       </div>
       <div class="govuk-grid-column-two-thirds" th:if="${navTab.toString() == 'CLAIM_DETAILS'}">
 

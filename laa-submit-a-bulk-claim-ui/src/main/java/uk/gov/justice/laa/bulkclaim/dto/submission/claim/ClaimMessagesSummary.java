@@ -1,6 +1,8 @@
 package uk.gov.justice.laa.bulkclaim.dto.submission.claim;
 
 import java.util.List;
+import java.util.Optional;
+import uk.gov.justice.laa.dstew.payments.claimsdata.model.Page;
 
 /**
  * Summary of claim errors.
@@ -12,7 +14,8 @@ import java.util.List;
 public record ClaimMessagesSummary(
     List<SubmissionSummaryClaimMessageRow> claimMessages,
     int totalMessageCount,
-    int totalClaimsWithErrors) {
+    int totalClaimsWithErrors,
+    Page pagination) {
 
   /**
    * Returns true if there are any errors in the bulk claim.
@@ -29,7 +32,10 @@ public record ClaimMessagesSummary(
    * @return the total error count
    */
   public long totalErrors() {
-    return claimMessages.stream().filter(x -> "error".equalsIgnoreCase(x.type())).count();
+    return Optional.ofNullable(claimMessages).stream()
+        .flatMap(List::stream)
+        .filter(x -> "error".equalsIgnoreCase(x.type()))
+        .count();
   }
 
   /**

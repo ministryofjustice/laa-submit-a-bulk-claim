@@ -52,10 +52,12 @@ public interface DataClaimsRestClient {
    */
   @GetExchange(url = "/submissions", accept = MediaType.APPLICATION_JSON_VALUE)
   Mono<SubmissionsResultSet> search(
-      @RequestParam(required = true) List<String> offices,
-      @RequestParam(required = false) String submissionId,
-      @RequestParam(required = false) LocalDate dateFrom,
-      @RequestParam(required = false) LocalDate dateTo);
+      @RequestParam(value = "offices", required = true) List<String> offices,
+      @RequestParam(value = "submission_id", required = false) String submissionId,
+      @RequestParam(value = "date_from", required = false) LocalDate dateFrom,
+      @RequestParam(value = "date_to", required = false) LocalDate dateTo,
+      @RequestParam(value = "page", required = false, defaultValue = "0") Integer page,
+      @RequestParam(value = "size", required = false, defaultValue = "10") Integer size);
 
   /**
    * Gets a submission by its ID.

@@ -1,5 +1,6 @@
 package uk.gov.justice.laa.bulkclaim.controller;
 
+import static org.springframework.beans.support.PagedListHolder.DEFAULT_PAGE_SIZE;
 import static uk.gov.justice.laa.bulkclaim.constants.SessionConstants.CLAIM_ID;
 import static uk.gov.justice.laa.bulkclaim.constants.SessionConstants.SUBMISSION_ID;
 
@@ -33,6 +34,8 @@ import uk.gov.justice.laa.dstew.payments.claimsdata.model.ValidationMessageType;
 @RequiredArgsConstructor
 @SessionAttributes({SUBMISSION_ID, CLAIM_ID})
 public final class ClaimDetailController {
+
+  private static final int DEFAULT_PAGE_SIZE = 10;
 
   private final DataClaimsRestClient dataClaimsRestClient;
   private final SubmissionClaimDetailsMapper submissionClaimDetailsMapper;
@@ -121,7 +124,7 @@ public final class ClaimDetailController {
     // Claim warnings & errors
     final ClaimMessagesSummary claimMessagesSummary =
         submissionClaimMessagesBuilder.build(
-            submissionId, claimId, page, ValidationMessageType.WARNING);
+            submissionId, claimId, page, ValidationMessageType.WARNING, DEFAULT_PAGE_SIZE);
     model.addAttribute("claimMessages", claimMessagesSummary);
   }
 }

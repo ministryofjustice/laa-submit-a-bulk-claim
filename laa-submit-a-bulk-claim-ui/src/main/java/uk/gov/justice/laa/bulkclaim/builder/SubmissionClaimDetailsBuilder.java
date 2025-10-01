@@ -10,6 +10,7 @@ import uk.gov.justice.laa.bulkclaim.dto.submission.SubmissionCostsSummary;
 import uk.gov.justice.laa.bulkclaim.dto.submission.claim.SubmissionClaimRow;
 import uk.gov.justice.laa.bulkclaim.dto.submission.claim.SubmissionClaimsDetails;
 import uk.gov.justice.laa.bulkclaim.mapper.SubmissionClaimRowMapper;
+import uk.gov.justice.laa.bulkclaim.util.PaginationUtil;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.ClaimResponse;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionResponse;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.ValidationMessageType;
@@ -26,6 +27,7 @@ public class SubmissionClaimDetailsBuilder {
 
   private final DataClaimsRestClient dataClaimsRestClient;
   private final SubmissionClaimRowMapper submissionClaimRowMapper;
+  private final PaginationUtil paginationUtil;
 
   /**
    * Builds a {@link SubmissionClaimsDetails} object. This object contains a summary of the costs
@@ -34,7 +36,7 @@ public class SubmissionClaimDetailsBuilder {
    * @param submissionResponse The source submission response.
    * @return The built {@link SubmissionClaimsDetails} object.
    */
-  public SubmissionClaimsDetails build(SubmissionResponse submissionResponse) {
+  public SubmissionClaimsDetails build(SubmissionResponse submissionResponse, int page, int size) {
 
     // Get all claims from data claims service
     List<SubmissionClaimRow> submissionClaimRows =
@@ -89,6 +91,17 @@ public class SubmissionClaimDetailsBuilder {
             // TODO: Where is fixed fee from?
             BigDecimal.ZERO,
             submissionValue);
-    return new SubmissionClaimsDetails(costSummary, submissionClaimRows);
+
+    int totalClaims = submissionClaimRows.size();
+    int safeSize = size > 0 ? size : totalClaims;
+    int maxPageIndex =
+        safeSize == 0 ? 0 : Math.max((int) Math.ceil((double) totalClaims / safeSize) - 1, 0);
+    int safePage = Math.min(Math.max(page, 0), maxPageIndex);
+    int fromIndex = Math.min(safePage * safeSize, totalClaims);
+    int toIndex = Math.min(fromIndex + safeSize, totalClaims);
+    List<SubmissionClaimRow> pagedClaims = submissionClaimRows.subList(fromIndex, toIndex);
+
+    return new SubmissionClaimsDetails(
+        costSummary, pagedClaims, paginationUtil.from(safePage, safeSize, totalClaims));
   }
 }

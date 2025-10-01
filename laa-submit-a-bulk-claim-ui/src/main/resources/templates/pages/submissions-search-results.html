@@ -57,7 +57,7 @@
             <tr class="govuk-table__row" th:each="submission : ${submissions.getContent}">
               <td class="govuk-table__cell">
                 <a th:href="@{/submission/{submission_ref}(submission_ref=${submission.getSubmissionId})}"
-                   th:text="${ #strings.substring(submission.getSubmissionId, 0, 7)}"
+                   th:text="${ #strings.substring(submission.getSubmissionId, 24, 36)}"
                    class="govuk-link--no-visited-state"></a></td>
               <td class="govuk-table__cell" th:text="${submission.getOfficeAccountNumber}"></td>
               <td class="govuk-table__cell"
@@ -70,8 +70,7 @@
             </tr>
             </tbody>
           </table>
-          <nav
-              th:replace="~{fragments/pagination :: pagination(currentUrl='/submissions/search/results', page=${pagination})}"></nav>
+          <nav th:replace="~{fragments/pagination :: pagination(currentUrl='/submissions/search/results', page=${pagination})}"></nav>
         </div>
 
       </div>
