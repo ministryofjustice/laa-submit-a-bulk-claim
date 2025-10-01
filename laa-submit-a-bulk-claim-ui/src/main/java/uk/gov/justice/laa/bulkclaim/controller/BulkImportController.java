@@ -20,6 +20,7 @@ import org.springframework.web.bind.support.SessionStatus;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import uk.gov.justice.laa.bulkclaim.client.DataClaimsRestClient;
 import uk.gov.justice.laa.bulkclaim.dto.FileUploadForm;
+import uk.gov.justice.laa.bulkclaim.util.OidcAttributeUtils;
 import uk.gov.justice.laa.bulkclaim.validation.BulkImportFileValidator;
 import uk.gov.justice.laa.bulkclaim.validation.BulkImportFileVirusValidator;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.CreateBulkSubmission201Response;
@@ -35,6 +36,7 @@ public class BulkImportController {
   private final BulkImportFileValidator bulkImportFileValidator;
   private final BulkImportFileVirusValidator bulkImportFileVirusValidator;
   private final DataClaimsRestClient dataClaimsRestClient;
+  private final OidcAttributeUtils oidcAttributeUtils;
 
   /**
    * Renders the upload page.
@@ -62,13 +64,11 @@ public class BulkImportController {
    * Performs a bulk upload for the given file.
    *
    * @param fileUploadForm the file to be uploaded
-   * @param model the model to be populated with data
    * @param oidcUser the authenticated user principal
    * @return the submission page
    */
   @PostMapping("/upload")
   public String performUpload(
-      Model model,
       @ModelAttribute(FILE_UPLOAD_FORM_MODEL_ATTR) FileUploadForm fileUploadForm,
       BindingResult bindingResult,
       @AuthenticationPrincipal OidcUser oidcUser,
@@ -87,7 +87,10 @@ public class BulkImportController {
     try {
       ResponseEntity<CreateBulkSubmission201Response> responseEntity =
           dataClaimsRestClient
-              .upload(fileUploadForm.file(), oidcUser.getPreferredUsername())
+              .upload(
+                  fileUploadForm.file(),
+                  oidcUser.getPreferredUsername(),
+                  oidcAttributeUtils.getUserOffices(oidcUser))
               .block();
       CreateBulkSubmission201Response bulkSubmissionResponse = responseEntity.getBody();
       log.info(
