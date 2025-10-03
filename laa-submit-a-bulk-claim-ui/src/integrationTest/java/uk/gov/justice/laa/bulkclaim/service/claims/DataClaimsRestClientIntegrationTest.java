@@ -78,7 +78,7 @@ class DataClaimsRestClientIntegrationTest extends MockServerIntegrationTest {
 
       // When
       Mono<ResponseEntity<CreateBulkSubmission201Response>> upload =
-          dataClaimsRestClient.upload(file, "test-user");
+          dataClaimsRestClient.upload(file, "test-user", List.of("ABC123"));
       ResponseEntity<CreateBulkSubmission201Response> block = upload.block();
       CreateBulkSubmission201Response result = block.getBody();
       String locationHeader = block.getHeaders().getFirst(HttpHeaders.LOCATION);
@@ -102,7 +102,9 @@ class DataClaimsRestClientIntegrationTest extends MockServerIntegrationTest {
           .respond(response().withStatusCode(400).withHeader("Content-Type", "application/json"));
 
       // When
-      assertThrows(BadRequest.class, () -> dataClaimsRestClient.upload(file, "test-user").block());
+      assertThrows(
+          BadRequest.class,
+          () -> dataClaimsRestClient.upload(file, "test-user", List.of("ABC123")).block());
     }
 
     @Test
@@ -117,7 +119,8 @@ class DataClaimsRestClientIntegrationTest extends MockServerIntegrationTest {
 
       // When
       assertThrows(
-          Unauthorized.class, () -> dataClaimsRestClient.upload(file, "test-user").block());
+          Unauthorized.class,
+          () -> dataClaimsRestClient.upload(file, "test-user", List.of("ABC123")).block());
     }
 
     @Test
@@ -131,7 +134,9 @@ class DataClaimsRestClientIntegrationTest extends MockServerIntegrationTest {
           .respond(response().withStatusCode(403).withHeader("Content-Type", "application/json"));
 
       // When
-      assertThrows(Forbidden.class, () -> dataClaimsRestClient.upload(file, "test-user").block());
+      assertThrows(
+          Forbidden.class,
+          () -> dataClaimsRestClient.upload(file, "test-user", List.of("ABC123")).block());
     }
 
     @Test
@@ -146,7 +151,8 @@ class DataClaimsRestClientIntegrationTest extends MockServerIntegrationTest {
 
       // When
       assertThrows(
-          InternalServerError.class, () -> dataClaimsRestClient.upload(file, "test-user").block());
+          InternalServerError.class,
+          () -> dataClaimsRestClient.upload(file, "test-user", List.of("ABC123")).block());
     }
   }
 
@@ -188,7 +194,9 @@ class DataClaimsRestClientIntegrationTest extends MockServerIntegrationTest {
       LocalDate to = LocalDate.of(2025, 8, 31);
 
       SubmissionsResultSet response =
-          dataClaimsRestClient.search(offices, submissionId, from, to).block(Duration.ofSeconds(2));
+          dataClaimsRestClient
+              .search(offices, submissionId, from, to, 0, 10)
+              .block(Duration.ofSeconds(2));
       assertThat(response.toString()).isNotEmpty();
       assertThat(response.getContent().getFirst().getSubmissionId().toString())
           .isEqualTo(expectedSubmissionId);

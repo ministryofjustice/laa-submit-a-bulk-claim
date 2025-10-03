@@ -38,7 +38,9 @@ public interface DataClaimsRestClient {
    */
   @PostExchange(value = "/bulk-submissions", contentType = MediaType.MULTIPART_FORM_DATA_VALUE)
   Mono<ResponseEntity<CreateBulkSubmission201Response>> upload(
-      @RequestPart("file") MultipartFile file, @RequestParam(required = true) String userId)
+      @RequestPart("file") MultipartFile file,
+      @RequestParam(required = true) String userId,
+      @RequestParam(required = true) List<String> offices)
       throws WebClientResponseException;
 
   /**
