@@ -1,9 +1,4 @@
 services:
- # app:
-  #  build:
-  #   context: .
-  # ports:
-  #   - "8082:8082"
   claim-service:
     image: wiremock/wiremock:latest
     container_name: claim-service
@@ -19,3 +14,8 @@ services:
     restart: always
     ports:
       - "8091:8080"
+  # Follow guidance here to run this service via docker: https://github.com/ministryofjustice/laa-oidc-mock-server?tab=readme-ov-file#running-the-server-via-docker
+  laa-mock-oidc-service:
+    image: laa-oidc-mock-server:latest
+    ports:
+      - "9000:9000"
