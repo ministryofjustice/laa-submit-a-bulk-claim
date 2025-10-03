@@ -31,6 +31,9 @@ dependencies {
 
     implementation 'uk.gov.justice.laa.datastewardship.payments:data-claims-api-models:0f57254'
 
+    //Common exception handling
+    implementation 'uk.gov.laa.springboot:laa-spring-boot-starter-application-exception'
+
     implementation 'org.springframework.boot:spring-boot-starter-cache'
     implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
     implementation 'org.springframework.boot:spring-boot-starter-security'
