@@ -4,6 +4,7 @@ import static uk.gov.justice.laa.bulkclaim.constants.SessionConstants.SUBMISSION
 import static uk.gov.justice.laa.bulkclaim.constants.SessionConstants.SUBMISSION_ID;
 import static uk.gov.justice.laa.bulkclaim.constants.SessionConstants.UPLOADED_FILENAME;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import java.time.LocalDateTime;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -17,12 +18,15 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.support.SessionStatus;
+import org.springframework.web.reactive.function.client.WebClientResponseException;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import uk.gov.justice.laa.bulkclaim.client.DataClaimsRestClient;
 import uk.gov.justice.laa.bulkclaim.dto.FileUploadForm;
+import uk.gov.justice.laa.bulkclaim.util.OidcAttributeUtils;
 import uk.gov.justice.laa.bulkclaim.validation.BulkImportFileValidator;
 import uk.gov.justice.laa.bulkclaim.validation.BulkImportFileVirusValidator;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.CreateBulkSubmission201Response;
+import uk.gov.laa.springboot.exception.ApplicationException;
 
 /** Controller for handling the bulk upload requests. */
 @Slf4j
@@ -35,6 +39,7 @@ public class BulkImportController {
   private final BulkImportFileValidator bulkImportFileValidator;
   private final BulkImportFileVirusValidator bulkImportFileVirusValidator;
   private final DataClaimsRestClient dataClaimsRestClient;
+  private final OidcAttributeUtils oidcAttributeUtils;
 
   /**
    * Renders the upload page.
@@ -62,13 +67,11 @@ public class BulkImportController {
    * Performs a bulk upload for the given file.
    *
    * @param fileUploadForm the file to be uploaded
-   * @param model the model to be populated with data
    * @param oidcUser the authenticated user principal
    * @return the submission page
    */
   @PostMapping("/upload")
   public String performUpload(
-      Model model,
       @ModelAttribute(FILE_UPLOAD_FORM_MODEL_ATTR) FileUploadForm fileUploadForm,
       BindingResult bindingResult,
       @AuthenticationPrincipal OidcUser oidcUser,
@@ -87,7 +90,10 @@ public class BulkImportController {
     try {
       ResponseEntity<CreateBulkSubmission201Response> responseEntity =
           dataClaimsRestClient
-              .upload(fileUploadForm.file(), oidcUser.getPreferredUsername())
+              .upload(
+                  fileUploadForm.file(),
+                  oidcUser.getPreferredUsername(),
+                  oidcAttributeUtils.getUserOffices(oidcUser))
               .block();
       CreateBulkSubmission201Response bulkSubmissionResponse = responseEntity.getBody();
       log.info(
@@ -99,6 +105,21 @@ public class BulkImportController {
           UPLOADED_FILENAME, fileUploadForm.file().getOriginalFilename());
       redirectAttributes.addFlashAttribute(SUBMISSION_DATE_TIME, LocalDateTime.now());
       return "redirect:/import-in-progress";
+    } catch (WebClientResponseException e) {
+      try {
+        ApplicationException error =
+            new ObjectMapper().readValue(e.getResponseBodyAsString(), ApplicationException.class);
+
+        log.error("API upload failed: {}", error.getErrorMessage());
+
+        bindingResult.rejectValue("file", "api.error", error.getErrorMessage());
+      } catch (Exception parseEx) {
+        log.error("Failed to upload file to Claims API with message: {}", e.getMessage());
+        bindingResult.reject("bulkImport.validation.uploadFailed");
+      }
+
+      return showErrorOnUpload(fileUploadForm, bindingResult, redirectAttributes);
+
     } catch (Exception e) {
       log.error("Failed to upload file to Claims API with message: {}", e.getMessage());
       bindingResult.reject("bulkImport.validation.uploadFailed");
