@@ -85,59 +85,8 @@
 
         <!--Claim details information-->
         <th:block th:if="${navTab.toString() == 'CLAIM_DETAILS'}">
-          <div class="govuk-grid-column-two-thirds">
-            <h2 class="govuk-heading-l" id="claims" th:text="#{viewSubmission.claims.subHeading}"/>
-            <table class="govuk-table">
-              <caption class="govuk-table__caption govuk-table__caption--m"
-                       th:text="#{viewSubmission.claims.submissionCosts.caption}"/>
-              <thead class="govuk-table__head">
-              <tr class="govuk-table__row">
-                <th scope="col" class="govuk-table__header"
-                    th:text="#{viewSubmission.claims.submissionCosts.tableHeader.name}"/>
-                <th scope="col" class="govuk-table__header"
-                    th:text="#{viewSubmission.claims.submissionCosts.tableHeader.claimed}"/>
-              </tr>
-              </thead>
-              <tbody class="govuk-table__body">
-              <tr class="govuk-table__row">
-                <th scope="row" class="govuk-table__header"
-                    th:text="#{viewSubmission.claims.submissionCosts.profitCosts}"/>
-                <td class="govuk-table__cell"
-                    id="profit-costs-value"
-                    th:text="${@currencyUtil.toString(claimDetails.costsSummary.profitCosts)}"/>
-              </tr>
-              <tr class="govuk-table__row">
-                <th scope="row" class="govuk-table__header"
-                    th:text="#{viewSubmission.claims.submissionCosts.disbursements}"/>
-                <td class="govuk-table__cell"
-                    id="disbursements-value"
-                    th:text="${@currencyUtil.toString(claimDetails.costsSummary.disbursements)}"/>
-              </tr>
-              <tr class="govuk-table__row">
-                <th scope="row" class="govuk-table__header"
-                    th:text="#{viewSubmission.claims.submissionCosts.additionalPayments}"/>
-                <td class="govuk-table__cell"
-                    id="additional-payments-costs-value"
-                    th:text="${@currencyUtil.toString(claimDetails.costsSummary.additionalPayments)}"/>
-              </tr>
-              <tr class="govuk-table__row">
-                <th scope="row" class="govuk-table__header"
-                    th:text="#{viewSubmission.claims.submissionCosts.fixedFee}"/>
-                <td class="govuk-table__cell"
-                    id="fixed-fee-value"
-                    th:text="${@currencyUtil.toString(claimDetails.costsSummary.fixedFee)}"/>
-              </tr>
-              <tr class="govuk-table__row">
-                <th scope="row" class="govuk-table__header"
-                    th:text="#{viewSubmission.claims.submissionCosts.submissionValue}"/>
-                <td class="govuk-table__cell"
-                    id="submission-value"
-                    th:text="${@currencyUtil.toString(claimDetails.costsSummary.submissionValue)}"/>
-              </tr>
-              </tbody>
-            </table>
-          </div>
           <div class="govuk-grid-column-full">
+            <h2 class="govuk-heading-l" id="claims" th:text="#{viewSubmission.claims.subHeading}"/>
 
             <div class="moj-scrollable-pane">
               <table class="govuk-table" data-module="moj-sortable-table">

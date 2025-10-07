@@ -1,12 +1,10 @@
 package uk.gov.justice.laa.bulkclaim.builder;
 
-import java.math.BigDecimal;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import reactor.core.publisher.Mono;
 import uk.gov.justice.laa.bulkclaim.client.DataClaimsRestClient;
-import uk.gov.justice.laa.bulkclaim.dto.submission.SubmissionCostsSummary;
 import uk.gov.justice.laa.bulkclaim.dto.submission.claim.SubmissionClaimRow;
 import uk.gov.justice.laa.bulkclaim.dto.submission.claim.SubmissionClaimsDetails;
 import uk.gov.justice.laa.bulkclaim.mapper.SubmissionClaimRowMapper;
@@ -65,43 +63,16 @@ public class SubmissionClaimDetailsBuilder {
                         x.block().getT1(), x.block().getT2()))
             .toList();
 
-    BigDecimal totalProfitCosts =
-        submissionClaimRows.stream()
-            .map(x -> x.costsDetails().netProfitCostsAmount())
-            .reduce(BigDecimal.ZERO, BigDecimal::add);
-    BigDecimal disbursements =
-        submissionClaimRows.stream()
-            .map(x -> x.costsDetails().netDisbursementAmount())
-            .reduce(BigDecimal.ZERO, BigDecimal::add);
-    BigDecimal additionalPayments =
-        submissionClaimRows.stream()
-            .map(x -> x.costsDetails().additionalCosts())
-            .reduce(BigDecimal.ZERO, BigDecimal::add);
-    BigDecimal submissionValue =
-        submissionClaimRows.stream()
-            .map(x -> x.costsDetails().claimValue())
-            .reduce(BigDecimal.ZERO, BigDecimal::add);
-
-    // Add to the cost summary using claims
-    SubmissionCostsSummary costSummary =
-        new SubmissionCostsSummary(
-            totalProfitCosts,
-            disbursements,
-            additionalPayments,
-            // TODO: Where is fixed fee from?
-            BigDecimal.ZERO,
-            submissionValue);
-
     int totalClaims = submissionClaimRows.size();
     int safeSize = size > 0 ? size : totalClaims;
     int maxPageIndex =
         safeSize == 0 ? 0 : Math.max((int) Math.ceil((double) totalClaims / safeSize) - 1, 0);
-    int safePage = Math.min(Math.max(page, 0), maxPageIndex);
+    int safePage = Math.clamp(page, 0, maxPageIndex);
     int fromIndex = Math.min(safePage * safeSize, totalClaims);
     int toIndex = Math.min(fromIndex + safeSize, totalClaims);
     List<SubmissionClaimRow> pagedClaims = submissionClaimRows.subList(fromIndex, toIndex);
 
     return new SubmissionClaimsDetails(
-        costSummary, pagedClaims, paginationUtil.from(safePage, safeSize, totalClaims));
+        pagedClaims, paginationUtil.from(safePage, safeSize, totalClaims));
   }
 }

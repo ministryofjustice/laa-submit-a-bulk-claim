@@ -33,7 +33,6 @@ import uk.gov.justice.laa.bulkclaim.builder.SubmissionMatterStartsDetailsBuilder
 import uk.gov.justice.laa.bulkclaim.builder.SubmissionSummaryBuilder;
 import uk.gov.justice.laa.bulkclaim.client.DataClaimsRestClient;
 import uk.gov.justice.laa.bulkclaim.config.WebMvcTestConfig;
-import uk.gov.justice.laa.bulkclaim.dto.submission.SubmissionCostsSummary;
 import uk.gov.justice.laa.bulkclaim.dto.submission.SubmissionMatterStartsDetails;
 import uk.gov.justice.laa.bulkclaim.dto.submission.SubmissionMatterStartsRow;
 import uk.gov.justice.laa.bulkclaim.dto.submission.SubmissionSummary;
@@ -100,16 +99,7 @@ class SubmissionDetailControllerTest {
                   "Legal aid",
                   OffsetDateTime.of(2025, 1, 1, 10, 10, 10, 0, ZoneOffset.UTC)));
       when(submissionClaimDetailsBuilder.build(any(), anyInt(), anyInt()))
-          .thenReturn(
-              new SubmissionClaimsDetails(
-                  new SubmissionCostsSummary(
-                      new BigDecimal("100.00"),
-                      new BigDecimal("100.50"),
-                      new BigDecimal("100.85"),
-                      new BigDecimal("100.90"),
-                      new BigDecimal("123.45")),
-                  Collections.emptyList(),
-                  pagination));
+          .thenReturn(new SubmissionClaimsDetails(Collections.emptyList(), pagination));
       // When / Then
       assertThat(
               mockMvc.perform(
@@ -142,16 +132,7 @@ class SubmissionDetailControllerTest {
                   "Legal aid",
                   OffsetDateTime.of(2025, 1, 1, 10, 10, 10, 0, ZoneOffset.UTC)));
       when(submissionClaimDetailsBuilder.build(any(), anyInt(), anyInt()))
-          .thenReturn(
-              new SubmissionClaimsDetails(
-                  new SubmissionCostsSummary(
-                      new BigDecimal("100.00"),
-                      new BigDecimal("100.50"),
-                      new BigDecimal("100.85"),
-                      new BigDecimal("100.90"),
-                      new BigDecimal("123.45")),
-                  Collections.emptyList(),
-                  pagination));
+          .thenReturn(new SubmissionClaimsDetails(Collections.emptyList(), pagination));
       // When / Then
       assertThat(
               mockMvc.perform(
