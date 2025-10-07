@@ -40,6 +40,7 @@ public class BulkImportController {
   private final BulkImportFileVirusValidator bulkImportFileVirusValidator;
   private final DataClaimsRestClient dataClaimsRestClient;
   private final OidcAttributeUtils oidcAttributeUtils;
+  private final ObjectMapper objectMapper;
 
   /**
    * Renders the upload page.
@@ -108,10 +109,9 @@ public class BulkImportController {
     } catch (WebClientResponseException e) {
       try {
         ApplicationException error =
-            new ObjectMapper().readValue(e.getResponseBodyAsString(), ApplicationException.class);
+            objectMapper.readValue(e.getResponseBodyAsString(), ApplicationException.class);
 
         log.error("API upload failed: {}", error.getErrorMessage());
-
         bindingResult.rejectValue("file", "api.error", error.getErrorMessage());
       } catch (Exception parseEx) {
         log.error("Failed to upload file to Claims API with message: {}", e.getMessage());
