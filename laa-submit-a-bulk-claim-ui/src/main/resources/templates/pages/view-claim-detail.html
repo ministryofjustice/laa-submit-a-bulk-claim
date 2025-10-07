@@ -21,11 +21,11 @@
             <!--/*@thymesVar id="navTab" type="uk.gov.justice.laa.bulkclaim.constants.ViewClaimNavigationTab"*/-->
             <li class="moj-sub-navigation__item">
               <a class="moj-sub-navigation__link"
-                 th:with="isCurrent=${navTab.toString() == 'CLAIM_DETAILS'},
-                  url=@{/view-claim-detail(navTab='CLAIM_DETAILS')}"
+                 th:with="isCurrent=${navTab.toString() == 'FEE_CALCULATION'},
+                  url=@{/view-claim-detail(navTab='FEE_CALCULATION')}"
                  th:attr="aria-current=${isCurrent ? 'page' : null}"
-                 th:href="${isCurrent ? '#claims' : url}"
-                 th:text="#{viewClaim.claimDetails.subheading}"/>
+                 th:href="${isCurrent ? '#matter-starts' : url}"
+                 th:text="#{viewClaim.feeCalculation.subheading}"/>
             </li>
 
             <li class="moj-sub-navigation__item">
@@ -35,15 +35,6 @@
                  th:attr="aria-current=${isCurrent ? 'page' : null}"
                  th:href="${isCurrent ? '#claim-errors' : url}"
                  th:text="#{viewClaim.claimMessages.subheading}"/>
-            </li>
-
-            <li class="moj-sub-navigation__item">
-              <a class="moj-sub-navigation__link"
-                 th:with="isCurrent=${navTab.toString() == 'FEE_CALCULATION'},
-                  url=@{/view-claim-detail(navTab='FEE_CALCULATION')}"
-                 th:attr="aria-current=${isCurrent ? 'page' : null}"
-                 th:href="${isCurrent ? '#matter-starts' : url}"
-                 th:text="#{viewClaim.feeCalculation.subheading}"/>
             </li>
 
           </ul>

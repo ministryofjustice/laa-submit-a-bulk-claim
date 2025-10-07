@@ -6,7 +6,6 @@ package uk.gov.justice.laa.bulkclaim.constants;
  * @author Jamie Briggs
  */
 public enum ViewClaimNavigationTab {
+  FEE_CALCULATION,
   CLAIM_MESSAGES,
-  CLAIM_DETAILS,
-  FEE_CALCULATION
 }

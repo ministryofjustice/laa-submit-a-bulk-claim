@@ -11,9 +11,9 @@ import uk.gov.justice.laa.dstew.payments.claimsdata.model.ClaimResponse;
  * @author Jamie Briggs
  */
 @Mapper(componentModel = "spring")
-public interface SubmissionClaimDetailsMapper {
+public interface ClaimFeeDetailsMapper {
 
-  SubmissionClaimDetails toSubmissionClaimDetails(ClaimResponse claimFields);
-
-  SubmissionClaimFeeCalculationDetails toFeeCalculationDetails(ClaimResponse claimFields);
+  // TODO: Add new calculated fee details to the claim response object and map. This method
+  //  technically maps the submitted details.
+  SubmissionClaimFeeCalculationDetails toSubmittedFeeDetails(ClaimResponse claimFields);
 }
