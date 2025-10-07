@@ -12,15 +12,8 @@
         <div class="govuk-grid-column-full">
           <div th:replace="~{fragments/error-components :: error-summary}"/>
         </div>
-        <div class="govuk-grid-column-one-half">
+        <div class="govuk-grid-column-full" data-component="laa-print-button">
           <h1 class="govuk-heading-l" th:text="#{search.title}"></h1>
-        </div>
-        <div class="govuk-grid-column-one-half govuk-!-text-align-right">
-          <button type="button" class="govuk-button govuk-button--secondary"
-                  data-module="govuk-button" id="print-button"
-                  onclick="window.print()">
-            Print this page
-          </button>
         </div>
 
         <div class="govuk-grid-column-full">
