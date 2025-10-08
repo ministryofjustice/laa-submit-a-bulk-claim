@@ -1,154 +1,152 @@
 # Submit a Bulk Claim
-[![Ministry of Justice Repository Compliance Badge](https://github-community.service.justice.gov.uk/repository-standards/api/laa-cwa-bulk-upload/badge)](https://github-community.service.justice.gov.uk/repository-standards/laa-cwa-bulk-upload)
+[![Ministry of Justice Repository Compliance Badge](https://github-community.service.justice.gov.uk/repository-standards/api/laa-submit-a-bulk-claim/badge)](https://github-community.service.justice.gov.uk/repository-standards/laa-cwa-bulk-upload)
 
-A Spring Boot web application for securely uploading bulk claim files to the Legal Aid Agency. The application provides a user-friendly interface for file uploads, provider selection, virus scanning, and result tracking.
+Submit a Bulk Claim is a Spring Boot web application that enables Legal Aid Agency providers to upload and track claims in bulk. 
+The service authenticates users via Sign into LAA Services (SILAS), orchestrates validation and processing through the Data Stewardship `data-claims-api`, and surfaces submission feedback through a lightweight web UI.
 
 ## Table of Contents
-
-- [Features](#features)
+- [Overview](#overview)
+- [Key Capabilities](#key-capabilities)
+- [Integrations](#integrations)
 - [Architecture](#architecture)
-- [Technologies](#technologies)
-- [Getting Started](#getting-started)
+- [Tech Stack](#tech-stack)
+- [Local Development](#local-development)
   - [Prerequisites](#prerequisites)
-  - [Build](#build)
-  - [Wiremock](#wiremock)
-  - [Local Application Properties](#local-application-properties)
-  - [Run](#run)
+  - [Configure External Dependencies](#configure-external-dependencies)
+  - [Run the Application](#run-the-application)
   - [Configuration](#configuration)
-- [Usage](#usage)
 - [Testing](#testing)
+- [Deployment](#deployment)
+- [Tooling & Conventions](#tooling--conventions)
+- [Documentation](#documentation)
 - [Project Structure](#project-structure)
 - [Contributing](#contributing)
 - [License](#license)
 
----
+## Overview
+- Securely capture, validate, and submit bulk claims for providers authorised via SILAS.
+- Surface submission progress, validation results, and historic uploads via search workflows.
+- Integrate with downstream services through client libraries generated from the `data-claims-api`.
 
-## Features
+## Key Capabilities
+- Guided bulk file upload with validation, virus scanning, and provider scoping.
+- In-progress polling for submission status as the Data Stewardship platform processes files.
+- Search and pagination for previous submissions with detailed status and error summaries.
+- Role-aware error handling and feedback aligned to GOV.UK design guidance.
 
-- **Secure File Upload:** Upload files with size and format validation.
-- **Virus Scanning:** All files are scanned for viruses before processing.
-- **Provider Selection:** Users must select a provider before uploading.
-- **Error Handling:** User-friendly error messages for all validation and system errors.
-- **Upload Summary:** View results and errors for each upload.
-- **Search:** Search for previous uploads by file reference.
-- **Role-based Access:** Handles forbidden access and error scenarios gracefully.
+## Integrations
+- **SILAS (Sign into LAA Services)** – Production authentication relies on Azure AD SILAS tenants. Locally, use the [laa-oidc-mock-server](https://github.com/ministryofjustice/laa-oidc-mock-server) to emulate SILAS OIDC flows.
+- **Data Stewardship `data-claims-api`** – REST client (`DataClaimsRestClient`) fetches submission summaries, claim details, and validation messages. Data transfer objects are supplied via the shared data stewardship model packages.
+- **WireMock stubs** – Local testing depends on WireMock mappings in `wiremock/mappings` to simulate Data Stewardship responses and avoid touching live infrastructure.
+- **MapStruct mappers** – DTOs are mapped to UI view models via MapStruct components in `laa-submit-a-bulk-claim-ui/src/main/java/uk/gov/justice/laa/bulkclaim/mapper`.
 
 ## Architecture
+- **Presentation layer** – Spring MVC controllers orchestrate upload (`BulkImportController`), polling (`BulkImportInProgressController`), search (`SearchController`), and detail pages.
+- **Service and helper layer** – Validators, pagination helpers, and OIDC utilities encapsulate business rules and session handling.
+- **Clients** – Declarative Spring `@HttpExchange` clients wrap the Data Stewardship API with non-blocking WebClient calls.
+- **View templates** – Thymeleaf templates render forms, dashboards, and error states.
+- **Security** – Spring Security OIDC handles SILAS authentication; client credentials access the Data Stewardship API.
 
-- **Controller Layer:** Handles HTTP requests and responses.
-- **Service Layer:** Business logic for file upload, virus scanning, and search.
-- **Helper Classes:** Provider population and utility logic.
-- **Thymeleaf Views:** User interface templates for upload, results, and errors.
+## Tech Stack
+- Java 21, Spring Boot, Spring Security, Spring WebFlux clients
+- Thymeleaf, HTMX, and GOV.UK Design System components
+- Gradle build tooling
+- MapStruct for DTO/view-model mapping
+- JUnit 5, MockMvc, and Mockito for automated testing
+- Docker & Docker Compose for local dependencies
 
-## Technologies
-
-- Java 21+
-- Spring Boot
-- Gradle
-- Thymeleaf
-- JUnit 5, MockMvc (testing)
-- Mockito (mocking dependencies)
-- Docker
-
-## Getting Started
+## Local Development
 
 ### Prerequisites
-
-The project uses the `laa-ccms-spring-boot-gradle-plugin`. Please follow the steps in the [laa-ccms-spring-boot-common](https://github.com/ministryofjustice/laa-ccms-spring-boot-common?tab=readme-ov-file#provide-your-repository-credentials) repository to set up your Github Packages credentials locally before building the application.
-
 - Java 21 or higher
-- Gradle (or use the Gradle wrapper)
-- (Optional) Docker for running dependencies
-- Install Docker desktop (https://www.docker.com/products/docker-desktop)
+- Gradle (or use the included Gradle wrapper)
+- Docker Desktop for dependency containers
+- GitHub Packages credentials configured for the [`laa-ccms-spring-boot-gradle-plugin`](https://github.com/ministryofjustice/laa-ccms-spring-boot-common?tab=readme-ov-file#provide-your-repository-credentials)
 
-Ensure you have the following environment variables set for local development:
+### Configure External Dependencies
+1. **Clone the repository**
+   ```sh
+   git clone git@github.com:ministryofjustice/submit-a-bulk-claim.git
+   cd submit-a-bulk-claim
+   ```
+2. **Start Data Stewardship WireMocks**
+   ```sh
+    docker-compose up claim-service
+   ```
+   - WireMock listens on `http://localhost:8091` using stubs from `wiremock/mappings/claim-service`.
+   
 
-### Build
+3. **Run the SILAS OIDC mock**
+   - Follow the [laa-oidc-mock-server](https://github.com/ministryofjustice/laa-oidc-mock-server#running-the-server-via-docker) instructions.
+   - Expose it on `http://localhost:9000` and align issuer/client details with your local Spring profile.
+   
 
-Clone the repository and build the project:
+4. **Environment variables**
+  ```sh
+  export CLAIM_API_URL=http://localhost:8091
+  export CLAIMS_API_ACCESS_TOKEN=dummy-token
+  export REST_CLIENT_CONNECT_TIMEOUT=5000
+  export REST_CLIENT_READ_TIMEOUT=40000
+  export UPLOAD_MAX_FILE_SIZE=10MB
+  export SERVER_MAX_FILE_SIZE=10MB
+  ```
+   - The example access token aligns with the WireMock fixtures; supply a real token when targeting non-mocked environments.
+   - Update `AUTH_*` and `SILAS_*` variables to match either SILAS sandbox credentials or the mock server claims.
 
+### Run the Application
 ```sh
-git clone git@github.com:ministryofjustice/submit-a-bulk-claim.git
-cd submit-a-bulk-claim
-./gradlew clean build
+./gradlew clean bootRun
 ```
-### Wiremock
-```
-export WIREMOCK_PORT=8090
-export WIREMOCK_HOST=localhost
-```
-All Wiremock stubs are located in `src/wiremock/mappings/cwa-service`
-Before running the application, ensure Wiremock is running on port 8090.
-You can start it using Docker compose  : `docker-compose up` (from the root of the project)
-Ensure cwa-api.url in your local application yaml is set to 'http://localhost:8090' to point to wiremock.
-
-### Local Application Properties
-```
-export CWA_API_URL=http://localhost:8090
-```
-
-### Run
-
-Start the application locally:
-
-```sh
-./gradlew bootRun
-```
-
-The app will be available at [http://localhost:8082](http://localhost:8082).
+- The UI is served on `http://localhost:8082`.
+- Management endpoints are exposed on `http://localhost:8083`.
+- Use `SPRING_PROFILES_ACTIVE=local` if you maintain separate local overrides.
 
 ### Configuration
-
-You can configure the maximum upload file size and other properties in `src/main/resources/application.properties`:
-
-```
-upload-max-file-size=10MB
-```
-
-Other configuration options (e.g., CWA API endpoints, authentication) can be added as needed.
-
-## Usage
-
-1. **Open the application** in your browser at [http://localhost:8082](http://localhost:8082).
-2. **Select a provider** from the dropdown.
-3. **Choose a file** to upload (must be under the configured size limit and virus-free).
-4. **Submit the form** to upload.
-5. **View the results** or any error messages.
-6. **Search** for previous uploads using the file reference and provider.
+- Default configuration lives in `laa-submit-a-bulk-claim-ui/src/main/resources/application.yaml`.
+- Override secrets via environment variables or Spring profiles. Kubernetes deployments source them from `laa-submit-a-bulk-claim-secrets` (see `helm-chart/values.yaml`).
+- Upload limits can be adjusted with `UPLOAD_MAX_FILE_SIZE` and `SERVER_MAX_FILE_SIZE`.
 
 ## Testing
-
-Run all unit and integration tests:
-
 ```sh
 ./gradlew test
 ```
+- Controller and service layers are covered with MockMvc and unit tests.
+- WireMock supports integration-style tests against Data Stewardship flows.
+- Add new tests alongside changes to maintain coverage.
 
-Test coverage includes:
+## Deployment
+- GitHub Actions pipelines under `.github/workflows` build, scan, and publish Docker images.
+  - `build-main.yml` tags merged changes on `main` and publishes artifacts.
+  - `deploy-main.yml` produces release images, pushes to ECR, and triggers helm deployments.
+- Kubernetes manifests are defined in `helm-chart/` with environment-specific overrides under `helm-chart/values/`.
+- Deployments run on the MoJ Cloud Platform with ModSec ingress and pod security settings defined in chart values.
 
-- Controller logic (file upload, error handling, search)
-- Service layer (mocked in controller tests)
-- Validation and error scenarios
+## Tooling & Conventions
+- Follows MoJ coding standards; repository badge indicates compliance.
+- Formatting and linting are inherited from shared Gradle conventions (`laa-ccms-spring-boot-gradle-plugin`).
+- MapStruct mappers are generated at compile time; rebuild when DTOs change (`./gradlew clean assemble`).
+
+## Documentation
+- High-level flow diagrams are available in [`docs/flows`](docs/flows):
+  - [`bulk-upload-flow.md`](docs/flows/bulk-upload-flow.md)
+  - [`search-flow.md`](docs/flows/search-flow.md)
+  - [`submission-detail-flow.md`](docs/flows/submission-detail-flow.md)
+- Extend this folder with additional operational or support documentation as needed.
 
 ## Project Structure
-
-- `src/main/java/uk/gov/justice/laa/bulkclaim/controller` — Web controllers
-- `src/main/java/uk/gov/justice/laa/bulkclaim/service` — Business logic and services
-- `src/main/java/uk/gov/justice/laa/bulkclaim/helper` — Helper and utility classes
-- `src/main/resources/templates` — Thymeleaf HTML templates
-- `src/test/java/uk/gov/justice/laa/bulkclaim/controller` — Controller tests
+- `laa-submit-a-bulk-claim-ui/src/main/java/uk/gov/justice/laa/bulkclaim/controller` – Web controllers for upload, polling, search, and detail views.
+- `laa-submit-a-bulk-claim-ui/src/main/java/uk/gov/justice/laa/bulkclaim/service` – Business services and helpers.
+- `laa-submit-a-bulk-claim-ui/src/main/java/uk/gov/justice/laa/bulkclaim/client` – Web clients for Data Stewardship APIs.
+- `laa-submit-a-bulk-claim-ui/src/main/java/uk/gov/justice/laa/bulkclaim/mapper` – MapStruct mappers translating API responses to view models.
+- `laa-submit-a-bulk-claim-ui/src/main/resources/templates` – Thymeleaf views.
+- `wiremock/mappings` – Local stubs for dependent APIs.
+- `helm-chart/` – Helm chart used by GitHub Actions deploy workflows.
 
 ## Contributing
-
-Pull requests are welcome! Please:
-
-- Fork the repository and create a feature branch.
-- Write clear, concise commit messages.
-- Add or update tests for new features or bug fixes.
-- Ensure all tests pass before submitting a PR.
+- Create a feature branch from `main`.
+- Write clear commit messages and include tests for new behaviour.
+- Ensure `./gradlew test` passes before raising a pull request.
+- Follow the MoJ pull request template and tagging policy where applicable.
 
 ## License
-
 [MIT](LICENSE)
-```
-This README provides a comprehensive overview for developers and users. Adjust project-specific details as needed.
