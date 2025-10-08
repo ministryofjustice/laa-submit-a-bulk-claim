@@ -111,7 +111,9 @@ public final class ClaimDetailController {
 
   private void addFeeCalculationDetails(Model model, ClaimResponse claimResponse) {
     model.addAttribute(
-        "feeCalculationDetails", claimFeeDetailsMapper.toSubmittedFeeDetails(claimResponse));
+        "feeSubmittedDetails", claimFeeDetailsMapper.toSubmittedFeeDetails(claimResponse));
+    model.addAttribute(
+        "feeCalculationDetails", claimFeeDetailsMapper.toCalculatedFeeDetails(claimResponse));
   }
 
   private void addClaimMessages(Model model, int page, UUID submissionId, UUID claimId) {

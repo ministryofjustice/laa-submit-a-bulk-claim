@@ -24,7 +24,7 @@ import lombok.Builder;
  * @param jrFormFillingAmount the JR form filling amount
  */
 @Builder
-public record SubmissionClaimFeeCalculationDetails(
+public record SubmissionClaimFeeSubmittedDetails(
     BigDecimal totalValue,
     BigDecimal netProfitCostsAmount,
     BigDecimal netDisbursementAmount,
