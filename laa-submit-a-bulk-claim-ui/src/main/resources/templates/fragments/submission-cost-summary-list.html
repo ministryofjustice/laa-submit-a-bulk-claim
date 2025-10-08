@@ -1,0 +1,57 @@
+<!--/*@thymesVar id="costSummaryTable" type="uk.gov.justice.laa.bulkclaim.dto.submission.SubmissionCostsSummary"*/-->
+<table class="govuk-table"
+       th:with="justWarnings=${justWarnings?:false}"
+       th:fragment="summaryTable(costSummaryTable)">
+  <div class="govuk-grid-column-two-thirds">
+    <h2 class="govuk-heading-l" id="claims" th:text="#{viewSubmission.claims.subHeading}"/>
+    <table class="govuk-table">
+      <caption class="govuk-table__caption govuk-table__caption--m"
+               th:text="#{fragments.submissionCosts.caption}"/>
+      <thead class="govuk-table__head">
+      <tr class="govuk-table__row">
+        <th scope="col" class="govuk-table__header"
+            th:text="#{fragments.submissionCosts.tableHeader.name}"/>
+        <th scope="col" class="govuk-table__header"
+            th:text="#{fragments.submissionCosts.tableHeader.costs}"/>
+      </tr>
+      </thead>
+      <tbody class="govuk-table__body">
+      <tr class="govuk-table__row">
+        <th scope="row" class="govuk-table__header"
+            th:text="#{fragments.submissionCosts.profitCosts}"/>
+        <td class="govuk-table__cell"
+            id="profit-costs-value"
+            th:text="${@currencyUtil.toString(costSummaryTable.profitCosts)}"/>
+      </tr>
+      <tr class="govuk-table__row">
+        <th scope="row" class="govuk-table__header"
+            th:text="#{fragments.submissionCosts.disbursements}"/>
+        <td class="govuk-table__cell"
+            id="disbursements-value"
+            th:text="${@currencyUtil.toString(costSummaryTable.disbursements)}"/>
+      </tr>
+      <tr class="govuk-table__row">
+        <th scope="row" class="govuk-table__header"
+            th:text="#{fragments.submissionCosts.additionalPayments}"/>
+        <td class="govuk-table__cell"
+            id="additional-payments-costs-value"
+            th:text="${@currencyUtil.toString(costSummaryTable.additionalPayments)}"/>
+      </tr>
+      <tr class="govuk-table__row">
+        <th scope="row" class="govuk-table__header"
+            th:text="#{fragments.submissionCosts.fixedFee}"/>
+        <td class="govuk-table__cell"
+            id="fixed-fee-value"
+            th:text="${@currencyUtil.toString(costSummaryTable.fixedFee)}"/>
+      </tr>
+      <tr class="govuk-table__row">
+        <th scope="row" class="govuk-table__header"
+            th:text="#{fragments.submissionCosts.submissionValue}"/>
+        <td class="govuk-table__cell"
+            id="submission-value"
+            th:text="${@currencyUtil.toString(costSummaryTable.submissionValue)}"/>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+</table>

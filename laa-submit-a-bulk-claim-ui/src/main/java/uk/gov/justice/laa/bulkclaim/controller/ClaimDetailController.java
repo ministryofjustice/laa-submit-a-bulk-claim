@@ -1,8 +1,8 @@
 package uk.gov.justice.laa.bulkclaim.controller;
 
-import static org.springframework.beans.support.PagedListHolder.DEFAULT_PAGE_SIZE;
 import static uk.gov.justice.laa.bulkclaim.constants.SessionConstants.CLAIM_ID;
 import static uk.gov.justice.laa.bulkclaim.constants.SessionConstants.SUBMISSION_ID;
+import static uk.gov.justice.laa.bulkclaim.constants.ViewClaimNavigationTab.CLAIM_MESSAGES;
 
 import jakarta.servlet.http.HttpSession;
 import java.util.UUID;
@@ -20,7 +20,7 @@ import uk.gov.justice.laa.bulkclaim.client.DataClaimsRestClient;
 import uk.gov.justice.laa.bulkclaim.constants.ViewClaimNavigationTab;
 import uk.gov.justice.laa.bulkclaim.dto.submission.claim.ClaimMessagesSummary;
 import uk.gov.justice.laa.bulkclaim.exception.SubmitBulkClaimException;
-import uk.gov.justice.laa.bulkclaim.mapper.SubmissionClaimDetailsMapper;
+import uk.gov.justice.laa.bulkclaim.mapper.ClaimFeeDetailsMapper;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.ClaimResponse;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.ValidationMessageType;
 
@@ -38,7 +38,7 @@ public final class ClaimDetailController {
   private static final int DEFAULT_PAGE_SIZE = 10;
 
   private final DataClaimsRestClient dataClaimsRestClient;
-  private final SubmissionClaimDetailsMapper submissionClaimDetailsMapper;
+  private final ClaimFeeDetailsMapper claimFeeDetailsMapper;
   private final SubmissionClaimMessagesBuilder submissionClaimMessagesBuilder;
 
   /**
@@ -69,7 +69,7 @@ public final class ClaimDetailController {
   public String getClaimDetail(
       Model model,
       @RequestParam(value = "page", defaultValue = "0") final int page,
-      @RequestParam(value = "navTab", required = false, defaultValue = "CLAIM_DETAILS")
+      @RequestParam(value = "navTab", required = false, defaultValue = "FEE_CALCULATION")
           final ViewClaimNavigationTab navigationTab,
       @ModelAttribute(SUBMISSION_ID) final UUID submissionId,
       @ModelAttribute(CLAIM_ID) final UUID claimId) {
@@ -85,10 +85,10 @@ public final class ClaimDetailController {
                             .formatted(claimId.toString(), submissionId.toString())));
     model.addAttribute("ufn", claimResponse.getUniqueFileNumber());
 
-    switch (navigationTab) {
-      case CLAIM_MESSAGES -> addClaimMessages(model, page, submissionId, claimId);
-      case FEE_CALCULATION -> addFeeCalculationDetails(model, claimResponse);
-      default -> addClaimDetails(model, claimResponse);
+    if (CLAIM_MESSAGES.equals(navigationTab)) {
+      addClaimMessages(model, page, submissionId, claimId);
+    } else { // Default fee calculation details
+      addFeeCalculationDetails(model, claimResponse);
     }
 
     model.addAttribute("navTab", navigationTab);
@@ -109,15 +109,9 @@ public final class ClaimDetailController {
     return "redirect:/view-claim-detail?navTab=CLAIM_MESSAGES";
   }
 
-  private void addClaimDetails(Model model, ClaimResponse claimResponse) {
-    model.addAttribute(
-        "claimDetails", submissionClaimDetailsMapper.toSubmissionClaimDetails(claimResponse));
-  }
-
   private void addFeeCalculationDetails(Model model, ClaimResponse claimResponse) {
     model.addAttribute(
-        "feeCalculationDetails",
-        submissionClaimDetailsMapper.toFeeCalculationDetails(claimResponse));
+        "feeCalculationDetails", claimFeeDetailsMapper.toSubmittedFeeDetails(claimResponse));
   }
 
   private void addClaimMessages(Model model, int page, UUID submissionId, UUID claimId) {
