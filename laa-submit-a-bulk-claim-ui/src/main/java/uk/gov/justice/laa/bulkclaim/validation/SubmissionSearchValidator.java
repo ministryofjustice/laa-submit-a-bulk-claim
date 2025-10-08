@@ -86,7 +86,9 @@ public class SubmissionSearchValidator implements Validator {
           SUBMITTED_DATE_TO, "date.range.invalid", "To date must be on or before today.");
     }
 
-    if (submissionId != null && submissionId.length() > 100) {
+    if (submissionId != null
+        && submissionId.length() >= SEARCH_TERM_MIN_LENGTH
+        && submissionId.length() <= SEARCH_TERM_MAX_LENGTH) {
       errors.rejectValue("submissionId", "submissionId.length", "Submission id is too long.");
     }
   }
