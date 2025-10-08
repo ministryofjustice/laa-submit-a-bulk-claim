@@ -197,7 +197,10 @@
             <h2 class="govuk-heading-l" id="matter-starts"
                 th:text="#{viewSubmission.matterStarts.subHeading}"/>
 
-            <dl class="govuk-summary-list">
+            <p class="govuk-body"
+               th:if="${matterStartsDetails.matterTypes().isEmpty()}"
+               th:text="#{viewSubmission.matterStarts.none}"/>
+            <dl class="govuk-summary-list" th:unless="${matterStartsDetails.matterTypes().isEmpty()}">
               <div class="govuk-summary-list__row"
                    th:each="matterStart, idx : ${matterStartsDetails.matterTypes}">
                 <dt class="govuk-summary-list__key"
