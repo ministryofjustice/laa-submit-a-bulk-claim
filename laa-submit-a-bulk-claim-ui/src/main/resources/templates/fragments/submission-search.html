@@ -14,7 +14,7 @@
       <input class="govuk-input" id="submissionId" th:field="*{submissionId}" type="search"
              aria-description="submission id search criteria">
     </div>
-    <fieldset class="govuk-fieldset">
+    <fieldset class="govuk-fieldset" th:with="maxDate=${#dates.format((#dates.createNow().getTime() + 86400000), 'd/M/yyyy')}">
       <legend class="govuk-fieldset__legend govuk-fieldset__legend--s">
         <span th:text="#{search.legend}"></span>
         <div class="govuk-body" th:text="#{search.dateHint}"></div>
@@ -23,7 +23,7 @@
            th:classappend="${#fields.hasErrors('submittedDateFrom')} ? 'govuk-form-group--error'">
         <div class="govuk-date-input__item">
           <div class="moj-datepicker" data-module="moj-date-picker"
-               th:attr="data-max-date=${#dates.format(standardDate, 'dd/M/yyyy')}">
+               th:attr="data-max-date=${maxDate}">
 
             <div class="govuk-form-group">
               <label class="govuk-label" for="submittedDateFrom"
@@ -43,7 +43,7 @@
            th:classappend="${#fields.hasErrors('submittedDateTo')} ? 'govuk-form-group--error'">
         <div class="govuk-date-input__item">
           <div class="moj-datepicker" data-module="moj-date-picker"
-               th:attr="data-max-date=${#dates.format(standardDate, 'dd/M/yyyy')}">
+               th:attr="data-max-date=${maxDate}">
             <div class="govuk-form-group">
               <label class="govuk-label" for="submittedDateTo"
                      th:text="#{search.submittedDateTo.label}">

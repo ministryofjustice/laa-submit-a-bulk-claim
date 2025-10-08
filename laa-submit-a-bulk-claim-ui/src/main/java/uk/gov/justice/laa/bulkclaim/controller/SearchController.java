@@ -67,9 +67,6 @@ public class SearchController {
     if (!model.containsAttribute(SUBMISSION_SEARCH_FORM)) {
       model.addAttribute(SUBMISSION_SEARCH_FORM, new SubmissionsSearchForm(null, null, null));
     }
-    model.addAttribute(
-        "standardDate",
-        LocalDate.now().plusDays(1).format(DateTimeFormatter.ofPattern("M/d/yyyy")));
     sessionStatus.setComplete();
     return "pages/submissions-search";
   }
