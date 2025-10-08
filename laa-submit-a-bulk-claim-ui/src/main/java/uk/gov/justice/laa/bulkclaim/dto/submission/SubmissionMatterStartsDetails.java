@@ -8,4 +8,14 @@ import java.util.Map;
  * @param matterTypes the map of matter starts for the bulk submission
  * @author Jamie Briggs
  */
-public record SubmissionMatterStartsDetails(Map<SubmissionMatterStartsRow, Long> matterTypes) {}
+public record SubmissionMatterStartsDetails(Map<SubmissionMatterStartsRow, Long> matterTypes) {
+
+  /**
+   * Returns the total number of matter starts for the bulk submission.
+   *
+   * @return the total number of matter starts
+   */
+  public long getTotalNumberOfMatterStarts() {
+    return matterTypes.values().stream().mapToLong(l -> l).sum();
+  }
+}
