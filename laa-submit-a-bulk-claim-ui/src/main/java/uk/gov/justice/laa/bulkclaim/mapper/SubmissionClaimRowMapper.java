@@ -35,6 +35,12 @@ public interface SubmissionClaimRowMapper {
   @Mapping(target = "totalMessages", source = "totalMessages")
   SubmissionClaimRow toSubmissionClaimRow(ClaimResponse claimFields, int totalMessages);
 
+  /**
+   * Maps the FeeCalculationType to a human readable string.
+   *
+   * @param feeCalculationType The FeeCalculationType to map.
+   * @return The mapped FeeCalculationType string.
+   */
   @Named("toFeeType")
   default String toFeeType(final FeeCalculationType feeCalculationType) {
     // Convert to sentence case
