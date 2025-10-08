@@ -7,7 +7,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import uk.gov.justice.laa.bulkclaim.dto.submission.claim.SubmissionClaimFeeCalculationDetails;
+import uk.gov.justice.laa.bulkclaim.dto.submission.claim.SubmissionClaimFeeSubmittedDetails;
 import uk.gov.justice.laa.bulkclaim.helper.TestObjectCreator;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.ClaimResponse;
 
@@ -28,7 +28,7 @@ class ClaimFeeDetailsMapperTest {
     // Given
     ClaimResponse claimResponse = TestObjectCreator.buildClaimResponse();
     // When
-    SubmissionClaimFeeCalculationDetails result = mapper.toSubmittedFeeDetails(claimResponse);
+    SubmissionClaimFeeSubmittedDetails result = mapper.toSubmittedFeeDetails(claimResponse);
     // Then
     SoftAssertions.assertSoftly(
         softAssertions -> {

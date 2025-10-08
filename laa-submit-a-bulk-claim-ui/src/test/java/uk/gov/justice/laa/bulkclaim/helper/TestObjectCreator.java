@@ -4,7 +4,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.UUID;
 import uk.gov.justice.laa.bulkclaim.dto.submission.claim.SubmissionClaimDetails;
-import uk.gov.justice.laa.bulkclaim.dto.submission.claim.SubmissionClaimFeeCalculationDetails;
+import uk.gov.justice.laa.bulkclaim.dto.submission.claim.SubmissionClaimFeeSubmittedDetails;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.ClaimResponse;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.ClaimStatus;
 
@@ -213,9 +213,9 @@ public final class TestObjectCreator {
         .build();
   }
 
-  public static SubmissionClaimFeeCalculationDetails buildFeeCalculationDetails() {
+  public static SubmissionClaimFeeSubmittedDetails buildFeeCalculationDetails() {
 
-    return SubmissionClaimFeeCalculationDetails.builder()
+    return SubmissionClaimFeeSubmittedDetails.builder()
         .totalValue(new BigDecimal("1234.56"))
         .adviceTime(6)
         .travelTime(7)

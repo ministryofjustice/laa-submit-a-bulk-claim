@@ -12,6 +12,8 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.justice.laa.bulkclaim.dto.submission.claim.SubmissionClaimRow;
 import uk.gov.justice.laa.bulkclaim.dto.submission.claim.SubmissionClaimRowCostsDetails;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.ClaimResponse;
+import uk.gov.justice.laa.dstew.payments.claimsdata.model.FeeCalculationPatch;
+import uk.gov.justice.laa.dstew.payments.claimsdata.model.FeeCalculationType;
 
 @DisplayName("Submission claim row mapper test")
 @ExtendWith(SpringExtension.class)
@@ -47,6 +49,11 @@ class SubmissionClaimRowMapperTest {
             // TODO: Fee type is not available on OpenAPI spec.
             // .feeType("Fee type")
             .feeCode("Fee code")
+            .feeCalculationResponse(
+                FeeCalculationPatch.builder()
+                    .feeType(FeeCalculationType.DISBURSEMENT_ONLY)
+                    .feeCode("FC123")
+                    .build())
             .build();
     // When
     SubmissionClaimRow result = mapper.toSubmissionClaimRow(claimResponse, 2);
@@ -65,8 +72,8 @@ class SubmissionClaimRowMapperTest {
           softAssertions
               .assertThat(result.concludedOrClaimedDate())
               .isEqualTo(LocalDate.of(2025, 3, 18));
-          softAssertions.assertThat(result.feeType()).isEqualTo("Fee type");
-          softAssertions.assertThat(result.feeCode()).isEqualTo("Fee code");
+          softAssertions.assertThat(result.feeType()).isEqualTo("Disbursement only");
+          softAssertions.assertThat(result.feeCode()).isEqualTo("FC123");
           softAssertions.assertThat(result.costsDetails()).isNotNull();
           softAssertions.assertThat(result.totalMessages()).isEqualTo(2);
         });
