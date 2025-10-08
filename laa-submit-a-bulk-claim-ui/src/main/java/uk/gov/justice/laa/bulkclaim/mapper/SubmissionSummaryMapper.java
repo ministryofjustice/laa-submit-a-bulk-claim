@@ -27,7 +27,7 @@ public interface SubmissionSummaryMapper {
    * @return The mapped {@link SubmissionSummary}.
    */
   @Mapping(target = "submissionReference", source = "submissionId")
-  @Mapping(target = "areaOfLaw", source = "areaOfLaw", qualifiedByName = "toSentenceCase")
+  @Mapping(target = "areaOfLaw", source = "areaOfLaw")
   @Mapping(target = "officeAccount", source = "officeAccountNumber")
   @Mapping(
       target = "submissionPeriod",
@@ -37,19 +37,6 @@ public interface SubmissionSummaryMapper {
   @Mapping(target = "submitted", source = "submitted")
   @Mapping(target = "submissionValue", constant = "50.52")
   SubmissionSummary toSubmissionSummary(SubmissionResponse submissionResponse);
-
-  /**
-   * Converts a string to sentence case.
-   *
-   * @param input The string to convert.
-   * @return The converted string.
-   */
-  @Named("toSentenceCase")
-  default String toSentenceCase(String input) {
-    return input == null
-        ? null
-        : input.substring(0, 1).toUpperCase() + input.substring(1).toLowerCase();
-  }
 
   /**
    * Maps the {@link SubmissionStatus} to string.

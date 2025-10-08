@@ -70,7 +70,7 @@ class SubmissionSummaryMapperTest {
           softAssertions.assertThat(result.submissionPeriod()).isEqualTo(LocalDate.of(2025, 5, 1));
           softAssertions.assertThat(result.officeAccount()).isEqualTo("1234567890");
           softAssertions.assertThat(result.submissionValue()).isEqualTo(new BigDecimal("50.52"));
-          softAssertions.assertThat(result.areaOfLaw()).isEqualTo("Legal help");
+          softAssertions.assertThat(result.areaOfLaw()).isEqualTo("LEGAL HELP");
           softAssertions
               .assertThat(result.submitted())
               .isEqualTo(OffsetDateTime.of(2025, 1, 1, 0, 0, 0, 0, ZoneOffset.UTC));
