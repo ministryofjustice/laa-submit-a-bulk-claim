@@ -31,13 +31,11 @@ public class SubmissionSearchValidator implements Validator {
     String from = form.submittedDateFrom();
     String to = form.submittedDateTo();
 
-    // Must provide at least one of: submissionId or date range
     if (submissionId == null && StringUtils.isNotEmpty(from) && StringUtils.isNotEmpty(to)) {
       errors.reject("search.empty", "Provide a submission id or a date range.");
       return;
     }
 
-    // Both dates must be provided together if either is present
     if ((StringUtils.isNotEmpty(from)) != (StringUtils.isNotEmpty(to))) {
       errors.rejectValue(
           SUBMITTED_DATE_FROM, "date.range.incomplete", "Both dates must be provided together.");
@@ -50,6 +48,7 @@ public class SubmissionSearchValidator implements Validator {
     LocalDate dateTo = null;
 
     DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("d/M/yyyy");
+
     if (StringUtils.isNotEmpty(from)) {
       try {
         dateFrom = LocalDate.parse(from, dateTimeFormatter);
@@ -68,7 +67,6 @@ public class SubmissionSearchValidator implements Validator {
       }
     }
 
-    // From must not be after To
     if (dateFrom != null && dateTo != null && dateFrom.isAfter(dateTo)) {
       errors.rejectValue(
           SUBMITTED_DATE_FROM, "date.range.invalid", "From date must be on or before To date.");
@@ -76,7 +74,25 @@ public class SubmissionSearchValidator implements Validator {
           SUBMITTED_DATE_TO, "date.range.invalid", "To date must be on or after From date.");
     }
 
-    // Optional conservative guard on submission id size
+    LocalDate maxDate = LocalDate.now().plusDays(1);
+
+    if (dateFrom != null
+        && dateFrom.isBefore(maxDate)) {
+      errors.rejectValue(
+          SUBMITTED_DATE_FROM, "date.range.invalid", "From date must be on or before today.");
+      errors.rejectValue(
+          SUBMITTED_DATE_TO, "date.range.invalid", "To date must be on or before today.");
+    }
+    if (dateFrom != null
+        && dateTo != null
+        && dateFrom.isBefore(maxDate)
+        && dateTo.isBefore(maxDate)) {
+      errors.rejectValue(
+          SUBMITTED_DATE_FROM, "date.range.invalid", "From date must be on or before today.");
+      errors.rejectValue(
+          SUBMITTED_DATE_TO, "date.range.invalid", "To date must be on or before today.");
+    }
+
     if (submissionId != null && submissionId.length() > 100) {
       errors.rejectValue("submissionId", "submissionId.length", "Submission id is too long.");
     }

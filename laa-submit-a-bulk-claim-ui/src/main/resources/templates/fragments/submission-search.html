@@ -23,10 +23,7 @@
            th:classappend="${#fields.hasErrors('submittedDateFrom')} ? 'govuk-form-group--error'">
         <div class="govuk-date-input__item">
           <div class="moj-datepicker" data-module="moj-date-picker"
-               th:attr="data-min-date=#{search.date.min},
-                         data-max-date=#{search.date.max},
-                         data-excluded-dates=#{search.date.excludedDates},
-                         data-excluded-days=#{search.date.excludedDays}">
+               th:attr="data-max-date=${#dates.format(standardDate, 'dd/M/yyyy')}">
 
             <div class="govuk-form-group">
               <label class="govuk-label" for="submittedDateFrom"
@@ -46,11 +43,7 @@
            th:classappend="${#fields.hasErrors('submittedDateTo')} ? 'govuk-form-group--error'">
         <div class="govuk-date-input__item">
           <div class="moj-datepicker" data-module="moj-date-picker"
-               th:attr="data-min-date=#{search.date.min},
-                         data-max-date=#{search.date.max},
-                         data-excluded-dates=#{search.date.excludedDates},
-                         data-excluded-days=#{search.date.excludedDays}"
-          >
+               th:attr="data-max-date=${#dates.format(standardDate, 'dd/M/yyyy')}">
             <div class="govuk-form-group">
               <label class="govuk-label" for="submittedDateTo"
                      th:text="#{search.submittedDateTo.label}">
