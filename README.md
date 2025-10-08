@@ -77,9 +77,10 @@ The service authenticates users via Sign into LAA Services (SILAS), orchestrates
    
 
 3. **Run the SILAS OIDC mock**
-   - Follow the [laa-oidc-mock-server](https://github.com/ministryofjustice/laa-oidc-mock-server#running-the-server-via-docker) instructions.
-   - Expose it on `http://localhost:9000` and align issuer/client details with your local Spring profile.
-   
+   - Included in docker-compose as `laa-mock-oidc-service`.
+     - Exposed on `http://localhost:9000` and align issuer/client details with your local Spring profile.
+   - More details here: [laa-oidc-mock-server](https://github.com/ministryofjustice/laa-oidc-mock-server#running-the-server-via-docker).
+
 
 4. **Environment variables**
   ```sh
