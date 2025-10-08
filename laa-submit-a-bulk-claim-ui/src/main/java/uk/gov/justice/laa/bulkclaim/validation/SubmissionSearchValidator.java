@@ -76,19 +76,12 @@ public class SubmissionSearchValidator implements Validator {
 
     LocalDate maxDate = LocalDate.now().plusDays(1);
 
-    if (dateFrom != null
-        && dateFrom.isBefore(maxDate)) {
+    if (dateFrom != null && dateFrom.isBefore(maxDate)) {
       errors.rejectValue(
           SUBMITTED_DATE_FROM, "date.range.invalid", "From date must be on or before today.");
-      errors.rejectValue(
-          SUBMITTED_DATE_TO, "date.range.invalid", "To date must be on or before today.");
     }
-    if (dateFrom != null
-        && dateTo != null
-        && dateFrom.isBefore(maxDate)
-        && dateTo.isBefore(maxDate)) {
-      errors.rejectValue(
-          SUBMITTED_DATE_FROM, "date.range.invalid", "From date must be on or before today.");
+
+    if (dateTo != null && dateTo.isBefore(maxDate)) {
       errors.rejectValue(
           SUBMITTED_DATE_TO, "date.range.invalid", "To date must be on or before today.");
     }
