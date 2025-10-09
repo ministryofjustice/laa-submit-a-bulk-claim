@@ -38,7 +38,7 @@
           <div class="govuk-summary-list__row">
             <dt class="govuk-summary-list__key" th:text="#{submission.properties.areaOfLaw}">
             <dd class="govuk-summary-list__value"
-                th:text="${submissionSummary.areaOfLaw}"/>
+                th:text="${#strings.capitalize(#strings.toLowerCase(submissionSummary.areaOfLaw))}"/>
           </div>
           <div class="govuk-summary-list__row">
             <dt class="govuk-summary-list__key"
@@ -66,7 +66,7 @@
                  th:href="${isCurrent ? '#claims' : url}"
                  th:text="#{viewSubmission.claims.subHeading}"/>
             </li>
-            <li class="moj-sub-navigation__item">
+            <li class="moj-sub-navigation__item" th:unless="${#strings.containsIgnoreCase(submissionSummary?.areaOfLaw, 'crime')}">
               <a class="moj-sub-navigation__link"
                  th:with="isCurrent=${navTab.toString() == 'MATTER_STARTS'},
                   url=@{/view-submission-detail(navTab='MATTER_STARTS')}"
@@ -188,24 +188,43 @@
                 </tbody>
               </table>
             </div>
-            <nav th:replace="~{fragments/pagination :: pagination(currentUrl='/view-submission-detail?navTab=CLAIM_DETAILS', page=${claimDetails.pagination})}"></nav>
+            <nav
+                th:replace="~{fragments/pagination :: pagination(currentUrl='/view-submission-detail?navTab=CLAIM_DETAILS', page=${claimDetails.pagination})}"></nav>
           </div>
         </th:block>
 
-        <th:block th:if="${navTab.toString() == 'MATTER_STARTS'}">
+        <th:block th:if="${navTab.toString() == 'MATTER_STARTS' && !#strings.containsIgnoreCase(submissionSummary?.areaOfLaw, 'crime')}">
           <div class="govuk-grid-column-two-thirds">
             <h2 class="govuk-heading-l" id="matter-starts"
                 th:text="#{viewSubmission.matterStarts.subHeading}"/>
 
-            <dl class="govuk-summary-list">
-              <div class="govuk-summary-list__row"
-                   th:each="matterStart, idx : ${matterStartsDetails.matterTypes}">
-                <dt class="govuk-summary-list__key"
-                    th:text="${matterStart.key.description}"/>
-                <dd class="govuk-summary-list__value"
-                    th:text="${matterStart.value}"/>
-              </div>
-            </dl>
+            <p class="govuk-body"
+               th:if="${matterStartsDetails.matterTypes().isEmpty()}"
+               th:text="#{viewSubmission.matterStarts.none}"/>
+
+            <th:block th:if="${#strings.containsIgnoreCase(submissionSummary.areaOfLaw, 'legal')}">
+              <dl class="govuk-summary-list"
+                  th:unless="${matterStartsDetails.matterTypes().isEmpty()}">
+                <div class="govuk-summary-list__row"
+                     th:each="matterStart, idx : ${matterStartsDetails.matterTypes}">
+                  <dt class="govuk-summary-list__key"
+                      th:text="${matterStart.key.description}"/>
+                  <dd class="govuk-summary-list__value"
+                      th:text="${matterStart.value}"/>
+                </div>
+              </dl>
+            </th:block>
+            <th:block th:if="${#strings.containsIgnoreCase(submissionSummary.areaOfLaw, 'mediation')}">
+              <dl class="govuk-summary-list"
+                  th:unless="${matterStartsDetails.matterTypes().isEmpty()}">
+                <div class="govuk-summary-list__row">
+                  <dt class="govuk-summary-list__key"
+                      th:text="#{viewSubmission.matterStarts.newMatterStarts}"/>
+                  <dd class="govuk-summary-list__value"
+                      th:text="${matterStartsDetails.getTotalNumberOfMatterStarts()}"/>
+                </div>
+              </dl>
+            </th:block>
           </div>
         </th:block>
 
@@ -216,7 +235,8 @@
         <div class="govuk-grid-column-full">
           <th:block
               th:replace="~{fragments/claim-messages :: messagesTable(${claimErrorDetails})}"/>
-          <nav th:replace="~{fragments/pagination :: pagination(currentUrl='/view-submission-detail', page=${claimErrorDetails.pagination})}"></nav>
+          <nav
+              th:replace="~{fragments/pagination :: pagination(currentUrl='/view-submission-detail', page=${claimErrorDetails.pagination})}"></nav>
         </div>
       </th:block>
     </div>
