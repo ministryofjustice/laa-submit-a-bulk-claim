@@ -1,6 +1,7 @@
 package uk.gov.justice.laa.bulkclaim.controller;
 
 import static org.springframework.beans.support.PagedListHolder.DEFAULT_PAGE_SIZE;
+import static uk.gov.justice.laa.bulkclaim.constants.SessionConstants.CLAIM_ID;
 import static uk.gov.justice.laa.bulkclaim.constants.SessionConstants.SUBMISSION_ID;
 import static uk.gov.justice.laa.bulkclaim.constants.ViewSubmissionNavigationTab.CLAIM_DETAILS;
 
@@ -55,7 +56,9 @@ public class SubmissionDetailController {
   @GetMapping("/submission/{submissionReference}")
   public String getSubmissionReference(
       @PathVariable("submissionReference") UUID submissionReference, HttpSession httpSession) {
+    httpSession.removeAttribute(CLAIM_ID);
     httpSession.setAttribute(SUBMISSION_ID, submissionReference);
+
     return "redirect:/view-submission-detail";
   }
 

@@ -15,7 +15,6 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.SessionAttributes;
-import org.springframework.web.bind.support.SessionStatus;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
 import uk.gov.justice.laa.bulkclaim.client.DataClaimsRestClient;
 import uk.gov.justice.laa.bulkclaim.dto.UploadInProgressSummary;
@@ -52,8 +51,7 @@ public class BulkImportInProgressController {
       Model model,
       @ModelAttribute(SUBMISSION_ID) UUID submissionId,
       @ModelAttribute(UPLOADED_FILENAME) String uploadedFilename,
-      @ModelAttribute(SUBMISSION_DATE_TIME) LocalDateTime submissionDateTime,
-      SessionStatus sessionStatus) {
+      @ModelAttribute(SUBMISSION_DATE_TIME) LocalDateTime submissionDateTime) {
 
     // Check submission exists otherwise they will be stuck in a loop on this page.
     SubmissionResponse submission;
