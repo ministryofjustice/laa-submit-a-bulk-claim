@@ -4,7 +4,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.UUID;
 import uk.gov.justice.laa.bulkclaim.dto.submission.claim.SubmissionClaimDetails;
-import uk.gov.justice.laa.bulkclaim.dto.submission.claim.SubmissionClaimFeeSubmittedDetails;
+import uk.gov.justice.laa.bulkclaim.dto.submission.claim.deprecated.SubmissionClaimFeeSubmittedDetails;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.ClaimResponse;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.ClaimStatus;
 

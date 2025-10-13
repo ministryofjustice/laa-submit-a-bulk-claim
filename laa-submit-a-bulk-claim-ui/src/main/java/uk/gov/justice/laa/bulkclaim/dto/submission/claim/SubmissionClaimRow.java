@@ -14,7 +14,7 @@ import java.util.UUID;
  * @param category the claim category
  * @param matter the claim matter type
  * @param concludedOrClaimedDate the date the claim was concluded or claimed
- * @param totalMessages the total messages attached to the claim
+ * @param totalMessages the calculatedTotal messages attached to the claim
  * @param feeType the fee type
  * @param feeCode the fee code
  * @param costsDetails the costs details

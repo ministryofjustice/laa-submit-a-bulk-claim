@@ -1,4 +1,4 @@
-package uk.gov.justice.laa.bulkclaim.dto.submission.claim;
+package uk.gov.justice.laa.bulkclaim.dto.submission.claim.deprecated;
 
 import java.math.BigDecimal;
 import lombok.Builder;
@@ -6,7 +6,7 @@ import lombok.Builder;
 /**
  * Holds information about fee calculation in a claim.
  *
- * @param totalValue the total value
+ * @param totalValue the calculatedTotal value
  * @param adviceTime the advice time
  * @param travelTime the travel time
  * @param waitingTime the waiting time

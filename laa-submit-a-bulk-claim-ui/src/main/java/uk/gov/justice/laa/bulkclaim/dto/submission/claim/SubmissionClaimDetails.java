@@ -38,7 +38,7 @@ import uk.gov.justice.laa.dstew.payments.claimsdata.model.ClaimStatus;
  * @param mediationTimeMinutes the mediation time minutes
  * @param outreachLocation the outreach location
  * @param referralSource the referral source
- * @param totalValue the total value
+ * @param totalValue the calculatedTotal value
  * @param clientForename the client forename
  * @param clientSurname the client surname
  * @param clientDateOfBirth the client date of birth

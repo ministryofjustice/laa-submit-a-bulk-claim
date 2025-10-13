@@ -5,8 +5,8 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.NullValuePropertyMappingStrategy;
 import uk.gov.justice.laa.bulkclaim.dto.submission.claim.SubmissionClaimDetails;
-import uk.gov.justice.laa.bulkclaim.dto.submission.claim.SubmissionClaimFeeCalculatedDetails;
-import uk.gov.justice.laa.bulkclaim.dto.submission.claim.SubmissionClaimFeeSubmittedDetails;
+import uk.gov.justice.laa.bulkclaim.dto.submission.claim.deprecated.SubmissionClaimFeeCalculatedDetails;
+import uk.gov.justice.laa.bulkclaim.dto.submission.claim.deprecated.SubmissionClaimFeeSubmittedDetails;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.ClaimResponse;
 
 /**
@@ -14,6 +14,7 @@ import uk.gov.justice.laa.dstew.payments.claimsdata.model.ClaimResponse;
  *
  * @author Jamie Briggs
  */
+@Deprecated
 @Mapper(componentModel = "spring")
 public interface ClaimFeeDetailsMapper {
 

@@ -25,7 +25,7 @@ import uk.gov.justice.laa.bulkclaim.builder.SubmissionClaimMessagesBuilder;
 import uk.gov.justice.laa.bulkclaim.client.DataClaimsRestClient;
 import uk.gov.justice.laa.bulkclaim.config.WebMvcTestConfig;
 import uk.gov.justice.laa.bulkclaim.dto.submission.claim.ClaimMessagesSummary;
-import uk.gov.justice.laa.bulkclaim.dto.submission.claim.SubmissionClaimFeeSubmittedDetails;
+import uk.gov.justice.laa.bulkclaim.dto.submission.claim.deprecated.SubmissionClaimFeeSubmittedDetails;
 import uk.gov.justice.laa.bulkclaim.helper.TestObjectCreator;
 import uk.gov.justice.laa.bulkclaim.mapper.ClaimFeeDetailsMapper;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.ClaimResponse;
