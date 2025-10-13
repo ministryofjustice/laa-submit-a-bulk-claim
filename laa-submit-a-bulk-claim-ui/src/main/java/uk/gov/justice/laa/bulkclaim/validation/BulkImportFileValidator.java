@@ -50,7 +50,6 @@ public class BulkImportFileValidator implements Validator {
    *
    * <ul>
    *   <li>The file is not empty.
-   *   <li>The file size does not exceed 10MB.
    * </ul>
    *
    * @param target the {@link FileUploadForm} object to be validated.
@@ -87,15 +86,6 @@ public class BulkImportFileValidator implements Validator {
         || (lowercaseFileName.endsWith(".txt") && !("text/plain".equals(contentType)))) {
       errors.rejectValue("file", "bulkImport.validation.mimeType");
       return;
-    }
-
-    // Step 4: Validate file size
-    if (file.getSize() > maxFileSize) {
-      errors.rejectValue(
-          "file",
-          "bulkImport.validation.size",
-          new String[] {maxFileSizeReadable},
-          "File size too large");
     }
   }
 }
