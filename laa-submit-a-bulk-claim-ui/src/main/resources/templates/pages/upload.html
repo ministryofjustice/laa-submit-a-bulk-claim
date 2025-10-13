@@ -13,28 +13,22 @@
 
         <div th:replace="~{fragments/error-components :: error-summary}"/>
 
-        <fieldset class="govuk-fieldset">
-          <legend class="govuk-fieldset__legend govuk-fieldset__legend--xl">
-            <h1 class="govuk-fieldset__heading" th:text="#{bulkImport.heading}"/>
-          </legend>
-          <p class="govuk-body-l" th:utext="#{bulkImport.leadParagraph(
-            ${@environment.getProperty('links.bulk-upload-spreadsheet')},
-            ${@environment.getProperty('upload-max-file-size')})}"/>
-          <a class="govuk-body govuk-link" target="_blank" th:text="#{bulkImport.guidanceLink}"
-             th:href="${@environment.getProperty('links.bulk-upload-spreadsheet-guide')}"/>
+        <h1 class="govuk-heading-xl" th:text="#{bulkImport.heading}"/>
+        <p class="govuk-body-l"
+           th:text="#{bulkImport.maxSize(${@environment.getProperty('upload-max-file-size')})}"/>
+        <p class="govuk-body govuk-!-margin-bottom-6" th:text="#{bulkImport.nextStep}"/>
 
-          <div class="govuk-form-group govuk-!-padding-top-4"
-               th:classappend="${#fields.hasErrors('file')} ? 'govuk-form-group--error'">
-            <label class="govuk-label" for="file-input"
-                   th:text="#{bulkImport.upload.label}"/>
-            <p th:replace="~{ fragments/error-components :: error-messages('file')}"/>
-            <div
-                class="govuk-drop-zone"
-                data-module="govuk-file-upload">
-              <input class="govuk-file-upload" id="file-input" type="file" th:field="*{file}">
-            </div>
+        <div class="govuk-form-group"
+             th:classappend="${#fields.hasErrors('file')} ? ' govuk-form-group--error'">
+          <label class="govuk-label govuk-!-font-weight-bold" for="file-input"
+                 th:text="#{bulkImport.upload.label}"/>
+          <p th:replace="~{ fragments/error-components :: error-messages('file')}"/>
+          <div
+              class="govuk-drop-zone"
+              data-module="govuk-file-upload">
+            <input class="govuk-file-upload" id="file-input" type="file" th:field="*{file}">
           </div>
-        </fieldset>
+        </div>
 
         <button type="submit" class="govuk-button" data-module="govuk-button"
                 th:text="#{bulkImport.primaryButton}"/>

@@ -1,6 +1,6 @@
 <!DOCTYPE HTML>
 <html lang="en" class="govuk-template" xmlns:th="http://www.thymeleaf.org"
-      th:replace="~{ layout/main-layout :: layout(#{landing.heading},~{::main},~{},~{})}">
+      th:replace="~{ layout/main-layout :: layout(#{landing.heading},~{::main},~{}, 'landing')}">
 <main class="govuk-main-wrapper" id="main-content">
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds-from-desktop">
@@ -15,11 +15,6 @@
          th:utext="#{landing.beforeStart.files(
      ${@environment.getProperty('links.bulk-upload-spreadsheet')},
      ${@environment.getProperty('links.bulk-upload-spreadsheet-guide')})}"></p>
-
-      <p class="govuk-body govuk-!-margin-bottom-6"
-         th:utext="#{landing.beforeStart.guidance(
-     ${@environment.getProperty('links.fees-guidance')})}"></p>
-
 
       <a class="govuk-button govuk-button--start"
          th:href="@{/upload}"

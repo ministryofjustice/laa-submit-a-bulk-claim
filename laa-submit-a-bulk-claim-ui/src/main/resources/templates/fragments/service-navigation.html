@@ -14,7 +14,10 @@
             <a th:href="@{/}" id="service-name" class="govuk-service-navigation__link"
               th:text="#{service.name}"/>
         </span>
-      <nav aria-label="Menu" class="govuk-service-navigation__wrapper" sec:authorize="isAuthenticated()">
+      <nav aria-label="Menu"
+           class="govuk-service-navigation__wrapper"
+           sec:authorize="isAuthenticated()"
+           th:if="${package != 'landing'}">
         <button type="button"
                 id="menu-button"
                 class="govuk-service-navigation__toggle govuk-js-service-navigation-toggle"
