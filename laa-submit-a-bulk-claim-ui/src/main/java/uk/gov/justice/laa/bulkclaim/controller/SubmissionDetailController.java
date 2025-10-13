@@ -4,17 +4,20 @@ import static org.springframework.beans.support.PagedListHolder.DEFAULT_PAGE_SIZ
 import static uk.gov.justice.laa.bulkclaim.constants.SessionConstants.SUBMISSION_ID;
 import static uk.gov.justice.laa.bulkclaim.constants.ViewSubmissionNavigationTab.CLAIM_DETAILS;
 
-import jakarta.servlet.http.HttpSession;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.SessionAttribute;
 import org.springframework.web.bind.annotation.SessionAttributes;
+import org.springframework.web.server.ResponseStatusException;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import uk.gov.justice.laa.bulkclaim.builder.SubmissionClaimDetailsBuilder;
 import uk.gov.justice.laa.bulkclaim.builder.SubmissionClaimMessagesBuilder;
 import uk.gov.justice.laa.bulkclaim.builder.SubmissionMatterStartsDetailsBuilder;
@@ -26,7 +29,10 @@ import uk.gov.justice.laa.bulkclaim.dto.submission.SubmissionSummary;
 import uk.gov.justice.laa.bulkclaim.dto.submission.claim.ClaimMessagesSummary;
 import uk.gov.justice.laa.bulkclaim.dto.submission.claim.SubmissionClaimsDetails;
 import uk.gov.justice.laa.bulkclaim.exception.SubmitBulkClaimException;
+import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionBase;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionResponse;
+import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionStatus;
+import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionsResultSet;
 
 /**
  * Controller for handling viewing a submission.
@@ -49,13 +55,35 @@ public class SubmissionDetailController {
    * Gets the submission reference, stores it in the session and redirects to the view submission.
    *
    * @param submissionReference the submission reference
-   * @param httpSession the http session
    * @return the redirect to view a submission detail
    */
   @GetMapping("/submission/{submissionReference}")
   public String getSubmissionReference(
-      @PathVariable("submissionReference") UUID submissionReference, HttpSession httpSession) {
-    httpSession.setAttribute(SUBMISSION_ID, submissionReference);
+      @PathVariable("submissionReference") UUID submissionReference,
+      @SessionAttribute("submissions") SubmissionsResultSet submissions,
+      RedirectAttributes redirectAttributes,
+      Model model) {
+
+    // Find the submission by ID
+    SubmissionBase submission =
+        submissions.getContent().stream()
+            .filter(s -> submissionReference.equals(s.getSubmissionId()))
+            .findFirst()
+            .orElseThrow(
+                () ->
+                    new ResponseStatusException(
+                        HttpStatus.FORBIDDEN, "Submission not found for user"));
+
+    // Store the submission ID in session
+    model.addAttribute(SUBMISSION_ID, submissionReference);
+
+    // If validation is in progress, redirect to /import-in-progress and add submission details
+    if (submission.getStatus() == SubmissionStatus.VALIDATION_IN_PROGRESS) {
+      redirectAttributes.addFlashAttribute("submission", submission);
+      return "redirect:/import-in-progress";
+    }
+
+    // Otherwise, redirect to the standard submission details view
     return "redirect:/view-submission-detail";
   }
 
