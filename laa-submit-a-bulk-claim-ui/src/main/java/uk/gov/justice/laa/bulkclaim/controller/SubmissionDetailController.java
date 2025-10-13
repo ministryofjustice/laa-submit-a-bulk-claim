@@ -4,7 +4,6 @@ import static org.springframework.beans.support.PagedListHolder.DEFAULT_PAGE_SIZ
 import static uk.gov.justice.laa.bulkclaim.constants.SessionConstants.SUBMISSION_ID;
 import static uk.gov.justice.laa.bulkclaim.constants.ViewSubmissionNavigationTab.CLAIM_DETAILS;
 
-import jakarta.servlet.http.HttpSession;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -56,15 +55,14 @@ public class SubmissionDetailController {
    * Gets the submission reference, stores it in the session and redirects to the view submission.
    *
    * @param submissionReference the submission reference
-   * @param httpSession the http session
    * @return the redirect to view a submission detail
    */
   @GetMapping("/submission/{submissionReference}")
   public String getSubmissionReference(
       @PathVariable("submissionReference") UUID submissionReference,
       @SessionAttribute("submissions") SubmissionsResultSet submissions,
-      HttpSession httpSession,
-      RedirectAttributes redirectAttributes) {
+      RedirectAttributes redirectAttributes,
+      Model model) {
 
     // Find the submission by ID
     SubmissionBase submission =
@@ -77,7 +75,7 @@ public class SubmissionDetailController {
                         HttpStatus.FORBIDDEN, "Submission not found for user"));
 
     // Store the submission ID in session
-    httpSession.setAttribute(SUBMISSION_ID, submissionReference);
+    model.addAttribute(SUBMISSION_ID, submissionReference);
 
     // If validation is in progress, redirect to /import-in-progress and add submission details
     if (submission.getStatus() == SubmissionStatus.VALIDATION_IN_PROGRESS) {
