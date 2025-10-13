@@ -4,20 +4,20 @@
        th:with="justWarnings=${justWarnings?:false}"
        th:fragment="messagesTable(messageDetails)">
   <caption class="govuk-table__caption govuk-table__caption--m"
-           th:text="${justWarnings}? #{bulkClaimImportSummary.claimMessages.caption} : #{bulkClaimImportSummary.claimErrors.caption}"/>
+           th:text="${justWarnings}? #{bulkClaimImportSummary.claimMessages.caption} : #{bulkClaimImportSummary.claimErrors.caption}"></caption>
 
   <thead class="govuk-table__head">
   <tr class="govuk-table__row">
     <th scope="col" class="govuk-table__header" aria-sort="none"
-        th:text="#{submission.claim.properties.ufn}"/>
+        th:text="#{submission.claim.properties.ufn}"></th>
     <th scope="col" class="govuk-table__header" aria-sort="none"
-        th:text="#{submission.claim.properties.ucn}"/>
+        th:text="#{submission.claim.properties.ucn}"></th>
     <th scope="col" class="govuk-table__header" aria-sort="none"
-        th:text="#{submission.claim.properties.client}"/>
+        th:text="#{submission.claim.properties.client}"></th>
     <th th:unless="${justWarnings}" scope="col" class="govuk-table__header" aria-sort="none"
-        th:text="#{submission.claim.properties.errorDescription}"/>
+        th:text="#{submission.claim.properties.errorDescription}"></th>
     <th th:if="${justWarnings}" scope="col" class="govuk-table__header" aria-sort="none"
-        th:text="#{submission.claim.properties.messageDescription}"/>
+        th:text="#{submission.claim.properties.messageDescription}"></th>
   </tr>
   </thead>
 
