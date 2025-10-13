@@ -46,7 +46,7 @@ public class BulkImportController {
    * @param oidcUser the authenticated user principal
    * @return the upload page
    */
-  @GetMapping("/")
+  @GetMapping("/upload")
   public String showUploadPage(
       Model model, @AuthenticationPrincipal OidcUser oidcUser, SessionStatus sessionStatus) {
 
@@ -135,6 +135,6 @@ public class BulkImportController {
     redirectAttributes.addFlashAttribute(FILE_UPLOAD_FORM_MODEL_ATTR, fileUploadForm);
     redirectAttributes.addFlashAttribute(
         "org.springframework.validation.BindingResult.fileUploadForm", bindingResult);
-    return "redirect:/";
+    return "redirect:/upload";
   }
 }

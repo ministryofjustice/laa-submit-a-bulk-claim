@@ -21,7 +21,7 @@
             ${@environment.getProperty('links.bulk-upload-spreadsheet')},
             ${@environment.getProperty('upload-max-file-size')})}"/>
           <a class="govuk-body govuk-link" target="_blank" th:text="#{bulkImport.guidanceLink}"
-             th:href="${@environment.getProperty('links.guidance')}"/>
+             th:href="${@environment.getProperty('links.bulk-upload-spreadsheet-guide')}"/>
 
           <div class="govuk-form-group govuk-!-padding-top-4"
                th:classappend="${#fields.hasErrors('file')} ? 'govuk-form-group--error'">

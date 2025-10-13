@@ -57,7 +57,7 @@ class BulkImportControllerTest {
     @DisplayName("Should return expected view")
     void shouldReturnExpectedView() throws Exception {
       mockMvc
-          .perform(get("/").with(oidcLogin().oidcUser(getOidcUser())))
+          .perform(get("/upload").with(oidcLogin().oidcUser(getOidcUser())))
           .andExpect(status().isOk())
           .andExpect(view().name("pages/upload"));
     }
@@ -89,7 +89,7 @@ class BulkImportControllerTest {
                   .with(csrf())
                   .with(oidcLogin().oidcUser(getOidcUser())))
           .andExpect(status().is3xxRedirection())
-          .andExpect(view().name("redirect:/"));
+          .andExpect(view().name("redirect:/upload"));
     }
 
     @Test
@@ -115,7 +115,7 @@ class BulkImportControllerTest {
                   .with(csrf())
                   .with(oidcLogin().oidcUser(getOidcUser())))
           .andExpect(status().is3xxRedirection())
-          .andExpect(view().name("redirect:/"));
+          .andExpect(view().name("redirect:/upload"));
     }
 
     @Test
@@ -135,7 +135,7 @@ class BulkImportControllerTest {
                   .with(csrf())
                   .with(oidcLogin().oidcUser(getOidcUser())))
           .andExpect(status().is3xxRedirection())
-          .andExpect(view().name("redirect:/"));
+          .andExpect(view().name("redirect:/upload"));
     }
 
     @Test

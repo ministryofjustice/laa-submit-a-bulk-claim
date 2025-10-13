@@ -24,9 +24,9 @@
         <ul class="govuk-service-navigation__list" id="navigation">
           <li class="govuk-service-navigation__item"
               th:classappend="${#strings.isEmpty(package)} ? 'govuk-service-navigation__item--active' : ${package}">
-            <a class="govuk-service-navigation__link" th:href="@{/}"
+            <a class="govuk-service-navigation__link" th:href="@{/upload}"
                id="import-claims-link"
-               aria-current="true">
+               th:attr="aria-current=${#strings.isEmpty(package)} ? 'page' : null">
               <strong class="govuk-service-navigation__active-fallback"
                 th:text="#{header.navigation.bulkImports}"/>
             </a>
