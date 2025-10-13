@@ -4,7 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
 import static uk.gov.justice.laa.bulkclaim.controller.ControllerTestHelper.getOidcUser;
 
-import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 import java.util.Collections;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
@@ -34,7 +34,7 @@ class SearchControllerTest {
 
   @Mock private Model model;
   @Mock private BindingResult bindingResult;
-  @Mock private HttpServletRequest request;
+  @Mock private HttpSession session;
   @Mock private SubmissionSearchValidator submissionSearchValidator;
   @Mock private DataClaimsRestClient claimsRestService;
   @Mock private PaginationUtil paginationUtil;
@@ -112,13 +112,14 @@ class SearchControllerTest {
             "01/01/2024",
             "02/01/2024",
             model,
-            request,
             getOidcUser(),
-            sessionStatus);
+            sessionStatus,
+            session);
 
     verify(sessionStatus).setComplete();
     verify(model).addAttribute(eq("pagination"), any(Page.class));
     verify(model).addAttribute("submissions", response);
+    verify(session).setAttribute("submissions", response);
     assertEquals("pages/submissions-search-results", view);
   }
 
@@ -132,7 +133,7 @@ class SearchControllerTest {
 
     String view =
         searchController.submissionsSearchResults(
-            0, 10, "1234", null, null, model, request, getOidcUser(), sessionStatus);
+            0, 10, "1234", null, null, model, getOidcUser(), sessionStatus, session);
 
     assertEquals("error", view);
   }
@@ -146,7 +147,7 @@ class SearchControllerTest {
 
     String view =
         searchController.submissionsSearchResults(
-            0, 10, "1234", null, null, model, request, getOidcUser(), sessionStatus);
+            0, 10, "1234", null, null, model, getOidcUser(), sessionStatus, session);
 
     assertEquals("error", view);
   }
@@ -171,12 +172,13 @@ class SearchControllerTest {
             "invalid-date",
             "bad-date",
             model,
-            request,
             getOidcUser(),
-            sessionStatus);
+            sessionStatus,
+            session);
 
     verify(model).addAttribute(eq("pagination"), any(Page.class));
     verify(model).addAttribute("submissions", response);
+    verify(session).setAttribute("submissions", response);
     assertEquals("pages/submissions-search-results", view);
   }
 }

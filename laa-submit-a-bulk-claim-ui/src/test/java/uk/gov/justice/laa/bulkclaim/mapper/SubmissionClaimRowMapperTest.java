@@ -1,5 +1,7 @@
 package uk.gov.justice.laa.bulkclaim.mapper;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.UUID;
@@ -118,5 +120,11 @@ class SubmissionClaimRowMapperTest {
               .isEqualTo(new BigDecimal("500.50"));
           softAssertions.assertThat(result.claimValue()).isEqualTo(new BigDecimal("1234.56"));
         });
+  }
+
+  @Test
+  @DisplayName("Should return null fee type when fee calculation type is null")
+  void shouldReturnNullWhenFeeCalculationTypeIsNull() {
+    assertThat(mapper.toFeeType(null)).isNull();
   }
 }

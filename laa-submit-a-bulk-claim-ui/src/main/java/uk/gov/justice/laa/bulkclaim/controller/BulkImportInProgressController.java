@@ -4,7 +4,6 @@ import static uk.gov.justice.laa.bulkclaim.constants.SessionConstants.SUBMISSION
 import static uk.gov.justice.laa.bulkclaim.constants.SessionConstants.SUBMISSION_ID;
 import static uk.gov.justice.laa.bulkclaim.constants.SessionConstants.UPLOADED_FILENAME;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
@@ -15,10 +14,8 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.SessionAttributes;
-import org.springframework.web.bind.support.SessionStatus;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
 import uk.gov.justice.laa.bulkclaim.client.DataClaimsRestClient;
-import uk.gov.justice.laa.bulkclaim.dto.UploadInProgressSummary;
 import uk.gov.justice.laa.bulkclaim.exception.SubmitBulkClaimException;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionResponse;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionStatus;
@@ -48,20 +45,10 @@ public class BulkImportInProgressController {
    * @return the import in progress view or redirects to view submission.
    */
   @GetMapping("/import-in-progress")
-  public String importInProgress(
-      Model model,
-      @ModelAttribute(SUBMISSION_ID) UUID submissionId,
-      @ModelAttribute(UPLOADED_FILENAME) String uploadedFilename,
-      @ModelAttribute(SUBMISSION_DATE_TIME) LocalDateTime submissionDateTime,
-      SessionStatus sessionStatus) {
+  public String importInProgress(Model model, @ModelAttribute(SUBMISSION_ID) UUID submissionId) {
 
     // Check submission exists otherwise they will be stuck in a loop on this page.
     SubmissionResponse submission;
-
-    // Get summary
-    UploadInProgressSummary summary =
-        new UploadInProgressSummary(submissionDateTime, submissionId, uploadedFilename);
-    model.addAttribute("inProgressSummary", summary);
 
     try {
       submission = dataClaimsRestClient.getSubmission(submissionId).block();

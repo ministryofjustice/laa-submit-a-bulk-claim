@@ -43,6 +43,9 @@ public interface SubmissionClaimRowMapper {
    */
   @Named("toFeeType")
   default String toFeeType(final FeeCalculationType feeCalculationType) {
+    if (feeCalculationType == null) {
+      return null;
+    }
     // Convert to sentence case
     String value = feeCalculationType.getValue().replace("_", " ");
     return value.substring(0, 1).toUpperCase() + value.substring(1).toLowerCase();
