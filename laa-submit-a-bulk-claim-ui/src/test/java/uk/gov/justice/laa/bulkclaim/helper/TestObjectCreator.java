@@ -6,6 +6,7 @@ import uk.gov.justice.laa.bulkclaim.dto.submission.claim.ClaimSummary;
 import uk.gov.justice.laa.bulkclaim.dto.submission.claim.deprecated.SubmissionClaimFeeSubmittedDetails;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.ClaimResponse;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.ClaimStatus;
+import uk.gov.justice.laa.dstew.payments.claimsdata.model.FeeCalculationPatch;
 
 /**
  * Helper class to create test objects.
@@ -117,6 +118,7 @@ public final class TestObjectCreator {
         .isSubstantiveHearing(true)
         .hoInterview(3)
         .localAuthorityNumber("local-authority-number")
+        .feeCalculationResponse(FeeCalculationPatch.builder().build())
         .build();
   }
 

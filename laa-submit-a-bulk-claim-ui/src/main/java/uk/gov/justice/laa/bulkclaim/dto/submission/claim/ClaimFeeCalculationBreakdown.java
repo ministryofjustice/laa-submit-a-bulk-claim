@@ -1,6 +1,7 @@
 package uk.gov.justice.laa.bulkclaim.dto.submission.claim;
 
 import java.math.BigDecimal;
+import lombok.Builder;
 
 /**
  * Holds the breakdown of the fee calculation for a claim.
@@ -21,6 +22,7 @@ import java.math.BigDecimal;
  * @param vat the VAT.
  * @param calculatedTotal the final calculated calculatedTotal.
  */
+@Builder
 public record ClaimFeeCalculationBreakdown(
     BulkClaimCostItem fixedFee,
     BulkClaimCostItem netProfitCost,
