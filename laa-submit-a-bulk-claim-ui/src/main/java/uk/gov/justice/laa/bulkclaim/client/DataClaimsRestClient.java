@@ -3,6 +3,7 @@ package uk.gov.justice.laa.bulkclaim.client;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -54,10 +55,14 @@ public interface DataClaimsRestClient {
    */
   @GetExchange(url = "/submissions", accept = MediaType.APPLICATION_JSON_VALUE)
   Mono<SubmissionsResultSet> search(
-      @RequestParam(value = "offices", required = true) List<String> offices,
+      @RequestParam(value = "offices") List<String> offices,
       @RequestParam(value = "submission_id", required = false) String submissionId,
-      @RequestParam(value = "date_from", required = false) LocalDate dateFrom,
-      @RequestParam(value = "date_to", required = false) LocalDate dateTo,
+      @RequestParam(value = "submitted_date_from", required = false)
+          @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
+          LocalDate dateFrom,
+      @RequestParam(value = "submitted_date_to", required = false)
+          @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
+          LocalDate dateTo,
       @RequestParam(value = "page", required = false, defaultValue = "0") Integer page,
       @RequestParam(value = "size", required = false, defaultValue = "10") Integer size);
 
