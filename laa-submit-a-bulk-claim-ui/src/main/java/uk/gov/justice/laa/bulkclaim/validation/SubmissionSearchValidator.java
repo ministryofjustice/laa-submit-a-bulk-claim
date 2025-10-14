@@ -2,6 +2,7 @@ package uk.gov.justice.laa.bulkclaim.validation;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.UUID;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;
@@ -12,8 +13,6 @@ import uk.gov.justice.laa.bulkclaim.dto.SubmissionsSearchForm;
 @Component
 public class SubmissionSearchValidator implements Validator {
 
-  private static final int SEARCH_TERM_MIN_LENGTH = 2;
-  private static final int SEARCH_TERM_MAX_LENGTH = 100;
   public static final String SUBMITTED_DATE_FROM = "submittedDateFrom";
   public static final String SUBMITTED_DATE_TO = "submittedDateTo";
 
@@ -76,9 +75,13 @@ public class SubmissionSearchValidator implements Validator {
           SUBMITTED_DATE_TO, "date.range.invalid", "To date must be on or after From date.");
     }
 
-    // Optional conservative guard on submission id size
-    if (submissionId != null && submissionId.length() > 100) {
-      errors.rejectValue("submissionId", "submissionId.length", "Submission id is too long.");
+    if (StringUtils.isNotBlank(submissionId)) {
+      try {
+        UUID.fromString(submissionId.trim());
+      } catch (IllegalArgumentException ex) {
+        errors.rejectValue(
+            "submissionId", "search.submissionId.invalid", "Submission id must be a valid UUID.");
+      }
     }
   }
 }
