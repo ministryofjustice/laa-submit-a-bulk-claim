@@ -34,4 +34,32 @@ class SubmissionSearchValidatorTest {
 
     assertFalse(errors.hasErrors());
   }
+
+  @Test
+  void validateShouldOnlyFlagMissingToDateWhenFromDateProvided() {
+    final SubmissionsSearchForm form = new SubmissionsSearchForm(null, "01/01/2024", null);
+    final BindingResult errors = new BeanPropertyBindingResult(form, "submissionsSearchForm");
+
+    validator.validate(form, errors);
+
+    assertFalse(errors.hasFieldErrors(SubmissionSearchValidator.SUBMITTED_DATE_FROM));
+    assertTrue(errors.hasFieldErrors(SubmissionSearchValidator.SUBMITTED_DATE_TO));
+    assertEquals(
+        "search.error.date.to.requiredWithFrom",
+        errors.getFieldError(SubmissionSearchValidator.SUBMITTED_DATE_TO).getCode());
+  }
+
+  @Test
+  void validateShouldOnlyFlagMissingFromDateWhenToDateProvided() {
+    final SubmissionsSearchForm form = new SubmissionsSearchForm(null, null, "01/01/2024");
+    final BindingResult errors = new BeanPropertyBindingResult(form, "submissionsSearchForm");
+
+    validator.validate(form, errors);
+
+    assertTrue(errors.hasFieldErrors(SubmissionSearchValidator.SUBMITTED_DATE_FROM));
+    assertFalse(errors.hasFieldErrors(SubmissionSearchValidator.SUBMITTED_DATE_TO));
+    assertEquals(
+        "search.error.date.from.requiredWithTo",
+        errors.getFieldError(SubmissionSearchValidator.SUBMITTED_DATE_FROM).getCode());
+  }
 }

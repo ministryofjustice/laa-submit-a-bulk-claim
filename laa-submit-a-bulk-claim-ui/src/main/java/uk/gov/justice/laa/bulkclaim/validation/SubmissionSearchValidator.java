@@ -37,11 +37,21 @@ public class SubmissionSearchValidator implements Validator {
     }
 
     // Both dates must be provided together if either is present
-    if ((StringUtils.isNotEmpty(from)) != (StringUtils.isNotEmpty(to))) {
-      errors.rejectValue(
-          SUBMITTED_DATE_FROM, "date.range.incomplete", "Both dates must be provided together.");
-      errors.rejectValue(
-          SUBMITTED_DATE_TO, "date.range.incomplete", "Both dates must be provided together.");
+    boolean fromProvided = StringUtils.isNotEmpty(from);
+    boolean toProvided = StringUtils.isNotEmpty(to);
+    if (fromProvided ^ toProvided) {
+      if (!fromProvided) {
+        errors.rejectValue(
+            SUBMITTED_DATE_FROM,
+            "search.error.date.from.requiredWithTo",
+            "Enter the submission from date when you enter a submission to date.");
+      }
+      if (!toProvided) {
+        errors.rejectValue(
+            SUBMITTED_DATE_TO,
+            "search.error.date.to.requiredWithFrom",
+            "Enter the submission to date when you enter a submission from date.");
+      }
     }
 
     // Check date formats
