@@ -1,26 +1,26 @@
 {
+  "submission_id": "945dfedc-ad7f-4af7-b20c-06082ffa3cb3",
+  "bulk_submission_id": "7059e4c7-b800-40a0-9074-6127288e548a",
+  "office_account_number": "string",
+  "submission_period": "string",
+  "area_of_law": "string",
+  "provider_user_id": "string",
+  "status": "CREATED",
+  "crime_schedule_number": "string",
+  "civil_submission_reference": "string",
+  "mediation_submission_reference": "string",
+  "previous_submission_id": "c7efec14-c957-40bb-aa33-6b9e7d48d9bc",
+  "is_nil_submission": true,
+  "number_of_claims": 0,
+  "submitted": "2019-08-24T14:15:22Z",
+  "created_by_user_id": "string",
   "claims": [
     {
-      "claim_id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
-      "status": "VALID"
-    },
-    {
-      "claim_id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
-      "status": "INVALID"
+      "claim_id": "6ed32748-64af-4d95-94ea-a78b6397033c",
+      "status": "READY_TO_PROCESS"
     }
   ],
   "matter_starts": [
-    "3fa85f64-5717-4562-b3fc-2c963f66afa6"
-  ],
-  "submission_id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
-  "bulk_submission_id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
-  "office_account_number": "string",
-  "submission_period": "MAY-2025",
-  "area_of_law": "string",
-  "status": "READY_FOR_VALIDATION",
-  "schedule_number": "string",
-  "previous_submission_id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
-  "is_nil_submission": true,
-  "number_of_claims": 0,
-  "submitted": "2020-01-01"
+    "497f6eca-6276-4993-bfeb-53cbbbba6f08"
+  ]
 }
