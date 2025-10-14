@@ -46,8 +46,8 @@ public class SubmissionClaimMessagesBuilder {
    * @param page The page number to fetch errors for.
    * @return The built {@link ClaimMessagesSummary}.
    */
-  public ClaimMessagesSummary build(UUID submissionId, UUID claimId, int page, int size) {
-    return build(submissionId, claimId, page, null, size);
+  public ClaimMessagesSummary buildWarnings(UUID submissionId, UUID claimId, int page, int size) {
+    return build(submissionId, claimId, page, ValidationMessageType.WARNING, size);
   }
 
   /**

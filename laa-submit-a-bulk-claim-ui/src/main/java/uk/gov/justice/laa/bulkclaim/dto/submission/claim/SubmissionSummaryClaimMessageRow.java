@@ -1,6 +1,7 @@
 package uk.gov.justice.laa.bulkclaim.dto.submission.claim;
 
 import java.util.UUID;
+import lombok.Builder;
 
 /**
  * A record representing a claim message in a bulk submission.
@@ -13,6 +14,7 @@ import java.util.UUID;
  * @param type the message type
  * @author Jamie Briggs
  */
+@Builder
 public record SubmissionSummaryClaimMessageRow(
     UUID submissionReference,
     String ufn,

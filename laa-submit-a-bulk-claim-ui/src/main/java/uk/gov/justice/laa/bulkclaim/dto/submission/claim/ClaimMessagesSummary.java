@@ -2,6 +2,7 @@ package uk.gov.justice.laa.bulkclaim.dto.submission.claim;
 
 import java.util.List;
 import java.util.Optional;
+import lombok.Builder;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.Page;
 
 /**
@@ -11,6 +12,7 @@ import uk.gov.justice.laa.dstew.payments.claimsdata.model.Page;
  * @param totalMessageCount calculatedTotal number of errors found
  * @param totalClaimsWithErrors calculatedTotal number of unique claims with errors
  */
+@Builder
 public record ClaimMessagesSummary(
     List<SubmissionSummaryClaimMessageRow> claimMessages,
     int totalMessageCount,
