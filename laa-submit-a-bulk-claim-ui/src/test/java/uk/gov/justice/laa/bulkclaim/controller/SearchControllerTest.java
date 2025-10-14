@@ -78,13 +78,14 @@ class SearchControllerTest {
   void handleSearchShouldRedirectWithParamsOnSuccess() {
     when(bindingResult.hasErrors()).thenReturn(false);
     final SubmissionsSearchForm form =
-        new SubmissionsSearchForm("1234", "01/01/2024", "02/01/2024");
+        new SubmissionsSearchForm(
+            "704b3dda-4aec-4883-a263-000d86511289", "01/01/2024", "02/01/2024");
     final RedirectAttributes redirectAttributes = new RedirectAttributesModelMap();
 
     String view = searchController.handleSearch(form, bindingResult, redirectAttributes);
 
     assertEquals(
-        "redirect:/submissions/search/results?page=0&size=10&submissionId=1234&submittedDateFrom=01/01/2024&submittedDateTo=02/01/2024",
+        "redirect:/submissions/search/results?page=0&submissionId=704b3dda-4aec-4883-a263-000d86511289&submittedDateFrom=01/01/2024&submittedDateTo=02/01/2024",
         view);
   }
 
@@ -106,15 +107,7 @@ class SearchControllerTest {
 
     String view =
         searchController.submissionsSearchResults(
-            0,
-            10,
-            "1234",
-            "01/01/2024",
-            "02/01/2024",
-            model,
-            getOidcUser(),
-            sessionStatus,
-            session);
+            0, "1234", "01/01/2024", "02/01/2024", model, getOidcUser(), sessionStatus, session);
 
     verify(sessionStatus).setComplete();
     verify(model).addAttribute(eq("pagination"), any(Page.class));
@@ -133,7 +126,7 @@ class SearchControllerTest {
 
     String view =
         searchController.submissionsSearchResults(
-            0, 10, "1234", null, null, model, getOidcUser(), sessionStatus, session);
+            0, "1234", null, null, model, getOidcUser(), sessionStatus, session);
 
     assertEquals("error", view);
   }
@@ -147,7 +140,7 @@ class SearchControllerTest {
 
     String view =
         searchController.submissionsSearchResults(
-            0, 10, "1234", null, null, model, getOidcUser(), sessionStatus, session);
+            0, "1234", null, null, model, getOidcUser(), sessionStatus, session);
 
     assertEquals("error", view);
   }
@@ -166,15 +159,7 @@ class SearchControllerTest {
 
     String view =
         searchController.submissionsSearchResults(
-            0,
-            10,
-            "1234",
-            "invalid-date",
-            "bad-date",
-            model,
-            getOidcUser(),
-            sessionStatus,
-            session);
+            0, "1234", "invalid-date", "bad-date", model, getOidcUser(), sessionStatus, session);
 
     verify(model).addAttribute(eq("pagination"), any(Page.class));
     verify(model).addAttribute("submissions", response);

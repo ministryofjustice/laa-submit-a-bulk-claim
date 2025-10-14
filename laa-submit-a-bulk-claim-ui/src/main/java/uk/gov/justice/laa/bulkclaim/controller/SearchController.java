@@ -103,8 +103,7 @@ public class SearchController {
 
     UriComponentsBuilder redirectUrl =
         UriComponentsBuilder.fromPath("/submissions/search/results")
-            .queryParam("page", DEFAULT_PAGE)
-            .queryParam("size", DEFAULT_PAGE_SIZE);
+            .queryParam("page", DEFAULT_PAGE);
 
     if (submissionId != null) {
       redirectUrl.queryParam("submissionId", submissionId);
@@ -123,7 +122,6 @@ public class SearchController {
    * Handles Submission page results.
    *
    * @param page requested page number
-   * @param size requested page size
    * @param submissionId submission id filter
    * @param submittedDateFrom submitted date from filter
    * @param submittedDateTo submitted date to filter
@@ -136,7 +134,6 @@ public class SearchController {
   @GetMapping("/submissions/search/results")
   public String submissionsSearchResults(
       @RequestParam(value = "page", defaultValue = "0") final int page,
-      @RequestParam(value = "size", defaultValue = "10") final int size,
       @RequestParam(value = "submissionId", required = false) String submissionId,
       @RequestParam(value = "submittedDateFrom", required = false) String submittedDateFrom,
       @RequestParam(value = "submittedDateTo", required = false) String submittedDateTo,
@@ -166,10 +163,11 @@ public class SearchController {
                   submittedDateFromParsed,
                   submittedDateToParsed,
                   page,
-                  size)
+                  DEFAULT_PAGE_SIZE)
               .block();
 
-      Page pagination = paginationUtil.fromSubmissionsResultSet(submissionsResults, page, size);
+      Page pagination =
+          paginationUtil.fromSubmissionsResultSet(submissionsResults, page, DEFAULT_PAGE_SIZE);
       model.addAttribute("pagination", pagination);
       model.addAttribute("submissions", submissionsResults);
       session.setAttribute("submissions", submissionsResults);
