@@ -30,8 +30,6 @@ import uk.gov.justice.laa.dstew.payments.claimsdata.model.ClaimResponse;
 @SessionAttributes({SUBMISSION_ID, CLAIM_ID})
 public final class ClaimDetailController {
 
-  private static final int DEFAULT_PAGE_SIZE = 10;
-
   private final DataClaimsRestClient dataClaimsRestClient;
   private final ClaimFeeCalculationBreakdownMapper claimFeeCalculationBreakdownMapper;
 
@@ -76,7 +74,7 @@ public final class ClaimDetailController {
 
     Assert.notNull(claimResponse.getFeeCalculationResponse(), "Fee calculation response is null");
     model.addAttribute(
-        "feeSubmittedDetails",
+        "feeDetails",
         claimFeeCalculationBreakdownMapper.toClaimFeeCalculationBreakdown(claimResponse));
 
     return "pages/view-claim-detail";
