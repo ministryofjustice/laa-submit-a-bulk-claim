@@ -5,6 +5,11 @@ import org.mapstruct.Mapping;
 import uk.gov.justice.laa.bulkclaim.dto.submission.claim.ClaimSummary;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.ClaimResponse;
 
+/**
+ * Maps between {@link ClaimResponse} and {@link ClaimSummary}.
+ *
+ * @author Jamie Briggs
+ */
 @Mapper(componentModel = "spring")
 public interface ClaimSummaryMapper {
 

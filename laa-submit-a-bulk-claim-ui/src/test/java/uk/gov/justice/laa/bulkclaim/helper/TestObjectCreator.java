@@ -2,7 +2,6 @@ package uk.gov.justice.laa.bulkclaim.helper;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.UUID;
 import uk.gov.justice.laa.bulkclaim.dto.submission.claim.ClaimSummary;
 import uk.gov.justice.laa.bulkclaim.dto.submission.claim.deprecated.SubmissionClaimFeeSubmittedDetails;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.ClaimResponse;

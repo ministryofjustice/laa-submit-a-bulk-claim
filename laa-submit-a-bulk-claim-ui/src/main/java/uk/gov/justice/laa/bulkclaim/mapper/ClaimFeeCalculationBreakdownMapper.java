@@ -23,50 +23,51 @@ public interface ClaimFeeCalculationBreakdownMapper {
       target = "netProfitCost",
       expression =
           """
-      java(toBulkClaimCostItem(claimResponse.getNetProfitCostsAmount(),
-      claimResponse.getFeeCalculationResponse().getNetProfitCostsAmount()))""")
+              java(toBulkClaimCostItem(claimResponse.getNetProfitCostsAmount(),
+              claimResponse.getFeeCalculationResponse().getNetProfitCostsAmount()))""")
   @Mapping(
       target = "netDisbursments",
       expression =
           """
-      java(toBulkClaimCostItem(claimResponse.getNetDisbursementAmount(),
-      claimResponse.getFeeCalculationResponse().getDisbursementAmount()))""")
+              java(toBulkClaimCostItem(claimResponse.getNetDisbursementAmount(),
+              claimResponse.getFeeCalculationResponse().getDisbursementAmount()))""")
   @Mapping(
       target = "disbursementVat",
       expression =
           """
-      java(toBulkClaimCostItem(claimResponse.getDisbursementsVatAmount(),
-      claimResponse.getFeeCalculationResponse().getDisbursementVatAmount()))""")
+              java(toBulkClaimCostItem(claimResponse.getDisbursementsVatAmount(),
+              claimResponse.getFeeCalculationResponse().getDisbursementVatAmount()))""")
   @Mapping(
       target = "netCostOfCounsel",
       expression =
           """
-      java(toBulkClaimCostItem(claimResponse.getNetCounselCostsAmount(),
-      claimResponse.getFeeCalculationResponse().getNetCostOfCounselAmount()))""")
+              java(toBulkClaimCostItem(claimResponse.getNetCounselCostsAmount(),
+              claimResponse.getFeeCalculationResponse().getNetCostOfCounselAmount()))""")
   @Mapping(
       target = "travelAndWaitingCosts",
       expression =
           """
-      java(toBulkClaimCostItem(claimResponse.getTravelWaitingCostsAmount(),
-      claimResponse.getFeeCalculationResponse().getTravelAndWaitingCostsAmount()))""")
+              java(toBulkClaimCostItem(claimResponse.getTravelWaitingCostsAmount(),
+              claimResponse.getFeeCalculationResponse().getTravelAndWaitingCostsAmount()))""")
   @Mapping(
       target = "adjournedHearingFee",
       expression =
           """
-      java(toBulkClaimCostItem(toBigDecimal(claimResponse.getAdjournedHearingFeeAmount()),
-      claimResponse.getFeeCalculationResponse().getBoltOnDetails().getBoltOnAdjournedHearingFee()))""")
+              java(toBulkClaimCostItem(toBigDecimal(claimResponse.getAdjournedHearingFeeAmount()),
+              claimResponse.getFeeCalculationResponse()
+                .getBoltOnDetails().getBoltOnAdjournedHearingFee()))""")
   @Mapping(
       target = "jrFormFilling",
       expression =
           """
-      java(toBulkClaimCostItem(claimResponse.getJrFormFillingAmount(),
-      claimResponse.getFeeCalculationResponse().getJrFormFillingAmount()))""")
+              java(toBulkClaimCostItem(claimResponse.getJrFormFillingAmount(),
+              claimResponse.getFeeCalculationResponse().getJrFormFillingAmount()))""")
   @Mapping(
       target = "detentionTravelAndWaitingCosts",
       expression =
           """
-      java(toBulkClaimCostItem(claimResponse.getDetentionTravelWaitingCostsAmount(),
-      claimResponse.getFeeCalculationResponse().getDetentionAndWaitingCostsAmount()))""")
+              java(toBulkClaimCostItem(claimResponse.getDetentionTravelWaitingCostsAmount(),
+              claimResponse.getFeeCalculationResponse().getDetentionAndWaitingCostsAmount()))""")
   @Mapping(target = "cmrhTelephone.enteredValue", ignore = true)
   @Mapping(
       target = "cmrhTelephone.calculatedValue",
@@ -90,12 +91,24 @@ public interface ClaimFeeCalculationBreakdownMapper {
   @Mapping(target = "calculatedValue", source = "calculatedValue")
   BulkClaimCostItem toBulkClaimCostItem(BigDecimal enteredValue, BigDecimal calculatedValue);
 
+  /**
+   * Converts an Integer to a BigDecimal with 2 decimal places.
+   *
+   * @param value The Integer to convert.
+   * @return The converted BigDecimal with 2 decimal places.
+   */
   default BigDecimal toBigDecimal(Integer value) {
     return value == null
         ? null
-        : BigDecimal.valueOf(value).setScale(2); // Ensures precision to 2 decimal points
+        : scaleBigDecimal(BigDecimal.valueOf(value)); // Ensures precision to 2 decimal points
   }
 
+  /**
+   * Scales a BigDecimal to 2 decimal places - a monetary value.
+   *
+   * @param value The BigDecimal to scale.
+   * @return The scaled BigDecimal with 2 decimal places.
+   */
   default BigDecimal scaleBigDecimal(BigDecimal value) {
     return value == null
         ? null

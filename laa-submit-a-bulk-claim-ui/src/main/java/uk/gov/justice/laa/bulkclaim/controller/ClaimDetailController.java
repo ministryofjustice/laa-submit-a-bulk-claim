@@ -20,6 +20,7 @@ import uk.gov.justice.laa.bulkclaim.exception.SubmitBulkClaimException;
 import uk.gov.justice.laa.bulkclaim.mapper.ClaimFeeCalculationBreakdownMapper;
 import uk.gov.justice.laa.bulkclaim.mapper.ClaimSummaryMapper;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.ClaimResponse;
+import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionResponse;
 
 /**
  * Controller for handling viewing a claim from a submission.
@@ -37,11 +38,10 @@ public final class ClaimDetailController {
   private final ClaimFeeCalculationBreakdownMapper claimFeeCalculationBreakdownMapper;
 
   /**
-   * Gets the claim reference, stores it in the session and redirects to the view claim detail
-   * page.
+   * Gets the claim reference, stores it in the session and redirects to the view claim detail page.
    *
    * @param claimReference the claim reference
-   * @param httpSession    the http session
+   * @param httpSession the http session
    * @return the redirect to view a claim detail
    */
   @GetMapping("/submission/claim/{claimReference}")
@@ -54,9 +54,9 @@ public final class ClaimDetailController {
   /**
    * Views the submission detail page.
    *
-   * @param model        the spring model
+   * @param model the spring model
    * @param submissionId the submission id in the session
-   * @param claimId      the claim id in the session
+   * @param claimId the claim id in the session
    * @return the view claim detail page
    */
   @GetMapping("/view-claim-detail")
@@ -65,8 +65,6 @@ public final class ClaimDetailController {
       @ModelAttribute(SUBMISSION_ID) final UUID submissionId,
       @ModelAttribute(CLAIM_ID) final UUID claimId) {
 
-    String areaOfLaw =
-        simplifyAreaOfLaw(dataClaimsRestClient.getSubmission(submissionId).block().getAreaOfLaw());
     ClaimResponse claimResponse =
         dataClaimsRestClient
             .getSubmissionClaim(submissionId, claimId)
@@ -82,13 +80,18 @@ public final class ClaimDetailController {
     model.addAttribute(
         "feeDetails",
         claimFeeCalculationBreakdownMapper.toClaimFeeCalculationBreakdown(claimResponse));
+    SubmissionResponse submissionResponse =
+        dataClaimsRestClient.getSubmission(submissionId).block();
+    String areaOfLaw = simplifyAreaOfLaw(submissionResponse.getAreaOfLaw());
     model.addAttribute("claimSummary", claimSummaryMapper.toClaimSummary(claimResponse, areaOfLaw));
 
     return "pages/view-claim-detail";
   }
 
   private String simplifyAreaOfLaw(String areaOfLaw) {
-    return areaOfLaw.toUpperCase(Locale.ROOT).replace("LEGAL HELP", "CIVIL")
+    return areaOfLaw
+        .toUpperCase(Locale.ROOT)
+        .replace("LEGAL HELP", "CIVIL")
         .replace("CRIME LOWER", "CRIME");
   }
 }

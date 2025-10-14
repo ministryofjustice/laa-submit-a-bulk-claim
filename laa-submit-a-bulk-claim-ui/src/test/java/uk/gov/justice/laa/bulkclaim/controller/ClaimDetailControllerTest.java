@@ -25,7 +25,6 @@ import uk.gov.justice.laa.bulkclaim.builder.SubmissionClaimMessagesBuilder;
 import uk.gov.justice.laa.bulkclaim.client.DataClaimsRestClient;
 import uk.gov.justice.laa.bulkclaim.config.WebMvcTestConfig;
 import uk.gov.justice.laa.bulkclaim.dto.submission.claim.ClaimMessagesSummary;
-import uk.gov.justice.laa.bulkclaim.dto.submission.claim.deprecated.SubmissionClaimFeeSubmittedDetails;
 import uk.gov.justice.laa.bulkclaim.helper.TestObjectCreator;
 import uk.gov.justice.laa.bulkclaim.mapper.ClaimSummaryMapper;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.ClaimResponse;
@@ -38,16 +37,11 @@ import uk.gov.justice.laa.dstew.payments.claimsdata.model.ValidationMessageType;
 @DisplayName("Claim detail controller test")
 class ClaimDetailControllerTest {
 
-  @Autowired
-  private MockMvcTester mockMvc;
+  @Autowired private MockMvcTester mockMvc;
 
-  @MockitoBean
-  private DataClaimsRestClient dataClaimsRestClient;
-  @Autowired
-  @MockitoBean
-  private ClaimSummaryMapper claimSummaryMapper;
-  @MockitoBean
-  private SubmissionClaimMessagesBuilder submissionClaimMessagesBuilder;
+  @MockitoBean private DataClaimsRestClient dataClaimsRestClient;
+  @Autowired @MockitoBean private ClaimSummaryMapper claimSummaryMapper;
+  @MockitoBean private SubmissionClaimMessagesBuilder submissionClaimMessagesBuilder;
 
   @Nested
   @DisplayName("GET: /submission/claim/{claimReference}")
@@ -59,9 +53,9 @@ class ClaimDetailControllerTest {
       UUID claimId = UUID.fromString("244fcb9f-50ab-4af8-b635-76bd30e0e97d");
 
       assertThat(
-          mockMvc.perform(
-              get("/submission/claim/" + claimId)
-                  .with(oidcLogin().oidcUser(ControllerTestHelper.getOidcUser()))))
+              mockMvc.perform(
+                  get("/submission/claim/" + claimId)
+                      .with(oidcLogin().oidcUser(ControllerTestHelper.getOidcUser()))))
           .hasStatus3xxRedirection()
           .hasRedirectedUrl("/view-claim-detail");
     }
@@ -82,11 +76,11 @@ class ClaimDetailControllerTest {
           .thenReturn(Mono.just(claimResponse));
 
       assertThat(
-          mockMvc.perform(
-              get("/view-claim-detail")
-                  .with(oidcLogin().oidcUser(ControllerTestHelper.getOidcUser()))
-                  .sessionAttr(SUBMISSION_ID, submissionId)
-                  .sessionAttr(CLAIM_ID, claimId)))
+              mockMvc.perform(
+                  get("/view-claim-detail")
+                      .with(oidcLogin().oidcUser(ControllerTestHelper.getOidcUser()))
+                      .sessionAttr(SUBMISSION_ID, submissionId)
+                      .sessionAttr(CLAIM_ID, claimId)))
           .hasStatusOk()
           .hasViewName("pages/view-claim-detail");
 
@@ -107,16 +101,16 @@ class ClaimDetailControllerTest {
       Page pagination = Page.builder().totalPages(1).totalElements(0).number(0).size(10).build();
 
       when(submissionClaimMessagesBuilder.build(
-          submissionId, claimId, 0, ValidationMessageType.WARNING, 10))
+              submissionId, claimId, 0, ValidationMessageType.WARNING, 10))
           .thenReturn(new ClaimMessagesSummary(Collections.emptyList(), 0, 0, pagination));
 
       assertThat(
-          mockMvc.perform(
-              get("/view-claim-detail")
-                  .param("navTab", "CLAIM_MESSAGES")
-                  .with(oidcLogin().oidcUser(ControllerTestHelper.getOidcUser()))
-                  .sessionAttr(SUBMISSION_ID, submissionId)
-                  .sessionAttr(CLAIM_ID, claimId)))
+              mockMvc.perform(
+                  get("/view-claim-detail")
+                      .param("navTab", "CLAIM_MESSAGES")
+                      .with(oidcLogin().oidcUser(ControllerTestHelper.getOidcUser()))
+                      .sessionAttr(SUBMISSION_ID, submissionId)
+                      .sessionAttr(CLAIM_ID, claimId)))
           .hasStatusOk()
           .hasViewName("pages/view-claim-detail");
 
@@ -130,10 +124,10 @@ class ClaimDetailControllerTest {
       UUID claimId = UUID.fromString("244fcb9f-50ab-4af8-b635-76bd30e0e97d");
 
       assertThat(
-          mockMvc.perform(
-              get("/view-claim-detail")
-                  .with(oidcLogin().oidcUser(ControllerTestHelper.getOidcUser()))
-                  .sessionAttr(CLAIM_ID, claimId)))
+              mockMvc.perform(
+                  get("/view-claim-detail")
+                      .with(oidcLogin().oidcUser(ControllerTestHelper.getOidcUser()))
+                      .sessionAttr(CLAIM_ID, claimId)))
           .failure()
           .hasMessageContaining("Expected session attribute 'submissionId'");
     }
@@ -144,10 +138,10 @@ class ClaimDetailControllerTest {
       UUID submissionId = UUID.fromString("244fcb9f-50ab-4af8-b635-76bd30e0e97d");
 
       assertThat(
-          mockMvc.perform(
-              get("/view-claim-detail")
-                  .with(oidcLogin().oidcUser(ControllerTestHelper.getOidcUser()))
-                  .sessionAttr(SUBMISSION_ID, submissionId)))
+              mockMvc.perform(
+                  get("/view-claim-detail")
+                      .with(oidcLogin().oidcUser(ControllerTestHelper.getOidcUser()))
+                      .sessionAttr(SUBMISSION_ID, submissionId)))
           .failure()
           .hasMessageContaining("Expected session attribute 'claimId'");
     }
@@ -159,12 +153,12 @@ class ClaimDetailControllerTest {
       UUID submissionId = UUID.fromString("244fcb9f-50ab-4af8-b635-76bd30e0e97d");
 
       assertThat(
-          mockMvc.perform(
-              get("/view-claim-detail")
-                  .param("navTab", "INVALID_VALUE")
-                  .with(oidcLogin().oidcUser(ControllerTestHelper.getOidcUser()))
-                  .sessionAttr(CLAIM_ID, claimId)
-                  .sessionAttr(SUBMISSION_ID, submissionId)))
+              mockMvc.perform(
+                  get("/view-claim-detail")
+                      .param("navTab", "INVALID_VALUE")
+                      .with(oidcLogin().oidcUser(ControllerTestHelper.getOidcUser()))
+                      .sessionAttr(CLAIM_ID, claimId)
+                      .sessionAttr(SUBMISSION_ID, submissionId)))
           .failure()
           .hasMessageContaining(
               "Method parameter 'navTab': Failed to convert value of type 'java.lang.String'");
@@ -179,11 +173,11 @@ class ClaimDetailControllerTest {
       when(dataClaimsRestClient.getSubmissionClaim(submissionId, claimId)).thenReturn(Mono.empty());
 
       assertThat(
-          mockMvc.perform(
-              get("/view-claim-detail")
-                  .with(oidcLogin().oidcUser(ControllerTestHelper.getOidcUser()))
-                  .sessionAttr(SUBMISSION_ID, submissionId)
-                  .sessionAttr(CLAIM_ID, claimId)))
+              mockMvc.perform(
+                  get("/view-claim-detail")
+                      .with(oidcLogin().oidcUser(ControllerTestHelper.getOidcUser()))
+                      .sessionAttr(SUBMISSION_ID, submissionId)
+                      .sessionAttr(CLAIM_ID, claimId)))
           .failure()
           .hasMessageEndingWith(
               "Claim 59930faa-3f38-4ee1-b5bd-08dce5a4fdbc does not exist for submission "
