@@ -1,0 +1,25 @@
+{
+  "content": [
+    {
+      "id": "497f6eca-6276-4993-bfeb-53cbbbba6f08",
+      "submission_id": "945dfedc-ad7f-4af7-b20c-06082ffa3cb3",
+      "claim_id": "6ed32748-64af-4d95-94ea-a78b6397033c",
+      "type": "ERROR",
+      "source": "string",
+      "display_message": "string"
+    },
+    {
+      "id": "0199e23f-b903-7a25-b802-7d1676ba06c8",
+      "submission_id": "0199e267-62e6-7d0d-9211-135702b158cf",
+      "claim_id": "0199e267-8139-782a-bb5f-6b504c66ea77",
+      "type": "WARNING",
+      "source": "string",
+      "display_message": "string"
+    }
+  ],
+  "total_claims": 2,
+  "total_pages": 1,
+  "total_elements": 2,
+  "number": 1,
+  "size": 1
+}

@@ -170,14 +170,14 @@ class DataClaimsRestClientIntegrationTest extends MockServerIntegrationTest {
             "office_account_number": "9Z876X",
             "status": "CREATED",
             "area_of_law": "CIVIL",
-            "submitted": "2025-08-21"
+            "submitted": "2019-08-24T14:15:22Z"
           },
           {
             "submission_id": "770e8400-e29b-41d4-a716-2c963f66afa6",
             "office_account_number": "9Z876X",
             "status": "VALIDATION_SUCCEEDED",
             "area_of_law": "CIVIL",
-            "submitted": "2025-08-22"
+            "submitted": "2019-08-25T15:17:22Z"
           }
           """;
       mockServerClient
@@ -224,7 +224,7 @@ class DataClaimsRestClientIntegrationTest extends MockServerIntegrationTest {
                   .withHeader("Content-Type", "application/json")
                   .withBody(expectJson));
       // Then
-      GetSubmission200Response block = dataClaimsRestClient.getSubmission(submissionId).block();
+      SubmissionResponse block = dataClaimsRestClient.getSubmission(submissionId).block();
       String result = objectMapper.writeValueAsString(block);
       assertThatJsonMatches(expectJson, result);
     }
@@ -336,7 +336,7 @@ class DataClaimsRestClientIntegrationTest extends MockServerIntegrationTest {
                   .withHeader("Content-Type", "application/json")
                   .withBody(expectJson));
       // Then
-      ClaimFields block = dataClaimsRestClient.getSubmissionClaim(submissionId, claimId).block();
+      ClaimResponse block = dataClaimsRestClient.getSubmissionClaim(submissionId, claimId).block();
       String result = objectMapper.writeValueAsString(block);
       assertThatJsonMatches(expectJson, result);
     }
@@ -559,7 +559,7 @@ class DataClaimsRestClientIntegrationTest extends MockServerIntegrationTest {
   }
 
   @Nested
-  @DisplayName("GET: /api/v0/validation-errors")
+  @DisplayName("GET: /api/v0/validation-messages")
   class GetValidationErrors {
 
     @Test
@@ -567,17 +567,17 @@ class DataClaimsRestClientIntegrationTest extends MockServerIntegrationTest {
     void shouldHandle200ResponseWithOneError() throws Exception {
       // Given
       UUID submissionId = UUID.fromString("3fa85f64-5717-4562-b3fc-2c963f66afa6");
-      String expectJson = readJsonFromFile("/GetValidationError200.json");
+      String expectJson = readJsonFromFile("/GetValidationMessage200.json");
       mockServerClient
-          .when(HttpRequest.request().withMethod("GET").withPath("/api/v0/validation-errors"))
+          .when(HttpRequest.request().withMethod("GET").withPath("/api/v0/validation-messages"))
           .respond(
               response()
                   .withStatusCode(200)
                   .withHeader("Content-Type", "application/json")
                   .withBody(expectJson));
       // Then
-      List<ClaimValidationError> block =
-          dataClaimsRestClient.getValidationErrors(submissionId).block();
+      ValidationMessagesResponse block =
+          dataClaimsRestClient.getValidationMessages(submissionId, null, null, null, null).block();
       String result = objectMapper.writeValueAsString(block);
       assertThatJsonMatches(expectJson, result);
     }
@@ -587,17 +587,17 @@ class DataClaimsRestClientIntegrationTest extends MockServerIntegrationTest {
     void shouldHandle200ResponseWithMultipleErrors() throws Exception {
       // Given
       UUID submissionId = UUID.fromString("3fa85f64-5717-4562-b3fc-2c963f66afa6");
-      String expectJson = readJsonFromFile("/GetValidationErrors200.json");
+      String expectJson = readJsonFromFile("/GetValidationMessages200.json");
       mockServerClient
-          .when(HttpRequest.request().withMethod("GET").withPath("/api/v0/validation-errors"))
+          .when(HttpRequest.request().withMethod("GET").withPath("/api/v0/validation-messages"))
           .respond(
               response()
                   .withStatusCode(200)
                   .withHeader("Content-Type", "application/json")
                   .withBody(expectJson));
       // Then
-      List<ClaimValidationError> block =
-          dataClaimsRestClient.getValidationErrors(submissionId).block();
+      ValidationMessagesResponse block =
+          dataClaimsRestClient.getValidationMessages(submissionId, null, null, null, null).block();
       String result = objectMapper.writeValueAsString(block);
       assertThatJsonMatches(expectJson, result);
     }
@@ -608,12 +608,16 @@ class DataClaimsRestClientIntegrationTest extends MockServerIntegrationTest {
       // Given
       UUID submissionId = UUID.fromString("3fa85f64-5717-4562-b3fc-2c963f66afa6");
       mockServerClient
-          .when(HttpRequest.request().withMethod("GET").withPath("/api/v0/validation-errors"))
+          .when(HttpRequest.request().withMethod("GET").withPath("/api/v0/validation-messages"))
           .respond(response().withStatusCode(400).withHeader("Content-Type", "application/json"));
 
       // When
       assertThrows(
-          BadRequest.class, () -> dataClaimsRestClient.getValidationErrors(submissionId).block());
+          BadRequest.class,
+          () ->
+              dataClaimsRestClient
+                  .getValidationMessages(submissionId, null, null, null, null)
+                  .block());
     }
 
     @Test
@@ -622,12 +626,16 @@ class DataClaimsRestClientIntegrationTest extends MockServerIntegrationTest {
       // Given
       UUID submissionId = UUID.fromString("3fa85f64-5717-4562-b3fc-2c963f66afa6");
       mockServerClient
-          .when(HttpRequest.request().withMethod("GET").withPath("/api/v0/validation-errors"))
+          .when(HttpRequest.request().withMethod("GET").withPath("/api/v0/validation-messages"))
           .respond(response().withStatusCode(401).withHeader("Content-Type", "application/json"));
 
       // When
       assertThrows(
-          Unauthorized.class, () -> dataClaimsRestClient.getValidationErrors(submissionId).block());
+          Unauthorized.class,
+          () ->
+              dataClaimsRestClient
+                  .getValidationMessages(submissionId, null, null, null, null)
+                  .block());
     }
 
     @Test
@@ -636,12 +644,16 @@ class DataClaimsRestClientIntegrationTest extends MockServerIntegrationTest {
       // Given
       UUID submissionId = UUID.fromString("3fa85f64-5717-4562-b3fc-2c963f66afa6");
       mockServerClient
-          .when(HttpRequest.request().withMethod("GET").withPath("/api/v0/validation-errors"))
+          .when(HttpRequest.request().withMethod("GET").withPath("/api/v0/validation-messages"))
           .respond(response().withStatusCode(403).withHeader("Content-Type", "application/json"));
 
       // When
       assertThrows(
-          Forbidden.class, () -> dataClaimsRestClient.getValidationErrors(submissionId).block());
+          Forbidden.class,
+          () ->
+              dataClaimsRestClient
+                  .getValidationMessages(submissionId, null, null, null, null)
+                  .block());
     }
 
     @Test
@@ -650,12 +662,16 @@ class DataClaimsRestClientIntegrationTest extends MockServerIntegrationTest {
       // Given
       UUID submissionId = UUID.fromString("3fa85f64-5717-4562-b3fc-2c963f66afa6");
       mockServerClient
-          .when(HttpRequest.request().withMethod("GET").withPath("/api/v0/validation-errors"))
+          .when(HttpRequest.request().withMethod("GET").withPath("/api/v0/validation-messages"))
           .respond(response().withStatusCode(404).withHeader("Content-Type", "application/json"));
 
       // When
       assertThrows(
-          NotFound.class, () -> dataClaimsRestClient.getValidationErrors(submissionId).block());
+          NotFound.class,
+          () ->
+              dataClaimsRestClient
+                  .getValidationMessages(submissionId, null, null, null, null)
+                  .block());
     }
 
     @Test
@@ -664,13 +680,16 @@ class DataClaimsRestClientIntegrationTest extends MockServerIntegrationTest {
       // Given
       UUID submissionId = UUID.fromString("3fa85f64-5717-4562-b3fc-2c963f66afa6");
       mockServerClient
-          .when(HttpRequest.request().withMethod("GET").withPath("/api/v0/validation-errors"))
+          .when(HttpRequest.request().withMethod("GET").withPath("/api/v0/validation-messages"))
           .respond(response().withStatusCode(500).withHeader("Content-Type", "application/json"));
 
       // When
       assertThrows(
           InternalServerError.class,
-          () -> dataClaimsRestClient.getValidationErrors(submissionId).block());
+          () ->
+              dataClaimsRestClient
+                  .getValidationMessages(submissionId, null, null, null, null)
+                  .block());
     }
   }
 }
