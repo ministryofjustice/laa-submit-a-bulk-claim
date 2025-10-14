@@ -1,11 +1,14 @@
 package uk.gov.justice.laa.bulkclaim.builder;
 
+import java.math.BigDecimal;
 import java.util.List;
+import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import reactor.core.publisher.Mono;
 import uk.gov.justice.laa.bulkclaim.client.DataClaimsRestClient;
 import uk.gov.justice.laa.bulkclaim.dto.submission.claim.SubmissionClaimRow;
+import uk.gov.justice.laa.bulkclaim.dto.submission.claim.SubmissionClaimRowCostsDetails;
 import uk.gov.justice.laa.bulkclaim.dto.submission.claim.SubmissionClaimsDetails;
 import uk.gov.justice.laa.bulkclaim.mapper.SubmissionClaimRowMapper;
 import uk.gov.justice.laa.bulkclaim.util.PaginationUtil;
@@ -52,7 +55,8 @@ public class SubmissionClaimDetailsBuilder {
                               x.getClaimId(),
                               ValidationMessageType.WARNING.getValue(),
                               null,
-                              0)
+                              0,
+                              size)
                           .block()
                           .getTotalElements();
                   return Mono.zip(Mono.just(submissionClaim), Mono.just(totalElements));
@@ -64,6 +68,13 @@ public class SubmissionClaimDetailsBuilder {
             .toList();
 
     int totalClaims = submissionClaimRows.size();
+    BigDecimal totalClaimValue =
+        submissionClaimRows.stream()
+            .map(SubmissionClaimRow::costsDetails)
+            .filter(Objects::nonNull)
+            .map(SubmissionClaimRowCostsDetails::claimValue)
+            .filter(Objects::nonNull)
+            .reduce(BigDecimal.ZERO, BigDecimal::add);
     int safeSize = size > 0 ? size : totalClaims;
     int maxPageIndex =
         safeSize == 0 ? 0 : Math.max((int) Math.ceil((double) totalClaims / safeSize) - 1, 0);
@@ -73,6 +84,6 @@ public class SubmissionClaimDetailsBuilder {
     List<SubmissionClaimRow> pagedClaims = submissionClaimRows.subList(fromIndex, toIndex);
 
     return new SubmissionClaimsDetails(
-        pagedClaims, paginationUtil.from(safePage, safeSize, totalClaims));
+        pagedClaims, paginationUtil.from(safePage, safeSize, totalClaims), totalClaimValue);
   }
 }

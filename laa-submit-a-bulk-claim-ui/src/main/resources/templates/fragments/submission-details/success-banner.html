@@ -1,0 +1,24 @@
+<th:block th:fragment="success-banner">
+  <div class="govuk-grid-column-full">
+    <div class="govuk-notification-banner govuk-notification-banner--success"
+         role="alert"
+         aria-labelledby="submission-success-banner-title"
+         data-module="govuk-notification-banner">
+      <div class="govuk-notification-banner__header">
+        <h2 class="govuk-notification-banner__title"
+            id="submission-success-banner-title"
+            th:text="#{common.success}"></h2>
+      </div>
+      <div class="govuk-notification-banner__content">
+        <h3 class="govuk-notification-banner__heading"
+            th:text="#{submission.summary.panel.title}"></h3>
+        <p class="govuk-body">
+          <span th:text="#{submission.summary.panel.body}"></span>
+          <a class="govuk-notification-banner__link"
+             th:href="${@environment.getProperty('links.bulk-upload-amendments')}"
+             th:text="#{submission.summary.panel.requestAmendment}"></a>.
+        </p>
+      </div>
+    </div>
+  </div>
+</th:block>

@@ -1,0 +1,253 @@
+<th:block th:fragment="claim-details">
+  <!--Claim details information-->
+  <th:block th:if="${navTab.toString() == 'CLAIM_DETAILS'}">
+    <div class="govuk-grid-column-full">
+      <div class="moj-scrollable-pane">
+        <table class="govuk-table" data-module="moj-sortable-table"
+               th:with="area=${submissionSummary.areaOfLaw != null ? #strings.toLowerCase(submissionSummary.areaOfLaw) : ''},
+                        isCrime=${area.contains('crime lower')},
+                        isCivil=${area.contains('legal help')},
+                        isMediation=${area.contains('mediation')}">
+
+          <caption class="govuk-table__caption govuk-table__caption--m"
+                   th:text="#{submission.summary.claims.caption}"></caption>
+
+          <thead class="govuk-table__head" th:if="${isCrime}">
+          <tr class="govuk-table__row">
+            <th scope="col" class="govuk-table__header" aria-sort="none"
+                th:text="#{submission.summary.claims.table.claim}"></th>
+            <th scope="col" class="govuk-table__header" aria-sort="none"
+                th:text="#{submission.summary.claims.table.clientSurname}"></th>
+            <th scope="col" class="govuk-table__header" aria-sort="none"
+                th:text="#{submission.summary.claims.table.clientInitial}"></th>
+            <th scope="col" class="govuk-table__header" aria-sort="none"
+                th:text="#{submission.summary.claims.table.ufn}"></th>
+            <th scope="col" class="govuk-table__header" aria-sort="none"
+                th:text="#{submission.summary.claims.table.feeCode}"></th>
+            <th scope="col" class="govuk-table__header" aria-sort="none"
+                th:text="#{submission.summary.claims.table.dateWorkConcluded}"></th>
+            <th scope="col" class="govuk-table__header" aria-sort="none"
+                th:text="#{submission.summary.claims.table.calculatedValue}"></th>
+            <th scope="col" class="govuk-table__header" aria-sort="none"
+                th:text="#{submission.summary.claims.table.escapeCase}"></th>
+            <th scope="col" class="govuk-table__header" aria-sort="none"
+                th:text="#{submission.summary.claims.table.messages}"></th>
+          </tr>
+          </thead>
+
+          <thead class="govuk-table__head" th:if="${isCivil}">
+          <tr class="govuk-table__row">
+            <th scope="col" class="govuk-table__header" aria-sort="none"
+                th:text="#{submission.summary.claims.table.claim}"></th>
+            <th scope="col" class="govuk-table__header" aria-sort="none"
+                th:text="#{submission.summary.claims.table.clientSurname}"></th>
+            <th scope="col" class="govuk-table__header" aria-sort="none"
+                th:text="#{submission.summary.claims.table.clientForename}"></th>
+            <th scope="col" class="govuk-table__header" aria-sort="none"
+                th:text="#{submission.summary.claims.table.ufn}"></th>
+            <th scope="col" class="govuk-table__header" aria-sort="none"
+                th:text="#{submission.summary.claims.table.ucn}"></th>
+            <th scope="col" class="govuk-table__header" aria-sort="none"
+                th:text="#{submission.summary.claims.table.feeCode}"></th>
+            <th scope="col" class="govuk-table__header" aria-sort="none"
+                th:text="#{submission.summary.claims.table.calculatedValue}"></th>
+            <th scope="col" class="govuk-table__header" aria-sort="none"
+                th:text="#{submission.summary.claims.table.escapeCase}"></th>
+            <th scope="col" class="govuk-table__header" aria-sort="none"
+                th:text="#{submission.summary.claims.table.messages}"></th>
+          </tr>
+          </thead>
+
+          <thead class="govuk-table__head" th:if="${isMediation}">
+          <tr class="govuk-table__row">
+            <th scope="col" class="govuk-table__header" aria-sort="none"
+                th:text="#{submission.summary.claims.table.claim}"></th>
+            <th scope="col" class="govuk-table__header" aria-sort="none"
+                th:text="#{submission.summary.claims.table.client1Surname}"></th>
+            <th scope="col" class="govuk-table__header" aria-sort="none"
+                th:text="#{submission.summary.claims.table.client1Forename}"></th>
+            <th scope="col" class="govuk-table__header" aria-sort="none"
+                th:text="#{submission.summary.claims.table.client1Ucn}"></th>
+            <th scope="col" class="govuk-table__header" aria-sort="none"
+                th:text="#{submission.summary.claims.table.client2Surname}"></th>
+            <th scope="col" class="govuk-table__header" aria-sort="none"
+                th:text="#{submission.summary.claims.table.client2Forename}"></th>
+            <th scope="col" class="govuk-table__header" aria-sort="none"
+                th:text="#{submission.summary.claims.table.client2Ucn}"></th>
+            <th scope="col" class="govuk-table__header" aria-sort="none"
+                th:text="#{submission.summary.claims.table.feeCode}"></th>
+            <th scope="col" class="govuk-table__header" aria-sort="none"
+                th:text="#{submission.summary.claims.table.calculatedValue}"></th>
+          </tr>
+          </thead>
+
+          <thead class="govuk-table__head"
+                 th:if="${!isCrime and !isCivil and !isMediation}">
+          <tr class="govuk-table__row">
+            <th scope="col" class="govuk-table__header" aria-sort="none"
+                th:text="#{submission.summary.claims.table.claim}"></th>
+            <th scope="col" class="govuk-table__header" aria-sort="none"
+                th:text="#{submission.summary.claims.table.client}"></th>
+            <th scope="col" class="govuk-table__header" aria-sort="none"
+                th:text="#{submission.summary.claims.table.ufn}"></th>
+            <th scope="col" class="govuk-table__header" aria-sort="none"
+                th:text="#{submission.summary.claims.table.ucn}"></th>
+            <th scope="col" class="govuk-table__header" aria-sort="none"
+                th:text="#{submission.summary.claims.table.feeCode}"></th>
+            <th scope="col" class="govuk-table__header" aria-sort="none"
+                th:text="#{submission.summary.claims.table.calculatedValue}"></th>
+            <th scope="col" class="govuk-table__header" aria-sort="none"
+                th:text="#{submission.summary.claims.table.messages}"></th>
+          </tr>
+          </thead>
+
+          <tbody class="govuk-table__body"
+                 th:if="${claimDetails == null or claimDetails.submissionClaims.isEmpty()}">
+          <tr class="govuk-table__row">
+            <td class="govuk-table__cell"
+                th:attr="colspan=${isMediation ? 9 : (isCrime or isCivil ? 9 : 7)}"
+                th:text="#{submission.summary.claims.none}"></td>
+          </tr>
+          </tbody>
+
+          <tbody class="govuk-table__body"
+                 th:if="${isCrime and claimDetails != null and !claimDetails.submissionClaims.isEmpty()}">
+          <tr class="govuk-table__row"
+              th:each="claim, idx : ${claimDetails.submissionClaims}">
+            <td class="govuk-table__cell">
+              <a class="govuk-link"
+                 th:href="@{/submission/claim/{id}(id=${claim.id})}"
+                 th:text="#{submission.summary.claims.viewLink}"></a>
+            </td>
+            <td class="govuk-table__cell"
+                th:text="${claim.clientSurname ?: '-'}"></td>
+            <td class="govuk-table__cell"
+                th:text="${claim.clientForename != null ? #strings.substring(claim.clientForename, 0, 1) : '-'}"></td>
+            <td class="govuk-table__cell"
+                th:text="${claim.ufn ?: '-'}"></td>
+            <td class="govuk-table__cell"
+                th:text="${claim.feeCode ?: '-'}"></td>
+            <td class="govuk-table__cell"
+                th:text="${claim.concludedOrClaimedDate != null ? #temporals.format(claim.concludedOrClaimedDate, 'dd MMM yyyy') : '-'}"></td>
+            <td class="govuk-table__cell"
+                th:text="${claim.costsDetails != null && claim.costsDetails.claimValue != null ? @currencyUtil.toString(claim.costsDetails.claimValue) : '-'}"></td>
+            <td class="govuk-table__cell">
+              <strong class="govuk-tag govuk-tag--pink"
+                      th:if="${claim.escapeCase}"
+                      th:text="#{submission.summary.claims.escapeCase.yes}"></strong>
+              <span th:if="${claim.escapeCase == null}"
+                    th:text="'-'"></span>
+              <span th:if="${claim.escapeCase != null and !claim.escapeCase}"
+                    th:text="#{submission.summary.claims.escapeCase.no}"></span>
+            </td>
+            <td class="govuk-table__cell">
+              <a class="govuk-link"
+                 th:if="${claim.totalMessages > 0}"
+                 th:href="@{/submission/claim/{id}(id=${claim.id})}"
+                 th:text="#{submission.summary.claims.messages.count(${claim.totalMessages})}"></a>
+            </td>
+          </tr>
+          </tbody>
+
+          <tbody class="govuk-table__body"
+                 th:if="${isCivil and claimDetails != null and !claimDetails.submissionClaims.isEmpty()}">
+          <tr class="govuk-table__row"
+              th:each="claim, idx : ${claimDetails.submissionClaims}">
+            <td class="govuk-table__cell">
+              <a class="govuk-link"
+                 th:href="@{/submission/claim/{id}(id=${claim.id})}"
+                 th:text="#{submission.summary.claims.viewLink}"></a>
+            </td>
+            <td class="govuk-table__cell"
+                th:text="${claim.clientSurname ?: '-'}"></td>
+            <td class="govuk-table__cell"
+                th:text="${claim.clientForename ?: '-'}"></td>
+            <td class="govuk-table__cell"
+                th:text="${claim.ufn ?: '-'}"></td>
+            <td class="govuk-table__cell"
+                th:text="${claim.ucn ?: '-'}"></td>
+            <td class="govuk-table__cell"
+                th:text="${claim.feeCode ?: '-'}"></td>
+            <td class="govuk-table__cell"
+                th:text="${claim.costsDetails != null && claim.costsDetails.claimValue != null ? @currencyUtil.toString(claim.costsDetails.claimValue) : '-'}"></td>
+            <td class="govuk-table__cell">
+              <strong class="govuk-tag govuk-tag--pink"
+                      th:if="${claim.escapeCase}"
+                      th:text="#{submission.summary.claims.escapeCase.yes}"></strong>
+              <span th:if="${claim.escapeCase == null}"
+                    th:text="'-'"></span>
+              <span th:if="${claim.escapeCase != null and !claim.escapeCase}"
+                    th:text="#{submission.summary.claims.escapeCase.no}"></span>
+            </td>
+            <td class="govuk-table__cell">
+              <a class="govuk-link"
+                 th:if="${claim.totalMessages > 0}"
+                 th:href="@{/submission/claim/{id}(id=${claim.id})}"
+                 th:text="#{submission.summary.claims.messages.count(${claim.totalMessages})}"></a>
+            </td>
+          </tr>
+          </tbody>
+
+          <tbody class="govuk-table__body"
+                 th:if="${isMediation and claimDetails != null and !claimDetails.submissionClaims.isEmpty()}">
+          <tr class="govuk-table__row"
+              th:each="claim, idx : ${claimDetails.submissionClaims}">
+            <td class="govuk-table__cell">
+              <a class="govuk-link"
+                 th:href="@{/submission/claim/{id}(id=${claim.id})}"
+                 th:text="#{submission.summary.claims.viewLink}"></a>
+            </td>
+            <td class="govuk-table__cell"
+                th:text="${claim.clientSurname ?: '-'}"></td>
+            <td class="govuk-table__cell"
+                th:text="${claim.clientForename ?: '-'}"></td>
+            <td class="govuk-table__cell"
+                th:text="${claim.ucn ?: '-'}"></td>
+            <td class="govuk-table__cell"
+                th:text="${claim.client2Surname ?: '-'}"></td>
+            <td class="govuk-table__cell"
+                th:text="${claim.client2Forename ?: '-'}"></td>
+            <td class="govuk-table__cell"
+                th:text="${claim.client2Ucn ?: '-'}"></td>
+            <td class="govuk-table__cell"
+                th:text="${claim.feeCode ?: '-'}"></td>
+            <td class="govuk-table__cell"
+                th:text="${claim.costsDetails != null && claim.costsDetails.claimValue != null ? @currencyUtil.toString(claim.costsDetails.claimValue) : '-'}"></td>
+          </tr>
+          </tbody>
+
+          <tbody class="govuk-table__body"
+                 th:if="${!isCrime and !isCivil and !isMediation and claimDetails != null and !claimDetails.submissionClaims.isEmpty()}">
+          <tr class="govuk-table__row"
+              th:each="claim, idx : ${claimDetails.submissionClaims}">
+            <td class="govuk-table__cell">
+              <a class="govuk-link"
+                 th:href="@{/submission/claim/{id}(id=${claim.id})}"
+                 th:text="#{submission.summary.claims.viewLink}"></a>
+            </td>
+            <td class="govuk-table__cell"
+                th:text="${claim.client ?: '-'}"></td>
+            <td class="govuk-table__cell"
+                th:text="${claim.ufn ?: '-'}"></td>
+            <td class="govuk-table__cell"
+                th:text="${claim.ucn ?: '-'}"></td>
+            <td class="govuk-table__cell"
+                th:text="${claim.feeCode ?: '-'}"></td>
+            <td class="govuk-table__cell"
+                th:text="${claim.costsDetails != null && claim.costsDetails.claimValue != null ? @currencyUtil.toString(claim.costsDetails.claimValue) : '-'}"></td>
+            <td class="govuk-table__cell">
+              <a class="govuk-link"
+                 th:if="${claim.totalMessages > 0}"
+                 th:href="@{/submission/claim/{id}(id=${claim.id})}"
+                 th:text="#{submission.summary.claims.messages.count(${claim.totalMessages})}"></a>
+            </td>
+          </tr>
+          </tbody>
+
+        </table>
+      </div>
+      <nav th:if="${claimDetails != null}"
+          th:replace="~{fragments/pagination :: pagination(currentUrl='/view-submission-detail?navTab=CLAIM_DETAILS', page=${claimDetails.pagination})}"></nav>
+    </div>
+  </th:block>
+</th:block>

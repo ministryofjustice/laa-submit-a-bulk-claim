@@ -39,8 +39,8 @@ public interface DataClaimsRestClient {
   @PostExchange(value = "/bulk-submissions", contentType = MediaType.MULTIPART_FORM_DATA_VALUE)
   Mono<ResponseEntity<CreateBulkSubmission201Response>> upload(
       @RequestPart("file") MultipartFile file,
-      @RequestParam(required = true) String userId,
-      @RequestParam(required = true) List<String> offices)
+      @RequestParam String userId,
+      @RequestParam List<String> offices)
       throws WebClientResponseException;
 
   /**
@@ -54,7 +54,7 @@ public interface DataClaimsRestClient {
    */
   @GetExchange(url = "/submissions", accept = MediaType.APPLICATION_JSON_VALUE)
   Mono<SubmissionsResultSet> search(
-      @RequestParam(value = "offices", required = true) List<String> offices,
+      @RequestParam(value = "offices") List<String> offices,
       @RequestParam(value = "submission_id", required = false) String submissionId,
       @RequestParam(value = "date_from", required = false) LocalDate dateFrom,
       @RequestParam(value = "date_to", required = false) LocalDate dateTo,
@@ -101,5 +101,6 @@ public interface DataClaimsRestClient {
       @RequestParam(value = "claim-id", required = false) UUID claimId,
       @RequestParam(value = "type", required = false) String type,
       @RequestParam(value = "source", required = false) String source,
-      @RequestParam(value = "page", required = false, defaultValue = "0") Integer page);
+      @RequestParam(value = "page", required = false, defaultValue = "0") Integer page,
+      @RequestParam(value = "size", required = false) Integer size);
 }

@@ -577,7 +577,9 @@ class DataClaimsRestClientIntegrationTest extends MockServerIntegrationTest {
                   .withBody(expectJson));
       // Then
       ValidationMessagesResponse block =
-          dataClaimsRestClient.getValidationMessages(submissionId, null, null, null, null).block();
+          dataClaimsRestClient
+              .getValidationMessages(submissionId, null, null, null, null, null)
+              .block();
       String result = objectMapper.writeValueAsString(block);
       assertThatJsonMatches(expectJson, result);
     }
@@ -597,7 +599,9 @@ class DataClaimsRestClientIntegrationTest extends MockServerIntegrationTest {
                   .withBody(expectJson));
       // Then
       ValidationMessagesResponse block =
-          dataClaimsRestClient.getValidationMessages(submissionId, null, null, null, null).block();
+          dataClaimsRestClient
+              .getValidationMessages(submissionId, null, null, null, null, null)
+              .block();
       String result = objectMapper.writeValueAsString(block);
       assertThatJsonMatches(expectJson, result);
     }
@@ -616,7 +620,7 @@ class DataClaimsRestClientIntegrationTest extends MockServerIntegrationTest {
           BadRequest.class,
           () ->
               dataClaimsRestClient
-                  .getValidationMessages(submissionId, null, null, null, null)
+                  .getValidationMessages(submissionId, null, null, null, null, null)
                   .block());
     }
 
@@ -634,7 +638,7 @@ class DataClaimsRestClientIntegrationTest extends MockServerIntegrationTest {
           Unauthorized.class,
           () ->
               dataClaimsRestClient
-                  .getValidationMessages(submissionId, null, null, null, null)
+                  .getValidationMessages(submissionId, null, null, null, null, null)
                   .block());
     }
 
@@ -652,7 +656,7 @@ class DataClaimsRestClientIntegrationTest extends MockServerIntegrationTest {
           Forbidden.class,
           () ->
               dataClaimsRestClient
-                  .getValidationMessages(submissionId, null, null, null, null)
+                  .getValidationMessages(submissionId, null, null, null, null, null)
                   .block());
     }
 
@@ -670,7 +674,7 @@ class DataClaimsRestClientIntegrationTest extends MockServerIntegrationTest {
           NotFound.class,
           () ->
               dataClaimsRestClient
-                  .getValidationMessages(submissionId, null, null, null, null)
+                  .getValidationMessages(submissionId, null, null, null, null, null)
                   .block());
     }
 
@@ -688,7 +692,7 @@ class DataClaimsRestClientIntegrationTest extends MockServerIntegrationTest {
           InternalServerError.class,
           () ->
               dataClaimsRestClient
-                  .getValidationMessages(submissionId, null, null, null, null)
+                  .getValidationMessages(submissionId, null, null, null, null, null)
                   .block());
     }
   }

@@ -64,6 +64,11 @@ class SubmissionClaimsDetailsBuilderTest {
             "ufn",
             "ucn",
             "client",
+            "client-forename",
+            "client-surname",
+            "client2-forename",
+            "client2-surname",
+            "client2-ucn",
             "cat",
             "matter",
             LocalDate.of(2025, 5, 1),
@@ -77,13 +82,15 @@ class SubmissionClaimsDetailsBuilderTest {
                 new BigDecimal("40.10"),
                 new BigDecimal("50.10"),
                 new BigDecimal("60.10"),
-                new BigDecimal("70.10")));
-    when(dataClaimsRestClient.getValidationMessages(any(), any(), any(), any(), anyInt()))
+                new BigDecimal("70.10")),
+            Boolean.TRUE);
+    when(dataClaimsRestClient.getValidationMessages(any(), any(), any(), any(), anyInt(), anyInt()))
         .thenReturn(Mono.just(ValidationMessagesResponse.builder().totalElements(2).build()));
     when(submissionClaimRowMapper.toSubmissionClaimRow(any(), anyInt())).thenReturn(expected);
     // When
     SubmissionClaimsDetails result = builder.build(submissionResponse, 0, 10);
     // Then
     assertThat(result.submissionClaims().contains(expected)).isTrue();
+    assertThat(result.totalClaimValue()).isEqualTo(new BigDecimal("70.10"));
   }
 }

@@ -63,7 +63,7 @@ public class SubmissionClaimMessagesBuilder {
     String submissionType = type != null ? type.toString() : null;
     final ValidationMessagesResponse messagesResponse =
         dataClaimsRestClient
-            .getValidationMessages(submissionId, claimId, submissionType, null, page)
+            .getValidationMessages(submissionId, claimId, submissionType, null, page, size)
             .block();
 
     // Loop through an error map and add claims

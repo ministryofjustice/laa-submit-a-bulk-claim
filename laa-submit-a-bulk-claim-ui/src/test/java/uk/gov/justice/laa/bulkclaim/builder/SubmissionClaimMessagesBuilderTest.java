@@ -48,7 +48,7 @@ class SubmissionClaimMessagesBuilderTest {
         new ValidationMessagesResponse().content(List.of(error)).totalElements(1).totalClaims(1);
 
     when(dataClaimsRestClient.getValidationMessages(
-            submissionId, null, ValidationMessageType.ERROR.toString(), null, 0))
+            submissionId, null, ValidationMessageType.ERROR.toString(), null, 0, 10))
         .thenReturn(Mono.just(errorResponse));
 
     when(dataClaimsRestClient.getSubmissionClaim(submissionId, claimId))
@@ -85,7 +85,7 @@ class SubmissionClaimMessagesBuilderTest {
     UUID submissionId = UUID.randomUUID();
 
     when(dataClaimsRestClient.getValidationMessages(
-            submissionId, null, ValidationMessageType.ERROR.toString(), null, 0))
+            submissionId, null, ValidationMessageType.ERROR.toString(), null, 0, 10))
         .thenReturn(Mono.empty());
 
     ClaimMessagesSummary result = builder.buildErrors(submissionId, 0, 10);
@@ -110,7 +110,7 @@ class SubmissionClaimMessagesBuilderTest {
         new ValidationMessagesResponse().content(List.of(error)).totalElements(1).totalClaims(1);
 
     when(dataClaimsRestClient.getValidationMessages(
-            submissionId, null, ValidationMessageType.ERROR.toString(), null, 0))
+            submissionId, null, ValidationMessageType.ERROR.toString(), null, 0, 10))
         .thenReturn(Mono.just(errorResponse));
 
     SubmissionSummaryClaimMessageRow mappedError =
