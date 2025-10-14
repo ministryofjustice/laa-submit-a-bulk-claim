@@ -2,7 +2,6 @@ package uk.gov.justice.laa.bulkclaim.controller;
 
 import static uk.gov.justice.laa.bulkclaim.constants.SessionConstants.CLAIM_ID;
 import static uk.gov.justice.laa.bulkclaim.constants.SessionConstants.SUBMISSION_ID;
-import static uk.gov.justice.laa.bulkclaim.constants.ViewClaimNavigationTab.CLAIM_MESSAGES;
 
 import jakarta.servlet.http.HttpSession;
 import java.util.UUID;
@@ -10,19 +9,15 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.util.Assert;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.SessionAttributes;
-import uk.gov.justice.laa.bulkclaim.builder.SubmissionClaimMessagesBuilder;
 import uk.gov.justice.laa.bulkclaim.client.DataClaimsRestClient;
-import uk.gov.justice.laa.bulkclaim.constants.ViewClaimNavigationTab;
-import uk.gov.justice.laa.bulkclaim.dto.submission.claim.ClaimMessagesSummary;
 import uk.gov.justice.laa.bulkclaim.exception.SubmitBulkClaimException;
-import uk.gov.justice.laa.bulkclaim.mapper.ClaimFeeDetailsMapper;
+import uk.gov.justice.laa.bulkclaim.mapper.ClaimFeeCalculationBreakdownMapper;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.ClaimResponse;
-import uk.gov.justice.laa.dstew.payments.claimsdata.model.ValidationMessageType;
 
 /**
  * Controller for handling viewing a claim from a submission.
@@ -38,8 +33,7 @@ public final class ClaimDetailController {
   private static final int DEFAULT_PAGE_SIZE = 10;
 
   private final DataClaimsRestClient dataClaimsRestClient;
-  private final ClaimFeeDetailsMapper claimFeeDetailsMapper;
-  private final SubmissionClaimMessagesBuilder submissionClaimMessagesBuilder;
+  private final ClaimFeeCalculationBreakdownMapper claimFeeCalculationBreakdownMapper;
 
   /**
    * Gets the claim reference, stores it in the session and redirects to the view claim detail page.
@@ -59,8 +53,6 @@ public final class ClaimDetailController {
    * Views the submission detail page.
    *
    * @param model the spring model
-   * @param page the page number for messages (default = 0)
-   * @param navigationTab the navigation tab (default = CLAIM_DETAILS)
    * @param submissionId the submission id in the session
    * @param claimId the claim id in the session
    * @return the view claim detail page
@@ -68,9 +60,6 @@ public final class ClaimDetailController {
   @GetMapping("/view-claim-detail")
   public String getClaimDetail(
       Model model,
-      @RequestParam(value = "page", defaultValue = "0") final int page,
-      @RequestParam(value = "navTab", required = false, defaultValue = "FEE_CALCULATION")
-          final ViewClaimNavigationTab navigationTab,
       @ModelAttribute(SUBMISSION_ID) final UUID submissionId,
       @ModelAttribute(CLAIM_ID) final UUID claimId) {
 
@@ -85,42 +74,11 @@ public final class ClaimDetailController {
                             .formatted(claimId.toString(), submissionId.toString())));
     model.addAttribute("ufn", claimResponse.getUniqueFileNumber());
 
-    if (CLAIM_MESSAGES.equals(navigationTab)) {
-      addClaimMessages(model, page, submissionId, claimId);
-    } else { // Default fee calculation details
-      addFeeCalculationDetails(model, claimResponse);
-    }
+    Assert.notNull(claimResponse.getFeeCalculationResponse(), "Fee calculation response is null");
+    model.addAttribute(
+        "feeSubmittedDetails",
+        claimFeeCalculationBreakdownMapper.toClaimFeeCalculationBreakdown(claimResponse));
 
-    model.addAttribute("navTab", navigationTab);
     return "pages/view-claim-detail";
-  }
-
-  /**
-   * Gets the claim reference, stores it in the session and redirects to the view claim detail page.
-   *
-   * @param claimReference the claim reference
-   * @param httpSession the http session
-   * @return the redirect to view a claim detail
-   */
-  @GetMapping("/submission/claim/{claimReference}/messages")
-  public String getClaimDetailMessages(
-      @PathVariable("claimReference") UUID claimReference, HttpSession httpSession) {
-    httpSession.setAttribute(CLAIM_ID, claimReference);
-    return "redirect:/view-claim-detail?navTab=CLAIM_MESSAGES";
-  }
-
-  private void addFeeCalculationDetails(Model model, ClaimResponse claimResponse) {
-    model.addAttribute(
-        "feeSubmittedDetails", claimFeeDetailsMapper.toSubmittedFeeDetails(claimResponse));
-    model.addAttribute(
-        "feeCalculationDetails", claimFeeDetailsMapper.toCalculatedFeeDetails(claimResponse));
-  }
-
-  private void addClaimMessages(Model model, int page, UUID submissionId, UUID claimId) {
-    // Claim warnings & errors
-    final ClaimMessagesSummary claimMessagesSummary =
-        submissionClaimMessagesBuilder.build(
-            submissionId, claimId, page, ValidationMessageType.WARNING, DEFAULT_PAGE_SIZE);
-    model.addAttribute("claimMessages", claimMessagesSummary);
   }
 }
