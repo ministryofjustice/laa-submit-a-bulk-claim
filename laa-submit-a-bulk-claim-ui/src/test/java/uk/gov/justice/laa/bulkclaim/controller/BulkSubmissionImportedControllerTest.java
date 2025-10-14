@@ -146,6 +146,12 @@ class BulkSubmissionImportedControllerTest {
                 "UFN1",
                 "UCN2",
                 "Client",
+                "Client",
+                null,
+                null,
+                null,
+                null,
+                null,
                 "This is an error which is found on your claim!",
                 "ERROR"));
 

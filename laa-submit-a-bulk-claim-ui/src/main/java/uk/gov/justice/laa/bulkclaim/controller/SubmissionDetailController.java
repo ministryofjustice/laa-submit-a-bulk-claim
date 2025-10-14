@@ -60,25 +60,37 @@ public class SubmissionDetailController {
   @GetMapping("/submission/{submissionReference}")
   public String getSubmissionReference(
       @PathVariable("submissionReference") UUID submissionReference,
-      @SessionAttribute("submissions") SubmissionsResultSet submissions,
+      @SessionAttribute(value = "submissions", required = false) SubmissionsResultSet submissions,
+      @SessionAttribute(value = SUBMISSION_ID, required = false) UUID submissionId,
       RedirectAttributes redirectAttributes,
       Model model) {
 
-    // Find the submission by ID
-    SubmissionBase submission =
-        submissions.getContent().stream()
-            .filter(s -> submissionReference.equals(s.getSubmissionId()))
-            .findFirst()
-            .orElseThrow(
-                () ->
-                    new ResponseStatusException(
-                        HttpStatus.FORBIDDEN, "Submission not found for user"));
+    // Validate that either submissions or submissionId is available
+    if ((submissions == null || submissions.getContent() == null) && submissionId == null) {
+      throw new ResponseStatusException(HttpStatus.FORBIDDEN, "No submissions found in session");
+    }
+
+    // Try to locate submission by reference in session submissions
+    SubmissionBase submission = null;
+    if (submissions != null && submissions.getContent() != null) {
+      submission =
+          submissions.getContent().stream()
+              .filter(s -> submissionReference.equals(s.getSubmissionId()))
+              .findFirst()
+              .orElse(null);
+    }
+
+    // If not found, check if submissionId in session matches the path variable
+    boolean matchesSessionId = submissionId != null && submissionReference.equals(submissionId);
+    if (submission == null && !matchesSessionId) {
+      throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Submission not found for user");
+    }
 
     // Store the submission ID in session
     model.addAttribute(SUBMISSION_ID, submissionReference);
 
-    // If validation is in progress, redirect to /import-in-progress and add submission details
-    if (submission.getStatus() == SubmissionStatus.VALIDATION_IN_PROGRESS) {
+    // Redirect based on submission status
+    if (submission != null && submission.getStatus() == SubmissionStatus.VALIDATION_IN_PROGRESS) {
       redirectAttributes.addFlashAttribute("submission", submission);
       return "redirect:/import-in-progress";
     }

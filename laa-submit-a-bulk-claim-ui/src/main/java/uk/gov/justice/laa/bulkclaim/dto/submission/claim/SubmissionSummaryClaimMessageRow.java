@@ -14,4 +14,15 @@ import java.util.UUID;
  * @author Jamie Briggs
  */
 public record SubmissionSummaryClaimMessageRow(
-    UUID submissionReference, String ufn, String ucn, String client, String message, String type) {}
+    UUID submissionReference,
+    String ufn,
+    String ucn,
+    String client,
+    String clientForename,
+    String clientSurname,
+    String client2Forename,
+    String client2Surname,
+    String client2Ucn,
+    String crimeMatterTypeCode,
+    String message,
+    String type) {}

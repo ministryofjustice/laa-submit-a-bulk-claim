@@ -87,6 +87,12 @@ class BulkClaimImportSummaryMapperTest {
           softly.assertThat(result.ufn()).isEqualTo("F123");
           softly.assertThat(result.ucn()).isEqualTo("C123");
           softly.assertThat(result.client()).isEqualTo("First Last");
+          softly.assertThat(result.clientForename()).isEqualTo("First");
+          softly.assertThat(result.clientSurname()).isEqualTo("Last");
+          softly.assertThat(result.client2Forename()).isNull();
+          softly.assertThat(result.client2Surname()).isNull();
+          softly.assertThat(result.client2Ucn()).isNull();
+          softly.assertThat(result.crimeMatterTypeCode()).isNull();
           softly.assertThat(result.message()).isEqualTo("This is an error!");
           softly.assertThat(result.type()).isEqualTo("ERROR");
         });
@@ -118,6 +124,12 @@ class BulkClaimImportSummaryMapperTest {
           softly.assertThat(result.ufn()).isEqualTo("F123");
           softly.assertThat(result.ucn()).isEqualTo("C123");
           softly.assertThat(result.client()).isEqualTo("First Last");
+          softly.assertThat(result.clientForename()).isEqualTo("First");
+          softly.assertThat(result.clientSurname()).isEqualTo("Last");
+          softly.assertThat(result.client2Forename()).isNull();
+          softly.assertThat(result.client2Surname()).isNull();
+          softly.assertThat(result.client2Ucn()).isNull();
+          softly.assertThat(result.crimeMatterTypeCode()).isNull();
           softly.assertThat(result.message()).isEqualTo("This is an error!");
           softly.assertThat(result.type()).isEqualTo("WARNING");
         });
@@ -141,6 +153,12 @@ class BulkClaimImportSummaryMapperTest {
     SoftAssertions.assertSoftly(
         softly -> {
           softly.assertThat(result.client()).isEqualTo("Second Client");
+          softly.assertThat(result.clientForename()).isEmpty();
+          softly.assertThat(result.clientSurname()).isEmpty();
+          softly.assertThat(result.client2Forename()).isEqualTo("Second");
+          softly.assertThat(result.client2Surname()).isEqualTo("Client");
+          softly.assertThat(result.client2Ucn()).isNull();
+          softly.assertThat(result.crimeMatterTypeCode()).isNull();
           softly.assertThat(result.message()).isEqualTo("Error!");
         });
   }
@@ -159,6 +177,12 @@ class BulkClaimImportSummaryMapperTest {
     SoftAssertions.assertSoftly(
         softly -> {
           softly.assertThat(result.client()).isNull();
+          softly.assertThat(result.clientForename()).isNull();
+          softly.assertThat(result.clientSurname()).isNull();
+          softly.assertThat(result.client2Forename()).isNull();
+          softly.assertThat(result.client2Surname()).isNull();
+          softly.assertThat(result.client2Ucn()).isNull();
+          softly.assertThat(result.crimeMatterTypeCode()).isNull();
           softly.assertThat(result.message()).isEqualTo("Error!");
         });
   }

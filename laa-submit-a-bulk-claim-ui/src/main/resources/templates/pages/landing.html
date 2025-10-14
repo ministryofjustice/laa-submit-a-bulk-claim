@@ -15,6 +15,9 @@
          th:utext="#{landing.beforeStart.files(
      ${@environment.getProperty('links.bulk-upload-spreadsheet')},
      ${@environment.getProperty('links.bulk-upload-spreadsheet-guide')})}"></p>
+      <p class="govuk-body"
+         th:utext="#{landing.beforeStart.guidance(
+     ${@environment.getProperty('links.bulk-upload-guidance')})}"></p>
 
       <a class="govuk-button govuk-button--start"
          th:href="@{/upload}"
