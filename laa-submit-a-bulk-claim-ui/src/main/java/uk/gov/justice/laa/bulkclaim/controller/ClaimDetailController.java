@@ -88,7 +88,7 @@ public final class ClaimDetailController {
     model.addAttribute("claimSummary", claimSummaryMapper.toClaimSummary(claimResponse, areaOfLaw));
 
     ClaimMessagesSummary claimMessagesSummary =
-        submissionClaimMessagesBuilder.buildWarnings(submissionId, claimId, 0, 100);
+        submissionClaimMessagesBuilder.buildAllWarnings(submissionId, claimId);
     model.addAttribute("claimMessages", claimMessagesSummary);
 
     return "pages/view-claim-detail";

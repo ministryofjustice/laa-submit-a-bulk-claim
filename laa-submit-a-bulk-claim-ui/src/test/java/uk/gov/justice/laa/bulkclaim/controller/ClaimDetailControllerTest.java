@@ -88,7 +88,7 @@ class ClaimDetailControllerTest {
       when(claimFeeCalculationBreakdownMapper.toClaimFeeCalculationBreakdown(claimResponse))
           .thenReturn(ClaimFeeCalculationBreakdown.builder().build());
 
-      when(submissionClaimMessagesBuilder.buildWarnings(submissionId, claimId, 0, 100))
+      when(submissionClaimMessagesBuilder.buildAllWarnings(submissionId, claimId))
           .thenReturn(
               ClaimMessagesSummary.builder()
                   .claimMessages(singletonList(SubmissionSummaryClaimMessageRow.builder().build()))

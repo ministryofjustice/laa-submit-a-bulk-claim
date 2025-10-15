@@ -43,11 +43,10 @@ public class SubmissionClaimMessagesBuilder {
    *
    * @param submissionId The submission ID to fetch errors for.
    * @param claimId The claim ID to fetch errors for.
-   * @param page The page number to fetch errors for.
    * @return The built {@link ClaimMessagesSummary}.
    */
-  public ClaimMessagesSummary buildWarnings(UUID submissionId, UUID claimId, int page, int size) {
-    return build(submissionId, claimId, page, ValidationMessageType.WARNING, size);
+  public ClaimMessagesSummary buildAllWarnings(UUID submissionId, UUID claimId) {
+    return build(submissionId, claimId, null, ValidationMessageType.WARNING, null);
   }
 
   /**
@@ -59,7 +58,7 @@ public class SubmissionClaimMessagesBuilder {
    * @return the built {@link ClaimMessagesSummary}.
    */
   public ClaimMessagesSummary build(
-      UUID submissionId, UUID claimId, int page, ValidationMessageType type, int size) {
+      UUID submissionId, UUID claimId, Integer page, ValidationMessageType type, Integer size) {
     String submissionType = type != null ? type.toString() : null;
     final ValidationMessagesResponse messagesResponse =
         dataClaimsRestClient
