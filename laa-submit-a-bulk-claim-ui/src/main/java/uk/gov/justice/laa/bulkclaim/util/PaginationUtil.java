@@ -67,7 +67,7 @@ public class PaginationUtil {
    *
    * @param pageNumber the zero-based page number requested.
    * @param pageSize the page size requested.
-   * @param totalElements the total number of elements available.
+   * @param totalElements the calculatedTotal number of elements available.
    * @return a populated {@link Page} instance.
    */
   public Page from(int pageNumber, int pageSize, int totalElements) {

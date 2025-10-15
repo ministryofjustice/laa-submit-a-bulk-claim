@@ -11,9 +11,9 @@ import java.util.Map;
 public record SubmissionMatterStartsDetails(Map<SubmissionMatterStartsRow, Long> matterTypes) {
 
   /**
-   * Returns the total number of matter starts for the bulk submission.
+   * Returns the calculatedTotal number of matter starts for the bulk submission.
    *
-   * @return the total number of matter starts
+   * @return the calculatedTotal number of matter starts
    */
   public long getTotalNumberOfMatterStarts() {
     return matterTypes.values().stream().mapToLong(l -> l).sum();

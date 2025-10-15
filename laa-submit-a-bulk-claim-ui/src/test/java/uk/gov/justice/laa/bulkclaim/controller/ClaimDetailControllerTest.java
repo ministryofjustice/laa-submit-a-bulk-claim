@@ -1,5 +1,6 @@
 package uk.gov.justice.laa.bulkclaim.controller;
 
+import static java.util.Collections.singletonList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -9,7 +10,6 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static uk.gov.justice.laa.bulkclaim.constants.SessionConstants.CLAIM_ID;
 import static uk.gov.justice.laa.bulkclaim.constants.SessionConstants.SUBMISSION_ID;
 
-import java.util.Collections;
 import java.util.UUID;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -24,13 +24,15 @@ import reactor.core.publisher.Mono;
 import uk.gov.justice.laa.bulkclaim.builder.SubmissionClaimMessagesBuilder;
 import uk.gov.justice.laa.bulkclaim.client.DataClaimsRestClient;
 import uk.gov.justice.laa.bulkclaim.config.WebMvcTestConfig;
+import uk.gov.justice.laa.bulkclaim.dto.submission.claim.ClaimFeeCalculationBreakdown;
 import uk.gov.justice.laa.bulkclaim.dto.submission.claim.ClaimMessagesSummary;
-import uk.gov.justice.laa.bulkclaim.dto.submission.claim.SubmissionClaimFeeSubmittedDetails;
+import uk.gov.justice.laa.bulkclaim.dto.submission.claim.ClaimSummary;
+import uk.gov.justice.laa.bulkclaim.dto.submission.claim.SubmissionSummaryClaimMessageRow;
 import uk.gov.justice.laa.bulkclaim.helper.TestObjectCreator;
-import uk.gov.justice.laa.bulkclaim.mapper.ClaimFeeDetailsMapper;
+import uk.gov.justice.laa.bulkclaim.mapper.ClaimFeeCalculationBreakdownMapper;
+import uk.gov.justice.laa.bulkclaim.mapper.ClaimSummaryMapper;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.ClaimResponse;
-import uk.gov.justice.laa.dstew.payments.claimsdata.model.Page;
-import uk.gov.justice.laa.dstew.payments.claimsdata.model.ValidationMessageType;
+import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionResponse;
 
 @WebMvcTest(ClaimDetailController.class)
 @AutoConfigureMockMvc
@@ -41,7 +43,8 @@ class ClaimDetailControllerTest {
   @Autowired private MockMvcTester mockMvc;
 
   @MockitoBean private DataClaimsRestClient dataClaimsRestClient;
-  @Autowired @MockitoBean private ClaimFeeDetailsMapper claimFeeDetailsMapper;
+  @MockitoBean private ClaimSummaryMapper claimSummaryMapper;
+  @MockitoBean private ClaimFeeCalculationBreakdownMapper claimFeeCalculationBreakdownMapper;
   @MockitoBean private SubmissionClaimMessagesBuilder submissionClaimMessagesBuilder;
 
   @Nested
@@ -67,16 +70,29 @@ class ClaimDetailControllerTest {
   class GetClaimDetail {
 
     @Test
-    @DisplayName("Should return expected result with default tab")
+    @DisplayName("Should return expected result")
     void shouldReturnExpectedResultWithDefaultTab() {
       UUID claimId = UUID.fromString("244fcb9f-50ab-4af8-b635-76bd30e0e97d");
       UUID submissionId = UUID.fromString("244fcb9f-50ab-4af8-b635-76bd30e0e97d");
-      ClaimResponse claimResponse = TestObjectCreator.buildClaimResponse();
+      SubmissionResponse submissionResponse =
+          SubmissionResponse.builder().areaOfLaw("CIVIL").build();
+      when(dataClaimsRestClient.getSubmission(submissionId))
+          .thenReturn(Mono.just(submissionResponse));
 
+      ClaimResponse claimResponse = TestObjectCreator.buildClaimResponse();
       when(dataClaimsRestClient.getSubmissionClaim(submissionId, claimId))
           .thenReturn(Mono.just(claimResponse));
-      when(claimFeeDetailsMapper.toSubmittedFeeDetails(claimResponse))
-          .thenReturn(SubmissionClaimFeeSubmittedDetails.builder().build());
+
+      when(claimSummaryMapper.toClaimSummary(claimResponse, "CIVIL"))
+          .thenReturn(ClaimSummary.builder().build());
+      when(claimFeeCalculationBreakdownMapper.toClaimFeeCalculationBreakdown(claimResponse))
+          .thenReturn(ClaimFeeCalculationBreakdown.builder().build());
+
+      when(submissionClaimMessagesBuilder.buildAllWarnings(submissionId, claimId))
+          .thenReturn(
+              ClaimMessagesSummary.builder()
+                  .claimMessages(singletonList(SubmissionSummaryClaimMessageRow.builder().build()))
+                  .build());
 
       assertThat(
               mockMvc.perform(
@@ -87,63 +103,7 @@ class ClaimDetailControllerTest {
           .hasStatusOk()
           .hasViewName("pages/view-claim-detail");
 
-      verify(claimFeeDetailsMapper, times(1)).toSubmittedFeeDetails(claimResponse);
-    }
-
-    @Test
-    @DisplayName("Should return expected result with claim messages tab")
-    void shouldReturnExpectedResultWithClaimMessagesTab() {
-      UUID claimId = UUID.fromString("244fcb9f-50ab-4af8-b635-76bd30e0e97d");
-      UUID submissionId = UUID.fromString("244fcb9f-50ab-4af8-b635-76bd30e0e97d");
-      ClaimResponse claimResponse = TestObjectCreator.buildClaimResponse();
-
-      when(dataClaimsRestClient.getSubmissionClaim(submissionId, claimId))
-          .thenReturn(Mono.just(claimResponse));
-
-      // Build a Page object for pagination
-      Page pagination = Page.builder().totalPages(1).totalElements(0).number(0).size(10).build();
-
-      when(submissionClaimMessagesBuilder.build(
-              submissionId, claimId, 0, ValidationMessageType.WARNING, 10))
-          .thenReturn(new ClaimMessagesSummary(Collections.emptyList(), 0, 0, pagination));
-
-      assertThat(
-              mockMvc.perform(
-                  get("/view-claim-detail")
-                      .param("navTab", "CLAIM_MESSAGES")
-                      .with(oidcLogin().oidcUser(ControllerTestHelper.getOidcUser()))
-                      .sessionAttr(SUBMISSION_ID, submissionId)
-                      .sessionAttr(CLAIM_ID, claimId)))
-          .hasStatusOk()
-          .hasViewName("pages/view-claim-detail");
-
-      verify(submissionClaimMessagesBuilder, times(1))
-          .build(submissionId, claimId, 0, ValidationMessageType.WARNING, 10);
-    }
-
-    @Test
-    @DisplayName("Should return expected result with calculated fee details tab")
-    void shouldReturnExpectedResultWithCalculatedFeeDetailsTab() {
-      UUID claimId = UUID.fromString("244fcb9f-50ab-4af8-b635-76bd30e0e97d");
-      UUID submissionId = UUID.fromString("244fcb9f-50ab-4af8-b635-76bd30e0e97d");
-      ClaimResponse claimResponse = TestObjectCreator.buildClaimResponse();
-
-      when(dataClaimsRestClient.getSubmissionClaim(submissionId, claimId))
-          .thenReturn(Mono.just(claimResponse));
-      when(claimFeeDetailsMapper.toSubmittedFeeDetails(claimResponse))
-          .thenReturn(SubmissionClaimFeeSubmittedDetails.builder().build());
-
-      assertThat(
-              mockMvc.perform(
-                  get("/view-claim-detail")
-                      .param("navTab", "FEE_CALCULATION")
-                      .with(oidcLogin().oidcUser(ControllerTestHelper.getOidcUser()))
-                      .sessionAttr(SUBMISSION_ID, submissionId)
-                      .sessionAttr(CLAIM_ID, claimId)))
-          .hasStatusOk()
-          .hasViewName("pages/view-claim-detail");
-
-      verify(claimFeeDetailsMapper, times(1)).toSubmittedFeeDetails(claimResponse);
+      verify(claimSummaryMapper, times(1)).toClaimSummary(claimResponse, "CIVIL");
     }
 
     @Test
@@ -172,24 +132,6 @@ class ClaimDetailControllerTest {
                       .sessionAttr(SUBMISSION_ID, submissionId)))
           .failure()
           .hasMessageContaining("Expected session attribute 'claimId'");
-    }
-
-    @Test
-    @DisplayName("Should throw exception when unexpected value passed for nav tab")
-    void shouldThrowExceptionWhenUnexpectedValuePassedForNavTab() {
-      UUID claimId = UUID.fromString("244fcb9f-50ab-4af8-b635-76bd30e0e97d");
-      UUID submissionId = UUID.fromString("244fcb9f-50ab-4af8-b635-76bd30e0e97d");
-
-      assertThat(
-              mockMvc.perform(
-                  get("/view-claim-detail")
-                      .param("navTab", "INVALID_VALUE")
-                      .with(oidcLogin().oidcUser(ControllerTestHelper.getOidcUser()))
-                      .sessionAttr(CLAIM_ID, claimId)
-                      .sessionAttr(SUBMISSION_ID, submissionId)))
-          .failure()
-          .hasMessageContaining(
-              "Method parameter 'navTab': Failed to convert value of type 'java.lang.String'");
     }
 
     @Test
