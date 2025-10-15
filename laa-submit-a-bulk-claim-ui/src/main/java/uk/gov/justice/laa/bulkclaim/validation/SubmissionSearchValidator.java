@@ -26,18 +26,13 @@ public class SubmissionSearchValidator implements Validator {
   public void validate(Object target, Errors errors) {
     SubmissionsSearchForm form = (SubmissionsSearchForm) target;
 
-    String submissionId = form.submissionId();
     String from = form.submittedDateFrom();
     String to = form.submittedDateTo();
 
-    if (submissionId == null && StringUtils.isNotEmpty(from) && StringUtils.isNotEmpty(to)) {
-      errors.reject("search.empty", "Provide a submission id or a date range.");
-      return;
-    }
-
-    // Both dates must be provided together if either is present
     boolean fromProvided = StringUtils.isNotEmpty(from);
     boolean toProvided = StringUtils.isNotEmpty(to);
+
+    // Both dates must be provided together if either is present
     if (fromProvided ^ toProvided) {
       if (!fromProvided) {
         errors.rejectValue(
@@ -53,13 +48,11 @@ public class SubmissionSearchValidator implements Validator {
       }
     }
 
-    // Check date formats
     LocalDate dateFrom = null;
     LocalDate dateTo = null;
-
     DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("d/M/yyyy");
 
-    if (StringUtils.isNotEmpty(from)) {
+    if (fromProvided) {
       try {
         dateFrom = LocalDate.parse(from, dateTimeFormatter);
       } catch (Exception e) {
@@ -68,7 +61,7 @@ public class SubmissionSearchValidator implements Validator {
       }
     }
 
-    if (StringUtils.isNotEmpty(to)) {
+    if (toProvided) {
       try {
         dateTo = LocalDate.parse(to, dateTimeFormatter);
       } catch (Exception e) {
@@ -77,13 +70,43 @@ public class SubmissionSearchValidator implements Validator {
       }
     }
 
-    if (dateFrom != null && dateTo != null && dateFrom.isAfter(dateTo)) {
-      errors.rejectValue(
-          SUBMITTED_DATE_FROM, "date.range.invalid", "Submission from date must be on or before submission to date.");
-      errors.rejectValue(
-          SUBMITTED_DATE_TO, "date.range.invalid", "Submission to date must be on or after submission from date.");
+    // Stop if parsing failed
+    if (errors.hasFieldErrors(SUBMITTED_DATE_FROM) || errors.hasFieldErrors(SUBMITTED_DATE_TO)) {
+      return;
     }
 
+    // Ensure from <= to
+    if (dateFrom != null && dateTo != null && dateFrom.isAfter(dateTo)) {
+      errors.rejectValue(
+          SUBMITTED_DATE_FROM,
+          "date.range.invalid",
+          "Submission from date must be on or before submission to date.");
+      errors.rejectValue(
+          SUBMITTED_DATE_TO,
+          "date.range.invalid",
+          "Submission to date must be on or after submission from date.");
+    }
+
+    // Ensure both dates are not in the future
+    LocalDate today = LocalDate.now();
+
+    if (dateFrom != null && dateFrom.isAfter(today)) {
+      errors.rejectValue(
+          SUBMITTED_DATE_FROM,
+          "date.range.invalid",
+          "Submission from date must be on or before today.");
+    }
+
+    if (dateTo != null && dateTo.isAfter(today)) {
+      errors.rejectValue(
+          SUBMITTED_DATE_TO,
+          "date.range.invalid",
+          "Submission to date must be on or before today.");
+    }
+
+    String submissionId = form.submissionId();
+
+    // Validate submission ID if present
     if (StringUtils.isNotBlank(submissionId)) {
       try {
         UUID.fromString(submissionId.trim());
@@ -91,22 +114,6 @@ public class SubmissionSearchValidator implements Validator {
         errors.rejectValue(
             "submissionId", "search.submissionId.invalid", "Submission id must be a valid UUID.");
       }
-    LocalDate maxDate = LocalDate.now().plusDays(1);
-
-    if (dateFrom != null && dateFrom.isBefore(maxDate)) {
-      errors.rejectValue(
-          SUBMITTED_DATE_FROM, "date.range.invalid", "Submission from date must be on or before today.");
-    }
-
-    if (dateTo != null && dateTo.isBefore(maxDate)) {
-      errors.rejectValue(
-          SUBMITTED_DATE_TO, "date.range.invalid", "Submission to date must be on or before today.");
-    }
-
-    if (submissionId != null
-        && submissionId.length() >= SEARCH_TERM_MIN_LENGTH
-        && submissionId.length() <= SEARCH_TERM_MAX_LENGTH) {
-      errors.rejectValue("submissionId", "submissionId.length", "Submission id is too long.");
     }
   }
 }
