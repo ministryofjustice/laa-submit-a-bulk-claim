@@ -1,6 +1,6 @@
 <th:block th:fragment="form(submissionsSearchForm)">
   <div class="search-panel govuk-!-margin-bottom-6">
-      <fieldset class="govuk-fieldset" th:with="maxDate=${#dates.format((#dates.createNow().getTime() + 86400000), 'd/M/yyyy')}">
+      <fieldset class="govuk-fieldset" th:with="maxDate=${#temporals.format(#temporals.createNow().plusDays(1), 'd/M/yyyy')}">
       <legend class="govuk-fieldset__legend govuk-fieldset__legend--s">
         <span th:text="#{search.legend}"></span>
         <div class="govuk-body" th:text="#{search.dateHint}"></div>
