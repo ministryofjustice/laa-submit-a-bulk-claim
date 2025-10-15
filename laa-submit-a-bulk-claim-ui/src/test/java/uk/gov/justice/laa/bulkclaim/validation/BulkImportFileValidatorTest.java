@@ -84,6 +84,22 @@ class BulkImportFileValidatorTest {
         .isEqualTo("bulkImport.validation.empty");
   }
 
+  @Test
+  @DisplayName("Should have errors if no file is provided")
+  void shouldHaveErrorsIfFileIsMissing() {
+    // Given no file selected
+    FileUploadForm fileUploadForm = new FileUploadForm(null);
+    SimpleErrors errors = new SimpleErrors(fileUploadForm);
+
+    // When
+    bulkClaimFileValidator.validate(fileUploadForm, errors);
+
+    // Then
+    assertThat(errors.hasFieldErrors("file")).isTrue();
+    assertThat(errors.getFieldErrors("file").getFirst().getCode())
+        .isEqualTo("bulkImport.validation.empty");
+  }
+
   @ParameterizedTest
   @ValueSource(strings = {"test.docx", "test.json", "test.pdf", ""})
   @DisplayName("Should have error for unsupported file extensions")

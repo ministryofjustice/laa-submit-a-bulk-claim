@@ -1,0 +1,14 @@
+{
+  "submission_id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+  "matter_starts": [
+    {
+      "schedule_reference": "string",
+      "category_code": "string",
+      "procurement_area_code": "string",
+      "access_point_code": "string",
+      "delivery_location": "string",
+      "mediation_type": "MDCS Child Only Sole",
+      "created_by_user_id": "string"
+    }
+  ]
+}

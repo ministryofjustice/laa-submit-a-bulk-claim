@@ -2,6 +2,7 @@ package uk.gov.justice.laa.bulkclaim.validation;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.UUID;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;
@@ -12,8 +13,6 @@ import uk.gov.justice.laa.bulkclaim.dto.SubmissionsSearchForm;
 @Component
 public class SubmissionSearchValidator implements Validator {
 
-  private static final int SEARCH_TERM_MIN_LENGTH = 2;
-  private static final int SEARCH_TERM_MAX_LENGTH = 100;
   public static final String SUBMITTED_DATE_FROM = "submittedDateFrom";
   public static final String SUBMITTED_DATE_TO = "submittedDateTo";
 
@@ -27,30 +26,33 @@ public class SubmissionSearchValidator implements Validator {
   public void validate(Object target, Errors errors) {
     SubmissionsSearchForm form = (SubmissionsSearchForm) target;
 
-    String submissionId = form.submissionId();
     String from = form.submittedDateFrom();
     String to = form.submittedDateTo();
 
-    // Must provide at least one of: submissionId or date range
-    if (submissionId == null && StringUtils.isNotEmpty(from) && StringUtils.isNotEmpty(to)) {
-      errors.reject("search.empty", "Provide a submission id or a date range.");
-      return;
-    }
+    boolean fromProvided = StringUtils.isNotEmpty(from);
+    boolean toProvided = StringUtils.isNotEmpty(to);
 
     // Both dates must be provided together if either is present
-    if ((StringUtils.isNotEmpty(from)) != (StringUtils.isNotEmpty(to))) {
-      errors.rejectValue(
-          SUBMITTED_DATE_FROM, "date.range.incomplete", "Both dates must be provided together.");
-      errors.rejectValue(
-          SUBMITTED_DATE_TO, "date.range.incomplete", "Both dates must be provided together.");
+    if (fromProvided ^ toProvided) {
+      if (!fromProvided) {
+        errors.rejectValue(
+            SUBMITTED_DATE_FROM,
+            "search.error.date.from.requiredWithTo",
+            "Enter the submission from date when you enter a submission to date.");
+      }
+      if (!toProvided) {
+        errors.rejectValue(
+            SUBMITTED_DATE_TO,
+            "search.error.date.to.requiredWithFrom",
+            "Enter the submission to date when you enter a submission from date.");
+      }
     }
 
-    // Check date formats
     LocalDate dateFrom = null;
     LocalDate dateTo = null;
-
     DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("d/M/yyyy");
-    if (StringUtils.isNotEmpty(from)) {
+
+    if (fromProvided) {
       try {
         dateFrom = LocalDate.parse(from, dateTimeFormatter);
       } catch (Exception e) {
@@ -59,7 +61,7 @@ public class SubmissionSearchValidator implements Validator {
       }
     }
 
-    if (StringUtils.isNotEmpty(to)) {
+    if (toProvided) {
       try {
         dateTo = LocalDate.parse(to, dateTimeFormatter);
       } catch (Exception e) {
@@ -68,17 +70,50 @@ public class SubmissionSearchValidator implements Validator {
       }
     }
 
-    // From must not be after To
-    if (dateFrom != null && dateTo != null && dateFrom.isAfter(dateTo)) {
-      errors.rejectValue(
-          SUBMITTED_DATE_FROM, "date.range.invalid", "From date must be on or before To date.");
-      errors.rejectValue(
-          SUBMITTED_DATE_TO, "date.range.invalid", "To date must be on or after From date.");
+    // Stop if parsing failed
+    if (errors.hasFieldErrors(SUBMITTED_DATE_FROM) || errors.hasFieldErrors(SUBMITTED_DATE_TO)) {
+      return;
     }
 
-    // Optional conservative guard on submission id size
-    if (submissionId != null && submissionId.length() > 100) {
-      errors.rejectValue("submissionId", "submissionId.length", "Submission id is too long.");
+    // Ensure from <= to
+    if (dateFrom != null && dateTo != null && dateFrom.isAfter(dateTo)) {
+      errors.rejectValue(
+          SUBMITTED_DATE_FROM,
+          "date.range.invalid",
+          "Submission from date must be on or before submission to date.");
+      errors.rejectValue(
+          SUBMITTED_DATE_TO,
+          "date.range.invalid",
+          "Submission to date must be on or after submission from date.");
+    }
+
+    // Ensure both dates are not in the future
+    LocalDate today = LocalDate.now();
+
+    if (dateFrom != null && dateFrom.isAfter(today)) {
+      errors.rejectValue(
+          SUBMITTED_DATE_FROM,
+          "date.range.invalid",
+          "Submission from date must be on or before today.");
+    }
+
+    if (dateTo != null && dateTo.isAfter(today)) {
+      errors.rejectValue(
+          SUBMITTED_DATE_TO,
+          "date.range.invalid",
+          "Submission to date must be on or before today.");
+    }
+
+    String submissionId = form.submissionId();
+
+    // Validate submission ID if present
+    if (StringUtils.isNotBlank(submissionId)) {
+      try {
+        UUID.fromString(submissionId.trim());
+      } catch (IllegalArgumentException ex) {
+        errors.rejectValue(
+            "submissionId", "search.submissionId.invalid", "Submission id must be a valid UUID.");
+      }
     }
   }
 }

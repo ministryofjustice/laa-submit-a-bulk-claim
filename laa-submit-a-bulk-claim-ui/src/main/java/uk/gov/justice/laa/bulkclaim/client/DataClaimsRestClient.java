@@ -3,6 +3,7 @@ package uk.gov.justice.laa.bulkclaim.client;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -17,6 +18,7 @@ import reactor.core.publisher.Mono;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.ClaimResponse;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.CreateBulkSubmission201Response;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.MatterStartGet;
+import uk.gov.justice.laa.dstew.payments.claimsdata.model.MatterStartResultSet;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionResponse;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionsResultSet;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.ValidationMessagesResponse;
@@ -56,8 +58,12 @@ public interface DataClaimsRestClient {
   Mono<SubmissionsResultSet> search(
       @RequestParam(value = "offices") List<String> offices,
       @RequestParam(value = "submission_id", required = false) String submissionId,
-      @RequestParam(value = "date_from", required = false) LocalDate dateFrom,
-      @RequestParam(value = "date_to", required = false) LocalDate dateTo,
+      @RequestParam(value = "submitted_date_from", required = false)
+          @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
+          LocalDate dateFrom,
+      @RequestParam(value = "submitted_date_to", required = false)
+          @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
+          LocalDate dateTo,
       @RequestParam(value = "page", required = false, defaultValue = "0") Integer page,
       @RequestParam(value = "size", required = false, defaultValue = "10") Integer size);
 
@@ -103,4 +109,7 @@ public interface DataClaimsRestClient {
       @RequestParam(value = "source", required = false) String source,
       @RequestParam(value = "page", required = false, defaultValue = "0") Integer page,
       @RequestParam(value = "size", required = false) Integer size);
+
+  @GetExchange(value = "/submissions/{id}/matter-starts")
+  Mono<MatterStartResultSet> getAllMatterStartsForSubmission(@PathVariable("id") UUID submissionId);
 }
