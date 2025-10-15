@@ -47,7 +47,7 @@ public class PaginationUtil {
    * @return a populated {@link Page} instance.
    */
   public Page fromValidationMessages(
-      ValidationMessagesResponse response, int requestedPage, int requestedSize) {
+      ValidationMessagesResponse response, Integer requestedPage, Integer requestedSize) {
     if (response == null) {
       return from(requestedPage, requestedSize, 0);
     }

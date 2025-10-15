@@ -49,6 +49,7 @@ import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionBase;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionResponse;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionStatus;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionsResultSet;
+import uk.gov.justice.laa.dstew.payments.claimsdata.model.ValidationMessageType;
 
 @WebMvcTest(SubmissionDetailController.class)
 @AutoConfigureMockMvc
@@ -167,7 +168,7 @@ class SubmissionDetailControllerTest {
                   new BigDecimal("100.50"),
                   "Legal aid",
                   OffsetDateTime.of(2025, 1, 1, 10, 10, 10, 0, ZoneOffset.UTC)));
-      when(submissionClaimMessagesBuilder.build(any(), any(), anyInt(), anyInt()))
+      when(submissionClaimMessagesBuilder.build(any(), any(), anyInt(), any(), anyInt()))
           .thenReturn(new ClaimMessagesSummary(Collections.emptyList(), 0, 0, pagination));
       when(submissionClaimDetailsBuilder.build(any(), anyInt(), anyInt()))
           .thenReturn(
@@ -252,7 +253,7 @@ class SubmissionDetailControllerTest {
       when(submissionClaimDetailsBuilder.build(any(), anyInt(), anyInt()))
           .thenReturn(
               new SubmissionClaimsDetails(Collections.emptyList(), pagination, BigDecimal.ZERO));
-      when(submissionClaimMessagesBuilder.build(any(), any(), anyInt(), anyInt()))
+      when(submissionClaimMessagesBuilder.build(any(), any(), anyInt(), any(), anyInt()))
           .thenReturn(new ClaimMessagesSummary(Collections.emptyList(), 0, 0, pagination));
       when(submissionMatterStartsDetailsBuilder.build(any()))
           .thenReturn(new SubmissionMatterStartsDetails(matterTypes));
@@ -295,7 +296,7 @@ class SubmissionDetailControllerTest {
       when(submissionClaimDetailsBuilder.build(any(), anyInt(), anyInt()))
           .thenReturn(
               new SubmissionClaimsDetails(Collections.emptyList(), pagination, BigDecimal.TEN));
-      when(submissionClaimMessagesBuilder.build(any(), any(), anyInt(), anyInt()))
+      when(submissionClaimMessagesBuilder.build(any(), any(), anyInt(), any(), anyInt()))
           .thenReturn(new ClaimMessagesSummary(Collections.emptyList(), 0, 0, pagination));
 
       // When
@@ -308,7 +309,8 @@ class SubmissionDetailControllerTest {
       // Then
       assertThat(response).hasStatusOk().hasViewName("pages/view-submission-detail-accepted");
       verify(submissionClaimDetailsBuilder).build(any(), anyInt(), anyInt());
-      verify(submissionClaimMessagesBuilder).build(submissionReference, null, 0, 10);
+      verify(submissionClaimMessagesBuilder)
+          .build(submissionReference, null, 0, ValidationMessageType.WARNING, 10);
     }
 
     @Test

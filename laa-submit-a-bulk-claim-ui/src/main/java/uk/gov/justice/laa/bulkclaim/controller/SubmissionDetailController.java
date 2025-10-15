@@ -34,6 +34,7 @@ import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionBase;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionResponse;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionStatus;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionsResultSet;
+import uk.gov.justice.laa.dstew.payments.claimsdata.model.ValidationMessageType;
 
 /**
  * Controller for handling viewing a submission.
@@ -165,7 +166,8 @@ public class SubmissionDetailController {
     }
 
     ClaimMessagesSummary claimMessagesSummary =
-        submissionClaimMessagesBuilder.build(submissionId, null, page, DEFAULT_PAGE_SIZE);
+        submissionClaimMessagesBuilder.build(
+            submissionId, null, page, ValidationMessageType.WARNING, DEFAULT_PAGE_SIZE);
     model.addAttribute("claimMessagesSummary", claimMessagesSummary);
 
     addCounts(model, claimDetails, claimMessagesSummary);
