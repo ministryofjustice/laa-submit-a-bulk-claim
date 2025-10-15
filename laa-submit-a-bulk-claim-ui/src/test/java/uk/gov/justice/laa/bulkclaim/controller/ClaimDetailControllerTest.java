@@ -25,10 +25,9 @@ import uk.gov.justice.laa.bulkclaim.builder.SubmissionClaimMessagesBuilder;
 import uk.gov.justice.laa.bulkclaim.client.DataClaimsRestClient;
 import uk.gov.justice.laa.bulkclaim.config.WebMvcTestConfig;
 import uk.gov.justice.laa.bulkclaim.dto.submission.claim.ClaimMessagesSummary;
-import uk.gov.justice.laa.bulkclaim.dto.submission.claim.SubmissionClaimDetails;
-import uk.gov.justice.laa.bulkclaim.dto.submission.claim.SubmissionClaimFeeCalculationDetails;
+import uk.gov.justice.laa.bulkclaim.dto.submission.claim.SubmissionClaimFeeSubmittedDetails;
 import uk.gov.justice.laa.bulkclaim.helper.TestObjectCreator;
-import uk.gov.justice.laa.bulkclaim.mapper.SubmissionClaimDetailsMapper;
+import uk.gov.justice.laa.bulkclaim.mapper.ClaimFeeDetailsMapper;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.ClaimResponse;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.Page;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.ValidationMessageType;
@@ -42,7 +41,7 @@ class ClaimDetailControllerTest {
   @Autowired private MockMvcTester mockMvc;
 
   @MockitoBean private DataClaimsRestClient dataClaimsRestClient;
-  @Autowired @MockitoBean private SubmissionClaimDetailsMapper submissionClaimDetailsMapper;
+  @Autowired @MockitoBean private ClaimFeeDetailsMapper claimFeeDetailsMapper;
   @MockitoBean private SubmissionClaimMessagesBuilder submissionClaimMessagesBuilder;
 
   @Nested
@@ -76,9 +75,8 @@ class ClaimDetailControllerTest {
 
       when(dataClaimsRestClient.getSubmissionClaim(submissionId, claimId))
           .thenReturn(Mono.just(claimResponse));
-      SubmissionClaimDetails submissionClaimDetails = TestObjectCreator.buildClaimDetails();
-      when(submissionClaimDetailsMapper.toSubmissionClaimDetails(claimResponse))
-          .thenReturn(submissionClaimDetails);
+      when(claimFeeDetailsMapper.toSubmittedFeeDetails(claimResponse))
+          .thenReturn(SubmissionClaimFeeSubmittedDetails.builder().build());
 
       assertThat(
               mockMvc.perform(
@@ -89,33 +87,7 @@ class ClaimDetailControllerTest {
           .hasStatusOk()
           .hasViewName("pages/view-claim-detail");
 
-      verify(submissionClaimDetailsMapper, times(1)).toSubmissionClaimDetails(claimResponse);
-    }
-
-    @Test
-    @DisplayName("Should return expected result with claim details tab")
-    void shouldReturnExpectedResultWithClaimDetailsTab() {
-      UUID claimId = UUID.fromString("244fcb9f-50ab-4af8-b635-76bd30e0e97d");
-      UUID submissionId = UUID.fromString("244fcb9f-50ab-4af8-b635-76bd30e0e97d");
-      ClaimResponse claimResponse = TestObjectCreator.buildClaimResponse();
-
-      when(dataClaimsRestClient.getSubmissionClaim(submissionId, claimId))
-          .thenReturn(Mono.just(claimResponse));
-      SubmissionClaimDetails submissionClaimDetails = TestObjectCreator.buildClaimDetails();
-      when(submissionClaimDetailsMapper.toSubmissionClaimDetails(claimResponse))
-          .thenReturn(submissionClaimDetails);
-
-      assertThat(
-              mockMvc.perform(
-                  get("/view-claim-detail")
-                      .param("navTab", "CLAIM_DETAILS")
-                      .with(oidcLogin().oidcUser(ControllerTestHelper.getOidcUser()))
-                      .sessionAttr(SUBMISSION_ID, submissionId)
-                      .sessionAttr(CLAIM_ID, claimId)))
-          .hasStatusOk()
-          .hasViewName("pages/view-claim-detail");
-
-      verify(submissionClaimDetailsMapper, times(1)).toSubmissionClaimDetails(claimResponse);
+      verify(claimFeeDetailsMapper, times(1)).toSubmittedFeeDetails(claimResponse);
     }
 
     @Test
@@ -158,8 +130,8 @@ class ClaimDetailControllerTest {
 
       when(dataClaimsRestClient.getSubmissionClaim(submissionId, claimId))
           .thenReturn(Mono.just(claimResponse));
-      when(submissionClaimDetailsMapper.toFeeCalculationDetails(claimResponse))
-          .thenReturn(SubmissionClaimFeeCalculationDetails.builder().build());
+      when(claimFeeDetailsMapper.toSubmittedFeeDetails(claimResponse))
+          .thenReturn(SubmissionClaimFeeSubmittedDetails.builder().build());
 
       assertThat(
               mockMvc.perform(
@@ -171,7 +143,7 @@ class ClaimDetailControllerTest {
           .hasStatusOk()
           .hasViewName("pages/view-claim-detail");
 
-      verify(submissionClaimDetailsMapper, times(1)).toFeeCalculationDetails(claimResponse);
+      verify(claimFeeDetailsMapper, times(1)).toSubmittedFeeDetails(claimResponse);
     }
 
     @Test

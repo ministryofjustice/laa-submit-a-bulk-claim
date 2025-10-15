@@ -55,7 +55,7 @@ class SubmissionSummaryMapperTest {
             .submissionPeriod("MAY-2025")
             .officeAccountNumber("1234567890")
             .status(inputStatus)
-            .areaOfLaw("Civil Law")
+            .areaOfLaw("LEGAL HELP")
             .submitted(OffsetDateTime.of(2025, 1, 1, 0, 0, 0, 0, ZoneOffset.UTC))
             .build();
 
@@ -70,7 +70,7 @@ class SubmissionSummaryMapperTest {
           softAssertions.assertThat(result.submissionPeriod()).isEqualTo(LocalDate.of(2025, 5, 1));
           softAssertions.assertThat(result.officeAccount()).isEqualTo("1234567890");
           softAssertions.assertThat(result.submissionValue()).isEqualTo(new BigDecimal("50.52"));
-          softAssertions.assertThat(result.areaOfLaw()).isEqualTo("Civil Law");
+          softAssertions.assertThat(result.areaOfLaw()).isEqualTo("LEGAL HELP");
           softAssertions
               .assertThat(result.submitted())
               .isEqualTo(OffsetDateTime.of(2025, 1, 1, 0, 0, 0, 0, ZoneOffset.UTC));

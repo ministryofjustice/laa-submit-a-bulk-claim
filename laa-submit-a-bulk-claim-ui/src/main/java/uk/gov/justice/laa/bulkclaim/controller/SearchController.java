@@ -3,7 +3,7 @@ package uk.gov.justice.laa.bulkclaim.controller;
 import static uk.gov.justice.laa.bulkclaim.constants.SessionConstants.CLAIM_ID;
 import static uk.gov.justice.laa.bulkclaim.constants.SessionConstants.SUBMISSION_ID;
 
-import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
@@ -126,8 +126,9 @@ public class SearchController {
    * @param submittedDateFrom submitted date from filter
    * @param submittedDateTo submitted date to filter
    * @param model view context model
-   * @param request HttpServletRequest object
    * @param oidcUser authenticated user
+   * @param sessionStatus session status for clearing session attributes
+   * @param session http session for storing results
    * @return search results view
    */
   @GetMapping("/submissions/search/results")
@@ -138,9 +139,9 @@ public class SearchController {
       @RequestParam(value = "submittedDateFrom", required = false) String submittedDateFrom,
       @RequestParam(value = "submittedDateTo", required = false) String submittedDateTo,
       Model model,
-      HttpServletRequest request,
       @AuthenticationPrincipal OidcUser oidcUser,
-      SessionStatus sessionStatus) {
+      SessionStatus sessionStatus,
+      HttpSession session) {
 
     sessionStatus.setComplete();
 
@@ -169,6 +170,7 @@ public class SearchController {
       Page pagination = paginationUtil.fromSubmissionsResultSet(submissionsResults, page, size);
       model.addAttribute("pagination", pagination);
       model.addAttribute("submissions", submissionsResults);
+      session.setAttribute("submissions", submissionsResults);
 
       return "pages/submissions-search-results";
     } catch (HttpClientErrorException e) {

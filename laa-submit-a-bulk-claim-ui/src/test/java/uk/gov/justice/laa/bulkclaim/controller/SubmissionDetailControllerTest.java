@@ -3,12 +3,14 @@ package uk.gov.justice.laa.bulkclaim.controller;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.oidcLogin;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static uk.gov.justice.laa.bulkclaim.constants.SessionConstants.SUBMISSION_ID;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -16,6 +18,7 @@ import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.UUID;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -24,8 +27,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.context.annotation.Import;
+import org.springframework.mock.web.MockHttpSession;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.assertj.MockMvcTester;
+import org.springframework.test.web.servlet.assertj.MvcTestResult;
 import reactor.core.publisher.Mono;
 import uk.gov.justice.laa.bulkclaim.builder.SubmissionClaimDetailsBuilder;
 import uk.gov.justice.laa.bulkclaim.builder.SubmissionClaimMessagesBuilder;
@@ -33,14 +38,16 @@ import uk.gov.justice.laa.bulkclaim.builder.SubmissionMatterStartsDetailsBuilder
 import uk.gov.justice.laa.bulkclaim.builder.SubmissionSummaryBuilder;
 import uk.gov.justice.laa.bulkclaim.client.DataClaimsRestClient;
 import uk.gov.justice.laa.bulkclaim.config.WebMvcTestConfig;
-import uk.gov.justice.laa.bulkclaim.dto.submission.SubmissionCostsSummary;
 import uk.gov.justice.laa.bulkclaim.dto.submission.SubmissionMatterStartsDetails;
 import uk.gov.justice.laa.bulkclaim.dto.submission.SubmissionMatterStartsRow;
 import uk.gov.justice.laa.bulkclaim.dto.submission.SubmissionSummary;
 import uk.gov.justice.laa.bulkclaim.dto.submission.claim.SubmissionClaimsDetails;
 import uk.gov.justice.laa.bulkclaim.util.PaginationUtil;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.Page;
+import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionBase;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionResponse;
+import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionStatus;
+import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionsResultSet;
 
 @WebMvcTest(SubmissionDetailController.class)
 @AutoConfigureMockMvc
@@ -62,17 +69,75 @@ class SubmissionDetailControllerTest {
   class GetSubmissionReference {
 
     @Test
-    @DisplayName("Should expect redirect")
-    void shouldExpectRedirect() {
-      // Given
+    @DisplayName("Should store submission and redirect to detail view when submission exists")
+    void shouldStoreSubmissionIdAndRedirectToDetail() {
       UUID submissionReference = UUID.fromString("bceac49c-d756-4e05-8e28-3334b84b6fe8");
-      // When
+      SubmissionBase submission = mock(SubmissionBase.class);
+      when(submission.getSubmissionId()).thenReturn(submissionReference);
+      when(submission.getStatus()).thenReturn(SubmissionStatus.VALIDATION_SUCCEEDED);
+
+      SubmissionsResultSet submissions = new SubmissionsResultSet();
+      submissions.setContent(List.of(submission));
+
+      MockHttpSession session = new MockHttpSession();
+      session.setAttribute("submissions", submissions);
+
+      // When / Then
       assertThat(
               mockMvc.perform(
                   get("/submission/" + submissionReference)
-                      .with(oidcLogin().oidcUser(ControllerTestHelper.getOidcUser()))))
+                      .with(oidcLogin().oidcUser(ControllerTestHelper.getOidcUser()))
+                      .session(session)))
           .hasStatus3xxRedirection()
           .hasRedirectedUrl("/view-submission-detail");
+
+      assertThat(session.getAttribute(SUBMISSION_ID)).isEqualTo(submissionReference);
+    }
+
+    @Test
+    @DisplayName("Should redirect to import in progress when submission validation is running")
+    void shouldRedirectToImportInProgressWhenValidationInProgress() throws Exception {
+      UUID submissionReference = UUID.fromString("bceac49c-d756-4e05-8e28-3334b84b6fe8");
+      SubmissionBase submission = mock(SubmissionBase.class);
+      when(submission.getSubmissionId()).thenReturn(submissionReference);
+      when(submission.getStatus()).thenReturn(SubmissionStatus.VALIDATION_IN_PROGRESS);
+
+      SubmissionsResultSet submissions = new SubmissionsResultSet();
+      submissions.setContent(List.of(submission));
+
+      MockHttpSession session = new MockHttpSession();
+      session.setAttribute("submissions", submissions);
+
+      MvcTestResult result =
+          mockMvc.perform(
+              get("/submission/" + submissionReference)
+                  .with(oidcLogin().oidcUser(ControllerTestHelper.getOidcUser()))
+                  .session(session));
+
+      assertThat(result).hasStatus3xxRedirection().hasRedirectedUrl("/import-in-progress");
+    }
+
+    @Test
+    @DisplayName("Should return forbidden when submission does not belong to current session user")
+    void shouldReturnForbiddenWhenSubmissionMissing() {
+      UUID submissionReference = UUID.fromString("bceac49c-d756-4e05-8e28-3334b84b6fe8");
+      SubmissionBase submission = mock(SubmissionBase.class);
+      when(submission.getSubmissionId()).thenReturn(UUID.randomUUID());
+      when(submission.getStatus()).thenReturn(SubmissionStatus.VALIDATION_SUCCEEDED);
+
+      SubmissionsResultSet submissions = new SubmissionsResultSet();
+      submissions.setContent(List.of(submission));
+
+      MockHttpSession session = new MockHttpSession();
+      session.setAttribute("submissions", submissions);
+
+      assertThat(
+              mockMvc.perform(
+                  get("/submission/" + submissionReference)
+                      .with(oidcLogin().oidcUser(ControllerTestHelper.getOidcUser()))
+                      .session(session)))
+          .failure()
+          .hasMessageContaining("403 FORBIDDEN");
     }
   }
 
@@ -100,16 +165,7 @@ class SubmissionDetailControllerTest {
                   "Legal aid",
                   OffsetDateTime.of(2025, 1, 1, 10, 10, 10, 0, ZoneOffset.UTC)));
       when(submissionClaimDetailsBuilder.build(any(), anyInt(), anyInt()))
-          .thenReturn(
-              new SubmissionClaimsDetails(
-                  new SubmissionCostsSummary(
-                      new BigDecimal("100.00"),
-                      new BigDecimal("100.50"),
-                      new BigDecimal("100.85"),
-                      new BigDecimal("100.90"),
-                      new BigDecimal("123.45")),
-                  Collections.emptyList(),
-                  pagination));
+          .thenReturn(new SubmissionClaimsDetails(Collections.emptyList(), pagination));
       // When / Then
       assertThat(
               mockMvc.perform(
@@ -142,16 +198,7 @@ class SubmissionDetailControllerTest {
                   "Legal aid",
                   OffsetDateTime.of(2025, 1, 1, 10, 10, 10, 0, ZoneOffset.UTC)));
       when(submissionClaimDetailsBuilder.build(any(), anyInt(), anyInt()))
-          .thenReturn(
-              new SubmissionClaimsDetails(
-                  new SubmissionCostsSummary(
-                      new BigDecimal("100.00"),
-                      new BigDecimal("100.50"),
-                      new BigDecimal("100.85"),
-                      new BigDecimal("100.90"),
-                      new BigDecimal("123.45")),
-                  Collections.emptyList(),
-                  pagination));
+          .thenReturn(new SubmissionClaimsDetails(Collections.emptyList(), pagination));
       // When / Then
       assertThat(
               mockMvc.perform(

@@ -1,71 +1,94 @@
-<th:block
-    th:fragment="form(submissionsSearchForm)">
-  <p class="govuk-body govuk-body-lead" th:text="#{search.intro}"></p>
+<th:block th:fragment="form(submissionsSearchForm)">
   <div class="search-panel govuk-!-margin-bottom-6">
-
-
-    <div class="govuk-form-group govuk-!-width-two-thirds" role="search"
-         th:classappend="${#fields.hasErrors('submissionId')} ? 'govuk-form-group--error'">
-      <label class="govuk-label govuk-label--s" for="submissionId"
-             th:text="#{search.submissionId.label}">
-      </label>
-
-      <p th:replace="~{ fragments/error-components :: error-messages('submissionId')}"/>
-      <input class="govuk-input" id="submissionId" th:field="*{submissionId}" type="search"
-             aria-description="submission id search criteria">
-    </div>
-    <fieldset class="govuk-fieldset" th:with="maxDate=${#dates.format((#dates.createNow().getTime() + 86400000), 'd/M/yyyy')}">
+      <fieldset class="govuk-fieldset" th:with="maxDate=${#dates.format((#dates.createNow().getTime() + 86400000), 'd/M/yyyy')}">
       <legend class="govuk-fieldset__legend govuk-fieldset__legend--s">
         <span th:text="#{search.legend}"></span>
         <div class="govuk-body" th:text="#{search.dateHint}"></div>
       </legend>
-      <div id="from-date-form-group" class="govuk-form-group"
-           th:classappend="${#fields.hasErrors('submittedDateFrom')} ? 'govuk-form-group--error'">
-        <div class="govuk-date-input__item">
-          <div class="moj-datepicker" data-module="moj-date-picker"
-               th:attr="data-max-date=${maxDate}">
 
-            <div class="govuk-form-group">
-              <label class="govuk-label" for="submittedDateFrom"
-                     th:text="#{search.submittedDateFrom.label}">
-              </label>
-              <p th:replace="~{ fragments/error-components :: error-messages('submittedDateFrom')}"/>
-              <input class="govuk-input moj-js-datepicker-input " id="submittedDateFrom"
-                     th:classappend="${#fields.hasErrors('submittedDateFrom')} ? 'govuk-input--error'"
-                     th:field="*{submittedDateFrom}" type="text" aria-describedby="date-hint"
-                     autocomplete="off">
+      <div class="govuk-grid-row govuk-!-margin-bottom-0">
+        <div
+            id="from-date-form-group"
+            class="govuk-form-group govuk-grid-column-one-third"
+            th:classappend="${#fields.hasErrors('submittedDateFrom')} ? 'govuk-form-group--error'">
+          <div class="govuk-date-input__item">
+            <div
+                class="moj-datepicker"
+                data-module="moj-date-picker"
+                th:attr="data-max-date=${maxDate}">
+
+              <div class="govuk-form-group">
+                <label class="govuk-label" for="submittedDateFrom"
+                       th:text="#{search.submittedDateFrom.label}"></label>
+                <p th:replace="~{ fragments/error-components :: error-messages('submittedDateFrom')}"></p>
+                <input
+                    class="govuk-input moj-js-datepicker-input"
+                    id="submittedDateFrom"
+                    th:classappend="${#fields.hasErrors('submittedDateFrom')} ? 'govuk-input--error'"
+                    th:field="*{submittedDateFrom}"
+                    type="text"
+                    aria-describedby="date-hint"
+                    autocomplete="off">
+              </div>
             </div>
-
           </div>
         </div>
-      </div>
-      <div id="to-date-form-group" class="govuk-form-group"
-           th:classappend="${#fields.hasErrors('submittedDateTo')} ? 'govuk-form-group--error'">
-        <div class="govuk-date-input__item">
-          <div class="moj-datepicker" data-module="moj-date-picker"
-               th:attr="data-max-date=${maxDate}">
-            <div class="govuk-form-group">
-              <label class="govuk-label" for="submittedDateTo"
-                     th:text="#{search.submittedDateTo.label}">
-              </label>
-              <p th:replace="~{ fragments/error-components :: error-messages('submittedDateTo')}"/>
-              <input class="govuk-input moj-js-datepicker-input " id="submittedDateTo"
-                     th:classappend="${#fields.hasErrors('submittedDateTo')} ? 'govuk-input--error'"
-                     th:field="*{submittedDateTo}" type="text" aria-describedby="date-hint"
-                     autocomplete="off">
+
+        <div
+            id="to-date-form-group"
+            class="govuk-form-group govuk-grid-column-one-third"
+            th:classappend="${#fields.hasErrors('submittedDateTo')} ? 'govuk-form-group--error'">
+          <div class="govuk-date-input__item">
+            <div
+                class="moj-datepicker"
+                data-module="moj-date-picker"
+                th:attr="data-max-date=${maxDate}">
+              <div class="govuk-form-group">
+                <label class="govuk-label" for="submittedDateTo"
+                       th:text="#{search.submittedDateTo.label}"></label>
+                <p th:replace="~{ fragments/error-components :: error-messages('submittedDateTo')}"></p>
+                <input
+                    class="govuk-input moj-js-datepicker-input"
+                    id="submittedDateTo"
+                    th:classappend="${#fields.hasErrors('submittedDateTo')} ? 'govuk-input--error'"
+                    th:field="*{submittedDateTo}"
+                    type="text"
+                    aria-describedby="date-hint"
+                    autocomplete="off">
+              </div>
             </div>
           </div>
         </div>
       </div>
     </fieldset>
+
+    <p class="govuk-label govuk-label--s" th:text="#{search.or}"></p>
+
+    <div
+        class="govuk-form-group govuk-!-width-two-thirds govuk-!-margin-top-4"
+        role="search"
+        th:classappend="${#fields.hasErrors('submissionId')} ? 'govuk-form-group--error'">
+      <label class="govuk-label govuk-label--s" for="submissionId"
+             th:text="#{search.submissionId.label}"></label>
+      <p th:replace="~{ fragments/error-components :: error-messages('submissionId')}"></p>
+      <input
+          class="govuk-input"
+          id="submissionId"
+          th:field="*{submissionId}"
+          type="search"
+          aria-description="submission id search criteria">
+    </div>
+
     <div class="govuk-button-group">
-      <button type="submit" class="govuk-button" data-module="govuk-button"
-              id="searchButton" data-govuk-button-init="">
+      <button
+          type="submit"
+          class="govuk-button"
+          data-module="govuk-button"
+          id="searchButton"
+          data-govuk-button-init="">
         Search
       </button>
-
       <a class="govuk-link" th:href="@{/submissions/search}">Clear all</a>
     </div>
   </div>
-
 </th:block>

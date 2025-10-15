@@ -18,7 +18,7 @@
 <header th:replace="~{fragments/header :: header(${pageCategory})}"/>
 
 <div class="govuk-width-container">
-  <div class="govuk-phase-banner">
+  <div class="govuk-phase-banner" data-module="laa-hide-on-print-button">
     <p class="govuk-phase-banner__content">
       <strong class="govuk-tag govuk-phase-banner__content__tag" id="phase-banner-tag"
         th:text="#{phase.banner.tag}"/>
@@ -26,9 +26,11 @@
         th:utext="#{phase.banner.description}"/>
     </p>
   </div>
-  <th:block th:replace="${backLink}">
-    Default back link (this should be replaced)
-  </th:block>
+  <div data-module="laa-hide-on-print-button">
+    <th:block th:replace="${backLink}">
+      Default back link (this should be replaced)
+    </th:block>
+  </div>
   <main th:replace="${main}">
     <p>Default content (this should be replaced)</p>
   </main>

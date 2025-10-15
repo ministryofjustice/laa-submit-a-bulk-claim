@@ -4,11 +4,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.oidcLogin;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static uk.gov.justice.laa.bulkclaim.constants.SessionConstants.SUBMISSION_DATE_TIME;
 import static uk.gov.justice.laa.bulkclaim.constants.SessionConstants.SUBMISSION_ID;
-import static uk.gov.justice.laa.bulkclaim.constants.SessionConstants.UPLOADED_FILENAME;
 
-import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.UUID;
@@ -67,9 +64,7 @@ public class BulkImportInProgressControllerTest {
               mockMvc.perform(
                   get("/import-in-progress")
                       .with(oidcLogin().oidcUser(ControllerTestHelper.getOidcUser()))
-                      .sessionAttr(SUBMISSION_ID, submissionId.toString())
-                      .sessionAttr(SUBMISSION_DATE_TIME, LocalDateTime.now())
-                      .sessionAttr(UPLOADED_FILENAME, "fileName.csv")))
+                      .sessionAttr(SUBMISSION_ID, submissionId)))
           .hasStatusOk()
           .hasViewName("pages/upload-in-progress");
     }
@@ -88,9 +83,7 @@ public class BulkImportInProgressControllerTest {
               mockMvc.perform(
                   get("/import-in-progress")
                       .with(oidcLogin().oidcUser(ControllerTestHelper.getOidcUser()))
-                      .sessionAttr(SUBMISSION_ID, submissionId.toString())
-                      .sessionAttr(SUBMISSION_DATE_TIME, LocalDateTime.now())
-                      .sessionAttr(UPLOADED_FILENAME, "fileName.csv")))
+                      .sessionAttr(SUBMISSION_ID, submissionId)))
           .hasStatusOk()
           .hasViewName("pages/upload-in-progress");
     }
@@ -118,9 +111,7 @@ public class BulkImportInProgressControllerTest {
               mockMvc.perform(
                   get("/import-in-progress")
                       .with(oidcLogin().oidcUser(ControllerTestHelper.getOidcUser()))
-                      .sessionAttr(SUBMISSION_ID, submissionId.toString())
-                      .sessionAttr(SUBMISSION_DATE_TIME, LocalDateTime.now())
-                      .sessionAttr(UPLOADED_FILENAME, "fileName.csv")))
+                      .sessionAttr(SUBMISSION_ID, submissionId)))
           .hasStatus3xxRedirection()
           .hasRedirectedUrl("/submission/5933fc67-bac7-4f48-81ed-61c8c463f054");
     }
@@ -141,9 +132,7 @@ public class BulkImportInProgressControllerTest {
               mockMvc.perform(
                   get("/import-in-progress")
                       .with(oidcLogin().oidcUser(ControllerTestHelper.getOidcUser()))
-                      .sessionAttr(SUBMISSION_ID, submissionId.toString())
-                      .sessionAttr(SUBMISSION_DATE_TIME, LocalDateTime.now())
-                      .sessionAttr(UPLOADED_FILENAME, "fileName.csv")))
+                      .sessionAttr(SUBMISSION_ID, submissionId)))
           .hasStatus3xxRedirection()
           .hasRedirectedUrl("/submission/5933fc67-bac7-4f48-81ed-61c8c463f054");
     }
@@ -161,9 +150,7 @@ public class BulkImportInProgressControllerTest {
               mockMvc.perform(
                   get("/import-in-progress")
                       .with(oidcLogin().oidcUser(ControllerTestHelper.getOidcUser()))
-                      .sessionAttr(SUBMISSION_ID, submissionId.toString())
-                      .sessionAttr(SUBMISSION_DATE_TIME, LocalDateTime.now())
-                      .sessionAttr(UPLOADED_FILENAME, "fileName.csv")))
+                      .sessionAttr(SUBMISSION_ID, submissionId)))
           .failure()
           .hasCauseInstanceOf(SubmitBulkClaimException.class)
           .hasMessageContaining("Claims API returned an error");

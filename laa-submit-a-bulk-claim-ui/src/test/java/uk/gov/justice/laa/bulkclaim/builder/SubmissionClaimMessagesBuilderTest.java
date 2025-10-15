@@ -56,7 +56,18 @@ class SubmissionClaimMessagesBuilderTest {
 
     SubmissionSummaryClaimMessageRow mappedError =
         new SubmissionSummaryClaimMessageRow(
-            submissionId, "UFN123", "UCN456", "John Doe", "Invalid data", "ERROR");
+            submissionId,
+            "UFN123",
+            "UCN456",
+            "John Doe",
+            "John",
+            "Doe",
+            null,
+            null,
+            null,
+            null,
+            "Invalid data",
+            "ERROR");
 
     when(bulkClaimImportSummaryMapper.toSubmissionSummaryClaimMessage(any(), any()))
         .thenReturn(mappedError);
@@ -104,7 +115,18 @@ class SubmissionClaimMessagesBuilderTest {
 
     SubmissionSummaryClaimMessageRow mappedError =
         new SubmissionSummaryClaimMessageRow(
-            submissionId, null, null, null, "Missing claimId", "ERROR");
+            submissionId,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            "Missing claimId",
+            "ERROR");
 
     when(bulkClaimImportSummaryMapper.toSubmissionSummaryClaimMessage(any(), any()))
         .thenReturn(mappedError);

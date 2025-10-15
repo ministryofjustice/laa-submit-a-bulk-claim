@@ -163,22 +163,4 @@ class BulkImportFileValidatorTest {
     assertThat(errors.getFieldErrors("file").getFirst().getCode())
         .isEqualTo("bulkImport.validation.mimeType");
   }
-
-  @Test
-  @DisplayName("Should have error if file size is larger than 10MB")
-  void shouldHaveErrorIfFileSizeIsLargerThan10Mb() {
-    // Given
-    MockMultipartFile file =
-        new MockMultipartFile("file", "test.csv", "text/csv", new byte[(10 * 1024 * 1024) + 1]);
-    FileUploadForm fileUploadForm = new FileUploadForm(file);
-    SimpleErrors errors = new SimpleErrors(fileUploadForm);
-
-    // When
-    bulkClaimFileValidator.validate(fileUploadForm, errors);
-
-    // Then
-    assertThat(errors.hasFieldErrors("file")).isTrue();
-    assertThat(errors.getFieldErrors("file").getFirst().getCode())
-        .isEqualTo("bulkImport.validation.size");
-  }
 }

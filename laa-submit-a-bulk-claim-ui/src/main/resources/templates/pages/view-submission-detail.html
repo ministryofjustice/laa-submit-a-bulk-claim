@@ -5,18 +5,34 @@
       th:with="invalidSubmission=${submissionSummary.status() == 'Invalid'}">
   <div class="govuk-width-container">
     <div class="govuk-grid-row">
-      <div class="govuk-grid-column-full">
+      <div class="govuk-grid-column-full" data-module="laa-print-button">
         <strong class="govuk-tag govuk-tag--pink"
                 th:text="${submissionSummary.status}"/>
         <h1 class="govuk-heading-l govuk-!-padding-top-4" th:text="#{viewSubmission.heading}"/>
       </div>
+
+      <th:block th:if="${invalidSubmission}">
+        <div class="govuk-grid-column-full">
+          <div class="govuk-error-summary"
+               role="alert"
+               aria-labelledby="submission-error-summary-title"
+               data-module="govuk-error-summary">
+            <h2 class="govuk-error-summary__title" id="submission-error-summary-title"
+                th:text="#{submission.claim.errors.banner.title(${claimErrorDetails.totalClaimsWithErrors()})}"></h2>
+            <div class="govuk-error-summary__body">
+              <p class="govuk-body"
+                 th:text="#{submission.claim.errors.banner.body}"></p>
+            </div>
+          </div>
+        </div>
+      </th:block>
 
       <div class="govuk-grid-column-two-thirds-from-desktop">
         <dl class="govuk-summary-list">
           <div class="govuk-summary-list__row">
             <dt class="govuk-summary-list__key"
                 th:text="#{submission.properties.submissionDateTimeAbbreviated}"/>
-            <dd class="govuk-summary-list__value govuk-!-font-weight-bold"
+            <dd class="govuk-summary-list__value"
                 th:text="|${#temporals.format(submissionSummary.submitted,'d MMM yyyy')} at ${#temporals.format(submissionSummary.submitted(),'HH:mm:ss')}|"/>
           </div>
           <div class="govuk-summary-list__row">
@@ -30,26 +46,23 @@
             <dd class="govuk-summary-list__value"
                 th:text="${submissionSummary.officeAccount}"/>
           </div>
-          <div class="govuk-summary-list__row" th:unless="${invalidSubmission}">
-            <dt class="govuk-summary-list__key" th:text="#{submission.properties.submissionValue}"/>
-            <dd class="govuk-summary-list__value"
-                th:text="${@currencyUtil.toString(submissionSummary.submissionValue)}"/>
-          </div>
           <div class="govuk-summary-list__row">
             <dt class="govuk-summary-list__key" th:text="#{submission.properties.areaOfLaw}">
             <dd class="govuk-summary-list__value"
-                th:text="${submissionSummary.areaOfLaw}"/>
+                th:text="${#strings.capitalize(#strings.toLowerCase(submissionSummary.areaOfLaw))}"/>
           </div>
           <div class="govuk-summary-list__row">
             <dt class="govuk-summary-list__key"
                 th:text="#{submission.properties.submissionReferenceAbbreviated}"/>
             <dd class="govuk-summary-list__value"
                 th:text="${submissionSummary.submissionReference}"/>
-
           </div>
-
+          <div class="govuk-summary-list__row" th:unless="${invalidSubmission}">
+            <dt class="govuk-summary-list__key" th:text="#{submission.properties.calculatedValue}"/>
+            <dd class="govuk-summary-list__value"
+                th:text="${@currencyUtil.toString(submissionSummary.submissionValue)}"/>
+          </div>
         </dl>
-
 
       </div>
 
@@ -66,7 +79,7 @@
                  th:href="${isCurrent ? '#claims' : url}"
                  th:text="#{viewSubmission.claims.subHeading}"/>
             </li>
-            <li class="moj-sub-navigation__item">
+            <li class="moj-sub-navigation__item" th:unless="${#strings.containsIgnoreCase(submissionSummary?.areaOfLaw, 'crime')}">
               <a class="moj-sub-navigation__link"
                  th:with="isCurrent=${navTab.toString() == 'MATTER_STARTS'},
                   url=@{/view-submission-detail(navTab='MATTER_STARTS')}"
@@ -85,59 +98,8 @@
 
         <!--Claim details information-->
         <th:block th:if="${navTab.toString() == 'CLAIM_DETAILS'}">
-          <div class="govuk-grid-column-two-thirds">
-            <h2 class="govuk-heading-l" id="claims" th:text="#{viewSubmission.claims.subHeading}"/>
-            <table class="govuk-table">
-              <caption class="govuk-table__caption govuk-table__caption--m"
-                       th:text="#{viewSubmission.claims.submissionCosts.caption}"/>
-              <thead class="govuk-table__head">
-              <tr class="govuk-table__row">
-                <th scope="col" class="govuk-table__header"
-                    th:text="#{viewSubmission.claims.submissionCosts.tableHeader.name}"/>
-                <th scope="col" class="govuk-table__header"
-                    th:text="#{viewSubmission.claims.submissionCosts.tableHeader.claimed}"/>
-              </tr>
-              </thead>
-              <tbody class="govuk-table__body">
-              <tr class="govuk-table__row">
-                <th scope="row" class="govuk-table__header"
-                    th:text="#{viewSubmission.claims.submissionCosts.profitCosts}"/>
-                <td class="govuk-table__cell"
-                    id="profit-costs-value"
-                    th:text="${@currencyUtil.toString(claimDetails.costsSummary.profitCosts)}"/>
-              </tr>
-              <tr class="govuk-table__row">
-                <th scope="row" class="govuk-table__header"
-                    th:text="#{viewSubmission.claims.submissionCosts.disbursements}"/>
-                <td class="govuk-table__cell"
-                    id="disbursements-value"
-                    th:text="${@currencyUtil.toString(claimDetails.costsSummary.disbursements)}"/>
-              </tr>
-              <tr class="govuk-table__row">
-                <th scope="row" class="govuk-table__header"
-                    th:text="#{viewSubmission.claims.submissionCosts.additionalPayments}"/>
-                <td class="govuk-table__cell"
-                    id="additional-payments-costs-value"
-                    th:text="${@currencyUtil.toString(claimDetails.costsSummary.additionalPayments)}"/>
-              </tr>
-              <tr class="govuk-table__row">
-                <th scope="row" class="govuk-table__header"
-                    th:text="#{viewSubmission.claims.submissionCosts.fixedFee}"/>
-                <td class="govuk-table__cell"
-                    id="fixed-fee-value"
-                    th:text="${@currencyUtil.toString(claimDetails.costsSummary.fixedFee)}"/>
-              </tr>
-              <tr class="govuk-table__row">
-                <th scope="row" class="govuk-table__header"
-                    th:text="#{viewSubmission.claims.submissionCosts.submissionValue}"/>
-                <td class="govuk-table__cell"
-                    id="submission-value"
-                    th:text="${@currencyUtil.toString(claimDetails.costsSummary.submissionValue)}"/>
-              </tr>
-              </tbody>
-            </table>
-          </div>
           <div class="govuk-grid-column-full">
+            <h2 class="govuk-heading-l" id="claims" th:text="#{viewSubmission.claims.subHeading}"/>
 
             <div class="moj-scrollable-pane">
               <table class="govuk-table" data-module="moj-sortable-table">
@@ -239,24 +201,43 @@
                 </tbody>
               </table>
             </div>
-            <nav th:replace="~{fragments/pagination :: pagination(currentUrl='/view-submission-detail?navTab=CLAIM_DETAILS', page=${claimDetails.pagination})}"></nav>
+            <nav
+                th:replace="~{fragments/pagination :: pagination(currentUrl='/view-submission-detail?navTab=CLAIM_DETAILS', page=${claimDetails.pagination})}"></nav>
           </div>
         </th:block>
 
-        <th:block th:if="${navTab.toString() == 'MATTER_STARTS'}">
+        <th:block th:if="${navTab.toString() == 'MATTER_STARTS' && !#strings.containsIgnoreCase(submissionSummary?.areaOfLaw, 'crime')}">
           <div class="govuk-grid-column-two-thirds">
             <h2 class="govuk-heading-l" id="matter-starts"
                 th:text="#{viewSubmission.matterStarts.subHeading}"/>
 
-            <dl class="govuk-summary-list">
-              <div class="govuk-summary-list__row"
-                   th:each="matterStart, idx : ${matterStartsDetails.matterTypes}">
-                <dt class="govuk-summary-list__key"
-                    th:text="${matterStart.key.description}"/>
-                <dd class="govuk-summary-list__value"
-                    th:text="${matterStart.value}"/>
-              </div>
-            </dl>
+            <p class="govuk-body"
+               th:if="${matterStartsDetails.matterTypes().isEmpty()}"
+               th:text="#{viewSubmission.matterStarts.none}"/>
+
+            <th:block th:if="${#strings.containsIgnoreCase(submissionSummary.areaOfLaw, 'legal')}">
+              <dl class="govuk-summary-list"
+                  th:unless="${matterStartsDetails.matterTypes().isEmpty()}">
+                <div class="govuk-summary-list__row"
+                     th:each="matterStart, idx : ${matterStartsDetails.matterTypes}">
+                  <dt class="govuk-summary-list__key"
+                      th:text="${matterStart.key.description}"/>
+                  <dd class="govuk-summary-list__value"
+                      th:text="${matterStart.value}"/>
+                </div>
+              </dl>
+            </th:block>
+            <th:block th:if="${#strings.containsIgnoreCase(submissionSummary.areaOfLaw, 'mediation')}">
+              <dl class="govuk-summary-list"
+                  th:unless="${matterStartsDetails.matterTypes().isEmpty()}">
+                <div class="govuk-summary-list__row">
+                  <dt class="govuk-summary-list__key"
+                      th:text="#{viewSubmission.matterStarts.newMatterStarts}"/>
+                  <dd class="govuk-summary-list__value"
+                      th:text="${matterStartsDetails.getTotalNumberOfMatterStarts()}"/>
+                </div>
+              </dl>
+            </th:block>
           </div>
         </th:block>
 
@@ -265,9 +246,172 @@
 
       <th:block th:if="${invalidSubmission}">
         <div class="govuk-grid-column-full">
-          <th:block
-              th:replace="~{fragments/claim-messages :: messagesTable(${claimErrorDetails})}"/>
-          <nav th:replace="~{fragments/pagination :: pagination(currentUrl='/view-submission-detail', page=${claimErrorDetails.pagination})}"></nav>
+          <h2 class="govuk-heading-m" id="claim-errors-heading"
+              th:text="#{submission.claim.errors.heading(${claimErrorDetails.totalMessageCount()})}"></h2>
+
+          <div class="moj-scrollable-pane">
+            <table class="govuk-table"
+                   data-module="moj-sortable-table"
+                   th:with="
+                      area=${submissionSummary.areaOfLaw != null ? #strings.toLowerCase(submissionSummary.areaOfLaw) : ''},
+                      isCrime=${area.contains('crime') or area.contains('crime lower') or area.contains('crime higher')},
+                      isCivil=${area.contains('civil') or area.contains('legal help')},
+                      isMediation=${area.contains('mediation')}">
+              <caption class="govuk-table__caption govuk-visually-hidden"
+                       th:text="#{submission.claim.errors.heading(${claimErrorDetails.totalMessageCount()})}"></caption>
+
+              <thead class="govuk-table__head" th:if="${isCrime}">
+              <tr class="govuk-table__row">
+                <th scope="col" class="govuk-table__header" aria-sort="none"
+                    th:text="#{submission.claim.errors.table.clientSurname}"></th>
+                <th scope="col" class="govuk-table__header" aria-sort="none"
+                    th:text="#{submission.claim.errors.table.clientInitial}"></th>
+                <th scope="col" class="govuk-table__header" aria-sort="none"
+                    th:text="#{submission.claim.errors.table.ufn}"></th>
+                <th scope="col" class="govuk-table__header" aria-sort="none"
+                    th:text="#{submission.claim.errors.table.messages}"></th>
+              </tr>
+              </thead>
+
+              <thead class="govuk-table__head" th:if="${isCivil}">
+              <tr class="govuk-table__row">
+                <th scope="col" class="govuk-table__header" aria-sort="none"
+                    th:text="#{submission.claim.errors.table.clientSurname}"></th>
+                <th scope="col" class="govuk-table__header" aria-sort="none"
+                    th:text="#{submission.claim.errors.table.clientForename}"></th>
+                <th scope="col" class="govuk-table__header" aria-sort="none"
+                    th:text="#{submission.claim.errors.table.ufn}"></th>
+                <th scope="col" class="govuk-table__header" aria-sort="none"
+                    th:text="#{submission.claim.errors.table.ucn}"></th>
+                <th scope="col" class="govuk-table__header" aria-sort="none"
+                    th:text="#{submission.claim.errors.table.messages}"></th>
+              </tr>
+              </thead>
+
+              <thead class="govuk-table__head" th:if="${isMediation}">
+              <tr class="govuk-table__row">
+                <th scope="col" class="govuk-table__header" aria-sort="none"
+                    th:text="#{submission.claim.errors.table.client1Surname}"></th>
+                <th scope="col" class="govuk-table__header" aria-sort="none"
+                    th:text="#{submission.claim.errors.table.client1Forename}"></th>
+                <th scope="col" class="govuk-table__header" aria-sort="none"
+                    th:text="#{submission.claim.errors.table.client1Ucn}"></th>
+                <th scope="col" class="govuk-table__header" aria-sort="none"
+                    th:text="#{submission.claim.errors.table.client2Surname}"></th>
+                <th scope="col" class="govuk-table__header" aria-sort="none"
+                    th:text="#{submission.claim.errors.table.client2Forename}"></th>
+                <th scope="col" class="govuk-table__header" aria-sort="none"
+                    th:text="#{submission.claim.errors.table.client2Ucn}"></th>
+                <th scope="col" class="govuk-table__header" aria-sort="none"
+                    th:text="#{submission.claim.errors.table.messages}"></th>
+              </tr>
+              </thead>
+
+              <thead class="govuk-table__head" th:if="${!isCrime and !isCivil and !isMediation}">
+              <tr class="govuk-table__row">
+                <th scope="col" class="govuk-table__header" aria-sort="none"
+                    th:text="#{submission.claim.errors.table.client}"></th>
+                <th scope="col" class="govuk-table__header" aria-sort="none"
+                    th:text="#{submission.claim.errors.table.ucn}"></th>
+                <th scope="col" class="govuk-table__header" aria-sort="none"
+                    th:text="#{submission.claim.errors.table.ufn}"></th>
+                <th scope="col" class="govuk-table__header" aria-sort="none"
+                    th:text="#{submission.claim.errors.table.messages}"></th>
+              </tr>
+              </thead>
+
+              <tbody class="govuk-table__body" th:if="${isCrime}">
+              <tr class="govuk-table__row"
+                  th:each="message, idx : ${claimErrorDetails.claimMessages}"
+                  th:id="|claim-error-${idx.index}|">
+                <td class="govuk-table__cell"
+                    th:data-sort-value="${message.clientSurname()}"
+                    th:text="${message.clientSurname() ?: '-'}"></td>
+                <td class="govuk-table__cell"
+                    th:data-sort-value="${message.clientForename()}"
+                    th:text="${message.clientForename() ?: '-'}"></td>
+                <td class="govuk-table__cell"
+                    th:data-sort-value="${message.ufn()}"
+                    th:text="${message.ufn() ?: '-'}"></td>
+                <td class="govuk-table__cell"
+                    th:data-sort-value="${message.message()}"
+                    th:text="${message.message()}"></td>
+              </tr>
+              </tbody>
+
+              <tbody class="govuk-table__body" th:if="${isCivil}">
+              <tr class="govuk-table__row"
+                  th:each="message, idx : ${claimErrorDetails.claimMessages}"
+                  th:id="|claim-error-${idx.index}|">
+                <td class="govuk-table__cell"
+                    th:data-sort-value="${message.clientSurname()}"
+                    th:text="${message.clientSurname() ?: '-'}"></td>
+                <td class="govuk-table__cell"
+                    th:data-sort-value="${message.clientForename()}"
+                    th:text="${message.clientForename() ?: '-'}"></td>
+                <td class="govuk-table__cell"
+                    th:data-sort-value="${message.ufn()}"
+                    th:text="${message.ufn() ?: '-'}"></td>
+                <td class="govuk-table__cell"
+                    th:data-sort-value="${message.ucn()}"
+                    th:text="${message.ucn() ?: '-'}"></td>
+                <td class="govuk-table__cell"
+                    th:data-sort-value="${message.message()}"
+                    th:text="${message.message()}"></td>
+              </tr>
+              </tbody>
+
+              <tbody class="govuk-table__body" th:if="${isMediation}">
+              <tr class="govuk-table__row"
+                  th:each="message, idx : ${claimErrorDetails.claimMessages}"
+                  th:id="|claim-error-${idx.index}|">
+                <td class="govuk-table__cell"
+                    th:data-sort-value="${message.clientSurname()}"
+                    th:text="${message.clientSurname() ?: '-'}"></td>
+                <td class="govuk-table__cell"
+                    th:data-sort-value="${message.clientForename()}"
+                    th:text="${message.clientForename() ?: '-'}"></td>
+                <td class="govuk-table__cell"
+                    th:data-sort-value="${message.ucn()}"
+                    th:text="${message.ucn() ?: '-'}"></td>
+                <td class="govuk-table__cell"
+                    th:data-sort-value="${message.client2Surname()}"
+                    th:text="${message.client2Surname() ?: '-'}"></td>
+                <td class="govuk-table__cell"
+                    th:data-sort-value="${message.client2Forename()}"
+                    th:text="${message.client2Forename() ?: '-'}"></td>
+                <td class="govuk-table__cell"
+                    th:data-sort-value="${message.client2Ucn()}"
+                    th:text="${message.client2Ucn() ?: '-'}"></td>
+                <td class="govuk-table__cell"
+                    th:data-sort-value="${message.message()}"
+                    th:text="${message.message()}"></td>
+              </tr>
+              </tbody>
+
+              <tbody class="govuk-table__body" th:if="${!isCrime and !isCivil and !isMediation}">
+              <tr class="govuk-table__row"
+                  th:each="message, idx : ${claimErrorDetails.claimMessages}"
+                  th:id="|claim-error-${idx.index}|">
+                <td class="govuk-table__cell"
+                    th:data-sort-value="${message.client()}"
+                    th:text="${message.client() ?: '-'}"></td>
+                <td class="govuk-table__cell"
+                    th:data-sort-value="${message.ucn()}"
+                    th:text="${message.ucn() ?: '-'}"></td>
+                <td class="govuk-table__cell"
+                    th:data-sort-value="${message.ufn()}"
+                    th:text="${message.ufn() ?: '-'}"></td>
+                <td class="govuk-table__cell"
+                    th:data-sort-value="${message.message()}"
+                    th:text="${message.message()}"></td>
+              </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <nav
+              th:replace="~{fragments/pagination :: pagination(currentUrl='/view-submission-detail', page=${claimErrorDetails.pagination})}"></nav>
         </div>
       </th:block>
     </div>

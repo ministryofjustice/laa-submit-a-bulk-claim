@@ -1,11 +1,8 @@
 package uk.gov.justice.laa.bulkclaim.controller;
 
-import static uk.gov.justice.laa.bulkclaim.constants.SessionConstants.SUBMISSION_DATE_TIME;
 import static uk.gov.justice.laa.bulkclaim.constants.SessionConstants.SUBMISSION_ID;
-import static uk.gov.justice.laa.bulkclaim.constants.SessionConstants.UPLOADED_FILENAME;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import java.time.LocalDateTime;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -49,7 +46,7 @@ public class BulkImportController {
    * @param oidcUser the authenticated user principal
    * @return the upload page
    */
-  @GetMapping("/")
+  @GetMapping("/upload")
   public String showUploadPage(
       Model model, @AuthenticationPrincipal OidcUser oidcUser, SessionStatus sessionStatus) {
 
@@ -102,9 +99,6 @@ public class BulkImportController {
           bulkSubmissionResponse.getBulkSubmissionId());
       redirectAttributes.addFlashAttribute(
           SUBMISSION_ID, bulkSubmissionResponse.getSubmissionIds().getFirst());
-      redirectAttributes.addFlashAttribute(
-          UPLOADED_FILENAME, fileUploadForm.file().getOriginalFilename());
-      redirectAttributes.addFlashAttribute(SUBMISSION_DATE_TIME, LocalDateTime.now());
       return "redirect:/import-in-progress";
     } catch (WebClientResponseException e) {
       try {
@@ -141,6 +135,6 @@ public class BulkImportController {
     redirectAttributes.addFlashAttribute(FILE_UPLOAD_FORM_MODEL_ATTR, fileUploadForm);
     redirectAttributes.addFlashAttribute(
         "org.springframework.validation.BindingResult.fileUploadForm", bindingResult);
-    return "redirect:/";
+    return "redirect:/upload";
   }
 }

@@ -39,20 +39,8 @@ jobs:
       ecr_region: ${{ vars.ECR_REGION }}
       ecr_role_to_assume: ${{ secrets.ECR_ROLE_TO_ASSUME }}
 
-  deploy-development:
-    needs: [ ecr-publish-image ]
-    permissions:
-      id-token: write
-      contents: read
-    uses: ./.github/workflows/helm-deploy.yml
-    with:
-      environment: development
-      deployment_name: dev
-      image_tag: ${{ needs.ecr-publish-image.outputs.published_image_version }}
-    secrets: inherit
-
   deploy-uat:
-    needs: [ ecr-publish-image, deploy-development ]
+    needs: [ ecr-publish-image ]
     permissions:
       id-token: write
       contents: read
@@ -63,26 +51,26 @@ jobs:
       image_tag: ${{ needs.ecr-publish-image.outputs.published_image_version }}
     secrets: inherit
 
-#  deploy-staging:
-#    needs: [ ecr-publish-image, deploy-uat ]
-#    permissions:
-#      id-token: write
-#      contents: read
-#    uses: ./.github/workflows/helm-deploy.yml
-#    with:
-#      environment: staging
-#      deployment_name: stg
-#      image_tag: ${{ needs.ecr-publish-image.outputs.published_image_version }}
-#    secrets: inherit
-#
-#  deploy-production:
-#    needs: [ ecr-publish-image, deploy-staging ]
-#    permissions:
-#      id-token: write
-#      contents: read
-#    uses: ./.github/workflows/helm-deploy.yml
-#    with:
-#      environment: production
-#      deployment_name: prod
-#      image_tag: ${{ needs.ecr-publish-image.outputs.published_image_version }}
-#    secrets: inherit
+  deploy-staging:
+    needs: [ ecr-publish-image, deploy-uat ]
+    permissions:
+      id-token: write
+      contents: read
+    uses: ./.github/workflows/helm-deploy.yml
+    with:
+      environment: staging
+      deployment_name: stg
+      image_tag: ${{ needs.ecr-publish-image.outputs.published_image_version }}
+    secrets: inherit
+
+  deploy-production:
+    needs: [ ecr-publish-image, deploy-staging ]
+    permissions:
+      id-token: write
+      contents: read
+    uses: ./.github/workflows/helm-deploy.yml
+    with:
+      environment: production
+      deployment_name: prod
+      image_tag: ${{ needs.ecr-publish-image.outputs.published_image_version }}
+    secrets: inherit
