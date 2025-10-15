@@ -13,7 +13,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.justice.laa.bulkclaim.dto.submission.SubmissionSummaryRow;
-import uk.gov.justice.laa.bulkclaim.dto.submission.claim.MessagesSummary;
+import uk.gov.justice.laa.bulkclaim.dto.submission.messages.MessagesSource;
+import uk.gov.justice.laa.bulkclaim.dto.submission.messages.MessagesSummary;
 import uk.gov.justice.laa.bulkclaim.dto.summary.BulkClaimImportSummary;
 import uk.gov.justice.laa.bulkclaim.mapper.BulkClaimImportSummaryMapper;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.Page;
@@ -42,7 +43,8 @@ class BulkClaimSummaryBuilderTest {
     when(bulkClaimImportSummaryMapper.toSubmissionSummaryRows(List.of(submissionResponse)))
         .thenReturn(List.of(summaryRow));
 
-    MessagesSummary errorSummary = new MessagesSummary(List.of(), 0, 0, pagination);
+    MessagesSummary errorSummary =
+        new MessagesSummary(List.of(), 0, 0, pagination, MessagesSource.CLAIM);
 
     when(submissionMessagesBuilder.buildErrors(submissionId, 0, 10)).thenReturn(errorSummary);
 

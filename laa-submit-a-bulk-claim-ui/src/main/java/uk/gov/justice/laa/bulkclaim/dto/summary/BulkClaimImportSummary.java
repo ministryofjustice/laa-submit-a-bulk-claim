@@ -2,7 +2,7 @@ package uk.gov.justice.laa.bulkclaim.dto.summary;
 
 import java.util.List;
 import uk.gov.justice.laa.bulkclaim.dto.submission.SubmissionSummaryRow;
-import uk.gov.justice.laa.bulkclaim.dto.submission.claim.MessagesSummary;
+import uk.gov.justice.laa.bulkclaim.dto.submission.messages.MessagesSummary;
 
 /**
  * Summary of submissions and claim errors. Used in the submission summary page between two tables.

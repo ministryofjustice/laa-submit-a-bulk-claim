@@ -33,16 +33,17 @@ import org.springframework.test.web.servlet.assertj.MockMvcTester;
 import org.springframework.test.web.servlet.assertj.MvcTestResult;
 import reactor.core.publisher.Mono;
 import uk.gov.justice.laa.bulkclaim.builder.SubmissionClaimDetailsBuilder;
-import uk.gov.justice.laa.bulkclaim.builder.SubmissionMessagesBuilder;
 import uk.gov.justice.laa.bulkclaim.builder.SubmissionMatterStartsDetailsBuilder;
+import uk.gov.justice.laa.bulkclaim.builder.SubmissionMessagesBuilder;
 import uk.gov.justice.laa.bulkclaim.builder.SubmissionSummaryBuilder;
 import uk.gov.justice.laa.bulkclaim.client.DataClaimsRestClient;
 import uk.gov.justice.laa.bulkclaim.config.WebMvcTestConfig;
 import uk.gov.justice.laa.bulkclaim.dto.submission.SubmissionMatterStartsDetails;
 import uk.gov.justice.laa.bulkclaim.dto.submission.SubmissionMatterStartsRow;
 import uk.gov.justice.laa.bulkclaim.dto.submission.SubmissionSummary;
-import uk.gov.justice.laa.bulkclaim.dto.submission.claim.MessagesSummary;
 import uk.gov.justice.laa.bulkclaim.dto.submission.claim.SubmissionClaimsDetails;
+import uk.gov.justice.laa.bulkclaim.dto.submission.messages.MessagesSource;
+import uk.gov.justice.laa.bulkclaim.dto.submission.messages.MessagesSummary;
 import uk.gov.justice.laa.bulkclaim.util.PaginationUtil;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.Page;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionBase;
@@ -169,7 +170,8 @@ class SubmissionDetailControllerTest {
                   "Legal aid",
                   OffsetDateTime.of(2025, 1, 1, 10, 10, 10, 0, ZoneOffset.UTC)));
       when(submissionMessagesBuilder.build(any(), any(), anyInt(), any(), anyInt()))
-          .thenReturn(new MessagesSummary(Collections.emptyList(), 0, 0, pagination));
+          .thenReturn(
+              new MessagesSummary(Collections.emptyList(), 0, 0, pagination, MessagesSource.CLAIM));
       when(submissionClaimDetailsBuilder.build(any(), anyInt(), anyInt()))
           .thenReturn(
               new SubmissionClaimsDetails(Collections.emptyList(), pagination, BigDecimal.ZERO));
@@ -210,7 +212,8 @@ class SubmissionDetailControllerTest {
           .thenReturn(
               new SubmissionClaimsDetails(Collections.emptyList(), pagination, BigDecimal.ZERO));
       when(submissionMessagesBuilder.buildErrors(any(), anyInt(), anyInt()))
-          .thenReturn(new MessagesSummary(Collections.emptyList(), 0, 0, pagination));
+          .thenReturn(
+              new MessagesSummary(Collections.emptyList(), 0, 0, pagination, MessagesSource.CLAIM));
       // When / Then
       assertThat(
               mockMvc.perform(
@@ -254,7 +257,8 @@ class SubmissionDetailControllerTest {
           .thenReturn(
               new SubmissionClaimsDetails(Collections.emptyList(), pagination, BigDecimal.ZERO));
       when(submissionMessagesBuilder.build(any(), any(), anyInt(), any(), anyInt()))
-          .thenReturn(new MessagesSummary(Collections.emptyList(), 0, 0, pagination));
+          .thenReturn(
+              new MessagesSummary(Collections.emptyList(), 0, 0, pagination, MessagesSource.CLAIM));
       when(submissionMatterStartsDetailsBuilder.build(any()))
           .thenReturn(new SubmissionMatterStartsDetails(matterTypes));
       // When / Then
@@ -297,7 +301,8 @@ class SubmissionDetailControllerTest {
           .thenReturn(
               new SubmissionClaimsDetails(Collections.emptyList(), pagination, BigDecimal.TEN));
       when(submissionMessagesBuilder.build(any(), any(), anyInt(), any(), anyInt()))
-          .thenReturn(new MessagesSummary(Collections.emptyList(), 0, 0, pagination));
+          .thenReturn(
+              new MessagesSummary(Collections.emptyList(), 0, 0, pagination, MessagesSource.CLAIM));
 
       // When
       MvcTestResult response =

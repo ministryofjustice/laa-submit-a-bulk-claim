@@ -19,15 +19,15 @@ import org.springframework.web.bind.annotation.SessionAttributes;
 import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import uk.gov.justice.laa.bulkclaim.builder.SubmissionClaimDetailsBuilder;
-import uk.gov.justice.laa.bulkclaim.builder.SubmissionMessagesBuilder;
 import uk.gov.justice.laa.bulkclaim.builder.SubmissionMatterStartsDetailsBuilder;
+import uk.gov.justice.laa.bulkclaim.builder.SubmissionMessagesBuilder;
 import uk.gov.justice.laa.bulkclaim.builder.SubmissionSummaryBuilder;
 import uk.gov.justice.laa.bulkclaim.client.DataClaimsRestClient;
 import uk.gov.justice.laa.bulkclaim.constants.ViewSubmissionNavigationTab;
 import uk.gov.justice.laa.bulkclaim.dto.submission.SubmissionMatterStartsDetails;
 import uk.gov.justice.laa.bulkclaim.dto.submission.SubmissionSummary;
-import uk.gov.justice.laa.bulkclaim.dto.submission.claim.MessagesSummary;
 import uk.gov.justice.laa.bulkclaim.dto.submission.claim.SubmissionClaimsDetails;
+import uk.gov.justice.laa.bulkclaim.dto.submission.messages.MessagesSummary;
 import uk.gov.justice.laa.bulkclaim.exception.SubmitBulkClaimException;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.Page;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionBase;
@@ -220,9 +220,7 @@ public class SubmissionDetailController {
   }
 
   private void addCounts(
-      Model model,
-      SubmissionClaimsDetails claimDetails,
-      MessagesSummary messagesSummary) {
+      Model model, SubmissionClaimsDetails claimDetails, MessagesSummary messagesSummary) {
 
     int claimCount =
         Optional.ofNullable(claimDetails)
@@ -231,9 +229,7 @@ public class SubmissionDetailController {
             .orElse(0);
 
     int messageCount =
-        Optional.ofNullable(messagesSummary)
-            .map(MessagesSummary::totalMessageCount)
-            .orElse(0);
+        Optional.ofNullable(messagesSummary).map(MessagesSummary::totalMessageCount).orElse(0);
 
     model.addAttribute("claimCount", claimCount);
     model.addAttribute("messageCount", messageCount);

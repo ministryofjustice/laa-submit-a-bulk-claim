@@ -7,9 +7,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import reactor.core.publisher.Mono;
 import uk.gov.justice.laa.bulkclaim.client.DataClaimsRestClient;
-import uk.gov.justice.laa.bulkclaim.dto.submission.claim.MessagesSource;
-import uk.gov.justice.laa.bulkclaim.dto.submission.claim.MessagesSummary;
-import uk.gov.justice.laa.bulkclaim.dto.submission.claim.MessageRow;
+import uk.gov.justice.laa.bulkclaim.dto.submission.messages.MessageRow;
+import uk.gov.justice.laa.bulkclaim.dto.submission.messages.MessagesSource;
+import uk.gov.justice.laa.bulkclaim.dto.submission.messages.MessagesSummary;
 import uk.gov.justice.laa.bulkclaim.mapper.BulkClaimImportSummaryMapper;
 import uk.gov.justice.laa.bulkclaim.util.PaginationUtil;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.ClaimResponse;
@@ -32,7 +32,7 @@ public class SubmissionMessagesBuilder {
    * Builds a {@link MessagesSummary} for a given submission ID whilst only returning errors.
    *
    * @param submissionId The submission ID to fetch errors for.
-   * @param page         The page number to fetch errors for.
+   * @param page The page number to fetch errors for.
    * @return The built {@link MessagesSummary}.
    */
   public MessagesSummary buildErrors(UUID submissionId, int page, int size) {
@@ -43,7 +43,8 @@ public class SubmissionMessagesBuilder {
    * Builds a {@link MessagesSummary} for a given submission ID with both warnings and errors.
    *
    * @param submissionId The submission ID to fetch errors for.
-   * @param claimId      The claim ID to fetch errors for.
+   * @param claimId The claim ID to fetch errors for.
+
    * @return The built {@link MessagesSummary}.
    */
   public MessagesSummary buildAllWarnings(UUID submissionId, UUID claimId) {
@@ -54,8 +55,8 @@ public class SubmissionMessagesBuilder {
    * Builds a {@link MessagesSummary} for a given submission ID and claim ID.
    *
    * @param submissionId the submission ID to fetch messages for.
-   * @param claimId      the claim ID to fetch messages for.
-   * @param page         the page number to fetch messages for.
+   * @param claimId the claim ID to fetch messages for.
+   * @param page the page number to fetch messages for.
    * @return the built {@link MessagesSummary}.
    */
   public MessagesSummary build(
@@ -104,7 +105,8 @@ public class SubmissionMessagesBuilder {
       // Set message source to submission if first message has no claim ID (all claims are either
       // submission or claim).
       messagesSource =
-          messagesResponse.getContent().getFirst().getClaimId() == null ? MessagesSource.SUBMISSION
+          messagesResponse.getContent().getFirst().getClaimId() == null
+              ? MessagesSource.SUBMISSION
               : MessagesSource.CLAIM;
     }
 
@@ -112,6 +114,7 @@ public class SubmissionMessagesBuilder {
         errorList,
         totalMessageCount,
         totalClaims,
-        paginationUtil.fromValidationMessages(messagesResponse, page, size), messagesSource);
+        paginationUtil.fromValidationMessages(messagesResponse, page, size),
+        messagesSource);
   }
 }

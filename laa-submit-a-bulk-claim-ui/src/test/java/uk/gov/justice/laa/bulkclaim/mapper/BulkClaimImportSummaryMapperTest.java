@@ -11,7 +11,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.justice.laa.bulkclaim.dto.submission.SubmissionSummaryRow;
-import uk.gov.justice.laa.bulkclaim.dto.submission.claim.MessageRow;
+import uk.gov.justice.laa.bulkclaim.dto.submission.messages.MessageRow;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.ClaimResponse;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionResponse;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.ValidationMessageBase;
@@ -78,8 +78,7 @@ class BulkClaimImportSummaryMapperTest {
     claimResponse.setClientForename("First");
     claimResponse.setClientSurname("Last");
 
-    MessageRow result =
-        mapper.toSubmissionSummaryClaimMessage(errors, claimResponse);
+    MessageRow result = mapper.toSubmissionSummaryClaimMessage(errors, claimResponse);
 
     SoftAssertions.assertSoftly(
         softly -> {
@@ -115,8 +114,7 @@ class BulkClaimImportSummaryMapperTest {
     claimResponse.setClientForename("First");
     claimResponse.setClientSurname("Last");
 
-    MessageRow result =
-        mapper.toSubmissionSummaryClaimMessage(errors, claimResponse);
+    MessageRow result = mapper.toSubmissionSummaryClaimMessage(errors, claimResponse);
 
     SoftAssertions.assertSoftly(
         softly -> {
@@ -147,8 +145,7 @@ class BulkClaimImportSummaryMapperTest {
     claimResponse.setClient2Forename("Second");
     claimResponse.setClient2Surname("Client");
 
-    MessageRow result =
-        mapper.toSubmissionSummaryClaimMessage(errors, claimResponse);
+    MessageRow result = mapper.toSubmissionSummaryClaimMessage(errors, claimResponse);
 
     SoftAssertions.assertSoftly(
         softly -> {
@@ -171,8 +168,7 @@ class BulkClaimImportSummaryMapperTest {
 
     ClaimResponse claimResponse = new ClaimResponse();
 
-    MessageRow result =
-        mapper.toSubmissionSummaryClaimMessage(errors, claimResponse);
+    MessageRow result = mapper.toSubmissionSummaryClaimMessage(errors, claimResponse);
 
     SoftAssertions.assertSoftly(
         softly -> {

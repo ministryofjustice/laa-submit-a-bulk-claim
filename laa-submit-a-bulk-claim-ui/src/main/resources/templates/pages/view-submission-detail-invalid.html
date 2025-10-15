@@ -10,6 +10,8 @@
           th:replace="~{fragments/submission-details/summary :: summary(' govuk-tag--red', #{submission.summary.status.rejected}, false, false)}"></th:block>
       <th:block
           th:replace="~{fragments/submission-details/claim-messages-errors :: claim-messages-errors}"></th:block>
+      <th:block
+          th:replace="~{fragments/submission-details/submission-messages-errors :: submission-messages-errors}"></th:block>
     </div>
   </div>
 </main>

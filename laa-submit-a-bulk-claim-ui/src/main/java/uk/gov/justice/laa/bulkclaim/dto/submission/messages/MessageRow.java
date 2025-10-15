@@ -1,4 +1,4 @@
-package uk.gov.justice.laa.bulkclaim.dto.submission.claim;
+package uk.gov.justice.laa.bulkclaim.dto.submission.messages;
 
 import java.util.UUID;
 import lombok.Builder;
