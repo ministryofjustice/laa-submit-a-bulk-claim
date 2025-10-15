@@ -3,7 +3,6 @@ package uk.gov.justice.laa.bulkclaim.controller;
 import static uk.gov.justice.laa.bulkclaim.constants.SessionConstants.CLAIM_ID;
 import static uk.gov.justice.laa.bulkclaim.constants.SessionConstants.SUBMISSION_ID;
 
-import jakarta.servlet.http.HttpSession;
 import java.util.Locale;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
@@ -43,14 +42,14 @@ public final class ClaimDetailController {
   /**
    * Gets the claim reference, stores it in the session and redirects to the view claim detail page.
    *
+   * @param model the spring model
    * @param claimReference the claim reference
-   * @param httpSession the http session
    * @return the redirect to view a claim detail
    */
   @GetMapping("/submission/claim/{claimReference}")
-  public String getClaimDetail(
-      @PathVariable("claimReference") UUID claimReference, HttpSession httpSession) {
-    httpSession.setAttribute(CLAIM_ID, claimReference);
+  public String getClaimDetail(Model model, @PathVariable("claimReference") UUID claimReference) {
+    model.addAttribute(CLAIM_ID, claimReference);
+
     return "redirect:/view-claim-detail";
   }
 
