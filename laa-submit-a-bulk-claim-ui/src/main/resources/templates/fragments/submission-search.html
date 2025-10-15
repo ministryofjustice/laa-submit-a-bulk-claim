@@ -1,6 +1,6 @@
 <th:block th:fragment="form(submissionsSearchForm)">
   <div class="search-panel govuk-!-margin-bottom-6">
-    <fieldset class="govuk-fieldset">
+      <fieldset class="govuk-fieldset" th:with="maxDate=${#dates.format((#dates.createNow().getTime() + 86400000), 'd/M/yyyy')}">
       <legend class="govuk-fieldset__legend govuk-fieldset__legend--s">
         <span th:text="#{search.legend}"></span>
         <div class="govuk-body" th:text="#{search.dateHint}"></div>
@@ -15,10 +15,8 @@
             <div
                 class="moj-datepicker"
                 data-module="moj-date-picker"
-                th:attr="data-min-date=#{search.date.min},
-                         data-max-date=#{search.date.max},
-                         data-excluded-dates=#{search.date.excludedDates},
-                         data-excluded-days=#{search.date.excludedDays}">
+                th:attr="data-max-date=${maxDate}">
+
               <div class="govuk-form-group">
                 <label class="govuk-label" for="submittedDateFrom"
                        th:text="#{search.submittedDateFrom.label}"></label>
@@ -44,10 +42,7 @@
             <div
                 class="moj-datepicker"
                 data-module="moj-date-picker"
-                th:attr="data-min-date=#{search.date.min},
-                         data-max-date=#{search.date.max},
-                         data-excluded-dates=#{search.date.excludedDates},
-                         data-excluded-days=#{search.date.excludedDays}">
+                th:attr="data-max-date=${maxDate}">
               <div class="govuk-form-group">
                 <label class="govuk-label" for="submittedDateTo"
                        th:text="#{search.submittedDateTo.label}"></label>

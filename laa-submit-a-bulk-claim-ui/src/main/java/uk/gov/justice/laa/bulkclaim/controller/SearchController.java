@@ -49,8 +49,6 @@ public class SearchController {
   private final OidcAttributeUtils oidcAttributeUtils;
 
   public static final String SUBMISSION_SEARCH_FORM = "submissionsSearchForm";
-  private static final DateTimeFormatter DATE_TIME_FORMATTER =
-      DateTimeFormatter.ofPattern("d/M/yyyy");
   private static final int DEFAULT_PAGE = 0;
   private static final int DEFAULT_PAGE_SIZE = 10;
 
@@ -189,7 +187,7 @@ public class SearchController {
       return null;
     }
     try {
-      return LocalDate.parse(date.trim(), DATE_TIME_FORMATTER);
+      return LocalDate.parse(date.trim(), DateTimeFormatter.ofPattern("d/M/yyyy"));
     } catch (DateTimeParseException exception) {
       log.warn("Unable to parse submitted date '{}': {}", date, exception.getMessage());
       return null;
