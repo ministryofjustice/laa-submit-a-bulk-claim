@@ -45,7 +45,7 @@ class ClaimSummaryMapperTest {
               .isEqualTo(claimResponse.getClient2Surname());
           softAssertions
               .assertThat(result.uniqueClientNumber2())
-              .isNull(); // TODO: Missing from response
+              .isEqualTo(claimResponse.getClient2Ucn());
           softAssertions
               .assertThat(result.stageReachedCode())
               .isEqualTo(claimResponse.getStageReachedCode());
@@ -56,7 +56,7 @@ class ClaimSummaryMapperTest {
           softAssertions
               .assertThat(result.caseConcludedDate())
               .isEqualTo(claimResponse.getCaseConcludedDate());
-          softAssertions.assertThat(result.isEscaped()).isTrue(); // TODO: Missing from response
+          softAssertions.assertThat(result.isEscaped()).isTrue();
         });
   }
 }

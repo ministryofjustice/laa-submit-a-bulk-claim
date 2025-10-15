@@ -35,4 +35,4 @@ public record ClaimSummary(
     String uniqueFileNumber, /*CIVIL, CRIME*/
     String outcomeCode, /*CRIME*/
     LocalDate caseConcludedDate, /*CRIME*/
-    boolean isEscaped /*CIVIL*/) {}
+    Boolean isEscaped /*CIVIL*/) {}
