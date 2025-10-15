@@ -1,0 +1,34 @@
+<th:block th:fragment="navigation(claimCount, messageCount)">
+  <div class="govuk-grid-column-full">
+    <nav class="moj-sub-navigation" aria-label="Sub navigation">
+      <ul class="moj-sub-navigation__list">
+        <!--/*@thymesVar id="navTab" type="uk.gov.justice.laa.bulkclaim.constants.ViewSubmissionNavigationTab"*/-->
+        <li class="moj-sub-navigation__item">
+          <a class="moj-sub-navigation__link"
+             th:with="isCurrent=${navTab.toString() == 'CLAIM_DETAILS'},
+              url=@{/view-submission-detail(navTab='CLAIM_DETAILS')}"
+             th:attr="aria-current=${isCurrent ? 'page' : null}"
+             th:href="${isCurrent ? '#claims' : url}"
+             th:text="#{submission.summary.nav.claims(${claimCount})}"></a>
+        </li>
+        <li class="moj-sub-navigation__item" th:if="${claimMessagesSummary != null}">
+          <a class="moj-sub-navigation__link"
+             th:with="isCurrent=${navTab.toString() == 'CLAIM_ERRORS'},
+              url=@{/view-submission-detail(navTab='CLAIM_ERRORS')}"
+             th:attr="aria-current=${isCurrent ? 'page' : null}"
+             th:href="${isCurrent ? '#messages' : url}"
+             th:text="#{submission.summary.nav.messages(${messageCount})}"></a>
+        </li>
+        <li class="moj-sub-navigation__item"
+            th:unless="${#strings.containsIgnoreCase(submissionSummary?.areaOfLaw, 'crime')}">
+          <a class="moj-sub-navigation__link"
+             th:with="isCurrent=${navTab.toString() == 'MATTER_STARTS'},
+              url=@{/view-submission-detail(navTab='MATTER_STARTS')}"
+             th:attr="aria-current=${isCurrent ? 'page' : null}"
+             th:href="${isCurrent ? '#matter-starts' : url}"
+             th:text="#{viewSubmission.matterStarts.subHeading}"></a>
+        </li>
+      </ul>
+    </nav>
+  </div>
+</th:block>

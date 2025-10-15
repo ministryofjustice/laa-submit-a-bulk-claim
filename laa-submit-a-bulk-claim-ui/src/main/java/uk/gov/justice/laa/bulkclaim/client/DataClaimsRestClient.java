@@ -41,8 +41,8 @@ public interface DataClaimsRestClient {
   @PostExchange(value = "/bulk-submissions", contentType = MediaType.MULTIPART_FORM_DATA_VALUE)
   Mono<ResponseEntity<CreateBulkSubmission201Response>> upload(
       @RequestPart("file") MultipartFile file,
-      @RequestParam(required = true) String userId,
-      @RequestParam(required = true) List<String> offices)
+      @RequestParam String userId,
+      @RequestParam List<String> offices)
       throws WebClientResponseException;
 
   /**
@@ -107,7 +107,8 @@ public interface DataClaimsRestClient {
       @RequestParam(value = "claim-id", required = false) UUID claimId,
       @RequestParam(value = "type", required = false) String type,
       @RequestParam(value = "source", required = false) String source,
-      @RequestParam(value = "page", required = false, defaultValue = "0") Integer page);
+      @RequestParam(value = "page", required = false, defaultValue = "0") Integer page,
+      @RequestParam(value = "size", required = false) Integer size);
 
   @GetExchange(value = "/submissions/{id}/matter-starts")
   Mono<MatterStartResultSet> getAllMatterStartsForSubmission(@PathVariable("id") UUID submissionId);

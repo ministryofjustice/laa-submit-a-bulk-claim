@@ -23,6 +23,11 @@ public interface SubmissionClaimRowMapper {
       target = "client",
       expression =
           "java(claimFields.getClientForename() + \" \" + " + "claimFields.getClientSurname())")
+  @Mapping(target = "clientForename", source = "claimFields.clientForename")
+  @Mapping(target = "clientSurname", source = "claimFields.clientSurname")
+  @Mapping(target = "client2Forename", source = "claimFields.client2Forename")
+  @Mapping(target = "client2Surname", source = "claimFields.client2Surname")
+  @Mapping(target = "client2Ucn", source = "claimFields.client2Ucn")
   @Mapping(target = "category", source = "claimFields.standardFeeCategoryCode")
   @Mapping(target = "matter", source = "claimFields.matterTypeCode")
   @Mapping(target = "concludedOrClaimedDate", source = "claimFields.caseConcludedDate")
@@ -33,6 +38,7 @@ public interface SubmissionClaimRowMapper {
   @Mapping(target = "feeCode", source = "claimFields.feeCalculationResponse.feeCode")
   @Mapping(target = "costsDetails", source = "claimFields")
   @Mapping(target = "totalMessages", source = "totalMessages")
+  @Mapping(target = "escapeCase", expression = "java(resolveEscapeCase(claimFields))")
   SubmissionClaimRow toSubmissionClaimRow(ClaimResponse claimFields, int totalMessages);
 
   /**
@@ -51,8 +57,24 @@ public interface SubmissionClaimRowMapper {
     return value.substring(0, 1).toUpperCase() + value.substring(1).toLowerCase();
   }
 
-  @Mapping(target = "claimValue", source = "claimFields.totalValue")
+  @Mapping(target = "claimValue", source = "claimFields.feeCalculationResponse.totalAmount")
   SubmissionClaimRowCostsDetails toSubmissionClaimRowCostsDetails(ClaimResponse claimFields);
+
+  /**
+   * Retrieves the escape case flag from the nested fee calculation response if available.
+   *
+   * @param claimFields the claim response to inspect
+   * @return {@code Boolean.TRUE} if the claim is an escape case, {@code Boolean.FALSE} if not, or
+   *     {@code null} if the value is unavailable
+   */
+  default Boolean resolveEscapeCase(ClaimResponse claimFields) {
+    if (claimFields == null
+        || claimFields.getFeeCalculationResponse() == null
+        || claimFields.getFeeCalculationResponse().getBoltOnDetails() == null) {
+      return null;
+    }
+    return claimFields.getFeeCalculationResponse().getBoltOnDetails().getEscapeCaseFlag();
+  }
 
   /**
    * Ensures that a BigDecimal is not null and instead changes to be zero if it is null.

@@ -1,6 +1,9 @@
 package uk.gov.justice.laa.bulkclaim.mapper;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Answers.RETURNS_DEEP_STUBS;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -40,6 +43,9 @@ class SubmissionClaimRowMapperTest {
             .uniqueClientNumber("UCN123")
             .clientForename("Client")
             .clientSurname("name")
+            .client2Forename("Second")
+            .client2Surname("User")
+            .client2Ucn("UCN999")
             .standardFeeCategoryCode("Family")
             .matterTypeCode("FAMD:FRES")
             .caseConcludedDate(LocalDate.of(2025, 3, 18).toString())
@@ -69,6 +75,11 @@ class SubmissionClaimRowMapperTest {
           softAssertions.assertThat(result.ufn()).isEqualTo("UFN123");
           softAssertions.assertThat(result.ucn()).isEqualTo("UCN123");
           softAssertions.assertThat(result.client()).isEqualTo("Client name");
+          softAssertions.assertThat(result.clientForename()).isEqualTo("Client");
+          softAssertions.assertThat(result.clientSurname()).isEqualTo("name");
+          softAssertions.assertThat(result.client2Forename()).isEqualTo("Second");
+          softAssertions.assertThat(result.client2Surname()).isEqualTo("User");
+          softAssertions.assertThat(result.client2Ucn()).isEqualTo("UCN999");
           softAssertions.assertThat(result.category()).isEqualTo("Family");
           softAssertions.assertThat(result.matter()).isEqualTo("FAMD:FRES");
           softAssertions
@@ -78,6 +89,7 @@ class SubmissionClaimRowMapperTest {
           softAssertions.assertThat(result.feeCode()).isEqualTo("FC123");
           softAssertions.assertThat(result.costsDetails()).isNotNull();
           softAssertions.assertThat(result.totalMessages()).isEqualTo(2);
+          softAssertions.assertThat(result.escapeCase()).isNull();
         });
   }
 
@@ -94,6 +106,8 @@ class SubmissionClaimRowMapperTest {
             .netWaitingCostsAmount(new BigDecimal("400.40"))
             .travelWaitingCostsAmount(new BigDecimal("500.50"))
             .totalValue(new BigDecimal("1234.56"))
+            .feeCalculationResponse(
+                FeeCalculationPatch.builder().totalAmount(new BigDecimal("1234.56")).build())
             .build();
     // When
     SubmissionClaimRowCostsDetails result = mapper.toSubmissionClaimRowCostsDetails(claimResponse);
@@ -120,6 +134,33 @@ class SubmissionClaimRowMapperTest {
               .isEqualTo(new BigDecimal("500.50"));
           softAssertions.assertThat(result.claimValue()).isEqualTo(new BigDecimal("1234.56"));
         });
+  }
+
+  @Test
+  @DisplayName("Should map escape case flag when present")
+  void shouldMapEscapeCaseFlagWhenPresent() {
+    // Given
+    ClaimResponse claimResponse = mock(ClaimResponse.class, RETURNS_DEEP_STUBS);
+    when(claimResponse.getId()).thenReturn("5146e93f-92c8-4c56-bd25-0cb6953f534");
+    when(claimResponse.getLineNumber()).thenReturn(1);
+    when(claimResponse.getUniqueFileNumber()).thenReturn("UFN123");
+    when(claimResponse.getUniqueClientNumber()).thenReturn("UCN123");
+    when(claimResponse.getClientForename()).thenReturn("Client");
+    when(claimResponse.getClientSurname()).thenReturn("Name");
+    when(claimResponse.getStandardFeeCategoryCode()).thenReturn("Family");
+    when(claimResponse.getMatterTypeCode()).thenReturn("FAMD:FRES");
+    when(claimResponse.getCaseConcludedDate()).thenReturn(LocalDate.of(2025, 3, 18).toString());
+    when(claimResponse.getFeeCalculationResponse().getFeeType())
+        .thenReturn(FeeCalculationType.DISBURSEMENT_ONLY);
+    when(claimResponse.getFeeCalculationResponse().getFeeCode()).thenReturn("FC123");
+    when(claimResponse.getFeeCalculationResponse().getBoltOnDetails().getEscapeCaseFlag())
+        .thenReturn(Boolean.TRUE);
+
+    // When
+    SubmissionClaimRow result = mapper.toSubmissionClaimRow(claimResponse, 0);
+
+    // Then
+    assertThat(result.escapeCase()).isTrue();
   }
 
   @Test

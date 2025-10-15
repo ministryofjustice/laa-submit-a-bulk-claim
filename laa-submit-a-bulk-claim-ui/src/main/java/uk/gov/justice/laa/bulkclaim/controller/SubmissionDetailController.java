@@ -2,8 +2,8 @@ package uk.gov.justice.laa.bulkclaim.controller;
 
 import static org.springframework.beans.support.PagedListHolder.DEFAULT_PAGE_SIZE;
 import static uk.gov.justice.laa.bulkclaim.constants.SessionConstants.SUBMISSION_ID;
-import static uk.gov.justice.laa.bulkclaim.constants.ViewSubmissionNavigationTab.CLAIM_DETAILS;
 
+import java.util.Optional;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -29,10 +29,12 @@ import uk.gov.justice.laa.bulkclaim.dto.submission.SubmissionSummary;
 import uk.gov.justice.laa.bulkclaim.dto.submission.claim.ClaimMessagesSummary;
 import uk.gov.justice.laa.bulkclaim.dto.submission.claim.SubmissionClaimsDetails;
 import uk.gov.justice.laa.bulkclaim.exception.SubmitBulkClaimException;
+import uk.gov.justice.laa.dstew.payments.claimsdata.model.Page;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionBase;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionResponse;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionStatus;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionsResultSet;
+import uk.gov.justice.laa.dstew.payments.claimsdata.model.ValidationMessageType;
 
 /**
  * Controller for handling viewing a submission.
@@ -122,25 +124,118 @@ public class SubmissionDetailController {
                     new SubmitBulkClaimException(
                         "Submission %s does not exist".formatted(submissionId.toString())));
 
-    final SubmissionSummary submissionSummary = submissionSummaryBuilder.build(submissionResponse);
+    SubmissionSummary submissionSummary = submissionSummaryBuilder.build(submissionResponse);
+    boolean submissionAccepted =
+        submissionResponse.getStatus() == SubmissionStatus.VALIDATION_SUCCEEDED;
 
-    if ("invalid".equalsIgnoreCase(submissionSummary.status())) {
-      final ClaimMessagesSummary claimErrorSummary =
-          submissionClaimMessagesBuilder.buildErrors(submissionId, page, DEFAULT_PAGE_SIZE);
-      model.addAttribute("claimErrorDetails", claimErrorSummary);
-    }
-    if (CLAIM_DETAILS.equals(navigationTab)) {
-      final SubmissionClaimsDetails claimDetails =
-          submissionClaimDetailsBuilder.build(submissionResponse, page, DEFAULT_PAGE_SIZE);
-      model.addAttribute("claimDetails", claimDetails);
+    if (submissionAccepted) {
+      submissionSummary =
+          handleAcceptedSubmission(
+              model, submissionSummary, submissionResponse, submissionId, navigationTab, page);
+      addCommonSubmissionAttributes(model, submissionSummary, submissionResponse, navigationTab);
+      return "pages/view-submission-detail-accepted";
     } else {
-      final SubmissionMatterStartsDetails build =
-          submissionMatterStartsDetailsBuilder.build(submissionResponse);
-      model.addAttribute("matterStartsDetails", build);
+      handleInvalidSubmission(model, submissionResponse, submissionId, page);
+      addCommonSubmissionAttributes(model, submissionSummary, submissionResponse, navigationTab);
+      return "pages/view-submission-detail-invalid";
     }
-    model.addAttribute("submissionSummary", submissionSummary);
-    model.addAttribute("navTab", navigationTab);
+  }
 
-    return "pages/view-submission-detail";
+  private SubmissionSummary handleAcceptedSubmission(
+      Model model,
+      SubmissionSummary submissionSummary,
+      SubmissionResponse submissionResponse,
+      UUID submissionId,
+      ViewSubmissionNavigationTab navigationTab,
+      int page) {
+
+    SubmissionClaimsDetails claimDetails =
+        submissionClaimDetailsBuilder.build(submissionResponse, page, DEFAULT_PAGE_SIZE);
+    model.addAttribute("claimDetails", claimDetails);
+
+    if (claimDetails.totalClaimValue() != null) {
+      submissionSummary =
+          new SubmissionSummary(
+              submissionSummary.submissionReference(),
+              submissionSummary.status(),
+              submissionSummary.submissionPeriod(),
+              submissionSummary.officeAccount(),
+              claimDetails.totalClaimValue(),
+              submissionSummary.areaOfLaw(),
+              submissionSummary.submitted());
+    }
+
+    ClaimMessagesSummary claimMessagesSummary =
+        submissionClaimMessagesBuilder.build(
+            submissionId, null, page, ValidationMessageType.WARNING, DEFAULT_PAGE_SIZE);
+    model.addAttribute("claimMessagesSummary", claimMessagesSummary);
+
+    addCounts(model, claimDetails, claimMessagesSummary);
+    addMatterStartsIfApplicable(model, submissionResponse, navigationTab);
+
+    return submissionSummary;
+  }
+
+  private void handleInvalidSubmission(
+      Model model, SubmissionResponse submissionResponse, UUID submissionId, int page) {
+
+    SubmissionClaimsDetails claimDetails =
+        submissionClaimDetailsBuilder.build(submissionResponse, page, DEFAULT_PAGE_SIZE);
+    model.addAttribute("claimDetails", claimDetails);
+
+    ClaimMessagesSummary claimMessagesSummary =
+        submissionClaimMessagesBuilder.buildErrors(submissionId, page, DEFAULT_PAGE_SIZE);
+    model.addAttribute("claimMessagesSummary", claimMessagesSummary);
+
+    addCounts(model, claimDetails, claimMessagesSummary);
+  }
+
+  private void addMatterStartsIfApplicable(
+      Model model,
+      SubmissionResponse submissionResponse,
+      ViewSubmissionNavigationTab navigationTab) {
+
+    boolean isCrimeArea =
+        Optional.ofNullable(submissionResponse.getAreaOfLaw())
+            .map(String::toLowerCase)
+            .map(area -> area.contains("crime"))
+            .orElse(false);
+
+    if (ViewSubmissionNavigationTab.MATTER_STARTS.equals(navigationTab) && !isCrimeArea) {
+      SubmissionMatterStartsDetails matterStartsDetails =
+          submissionMatterStartsDetailsBuilder.build(submissionResponse);
+      model.addAttribute("matterStartsDetails", matterStartsDetails);
+    }
+  }
+
+  private void addCommonSubmissionAttributes(
+      Model model,
+      SubmissionSummary submissionSummary,
+      SubmissionResponse submissionResponse,
+      ViewSubmissionNavigationTab navigationTab) {
+
+    model.addAttribute("submissionSummary", submissionSummary);
+    model.addAttribute("submissionStatus", submissionResponse.getStatus());
+    model.addAttribute("navTab", navigationTab);
+  }
+
+  private void addCounts(
+      Model model,
+      SubmissionClaimsDetails claimDetails,
+      ClaimMessagesSummary claimMessagesSummary) {
+
+    int claimCount =
+        Optional.ofNullable(claimDetails)
+            .map(SubmissionClaimsDetails::pagination)
+            .map(Page::getTotalElements)
+            .orElse(0);
+
+    int messageCount =
+        Optional.ofNullable(claimMessagesSummary)
+            .map(ClaimMessagesSummary::totalMessageCount)
+            .orElse(0);
+
+    model.addAttribute("claimCount", claimCount);
+    model.addAttribute("messageCount", messageCount);
   }
 }

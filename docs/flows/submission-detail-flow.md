@@ -16,10 +16,13 @@ flowchart TD
     decision -->|MATTER_STARTS| buildMatterStarts["SubmissionMatterStartsDetailsBuilder.build"]
     buildSummary --> invalidCheck{"Submission marked invalid?"}
     invalidCheck -->|Yes| buildMessages["SubmissionClaimMessagesBuilder.buildErrors\npopulates validation messages"]
-    invalidCheck -->|No| renderDetail
-    buildClaimOverview --> renderDetail["Render pages/view-submission-detail"]
-    buildMatterStarts --> renderDetail
-    renderDetail --> selectClaim{"User selects a claim row?"}
+    invalidCheck -->|No| renderAccepted["Render pages/view-submission-detail-accepted"]
+    buildMessages --> renderInvalid["Render pages/view-submission-detail-invalid"]
+    buildClaimOverview --> renderAccepted
+    buildClaimOverview --> renderInvalid
+    buildMatterStarts --> renderAccepted
+    renderAccepted --> selectClaim{"User selects a claim row?"}
+    renderInvalid --> selectClaim
     selectClaim -->|Yes| cacheClaim["GET /submission/claim/{claimReference}\nClaimDetailController.getClaimDetail\nstores CLAIM_ID in session"]
     cacheClaim --> redirectClaim["Redirect to /view-claim-detail"]
     redirectClaim --> loadClaim["ClaimDetailController.getClaimDetail"]

@@ -41,6 +41,7 @@ import uk.gov.justice.laa.bulkclaim.config.WebMvcTestConfig;
 import uk.gov.justice.laa.bulkclaim.dto.submission.SubmissionMatterStartsDetails;
 import uk.gov.justice.laa.bulkclaim.dto.submission.SubmissionMatterStartsRow;
 import uk.gov.justice.laa.bulkclaim.dto.submission.SubmissionSummary;
+import uk.gov.justice.laa.bulkclaim.dto.submission.claim.ClaimMessagesSummary;
 import uk.gov.justice.laa.bulkclaim.dto.submission.claim.SubmissionClaimsDetails;
 import uk.gov.justice.laa.bulkclaim.util.PaginationUtil;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.Page;
@@ -48,6 +49,7 @@ import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionBase;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionResponse;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionStatus;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionsResultSet;
+import uk.gov.justice.laa.dstew.payments.claimsdata.model.ValidationMessageType;
 
 @WebMvcTest(SubmissionDetailController.class)
 @AutoConfigureMockMvc
@@ -152,8 +154,10 @@ class SubmissionDetailControllerTest {
       final UUID submissionReference = UUID.fromString("bceac49c-d756-4e05-8e28-3334b84b6fe8");
       final Page pagination =
           Page.builder().totalPages(1).totalElements(0).number(0).size(10).build();
+      SubmissionResponse submissionResponse =
+          SubmissionResponse.builder().status(SubmissionStatus.VALIDATION_SUCCEEDED).build();
       when(dataClaimsRestClient.getSubmission(submissionReference))
-          .thenReturn(Mono.just(SubmissionResponse.builder().build()));
+          .thenReturn(Mono.just(submissionResponse));
       when(submissionSummaryBuilder.build(any()))
           .thenReturn(
               new SubmissionSummary(
@@ -164,8 +168,11 @@ class SubmissionDetailControllerTest {
                   new BigDecimal("100.50"),
                   "Legal aid",
                   OffsetDateTime.of(2025, 1, 1, 10, 10, 10, 0, ZoneOffset.UTC)));
+      when(submissionClaimMessagesBuilder.build(any(), any(), anyInt(), any(), anyInt()))
+          .thenReturn(new ClaimMessagesSummary(Collections.emptyList(), 0, 0, pagination));
       when(submissionClaimDetailsBuilder.build(any(), anyInt(), anyInt()))
-          .thenReturn(new SubmissionClaimsDetails(Collections.emptyList(), pagination));
+          .thenReturn(
+              new SubmissionClaimsDetails(Collections.emptyList(), pagination, BigDecimal.ZERO));
       // When / Then
       assertThat(
               mockMvc.perform(
@@ -173,7 +180,7 @@ class SubmissionDetailControllerTest {
                       .with(oidcLogin().oidcUser(ControllerTestHelper.getOidcUser()))
                       .sessionAttr("submissionId", submissionReference)))
           .hasStatusOk()
-          .hasViewName("pages/view-submission-detail");
+          .hasViewName("pages/view-submission-detail-accepted");
       verify(submissionClaimDetailsBuilder, times(1)).build(any(), anyInt(), anyInt());
       verifyNoInteractions(submissionMatterStartsDetailsBuilder);
     }
@@ -185,20 +192,25 @@ class SubmissionDetailControllerTest {
       final UUID submissionReference = UUID.fromString("bceac49c-d756-4e05-8e28-3334b84b6fe8");
       final Page pagination =
           Page.builder().totalPages(1).totalElements(0).number(0).size(10).build();
+      SubmissionResponse submissionResponse =
+          SubmissionResponse.builder().status(SubmissionStatus.VALIDATION_FAILED).build();
       when(dataClaimsRestClient.getSubmission(submissionReference))
-          .thenReturn(Mono.just(SubmissionResponse.builder().build()));
+          .thenReturn(Mono.just(submissionResponse));
       when(submissionSummaryBuilder.build(any()))
           .thenReturn(
               new SubmissionSummary(
                   submissionReference,
-                  "Submitted",
+                  "Invalid",
                   LocalDate.of(2025, 5, 1),
                   "AQ2B3C",
                   new BigDecimal("100.50"),
                   "Legal aid",
                   OffsetDateTime.of(2025, 1, 1, 10, 10, 10, 0, ZoneOffset.UTC)));
       when(submissionClaimDetailsBuilder.build(any(), anyInt(), anyInt()))
-          .thenReturn(new SubmissionClaimsDetails(Collections.emptyList(), pagination));
+          .thenReturn(
+              new SubmissionClaimsDetails(Collections.emptyList(), pagination, BigDecimal.ZERO));
+      when(submissionClaimMessagesBuilder.buildErrors(any(), anyInt(), anyInt()))
+          .thenReturn(new ClaimMessagesSummary(Collections.emptyList(), 0, 0, pagination));
       // When / Then
       assertThat(
               mockMvc.perform(
@@ -206,9 +218,10 @@ class SubmissionDetailControllerTest {
                       .with(oidcLogin().oidcUser(ControllerTestHelper.getOidcUser()))
                       .sessionAttr("submissionId", submissionReference)))
           .hasStatusOk()
-          .hasViewName("pages/view-submission-detail");
+          .hasViewName("pages/view-submission-detail-invalid");
 
       verify(submissionClaimDetailsBuilder, times(1)).build(any(), anyInt(), anyInt());
+      verify(submissionClaimMessagesBuilder, times(1)).buildErrors(submissionReference, 0, 10);
       verifyNoInteractions(submissionMatterStartsDetailsBuilder);
     }
 
@@ -217,8 +230,14 @@ class SubmissionDetailControllerTest {
     void shouldReturnExpectedResultWithMatterStarts() {
       // Given
       UUID submissionReference = UUID.fromString("bceac49c-d756-4e05-8e28-3334b84b6fe8");
+      Page pagination = Page.builder().totalPages(1).totalElements(0).number(0).size(10).build();
       when(dataClaimsRestClient.getSubmission(submissionReference))
-          .thenReturn(Mono.just(SubmissionResponse.builder().build()));
+          .thenReturn(
+              Mono.just(
+                  SubmissionResponse.builder()
+                      .status(SubmissionStatus.VALIDATION_SUCCEEDED)
+                      .areaOfLaw("LEGAL HELP")
+                      .build()));
       when(submissionSummaryBuilder.build(any()))
           .thenReturn(
               new SubmissionSummary(
@@ -227,10 +246,15 @@ class SubmissionDetailControllerTest {
                   LocalDate.of(2025, 5, 1),
                   "AQ2B3C",
                   new BigDecimal("100.50"),
-                  "Legal aid",
+                  "LEGAL HELP",
                   OffsetDateTime.of(2025, 1, 1, 10, 10, 10, 0, ZoneOffset.UTC)));
       HashMap<SubmissionMatterStartsRow, Long> matterTypes = new HashMap<>();
       matterTypes.put(new SubmissionMatterStartsRow("Description"), 1L);
+      when(submissionClaimDetailsBuilder.build(any(), anyInt(), anyInt()))
+          .thenReturn(
+              new SubmissionClaimsDetails(Collections.emptyList(), pagination, BigDecimal.ZERO));
+      when(submissionClaimMessagesBuilder.build(any(), any(), anyInt(), any(), anyInt()))
+          .thenReturn(new ClaimMessagesSummary(Collections.emptyList(), 0, 0, pagination));
       when(submissionMatterStartsDetailsBuilder.build(any()))
           .thenReturn(new SubmissionMatterStartsDetails(matterTypes));
       // When / Then
@@ -240,9 +264,53 @@ class SubmissionDetailControllerTest {
                       .with(oidcLogin().oidcUser(ControllerTestHelper.getOidcUser()))
                       .sessionAttr("submissionId", submissionReference)))
           .hasStatusOk()
-          .hasViewName("pages/view-submission-detail");
-      verifyNoInteractions(submissionClaimDetailsBuilder);
+          .hasViewName("pages/view-submission-detail-accepted");
+      verify(submissionClaimDetailsBuilder).build(any(), anyInt(), anyInt());
       verify(submissionMatterStartsDetailsBuilder, times(1)).build(any());
+    }
+
+    @Test
+    @DisplayName("Should populate summary data for accepted submission")
+    void shouldPopulateSummaryForAcceptedSubmission() {
+      // Given
+      UUID submissionReference = UUID.fromString("bceac49c-d756-4e05-8e28-3334b84b6fe8");
+      Page pagination = Page.builder().totalPages(1).totalElements(0).number(0).size(10).build();
+      SubmissionResponse submissionResponse =
+          SubmissionResponse.builder()
+              .submissionId(submissionReference)
+              .status(SubmissionStatus.VALIDATION_SUCCEEDED)
+              .areaOfLaw("Crime Lower")
+              .build();
+      when(dataClaimsRestClient.getSubmission(submissionReference))
+          .thenReturn(Mono.just(submissionResponse));
+      when(submissionSummaryBuilder.build(any()))
+          .thenReturn(
+              new SubmissionSummary(
+                  submissionReference,
+                  "Submitted",
+                  LocalDate.of(2025, 5, 1),
+                  "AQ2B3C",
+                  null,
+                  "Crime lower",
+                  OffsetDateTime.of(2025, 1, 1, 10, 10, 10, 0, ZoneOffset.UTC)));
+      when(submissionClaimDetailsBuilder.build(any(), anyInt(), anyInt()))
+          .thenReturn(
+              new SubmissionClaimsDetails(Collections.emptyList(), pagination, BigDecimal.TEN));
+      when(submissionClaimMessagesBuilder.build(any(), any(), anyInt(), any(), anyInt()))
+          .thenReturn(new ClaimMessagesSummary(Collections.emptyList(), 0, 0, pagination));
+
+      // When
+      MvcTestResult response =
+          mockMvc.perform(
+              get("/view-submission-detail")
+                  .with(oidcLogin().oidcUser(ControllerTestHelper.getOidcUser()))
+                  .sessionAttr("submissionId", submissionReference));
+
+      // Then
+      assertThat(response).hasStatusOk().hasViewName("pages/view-submission-detail-accepted");
+      verify(submissionClaimDetailsBuilder).build(any(), anyInt(), anyInt());
+      verify(submissionClaimMessagesBuilder)
+          .build(submissionReference, null, 0, ValidationMessageType.WARNING, 10);
     }
 
     @Test
