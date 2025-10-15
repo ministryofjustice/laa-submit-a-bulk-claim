@@ -14,9 +14,9 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.SessionAttributes;
-import uk.gov.justice.laa.bulkclaim.builder.SubmissionClaimMessagesBuilder;
+import uk.gov.justice.laa.bulkclaim.builder.SubmissionMessagesBuilder;
 import uk.gov.justice.laa.bulkclaim.client.DataClaimsRestClient;
-import uk.gov.justice.laa.bulkclaim.dto.submission.claim.ClaimMessagesSummary;
+import uk.gov.justice.laa.bulkclaim.dto.submission.claim.MessagesSummary;
 import uk.gov.justice.laa.bulkclaim.exception.SubmitBulkClaimException;
 import uk.gov.justice.laa.bulkclaim.mapper.ClaimFeeCalculationBreakdownMapper;
 import uk.gov.justice.laa.bulkclaim.mapper.ClaimSummaryMapper;
@@ -37,7 +37,7 @@ public final class ClaimDetailController {
   private final DataClaimsRestClient dataClaimsRestClient;
   private final ClaimSummaryMapper claimSummaryMapper;
   private final ClaimFeeCalculationBreakdownMapper claimFeeCalculationBreakdownMapper;
-  private final SubmissionClaimMessagesBuilder submissionClaimMessagesBuilder;
+  private final SubmissionMessagesBuilder submissionMessagesBuilder;
 
   /**
    * Gets the claim reference, stores it in the session and redirects to the view claim detail page.
@@ -87,9 +87,9 @@ public final class ClaimDetailController {
     String areaOfLaw = simplifyAreaOfLaw(submissionResponse.getAreaOfLaw());
     model.addAttribute("claimSummary", claimSummaryMapper.toClaimSummary(claimResponse, areaOfLaw));
 
-    ClaimMessagesSummary claimMessagesSummary =
-        submissionClaimMessagesBuilder.buildAllWarnings(submissionId, claimId);
-    model.addAttribute("claimMessages", claimMessagesSummary);
+    final MessagesSummary messagesSummary =
+        submissionMessagesBuilder.buildAllWarnings(submissionId, claimId);
+    model.addAttribute("claimMessages", messagesSummary);
 
     return "pages/view-claim-detail";
   }

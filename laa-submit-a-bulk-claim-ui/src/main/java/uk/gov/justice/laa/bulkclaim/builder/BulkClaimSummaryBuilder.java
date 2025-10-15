@@ -4,7 +4,7 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import uk.gov.justice.laa.bulkclaim.dto.submission.SubmissionSummaryRow;
-import uk.gov.justice.laa.bulkclaim.dto.submission.claim.ClaimMessagesSummary;
+import uk.gov.justice.laa.bulkclaim.dto.submission.claim.MessagesSummary;
 import uk.gov.justice.laa.bulkclaim.dto.summary.BulkClaimImportSummary;
 import uk.gov.justice.laa.bulkclaim.mapper.BulkClaimImportSummaryMapper;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionResponse;
@@ -25,7 +25,7 @@ public class BulkClaimSummaryBuilder {
   private static final int DEFAULT_PAGE_SIZE = 10;
 
   private final BulkClaimImportSummaryMapper bulkClaimImportSummaryMapper;
-  private final SubmissionClaimMessagesBuilder submissionClaimMessagesBuilder;
+  private final SubmissionMessagesBuilder submissionMessagesBuilder;
 
   /**
    * Builds a {@link BulkClaimImportSummary} using a {@link SubmissionResponse}.
@@ -39,8 +39,8 @@ public class BulkClaimSummaryBuilder {
     List<SubmissionSummaryRow> summaryRows =
         bulkClaimImportSummaryMapper.toSubmissionSummaryRows(submissionResponse);
 
-    ClaimMessagesSummary claimErrorSummary =
-        submissionClaimMessagesBuilder.buildErrors(
+    MessagesSummary claimErrorSummary =
+        submissionMessagesBuilder.buildErrors(
             submissionResponse.getFirst().getSubmissionId(), page, DEFAULT_PAGE_SIZE);
 
     return new BulkClaimImportSummary(summaryRows, claimErrorSummary);

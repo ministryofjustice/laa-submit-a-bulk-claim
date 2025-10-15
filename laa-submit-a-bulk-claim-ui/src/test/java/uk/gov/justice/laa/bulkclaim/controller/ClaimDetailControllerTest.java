@@ -21,11 +21,11 @@ import org.springframework.context.annotation.Import;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.assertj.MockMvcTester;
 import reactor.core.publisher.Mono;
-import uk.gov.justice.laa.bulkclaim.builder.SubmissionClaimMessagesBuilder;
+import uk.gov.justice.laa.bulkclaim.builder.SubmissionMessagesBuilder;
 import uk.gov.justice.laa.bulkclaim.client.DataClaimsRestClient;
 import uk.gov.justice.laa.bulkclaim.config.WebMvcTestConfig;
 import uk.gov.justice.laa.bulkclaim.dto.submission.claim.ClaimFeeCalculationBreakdown;
-import uk.gov.justice.laa.bulkclaim.dto.submission.claim.ClaimMessagesSummary;
+import uk.gov.justice.laa.bulkclaim.dto.submission.claim.MessagesSummary;
 import uk.gov.justice.laa.bulkclaim.dto.submission.claim.ClaimSummary;
 import uk.gov.justice.laa.bulkclaim.dto.submission.claim.SubmissionSummaryClaimMessageRow;
 import uk.gov.justice.laa.bulkclaim.helper.TestObjectCreator;
@@ -45,7 +45,7 @@ class ClaimDetailControllerTest {
   @MockitoBean private DataClaimsRestClient dataClaimsRestClient;
   @MockitoBean private ClaimSummaryMapper claimSummaryMapper;
   @MockitoBean private ClaimFeeCalculationBreakdownMapper claimFeeCalculationBreakdownMapper;
-  @MockitoBean private SubmissionClaimMessagesBuilder submissionClaimMessagesBuilder;
+  @MockitoBean private SubmissionMessagesBuilder submissionMessagesBuilder;
 
   @Nested
   @DisplayName("GET: /submission/claim/{claimReference}")

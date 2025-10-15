@@ -7,8 +7,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import reactor.core.publisher.Mono;
 import uk.gov.justice.laa.bulkclaim.client.DataClaimsRestClient;
-import uk.gov.justice.laa.bulkclaim.dto.submission.claim.ClaimMessagesSummary;
-import uk.gov.justice.laa.bulkclaim.dto.submission.claim.SubmissionSummaryClaimMessageRow;
+import uk.gov.justice.laa.bulkclaim.dto.submission.claim.MessagesSource;
+import uk.gov.justice.laa.bulkclaim.dto.submission.claim.MessagesSummary;
+import uk.gov.justice.laa.bulkclaim.dto.submission.claim.MessageRow;
 import uk.gov.justice.laa.bulkclaim.mapper.BulkClaimImportSummaryMapper;
 import uk.gov.justice.laa.bulkclaim.util.PaginationUtil;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.ClaimResponse;
@@ -16,48 +17,48 @@ import uk.gov.justice.laa.dstew.payments.claimsdata.model.ValidationMessageType;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.ValidationMessagesResponse;
 
 /**
- * Builder class for constructing a {@link ClaimMessagesSummary} object used for displaying claim
- * error and warning details to the user.
+ * Builder class for constructing a {@link MessagesSummary} object used for displaying claim error
+ * and warning details to the user.
  */
 @Component
 @RequiredArgsConstructor
-public class SubmissionClaimMessagesBuilder {
+public class SubmissionMessagesBuilder {
 
   private final DataClaimsRestClient dataClaimsRestClient;
   private final BulkClaimImportSummaryMapper bulkClaimImportSummaryMapper;
   private final PaginationUtil paginationUtil;
 
   /**
-   * Builds a {@link ClaimMessagesSummary} for a given submission ID whilst only returning errors.
+   * Builds a {@link MessagesSummary} for a given submission ID whilst only returning errors.
    *
    * @param submissionId The submission ID to fetch errors for.
-   * @param page The page number to fetch errors for.
-   * @return The built {@link ClaimMessagesSummary}.
+   * @param page         The page number to fetch errors for.
+   * @return The built {@link MessagesSummary}.
    */
-  public ClaimMessagesSummary buildErrors(UUID submissionId, int page, int size) {
+  public MessagesSummary buildErrors(UUID submissionId, int page, int size) {
     return build(submissionId, null, page, ValidationMessageType.ERROR, size);
   }
 
   /**
-   * Builds a {@link ClaimMessagesSummary} for a given submission ID with both warnings and errors.
+   * Builds a {@link MessagesSummary} for a given submission ID with both warnings and errors.
    *
    * @param submissionId The submission ID to fetch errors for.
-   * @param claimId The claim ID to fetch errors for.
-   * @return The built {@link ClaimMessagesSummary}.
+   * @param claimId      The claim ID to fetch errors for.
+   * @return The built {@link MessagesSummary}.
    */
-  public ClaimMessagesSummary buildAllWarnings(UUID submissionId, UUID claimId) {
+  public MessagesSummary buildAllWarnings(UUID submissionId, UUID claimId) {
     return build(submissionId, claimId, null, ValidationMessageType.WARNING, null);
   }
 
   /**
-   * Builds a {@link ClaimMessagesSummary} for a given submission ID and claim ID.
+   * Builds a {@link MessagesSummary} for a given submission ID and claim ID.
    *
    * @param submissionId the submission ID to fetch messages for.
-   * @param claimId the claim ID to fetch messages for.
-   * @param page the page number to fetch messages for.
-   * @return the built {@link ClaimMessagesSummary}.
+   * @param claimId      the claim ID to fetch messages for.
+   * @param page         the page number to fetch messages for.
+   * @return the built {@link MessagesSummary}.
    */
-  public ClaimMessagesSummary build(
+  public MessagesSummary build(
       UUID submissionId, UUID claimId, Integer page, ValidationMessageType type, Integer size) {
     String submissionType = type != null ? type.toString() : null;
     final ValidationMessagesResponse messagesResponse =
@@ -66,7 +67,7 @@ public class SubmissionClaimMessagesBuilder {
             .block();
 
     // Loop through an error map and add claims
-    final List<SubmissionSummaryClaimMessageRow> errorList =
+    final List<MessageRow> errorList =
         Optional.ofNullable(messagesResponse)
             .map(ValidationMessagesResponse::getContent)
             .orElseGet(List::of)
@@ -98,10 +99,19 @@ public class SubmissionClaimMessagesBuilder {
             .map(ValidationMessagesResponse::getTotalClaims)
             .orElse(0);
 
-    return new ClaimMessagesSummary(
+    MessagesSource messagesSource = null;
+    if (totalMessageCount > 0) {
+      // Set message source to submission if first message has no claim ID (all claims are either
+      // submission or claim).
+      messagesSource =
+          messagesResponse.getContent().getFirst().getClaimId() == null ? MessagesSource.SUBMISSION
+              : MessagesSource.CLAIM;
+    }
+
+    return new MessagesSummary(
         errorList,
         totalMessageCount,
         totalClaims,
-        paginationUtil.fromValidationMessages(messagesResponse, page, size));
+        paginationUtil.fromValidationMessages(messagesResponse, page, size), messagesSource);
   }
 }

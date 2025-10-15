@@ -34,8 +34,8 @@ import uk.gov.justice.laa.bulkclaim.builder.BulkClaimSummaryBuilder;
 import uk.gov.justice.laa.bulkclaim.client.DataClaimsRestClient;
 import uk.gov.justice.laa.bulkclaim.config.WebMvcTestConfig;
 import uk.gov.justice.laa.bulkclaim.dto.submission.SubmissionSummaryRow;
-import uk.gov.justice.laa.bulkclaim.dto.submission.claim.ClaimMessagesSummary;
-import uk.gov.justice.laa.bulkclaim.dto.submission.claim.SubmissionSummaryClaimMessageRow;
+import uk.gov.justice.laa.bulkclaim.dto.submission.claim.MessagesSummary;
+import uk.gov.justice.laa.bulkclaim.dto.submission.claim.MessageRow;
 import uk.gov.justice.laa.bulkclaim.dto.summary.BulkClaimImportSummary;
 import uk.gov.justice.laa.bulkclaim.exception.SubmitBulkClaimException;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.Page;
@@ -139,9 +139,9 @@ class BulkSubmissionImportedControllerTest {
             "Legal help",
             LocalDate.of(2025, 5, 10),
             30);
-    List<SubmissionSummaryClaimMessageRow> errors =
+    List<MessageRow> errors =
         List.of(
-            new SubmissionSummaryClaimMessageRow(
+            new MessageRow(
                 submissionReference,
                 "UFN1",
                 "UCN2",
@@ -158,6 +158,6 @@ class BulkSubmissionImportedControllerTest {
     Page pagination = Page.builder().totalPages(1).totalElements(0).number(0).size(10).build();
 
     return new BulkClaimImportSummary(
-        Collections.singletonList(summaryRow), new ClaimMessagesSummary(errors, 1, 1, pagination));
+        Collections.singletonList(summaryRow), new MessagesSummary(errors, 1, 1, pagination));
   }
 }

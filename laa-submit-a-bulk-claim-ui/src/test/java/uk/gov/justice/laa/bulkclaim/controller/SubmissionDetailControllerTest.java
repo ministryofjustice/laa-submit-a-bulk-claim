@@ -33,7 +33,7 @@ import org.springframework.test.web.servlet.assertj.MockMvcTester;
 import org.springframework.test.web.servlet.assertj.MvcTestResult;
 import reactor.core.publisher.Mono;
 import uk.gov.justice.laa.bulkclaim.builder.SubmissionClaimDetailsBuilder;
-import uk.gov.justice.laa.bulkclaim.builder.SubmissionClaimMessagesBuilder;
+import uk.gov.justice.laa.bulkclaim.builder.SubmissionMessagesBuilder;
 import uk.gov.justice.laa.bulkclaim.builder.SubmissionMatterStartsDetailsBuilder;
 import uk.gov.justice.laa.bulkclaim.builder.SubmissionSummaryBuilder;
 import uk.gov.justice.laa.bulkclaim.client.DataClaimsRestClient;
@@ -41,7 +41,7 @@ import uk.gov.justice.laa.bulkclaim.config.WebMvcTestConfig;
 import uk.gov.justice.laa.bulkclaim.dto.submission.SubmissionMatterStartsDetails;
 import uk.gov.justice.laa.bulkclaim.dto.submission.SubmissionMatterStartsRow;
 import uk.gov.justice.laa.bulkclaim.dto.submission.SubmissionSummary;
-import uk.gov.justice.laa.bulkclaim.dto.submission.claim.ClaimMessagesSummary;
+import uk.gov.justice.laa.bulkclaim.dto.submission.claim.MessagesSummary;
 import uk.gov.justice.laa.bulkclaim.dto.submission.claim.SubmissionClaimsDetails;
 import uk.gov.justice.laa.bulkclaim.util.PaginationUtil;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.Page;
@@ -63,7 +63,7 @@ class SubmissionDetailControllerTest {
   @MockitoBean private SubmissionClaimDetailsBuilder submissionClaimDetailsBuilder;
   @MockitoBean private SubmissionMatterStartsDetailsBuilder submissionMatterStartsDetailsBuilder;
   @MockitoBean private DataClaimsRestClient dataClaimsRestClient;
-  @MockitoBean private SubmissionClaimMessagesBuilder submissionClaimMessagesBuilder;
+  @MockitoBean private SubmissionMessagesBuilder submissionMessagesBuilder;
   @MockitoBean private PaginationUtil paginationUtil;
 
   @Nested
@@ -168,8 +168,8 @@ class SubmissionDetailControllerTest {
                   new BigDecimal("100.50"),
                   "Legal aid",
                   OffsetDateTime.of(2025, 1, 1, 10, 10, 10, 0, ZoneOffset.UTC)));
-      when(submissionClaimMessagesBuilder.build(any(), any(), anyInt(), any(), anyInt()))
-          .thenReturn(new ClaimMessagesSummary(Collections.emptyList(), 0, 0, pagination));
+      when(submissionMessagesBuilder.build(any(), any(), anyInt(), any(), anyInt()))
+          .thenReturn(new MessagesSummary(Collections.emptyList(), 0, 0, pagination));
       when(submissionClaimDetailsBuilder.build(any(), anyInt(), anyInt()))
           .thenReturn(
               new SubmissionClaimsDetails(Collections.emptyList(), pagination, BigDecimal.ZERO));
@@ -209,8 +209,8 @@ class SubmissionDetailControllerTest {
       when(submissionClaimDetailsBuilder.build(any(), anyInt(), anyInt()))
           .thenReturn(
               new SubmissionClaimsDetails(Collections.emptyList(), pagination, BigDecimal.ZERO));
-      when(submissionClaimMessagesBuilder.buildErrors(any(), anyInt(), anyInt()))
-          .thenReturn(new ClaimMessagesSummary(Collections.emptyList(), 0, 0, pagination));
+      when(submissionMessagesBuilder.buildErrors(any(), anyInt(), anyInt()))
+          .thenReturn(new MessagesSummary(Collections.emptyList(), 0, 0, pagination));
       // When / Then
       assertThat(
               mockMvc.perform(
@@ -221,7 +221,7 @@ class SubmissionDetailControllerTest {
           .hasViewName("pages/view-submission-detail-invalid");
 
       verify(submissionClaimDetailsBuilder, times(1)).build(any(), anyInt(), anyInt());
-      verify(submissionClaimMessagesBuilder, times(1)).buildErrors(submissionReference, 0, 10);
+      verify(submissionMessagesBuilder, times(1)).buildErrors(submissionReference, 0, 10);
       verifyNoInteractions(submissionMatterStartsDetailsBuilder);
     }
 
@@ -253,8 +253,8 @@ class SubmissionDetailControllerTest {
       when(submissionClaimDetailsBuilder.build(any(), anyInt(), anyInt()))
           .thenReturn(
               new SubmissionClaimsDetails(Collections.emptyList(), pagination, BigDecimal.ZERO));
-      when(submissionClaimMessagesBuilder.build(any(), any(), anyInt(), any(), anyInt()))
-          .thenReturn(new ClaimMessagesSummary(Collections.emptyList(), 0, 0, pagination));
+      when(submissionMessagesBuilder.build(any(), any(), anyInt(), any(), anyInt()))
+          .thenReturn(new MessagesSummary(Collections.emptyList(), 0, 0, pagination));
       when(submissionMatterStartsDetailsBuilder.build(any()))
           .thenReturn(new SubmissionMatterStartsDetails(matterTypes));
       // When / Then
@@ -296,8 +296,8 @@ class SubmissionDetailControllerTest {
       when(submissionClaimDetailsBuilder.build(any(), anyInt(), anyInt()))
           .thenReturn(
               new SubmissionClaimsDetails(Collections.emptyList(), pagination, BigDecimal.TEN));
-      when(submissionClaimMessagesBuilder.build(any(), any(), anyInt(), any(), anyInt()))
-          .thenReturn(new ClaimMessagesSummary(Collections.emptyList(), 0, 0, pagination));
+      when(submissionMessagesBuilder.build(any(), any(), anyInt(), any(), anyInt()))
+          .thenReturn(new MessagesSummary(Collections.emptyList(), 0, 0, pagination));
 
       // When
       MvcTestResult response =
@@ -309,7 +309,7 @@ class SubmissionDetailControllerTest {
       // Then
       assertThat(response).hasStatusOk().hasViewName("pages/view-submission-detail-accepted");
       verify(submissionClaimDetailsBuilder).build(any(), anyInt(), anyInt());
-      verify(submissionClaimMessagesBuilder)
+      verify(submissionMessagesBuilder)
           .build(submissionReference, null, 0, ValidationMessageType.WARNING, 10);
     }
 

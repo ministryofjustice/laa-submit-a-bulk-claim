@@ -13,7 +13,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.justice.laa.bulkclaim.dto.submission.SubmissionSummaryRow;
-import uk.gov.justice.laa.bulkclaim.dto.submission.claim.ClaimMessagesSummary;
+import uk.gov.justice.laa.bulkclaim.dto.submission.claim.MessagesSummary;
 import uk.gov.justice.laa.bulkclaim.dto.summary.BulkClaimImportSummary;
 import uk.gov.justice.laa.bulkclaim.mapper.BulkClaimImportSummaryMapper;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.Page;
@@ -23,7 +23,7 @@ import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionResponse;
 class BulkClaimSummaryBuilderTest {
 
   @Mock private BulkClaimImportSummaryMapper bulkClaimImportSummaryMapper;
-  @Mock private SubmissionClaimMessagesBuilder submissionClaimMessagesBuilder;
+  @Mock private SubmissionMessagesBuilder submissionMessagesBuilder;
 
   @InjectMocks private BulkClaimSummaryBuilder builder;
 
@@ -42,13 +42,13 @@ class BulkClaimSummaryBuilderTest {
     when(bulkClaimImportSummaryMapper.toSubmissionSummaryRows(List.of(submissionResponse)))
         .thenReturn(List.of(summaryRow));
 
-    ClaimMessagesSummary errorSummary = new ClaimMessagesSummary(List.of(), 0, 0, pagination);
+    MessagesSummary errorSummary = new MessagesSummary(List.of(), 0, 0, pagination);
 
-    when(submissionClaimMessagesBuilder.buildErrors(submissionId, 0, 10)).thenReturn(errorSummary);
+    when(submissionMessagesBuilder.buildErrors(submissionId, 0, 10)).thenReturn(errorSummary);
 
     BulkClaimImportSummary result = builder.build(List.of(submissionResponse), 0);
 
     assertThat(result.submissions()).containsExactly(summaryRow);
-    assertThat(result.claimMessagesSummary()).isEqualTo(errorSummary);
+    assertThat(result.messagesSummary()).isEqualTo(errorSummary);
   }
 }

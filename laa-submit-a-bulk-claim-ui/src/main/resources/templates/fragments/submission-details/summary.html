@@ -46,10 +46,10 @@
     </dl>
 
     <th:block
-        th:if="${showWarnings and claimMessagesSummary != null and claimMessagesSummary.totalMessageCount() > 0}">
+        th:if="${showWarnings and messagesSummary != null and messagesSummary.totalMessageCount() > 0}">
       <div role="region"
            class="moj-alert moj-alert--warning moj-alert--with-heading govuk-!-margin-top-4 govuk-!-margin-bottom-6"
-           th:attr="aria-label=|#{common.warning}: #{submission.summary.warning.heading(${claimMessagesSummary.totalClaimsWithErrors()})}|"
+           th:attr="aria-label=|#{common.warning}: #{submission.summary.warning.heading(${messagesSummary.totalClaimsWithErrors()})}|"
            data-module="moj-alert">
         <div>
           <svg class="moj-alert__icon" role="presentation" focusable="false"
@@ -61,9 +61,9 @@
         </div>
         <div class="moj-alert__content">
           <h2 class="moj-alert__heading"
-              th:text="${claimMessagesSummary.totalClaimsWithErrors() == 1 ?
-                #messages.msg('submission.summary.warning.single', claimMessagesSummary.totalClaimsWithErrors()) :
-                #messages.msg('submission.summary.warning.multiple', claimMessagesSummary.totalClaimsWithErrors())}"></h2>
+              th:text="${messagesSummary.totalClaimsWithErrors() == 1 ?
+                #messages.msg('submission.summary.warning.single', messagesSummary.totalClaimsWithErrors()) :
+                #messages.msg('submission.summary.warning.multiple', messagesSummary.totalClaimsWithErrors())}"></h2>
         </div>
         <div class="moj-alert__action">
           <button class="moj-alert__dismiss" hidden th:text="#{common.dismiss}"></button>

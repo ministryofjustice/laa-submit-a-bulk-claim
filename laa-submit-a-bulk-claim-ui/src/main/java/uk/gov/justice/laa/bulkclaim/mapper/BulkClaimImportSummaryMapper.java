@@ -10,14 +10,14 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Named;
 import uk.gov.justice.laa.bulkclaim.dto.submission.SubmissionSummaryRow;
-import uk.gov.justice.laa.bulkclaim.dto.submission.claim.SubmissionSummaryClaimMessageRow;
+import uk.gov.justice.laa.bulkclaim.dto.submission.claim.MessageRow;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.ClaimResponse;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionResponse;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.ValidationMessageBase;
 
 /**
  * Maps between {@link SubmissionResponse} and {@link SubmissionSummaryRow}, and {@link
- * ClaimResponse} and {@link SubmissionSummaryClaimMessageRow}.
+ * ClaimResponse} and {@link MessageRow}.
  *
  * @author Jamie Briggs
  */
@@ -66,7 +66,7 @@ public interface BulkClaimImportSummaryMapper {
    *
    * @param message the validation message base
    * @param claimResponse the claim response containing client and claim details
-   * @return a mapped SubmissionSummaryClaimMessageRow
+   * @return a mapped MessageRow
    */
   @Mapping(target = "ufn", source = "claimResponse.uniqueFileNumber")
   @Mapping(target = "ucn", source = "claimResponse.uniqueClientNumber")
@@ -80,7 +80,7 @@ public interface BulkClaimImportSummaryMapper {
   @Mapping(target = "submissionReference", source = "message.submissionId")
   @Mapping(target = "message", source = "message.displayMessage")
   @Mapping(target = "type", source = "message.type")
-  SubmissionSummaryClaimMessageRow toSubmissionSummaryClaimMessage(
+  MessageRow toSubmissionSummaryClaimMessage(
       ValidationMessageBase message, ClaimResponse claimResponse);
 
   /**

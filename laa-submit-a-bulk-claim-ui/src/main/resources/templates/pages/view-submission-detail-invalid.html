@@ -5,10 +5,11 @@
   <div class="govuk-width-container">
     <div class="govuk-grid-row">
       <th:block
-          th:replace="~{fragments/submission-details/validation-error-banner :: validation-error-banner(${claimMessagesSummary})}"></th:block>
+          th:replace="~{fragments/submission-details/validation-error-banner :: validation-error-banner(${messagesSummary})}"></th:block>
       <th:block
           th:replace="~{fragments/submission-details/summary :: summary(' govuk-tag--red', #{submission.summary.status.rejected}, false, false)}"></th:block>
-      <th:block th:replace="~{fragments/submission-details/claim-messages-errors :: claim-messages-errors}"></th:block>
+      <th:block
+          th:replace="~{fragments/submission-details/claim-messages-errors :: claim-messages-errors}"></th:block>
     </div>
   </div>
 </main>

@@ -8,16 +8,17 @@ import uk.gov.justice.laa.dstew.payments.claimsdata.model.Page;
 /**
  * Summary of claim errors.
  *
- * @param claimMessages list of claim messages rows
+ * @param messages list of claim messages rows
  * @param totalMessageCount calculatedTotal number of errors found
  * @param totalClaimsWithErrors calculatedTotal number of unique claims with errors
  */
 @Builder
-public record ClaimMessagesSummary(
-    List<SubmissionSummaryClaimMessageRow> claimMessages,
+public record MessagesSummary(
+    List<MessageRow> messages,
     int totalMessageCount,
     int totalClaimsWithErrors,
-    Page pagination) {
+    Page pagination,
+    MessagesSource messagesSource) {
 
   /**
    * Returns true if there are any errors in the bulk claim.
@@ -34,7 +35,7 @@ public record ClaimMessagesSummary(
    * @return the calculatedTotal error count
    */
   public long totalErrors() {
-    return Optional.ofNullable(claimMessages).stream()
+    return Optional.ofNullable(messages).stream()
         .flatMap(List::stream)
         .filter(x -> "error".equalsIgnoreCase(x.type()))
         .count();

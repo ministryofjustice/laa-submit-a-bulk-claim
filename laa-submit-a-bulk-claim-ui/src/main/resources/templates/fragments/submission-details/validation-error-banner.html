@@ -1,9 +1,9 @@
-<th:block th:fragment="validation-error-banner(claimMessagesSummary)">
+<th:block th:fragment="validation-error-banner(messagesSummary)">
   <div role="region"
        class="moj-alert moj-alert--error moj-alert--with-heading"
        aria-label="error"
        data-module="moj-alert"
-       th:if="${claimMessagesSummary != null}">
+       th:if="${messagesSummary != null}">
     <div>
       <svg class="moj-alert__icon"
            role="presentation"
@@ -20,7 +20,7 @@
     </div>
     <div class="moj-alert__content">
       <h2 class="moj-alert__heading"
-          th:text="#{submission.claim.errors.banner.title(${claimMessagesSummary.totalClaimsWithErrors()})}">
+          th:text="#{submission.claim.errors.banner.title(${messagesSummary.totalClaimsWithErrors()})}">
       </h2>
       <p class="govuk-body"
          th:text="#{submission.claim.errors.banner.body}">

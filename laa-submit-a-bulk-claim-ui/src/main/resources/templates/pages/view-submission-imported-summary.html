@@ -1,6 +1,6 @@
 <!DOCTYPE HTML>
 <html lang="en" class="govuk-template" xmlns:th="http://www.thymeleaf.org"
-      th:replace="~{ layout/main-layout :: layout(${bulkClaimImportSummary.claimMessagesSummary.containsErrors()} ?
+      th:replace="~{ layout/main-layout :: layout(${bulkClaimImportSummary.messagesSummary.containsErrors()} ?
       #{bulkClaimImportSummary.failed.heading} :
       #{bulkClaimImportSummary.success.heading},~{::main}, ~{},~{})}"
       xmlns:dth="http://www.thymeleaf.org">
@@ -9,13 +9,13 @@
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds-from-desktop">
 
-      <h1 class="govuk-heading-l" id="header" th:text="${bulkClaimImportSummary.claimMessagesSummary.containsErrors()} ?
+      <h1 class="govuk-heading-l" id="header" th:text="${bulkClaimImportSummary.messagesSummary.containsErrors()} ?
       #{bulkClaimImportSummary.failed.heading} :
       #{bulkClaimImportSummary.success.heading}"/>
 
       <!--Error summary-->
       <div role="region" class="moj-alert moj-alert--warning moj-alert--with-heading"
-           th:if="${bulkClaimImportSummary.claimMessagesSummary.containsErrors()}"
+           th:if="${bulkClaimImportSummary.messagesSummary.containsErrors()}"
            th:aria-label="|#{common.warning}: #{bulkClaimImportSummary.errorsFoundModal.heading}|"
            aria-label="warning: Some information could not be imported" data-module="moj-alert">
         <div>
@@ -28,7 +28,7 @@
         </div>
         <div class="moj-alert__content">
           <h2 class="moj-alert__heading"
-              th:text="#{bulkClaimImportSummary.errorsFoundModal.heading(${bulkClaimImportSummary.claimMessagesSummary.totalClaimsWithErrors()})}"/>
+              th:text="#{bulkClaimImportSummary.errorsFoundModal.heading(${bulkClaimImportSummary.messagesSummary.totalClaimsWithErrors()})}"/>
           <th:block
               th:text="#{bulkClaimImportSummary.errorsFoundModal.message}"/>
         </div>
@@ -51,11 +51,11 @@
               id="submission-total-claims"
               th:text="${submission.totalClaims}"/>
         </div>
-        <div class="govuk-summary-list__row" th:if="${bulkClaimImportSummary.claimMessagesSummary.containsErrors}">
+        <div class="govuk-summary-list__row" th:if="${bulkClaimImportSummary.messagesSummary.containsErrors}">
           <dt class="govuk-summary-list__key" th:text="#{submission.properties.totalErrors}"/>
           <dd class="govuk-summary-list__value"
               id="submission-total-errors"
-              th:text="${bulkClaimImportSummary.claimMessagesSummary.totalErrors}"/>
+              th:text="${bulkClaimImportSummary.messagesSummary.totalErrors}"/>
         </div>
         <div class="govuk-summary-list__row">
           <dt class="govuk-summary-list__key" th:text="#{submission.properties.areaOfLaw}"/>
@@ -82,7 +82,7 @@
     </div>
     <div class="govuk-grid-column-full">
 
-      <th:block th:replace="~{fragments/claim-messages :: messagesTable(${bulkClaimImportSummary.claimMessagesSummary()})}"></th:block>
+      <th:block th:replace="~{fragments/claim-messages :: messagesTable(${bulkClaimImportSummary.messagesSummary()})}"></th:block>
 
       <div class="govuk-button-group">
         <a th:href="@{/}" role="button" draggable="false" class="govuk-button govuk-button--start"

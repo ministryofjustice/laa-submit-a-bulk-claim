@@ -11,7 +11,7 @@
              th:href="${isCurrent ? '#claims' : url}"
              th:text="#{submission.summary.nav.claims(${claimCount})}"></a>
         </li>
-        <li class="moj-sub-navigation__item" th:if="${claimMessagesSummary != null}">
+        <li class="moj-sub-navigation__item" th:if="${messagesSummary != null}">
           <a class="moj-sub-navigation__link"
              th:with="isCurrent=${navTab.toString() == 'CLAIM_ERRORS'},
               url=@{/view-submission-detail(navTab='CLAIM_ERRORS')}"

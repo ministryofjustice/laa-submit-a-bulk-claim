@@ -15,7 +15,7 @@ import lombok.Builder;
  * @author Jamie Briggs
  */
 @Builder
-public record SubmissionSummaryClaimMessageRow(
+public record MessageRow(
     UUID submissionReference,
     String ufn,
     String ucn,
