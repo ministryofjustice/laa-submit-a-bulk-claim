@@ -18,6 +18,7 @@ import reactor.core.publisher.Mono;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.ClaimResponse;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.CreateBulkSubmission201Response;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.MatterStartGet;
+import uk.gov.justice.laa.dstew.payments.claimsdata.model.MatterStartResultSet;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionResponse;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionsResultSet;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.ValidationMessagesResponse;
@@ -107,4 +108,7 @@ public interface DataClaimsRestClient {
       @RequestParam(value = "type", required = false) String type,
       @RequestParam(value = "source", required = false) String source,
       @RequestParam(value = "page", required = false, defaultValue = "0") Integer page);
+
+  @GetExchange(value = "/submissions/{id}/matter-starts")
+  Mono<MatterStartResultSet> getAllMatterStartsForSubmission(@PathVariable("id") UUID submissionId);
 }

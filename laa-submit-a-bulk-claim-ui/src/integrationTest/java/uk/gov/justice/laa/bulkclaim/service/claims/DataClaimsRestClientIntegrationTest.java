@@ -17,6 +17,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.mock.web.MockMultipartFile;
@@ -40,6 +41,7 @@ import uk.gov.justice.laa.dstew.payments.claimsdata.model.*;
 @AutoConfigureMockMvc(addFilters = false)
 @Import(WebMvcTestConfig.class)
 class DataClaimsRestClientIntegrationTest extends MockServerIntegrationTest {
+  private static final String GET_ALL_MATTER_STARTS_URI = "/api/v0/submissions/%s/matter-starts";
 
   protected DataClaimsRestClient dataClaimsRestClient;
 
@@ -690,6 +692,33 @@ class DataClaimsRestClientIntegrationTest extends MockServerIntegrationTest {
               dataClaimsRestClient
                   .getValidationMessages(submissionId, null, null, null, null)
                   .block());
+    }
+
+    @Test
+    @DisplayName("Should handle a 200 response")
+    void getAllMatterStartsForSubmission_shouldHandle200Response() throws Exception {
+
+      mockServerClient
+          .when(
+              HttpRequest.request()
+                  .withMethod(HttpMethod.GET.toString())
+                  .withPath(
+                      String.format(
+                          GET_ALL_MATTER_STARTS_URI, "3fa85f64-5717-4562-b3fc-2c963f66afa6")))
+          .respond(
+              response()
+                  .withStatusCode(200)
+                  .withHeader("Content-Type", "application/json")
+                  .withBody(readJsonFromFile("/GetAllMatterStarts200.json")));
+
+      dataClaimsRestClient
+          .getAllMatterStartsForSubmission(UUID.fromString("3fa85f64-5717-4562-b3fc-2c963f66afa6"))
+          .blockOptional()
+          .ifPresent(
+              matterStartResultSet -> {
+                assertThat(matterStartResultSet.getSubmissionId())
+                    .isEqualTo(UUID.fromString("3fa85f64-5717-4562-b3fc-2c963f66afa6"));
+              });
     }
   }
 }
