@@ -61,12 +61,6 @@ public class BulkImportInProgressController {
       throw new SubmitBulkClaimException("Claims API returned an error", e);
     }
 
-    // Check for NIL submission
-    if (Boolean.TRUE.equals(submission.getIsNilSubmission())) {
-      log.info("NIL submission found, will redirect: %s".formatted(submissionId.toString()));
-      return "redirect:/submission/%s".formatted(submissionId.toString());
-    }
-
     // Redirect if submission is complete
     if (completedStatuses.contains(submission.getStatus())) {
       return "redirect:/submission/%s".formatted(submissionId.toString());
