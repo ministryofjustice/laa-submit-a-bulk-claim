@@ -1,4 +1,5 @@
 <th:block th:fragment="validation-error-banner(messagesSummary)">
+  <!--/*@thymesVar id="messagesSummary" type="uk.gov.justice.laa.bulkclaim.dto.submission.messages.MessagesSummary"*/-->
   <div role="region"
        class="moj-alert moj-alert--error moj-alert--with-heading"
        aria-label="error"
@@ -20,10 +21,15 @@
     </div>
     <div class="moj-alert__content">
       <h2 class="moj-alert__heading"
+          th:if="${messagesSummary.messagesSource == T(uk.gov.justice.laa.bulkclaim.dto.submission.messages.MessagesSource).CLAIM}"
           th:text="#{submission.claim.errors.banner.title(${messagesSummary.totalClaimsWithErrors()})}">
       </h2>
+      <h2 class="moj-alert__heading"
+          th:if="${messagesSummary.messagesSource == T(uk.gov.justice.laa.bulkclaim.dto.submission.messages.MessagesSource).SUBMISSION}"
+          th:text="#{submission.errors.banner.title(${messagesSummary.totalMessageCount()})}">
+      </h2>
       <p class="govuk-body"
-         th:text="#{submission.claim.errors.banner.body}">
+         th:text="#{submission.errors.banner.body}">
       </p>
     </div>
     <div class="moj-alert__action">
