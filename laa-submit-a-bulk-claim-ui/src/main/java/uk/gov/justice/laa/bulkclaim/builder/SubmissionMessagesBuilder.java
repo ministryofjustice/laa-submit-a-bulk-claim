@@ -36,7 +36,7 @@ public class SubmissionMessagesBuilder {
    * @return The built {@link MessagesSummary}.
    */
   public MessagesSummary buildErrors(UUID submissionId, int page, int size) {
-    return build(submissionId, null, page, ValidationMessageType.ERROR, size);
+    return build(submissionId, null, ValidationMessageType.ERROR, page, size);
   }
 
   /**
@@ -47,7 +47,7 @@ public class SubmissionMessagesBuilder {
    * @return The built {@link MessagesSummary}.
    */
   public MessagesSummary buildAllWarnings(UUID submissionId, UUID claimId) {
-    return build(submissionId, claimId, null, ValidationMessageType.WARNING, null);
+    return build(submissionId, claimId, ValidationMessageType.WARNING, null, null);
   }
 
   /**
@@ -59,7 +59,7 @@ public class SubmissionMessagesBuilder {
    * @return the built {@link MessagesSummary}.
    */
   public MessagesSummary build(
-      UUID submissionId, UUID claimId, Integer page, ValidationMessageType type, Integer size) {
+      UUID submissionId, UUID claimId, ValidationMessageType type, Integer page, Integer size) {
     String submissionType = type != null ? type.toString() : null;
     final ValidationMessagesResponse messagesResponse =
         dataClaimsRestClient

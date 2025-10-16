@@ -167,7 +167,7 @@ public class SubmissionDetailController {
 
     MessagesSummary messagesSummary =
         submissionMessagesBuilder.build(
-            submissionId, null, page, ValidationMessageType.WARNING, DEFAULT_PAGE_SIZE);
+            submissionId, null, ValidationMessageType.WARNING, page, DEFAULT_PAGE_SIZE);
     model.addAttribute("messagesSummary", messagesSummary);
 
     addCounts(model, claimDetails, messagesSummary);

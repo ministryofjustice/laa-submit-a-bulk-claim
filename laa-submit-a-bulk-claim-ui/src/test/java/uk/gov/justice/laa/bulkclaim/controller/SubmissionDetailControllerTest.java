@@ -169,7 +169,7 @@ class SubmissionDetailControllerTest {
                   new BigDecimal("100.50"),
                   "Legal aid",
                   OffsetDateTime.of(2025, 1, 1, 10, 10, 10, 0, ZoneOffset.UTC)));
-      when(submissionMessagesBuilder.build(any(), any(), anyInt(), any(), anyInt()))
+      when(submissionMessagesBuilder.build(any(), any(), any(), anyInt(), anyInt()))
           .thenReturn(
               new MessagesSummary(Collections.emptyList(), 0, 0, pagination, MessagesSource.CLAIM));
       when(submissionClaimDetailsBuilder.build(any(), anyInt(), anyInt()))
@@ -256,7 +256,7 @@ class SubmissionDetailControllerTest {
       when(submissionClaimDetailsBuilder.build(any(), anyInt(), anyInt()))
           .thenReturn(
               new SubmissionClaimsDetails(Collections.emptyList(), pagination, BigDecimal.ZERO));
-      when(submissionMessagesBuilder.build(any(), any(), anyInt(), any(), anyInt()))
+      when(submissionMessagesBuilder.build(any(), any(), any(), anyInt(), anyInt()))
           .thenReturn(
               new MessagesSummary(Collections.emptyList(), 0, 0, pagination, MessagesSource.CLAIM));
       when(submissionMatterStartsDetailsBuilder.build(any()))
@@ -300,7 +300,7 @@ class SubmissionDetailControllerTest {
       when(submissionClaimDetailsBuilder.build(any(), anyInt(), anyInt()))
           .thenReturn(
               new SubmissionClaimsDetails(Collections.emptyList(), pagination, BigDecimal.TEN));
-      when(submissionMessagesBuilder.build(any(), any(), anyInt(), any(), anyInt()))
+      when(submissionMessagesBuilder.build(any(), any(), any(), anyInt(), anyInt()))
           .thenReturn(
               new MessagesSummary(Collections.emptyList(), 0, 0, pagination, MessagesSource.CLAIM));
 
@@ -315,7 +315,7 @@ class SubmissionDetailControllerTest {
       assertThat(response).hasStatusOk().hasViewName("pages/view-submission-detail-accepted");
       verify(submissionClaimDetailsBuilder).build(any(), anyInt(), anyInt());
       verify(submissionMessagesBuilder)
-          .build(submissionReference, null, 0, ValidationMessageType.WARNING, 10);
+          .build(submissionReference, null, ValidationMessageType.WARNING, 0, 10);
     }
 
     @Test
