@@ -26,6 +26,11 @@ updates:
       - maven-central
       - spring-boot-common-github-packages
       - laa-data-claims-api-github-packages
+    ignore:
+      # Ignore all SNAPSHOT builds from laa-data-claims-api
+      - dependency-name: "uk.gov.laa.data.claims.*"
+        versions:
+          - "*-SNAPSHOT"
     groups:
       gradle-updates:
         exclude-patterns:
