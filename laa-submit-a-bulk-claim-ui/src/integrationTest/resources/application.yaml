@@ -8,6 +8,15 @@ spring:
       max-file-size: 50MB
       max-request-size: 50MB
 
+management:
+  server:
+    port: 8182
+  # specify actuator endpoints to enable
+  endpoints:
+    web:
+      exposure:
+        include: health,info,prometheus
+
 sds-api:
   url: xx
 
