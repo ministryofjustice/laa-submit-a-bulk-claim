@@ -2,8 +2,8 @@
   <!--Claim details information-->
   <th:block th:if="${navTab.toString() == 'CLAIM_DETAILS'}">
     <div class="govuk-grid-column-full">
-      <div class="moj-scrollable-pane">
-        <table class="govuk-table" data-module="moj-sortable-table"
+      <div class="sabc-table-container">
+        <table class="govuk-table sabc-table--breakout-right" data-module="moj-sortable-table"
                th:with="area=${submissionSummary.areaOfLaw != null ? #strings.toLowerCase(submissionSummary.areaOfLaw) : ''},
                         isCrime=${area.contains('crime lower')},
                         isCivil=${area.contains('legal help')},

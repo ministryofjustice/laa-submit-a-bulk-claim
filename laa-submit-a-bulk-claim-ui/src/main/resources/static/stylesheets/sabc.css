@@ -1,3 +1,19 @@
 .sabc-govuk-table__cell__bold-bottom{
   border-bottom: 1.5px solid #000 !important;
 }
+
+.sabc-table-container {
+  overflow-x: visible;
+}
+
+.sabc-table--breakout-right {
+  width: auto;
+  min-width: 100%;
+  max-width: none;
+}
+
+@supports (width: max-content) {
+  .sabc-table--breakout-right {
+    width: max-content;
+  }
+}
