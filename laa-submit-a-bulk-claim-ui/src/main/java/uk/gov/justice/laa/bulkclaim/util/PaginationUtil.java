@@ -22,7 +22,7 @@ public class PaginationUtil {
    * @return a populated {@link Page} instance.
    */
   public Page fromSubmissionsResultSet(
-      SubmissionsResultSet resultSet, int requestedPage, int requestedSize) {
+      SubmissionsResultSet resultSet, Integer requestedPage, Integer requestedSize) {
     if (resultSet == null) {
       return from(requestedPage, requestedSize, 0);
     }

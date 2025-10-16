@@ -44,7 +44,6 @@ public class SubmissionMessagesBuilder {
    *
    * @param submissionId The submission ID to fetch errors for.
    * @param claimId The claim ID to fetch errors for.
-
    * @return The built {@link MessagesSummary}.
    */
   public MessagesSummary buildAllWarnings(UUID submissionId, UUID claimId) {
