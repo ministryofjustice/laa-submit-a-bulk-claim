@@ -20,7 +20,7 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v5
 
       - name: Authenticate to the cluster
         run: |
@@ -31,13 +31,13 @@ jobs:
           kubectl config use-context ${{ secrets.KUBE_CLUSTER }}
 
       - name: Configure aws credentials
-        uses: aws-actions/configure-aws-credentials@v2
+        uses: aws-actions/configure-aws-credentials@v5
         with:
           role-to-assume: ${{ secrets.ecr_role_to_assume }}
           aws-region: ${{ vars.ECR_REGION }}
 
       - name: Login ecr
-        uses: aws-actions/amazon-ecr-login@v1
+        uses: aws-actions/amazon-ecr-login@v2
         id: login-ecr
 
       - name: Set helm chart app version
