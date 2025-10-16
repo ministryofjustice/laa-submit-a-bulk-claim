@@ -11,6 +11,11 @@ registries:
     url: https://maven.pkg.github.com/ministryofjustice/laa-spring-boot-common
     username: farrellm
     password: ${{ secrets.DEPENDABOT_PAT }}
+  laa-data-claims-api-github-packages:
+    type: maven-repository
+    url: https://maven.pkg.github.com/ministryofjustice/laa-data-claims-api
+    username: farrellm
+    password: ${{ secrets.DEPENDABOT_PAT }}
 
 updates:
   - package-ecosystem: "gradle"
@@ -20,6 +25,7 @@ updates:
     registries:
       - maven-central
       - spring-boot-common-github-packages
+      - laa-data-claims-api-github-packages
     groups:
       gradle-updates:
         exclude-patterns:
