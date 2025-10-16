@@ -4,8 +4,8 @@
       <h2 class="govuk-heading-m" id="claim-messages-errors-heading"
           th:text="#{submission.claim.errors.heading(${claimMessagesSummary.totalMessageCount()})}"></h2>
 
-      <div class="moj-scrollable-pane">
-        <table class="govuk-table"
+      <div class="sabc-table-container">
+        <table class="govuk-table sabc-table--breakout-right"
                data-module="moj-sortable-table"
                th:with="
                   area=${submissionSummary.areaOfLaw != null ? #strings.toLowerCase(submissionSummary.areaOfLaw) : ''},
