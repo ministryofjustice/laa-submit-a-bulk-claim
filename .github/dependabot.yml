@@ -6,6 +6,9 @@
 version: 2
 
 registries:
+  maven-central:
+    type: maven-repository
+    url: https://repo.maven.apache.org/maven2
   spring-boot-common-github-packages:
     type: maven-repository
     url: https://maven.pkg.github.com/ministryofjustice/laa-spring-boot-common
@@ -26,11 +29,6 @@ updates:
       - maven-central
       - spring-boot-common-github-packages
       - laa-data-claims-api-github-packages
-    ignore:
-      # Ignore all SNAPSHOT builds from laa-data-claims-api
-      - dependency-name: "uk.gov.laa.data.claims.*"
-        versions:
-          - "*-SNAPSHOT"
     groups:
       gradle-updates:
         exclude-patterns:
