@@ -1,0 +1,39 @@
+<th:block th:fragment="submission-messages-errors"
+          th:if="${messagesSummary.messagesSource == T(uk.gov.justice.laa.bulkclaim.dto.submission.messages.MessagesSource).SUBMISSION}">
+  <th:block th:if="${messagesSummary != null}">
+    <div class="govuk-grid-column-full">
+      <h2 class="govuk-heading-m" id="messages-errors-heading"
+          th:text="#{submission.errors.heading(${messagesSummary.totalMessageCount()})}"></h2>
+
+      <div class="moj-scrollable-pane">
+        <table class="govuk-table"
+               data-module="moj-sortable-table">
+          <caption class="govuk-table__caption govuk-visually-hidden"
+                   th:text="#{submission.claim.errors.heading(${messagesSummary.totalMessageCount()})}"></caption>
+
+          <thead class="govuk-table__head">
+            <tr class="govuk-table__row">
+              <th scope="col" class="govuk-table__header" aria-sort="none"
+                  th:text="#{submission.claim.errors.table.messages}"></th>
+            </tr>
+          </thead>
+
+
+          <tbody class="govuk-table__body">
+            <tr class="govuk-table__row"
+                th:each="message, idx : ${messagesSummary.messages}"
+                th:id="|message-error-${idx.index}|">
+              <td class="govuk-table__cell"
+                  th:data-sort-value="${message.message()}"
+                  th:text="${message.message()}"></td>
+            </tr>
+          </tbody>
+
+        </table>
+      </div>
+
+      <nav
+          th:replace="~{fragments/pagination :: pagination(currentUrl='/view-submission-detail', page=${messagesSummary.pagination})}"></nav>
+    </div>
+  </th:block>
+</th:block>
