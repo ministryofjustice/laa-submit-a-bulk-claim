@@ -32,6 +32,12 @@
       </div>
       <div class="govuk-summary-list__row">
         <dt class="govuk-summary-list__key"
+            th:text="#{submission.summary.properties.submissionPeriod}"></dt>
+        <dd class="govuk-summary-list__value"
+            th:text="${#temporals.format(submissionSummary.submissionPeriod, 'MMM-yyyy').toUpperCase()}"></dd>
+      </div>
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key"
             th:text="#{submission.summary.properties.reference}"></dt>
         <dd class="govuk-summary-list__value"
             th:text="${submissionSummary.submissionReference}"></dd>
