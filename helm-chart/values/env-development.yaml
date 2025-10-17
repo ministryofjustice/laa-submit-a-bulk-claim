@@ -1,4 +1,6 @@
 replicas: 1
+metrics:
+  mainReleaseName: development
 ingress:
   externalRoute:
     enabled: true
