@@ -19,15 +19,15 @@ import org.springframework.web.bind.annotation.SessionAttributes;
 import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import uk.gov.justice.laa.bulkclaim.builder.SubmissionClaimDetailsBuilder;
-import uk.gov.justice.laa.bulkclaim.builder.SubmissionClaimMessagesBuilder;
 import uk.gov.justice.laa.bulkclaim.builder.SubmissionMatterStartsDetailsBuilder;
+import uk.gov.justice.laa.bulkclaim.builder.SubmissionMessagesBuilder;
 import uk.gov.justice.laa.bulkclaim.builder.SubmissionSummaryBuilder;
 import uk.gov.justice.laa.bulkclaim.client.DataClaimsRestClient;
 import uk.gov.justice.laa.bulkclaim.constants.ViewSubmissionNavigationTab;
 import uk.gov.justice.laa.bulkclaim.dto.submission.SubmissionMatterStartsDetails;
 import uk.gov.justice.laa.bulkclaim.dto.submission.SubmissionSummary;
-import uk.gov.justice.laa.bulkclaim.dto.submission.claim.ClaimMessagesSummary;
 import uk.gov.justice.laa.bulkclaim.dto.submission.claim.SubmissionClaimsDetails;
+import uk.gov.justice.laa.bulkclaim.dto.submission.messages.MessagesSummary;
 import uk.gov.justice.laa.bulkclaim.exception.SubmitBulkClaimException;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.Page;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionBase;
@@ -49,7 +49,7 @@ public class SubmissionDetailController {
 
   private final SubmissionSummaryBuilder submissionSummaryBuilder;
   private final SubmissionClaimDetailsBuilder submissionClaimDetailsBuilder;
-  private final SubmissionClaimMessagesBuilder submissionClaimMessagesBuilder;
+  private final SubmissionMessagesBuilder submissionMessagesBuilder;
   private final SubmissionMatterStartsDetailsBuilder submissionMatterStartsDetailsBuilder;
   private final DataClaimsRestClient dataClaimsRestClient;
 
@@ -165,12 +165,12 @@ public class SubmissionDetailController {
               submissionSummary.submitted());
     }
 
-    ClaimMessagesSummary claimMessagesSummary =
-        submissionClaimMessagesBuilder.build(
-            submissionId, null, page, ValidationMessageType.WARNING, DEFAULT_PAGE_SIZE);
-    model.addAttribute("claimMessagesSummary", claimMessagesSummary);
+    MessagesSummary messagesSummary =
+        submissionMessagesBuilder.build(
+            submissionId, null, ValidationMessageType.WARNING, page, DEFAULT_PAGE_SIZE);
+    model.addAttribute("messagesSummary", messagesSummary);
 
-    addCounts(model, claimDetails, claimMessagesSummary);
+    addCounts(model, claimDetails, messagesSummary);
     addMatterStartsIfApplicable(model, submissionResponse, navigationTab);
 
     return submissionSummary;
@@ -183,11 +183,11 @@ public class SubmissionDetailController {
         submissionClaimDetailsBuilder.build(submissionResponse, page, DEFAULT_PAGE_SIZE);
     model.addAttribute("claimDetails", claimDetails);
 
-    ClaimMessagesSummary claimMessagesSummary =
-        submissionClaimMessagesBuilder.buildErrors(submissionId, page, DEFAULT_PAGE_SIZE);
-    model.addAttribute("claimMessagesSummary", claimMessagesSummary);
+    MessagesSummary messagesSummary =
+        submissionMessagesBuilder.buildErrors(submissionId, page, DEFAULT_PAGE_SIZE);
+    model.addAttribute("messagesSummary", messagesSummary);
 
-    addCounts(model, claimDetails, claimMessagesSummary);
+    addCounts(model, claimDetails, messagesSummary);
   }
 
   private void addMatterStartsIfApplicable(
@@ -220,9 +220,7 @@ public class SubmissionDetailController {
   }
 
   private void addCounts(
-      Model model,
-      SubmissionClaimsDetails claimDetails,
-      ClaimMessagesSummary claimMessagesSummary) {
+      Model model, SubmissionClaimsDetails claimDetails, MessagesSummary messagesSummary) {
 
     int claimCount =
         Optional.ofNullable(claimDetails)
@@ -231,9 +229,7 @@ public class SubmissionDetailController {
             .orElse(0);
 
     int messageCount =
-        Optional.ofNullable(claimMessagesSummary)
-            .map(ClaimMessagesSummary::totalMessageCount)
-            .orElse(0);
+        Optional.ofNullable(messagesSummary).map(MessagesSummary::totalMessageCount).orElse(0);
 
     model.addAttribute("claimCount", claimCount);
     model.addAttribute("messageCount", messageCount);
