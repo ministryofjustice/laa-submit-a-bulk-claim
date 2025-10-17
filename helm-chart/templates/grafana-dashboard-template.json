@@ -1154,7 +1154,7 @@
     ]
   },
   "timezone": "browser",
-  "title": "LAA {{ .Values.metrics.grafana_dashboard.name }} Dashboard - {{ .Release.Name }} / {{ .Release.Namespace }}",
+  "title": "LAA Submit a Bulk Claim UI Dashboard - {{ .Release.Name }} / {{ .Release.Namespace }}",
   "uid": "{{ .Release.Name | trunc 12 }}-{{ .Release.Namespace | trunc -10 }}-{{ .Chart.Name | trunc -12 }}",
   "version": 1,
   "weekStart": ""
