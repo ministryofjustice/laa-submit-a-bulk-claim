@@ -1,12 +1,17 @@
 <th:block th:fragment="claim-messages-warnings">
   <th:block th:if="${navTab.toString() == 'CLAIM_ERRORS' and claimMessagesSummary != null}">
     <div class="govuk-grid-column-full">
-      <h2 class="govuk-heading-m" id="messages"
-          th:text="#{submission.summary.messages.heading}"></h2>
-
       <div class="moj-scrollable-pane">
+        <h2 class="govuk-heading-m" id="messages"
+            th:text="#{submission.summary.messages.heading}"></h2>
+
+        <th:block th:if="${claimMessagesSummary.claimMessages.isEmpty()}">
+          <p class="govuk-body" th:text="#{submission.summary.messages.none}"></p>
+        </th:block>
+
         <table class="govuk-table"
                data-module="moj-sortable-table"
+               th:if="${!claimMessagesSummary.claimMessages.isEmpty()}"
                th:with="
                   area=${submissionSummary.areaOfLaw != null ? #strings.toLowerCase(submissionSummary.areaOfLaw) : ''},
                   isCrime=${area.contains('crime lower')},

@@ -3,18 +3,26 @@
   <th:block th:if="${navTab.toString() == 'CLAIM_DETAILS'}">
     <div class="govuk-grid-column-full">
       <div class="moj-scrollable-pane">
+        <h2 class="govuk-heading-m" id="messages"
+            th:text="#{submission.summary.claims.caption}"></h2>
+
+        <th:block th:if="${claimDetails == null or claimDetails.submissionClaims.isEmpty()}">
+          <p class="govuk-body" th:text="#{submission.summary.claims.none}"></p>
+        </th:block>
+
         <table class="govuk-table" data-module="moj-sortable-table"
+               th:if ="${claimDetails != null and !claimDetails.submissionClaims.isEmpty()}"
                th:with="area=${submissionSummary.areaOfLaw != null ? #strings.toLowerCase(submissionSummary.areaOfLaw) : ''},
                         isCrime=${area.contains('crime lower')},
                         isCivil=${area.contains('legal help')},
                         isMediation=${area.contains('mediation')}">
 
-          <caption class="govuk-table__caption govuk-table__caption--m"
+          <caption class="govuk-table__caption govuk-table__caption--m govuk-visually-hidden"
                    th:text="#{submission.summary.claims.caption}"></caption>
 
           <thead class="govuk-table__head" th:if="${isCrime}">
           <tr class="govuk-table__row">
-            <th scope="col" class="govuk-table__header" aria-sort="none"
+            <th scope="col" class="govuk-table__header"
                 th:text="#{submission.summary.claims.table.claim}"></th>
             <th scope="col" class="govuk-table__header" aria-sort="none"
                 th:text="#{submission.summary.claims.table.clientSurname}"></th>
@@ -37,7 +45,7 @@
 
           <thead class="govuk-table__head" th:if="${isCivil}">
           <tr class="govuk-table__row">
-            <th scope="col" class="govuk-table__header" aria-sort="none"
+            <th scope="col" class="govuk-table__header"
                 th:text="#{submission.summary.claims.table.claim}"></th>
             <th scope="col" class="govuk-table__header" aria-sort="none"
                 th:text="#{submission.summary.claims.table.clientSurname}"></th>
@@ -60,7 +68,7 @@
 
           <thead class="govuk-table__head" th:if="${isMediation}">
           <tr class="govuk-table__row">
-            <th scope="col" class="govuk-table__header" aria-sort="none"
+            <th scope="col" class="govuk-table__header"
                 th:text="#{submission.summary.claims.table.claim}"></th>
             <th scope="col" class="govuk-table__header" aria-sort="none"
                 th:text="#{submission.summary.claims.table.client1Surname}"></th>
@@ -84,7 +92,7 @@
           <thead class="govuk-table__head"
                  th:if="${!isCrime and !isCivil and !isMediation}">
           <tr class="govuk-table__row">
-            <th scope="col" class="govuk-table__header" aria-sort="none"
+            <th scope="col" class="govuk-table__header"
                 th:text="#{submission.summary.claims.table.claim}"></th>
             <th scope="col" class="govuk-table__header" aria-sort="none"
                 th:text="#{submission.summary.claims.table.client}"></th>
@@ -100,15 +108,6 @@
                 th:text="#{submission.summary.claims.table.messages}"></th>
           </tr>
           </thead>
-
-          <tbody class="govuk-table__body"
-                 th:if="${claimDetails == null or claimDetails.submissionClaims.isEmpty()}">
-          <tr class="govuk-table__row">
-            <td class="govuk-table__cell"
-                th:attr="colspan=${isMediation ? 9 : (isCrime or isCivil ? 9 : 7)}"
-                th:text="#{submission.summary.claims.none}"></td>
-          </tr>
-          </tbody>
 
           <tbody class="govuk-table__body"
                  th:if="${isCrime and claimDetails != null and !claimDetails.submissionClaims.isEmpty()}">
