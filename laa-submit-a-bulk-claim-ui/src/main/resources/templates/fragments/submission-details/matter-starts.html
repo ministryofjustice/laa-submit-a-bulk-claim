@@ -1,7 +1,7 @@
 <th:block th:fragment="matter-starts">
   <th:block th:if="${navTab.toString() == 'MATTER_STARTS' && !#strings.containsIgnoreCase(submissionSummary?.areaOfLaw, 'crime')}">
     <div class="govuk-grid-column-two-thirds">
-      <h2 class="govuk-heading-l" id="matter-starts"
+      <h2 class="govuk-heading-m" id="matter-starts"
           th:text="#{viewSubmission.matterStarts.subHeading}"></h2>
 
       <p class="govuk-body"

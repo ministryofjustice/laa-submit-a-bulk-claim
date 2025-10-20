@@ -1,4 +1,6 @@
 replicas: 1
+metrics:
+  mainReleaseName: uat
 ingress:
   externalRoute:
     enabled: true

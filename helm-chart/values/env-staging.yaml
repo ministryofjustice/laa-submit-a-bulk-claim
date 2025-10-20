@@ -1,4 +1,6 @@
 replicas: 1
+metrics:
+  mainReleaseName: staging
 ingress:
   externalRoute:
     enabled: true

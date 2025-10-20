@@ -1,3 +1,6 @@
+metrics:
+  mainReleaseName: production
+
 global:
   clusterDomain: apps.live.cloud-platform.service.justice.gov.uk
 
