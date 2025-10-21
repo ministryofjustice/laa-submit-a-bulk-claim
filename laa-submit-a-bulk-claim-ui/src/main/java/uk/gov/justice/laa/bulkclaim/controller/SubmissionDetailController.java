@@ -94,7 +94,7 @@ public class SubmissionDetailController {
     // Redirect based on submission status
     if (submission != null && submission.getStatus() == SubmissionStatus.VALIDATION_IN_PROGRESS) {
       redirectAttributes.addFlashAttribute("submission", submission);
-      return "redirect:/import-in-progress";
+      return "redirect:/upload-is-being-checked";
     }
 
     // Otherwise, redirect to the standard submission details view

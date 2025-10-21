@@ -1,6 +1,6 @@
 <!DOCTYPE HTML>
 <html lang="en" class="govuk-template" xmlns:th="http://www.thymeleaf.org"
-      th:replace="~{ layout/main-layout :: layout(#{importInProgress.heading},~{::main}, ~{},~{})}">
+      th:replace="~{ layout/main-layout :: layout(#{uploadBeingChecked.heading},~{::main}, ~{},~{})}">
 <main class="govuk-main-wrapper" id="main-content">
 
   <div class="govuk-grid-row">
@@ -8,16 +8,16 @@
 
       <div class="moj-interruption-card">
         <div class="moj-interruption-card__content">
-          <h1 class="moj-interruption-card__heading" th:text="#{importInProgress.heading}"/>
+          <h1 class="moj-interruption-card__heading" th:text="#{uploadBeingChecked.heading}"/>
           <div class="moj-interruption-card__body">
-            <p th:text="#{importInProgress.leadParagraph}"/>
-            <p th:text="#{importInProgress.leadParagraph2}"/>
+            <p th:text="#{uploadBeingChecked.leadParagraph}"/>
+            <p th:text="#{uploadBeingChecked.leadParagraph2}"/>
           </div>
           <div class="govuk-button-group moj-interruption-card__actions" id="actions-container">
 
             <a th:href="@{/submissions/search}" id="go-to-search-button" role="button" draggable="false"
                class="govuk-button govuk-button--inverse"
-               data-module="govuk-button" th:text="#{importInProgress.goToSearch}"/>
+               data-module="govuk-button" th:text="#{uploadBeingChecked.goToSearch}"/>
 
           </div>
         </div>

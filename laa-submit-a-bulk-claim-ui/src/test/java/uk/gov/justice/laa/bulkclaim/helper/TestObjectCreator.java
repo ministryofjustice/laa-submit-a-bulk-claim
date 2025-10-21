@@ -3,7 +3,6 @@ package uk.gov.justice.laa.bulkclaim.helper;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import uk.gov.justice.laa.bulkclaim.dto.submission.claim.ClaimSummary;
-import uk.gov.justice.laa.bulkclaim.dto.submission.claim.deprecated.SubmissionClaimFeeSubmittedDetails;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.BoltOnPatch;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.ClaimResponse;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.ClaimStatus;
@@ -142,28 +141,6 @@ public final class TestObjectCreator {
         .uniqueClientNumber2("unique-client-number-2")
         .stageReachedCode("stage-reached-code")
         .outcomeCode("outcome-code")
-        .build();
-  }
-
-  public static SubmissionClaimFeeSubmittedDetails buildFeeCalculationDetails() {
-
-    return SubmissionClaimFeeSubmittedDetails.builder()
-        .totalValue(new BigDecimal("1234.56"))
-        .adviceTime(6)
-        .travelTime(7)
-        .waitingTime(8)
-        .netProfitCostsAmount(new BigDecimal("100.10"))
-        .netDisbursementAmount(new BigDecimal("200.20"))
-        .netCounselCostsAmount(new BigDecimal("300.30"))
-        .disbursementsVatAmount(new BigDecimal("17.50"))
-        .travelWaitingCostsAmount(new BigDecimal("500.50"))
-        .netWaitingCostsAmount(new BigDecimal("400.40"))
-        .isVatApplicable(true)
-        .isLondonRate(true)
-        .adjournedHearingFeeAmount(9)
-        .costsDamagesRecoveredAmount(new BigDecimal("600.60"))
-        .detentionTravelWaitingCostsAmount(new BigDecimal("700.70"))
-        .jrFormFillingAmount(new BigDecimal("800.80"))
         .build();
   }
 }

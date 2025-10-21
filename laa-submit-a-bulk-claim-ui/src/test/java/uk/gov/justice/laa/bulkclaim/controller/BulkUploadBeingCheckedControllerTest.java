@@ -32,18 +32,18 @@ import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionClaim;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionResponse;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionStatus;
 
-@WebMvcTest(BulkImportInProgressController.class)
+@WebMvcTest(BulkUploadBeingCheckedController.class)
 @AutoConfigureMockMvc
 @Import(WebMvcTestConfig.class)
-public class BulkImportInProgressControllerTest {
+public class BulkUploadBeingCheckedControllerTest {
 
   @Autowired private MockMvcTester mockMvc;
 
   @MockitoBean private DataClaimsRestClient dataClaimsRestClient;
 
   @Nested
-  @DisplayName("GET: /import-in-progress")
-  class ImportInProgressTests {
+  @DisplayName("GET: /upload-is-being-checked")
+  class UploadIsBeingChecked {
 
     @Test
     @DisplayName("Should return expected result submission is not ready")
@@ -62,11 +62,11 @@ public class BulkImportInProgressControllerTest {
 
       assertThat(
               mockMvc.perform(
-                  get("/import-in-progress")
+                  get("/upload-is-being-checked")
                       .with(oidcLogin().oidcUser(ControllerTestHelper.getOidcUser()))
                       .sessionAttr(SUBMISSION_ID, submissionId)))
           .hasStatusOk()
-          .hasViewName("pages/upload-in-progress");
+          .hasViewName("pages/upload-being-checked");
     }
 
     @Test
@@ -81,11 +81,11 @@ public class BulkImportInProgressControllerTest {
 
       assertThat(
               mockMvc.perform(
-                  get("/import-in-progress")
+                  get("/upload-is-being-checked")
                       .with(oidcLogin().oidcUser(ControllerTestHelper.getOidcUser()))
                       .sessionAttr(SUBMISSION_ID, submissionId)))
           .hasStatusOk()
-          .hasViewName("pages/upload-in-progress");
+          .hasViewName("pages/upload-being-checked");
     }
 
     @ParameterizedTest
@@ -109,7 +109,7 @@ public class BulkImportInProgressControllerTest {
 
       assertThat(
               mockMvc.perform(
-                  get("/import-in-progress")
+                  get("/upload-is-being-checked")
                       .with(oidcLogin().oidcUser(ControllerTestHelper.getOidcUser()))
                       .sessionAttr(SUBMISSION_ID, submissionId)))
           .hasStatus3xxRedirection()
@@ -130,7 +130,7 @@ public class BulkImportInProgressControllerTest {
 
       assertThat(
               mockMvc.perform(
-                  get("/import-in-progress")
+                  get("/upload-is-being-checked")
                       .with(oidcLogin().oidcUser(ControllerTestHelper.getOidcUser()))
                       .sessionAttr(SUBMISSION_ID, submissionId)))
           .hasStatus3xxRedirection()
@@ -148,7 +148,7 @@ public class BulkImportInProgressControllerTest {
 
       assertThat(
               mockMvc.perform(
-                  get("/import-in-progress")
+                  get("/upload-is-being-checked")
                       .with(oidcLogin().oidcUser(ControllerTestHelper.getOidcUser()))
                       .sessionAttr(SUBMISSION_ID, submissionId)))
           .failure()

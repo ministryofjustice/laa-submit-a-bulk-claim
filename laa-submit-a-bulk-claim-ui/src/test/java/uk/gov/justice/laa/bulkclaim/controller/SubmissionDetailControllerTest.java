@@ -117,7 +117,7 @@ class SubmissionDetailControllerTest {
                   .with(oidcLogin().oidcUser(ControllerTestHelper.getOidcUser()))
                   .session(session));
 
-      assertThat(result).hasStatus3xxRedirection().hasRedirectedUrl("/import-in-progress");
+      assertThat(result).hasStatus3xxRedirection().hasRedirectedUrl("/upload-is-being-checked");
     }
 
     @Test

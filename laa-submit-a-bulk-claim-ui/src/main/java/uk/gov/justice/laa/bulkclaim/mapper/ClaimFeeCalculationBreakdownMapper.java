@@ -1,6 +1,7 @@
 package uk.gov.justice.laa.bulkclaim.mapper;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import uk.gov.justice.laa.bulkclaim.dto.submission.claim.BulkClaimCostItem;
@@ -112,6 +113,6 @@ public interface ClaimFeeCalculationBreakdownMapper {
   default BigDecimal scaleBigDecimal(BigDecimal value) {
     return value == null
         ? null
-        : value.setScale(2, BigDecimal.ROUND_HALF_UP); // Ensures consistent scaling
+        : value.setScale(2, RoundingMode.HALF_UP); // Ensures consistent scaling
   }
 }
