@@ -40,13 +40,13 @@ class ClaimFeeCalculationBreakdownMapperTest {
             .jrFormFillingAmount(BigDecimal.valueOf(1800.80))
             .detentionTravelAndWaitingCostsAmount(BigDecimal.valueOf(1700.70))
             .calculatedVatAmount(BigDecimal.valueOf(20.50))
-            // TODO: Substantive hearing missing?
             .boltOnDetails(
                 BoltOnPatch.builder()
                     .boltOnCmrhTelephoneFee(BigDecimal.valueOf(1800.80))
                     .boltOnCmrhOralFee(BigDecimal.valueOf(1900.90))
                     .boltOnAdjournedHearingFee(BigDecimal.valueOf(2010.10))
                     .boltOnHomeOfficeInterviewFee(BigDecimal.valueOf(2020.20))
+                    .boltOnSubstantiveHearingFee(BigDecimal.valueOf(2030.30))
                     .build())
             .totalAmount(BigDecimal.valueOf(51234.12)));
     // When
@@ -126,7 +126,12 @@ class ClaimFeeCalculationBreakdownMapperTest {
           softAssertions
               .assertThat(result.homeOfficeInterview().calculatedValue())
               .isEqualTo(monetaryValue(2020.20));
-          // TODO: Substantive hearing is missing?
+          softAssertions
+              .assertThat(result.substantiveHearing().enteredValue())
+              .isNull(); // Not entered by the user
+          softAssertions
+              .assertThat(result.substantiveHearing().calculatedValue())
+              .isEqualTo(monetaryValue(2030.30));
           softAssertions
               .assertThat(result.vat().enteredValue())
               .isNull(); // Not entered by the user
