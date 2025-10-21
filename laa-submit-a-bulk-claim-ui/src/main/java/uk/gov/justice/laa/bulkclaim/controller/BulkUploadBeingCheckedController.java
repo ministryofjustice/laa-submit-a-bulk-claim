@@ -21,7 +21,7 @@ import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionResponse;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionStatus;
 
 /**
- * Controller for handling the import in progress page after a user has submitted a bulk claim.
+ * Controller for handling the upload being checked page after a user has submitted a bulk claim.
  *
  * @author Jamie Briggs
  */
@@ -29,7 +29,7 @@ import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionStatus;
 @Controller
 @RequiredArgsConstructor
 @SessionAttributes({SUBMISSION_ID, UPLOADED_FILENAME, SUBMISSION_DATE_TIME})
-public class BulkImportInProgressController {
+public class BulkUploadBeingCheckedController {
 
   private final DataClaimsRestClient dataClaimsRestClient;
 
@@ -44,8 +44,8 @@ public class BulkImportInProgressController {
    * @param submissionId the submission id session attribute.
    * @return the import in progress view or redirects to view submission.
    */
-  @GetMapping("/import-in-progress")
-  public String importInProgress(Model model, @ModelAttribute(SUBMISSION_ID) UUID submissionId) {
+  @GetMapping("/upload-is-being-checked")
+  public String uploadBeingChecked(Model model, @ModelAttribute(SUBMISSION_ID) UUID submissionId) {
 
     // Check submission exists otherwise they will be stuck in a loop on this page.
     SubmissionResponse submission;
@@ -56,7 +56,7 @@ public class BulkImportInProgressController {
       if (e.getStatusCode().isSameCodeAs(HttpStatusCode.valueOf(404))) {
         log.debug("No submission found, will retry: %s".formatted(submissionId.toString()));
         model.addAttribute("shouldRefresh", true);
-        return "pages/upload-in-progress";
+        return "pages/upload-being-checked";
       }
       throw new SubmitBulkClaimException("Claims API returned an error", e);
     }
@@ -67,6 +67,6 @@ public class BulkImportInProgressController {
     }
 
     model.addAttribute("shouldRefresh", true);
-    return "pages/upload-in-progress";
+    return "pages/upload-being-checked";
   }
 }

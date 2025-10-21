@@ -99,7 +99,7 @@ public class BulkImportController {
           bulkSubmissionResponse.getBulkSubmissionId());
       redirectAttributes.addFlashAttribute(
           SUBMISSION_ID, bulkSubmissionResponse.getSubmissionIds().getFirst());
-      return "redirect:/import-in-progress";
+      return "redirect:/upload-is-being-checked";
     } catch (WebClientResponseException e) {
       try {
         ApplicationException error =
