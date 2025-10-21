@@ -38,7 +38,7 @@ class ClaimFeeCalculationBreakdownMapperTest {
             .netCostOfCounselAmount(BigDecimal.valueOf(1500.50))
             .travelAndWaitingCostsAmount(BigDecimal.valueOf(1600.60))
             .jrFormFillingAmount(BigDecimal.valueOf(1800.80))
-            .detentionAndWaitingCostsAmount(BigDecimal.valueOf(1700.70))
+            .detentionTravelAndWaitingCostsAmount(BigDecimal.valueOf(1700.70))
             .calculatedVatAmount(BigDecimal.valueOf(20.50))
             // TODO: Substantive hearing missing?
             .boltOnDetails(

@@ -67,7 +67,8 @@ public interface ClaimFeeCalculationBreakdownMapper {
       expression =
           """
               java(toBulkClaimCostItem(claimResponse.getDetentionTravelWaitingCostsAmount(),
-              claimResponse.getFeeCalculationResponse().getDetentionAndWaitingCostsAmount()))""")
+              claimResponse.getFeeCalculationResponse()
+                            .getDetentionTravelAndWaitingCostsAmount()))""")
   @Mapping(target = "cmrhTelephone.enteredValue", ignore = true)
   @Mapping(
       target = "cmrhTelephone.calculatedValue",
