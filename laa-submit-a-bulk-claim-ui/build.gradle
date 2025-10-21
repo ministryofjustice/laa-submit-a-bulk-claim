@@ -29,7 +29,7 @@ dependencies {
     // Upgrade to fix vulnerabilities in spring-core
     implementation 'org.springframework:spring-core:6.2.11'
 
-    implementation 'uk.gov.justice.laa.datastewardship.payments:data-claims-api-models:e8dba85'
+    implementation 'uk.gov.justice.laa.datastewardship.payments:data-claims-api-models:a69b50c'
 
     //Common exception handling
     implementation 'uk.gov.laa.springboot:laa-spring-boot-starter-application-exception'

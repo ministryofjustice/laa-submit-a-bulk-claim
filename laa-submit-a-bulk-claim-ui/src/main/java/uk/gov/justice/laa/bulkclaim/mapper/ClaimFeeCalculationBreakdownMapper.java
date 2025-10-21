@@ -68,7 +68,8 @@ public interface ClaimFeeCalculationBreakdownMapper {
       expression =
           """
               java(toBulkClaimCostItem(claimResponse.getDetentionTravelWaitingCostsAmount(),
-              claimResponse.getFeeCalculationResponse().getDetentionAndWaitingCostsAmount()))""")
+              claimResponse.getFeeCalculationResponse()
+                            .getDetentionTravelAndWaitingCostsAmount()))""")
   @Mapping(target = "cmrhTelephone.enteredValue", ignore = true)
   @Mapping(
       target = "cmrhTelephone.calculatedValue",
@@ -81,6 +82,10 @@ public interface ClaimFeeCalculationBreakdownMapper {
   @Mapping(
       target = "homeOfficeInterview.calculatedValue",
       source = "claimResponse.feeCalculationResponse.boltOnDetails.boltOnHomeOfficeInterviewFee")
+  @Mapping(target = "substantiveHearing.enteredValue", ignore = true)
+  @Mapping(
+      target = "substantiveHearing.calculatedValue",
+      source = "claimResponse.feeCalculationResponse.boltOnDetails.boltOnSubstantiveHearingFee")
   @Mapping(target = "vat.enteredValue", ignore = true)
   @Mapping(
       target = "vat.calculatedValue",
