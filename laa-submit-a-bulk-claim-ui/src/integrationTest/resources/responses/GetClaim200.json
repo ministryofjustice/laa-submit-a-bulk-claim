@@ -138,7 +138,6 @@
       "bolt_on_cmrh_oral_fee": 0,
       "bolt_on_home_office_interview_count": 0,
       "bolt_on_home_office_interview_fee": 0,
-      "bolt_on_substantive_hearing_count": 0,
       "bolt_on_substantive_hearing_fee": 0,
       "escape_case_flag": true,
       "scheme_id": "string"
