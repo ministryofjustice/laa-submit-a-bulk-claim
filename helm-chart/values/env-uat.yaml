@@ -11,3 +11,6 @@ ingress:
     includeLondonProdNatGatewayWorkspaces: false
     includePrismaAccess: true
   className: modsec-non-prod
+
+grafana:
+  enabled: true
