@@ -51,6 +51,7 @@ public class SearchController {
   public static final String SUBMISSION_SEARCH_FORM = "submissionsSearchForm";
   private static final int DEFAULT_PAGE = 0;
   private static final int DEFAULT_PAGE_SIZE = 10;
+  private static final String DEFAULT_SEARCH_PAGE_SORT = "createdOn,desc";
 
   @InitBinder(SUBMISSION_SEARCH_FORM)
   void initSubmissionSearchValidator(WebDataBinder binder) {
@@ -132,7 +133,7 @@ public class SearchController {
   @GetMapping("/submissions/search/results")
   public String submissionsSearchResults(
       @RequestParam(value = "page", defaultValue = "0") final int page,
-      @RequestParam(value = "pageSort", defaultValue = "createdOn,desc") final String pageSort,
+      @RequestParam(value = "pageSort", defaultValue = DEFAULT_SEARCH_PAGE_SORT) final String pageSort,
       @RequestParam(value = "submissionId", required = false) String submissionId,
       @RequestParam(value = "submittedDateFrom", required = false) String submittedDateFrom,
       @RequestParam(value = "submittedDateTo", required = false) String submittedDateTo,

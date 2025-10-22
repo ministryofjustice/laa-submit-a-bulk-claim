@@ -66,7 +66,7 @@ public interface DataClaimsRestClient {
           LocalDate dateTo,
       @RequestParam(value = "page", required = false, defaultValue = "0") Integer page,
       @RequestParam(value = "size", required = false, defaultValue = "10") Integer size,
-      @RequestParam(value = "sort", required = false, defaultValue = "") String sort);
+      @RequestParam(value = "sort", required = false) String sort);
 
   /**
    * Gets a submission by its ID.
