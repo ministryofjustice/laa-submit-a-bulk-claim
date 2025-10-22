@@ -146,7 +146,7 @@
               ${feeDetails.netDisbursments}, null)}"/>
           <th:block
               th:replace="~{::fee-detail-row(#{viewClaim.feeCalculation.row.disbursementVat},
-              ${feeDetails.netDisbursments}, null)}"/>
+              ${feeDetails.disbursementVat}, null)}"/>
           <th:block
               th:replace="~{::fee-detail-row(#{viewClaim.feeCalculation.row.netCostOfCounsel},
               ${feeDetails.netCostOfCounsel},
@@ -175,6 +175,9 @@
           <th:block
               th:replace="~{::fee-detail-row(#{viewClaim.feeCalculation.row.homeOfficeInterview},
               ${feeDetails.homeOfficeInterview}, null)}"/>
+          <th:block
+              th:replace="~{::fee-detail-row(#{viewClaim.feeCalculation.row.substantiveHearing},
+              ${feeDetails.substantiveHearing}, null)}"/>
           <th:block
               th:replace="~{::fee-detail-row(title=#{viewClaim.feeCalculation.row.vat},
               values=${feeDetails.vat},notes=null, rowStyle='sabc-govuk-table\_\_cell\_\_bold-bottom')}"/>

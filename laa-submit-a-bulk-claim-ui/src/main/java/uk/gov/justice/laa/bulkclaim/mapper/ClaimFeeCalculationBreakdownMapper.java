@@ -1,6 +1,7 @@
 package uk.gov.justice.laa.bulkclaim.mapper;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import uk.gov.justice.laa.bulkclaim.dto.submission.claim.BulkClaimCostItem;
@@ -67,7 +68,8 @@ public interface ClaimFeeCalculationBreakdownMapper {
       expression =
           """
               java(toBulkClaimCostItem(claimResponse.getDetentionTravelWaitingCostsAmount(),
-              claimResponse.getFeeCalculationResponse().getDetentionAndWaitingCostsAmount()))""")
+              claimResponse.getFeeCalculationResponse()
+                            .getDetentionTravelAndWaitingCostsAmount()))""")
   @Mapping(target = "cmrhTelephone.enteredValue", ignore = true)
   @Mapping(
       target = "cmrhTelephone.calculatedValue",
@@ -80,6 +82,10 @@ public interface ClaimFeeCalculationBreakdownMapper {
   @Mapping(
       target = "homeOfficeInterview.calculatedValue",
       source = "claimResponse.feeCalculationResponse.boltOnDetails.boltOnHomeOfficeInterviewFee")
+  @Mapping(target = "substantiveHearing.enteredValue", ignore = true)
+  @Mapping(
+      target = "substantiveHearing.calculatedValue",
+      source = "claimResponse.feeCalculationResponse.boltOnDetails.boltOnSubstantiveHearingFee")
   @Mapping(target = "vat.enteredValue", ignore = true)
   @Mapping(
       target = "vat.calculatedValue",
@@ -112,6 +118,6 @@ public interface ClaimFeeCalculationBreakdownMapper {
   default BigDecimal scaleBigDecimal(BigDecimal value) {
     return value == null
         ? null
-        : value.setScale(2, BigDecimal.ROUND_HALF_UP); // Ensures consistent scaling
+        : value.setScale(2, RoundingMode.HALF_UP); // Ensures consistent scaling
   }
 }

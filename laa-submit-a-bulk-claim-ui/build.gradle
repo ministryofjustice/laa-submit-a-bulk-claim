@@ -28,8 +28,10 @@ dependencies {
     implementation 'org.apache.commons:commons-lang3:3.18.0'
     // Upgrade to fix vulnerabilities in spring-core
     implementation 'org.springframework:spring-core:6.2.11'
+    // Upgrade to fix CVE-2025-11226 vulnerability in logback-core
+    implementation 'ch.qos.logback:logback-core:1.5.19'
 
-    implementation 'uk.gov.justice.laa.datastewardship.payments:data-claims-api-models:e8dba85'
+    implementation 'uk.gov.justice.laa.datastewardship.payments:data-claims-api-models:a69b50c'
 
     //Common exception handling
     implementation 'uk.gov.laa.springboot:laa-spring-boot-starter-application-exception'
@@ -112,4 +114,8 @@ spotless {
         cleanthat()
         googleJavaFormat()
     }
+}
+
+tasks.compileJava {
+    options.compilerArgs.addAll(['-Xlint:deprecation', '-Xlint:unchecked'])
 }

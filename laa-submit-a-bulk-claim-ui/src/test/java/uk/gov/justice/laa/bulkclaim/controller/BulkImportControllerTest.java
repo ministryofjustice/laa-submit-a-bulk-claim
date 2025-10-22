@@ -160,7 +160,7 @@ class BulkImportControllerTest {
                   .with(csrf())
                   .with(oidcLogin().oidcUser(getOidcUser())))
           .andExpect(status().is3xxRedirection())
-          .andExpect(view().name("redirect:/import-in-progress"));
+          .andExpect(view().name("redirect:/upload-is-being-checked"));
     }
   }
 }

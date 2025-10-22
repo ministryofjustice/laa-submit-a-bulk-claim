@@ -65,7 +65,10 @@
             </tr>
             </tbody>
           </table>
-          <nav th:replace="~{fragments/pagination :: pagination(currentUrl='/submissions/search/results', page=${pagination})}"></nav>
+          <nav th:replace="~{fragments/pagination :: pagination(currentUrl='/submissions/search/results', page=${pagination},
+                              submissionId=${submissionsSearchForm.submissionId()},
+                              submittedDateFrom=${submissionsSearchForm.submittedDateFrom()},
+                              submittedDateTo=${submissionsSearchForm.submittedDateTo()})}"></nav>
         </div>
 
       </div>

@@ -13,7 +13,7 @@ flowchart TD
     validate -->|Validation passes| upload["DataClaimsRestClient.upload()\ncalls data-claims-api /bulk-submissions"]
     upload --> response["Submission ID + metadata returned"]
     response --> cache["Session stores submissionId, timestamp, filename"]
-    cache --> redirect["Redirect to /import-in-progress"]
+    cache --> redirect["Redirect to /upload-is-being-checked"]
     redirect --> poll["BulkImportInProgressController.importInProgress\npolls getSubmission(submissionId)"]
     poll --> status{"Submission status\ncomplete or NIL?"}
     status -->|No| refresh["Return upload-in-progress view\nauto-refresh every 5s"]
