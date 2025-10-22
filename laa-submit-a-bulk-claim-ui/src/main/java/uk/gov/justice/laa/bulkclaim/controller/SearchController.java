@@ -133,7 +133,8 @@ public class SearchController {
   @GetMapping("/submissions/search/results")
   public String submissionsSearchResults(
       @RequestParam(value = "page", defaultValue = "0") final int page,
-      @RequestParam(value = "pageSort", defaultValue = DEFAULT_SEARCH_PAGE_SORT) final String pageSort,
+      @RequestParam(value = "pageSort", defaultValue = DEFAULT_SEARCH_PAGE_SORT)
+          final String pageSort,
       @RequestParam(value = "submissionId", required = false) String submissionId,
       @RequestParam(value = "submittedDateFrom", required = false) String submittedDateFrom,
       @RequestParam(value = "submittedDateTo", required = false) String submittedDateTo,
