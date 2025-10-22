@@ -132,6 +132,7 @@ public class SearchController {
   @GetMapping("/submissions/search/results")
   public String submissionsSearchResults(
       @RequestParam(value = "page", defaultValue = "0") final int page,
+      @RequestParam(value = "pageSort", defaultValue = "createdOn,desc") final String pageSort,
       @RequestParam(value = "submissionId", required = false) String submissionId,
       @RequestParam(value = "submittedDateFrom", required = false) String submittedDateFrom,
       @RequestParam(value = "submittedDateTo", required = false) String submittedDateTo,
@@ -161,7 +162,8 @@ public class SearchController {
                   submittedDateFromParsed,
                   submittedDateToParsed,
                   page,
-                  DEFAULT_PAGE_SIZE)
+                  DEFAULT_PAGE_SIZE,
+                  StringUtils.hasText(pageSort) ? pageSort : null)
               .block();
 
       Page pagination =

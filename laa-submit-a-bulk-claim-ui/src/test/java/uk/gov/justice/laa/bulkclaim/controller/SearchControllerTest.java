@@ -100,14 +100,22 @@ class SearchControllerTest {
     response.setTotalPages(1);
 
     when(oidcAttributeUtils.getUserOffices(any())).thenReturn(List.of("1"));
-    when(claimsRestService.search(anyList(), any(), any(), any(), anyInt(), anyInt()))
+    when(claimsRestService.search(anyList(), any(), any(), any(), anyInt(), anyInt(), any()))
         .thenReturn(Mono.just(response));
     when(paginationUtil.fromSubmissionsResultSet(response, 0, 10))
         .thenReturn(new Page().totalElements(1));
 
     String view =
         searchController.submissionsSearchResults(
-            0, "1234", "01/01/2024", "02/01/2024", model, getOidcUser(), sessionStatus, session);
+            0,
+            null,
+            "1234",
+            "01/01/2024",
+            "02/01/2024",
+            model,
+            getOidcUser(),
+            sessionStatus,
+            session);
 
     verify(sessionStatus).setComplete();
     verify(model).addAttribute(eq("pagination"), any(Page.class));
@@ -121,12 +129,12 @@ class SearchControllerTest {
       "Submissions search results should return error when HttpClientErrorException is thrown")
   void submissionsSearchResultsShouldReturnErrorOnHttpClientError() {
     when(oidcAttributeUtils.getUserOffices(any())).thenReturn(List.of("1"));
-    when(claimsRestService.search(anyList(), any(), any(), any(), anyInt(), anyInt()))
+    when(claimsRestService.search(anyList(), any(), any(), any(), anyInt(), anyInt(), any()))
         .thenThrow(BadRequest.class);
 
     String view =
         searchController.submissionsSearchResults(
-            0, "1234", null, null, model, getOidcUser(), sessionStatus, session);
+            0, null, "1234", null, null, model, getOidcUser(), sessionStatus, session);
 
     assertEquals("error", view);
   }
@@ -135,12 +143,12 @@ class SearchControllerTest {
   @DisplayName("Submissions search results should return error when generic exception is thrown")
   void submissionsSearchResultsShouldReturnErrorOnGenericException() {
     when(oidcAttributeUtils.getUserOffices(any())).thenReturn(List.of("1"));
-    when(claimsRestService.search(anyList(), any(), any(), any(), anyInt(), anyInt()))
+    when(claimsRestService.search(anyList(), any(), any(), any(), anyInt(), anyInt(), any()))
         .thenThrow(new RuntimeException("Boom"));
 
     String view =
         searchController.submissionsSearchResults(
-            0, "1234", null, null, model, getOidcUser(), sessionStatus, session);
+            0, null, "1234", null, null, model, getOidcUser(), sessionStatus, session);
 
     assertEquals("error", view);
   }
@@ -152,14 +160,22 @@ class SearchControllerTest {
     response.setContent(Collections.emptyList());
 
     when(oidcAttributeUtils.getUserOffices(any())).thenReturn(List.of("1"));
-    when(claimsRestService.search(anyList(), any(), isNull(), isNull(), anyInt(), anyInt()))
+    when(claimsRestService.search(anyList(), any(), isNull(), isNull(), anyInt(), anyInt(), any()))
         .thenReturn(Mono.just(response));
     when(paginationUtil.fromSubmissionsResultSet(response, 0, 10))
         .thenReturn(new Page().totalElements(0));
 
     String view =
         searchController.submissionsSearchResults(
-            0, "1234", "invalid-date", "bad-date", model, getOidcUser(), sessionStatus, session);
+            0,
+            null,
+            "1234",
+            "invalid-date",
+            "bad-date",
+            model,
+            getOidcUser(),
+            sessionStatus,
+            session);
 
     verify(model).addAttribute(eq("pagination"), any(Page.class));
     verify(model).addAttribute("submissions", response);

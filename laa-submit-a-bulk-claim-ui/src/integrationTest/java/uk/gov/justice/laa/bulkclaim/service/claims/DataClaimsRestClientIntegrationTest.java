@@ -197,7 +197,7 @@ class DataClaimsRestClientIntegrationTest extends MockServerIntegrationTest {
 
       SubmissionsResultSet response =
           dataClaimsRestClient
-              .search(offices, submissionId, from, to, 0, 10)
+              .search(offices, submissionId, from, to, 0, 10, null)
               .block(Duration.ofSeconds(2));
       assertThat(response.toString()).isNotEmpty();
       assertThat(response.getContent().getFirst().getSubmissionId().toString())

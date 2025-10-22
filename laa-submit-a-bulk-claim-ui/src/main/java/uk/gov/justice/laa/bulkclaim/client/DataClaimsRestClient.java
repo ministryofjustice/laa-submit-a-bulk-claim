@@ -65,7 +65,8 @@ public interface DataClaimsRestClient {
           @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
           LocalDate dateTo,
       @RequestParam(value = "page", required = false, defaultValue = "0") Integer page,
-      @RequestParam(value = "size", required = false, defaultValue = "10") Integer size);
+      @RequestParam(value = "size", required = false, defaultValue = "10") Integer size,
+      @RequestParam(value = "sort", required = false, defaultValue = "") String sort);
 
   /**
    * Gets a submission by its ID.
