@@ -28,8 +28,7 @@ class ThymeleafHrefUtilsTest {
   void shouldAddNoRequestParamsWhenValuesEmpty(String href) {
     // Given
     // When
-    String result =
-        thymeleafHrefUtils.build(href, "param", "", "paramTwo", "", "paramThree", "");
+    String result = thymeleafHrefUtils.build(href, "param", "", "paramTwo", "", "paramThree", "");
     // Then
     assertThat(result).isEqualTo(href);
   }
@@ -41,9 +40,7 @@ class ThymeleafHrefUtilsTest {
     // Given
     // When
     String result =
-        thymeleafHrefUtils.build(
-            href, "param", "", "paramTwo", "has-a-value",
-            "paramThree", "");
+        thymeleafHrefUtils.build(href, "param", "", "paramTwo", "has-a-value", "paramThree", "");
     // Then
     assertThat(result).isEqualTo(href + "?paramTwo=has-a-value");
   }
@@ -56,10 +53,8 @@ class ThymeleafHrefUtilsTest {
     // When
     String result =
         thymeleafHrefUtils.build(
-            href, "param", "value1", "paramTwo", "value2",
-            "paramThree", "value3");
+            href, "param", "value1", "paramTwo", "value2", "paramThree", "value3");
     // Then
     assertThat(result).isEqualTo(href + "?param=value1&paramTwo=value2&paramThree=value3");
   }
-
 }

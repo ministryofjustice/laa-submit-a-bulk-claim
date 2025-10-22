@@ -1,13 +1,25 @@
 package uk.gov.justice.laa.bulkclaim.util;
 
-import java.util.Map;
 import java.util.StringJoiner;
 import org.springframework.stereotype.Component;
 
+/**
+ * Utility class for building URLs with query parameters.
+ *
+ * @author Jamie Briggs
+ */
 @Component
 public class ThymeleafHrefUtils {
 
-  public String build(String baseUrl, String...params) {
+  /**
+   * Builds a URL with query parameters. Will not add the query parameter if the parameter value is
+   * null or empty.
+   *
+   * @param baseUrl The base URL to append to.
+   * @param params The key-value pairs of query parameters.
+   * @return The built URL.
+   */
+  public String build(String baseUrl, String... params) {
     if (baseUrl == null || baseUrl.isEmpty()) {
       throw new IllegalArgumentException("Base URL cannot be null or empty");
     }
@@ -25,9 +37,7 @@ public class ThymeleafHrefUtils {
       }
     }
 
-
     String queryString = queryJoiner.toString();
     return queryString.isEmpty() ? baseUrl : baseUrl + "?" + queryString;
   }
-
 }
