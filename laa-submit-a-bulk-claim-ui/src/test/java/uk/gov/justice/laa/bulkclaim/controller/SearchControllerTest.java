@@ -107,15 +107,7 @@ class SearchControllerTest {
 
     String view =
         searchController.submissionsSearchResults(
-            0,
-            null,
-            "1234",
-            "01/01/2024",
-            "02/01/2024",
-            model,
-            getOidcUser(),
-            sessionStatus,
-            session);
+            0, "1234", "01/01/2024", "02/01/2024", model, getOidcUser(), sessionStatus, session);
 
     verify(sessionStatus).setComplete();
     verify(model).addAttribute(eq("pagination"), any(Page.class));
@@ -134,7 +126,7 @@ class SearchControllerTest {
 
     String view =
         searchController.submissionsSearchResults(
-            0, null, "1234", null, null, model, getOidcUser(), sessionStatus, session);
+            0, "1234", null, null, model, getOidcUser(), sessionStatus, session);
 
     assertEquals("error", view);
   }
@@ -148,7 +140,7 @@ class SearchControllerTest {
 
     String view =
         searchController.submissionsSearchResults(
-            0, null, "1234", null, null, model, getOidcUser(), sessionStatus, session);
+            0, "1234", null, null, model, getOidcUser(), sessionStatus, session);
 
     assertEquals("error", view);
   }
@@ -167,15 +159,7 @@ class SearchControllerTest {
 
     String view =
         searchController.submissionsSearchResults(
-            0,
-            null,
-            "1234",
-            "invalid-date",
-            "bad-date",
-            model,
-            getOidcUser(),
-            sessionStatus,
-            session);
+            0, "1234", "invalid-date", "bad-date", model, getOidcUser(), sessionStatus, session);
 
     verify(model).addAttribute(eq("pagination"), any(Page.class));
     verify(model).addAttribute("submissions", response);
