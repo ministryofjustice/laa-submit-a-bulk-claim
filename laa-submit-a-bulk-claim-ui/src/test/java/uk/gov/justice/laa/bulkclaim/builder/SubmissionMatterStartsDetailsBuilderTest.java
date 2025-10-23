@@ -1,5 +1,6 @@
 package uk.gov.justice.laa.bulkclaim.builder;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
@@ -8,7 +9,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -23,7 +23,6 @@ import uk.gov.justice.laa.dstew.payments.claimsdata.model.MatterStartResultSet;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionResponse;
 
 @ExtendWith(MockitoExtension.class)
-@Disabled("This test will need fixing after refactor work")
 @DisplayName("Submission matter starts builder tests")
 class SubmissionMatterStartsDetailsBuilderTest {
 
@@ -62,8 +61,7 @@ class SubmissionMatterStartsDetailsBuilderTest {
     // When
     List<SubmissionMatterStartsRow> build = builder.build(submissionResponse);
     // Then
-    // assertThat(build.get(new SubmissionMatterStartsRow("Description", 25)))
-    //    .isEqualTo(1L);
+    assertThat(build).contains(new SubmissionMatterStartsRow("Description", 25));
     verify(dataClaimsRestClient).getAllMatterStartsForSubmission(eq(submissionReference));
     verify(mapper).toSubmissionMatterTypesRow(eq(MatterStartGet.builder().build()));
     verifyNoMoreInteractions(dataClaimsRestClient, mapper);
