@@ -2,18 +2,17 @@ package uk.gov.justice.laa.bulkclaim.builder;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import reactor.core.publisher.Mono;
 import uk.gov.justice.laa.bulkclaim.client.DataClaimsRestClient;
-import uk.gov.justice.laa.bulkclaim.dto.submission.SubmissionMatterStartsDetails;
 import uk.gov.justice.laa.bulkclaim.dto.submission.SubmissionMatterStartsRow;
 import uk.gov.justice.laa.bulkclaim.mapper.SubmissionMatterStartsMapper;
+import uk.gov.justice.laa.dstew.payments.claimsdata.model.MatterStartResultSet;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionResponse;
 
 /**
- * Builder class responsible for creating instances of SubmissionMatterStartsDetails.
+ * Builder class responsible for creating a {@link List} of {@link SubmissionMatterStartsRow}.
  *
  * @author Jamie Briggs
  */
@@ -25,34 +24,24 @@ public class SubmissionMatterStartsDetailsBuilder {
   private final SubmissionMatterStartsMapper mapper;
 
   /**
-   * Builds a {@link SubmissionMatterStartsDetails} object.
+   * Builds a list of SubmissionMatterStartsRow objects.
    *
    * @param response The source submission response.
-   * @return The built {@link SubmissionMatterStartsDetails} object.
+   * @return The built list of {@link SubmissionMatterStartsRow} objects.
    */
-  public SubmissionMatterStartsDetails build(SubmissionResponse response) {
+  public List<SubmissionMatterStartsRow> build(final SubmissionResponse response) {
+    List<SubmissionMatterStartsRow> result = new ArrayList<>();
 
-    List<SubmissionMatterStartsRow> listOfSubmissionMatterStartsRow =
-        getListOfSubmissionMatterStartsRow(response);
+    Mono<MatterStartResultSet> allMatterStartsForSubmission =
+        dataClaimsRestClient.getAllMatterStartsForSubmission(response.getSubmissionId());
 
-    Map<SubmissionMatterStartsRow, Long> rows =
-        listOfSubmissionMatterStartsRow.stream()
-            .collect(Collectors.groupingBy(x -> x, Collectors.counting()));
-    return new SubmissionMatterStartsDetails(rows);
-  }
+    allMatterStartsForSubmission.subscribe(
+        matterStarterResultSet ->
+            result.addAll(
+                matterStarterResultSet.getMatterStarts().stream()
+                    .map(mapper::toSubmissionMatterTypesRow)
+                    .toList()));
 
-  private List<SubmissionMatterStartsRow> getListOfSubmissionMatterStartsRow(
-      final SubmissionResponse response) {
-    List<SubmissionMatterStartsRow> list = new ArrayList<>();
-    dataClaimsRestClient
-        .getAllMatterStartsForSubmission(response.getSubmissionId())
-        .subscribe(
-            matterStarterResultSet -> {
-              list.addAll(
-                  matterStarterResultSet.getMatterStarts().stream()
-                      .map(mapper::toSubmissionMatterTypesRow)
-                      .toList());
-            });
-    return list;
+    return result;
   }
 }

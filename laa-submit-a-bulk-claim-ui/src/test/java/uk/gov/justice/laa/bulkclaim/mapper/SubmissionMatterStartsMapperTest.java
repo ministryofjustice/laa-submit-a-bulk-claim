@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.justice.laa.bulkclaim.dto.submission.SubmissionMatterStartsRow;
+import uk.gov.justice.laa.dstew.payments.claimsdata.model.CategoryCode;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.MatterStartGet;
 
 @ExtendWith(SpringExtension.class)
@@ -27,17 +28,19 @@ class SubmissionMatterStartsMapperTest {
     MatterStartGet matterStartsFields =
         MatterStartGet.builder()
             .scheduleReference("Schedule Reference")
-            .categoryCode("Category Code")
+            .categoryCode(CategoryCode.AAP)
             .procurementAreaCode("Procurement Area Code")
             .accessPointCode("Access Point Code")
             .deliveryLocation("Delivery Location")
+            .numberOfMatterStarts(23)
             .build();
     // When
     SubmissionMatterStartsRow result = mapper.toSubmissionMatterTypesRow(matterStartsFields);
     // Then
     SoftAssertions.assertSoftly(
         softAssertions -> {
-          softAssertions.assertThat(result.description()).isEqualTo("Category Code");
+          softAssertions.assertThat(result.description()).isEqualTo(CategoryCode.AAP.toString());
+          softAssertions.assertThat(result.numberOfMatterStarts()).isEqualTo(23);
         });
   }
 }

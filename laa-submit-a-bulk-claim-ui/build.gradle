@@ -31,7 +31,7 @@ dependencies {
     // Upgrade to fix CVE-2025-11226 vulnerability in logback-core
     implementation 'ch.qos.logback:logback-core:1.5.19'
 
-    implementation 'uk.gov.justice.laa.datastewardship.payments:data-claims-api-models:a69b50c'
+    implementation 'uk.gov.justice.laa.datastewardship.payments:data-claims-api-models:326b3c0'
 
     //Common exception handling
     implementation 'uk.gov.laa.springboot:laa-spring-boot-starter-application-exception'
