@@ -27,3 +27,4 @@ out/
 claims-api-reference/generated
 
 laa-submit-a-bulk-claim-ui/src/main/resources/application-local.yml
+.env
