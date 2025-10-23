@@ -53,6 +53,7 @@ class SubmissionClaimsDetailsBuilderTest {
     SubmissionResponse submissionResponse =
         SubmissionResponse.builder()
             .submissionId(submissionId)
+            .calculatedTotalAmount(new BigDecimal("70.50"))
             .claims(List.of(SubmissionClaim.builder().claimId(claimId).build()))
             .build();
     when(dataClaimsRestClient.getSubmissionClaim(submissionId, claimId))
@@ -91,6 +92,6 @@ class SubmissionClaimsDetailsBuilderTest {
     SubmissionClaimsDetails result = builder.build(submissionResponse, 0, 10);
     // Then
     assertThat(result.submissionClaims().contains(expected)).isTrue();
-    assertThat(result.totalClaimValue()).isEqualTo(new BigDecimal("70.10"));
+    assertThat(result.totalClaimValue()).isEqualTo(new BigDecimal("70.50"));
   }
 }
