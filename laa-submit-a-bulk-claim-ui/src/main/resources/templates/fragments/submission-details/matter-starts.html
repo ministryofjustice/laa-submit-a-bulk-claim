@@ -1,5 +1,6 @@
 <th:block th:fragment="matter-starts">
-  <th:block th:if="${navTab.toString() == 'MATTER_STARTS' && !#strings.containsIgnoreCase(submissionSummary?.areaOfLaw, 'crime')}">
+  <th:block
+      th:if="${navTab.toString() == 'MATTER_STARTS' && !#strings.containsIgnoreCase(submissionSummary?.areaOfLaw, 'crime')}">
     <div class="govuk-grid-column-two-thirds">
       <h2 class="govuk-heading-m" id="matter-starts"
           th:text="#{viewSubmission.matterStarts.subHeading}"></h2>
@@ -9,30 +10,17 @@
          th:text="#{viewSubmission.matterStarts.none}"></p>
 
       <!--/*@thymesVar id="matterStart" type="uk.gov.justice.laa.bulkclaim.dto.submission.SubmissionMatterStartsRow"*/-->
-      <th:block th:if="${#strings.containsIgnoreCase(submissionSummary.areaOfLaw, 'legal')}">
-        <dl class="govuk-summary-list"
-            th:unless="${matterStartsDetails.isEmpty()}">
-          <div class="govuk-summary-list__row"
-               th:each="matterStart, idx : ${matterStartsDetails}">
-            <dt class="govuk-summary-list__key"
-                th:text="${matterStart.description}"></dt>
-            <dd class="govuk-summary-list__value"
-                th:text="${matterStart.numberOfMatterStarts}"></dd>
-          </div>
-        </dl>
-      </th:block>
-      <th:block th:if="${#strings.containsIgnoreCase(submissionSummary.areaOfLaw, 'mediation')}">
-        <dl class="govuk-summary-list"
-            th:unless="${matterStartsDetails.isEmpty()}">
-          <div class="govuk-summary-list__row">
-            <dt class="govuk-summary-list__key"
-                th:text="#{viewSubmission.matterStarts.newMatterStarts}"></dt>
-            <!--/*@thymesVar id="totalMatterStarts" type="java.lang.Long"*/-->
-            <dd class="govuk-summary-list__value"
-                th:text="${totalMatterStarts}"></dd>
-          </div>
-        </dl>
-      </th:block>
+      <dl class="govuk-summary-list"
+          th:unless="${matterStartsDetails.isEmpty()}">
+        <div class="govuk-summary-list__row"
+             th:each="matterStart, idx : ${matterStartsDetails}">
+          <dt class="govuk-summary-list__key"
+              th:text="${matterStart.description}"></dt>
+          <dd class="govuk-summary-list__value"
+              th:text="${matterStart.numberOfMatterStarts}"></dd>
+        </div>
+      </dl>
+
     </div>
   </th:block>
 </th:block>
