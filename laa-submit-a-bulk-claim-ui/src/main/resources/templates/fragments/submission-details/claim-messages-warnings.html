@@ -2,17 +2,17 @@
   <th:block th:if="${navTab.toString() == 'CLAIM_ERRORS' and messagesSummary != null}">
     <!--/*@thymesVar id="messagesSummary" type="uk.gov.justice.laa.bulkclaim.dto.submission.messages.MessagesSummary"*/-->
     <div class="govuk-grid-column-full">
-      <div class="moj-scrollable-pane">
-        <h2 class="govuk-heading-m" id="messages"
-            th:text="#{submission.summary.messages.heading}"></h2>
+      <h2 class="govuk-heading-m" id="messages"
+          th:text="#{submission.summary.messages.heading}"></h2>
 
-        <th:block th:if="${messagesSummary.messages == null or messagesSummary.messages.isEmpty()}">
-          <p class="govuk-body" th:text="#{submission.summary.messages.none}"></p>
-        </th:block>
+      <th:block th:if="${messagesSummary.messages == null or messagesSummary.messages.isEmpty()}">
+        <p class="govuk-body" th:text="#{submission.summary.messages.none}"></p>
+      </th:block>
 
+      <div class="moj-scrollable-pane"
+           th:if="${messagesSummary.messages != null and !messagesSummary.messages.isEmpty()}">
         <table class="govuk-table"
                data-module="moj-sortable-table"
-               th:if="${messagesSummary.messages != null and !messagesSummary.messages.isEmpty()}"
                th:with="
                   area=${submissionSummary.areaOfLaw != null ? #strings.toLowerCase(submissionSummary.areaOfLaw) : ''},
                   isCrime=${area.contains('crime lower')},
@@ -171,7 +171,8 @@
         </table>
       </div>
 
-      <nav th:replace="~{fragments/pagination :: pagination(currentUrl='/view-submission-detail?navTab=CLAIM_ERRORS', page=${messagesSummary.pagination})}"></nav>
+      <nav
+          th:replace="~{fragments/pagination :: pagination(currentUrl='/view-submission-detail?navTab=CLAIM_ERRORS', page=${messagesSummary.pagination})}"></nav>
     </div>
   </th:block>
 </th:block>
