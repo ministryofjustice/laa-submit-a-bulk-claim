@@ -1,8 +1,7 @@
 <nav th:fragment="pagination(currentUrl, page)"
      th:with="submissionId=${submissionId?:null},
       submittedDateFrom=${submittedDateFrom?:null},
-      submittedDateTo=${submittedDateTo?:null},
-      pageSort=${pageSort?:null}"
+      submittedDateTo=${submittedDateTo?:null}"
      th:if="${page.totalPages > 1}" class="govuk-pagination"
      role="navigation" aria-label="results">
 
@@ -10,8 +9,7 @@
         <a class="govuk-link govuk-pagination__link"
            th:href="${@thymeleafHrefUtils.build(currentUrl, 'page', page.number - 1,
             'submissionId', submissionId, 'submittedDateFrom', submittedDateFrom,
-            'submittedDateTo', submittedDateTo,
-            'pageSort', pageSort)}" rel="prev">
+            'submittedDateTo', submittedDateTo)}" rel="prev">
             <svg class="govuk-pagination__icon govuk-pagination__icon--prev"
                  xmlns="http://www.w3.org/2000/svg" height="13" width="15" aria-hidden="true"
                  focusable="false" viewBox="0 0 15 13">
@@ -34,8 +32,7 @@
                     <a th:unless="${pageNumber == page.number}" class="govuk-link govuk-pagination__link"
                        th:href="${@thymeleafHrefUtils.build(currentUrl, 'page', pageNumber,
                               'submissionId', submissionId, 'submittedDateFrom', submittedDateFrom,
-                              'submittedDateTo', submittedDateTo,
-                              'pageSort', pageSort)}"
+                              'submittedDateTo', submittedDateTo)}"
                        aria-label="Page [[${pageNumber + 1}]]">
                         <span th:text="${pageNumber + 1}"></span>
                     </a>
@@ -53,8 +50,7 @@
         <a class="govuk-link govuk-pagination__link"
            th:href="${@thymeleafHrefUtils.build(currentUrl, 'page', page.number + 1,
             'submissionId', submissionId, 'submittedDateFrom', submittedDateFrom,
-            'submittedDateTo', submittedDateTo,
-            'pageSort', pageSort)}" rel="next">
+            'submittedDateTo', submittedDateTo)}" rel="next">
             <span class="govuk-pagination__link-title">Next</span>
             <svg class="govuk-pagination__icon govuk-pagination__icon--next"
                  xmlns="http://www.w3.org/2000/svg" height="13" width="15" aria-hidden="true"

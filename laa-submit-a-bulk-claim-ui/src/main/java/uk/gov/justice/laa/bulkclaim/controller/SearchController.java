@@ -51,6 +51,7 @@ public class SearchController {
   public static final String SUBMISSION_SEARCH_FORM = "submissionsSearchForm";
   private static final int DEFAULT_PAGE = 0;
   private static final int DEFAULT_PAGE_SIZE = 10;
+  private static final String DEFAULT_SEARCH_PAGE_SORT = "createdOn,desc";
 
   @InitBinder(SUBMISSION_SEARCH_FORM)
   void initSubmissionSearchValidator(WebDataBinder binder) {
@@ -161,7 +162,8 @@ public class SearchController {
                   submittedDateFromParsed,
                   submittedDateToParsed,
                   page,
-                  DEFAULT_PAGE_SIZE)
+                  DEFAULT_PAGE_SIZE,
+                  DEFAULT_SEARCH_PAGE_SORT)
               .block();
 
       Page pagination =

@@ -100,7 +100,7 @@ class SearchControllerTest {
     response.setTotalPages(1);
 
     when(oidcAttributeUtils.getUserOffices(any())).thenReturn(List.of("1"));
-    when(claimsRestService.search(anyList(), any(), any(), any(), anyInt(), anyInt()))
+    when(claimsRestService.search(anyList(), any(), any(), any(), anyInt(), anyInt(), any()))
         .thenReturn(Mono.just(response));
     when(paginationUtil.fromSubmissionsResultSet(response, 0, 10))
         .thenReturn(new Page().totalElements(1));
@@ -121,7 +121,7 @@ class SearchControllerTest {
       "Submissions search results should return error when HttpClientErrorException is thrown")
   void submissionsSearchResultsShouldReturnErrorOnHttpClientError() {
     when(oidcAttributeUtils.getUserOffices(any())).thenReturn(List.of("1"));
-    when(claimsRestService.search(anyList(), any(), any(), any(), anyInt(), anyInt()))
+    when(claimsRestService.search(anyList(), any(), any(), any(), anyInt(), anyInt(), any()))
         .thenThrow(BadRequest.class);
 
     String view =
@@ -135,7 +135,7 @@ class SearchControllerTest {
   @DisplayName("Submissions search results should return error when generic exception is thrown")
   void submissionsSearchResultsShouldReturnErrorOnGenericException() {
     when(oidcAttributeUtils.getUserOffices(any())).thenReturn(List.of("1"));
-    when(claimsRestService.search(anyList(), any(), any(), any(), anyInt(), anyInt()))
+    when(claimsRestService.search(anyList(), any(), any(), any(), anyInt(), anyInt(), any()))
         .thenThrow(new RuntimeException("Boom"));
 
     String view =
@@ -152,7 +152,7 @@ class SearchControllerTest {
     response.setContent(Collections.emptyList());
 
     when(oidcAttributeUtils.getUserOffices(any())).thenReturn(List.of("1"));
-    when(claimsRestService.search(anyList(), any(), isNull(), isNull(), anyInt(), anyInt()))
+    when(claimsRestService.search(anyList(), any(), isNull(), isNull(), anyInt(), anyInt(), any()))
         .thenReturn(Mono.just(response));
     when(paginationUtil.fromSubmissionsResultSet(response, 0, 10))
         .thenReturn(new Page().totalElements(0));
