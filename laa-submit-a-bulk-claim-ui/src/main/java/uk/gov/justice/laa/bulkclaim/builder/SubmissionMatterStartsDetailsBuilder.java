@@ -1,11 +1,11 @@
 package uk.gov.justice.laa.bulkclaim.builder;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
-import reactor.core.publisher.Mono;
 import uk.gov.justice.laa.bulkclaim.client.DataClaimsRestClient;
 import uk.gov.justice.laa.bulkclaim.dto.submission.SubmissionMatterStartsRow;
 import uk.gov.justice.laa.bulkclaim.mapper.SubmissionMatterStartsMapper;
@@ -40,26 +40,28 @@ public class SubmissionMatterStartsDetailsBuilder {
   public List<SubmissionMatterStartsRow> build(final SubmissionResponse response) {
     List<SubmissionMatterStartsRow> result = new ArrayList<>();
 
-    Mono<MatterStartResultSet> allMatterStartsForSubmission =
-        dataClaimsRestClient.getAllMatterStartsForSubmission(response.getSubmissionId());
+    List<MatterStartGet> matterStarts =
+        dataClaimsRestClient
+            .getAllMatterStartsForSubmission(response.getSubmissionId())
+            .blockOptional()
+            .map(MatterStartResultSet::getMatterStarts)
+            .orElse(Collections.emptyList());
 
     Assert.notNull(response.getAreaOfLaw(), "Area of Law is null");
 
     if (response.getAreaOfLaw().toLowerCase().contains("legal")) {
-      allMatterStartsForSubmission.subscribe(
-          matterStarterResultSet -> addLegalHelpMatterStarts(matterStarterResultSet, result));
+      addLegalHelpMatterStarts(matterStarts, result);
     } else if (response.getAreaOfLaw().toLowerCase().contains("mediation")) {
-      allMatterStartsForSubmission.subscribe(
-          matterStarterResultSet -> addMediationMatterStarts(matterStarterResultSet, result));
+      addMediationMatterStarts(matterStarts, result);
     }
 
     return result;
   }
 
-  private boolean addLegalHelpMatterStarts(
-      MatterStartResultSet matterStarterResultSet, List<SubmissionMatterStartsRow> result) {
-    return result.addAll(
-        matterStarterResultSet.getMatterStarts().stream()
+  private void addLegalHelpMatterStarts(
+      List<MatterStartGet> matterStarts, List<SubmissionMatterStartsRow> result) {
+    result.addAll(
+        matterStarts.stream()
             // Filter by only category code matter starts
             .filter(x -> Objects.nonNull(x.getCategoryCode()))
             .map(mapper::toSubmissionMatterTypesRow)
@@ -67,9 +69,9 @@ public class SubmissionMatterStartsDetailsBuilder {
   }
 
   private void addMediationMatterStarts(
-      MatterStartResultSet matterStarterResultSet, List<SubmissionMatterStartsRow> result) {
+      List<MatterStartGet> matterStarts, List<SubmissionMatterStartsRow> result) {
     long totalMatterStartsMediationTypes =
-        matterStarterResultSet.getMatterStarts().stream()
+        matterStarts.stream()
             // Filter by only category code matter starts
             .filter(x -> Objects.nonNull(x.getMediationType()))
             .mapToLong(MatterStartGet::getNumberOfMatterStarts)
