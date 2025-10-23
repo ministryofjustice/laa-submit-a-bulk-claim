@@ -3,6 +3,7 @@ package uk.gov.justice.laa.bulkclaim.controller;
 import static org.springframework.beans.support.PagedListHolder.DEFAULT_PAGE_SIZE;
 import static uk.gov.justice.laa.bulkclaim.constants.SessionConstants.SUBMISSION_ID;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
@@ -24,7 +25,7 @@ import uk.gov.justice.laa.bulkclaim.builder.SubmissionMessagesBuilder;
 import uk.gov.justice.laa.bulkclaim.builder.SubmissionSummaryBuilder;
 import uk.gov.justice.laa.bulkclaim.client.DataClaimsRestClient;
 import uk.gov.justice.laa.bulkclaim.constants.ViewSubmissionNavigationTab;
-import uk.gov.justice.laa.bulkclaim.dto.submission.SubmissionMatterStartsDetails;
+import uk.gov.justice.laa.bulkclaim.dto.submission.SubmissionMatterStartsRow;
 import uk.gov.justice.laa.bulkclaim.dto.submission.SubmissionSummary;
 import uk.gov.justice.laa.bulkclaim.dto.submission.claim.SubmissionClaimsDetails;
 import uk.gov.justice.laa.bulkclaim.dto.submission.messages.MessagesSummary;
@@ -202,9 +203,15 @@ public class SubmissionDetailController {
             .orElse(false);
 
     if (ViewSubmissionNavigationTab.MATTER_STARTS.equals(navigationTab) && !isCrimeArea) {
-      SubmissionMatterStartsDetails matterStartsDetails =
+      List<SubmissionMatterStartsRow> matterStartsDetails =
           submissionMatterStartsDetailsBuilder.build(submissionResponse);
       model.addAttribute("matterStartsDetails", matterStartsDetails);
+      // For mediation submissions
+      model.addAttribute(
+          "totalMatterStarts",
+          matterStartsDetails.stream()
+              .mapToLong(SubmissionMatterStartsRow::numberOfMatterStarts)
+              .sum());
     }
   }
 

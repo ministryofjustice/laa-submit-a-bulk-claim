@@ -16,8 +16,8 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
+import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
 import org.junit.jupiter.api.DisplayName;
@@ -38,7 +38,6 @@ import uk.gov.justice.laa.bulkclaim.builder.SubmissionMessagesBuilder;
 import uk.gov.justice.laa.bulkclaim.builder.SubmissionSummaryBuilder;
 import uk.gov.justice.laa.bulkclaim.client.DataClaimsRestClient;
 import uk.gov.justice.laa.bulkclaim.config.WebMvcTestConfig;
-import uk.gov.justice.laa.bulkclaim.dto.submission.SubmissionMatterStartsDetails;
 import uk.gov.justice.laa.bulkclaim.dto.submission.SubmissionMatterStartsRow;
 import uk.gov.justice.laa.bulkclaim.dto.submission.SubmissionSummary;
 import uk.gov.justice.laa.bulkclaim.dto.submission.claim.SubmissionClaimsDetails;
@@ -251,16 +250,15 @@ class SubmissionDetailControllerTest {
                   new BigDecimal("100.50"),
                   "LEGAL HELP",
                   OffsetDateTime.of(2025, 1, 1, 10, 10, 10, 0, ZoneOffset.UTC)));
-      HashMap<SubmissionMatterStartsRow, Long> matterTypes = new HashMap<>();
-      matterTypes.put(new SubmissionMatterStartsRow("Description"), 1L);
+      List<SubmissionMatterStartsRow> matterTypes = new ArrayList<>();
+      matterTypes.add(new SubmissionMatterStartsRow("Description", 34));
       when(submissionClaimDetailsBuilder.build(any(), anyInt(), anyInt()))
           .thenReturn(
               new SubmissionClaimsDetails(Collections.emptyList(), pagination, BigDecimal.ZERO));
       when(submissionMessagesBuilder.build(any(), any(), any(), anyInt(), anyInt()))
           .thenReturn(
               new MessagesSummary(Collections.emptyList(), 0, 0, pagination, MessagesSource.CLAIM));
-      when(submissionMatterStartsDetailsBuilder.build(any()))
-          .thenReturn(new SubmissionMatterStartsDetails(matterTypes));
+      when(submissionMatterStartsDetailsBuilder.build(any())).thenReturn(matterTypes);
       // When / Then
       assertThat(
               mockMvc.perform(

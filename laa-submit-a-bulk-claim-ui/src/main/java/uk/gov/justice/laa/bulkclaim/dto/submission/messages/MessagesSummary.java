@@ -23,7 +23,7 @@ public record MessagesSummary(
   /**
    * Returns true if there are any errors in the bulk claim.
    *
-   * @return true if calculatedTotal error count is greater than zero
+   * @return true if calculatedTotal error numberOfMatterStarts is greater than zero
    */
   public boolean containsErrors() {
     return totalErrors() > 0;
@@ -32,7 +32,7 @@ public record MessagesSummary(
   /**
    * Returns the calculatedTotal number of messages found in the bulk claim.
    *
-   * @return the calculatedTotal error count
+   * @return the calculatedTotal error numberOfMatterStarts
    */
   public long totalErrors() {
     return Optional.ofNullable(messages).stream()

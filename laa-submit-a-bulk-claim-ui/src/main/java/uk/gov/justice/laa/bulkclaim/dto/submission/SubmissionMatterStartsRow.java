@@ -6,4 +6,4 @@ package uk.gov.justice.laa.bulkclaim.dto.submission;
  * @param description a description of the matter start
  * @author Jamie Briggs
  */
-public record SubmissionMatterStartsRow(String description) {}
+public record SubmissionMatterStartsRow(String description, long numberOfMatterStarts) {}
