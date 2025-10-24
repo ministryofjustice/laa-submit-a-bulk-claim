@@ -37,7 +37,7 @@ public class SubmissionMessagesBuilder {
    * Builds a {@link MessagesSummary} for a given submission ID whilst only returning errors.
    *
    * @param submissionId The submission ID to fetch errors for.
-   * @param page         The page number to fetch errors for.
+   * @param page The page number to fetch errors for.
    * @return The built {@link MessagesSummary}.
    */
   public MessagesSummary buildErrors(UUID submissionId, int page, int size) {
@@ -48,7 +48,7 @@ public class SubmissionMessagesBuilder {
    * Builds a {@link MessagesSummary} for a given submission ID with both warnings and errors.
    *
    * @param submissionId The submission ID to fetch errors for.
-   * @param claimId      The claim ID to fetch errors for.
+   * @param claimId The claim ID to fetch errors for.
    * @return The built {@link MessagesSummary}.
    */
   public MessagesSummary buildAllWarnings(UUID submissionId, UUID claimId) {
@@ -59,8 +59,8 @@ public class SubmissionMessagesBuilder {
    * Builds a {@link MessagesSummary} for a given submission ID and claim ID.
    *
    * @param submissionId the submission ID to fetch messages for.
-   * @param claimId      the claim ID to fetch messages for.
-   * @param page         the page number to fetch messages for.
+   * @param claimId the claim ID to fetch messages for.
+   * @param page the page number to fetch messages for.
    * @return the built {@link MessagesSummary}.
    */
   public MessagesSummary build(
@@ -81,11 +81,12 @@ public class SubmissionMessagesBuilder {
             .toList();
 
     // Collate all possible claim responses which messagesResponse could have
-    Map<UUID, Mono<ClaimResponse>> claims = claimRefs.stream()
-        .filter(Objects::nonNull)
-        .collect(Collectors.toMap(
-            x -> x,
-            x -> dataClaimsRestClient.getSubmissionClaim(submissionId, x)));
+    Map<UUID, Mono<ClaimResponse>> claims =
+        claimRefs.stream()
+            .filter(Objects::nonNull)
+            .collect(
+                Collectors.toMap(
+                    x -> x, x -> dataClaimsRestClient.getSubmissionClaim(submissionId, x)));
 
     // Loop through an error map and add claims
     final List<MessageRow> errorList =
@@ -99,7 +100,8 @@ public class SubmissionMessagesBuilder {
                       Optional.ofNullable(messages.getClaimId())
                           .map(
                               claimRef ->
-                                  claims.get(claimRef)
+                                  claims
+                                      .get(claimRef)
                                       .onErrorResume(ex -> Mono.just(new ClaimResponse()))
                                       .switchIfEmpty(Mono.just(new ClaimResponse()))
                                       .block())
