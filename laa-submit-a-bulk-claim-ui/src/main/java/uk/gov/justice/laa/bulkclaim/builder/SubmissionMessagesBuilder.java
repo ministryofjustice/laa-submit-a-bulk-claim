@@ -1,8 +1,12 @@
 package uk.gov.justice.laa.bulkclaim.builder;
 
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import reactor.core.publisher.Mono;
@@ -13,6 +17,7 @@ import uk.gov.justice.laa.bulkclaim.dto.submission.messages.MessagesSummary;
 import uk.gov.justice.laa.bulkclaim.mapper.BulkClaimImportSummaryMapper;
 import uk.gov.justice.laa.bulkclaim.util.PaginationUtil;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.ClaimResponse;
+import uk.gov.justice.laa.dstew.payments.claimsdata.model.ValidationMessageBase;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.ValidationMessageType;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.ValidationMessagesResponse;
 
@@ -66,6 +71,23 @@ public class SubmissionMessagesBuilder {
             .getValidationMessages(submissionId, claimId, submissionType, null, page, size)
             .block();
 
+    // Get all claims from data claims service
+    List<UUID> claimRefs =
+        Optional.ofNullable(messagesResponse)
+            .map(ValidationMessagesResponse::getContent)
+            .orElse(Collections.emptyList())
+            .stream()
+            .map(ValidationMessageBase::getClaimId)
+            .toList();
+
+    // Collate all possible claim responses which messagesResponse could have
+    Map<UUID, Mono<ClaimResponse>> claims =
+        claimRefs.stream()
+            .filter(Objects::nonNull)
+            .collect(
+                Collectors.toMap(
+                    x -> x, x -> dataClaimsRestClient.getSubmissionClaim(submissionId, x)));
+
     // Loop through an error map and add claims
     final List<MessageRow> errorList =
         Optional.ofNullable(messagesResponse)
@@ -78,8 +100,8 @@ public class SubmissionMessagesBuilder {
                       Optional.ofNullable(messages.getClaimId())
                           .map(
                               claimRef ->
-                                  dataClaimsRestClient
-                                      .getSubmissionClaim(messages.getSubmissionId(), claimRef)
+                                  claims
+                                      .get(claimRef)
                                       .onErrorResume(ex -> Mono.just(new ClaimResponse()))
                                       .switchIfEmpty(Mono.just(new ClaimResponse()))
                                       .block())
