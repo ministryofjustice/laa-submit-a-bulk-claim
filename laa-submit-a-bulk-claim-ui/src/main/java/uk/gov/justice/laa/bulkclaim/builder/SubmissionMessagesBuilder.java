@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
@@ -71,14 +72,14 @@ public class SubmissionMessagesBuilder {
             .getValidationMessages(submissionId, claimId, submissionType, null, page, size)
             .block();
 
-    // Get all claims from data claims service
-    List<UUID> claimRefs =
+    // Get all claims from data claims service (Only keep unique keys)
+    Set<UUID> claimRefs =
         Optional.ofNullable(messagesResponse)
             .map(ValidationMessagesResponse::getContent)
             .orElse(Collections.emptyList())
             .stream()
             .map(ValidationMessageBase::getClaimId)
-            .toList();
+            .collect(Collectors.toSet());
 
     // Collate all possible claim responses which messagesResponse could have
     Map<UUID, Mono<ClaimResponse>> claims =
