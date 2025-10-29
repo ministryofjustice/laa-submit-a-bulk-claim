@@ -30,6 +30,8 @@ dependencies {
     implementation 'org.springframework:spring-core:6.2.11'
     // Upgrade to fix CVE-2025-11226 vulnerability in logback-core
     implementation 'ch.qos.logback:logback-core:1.5.19'
+    // Upgrade to fix CVE-2025-61795 in tomcat-embed-core
+    implementation 'org.apache.tomcat.embed:tomcat-embed-core:10.1.47'
 
     implementation 'uk.gov.justice.laa.datastewardship.payments:data-claims-api-models:326b3c0'
 
@@ -50,8 +52,7 @@ dependencies {
     // https://mvnrepository.com/artifact/org.webjars/webjars-locator-lite
     implementation 'org.webjars:webjars-locator-lite'
     // https://mvnrepository.com/artifact/org.webjars.npm/govuk-frontend
-    implementation 'org.webjars.npm:govuk-frontend:5.11.0'
-    implementation 'org.webjars.npm:ministryofjustice__frontend:5.1.5'
+    implementation 'org.webjars.npm:govuk-frontend:5.13.0'
     implementation 'org.springframework.boot:spring-boot-starter-actuator'
     implementation 'io.micrometer:micrometer-registry-prometheus'
 
