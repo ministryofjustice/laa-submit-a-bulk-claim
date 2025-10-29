@@ -61,7 +61,10 @@ public class BulkImportFileValidator implements Validator {
     MultipartFile file = uploadForm.file();
 
     // Step 1: Check if file is null or empty
-    if (file == null || file.isEmpty()) {
+    if (file == null) {
+      errors.rejectValue("file", "bulkImport.validation.missing");
+      return;
+    } else if (file.isEmpty()) {
       errors.rejectValue("file", "bulkImport.validation.empty");
       return;
     }
