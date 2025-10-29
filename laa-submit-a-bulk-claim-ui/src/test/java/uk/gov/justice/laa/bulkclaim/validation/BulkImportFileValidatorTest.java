@@ -97,7 +97,7 @@ class BulkImportFileValidatorTest {
     // Then
     assertThat(errors.hasFieldErrors("file")).isTrue();
     assertThat(errors.getFieldErrors("file").getFirst().getCode())
-        .isEqualTo("bulkImport.validation.empty");
+        .isEqualTo("bulkImport.validation.missing");
   }
 
   @ParameterizedTest
