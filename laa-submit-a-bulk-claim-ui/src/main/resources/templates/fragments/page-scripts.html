@@ -5,10 +5,10 @@
 </head>
 <body>
 <script type="module" th:src="@{/webjars/govuk-frontend/dist/govuk/govuk-frontend.min.js}"></script>
-<script type="module" th:src="@{/webjars/ministryofjustice__frontend/moj/moj-frontend.min.js}"></script>
+<script type="module" th:src="@{/javascripts/moj-frontend.min.js}"></script>
 <script type="module">
     import * as GOVUKFrontend from '/webjars/govuk-frontend/dist/govuk/govuk-frontend.min.js'
-    import * as MOJFrontend from '/webjars/ministryofjustice__frontend/moj/moj-frontend.min.js'
+    import * as MOJFrontend from '/javascripts/moj-frontend.min.js'
 
     GOVUKFrontend.initAll()
     MOJFrontend.initAll()
