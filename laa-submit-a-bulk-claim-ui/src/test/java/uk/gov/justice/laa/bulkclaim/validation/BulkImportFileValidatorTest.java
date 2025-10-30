@@ -1,12 +1,14 @@
 package uk.gov.justice.laa.bulkclaim.validation;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.mockito.Mockito.when;
 
 import java.nio.charset.StandardCharsets;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
+import org.mockito.Mockito;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.validation.SimpleErrors;
 import org.springframework.validation.Validator;
@@ -100,8 +102,26 @@ class BulkImportFileValidatorTest {
         .isEqualTo("bulkImport.validation.missing");
   }
 
+  @Test
+  @DisplayName("Should have errors if file name missing")
+  void shouldHaveErrorsIfFileNameMissing() {
+    // Given an empty file (Override original file name, can't create MockMultipartFile without it)
+    MockMultipartFile file = Mockito.mock(MockMultipartFile.class);
+    when(file.getOriginalFilename()).thenReturn("");
+    FileUploadForm fileUploadForm = new FileUploadForm(file);
+    SimpleErrors errors = new SimpleErrors(fileUploadForm);
+
+    // When
+    bulkClaimFileValidator.validate(fileUploadForm, errors);
+
+    // Then
+    assertThat(errors.hasFieldErrors("file")).isTrue();
+    assertThat(errors.getFieldErrors("file").getFirst().getCode())
+        .isEqualTo("bulkImport.validation.missing");
+  }
+
   @ParameterizedTest
-  @ValueSource(strings = {"test.docx", "test.json", "test.pdf", ""})
+  @ValueSource(strings = {"test.docx", "test.json", "test.pdf"})
   @DisplayName("Should have error for unsupported file extensions")
   void shouldHaveErrorsForUnsupportedFileExtensions(String fileName) {
     // Given
