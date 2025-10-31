@@ -1,5 +1,6 @@
 package uk.gov.justice.laa.bulkclaim.validation;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.util.unit.DataSize;
@@ -61,7 +62,7 @@ public class BulkImportFileValidator implements Validator {
     MultipartFile file = uploadForm.file();
 
     // Step 1: Check if file is null or empty
-    if (file == null) {
+    if (file == null || StringUtils.isBlank(file.getOriginalFilename())) {
       errors.rejectValue("file", "bulkImport.validation.missing");
       return;
     } else if (file.isEmpty()) {
