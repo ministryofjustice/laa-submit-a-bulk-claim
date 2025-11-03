@@ -76,7 +76,9 @@ public class SubmissionMatterStartsDetailsBuilder {
             .filter(x -> Objects.nonNull(x.getMediationType()))
             .mapToLong(MatterStartGet::getNumberOfMatterStarts)
             .sum();
-    result.add(
-        new SubmissionMatterStartsRow(NEW_MATTER_STARTS_LABEL, totalMatterStartsMediationTypes));
+    if (totalMatterStartsMediationTypes > 0) {
+      result.add(
+          new SubmissionMatterStartsRow(NEW_MATTER_STARTS_LABEL, totalMatterStartsMediationTypes));
+    }
   }
 }

@@ -165,4 +165,31 @@ class SubmissionMatterStartsDetailsBuilderTest {
     verify(mapper, times(0)).toSubmissionMatterTypesRow(matterStartMediationTypeTwo);
     verifyNoMoreInteractions(dataClaimsRestClient, mapper);
   }
+
+  @Test
+  @DisplayName("Should return empty list when mediation matter starts total zero")
+  void shouldReturnEmptyListWhenMediationMatterStartsZero() {
+    // Given
+    UUID submissionReference = UUID.fromString("162521bc-7d32-4f69-a661-15e668aae963");
+    SubmissionResponse submissionResponse =
+        SubmissionResponse.builder()
+            .submissionId(submissionReference)
+            .areaOfLaw("Mediation")
+            .build();
+
+    when(dataClaimsRestClient.getAllMatterStartsForSubmission(submissionReference))
+        .thenReturn(
+            Mono.just(
+                MatterStartResultSet.builder()
+                    .submissionId(submissionReference)
+                    .matterStarts(Collections.emptyList())
+                    .build()));
+
+    // When
+    List<SubmissionMatterStartsRow> build = builder.build(submissionResponse);
+    // Then
+    assertThat(build).isEmpty();
+    verify(dataClaimsRestClient).getAllMatterStartsForSubmission(eq(submissionReference));
+    verifyNoMoreInteractions(dataClaimsRestClient, mapper);
+  }
 }
