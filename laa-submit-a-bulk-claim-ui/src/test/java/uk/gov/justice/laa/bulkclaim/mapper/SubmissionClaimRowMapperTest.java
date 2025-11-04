@@ -59,7 +59,7 @@ class SubmissionClaimRowMapperTest {
             .feeCode("Fee code")
             .feeCalculationResponse(
                 FeeCalculationPatch.builder()
-                    .feeType(FeeCalculationType.DISBURSEMENT_ONLY)
+                    .feeType(FeeCalculationType.DISB_ONLY)
                     .feeCode("FC123")
                     .build())
             .build();
@@ -85,7 +85,7 @@ class SubmissionClaimRowMapperTest {
           softAssertions
               .assertThat(result.concludedOrClaimedDate())
               .isEqualTo(LocalDate.of(2025, 3, 18));
-          softAssertions.assertThat(result.feeType()).isEqualTo("Disbursement only");
+          softAssertions.assertThat(result.feeType()).isEqualTo("Disb only");
           softAssertions.assertThat(result.feeCode()).isEqualTo("FC123");
           softAssertions.assertThat(result.costsDetails()).isNotNull();
           softAssertions.assertThat(result.totalMessages()).isEqualTo(2);
@@ -151,7 +151,7 @@ class SubmissionClaimRowMapperTest {
     when(claimResponse.getMatterTypeCode()).thenReturn("FAMD:FRES");
     when(claimResponse.getCaseConcludedDate()).thenReturn(LocalDate.of(2025, 3, 18).toString());
     when(claimResponse.getFeeCalculationResponse().getFeeType())
-        .thenReturn(FeeCalculationType.DISBURSEMENT_ONLY);
+        .thenReturn(FeeCalculationType.DISB_ONLY);
     when(claimResponse.getFeeCalculationResponse().getFeeCode()).thenReturn("FC123");
     when(claimResponse.getFeeCalculationResponse().getBoltOnDetails().getEscapeCaseFlag())
         .thenReturn(Boolean.TRUE);
