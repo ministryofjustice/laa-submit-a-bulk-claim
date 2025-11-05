@@ -2,3 +2,11 @@
 
 grafana:
   enabled: true
+
+ingress:
+  externalRoute:
+    enabled: true
+    hostname:
+      enabled: true
+      value: submit-a-bulk-claim.laa.service.justice.gov.uk
+      certSecretName: laa-sabc-cert
