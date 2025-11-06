@@ -17,7 +17,11 @@ spec:
         app: {{ .Release.Name }}-{{ .Chart.Name }}-pod
         app.kubernetes.io/name: {{ .Release.Name }}-{{ .Chart.Name }}
     spec:
+      {{- if .Values.serviceAccountName }}
+      serviceAccountName: {{ .Values.serviceAccountName }}
+      {{- else }}
       serviceAccountName: {{ .Release.Namespace }}-service-account
+      {{- end }}
       {{- if .Values.securityContext }}
       securityContext:
         fsGroup: {{ .Values.securityContext.fsGroup }}
@@ -207,28 +211,16 @@ metadata:
 spec:
   ingressClassName: {{ .Values.ingress.className }}
   tls:
-    - hosts:
-        - {{ .Release.Name }}-{{ .Chart.Name }}-{{ .Release.Namespace }}.{{ .Values.global.clusterDomain }}
-      {{- if .Values.ingress.externalRoute.hostname }}
-      {{- if eq .Values.ingress.externalRoute.hostname.enabled true }}
+    {{- if and .Values.ingress.externalRoute.hostname (eq .Values.ingress.externalRoute.hostname.enabled true) }}
     - hosts:
         - {{ required "hostname value must be provided when hostname is enabled." .Values.ingress.externalRoute.hostname.value }}
       secretName: {{ required "hostname certSecretName must be provided when hostname is enabled." .Values.ingress.externalRoute.hostname.certSecretName }}
-      {{ end }}
-      {{ end }}
+    {{- else }}
+    - hosts:
+        - {{ .Release.Name }}-{{ .Chart.Name }}-{{ .Release.Namespace }}.{{ .Values.global.clusterDomain }}
+    {{- end }}
   rules:
-    - host: {{ .Release.Name }}-{{ .Chart.Name }}-{{ .Release.Namespace }}.{{ .Values.global.clusterDomain }}
-      http:
-        paths:
-            - path: /
-              pathType: ImplementationSpecific
-              backend:
-                service:
-                  name: {{ .Release.Name }}-{{ .Chart.Name }}-service
-                  port:
-                    number: 80
-    {{- if .Values.ingress.externalRoute.hostname }}
-    {{- if eq .Values.ingress.externalRoute.hostname.enabled true }}
+    {{- if and .Values.ingress.externalRoute.hostname (eq .Values.ingress.externalRoute.hostname.enabled true) }}
     - host: {{ required "hostname value must be provided when hostname is enabled." .Values.ingress.externalRoute.hostname.value }}
       http:
         paths:
@@ -239,8 +231,18 @@ spec:
                 name: {{ .Release.Name }}-{{ .Chart.Name }}-service
                 port:
                   number: 80
-    {{ end }}
-    {{ end }}
+    {{- else }}
+    - host: {{ .Release.Name }}-{{ .Chart.Name }}-{{ .Release.Namespace }}.{{ .Values.global.clusterDomain }}
+      http:
+        paths:
+            - path: /
+              pathType: ImplementationSpecific
+              backend:
+                service:
+                  name: {{ .Release.Name }}-{{ .Chart.Name }}-service
+                  port:
+                    number: 80
+    {{- end }}
   {{- end }}
   {{- end }}
 ---

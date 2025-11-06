@@ -1,5 +1,7 @@
 # Not used as charts are made prod safe see values.yml
 
+serviceAccountName: laa-submit-a-bulk-claim-production-service-account
+
 grafana:
   enabled: true
 
