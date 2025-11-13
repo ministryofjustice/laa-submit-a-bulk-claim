@@ -171,14 +171,14 @@ class DataClaimsRestClientIntegrationTest extends MockServerIntegrationTest {
             "submission_id": "660e8400-e29b-41d4-a716-2c963f66afa6",
             "office_account_number": "9Z876X",
             "status": "CREATED",
-            "area_of_law": "CIVIL",
+            "area_of_law": "LEGAL HELP",
             "submitted": "2019-08-24T14:15:22Z"
           },
           {
             "submission_id": "770e8400-e29b-41d4-a716-2c963f66afa6",
             "office_account_number": "9Z876X",
             "status": "VALIDATION_SUCCEEDED",
-            "area_of_law": "CIVIL",
+            "area_of_law": "LEGAL HELP",
             "submitted": "2019-08-25T15:17:22Z"
           }
           """;

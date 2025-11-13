@@ -11,6 +11,7 @@ import org.mapstruct.Mapping;
 import org.mapstruct.Named;
 import uk.gov.justice.laa.bulkclaim.dto.submission.SubmissionSummaryRow;
 import uk.gov.justice.laa.bulkclaim.dto.submission.messages.MessageRow;
+import uk.gov.justice.laa.dstew.payments.claimsdata.model.AreaOfLaw;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.ClaimResponse;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionResponse;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.ValidationMessageBase;
@@ -33,7 +34,7 @@ public interface BulkClaimImportSummaryMapper {
   @Mapping(target = "submitted", source = "submitted")
   @Mapping(target = "submissionReference", source = "submissionId")
   @Mapping(target = "officeAccount", source = "officeAccountNumber")
-  @Mapping(target = "areaOfLaw", source = "areaOfLaw")
+  @Mapping(target = "areaOfLaw", source = "areaOfLaw", qualifiedByName = "fromAreaOfLaw")
   @Mapping(
       target = "submissionPeriod",
       source = "submissionPeriod",
@@ -42,6 +43,11 @@ public interface BulkClaimImportSummaryMapper {
   SubmissionSummaryRow toSubmissionSummaryRow(SubmissionResponse submissionResponse);
 
   List<SubmissionSummaryRow> toSubmissionSummaryRows(List<SubmissionResponse> submissionResponses);
+
+  @Named("fromAreaOfLaw")
+  default String fromAreaOfLaw(AreaOfLaw areaOfLaw){
+    return areaOfLaw.getValue().replace("_", " ");
+  }
 
   /**
    * Returns a {@link LocalDate} from a submission period string.

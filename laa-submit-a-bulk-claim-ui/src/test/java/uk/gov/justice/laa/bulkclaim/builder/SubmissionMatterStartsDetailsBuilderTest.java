@@ -23,6 +23,7 @@ import reactor.core.publisher.Mono;
 import uk.gov.justice.laa.bulkclaim.client.DataClaimsRestClient;
 import uk.gov.justice.laa.bulkclaim.dto.submission.SubmissionMatterStartsRow;
 import uk.gov.justice.laa.bulkclaim.mapper.SubmissionMatterStartsMapper;
+import uk.gov.justice.laa.dstew.payments.claimsdata.model.AreaOfLaw;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.CategoryCode;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.MatterStartGet;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.MatterStartResultSet;
@@ -52,7 +53,7 @@ class SubmissionMatterStartsDetailsBuilderTest {
     SubmissionResponse submissionResponse =
         SubmissionResponse.builder()
             .submissionId(submissionReference)
-            .areaOfLaw("Legal Help")
+            .areaOfLaw(AreaOfLaw.LEGAL_HELP)
             .matterStarts(Collections.singletonList(matterStartsReference))
             .build();
 
@@ -93,7 +94,7 @@ class SubmissionMatterStartsDetailsBuilderTest {
     SubmissionResponse submissionResponse =
         SubmissionResponse.builder()
             .submissionId(submissionReference)
-            .areaOfLaw("Mediation")
+            .areaOfLaw(AreaOfLaw.MEDIATION)
             .matterStarts(Collections.singletonList(matterStartsReference))
             .build();
 
@@ -132,7 +133,7 @@ class SubmissionMatterStartsDetailsBuilderTest {
     SubmissionResponse submissionResponse =
         SubmissionResponse.builder()
             .submissionId(submissionReference)
-            .areaOfLaw("Mediation")
+            .areaOfLaw(AreaOfLaw.MEDIATION)
             .matterStarts(Collections.singletonList(matterStartsReference))
             .build();
 
@@ -174,7 +175,7 @@ class SubmissionMatterStartsDetailsBuilderTest {
     SubmissionResponse submissionResponse =
         SubmissionResponse.builder()
             .submissionId(submissionReference)
-            .areaOfLaw("Mediation")
+            .areaOfLaw(AreaOfLaw.MEDIATION)
             .build();
 
     when(dataClaimsRestClient.getAllMatterStartsForSubmission(submissionReference))

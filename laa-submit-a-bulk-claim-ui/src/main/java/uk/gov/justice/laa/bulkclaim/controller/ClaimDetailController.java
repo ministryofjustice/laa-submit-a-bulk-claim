@@ -3,7 +3,6 @@ package uk.gov.justice.laa.bulkclaim.controller;
 import static uk.gov.justice.laa.bulkclaim.constants.SessionConstants.CLAIM_ID;
 import static uk.gov.justice.laa.bulkclaim.constants.SessionConstants.SUBMISSION_ID;
 
-import java.util.Locale;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -84,7 +83,7 @@ public final class ClaimDetailController {
         claimFeeCalculationBreakdownMapper.toClaimFeeCalculationBreakdown(claimResponse));
     SubmissionResponse submissionResponse =
         dataClaimsRestClient.getSubmission(submissionId).block();
-    String areaOfLaw = simplifyAreaOfLaw(submissionResponse.getAreaOfLaw());
+    String areaOfLaw = submissionResponse.getAreaOfLaw().getValue();
     model.addAttribute("claimSummary", claimSummaryMapper.toClaimSummary(claimResponse, areaOfLaw));
 
     final MessagesSummary messagesSummary =
@@ -92,12 +91,5 @@ public final class ClaimDetailController {
     model.addAttribute("claimMessages", messagesSummary);
 
     return "pages/view-claim-detail";
-  }
-
-  private String simplifyAreaOfLaw(String areaOfLaw) {
-    return areaOfLaw
-        .toUpperCase(Locale.ROOT)
-        .replace("LEGAL HELP", "CIVIL")
-        .replace("CRIME LOWER", "CRIME");
   }
 }

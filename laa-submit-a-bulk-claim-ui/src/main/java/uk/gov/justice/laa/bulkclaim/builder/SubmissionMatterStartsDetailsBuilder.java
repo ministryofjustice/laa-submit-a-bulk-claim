@@ -9,6 +9,7 @@ import org.springframework.util.Assert;
 import uk.gov.justice.laa.bulkclaim.client.DataClaimsRestClient;
 import uk.gov.justice.laa.bulkclaim.dto.submission.SubmissionMatterStartsRow;
 import uk.gov.justice.laa.bulkclaim.mapper.SubmissionMatterStartsMapper;
+import uk.gov.justice.laa.dstew.payments.claimsdata.model.AreaOfLaw;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.MatterStartGet;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.MatterStartResultSet;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionResponse;
@@ -49,9 +50,10 @@ public class SubmissionMatterStartsDetailsBuilder {
 
     Assert.notNull(response.getAreaOfLaw(), "Area of Law is null");
 
-    if (response.getAreaOfLaw().toLowerCase().contains("legal")) {
+    if (AreaOfLaw.LEGAL_HELP.equals(response.getAreaOfLaw())) {
       addLegalHelpMatterStarts(matterStarts, result);
-    } else if (response.getAreaOfLaw().toLowerCase().contains("mediation")) {
+    }
+    if (AreaOfLaw.MEDIATION.equals(response.getAreaOfLaw())) {
       addMediationMatterStarts(matterStarts, result);
     }
 
