@@ -44,6 +44,7 @@ import uk.gov.justice.laa.bulkclaim.dto.submission.claim.SubmissionClaimsDetails
 import uk.gov.justice.laa.bulkclaim.dto.submission.messages.MessagesSource;
 import uk.gov.justice.laa.bulkclaim.dto.submission.messages.MessagesSummary;
 import uk.gov.justice.laa.bulkclaim.util.PaginationUtil;
+import uk.gov.justice.laa.dstew.payments.claimsdata.model.AreaOfLaw;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.Page;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionBase;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionResponse;
@@ -238,7 +239,7 @@ class SubmissionDetailControllerTest {
               Mono.just(
                   SubmissionResponse.builder()
                       .status(SubmissionStatus.VALIDATION_SUCCEEDED)
-                      .areaOfLaw("LEGAL HELP")
+                      .areaOfLaw(AreaOfLaw.LEGAL_HELP)
                       .build()));
       when(submissionSummaryBuilder.build(any()))
           .thenReturn(
@@ -248,7 +249,7 @@ class SubmissionDetailControllerTest {
                   LocalDate.of(2025, 5, 1),
                   "AQ2B3C",
                   new BigDecimal("100.50"),
-                  "LEGAL HELP",
+                  AreaOfLaw.LEGAL_HELP.getValue(),
                   OffsetDateTime.of(2025, 1, 1, 10, 10, 10, 0, ZoneOffset.UTC)));
       List<SubmissionMatterStartsRow> matterTypes = new ArrayList<>();
       matterTypes.add(new SubmissionMatterStartsRow("Description", 34));
@@ -281,7 +282,7 @@ class SubmissionDetailControllerTest {
           SubmissionResponse.builder()
               .submissionId(submissionReference)
               .status(SubmissionStatus.VALIDATION_SUCCEEDED)
-              .areaOfLaw("Crime Lower")
+              .areaOfLaw(AreaOfLaw.CRIME_LOWER)
               .build();
       when(dataClaimsRestClient.getSubmission(submissionReference))
           .thenReturn(Mono.just(submissionResponse));
@@ -293,7 +294,7 @@ class SubmissionDetailControllerTest {
                   LocalDate.of(2025, 5, 1),
                   "AQ2B3C",
                   null,
-                  "Crime lower",
+                  AreaOfLaw.CRIME_LOWER.getValue(),
                   OffsetDateTime.of(2025, 1, 1, 10, 10, 10, 0, ZoneOffset.UTC)));
       when(submissionClaimDetailsBuilder.build(any(), anyInt(), anyInt()))
           .thenReturn(

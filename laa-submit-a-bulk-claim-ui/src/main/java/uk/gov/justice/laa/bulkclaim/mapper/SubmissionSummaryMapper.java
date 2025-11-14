@@ -9,6 +9,7 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Named;
 import uk.gov.justice.laa.bulkclaim.dto.submission.SubmissionSummary;
+import uk.gov.justice.laa.dstew.payments.claimsdata.model.AreaOfLaw;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionResponse;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionStatus;
 
@@ -27,7 +28,7 @@ public interface SubmissionSummaryMapper {
    * @return The mapped {@link SubmissionSummary}.
    */
   @Mapping(target = "submissionReference", source = "submissionId")
-  @Mapping(target = "areaOfLaw", source = "areaOfLaw")
+  @Mapping(target = "areaOfLaw", source = "areaOfLaw", qualifiedByName = "fromAreaOfLaw")
   @Mapping(target = "officeAccount", source = "officeAccountNumber")
   @Mapping(
       target = "submissionPeriod",
@@ -37,6 +38,11 @@ public interface SubmissionSummaryMapper {
   @Mapping(target = "submitted", source = "submitted")
   @Mapping(target = "submissionValue", constant = "50.52")
   SubmissionSummary toSubmissionSummary(SubmissionResponse submissionResponse);
+
+  @Named("fromAreaOfLaw")
+  default String fromAreaOfLaw(AreaOfLaw areaOfLaw) {
+    return areaOfLaw.getValue().replace("_", " ");
+  }
 
   /**
    * Maps the {@link SubmissionStatus} to string.

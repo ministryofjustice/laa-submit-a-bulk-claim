@@ -12,6 +12,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.justice.laa.bulkclaim.dto.submission.SubmissionSummaryRow;
 import uk.gov.justice.laa.bulkclaim.dto.submission.messages.MessageRow;
+import uk.gov.justice.laa.dstew.payments.claimsdata.model.AreaOfLaw;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.ClaimResponse;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionResponse;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.ValidationMessageBase;
@@ -37,7 +38,7 @@ class BulkClaimImportSummaryMapperTest {
             .submitted(OffsetDateTime.of(2025, 1, 1, 10, 10, 10, 0, ZoneOffset.UTC))
             .submissionId(UUID.fromString("ee92c4ac-0ff9-4896-8bbe-c58fa04206e3"))
             .officeAccountNumber("1234567890")
-            .areaOfLaw("Civil Law")
+            .areaOfLaw(AreaOfLaw.LEGAL_HELP)
             .submissionPeriod("MAY-2020")
             .numberOfClaims(123)
             .build();
@@ -55,7 +56,7 @@ class BulkClaimImportSummaryMapperTest {
               .assertThat(result.submissionReference())
               .isEqualTo(UUID.fromString("ee92c4ac-0ff9-4896-8bbe-c58fa04206e3"));
           softly.assertThat(result.officeAccount()).isEqualTo("1234567890");
-          softly.assertThat(result.areaOfLaw()).isEqualTo("Civil Law");
+          softly.assertThat(result.areaOfLaw()).isEqualTo("LEGAL HELP");
           softly.assertThat(result.submissionPeriod()).isEqualTo("2020-05-01");
           softly.assertThat(result.totalClaims()).isEqualTo(123);
         });

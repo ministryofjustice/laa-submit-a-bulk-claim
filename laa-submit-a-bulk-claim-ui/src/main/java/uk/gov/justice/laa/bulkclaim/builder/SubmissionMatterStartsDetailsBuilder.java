@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 import uk.gov.justice.laa.bulkclaim.client.DataClaimsRestClient;
@@ -18,6 +19,7 @@ import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionResponse;
  *
  * @author Jamie Briggs
  */
+@Slf4j
 @Service
 public class SubmissionMatterStartsDetailsBuilder {
 
@@ -49,10 +51,11 @@ public class SubmissionMatterStartsDetailsBuilder {
 
     Assert.notNull(response.getAreaOfLaw(), "Area of Law is null");
 
-    if (response.getAreaOfLaw().toLowerCase().contains("legal")) {
-      addLegalHelpMatterStarts(matterStarts, result);
-    } else if (response.getAreaOfLaw().toLowerCase().contains("mediation")) {
-      addMediationMatterStarts(matterStarts, result);
+    switch (response.getAreaOfLaw()) {
+      case LEGAL_HELP -> addLegalHelpMatterStarts(matterStarts, result);
+      case MEDIATION -> addMediationMatterStarts(matterStarts, result);
+      default ->
+          log.debug("No extra content required for Area of Law: {}", response.getAreaOfLaw());
     }
 
     return result;

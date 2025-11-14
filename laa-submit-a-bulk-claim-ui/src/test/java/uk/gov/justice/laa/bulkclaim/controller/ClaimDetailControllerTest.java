@@ -31,6 +31,7 @@ import uk.gov.justice.laa.bulkclaim.dto.submission.messages.MessagesSummary;
 import uk.gov.justice.laa.bulkclaim.helper.TestObjectCreator;
 import uk.gov.justice.laa.bulkclaim.mapper.ClaimFeeCalculationBreakdownMapper;
 import uk.gov.justice.laa.bulkclaim.mapper.ClaimSummaryMapper;
+import uk.gov.justice.laa.dstew.payments.claimsdata.model.AreaOfLaw;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.ClaimResponse;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionResponse;
 
@@ -75,7 +76,7 @@ class ClaimDetailControllerTest {
       UUID claimId = UUID.fromString("244fcb9f-50ab-4af8-b635-76bd30e0e97d");
       UUID submissionId = UUID.fromString("244fcb9f-50ab-4af8-b635-76bd30e0e97d");
       SubmissionResponse submissionResponse =
-          SubmissionResponse.builder().areaOfLaw("CIVIL").build();
+          SubmissionResponse.builder().areaOfLaw(AreaOfLaw.LEGAL_HELP).build();
       when(dataClaimsRestClient.getSubmission(submissionId))
           .thenReturn(Mono.just(submissionResponse));
 
@@ -83,7 +84,7 @@ class ClaimDetailControllerTest {
       when(dataClaimsRestClient.getSubmissionClaim(submissionId, claimId))
           .thenReturn(Mono.just(claimResponse));
 
-      when(claimSummaryMapper.toClaimSummary(claimResponse, "CIVIL"))
+      when(claimSummaryMapper.toClaimSummary(claimResponse, AreaOfLaw.LEGAL_HELP.getValue()))
           .thenReturn(ClaimSummary.builder().build());
       when(claimFeeCalculationBreakdownMapper.toClaimFeeCalculationBreakdown(claimResponse))
           .thenReturn(ClaimFeeCalculationBreakdown.builder().build());
@@ -103,7 +104,8 @@ class ClaimDetailControllerTest {
           .hasStatusOk()
           .hasViewName("pages/view-claim-detail");
 
-      verify(claimSummaryMapper, times(1)).toClaimSummary(claimResponse, "CIVIL");
+      verify(claimSummaryMapper, times(1))
+          .toClaimSummary(claimResponse, AreaOfLaw.LEGAL_HELP.getValue());
     }
 
     @Test

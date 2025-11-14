@@ -15,6 +15,7 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.justice.laa.bulkclaim.dto.submission.SubmissionSummary;
+import uk.gov.justice.laa.dstew.payments.claimsdata.model.AreaOfLaw;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionResponse;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionStatus;
 
@@ -55,7 +56,7 @@ class SubmissionSummaryMapperTest {
             .submissionPeriod("MAY-2025")
             .officeAccountNumber("1234567890")
             .status(inputStatus)
-            .areaOfLaw("LEGAL HELP")
+            .areaOfLaw(AreaOfLaw.LEGAL_HELP)
             .submitted(OffsetDateTime.of(2025, 1, 1, 0, 0, 0, 0, ZoneOffset.UTC))
             .build();
 
