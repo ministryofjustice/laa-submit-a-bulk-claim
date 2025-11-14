@@ -45,7 +45,7 @@ public interface BulkClaimImportSummaryMapper {
   List<SubmissionSummaryRow> toSubmissionSummaryRows(List<SubmissionResponse> submissionResponses);
 
   @Named("fromAreaOfLaw")
-  default String fromAreaOfLaw(AreaOfLaw areaOfLaw){
+  default String fromAreaOfLaw(AreaOfLaw areaOfLaw) {
     return areaOfLaw.getValue().replace("_", " ");
   }
 

@@ -40,7 +40,7 @@ public interface SubmissionSummaryMapper {
   SubmissionSummary toSubmissionSummary(SubmissionResponse submissionResponse);
 
   @Named("fromAreaOfLaw")
-  default String fromAreaOfLaw(AreaOfLaw areaOfLaw){
+  default String fromAreaOfLaw(AreaOfLaw areaOfLaw) {
     return areaOfLaw.getValue().replace("_", " ");
   }
 
