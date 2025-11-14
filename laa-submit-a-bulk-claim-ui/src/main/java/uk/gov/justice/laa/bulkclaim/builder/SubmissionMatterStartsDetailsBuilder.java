@@ -4,12 +4,12 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 import uk.gov.justice.laa.bulkclaim.client.DataClaimsRestClient;
 import uk.gov.justice.laa.bulkclaim.dto.submission.SubmissionMatterStartsRow;
 import uk.gov.justice.laa.bulkclaim.mapper.SubmissionMatterStartsMapper;
-import uk.gov.justice.laa.dstew.payments.claimsdata.model.AreaOfLaw;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.MatterStartGet;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.MatterStartResultSet;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionResponse;
@@ -19,6 +19,7 @@ import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionResponse;
  *
  * @author Jamie Briggs
  */
+@Slf4j
 @Service
 public class SubmissionMatterStartsDetailsBuilder {
 
@@ -50,11 +51,11 @@ public class SubmissionMatterStartsDetailsBuilder {
 
     Assert.notNull(response.getAreaOfLaw(), "Area of Law is null");
 
-    if (AreaOfLaw.LEGAL_HELP.equals(response.getAreaOfLaw())) {
-      addLegalHelpMatterStarts(matterStarts, result);
-    }
-    if (AreaOfLaw.MEDIATION.equals(response.getAreaOfLaw())) {
-      addMediationMatterStarts(matterStarts, result);
+    switch (response.getAreaOfLaw()) {
+      case LEGAL_HELP -> addLegalHelpMatterStarts(matterStarts, result);
+      case MEDIATION -> addMediationMatterStarts(matterStarts, result);
+      default ->
+          log.debug("No extra content required for Area of Law: {}", response.getAreaOfLaw());
     }
 
     return result;
