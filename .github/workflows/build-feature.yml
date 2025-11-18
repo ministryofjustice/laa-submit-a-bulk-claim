@@ -5,6 +5,7 @@ on:
     branches-ignore:
       - main
       - 'feature/*'
+      - deploy-runner-mage
 
 
 jobs:
