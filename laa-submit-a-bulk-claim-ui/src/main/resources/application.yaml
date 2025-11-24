@@ -1,4 +1,6 @@
 server:
+  tomcat:
+    max-swallow-size: 500MB
   port: 8082
 
 
