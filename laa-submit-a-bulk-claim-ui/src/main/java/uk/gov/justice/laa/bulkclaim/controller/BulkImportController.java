@@ -19,6 +19,7 @@ import org.springframework.web.reactive.function.client.WebClientResponseExcepti
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import uk.gov.justice.laa.bulkclaim.client.DataClaimsRestClient;
 import uk.gov.justice.laa.bulkclaim.dto.FileUploadForm;
+import uk.gov.justice.laa.bulkclaim.metrics.BulkClaimMetricService;
 import uk.gov.justice.laa.bulkclaim.util.OidcAttributeUtils;
 import uk.gov.justice.laa.bulkclaim.validation.BulkImportFileValidator;
 import uk.gov.justice.laa.bulkclaim.validation.BulkImportFileVirusValidator;
@@ -37,6 +38,7 @@ public class BulkImportController {
   private final BulkImportFileVirusValidator bulkImportFileVirusValidator;
   private final DataClaimsRestClient dataClaimsRestClient;
   private final OidcAttributeUtils oidcAttributeUtils;
+  private final BulkClaimMetricService bulkClaimMetricService;
   private final ObjectMapper objectMapper;
 
   /**
@@ -77,11 +79,13 @@ public class BulkImportController {
 
     bulkImportFileValidator.validate(fileUploadForm, bindingResult);
     if (bindingResult.hasErrors()) {
+      bulkClaimMetricService.recordFailedFileUploadSize(fileUploadForm.file(), bindingResult);
       return showErrorOnUpload(fileUploadForm, bindingResult, redirectAttributes);
     }
 
     bulkImportFileVirusValidator.validate(fileUploadForm, bindingResult);
     if (bindingResult.hasErrors()) {
+      bulkClaimMetricService.recordFailedFileUploadSize(fileUploadForm.file(), bindingResult);
       return showErrorOnUpload(fileUploadForm, bindingResult, redirectAttributes);
     }
 
@@ -99,6 +103,8 @@ public class BulkImportController {
           bulkSubmissionResponse.getBulkSubmissionId());
       redirectAttributes.addFlashAttribute(
           SUBMISSION_ID, bulkSubmissionResponse.getSubmissionIds().getFirst());
+
+      bulkClaimMetricService.recordSuccessfulFileUploadSize(fileUploadForm.file());
       return "redirect:/upload-is-being-checked";
     } catch (WebClientResponseException e) {
       try {
@@ -106,6 +112,8 @@ public class BulkImportController {
             objectMapper.readValue(e.getResponseBodyAsString(), ApplicationException.class);
 
         log.error("API upload failed: {}", error.getErrorMessage());
+        bulkClaimMetricService.recordFailedFileUploadSize(
+            fileUploadForm.file().getSize(), error.getErrorMessage());
         bindingResult.rejectValue("file", "api.error", error.getErrorMessage());
       } catch (Exception parseEx) {
         log.error("Failed to upload file to Claims API with message: {}", e.getMessage());

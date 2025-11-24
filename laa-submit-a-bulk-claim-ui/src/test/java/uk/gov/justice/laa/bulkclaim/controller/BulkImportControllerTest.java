@@ -30,6 +30,7 @@ import reactor.core.publisher.Mono;
 import uk.gov.justice.laa.bulkclaim.client.DataClaimsRestClient;
 import uk.gov.justice.laa.bulkclaim.config.WebMvcTestConfig;
 import uk.gov.justice.laa.bulkclaim.dto.FileUploadForm;
+import uk.gov.justice.laa.bulkclaim.metrics.BulkClaimMetricService;
 import uk.gov.justice.laa.bulkclaim.util.OidcAttributeUtils;
 import uk.gov.justice.laa.bulkclaim.validation.BulkImportFileValidator;
 import uk.gov.justice.laa.bulkclaim.validation.BulkImportFileVirusValidator;
@@ -40,14 +41,13 @@ import uk.gov.justice.laa.dstew.payments.claimsdata.model.CreateBulkSubmission20
 @Import(WebMvcTestConfig.class)
 class BulkImportControllerTest {
 
-  private static final String TEST_USER = "test@example.com";
-
   @Autowired private MockMvc mockMvc;
 
   @MockitoBean private BulkImportFileValidator bulkImportFileValidator;
   @MockitoBean private BulkImportFileVirusValidator bulkImportFileVirusValidator;
   @MockitoBean private DataClaimsRestClient dataClaimsRestClient;
   @MockitoBean private OidcAttributeUtils oidcAttributeUtils;
+  @MockitoBean private BulkClaimMetricService bulkClaimMetricService;
 
   @Nested
   @DisplayName("GET: /upload")

@@ -8,10 +8,17 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.multipart.MaxUploadSizeExceededException;
 import uk.gov.justice.laa.bulkclaim.controller.BulkImportController;
 import uk.gov.justice.laa.bulkclaim.dto.FileUploadForm;
+import uk.gov.justice.laa.bulkclaim.metrics.BulkClaimMetricService;
 
 /** Handles MaxUploadSizeExceededException thrown when a file exceeds the maximum upload size. */
 @ControllerAdvice
 public class MaxFileSizeExceedsHandler {
+
+  private final BulkClaimMetricService bulkClaimMetricService;
+
+  public MaxFileSizeExceedsHandler(BulkClaimMetricService bulkClaimMetricService) {
+    this.bulkClaimMetricService = bulkClaimMetricService;
+  }
 
   /**
    * Handles MaxUploadSizeExceededException and returns the upload page with an error message.
@@ -39,6 +46,8 @@ public class MaxFileSizeExceedsHandler {
         "org.springframework.validation.BindingResult."
             + BulkImportController.FILE_UPLOAD_FORM_MODEL_ATTR,
         bindingResult);
+
+    bulkClaimMetricService.recordFailedFileUploadSize(ex);
 
     return "pages/upload";
   }

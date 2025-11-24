@@ -3,6 +3,10 @@ package uk.gov.justice.laa.bulkclaim.validation;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.ui.ExtendedModelMap;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -10,10 +14,14 @@ import org.springframework.validation.FieldError;
 import org.springframework.web.multipart.MaxUploadSizeExceededException;
 import uk.gov.justice.laa.bulkclaim.controller.BulkImportController;
 import uk.gov.justice.laa.bulkclaim.dto.FileUploadForm;
+import uk.gov.justice.laa.bulkclaim.metrics.BulkClaimMetricService;
 
+@ExtendWith(MockitoExtension.class)
 class MaxFileSizeExceedsHandlerTest {
 
-  private final MaxFileSizeExceedsHandler handler = new MaxFileSizeExceedsHandler();
+  @Mock private BulkClaimMetricService bulkClaimMetricService;
+
+  @InjectMocks private MaxFileSizeExceedsHandler handler;
 
   @Test
   void handleMaxSizeExceptionPopulatesModelAndReturnsUploadView() {
