@@ -7,7 +7,7 @@ import java.util.StringJoiner;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
-import org.springframework.validation.BindingResult;
+import org.springframework.validation.Errors;
 import org.springframework.web.multipart.MaxUploadSizeExceededException;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -21,7 +21,7 @@ import org.springframework.web.multipart.MultipartFile;
 @Component
 public class BulkClaimMetricService {
 
-  private final Histogram fileUploadSize;
+  private final Histogram fileUploadSizeHistogram;
 
   /**
    * Constructor.
@@ -29,7 +29,7 @@ public class BulkClaimMetricService {
    * @param prometheusRegistry the registered prometheus registry Spring bean.
    */
   public BulkClaimMetricService(PrometheusRegistry prometheusRegistry) {
-    this.fileUploadSize =
+    this.fileUploadSizeHistogram =
         Histogram.builder()
             .name("submit_a_bulk_claim_file_size_bytes")
             .help("Size of uploaded bulk claim file in bytes which was submitted by the user")
@@ -43,7 +43,7 @@ public class BulkClaimMetricService {
    * @param file the file to measure the size of
    */
   public void recordSuccessfulFileUploadSize(MultipartFile file) {
-    fileUploadSize.labelValues("false").observe(file.getSize());
+    fileUploadSizeHistogram.labelValues("false", "N/A").observe(file.getSize());
   }
 
   /**
@@ -53,7 +53,7 @@ public class BulkClaimMetricService {
    * @param reason the reason why the file upload failed.
    */
   public void recordFailedFileUploadSize(long size, String reason) {
-    fileUploadSize.labelValues("true", reason).observe(size);
+    fileUploadSizeHistogram.labelValues("true", reason).observe(size);
   }
 
   /**
@@ -61,12 +61,12 @@ public class BulkClaimMetricService {
    * binding result.
    *
    * @param file the file to measure the size of
-   * @param bindingResult the binding result of the failed validation.
+   * @param errors the binding result of the failed validation.
    */
-  public void recordFailedFileUploadSize(MultipartFile file, BindingResult bindingResult) {
+  public void recordFailedFileUploadSize(MultipartFile file, Errors errors) {
     if (!Objects.isNull(file)) {
       StringJoiner stringJoiner = new StringJoiner(", ");
-      bindingResult.getAllErrors().forEach(error -> stringJoiner.add(error.getDefaultMessage()));
+      errors.getAllErrors().forEach(error -> stringJoiner.add(error.getDefaultMessage()));
       recordFailedFileUploadSize(file.getSize(), stringJoiner.toString());
     }
   }
