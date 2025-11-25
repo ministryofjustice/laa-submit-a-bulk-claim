@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.SessionAttribute;
 import org.springframework.web.bind.annotation.SessionAttributes;
 import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import org.springframework.web.util.UriComponentsBuilder;
 import uk.gov.justice.laa.bulkclaim.builder.SubmissionClaimDetailsBuilder;
 import uk.gov.justice.laa.bulkclaim.builder.SubmissionMatterStartsDetailsBuilder;
 import uk.gov.justice.laa.bulkclaim.builder.SubmissionMessagesBuilder;
@@ -65,8 +66,7 @@ public class SubmissionDetailController {
       @PathVariable("submissionReference") UUID submissionReference,
       @SessionAttribute(value = "submissions", required = false) SubmissionsResultSet submissions,
       @SessionAttribute(value = SUBMISSION_ID, required = false) UUID submissionId,
-      RedirectAttributes redirectAttributes,
-      Model model) {
+      RedirectAttributes redirectAttributes) {
 
     // Validate that either submissions or submissionId is available
     if ((submissions == null || submissions.getContent() == null) && submissionId == null) {
@@ -95,8 +95,13 @@ public class SubmissionDetailController {
       return "redirect:/upload-is-being-checked";
     }
 
+    String uri =
+        UriComponentsBuilder.fromPath("/view-submission-detail")
+            .queryParam(SUBMISSION_ID, submissionReference)
+            .toUriString();
+
     // Otherwise, redirect to the standard submission details view
-    return "redirect:/view-submission-detail?" + SUBMISSION_ID + "=" + submissionReference;
+    return "redirect:" + uri;
   }
 
   /**
