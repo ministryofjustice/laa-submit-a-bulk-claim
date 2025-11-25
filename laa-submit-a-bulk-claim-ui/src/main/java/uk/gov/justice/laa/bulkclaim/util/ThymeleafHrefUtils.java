@@ -38,6 +38,8 @@ public class ThymeleafHrefUtils {
     }
 
     String queryString = queryJoiner.toString();
-    return queryString.isEmpty() ? baseUrl : baseUrl + "?" + queryString;
+    String appendSymbol = baseUrl.contains("?") ? "&" : "?";
+
+    return queryString.isEmpty() ? baseUrl : baseUrl + appendSymbol + queryString;
   }
 }
