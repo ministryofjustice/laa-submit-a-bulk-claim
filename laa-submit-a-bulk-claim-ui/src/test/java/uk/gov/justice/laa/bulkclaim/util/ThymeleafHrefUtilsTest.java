@@ -56,6 +56,7 @@ class ThymeleafHrefUtilsTest {
         thymeleafHrefUtils.build(
             href, "param", "value1", "paramTwo", "value2", "paramThree", "value3");
     // Then
-    assertThat(result).isEqualTo(href + appendSymbol + "param=value1&paramTwo=value2&paramThree=value3");
+    assertThat(result)
+        .isEqualTo(href + appendSymbol + "param=value1&paramTwo=value2&paramThree=value3");
   }
 }
