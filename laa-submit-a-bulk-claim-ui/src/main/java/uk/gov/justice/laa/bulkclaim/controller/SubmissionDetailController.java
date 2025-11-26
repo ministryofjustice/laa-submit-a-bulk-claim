@@ -12,13 +12,13 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.SessionAttribute;
 import org.springframework.web.bind.annotation.SessionAttributes;
 import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import org.springframework.web.util.UriComponentsBuilder;
 import uk.gov.justice.laa.bulkclaim.builder.SubmissionClaimDetailsBuilder;
 import uk.gov.justice.laa.bulkclaim.builder.SubmissionMatterStartsDetailsBuilder;
 import uk.gov.justice.laa.bulkclaim.builder.SubmissionMessagesBuilder;
@@ -66,8 +66,7 @@ public class SubmissionDetailController {
       @PathVariable("submissionReference") UUID submissionReference,
       @SessionAttribute(value = "submissions", required = false) SubmissionsResultSet submissions,
       @SessionAttribute(value = SUBMISSION_ID, required = false) UUID submissionId,
-      RedirectAttributes redirectAttributes,
-      Model model) {
+      RedirectAttributes redirectAttributes) {
 
     // Validate that either submissions or submissionId is available
     if ((submissions == null || submissions.getContent() == null) && submissionId == null) {
@@ -90,17 +89,19 @@ public class SubmissionDetailController {
       throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Submission not found for user");
     }
 
-    // Store the submission ID in session
-    model.addAttribute(SUBMISSION_ID, submissionReference);
-
     // Redirect based on submission status
     if (submission != null && submission.getStatus() == SubmissionStatus.VALIDATION_IN_PROGRESS) {
       redirectAttributes.addFlashAttribute("submission", submission);
       return "redirect:/upload-is-being-checked";
     }
 
+    String uri =
+        UriComponentsBuilder.fromPath("/view-submission-detail")
+            .queryParam(SUBMISSION_ID, submissionReference)
+            .toUriString();
+
     // Otherwise, redirect to the standard submission details view
-    return "redirect:/view-submission-detail";
+    return "redirect:" + uri;
   }
 
   /**
@@ -114,7 +115,7 @@ public class SubmissionDetailController {
   public String getSubmissionDetail(
       Model model,
       @RequestParam(value = "page", defaultValue = "0") final int page,
-      @ModelAttribute(SUBMISSION_ID) UUID submissionId,
+      @RequestParam(value = SUBMISSION_ID) UUID submissionId,
       @RequestParam(value = "navTab", required = false, defaultValue = "CLAIM_DETAILS")
           ViewSubmissionNavigationTab navigationTab) {
     final SubmissionResponse submissionResponse =
@@ -134,11 +135,13 @@ public class SubmissionDetailController {
       submissionSummary =
           handleAcceptedSubmission(
               model, submissionSummary, submissionResponse, submissionId, navigationTab, page);
-      addCommonSubmissionAttributes(model, submissionSummary, submissionResponse, navigationTab);
+      addCommonSubmissionAttributes(
+          model, submissionSummary, submissionResponse, navigationTab, submissionId);
       return "pages/view-submission-detail-accepted";
     } else {
       handleInvalidSubmission(model, submissionResponse, submissionId, page);
-      addCommonSubmissionAttributes(model, submissionSummary, submissionResponse, navigationTab);
+      addCommonSubmissionAttributes(
+          model, submissionSummary, submissionResponse, navigationTab, submissionId);
       return "pages/view-submission-detail-invalid";
     }
   }
@@ -221,11 +224,13 @@ public class SubmissionDetailController {
       Model model,
       SubmissionSummary submissionSummary,
       SubmissionResponse submissionResponse,
-      ViewSubmissionNavigationTab navigationTab) {
+      ViewSubmissionNavigationTab navigationTab,
+      UUID submissionId) {
 
     model.addAttribute("submissionSummary", submissionSummary);
     model.addAttribute("submissionStatus", submissionResponse.getStatus());
     model.addAttribute("navTab", navigationTab);
+    model.addAttribute(SUBMISSION_ID, submissionId);
   }
 
   private void addCounts(

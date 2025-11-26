@@ -4,6 +4,7 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.ValueSource;
 
 @DisplayName("Thymeleaf Href Utils Test")
@@ -46,15 +47,16 @@ class ThymeleafHrefUtilsTest {
   }
 
   @ParameterizedTest
-  @ValueSource(strings = {"/", "/test", "/test/test"})
+  @CsvSource({"/,?", "/test?param1=value,&", "/test/test,?"})
   @DisplayName("Should add only one request param")
-  void shouldAddMultipleRequestParams(String href) {
+  void shouldAddMultipleRequestParams(String href, String appendSymbol) {
     // Given
     // When
     String result =
         thymeleafHrefUtils.build(
             href, "param", "value1", "paramTwo", "value2", "paramThree", "value3");
     // Then
-    assertThat(result).isEqualTo(href + "?param=value1&paramTwo=value2&paramThree=value3");
+    assertThat(result)
+        .isEqualTo(href + appendSymbol + "param=value1&paramTwo=value2&paramThree=value3");
   }
 }

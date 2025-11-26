@@ -1,7 +1,7 @@
 package uk.gov.justice.laa.bulkclaim.util;
 
-import java.util.StringJoiner;
 import org.springframework.stereotype.Component;
+import org.springframework.web.util.UriComponentsBuilder;
 
 /**
  * Utility class for building URLs with query parameters.
@@ -27,17 +27,17 @@ public class ThymeleafHrefUtils {
       throw new IllegalArgumentException("Parameters should be provided in key-value pairs");
     }
 
-    StringJoiner queryJoiner = new StringJoiner("&");
+    UriComponentsBuilder uriComponentsBuilder = UriComponentsBuilder.fromUriString(baseUrl);
+
     for (int i = 0; i < params.length; i += 2) {
       String key = params[i];
       String value = params[i + 1];
 
       if (value != null && !value.isEmpty()) {
-        queryJoiner.add(key + "=" + value);
+        uriComponentsBuilder.queryParam(key, value);
       }
     }
 
-    String queryString = queryJoiner.toString();
-    return queryString.isEmpty() ? baseUrl : baseUrl + "?" + queryString;
+    return uriComponentsBuilder.toUriString();
   }
 }

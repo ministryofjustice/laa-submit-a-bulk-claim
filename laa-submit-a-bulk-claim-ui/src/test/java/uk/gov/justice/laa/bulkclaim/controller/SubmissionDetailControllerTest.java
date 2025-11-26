@@ -10,7 +10,6 @@ import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.oidcLogin;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static uk.gov.justice.laa.bulkclaim.constants.SessionConstants.SUBMISSION_ID;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -73,7 +72,7 @@ class SubmissionDetailControllerTest {
 
     @Test
     @DisplayName("Should store submission and redirect to detail view when submission exists")
-    void shouldStoreSubmissionIdAndRedirectToDetail() {
+    void shouldStoreSubmissionsAndRedirectToDetail() {
       UUID submissionReference = UUID.fromString("bceac49c-d756-4e05-8e28-3334b84b6fe8");
       SubmissionBase submission = mock(SubmissionBase.class);
       when(submission.getSubmissionId()).thenReturn(submissionReference);
@@ -92,9 +91,7 @@ class SubmissionDetailControllerTest {
                       .with(oidcLogin().oidcUser(ControllerTestHelper.getOidcUser()))
                       .session(session)))
           .hasStatus3xxRedirection()
-          .hasRedirectedUrl("/view-submission-detail");
-
-      assertThat(session.getAttribute(SUBMISSION_ID)).isEqualTo(submissionReference);
+          .hasRedirectedUrl("/view-submission-detail?submissionId=" + submissionReference);
     }
 
     @Test
@@ -178,7 +175,7 @@ class SubmissionDetailControllerTest {
       // When / Then
       assertThat(
               mockMvc.perform(
-                  get("/view-submission-detail")
+                  get("/view-submission-detail?submissionId=" + submissionReference)
                       .with(oidcLogin().oidcUser(ControllerTestHelper.getOidcUser()))
                       .sessionAttr("submissionId", submissionReference)))
           .hasStatusOk()
@@ -217,7 +214,8 @@ class SubmissionDetailControllerTest {
       // When / Then
       assertThat(
               mockMvc.perform(
-                  get("/view-submission-detail?navTab=CLAIM_DETAILS")
+                  get("/view-submission-detail?navTab=CLAIM_DETAILS&submissionId="
+                          + submissionReference)
                       .with(oidcLogin().oidcUser(ControllerTestHelper.getOidcUser()))
                       .sessionAttr("submissionId", submissionReference)))
           .hasStatusOk()
@@ -263,7 +261,8 @@ class SubmissionDetailControllerTest {
       // When / Then
       assertThat(
               mockMvc.perform(
-                  get("/view-submission-detail?navTab=MATTER_STARTS")
+                  get("/view-submission-detail?navTab=MATTER_STARTS&submissionId="
+                          + submissionReference)
                       .with(oidcLogin().oidcUser(ControllerTestHelper.getOidcUser()))
                       .sessionAttr("submissionId", submissionReference)))
           .hasStatusOk()
@@ -306,7 +305,7 @@ class SubmissionDetailControllerTest {
       // When
       MvcTestResult response =
           mockMvc.perform(
-              get("/view-submission-detail")
+              get("/view-submission-detail?submissionId=" + submissionReference)
                   .with(oidcLogin().oidcUser(ControllerTestHelper.getOidcUser()))
                   .sessionAttr("submissionId", submissionReference));
 
@@ -326,7 +325,8 @@ class SubmissionDetailControllerTest {
       // When / Then
       assertThat(
               mockMvc.perform(
-                  get("/view-submission-detail?navTab=MATTER_STARTS")
+                  get("/view-submission-detail?navTab=MATTER_STARTS&submissionId="
+                          + submissionReference)
                       .with(oidcLogin().oidcUser(ControllerTestHelper.getOidcUser()))
                       .sessionAttr("submissionId", submissionReference)))
           .failure()
