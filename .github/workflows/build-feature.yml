@@ -5,7 +5,7 @@ on:
     branches-ignore:
       - main
       - 'feature/*'
-      - deploy-runner-mage
+      - oidc-push-image
 
 
 jobs:

@@ -1,0 +1,50 @@
+name: Build runner image
+
+on:
+  push:
+
+permissions:
+  id-token: write
+  contents: write
+
+jobs:
+  mirror:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          repository: ministryofjustice/laa-oidc-mock-server
+        
+      - name: Log in to GHCR
+        run: |
+          echo "${{ github.token }}" | docker login ghcr.io \
+            -u ${{ github.actor }} --password-stdin
+      
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v4
+
+      - name: Gradle assemble
+        run: ./gradlew assemble
+
+      - name: Configure aws credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.ECR_ROLE_TO_ASSUME }}
+          aws-region: ${{ vars.ECR_REGION }}
+
+      - name: Login ecr
+        uses: aws-actions/amazon-ecr-login@v2
+        id: login-ecr
+
+      - name: Tag and push image
+        run: |
+          IMAGE="${{ steps.login-ecr.outputs.registry }}/${{ vars.ECR_REPOSITORY }}:oidc-mock-${{ github.sha }}"
+          echo "Building image: $IMAGE"
+          docker build -f Dockerfile -t $IMAGE .
+
+          echo "Pushing image..."
+          docker push $IMAGE
+
+          echo "Pushed to ECR: $IMAGE"
