@@ -6,7 +6,7 @@
         <li class="moj-sub-navigation__item">
           <a class="moj-sub-navigation__link"
              th:with="isCurrent=${navTab.toString() == 'CLAIM_DETAILS'},
-              url=@{/view-submission-detail(navTab='CLAIM_DETAILS')}"
+              url=@{/view-submission-detail(navTab='CLAIM_DETAILS', submissionId=${submissionSummary.submissionReference})}"
              th:attr="aria-current=${isCurrent ? 'page' : null}"
              th:href="${isCurrent ? '#claims' : url}"
              th:text="#{submission.summary.nav.claims(${claimCount})}"></a>
@@ -14,7 +14,7 @@
         <li class="moj-sub-navigation__item" th:if="${messagesSummary != null}">
           <a class="moj-sub-navigation__link"
              th:with="isCurrent=${navTab.toString() == 'CLAIM_ERRORS'},
-              url=@{/view-submission-detail(navTab='CLAIM_ERRORS')}"
+              url=@{/view-submission-detail(navTab='CLAIM_ERRORS', submissionId=${submissionSummary.submissionReference})}"
              th:attr="aria-current=${isCurrent ? 'page' : null}"
              th:href="${isCurrent ? '#messages' : url}"
              th:text="#{submission.summary.nav.messages(${messageCount})}"></a>
@@ -23,7 +23,7 @@
             th:unless="${#strings.containsIgnoreCase(submissionSummary?.areaOfLaw, 'crime')}">
           <a class="moj-sub-navigation__link"
              th:with="isCurrent=${navTab.toString() == 'MATTER_STARTS'},
-              url=@{/view-submission-detail(navTab='MATTER_STARTS')}"
+              url=@{/view-submission-detail(navTab='MATTER_STARTS', submissionId=${submissionSummary.submissionReference})}"
              th:attr="aria-current=${isCurrent ? 'page' : null}"
              th:href="${isCurrent ? '#matter-starts' : url}"
              th:text="#{viewSubmission.matterStarts.subHeading}"></a>
