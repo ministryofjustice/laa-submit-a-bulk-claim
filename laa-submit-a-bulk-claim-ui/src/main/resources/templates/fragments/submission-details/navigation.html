@@ -1,12 +1,13 @@
 <th:block th:fragment="navigation(claimCount, messageCount)">
   <div class="govuk-grid-column-full">
     <nav class="moj-sub-navigation" aria-label="Sub navigation">
-      <ul class="moj-sub-navigation__list">
+      <ul class="moj-sub-navigation__list"
+          th:with="baseUrl=@{/view-submission-detail(submissionId=${submissionSummary.submissionReference})}">
         <!--/*@thymesVar id="navTab" type="uk.gov.justice.laa.bulkclaim.constants.ViewSubmissionNavigationTab"*/-->
         <li class="moj-sub-navigation__item">
           <a class="moj-sub-navigation__link"
              th:with="isCurrent=${navTab.toString() == 'CLAIM_DETAILS'},
-              url=@{/view-submission-detail(navTab='CLAIM_DETAILS', submissionId=${submissionSummary.submissionReference})}"
+              url=@{${baseUrl}(navTab=${navTab.CLAIM_DETAILS.toString()})}"
              th:attr="aria-current=${isCurrent ? 'page' : null}"
              th:href="${isCurrent ? '#claims' : url}"
              th:text="#{submission.summary.nav.claims(${claimCount})}"></a>
@@ -14,7 +15,7 @@
         <li class="moj-sub-navigation__item" th:if="${messagesSummary != null}">
           <a class="moj-sub-navigation__link"
              th:with="isCurrent=${navTab.toString() == 'CLAIM_ERRORS'},
-              url=@{/view-submission-detail(navTab='CLAIM_ERRORS', submissionId=${submissionSummary.submissionReference})}"
+              url=@{${baseUrl}(navTab=${navTab.CLAIM_ERRORS.toString()})}"
              th:attr="aria-current=${isCurrent ? 'page' : null}"
              th:href="${isCurrent ? '#messages' : url}"
              th:text="#{submission.summary.nav.messages(${messageCount})}"></a>
@@ -23,7 +24,7 @@
             th:unless="${#strings.containsIgnoreCase(submissionSummary?.areaOfLaw, 'crime')}">
           <a class="moj-sub-navigation__link"
              th:with="isCurrent=${navTab.toString() == 'MATTER_STARTS'},
-              url=@{/view-submission-detail(navTab='MATTER_STARTS', submissionId=${submissionSummary.submissionReference})}"
+              url=@{${baseUrl}(navTab=${navTab.MATTER_STARTS.toString()})}"
              th:attr="aria-current=${isCurrent ? 'page' : null}"
              th:href="${isCurrent ? '#matter-starts' : url}"
              th:text="#{viewSubmission.matterStarts.subHeading}"></a>

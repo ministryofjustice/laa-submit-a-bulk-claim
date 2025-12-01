@@ -246,7 +246,8 @@
         </table>
       </div>
       <nav th:if="${claimDetails != null}"
-          th:replace="~{fragments/pagination :: pagination(currentUrl='/view-submission-detail?navTab=CLAIM_DETAILS&submissionId' + ${submissionId},
+           th:with="claimDetailsUrl='/view-submission-detail?navTab=CLAIM_DETAILS&submissionId' + ${submissionId}"
+          th:replace="~{fragments/pagination :: pagination(currentUrl=${claimDetailsUrl},
            page=${claimDetails.pagination})}"></nav>
     </div>
   </th:block>
