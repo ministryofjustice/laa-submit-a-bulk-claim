@@ -50,7 +50,7 @@ upload-max-file-size: ${UPLOAD_MAX_FILE_SIZE}
 
 links:
   bulk-upload-spreadsheet: https://assets.publishing.service.gov.uk/media/677bc6906f01ae28ab5c03ec/Provider_Bulkload_Spreadsheet.xls
-  bulk-upload-spreadsheet-guide: https://www.gov.uk/guidance/submit-a-contracted-work-and-administration-cwa-claim-online
+  bulk-upload-spreadsheet-guide: https://assets.publishing.service.gov.uk/media/5a82c76aed915d74e623796e/bulkload-spreadsheet-guidance.pdf
   bulk-upload-guidance: https://www.gov.uk/guidance/submit-a-bulk-claim-sabc
   bulk-upload-amendments: https://www.gov.uk/guidance/submit-a-contracted-work-and-administration-cwa-claim-online#amendments-to-submitted-claims
 
