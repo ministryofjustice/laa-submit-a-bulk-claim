@@ -67,7 +67,8 @@
                  class="moj-header__logotype-crest-fallback-image" width="40" height="40"></image>
 
         </svg>
-        <a class="moj-header__link moj-header__link--organisation-name" href="/"
+        <a class="moj-header__link moj-header__link--organisation-name"
+           th:href="${@environment.getProperty('links.laa-homepage')}"
            th:text="#{service.provider}"/>
       </div>
       <div class="moj-header__content" sec:authorize="isAuthenticated()">
