@@ -4,7 +4,6 @@ import io.prometheus.metrics.model.registry.PrometheusRegistry;
 import org.mockito.Mockito;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
-import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.web.client.RestClient;
 import uk.gov.justice.laa.bulkclaim.util.CurrencyUtil;
 
@@ -39,6 +38,4 @@ public class WebMvcTestConfig {
   PrometheusRegistry prometheusRegistry() {
     return Mockito.mock(PrometheusRegistry.class);
   }
-
-
 }
