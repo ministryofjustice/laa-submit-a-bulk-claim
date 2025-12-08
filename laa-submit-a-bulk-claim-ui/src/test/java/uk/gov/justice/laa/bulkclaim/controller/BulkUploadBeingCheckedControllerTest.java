@@ -27,7 +27,6 @@ import reactor.core.publisher.Mono;
 import uk.gov.justice.laa.bulkclaim.client.DataClaimsRestClient;
 import uk.gov.justice.laa.bulkclaim.config.WebMvcTestConfig;
 import uk.gov.justice.laa.bulkclaim.exception.SubmitBulkClaimException;
-import uk.gov.justice.laa.bulkclaim.metrics.BulkClaimMetricService;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.ClaimStatus;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionClaim;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionResponse;
@@ -41,8 +40,6 @@ public class BulkUploadBeingCheckedControllerTest {
   @Autowired private MockMvcTester mockMvc;
 
   @MockitoBean private DataClaimsRestClient dataClaimsRestClient;
-
-  @MockitoBean private BulkClaimMetricService bulkClaimMetricService;
 
   @Nested
   @DisplayName("GET: /upload-is-being-checked")

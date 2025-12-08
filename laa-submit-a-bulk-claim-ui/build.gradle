@@ -37,6 +37,7 @@ dependencies {
 
     //Common exception handling
     implementation 'uk.gov.laa.springboot:laa-spring-boot-starter-application-exception'
+    implementation 'uk.gov.laa.springboot:laa-spring-boot-starter-metrics'
 
     implementation 'org.springframework.boot:spring-boot-starter-cache'
     implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
@@ -55,9 +56,7 @@ dependencies {
     implementation 'org.webjars.npm:govuk-frontend:5.13.0'
     implementation 'org.webjars.npm:ministryofjustice__frontend:5.1.5'
     implementation 'org.springframework.boot:spring-boot-starter-actuator'
-    implementation 'io.micrometer:micrometer-registry-prometheus'
     implementation 'io.prometheus:prometheus-metrics-tracer-initializer'
-    implementation 'io.micrometer:micrometer-registry-prometheus'
 
     implementation 'org.mapstruct:mapstruct:1.6.3'
     annotationProcessor 'org.mapstruct:mapstruct-processor:1.6.3'
