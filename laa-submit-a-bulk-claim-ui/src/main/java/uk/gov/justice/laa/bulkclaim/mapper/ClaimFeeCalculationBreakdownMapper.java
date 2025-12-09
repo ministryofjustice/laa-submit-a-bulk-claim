@@ -51,13 +51,6 @@ public interface ClaimFeeCalculationBreakdownMapper {
               java(toBulkClaimCostItem(claimResponse.getTravelWaitingCostsAmount(),
               claimResponse.getFeeCalculationResponse().getTravelAndWaitingCostsAmount()))""")
   @Mapping(
-      target = "adjournedHearingFee",
-      expression =
-          """
-              java(toBulkClaimCostItem(toBigDecimal(claimResponse.getAdjournedHearingFeeAmount()),
-              claimResponse.getFeeCalculationResponse()
-                .getBoltOnDetails().getBoltOnAdjournedHearingFee()))""")
-  @Mapping(
       target = "jrFormFilling",
       expression =
           """
@@ -86,6 +79,10 @@ public interface ClaimFeeCalculationBreakdownMapper {
   @Mapping(
       target = "substantiveHearing.calculatedValue",
       source = "claimResponse.feeCalculationResponse.boltOnDetails.boltOnSubstantiveHearingFee")
+  @Mapping(target = "adjournedHearingFee.enteredValue", ignore = true)
+  @Mapping(
+      target = "adjournedHearingFee.calculatedValue",
+      source = "claimResponse.feeCalculationResponse.boltOnDetails.boltOnAdjournedHearingFee")
   @Mapping(target = "vat.enteredValue", ignore = true)
   @Mapping(
       target = "vat.calculatedValue",
