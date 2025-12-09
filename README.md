@@ -199,6 +199,7 @@ server claims.
 
 ## Testing
 
+### Unit Tests
 ```sh
 ./gradlew test
 ```
@@ -206,6 +207,11 @@ server claims.
 - Controller and service layers are covered with MockMvc and unit tests.
 - WireMock supports integration-style tests against Data Stewardship flows.
 - Add new tests alongside changes to maintain coverage.
+
+### E2E Tests
+E2E tests are designed to run in UAT environments. They can be found on GitHub
+within the [bulk-submission-and-fee-scheme-tests](https://github.com/ministryofjustice/bulk-submission-and-fee-scheme-tests-)
+repository.
 
 ## Deployment
 
