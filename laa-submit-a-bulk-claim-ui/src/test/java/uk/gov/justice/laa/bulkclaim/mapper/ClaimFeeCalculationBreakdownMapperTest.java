@@ -91,12 +91,6 @@ class ClaimFeeCalculationBreakdownMapperTest {
               .assertThat(result.travelAndWaitingCosts().calculatedValue())
               .isEqualTo(monetaryValue(1600.60));
           softAssertions
-              .assertThat(result.adjournedHearingFee().enteredValue())
-              .isEqualTo(monetaryValue(9));
-          softAssertions
-              .assertThat(result.adjournedHearingFee().calculatedValue())
-              .isEqualTo(monetaryValue(2010.10));
-          softAssertions
               .assertThat(result.jrFormFilling().enteredValue())
               .isEqualTo(monetaryValue(800.80));
           softAssertions
@@ -132,6 +126,10 @@ class ClaimFeeCalculationBreakdownMapperTest {
           softAssertions
               .assertThat(result.substantiveHearing().calculatedValue())
               .isEqualTo(monetaryValue(2030.30));
+          softAssertions.assertThat(result.adjournedHearingFee().enteredValue()).isNull();
+          softAssertions
+              .assertThat(result.adjournedHearingFee().calculatedValue())
+              .isEqualTo(monetaryValue(2010.10));
           softAssertions
               .assertThat(result.vat().enteredValue())
               .isNull(); // Not entered by the user
