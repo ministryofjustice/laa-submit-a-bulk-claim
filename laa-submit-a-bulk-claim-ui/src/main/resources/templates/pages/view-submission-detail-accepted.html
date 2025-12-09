@@ -11,7 +11,7 @@
           th:replace="~{fragments/submission-details/navigation :: navigation(${claimCount}, ${messageCount})}"></th:block>
       <th:block th:replace="~{fragments/submission-details/claim-details :: claim-details}"></th:block>
       <th:block th:replace="~{fragments/submission-details/matter-starts :: matter-starts}"></th:block>
-      <th:block th:replace="~{fragments/submission-details/claim-messages-warnings :: claim-messages-warnings}"></th:block>
+      <th:block th:replace="~{fragments/submission-details/claim-messages-warnings :: claim-messages-warnings(pageVarName='messagesPage')}"></th:block>
     </div>
   </div>
 </main>
