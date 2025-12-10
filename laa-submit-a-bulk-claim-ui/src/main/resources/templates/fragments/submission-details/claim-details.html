@@ -2,15 +2,15 @@
   <!--Claim details information-->
   <th:block th:if="${navTab.toString() == 'CLAIM_DETAILS'}">
     <div class="govuk-grid-column-full">
-        <h2 class="govuk-heading-m" id="messages"
-            th:text="#{submission.summary.claims.caption}"></h2>
+      <h2 class="govuk-heading-m" id="messages"
+          th:text="#{submission.summary.claims.caption}"></h2>
 
-        <th:block th:if="${claimDetails == null or claimDetails.submissionClaims.isEmpty()}">
-          <p class="govuk-body" th:text="#{submission.summary.claims.none}"></p>
-        </th:block>
+      <th:block th:if="${claimDetails == null or claimDetails.submissionClaims.isEmpty()}">
+        <p class="govuk-body" th:text="#{submission.summary.claims.none}"></p>
+      </th:block>
 
       <div class="moj-scrollable-pane"
-           th:if ="${claimDetails != null and !claimDetails.submissionClaims.isEmpty()}">
+           th:if="${claimDetails != null and !claimDetails.submissionClaims.isEmpty()}">
         <table class="govuk-table" data-module="moj-sortable-table"
                th:with="area=${submissionSummary.areaOfLaw != null ? #strings.toLowerCase(submissionSummary.areaOfLaw) : ''},
                         isCrime=${area.contains('crime lower')},
@@ -245,10 +245,13 @@
 
         </table>
       </div>
-      <nav th:if="${claimDetails != null}"
-           th:with="claimDetailsUrl='/view-submission-detail?navTab=CLAIM_DETAILS&submissionId' + ${submissionId}"
-          th:replace="~{fragments/pagination :: pagination(currentUrl=${claimDetailsUrl},
-           page=${claimDetails.pagination})}"></nav>
+      <div
+          th:with="claimDetailsUrl='/view-submission-detail?navTab=CLAIM_DETAILS&submissionId' + ${submissionId}">
+        <th:block th:if="${claimDetails != null}"
+                  th:insert="~{fragments/pagination :: pagination(currentUrl=${claimDetailsUrl},
+           page=${claimDetails.pagination})}">
+        </th:block>
+      </div>
     </div>
   </th:block>
 </th:block>

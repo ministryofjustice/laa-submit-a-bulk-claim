@@ -115,6 +115,7 @@ public class SubmissionDetailController {
   public String getSubmissionDetail(
       Model model,
       @RequestParam(value = "page", defaultValue = "0") final int page,
+      @RequestParam(value = "messagesPage", defaultValue = "0") final int messagesPage,
       @RequestParam(value = SUBMISSION_ID) UUID submissionId,
       @RequestParam(value = "navTab", required = false, defaultValue = "CLAIM_DETAILS")
           ViewSubmissionNavigationTab navigationTab) {
@@ -134,7 +135,13 @@ public class SubmissionDetailController {
     if (submissionAccepted) {
       submissionSummary =
           handleAcceptedSubmission(
-              model, submissionSummary, submissionResponse, submissionId, navigationTab, page);
+              model,
+              submissionSummary,
+              submissionResponse,
+              submissionId,
+              navigationTab,
+              page,
+              messagesPage);
       addCommonSubmissionAttributes(
           model, submissionSummary, submissionResponse, navigationTab, submissionId);
       return "pages/view-submission-detail-accepted";
@@ -152,7 +159,8 @@ public class SubmissionDetailController {
       SubmissionResponse submissionResponse,
       UUID submissionId,
       ViewSubmissionNavigationTab navigationTab,
-      int page) {
+      int page,
+      int messagesPage) {
 
     SubmissionClaimsDetails claimDetails =
         submissionClaimDetailsBuilder.build(submissionResponse, page, DEFAULT_PAGE_SIZE);
@@ -172,7 +180,7 @@ public class SubmissionDetailController {
 
     MessagesSummary messagesSummary =
         submissionMessagesBuilder.build(
-            submissionId, null, ValidationMessageType.WARNING, page, DEFAULT_PAGE_SIZE);
+            submissionId, null, ValidationMessageType.WARNING, messagesPage, DEFAULT_PAGE_SIZE);
     model.addAttribute("messagesSummary", messagesSummary);
 
     addCounts(model, claimDetails, messagesSummary);
