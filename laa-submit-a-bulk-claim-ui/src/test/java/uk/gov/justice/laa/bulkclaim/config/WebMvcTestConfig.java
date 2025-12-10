@@ -5,7 +5,6 @@ import org.mockito.Mockito;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.web.client.RestClient;
-import uk.gov.justice.laa.bulkclaim.metrics.BulkClaimMetricService;
 import uk.gov.justice.laa.bulkclaim.util.CurrencyUtil;
 
 /**
@@ -38,10 +37,5 @@ public class WebMvcTestConfig {
   @Bean
   PrometheusRegistry prometheusRegistry() {
     return Mockito.mock(PrometheusRegistry.class);
-  }
-
-  @Bean
-  BulkClaimMetricService bulkClaimMetricService(PrometheusRegistry prometheusRegistry) {
-    return new BulkClaimMetricService(prometheusRegistry);
   }
 }
