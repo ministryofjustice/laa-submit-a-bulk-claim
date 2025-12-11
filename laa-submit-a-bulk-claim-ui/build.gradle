@@ -33,7 +33,7 @@ dependencies {
     // Upgrade to fix CVE-2025-61795 in tomcat-embed-core
     implementation 'org.apache.tomcat.embed:tomcat-embed-core:10.1.47'
 
-    implementation 'uk.gov.justice.laa.datastewardship.payments:data-claims-api-models:e7e4622'
+    implementation 'uk.gov.justice.laa.datastewardship.payments:data-claims-api-models:1aa52ae-SNAPSHOT'
 
     //Common exception handling
     implementation 'uk.gov.laa.springboot:laa-spring-boot-starter-application-exception'

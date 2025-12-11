@@ -35,47 +35,23 @@ public class SubmissionClaimDetailsBuilder {
    * @return The built {@link SubmissionClaimsDetails} object.
    */
   public SubmissionClaimsDetails build(SubmissionResponse submissionResponse, int page, int size) {
-
+    var submissionClaimData = dataClaimsRestClient.getClaims(
+        submissionResponse.getOfficeAccountNumber(),
+        submissionResponse.getSubmissionId(),
+        page, size).getBody();
     // Get all claims from data claims service
     List<SubmissionClaimRow> submissionClaimRows =
-        submissionResponse.getClaims().stream()
-            .map(
-                x -> {
-                  ClaimResponse submissionClaim =
-                      dataClaimsRestClient
-                          .getSubmissionClaim(submissionResponse.getSubmissionId(), x.getClaimId())
-                          .block();
-                  Integer totalElements =
-                      dataClaimsRestClient
-                          .getValidationMessages(
-                              submissionResponse.getSubmissionId(),
-                              x.getClaimId(),
-                              ValidationMessageType.WARNING.getValue(),
-                              null,
-                              0,
-                              size)
-                          .block()
-                          .getTotalElements();
-                  return Mono.zip(Mono.just(submissionClaim), Mono.just(totalElements));
-                })
+        submissionClaimData.getContent()
+            .stream()
             .map(
                 x ->
                     submissionClaimRowMapper.toSubmissionClaimRow(
-                        x.block().getT1(), x.block().getT2()))
+                        x, x.getTotalWarnings()))
             .toList();
 
-    int totalClaims = submissionClaimRows.size();
-    int safeSize = size > 0 ? size : totalClaims;
-    int maxPageIndex =
-        safeSize == 0 ? 0 : Math.max((int) Math.ceil((double) totalClaims / safeSize) - 1, 0);
-    int safePage = Math.clamp(page, 0, maxPageIndex);
-    int fromIndex = Math.min(safePage * safeSize, totalClaims);
-    int toIndex = Math.min(fromIndex + safeSize, totalClaims);
-    List<SubmissionClaimRow> pagedClaims = submissionClaimRows.subList(fromIndex, toIndex);
-
     return new SubmissionClaimsDetails(
-        pagedClaims,
-        paginationUtil.from(safePage, safeSize, totalClaims),
+        submissionClaimRows,
+        paginationUtil.from(submissionClaimData.getTotalPages(), submissionClaimData.getSize(), submissionClaimData.getTotalElements()),
         submissionResponse.getCalculatedTotalAmount());
   }
 }

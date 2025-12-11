@@ -3,6 +3,7 @@ package uk.gov.justice.laa.bulkclaim.client;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
+import org.springframework.boot.autoconfigure.data.web.SpringDataWebProperties.Sort;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -16,10 +17,13 @@ import org.springframework.web.service.annotation.HttpExchange;
 import org.springframework.web.service.annotation.PostExchange;
 import reactor.core.publisher.Mono;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.ClaimResponse;
+import uk.gov.justice.laa.dstew.payments.claimsdata.model.ClaimResultSet;
+import uk.gov.justice.laa.dstew.payments.claimsdata.model.ClaimStatus;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.CreateBulkSubmission201Response;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.MatterStartGet;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.MatterStartResultSet;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionResponse;
+import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionStatus;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionsResultSet;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.ValidationMessagesResponse;
 
@@ -90,6 +94,30 @@ public interface DataClaimsRestClient {
   @GetExchange(value = "/submissions/{submission-id}/claims/{claim-id}")
   Mono<ClaimResponse> getSubmissionClaim(
       @PathVariable("submission-id") UUID submissionId, @PathVariable("claim-id") UUID claimId);
+
+  /**
+   * Gets a submission claims by submission ID and claim ID.
+   *
+   * @param submissionId the submission ID
+   * @param claimId the claim ID
+   * @return a mono containing the response from the Claims API.
+   * @throws WebClientResponseException if status other than 2xx is returned
+   */
+  /**
+   * Get claims in an office, filtering on certain criteria.
+   *
+   * @param officeCode the office code of the claims to be retrieved
+   * @param submissionId the submission id of the claims to be retrieved
+   * @param page the page number
+   * @param size the page size
+   * @return 200 OK with JSON body containing the list of matched claims
+   */
+  @GetExchange("/claims")
+  ResponseEntity<ClaimResultSet> getClaims(
+      @RequestParam(value = "office_code") String officeCode,
+      @RequestParam(value = "submission_id", required = false) UUID submissionId,
+      @RequestParam(value = "page", required = false) Integer page,
+      @RequestParam(value = "size", required = false) Integer size);
 
   @GetExchange(value = "/submissions/{submission-id}/matter-starts/{matter-starts-id}")
   Mono<MatterStartGet> getSubmissionMatterStarts(
