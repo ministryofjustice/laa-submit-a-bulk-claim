@@ -3,15 +3,12 @@ package uk.gov.justice.laa.bulkclaim.builder;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
-import reactor.core.publisher.Mono;
 import uk.gov.justice.laa.bulkclaim.client.DataClaimsRestClient;
 import uk.gov.justice.laa.bulkclaim.dto.submission.claim.SubmissionClaimRow;
 import uk.gov.justice.laa.bulkclaim.dto.submission.claim.SubmissionClaimsDetails;
 import uk.gov.justice.laa.bulkclaim.mapper.SubmissionClaimRowMapper;
 import uk.gov.justice.laa.bulkclaim.util.PaginationUtil;
-import uk.gov.justice.laa.dstew.payments.claimsdata.model.ClaimResponse;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionResponse;
-import uk.gov.justice.laa.dstew.payments.claimsdata.model.ValidationMessageType;
 
 /**
  * Builder class for constructing a {@link SubmissionClaimsDetails} object used for displaying a
@@ -35,23 +32,26 @@ public class SubmissionClaimDetailsBuilder {
    * @return The built {@link SubmissionClaimsDetails} object.
    */
   public SubmissionClaimsDetails build(SubmissionResponse submissionResponse, int page, int size) {
-    var submissionClaimData = dataClaimsRestClient.getClaims(
-        submissionResponse.getOfficeAccountNumber(),
-        submissionResponse.getSubmissionId(),
-        page, size).getBody();
+    var submissionClaimData =
+        dataClaimsRestClient
+            .getClaims(
+                submissionResponse.getOfficeAccountNumber(),
+                submissionResponse.getSubmissionId(),
+                page,
+                size)
+            .getBody();
     // Get all claims from data claims service
     List<SubmissionClaimRow> submissionClaimRows =
-        submissionClaimData.getContent()
-            .stream()
-            .map(
-                x ->
-                    submissionClaimRowMapper.toSubmissionClaimRow(
-                        x, x.getTotalWarnings()))
+        submissionClaimData.getContent().stream()
+            .map(x -> submissionClaimRowMapper.toSubmissionClaimRow(x, x.getTotalWarnings()))
             .toList();
 
     return new SubmissionClaimsDetails(
         submissionClaimRows,
-        paginationUtil.from(submissionClaimData.getTotalPages(), submissionClaimData.getSize(), submissionClaimData.getTotalElements()),
+        paginationUtil.from(
+            submissionClaimData.getNumber(),
+            submissionClaimData.getSize(),
+            submissionClaimData.getTotalElements()),
         submissionResponse.getCalculatedTotalAmount());
   }
 }
