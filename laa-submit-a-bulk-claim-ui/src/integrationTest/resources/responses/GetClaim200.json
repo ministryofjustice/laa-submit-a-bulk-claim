@@ -103,6 +103,7 @@
   "local_authority_number": "string",
   "submission_period": "JUL-2025",
   "created_by_user_id": null,
+  "total_warnings":5,
   "fee_calculation_response": {
     "calculated_fee_detail_id": "string",
     "claim_summary_fee_id": "fef5a1ef-1876-47fa-b9cd-0f334c3c3030",
