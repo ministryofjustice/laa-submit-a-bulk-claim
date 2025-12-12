@@ -263,10 +263,7 @@ class DataClaimsRestClientIntegrationTest extends MockServerIntegrationTest {
       UUID claimId = UUID.fromString("3fa85f64-5717-4562-b3fc-2c963f66afa6");
       String expectJson = readJsonFromFile("/GetClaims200.json");
       mockServerClient
-          .when(
-              HttpRequest.request()
-                  .withMethod("GET")
-                  .withPath("/api/v0/claims"))
+          .when(HttpRequest.request().withMethod("GET").withPath("/api/v0/claims"))
           .respond(
               response()
                   .withStatusCode(200)
@@ -284,15 +281,11 @@ class DataClaimsRestClientIntegrationTest extends MockServerIntegrationTest {
       // Given
       UUID claimId = UUID.fromString("3fa85f64-5717-4562-b3fc-2c963f66afa6");
       mockServerClient
-          .when(
-              HttpRequest.request()
-                  .withMethod("GET")
-                  .withPath("/api/v0/claims"))
+          .when(HttpRequest.request().withMethod("GET").withPath("/api/v0/claims"))
           .respond(response().withStatusCode(400).withHeader("Content-Type", "application/json"));
 
       // When
-      assertThrows(
-          BadRequest.class, () -> dataClaimsRestClient.getClaims("0P322F", claimId, 0, 1));
+      assertThrows(BadRequest.class, () -> dataClaimsRestClient.getClaims("0P322F", claimId, 0, 1));
     }
 
     @Test
@@ -301,10 +294,7 @@ class DataClaimsRestClientIntegrationTest extends MockServerIntegrationTest {
       // Given
       UUID claimId = UUID.fromString("3fa85f64-5717-4562-b3fc-2c963f66afa6");
       mockServerClient
-          .when(
-              HttpRequest.request()
-                  .withMethod("GET")
-                  .withPath("/api/v0/claims"))
+          .when(HttpRequest.request().withMethod("GET").withPath("/api/v0/claims"))
           .respond(response().withStatusCode(401).withHeader("Content-Type", "application/json"));
 
       // When
@@ -318,10 +308,7 @@ class DataClaimsRestClientIntegrationTest extends MockServerIntegrationTest {
       // Given
       UUID claimId = UUID.fromString("3fa85f64-5717-4562-b3fc-2c963f66afa6");
       mockServerClient
-          .when(
-              HttpRequest.request()
-                  .withMethod("GET")
-                  .withPath("/api/v0/claims"))
+          .when(HttpRequest.request().withMethod("GET").withPath("/api/v0/claims"))
           .respond(response().withStatusCode(403).withHeader("Content-Type", "application/json"));
 
       // When
