@@ -202,6 +202,10 @@ metadata:
     {{- end }}
     external-dns.alpha.kubernetes.io/set-identifier: {{ .Release.Name }}-{{ .Chart.Name }}-{{ .Release.Namespace }}-green
     external-dns.alpha.kubernetes.io/aws-weight: "100"
+    {{- if and .Values.enabled (default false ((default (dict) (default (dict) .Values.downtime).page).enabled)) }}
+    nginx.ingress.kubernetes.io/custom-http-errors: '503'
+    nginx.ingress.kubernetes.io/default-backend: {{ .Release.Name }}-{{ .Chart.Name }}-error-page-service
+    {{- end }}
     {{- if or (eq .Values.ingress.className "modsec") (eq .Values.ingress.className "modsec-non-prod") }}
     nginx.ingress.kubernetes.io/enable-modsecurity: "true"
     nginx.ingress.kubernetes.io/modsecurity-snippet: |
