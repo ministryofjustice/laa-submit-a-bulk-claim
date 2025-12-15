@@ -8,7 +8,7 @@ permissions:
   contents: write
 
 jobs:
-  mirror:
+  build-image:
     runs-on: ubuntu-latest
 
     steps:
@@ -26,14 +26,19 @@ jobs:
           FROM ubuntu:22.04
   
           ARG RUNNER_VERSION=2.319.1
+          ENV DEBIAN_FRONTEND=noninteractive TZ=Etc/UTC
           
           USER root
           
           # OS dependencies
-          RUN apt-get update && \
+          RUN ln -fs /usr/share/zoneinfo/$TZ /etc/localtime && \
+              apt-get update && \
               apt-get install -y --no-install-recommends \
                   curl jq tar git sudo ca-certificates \
-                  build-essential gnupg xz-utils && \
+                  build-essential gnupg xz-utils \
+                  postgresql-client \
+                  openjdk-17-jre-headless jmeter tzdata && \
+              dpkg-reconfigure -f noninteractive tzdata && \
               rm -rf /var/lib/apt/lists/*
           
           # Install Node.js 20 from official binary
@@ -90,11 +95,12 @@ jobs:
 
       - name: Tag and push image
         run: |
-          IMAGE="${{ steps.login-ecr.outputs.registry }}/${{ vars.ECR_REPOSITORY }}:github-runner-7"
+          TAG=$(echo "$GITHUB_SHA" | cut -c1-7)
+          IMAGE="${{ steps.login-ecr.outputs.registry }}/${{ vars.ECR_REPOSITORY }}:github-runner-$TAG"
           echo "Building image: $IMAGE"
-          docker build -f Dockerfile-runner -t $IMAGE .
+          docker build -f Dockerfile-runner -t "$IMAGE" .
 
           echo "Pushing image..."
-          docker push $IMAGE
+          docker push "$IMAGE"
 
           echo "Pushed to ECR: $IMAGE"
