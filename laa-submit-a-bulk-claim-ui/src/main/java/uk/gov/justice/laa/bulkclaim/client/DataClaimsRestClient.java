@@ -16,6 +16,7 @@ import org.springframework.web.service.annotation.HttpExchange;
 import org.springframework.web.service.annotation.PostExchange;
 import reactor.core.publisher.Mono;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.ClaimResponse;
+import uk.gov.justice.laa.dstew.payments.claimsdata.model.ClaimResultSet;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.CreateBulkSubmission201Response;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.MatterStartGet;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.MatterStartResultSet;
@@ -90,6 +91,22 @@ public interface DataClaimsRestClient {
   @GetExchange(value = "/submissions/{submission-id}/claims/{claim-id}")
   Mono<ClaimResponse> getSubmissionClaim(
       @PathVariable("submission-id") UUID submissionId, @PathVariable("claim-id") UUID claimId);
+
+  /**
+   * Get claims in a submission, filtering by office code, and using page number and size.
+   *
+   * @param officeCode the office code of the claims to be retrieved
+   * @param submissionId the submission id of the claims to be retrieved
+   * @param page the page number
+   * @param size the page size
+   * @return 200 OK with JSON body containing the list of matched claims
+   */
+  @GetExchange("/claims")
+  ResponseEntity<ClaimResultSet> getClaims(
+      @RequestParam(value = "office_code") String officeCode,
+      @RequestParam(value = "submission_id") UUID submissionId,
+      @RequestParam(value = "page") Integer page,
+      @RequestParam(value = "size") Integer size);
 
   @GetExchange(value = "/submissions/{submission-id}/matter-starts/{matter-starts-id}")
   Mono<MatterStartGet> getSubmissionMatterStarts(

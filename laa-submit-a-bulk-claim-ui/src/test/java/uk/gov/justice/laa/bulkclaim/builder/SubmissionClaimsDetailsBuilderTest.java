@@ -7,7 +7,9 @@ import static org.mockito.Mockito.when;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -15,7 +17,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import reactor.core.publisher.Mono;
+import org.springframework.http.ResponseEntity;
 import uk.gov.justice.laa.bulkclaim.client.DataClaimsRestClient;
 import uk.gov.justice.laa.bulkclaim.dto.submission.claim.SubmissionClaimRow;
 import uk.gov.justice.laa.bulkclaim.dto.submission.claim.SubmissionClaimRowCostsDetails;
@@ -23,9 +25,9 @@ import uk.gov.justice.laa.bulkclaim.dto.submission.claim.SubmissionClaimsDetails
 import uk.gov.justice.laa.bulkclaim.mapper.SubmissionClaimRowMapper;
 import uk.gov.justice.laa.bulkclaim.util.PaginationUtil;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.ClaimResponse;
+import uk.gov.justice.laa.dstew.payments.claimsdata.model.ClaimResultSet;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionClaim;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionResponse;
-import uk.gov.justice.laa.dstew.payments.claimsdata.model.ValidationMessagesResponse;
 
 @ExtendWith(MockitoExtension.class)
 @DisplayName("Submission claim details builder tests")
@@ -56,8 +58,16 @@ class SubmissionClaimsDetailsBuilderTest {
             .calculatedTotalAmount(new BigDecimal("70.50"))
             .claims(List.of(SubmissionClaim.builder().claimId(claimId).build()))
             .build();
-    when(dataClaimsRestClient.getSubmissionClaim(submissionId, claimId))
-        .thenReturn(Mono.just(ClaimResponse.builder().build()));
+    ClaimResultSet claimResultSet =
+        ClaimResultSet.builder()
+            .totalElements(1)
+            .content(Collections.singletonList(ClaimResponse.builder().totalWarnings(1).build()))
+            .size(10)
+            .number(2)
+            .totalPages(2)
+            .build();
+    when(dataClaimsRestClient.getClaims(any(), any(), any(), any()))
+        .thenReturn(ResponseEntity.of(Optional.of(claimResultSet)));
     SubmissionClaimRow expected =
         new SubmissionClaimRow(
             UUID.fromString("5146e93f-92c8-4c56-bd25-0cb6953f534d"),
@@ -85,8 +95,7 @@ class SubmissionClaimsDetailsBuilderTest {
                 new BigDecimal("60.10"),
                 new BigDecimal("70.10")),
             Boolean.TRUE);
-    when(dataClaimsRestClient.getValidationMessages(any(), any(), any(), any(), anyInt(), anyInt()))
-        .thenReturn(Mono.just(ValidationMessagesResponse.builder().totalElements(2).build()));
+
     when(submissionClaimRowMapper.toSubmissionClaimRow(any(), anyInt())).thenReturn(expected);
     // When
     SubmissionClaimsDetails result = builder.build(submissionResponse, 0, 10);
