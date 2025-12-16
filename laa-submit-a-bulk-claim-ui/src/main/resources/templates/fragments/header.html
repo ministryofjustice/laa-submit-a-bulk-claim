@@ -74,11 +74,13 @@
       <div class="moj-header__content" sec:authorize="isAuthenticated()">
         <nav class="moj-header__navigation" aria-label="Account navigation">
           <ul class="moj-header__navigation-list">
-            <li class="moj-header__navigation-item" id="logged-in-user" sec:authentication="principal.attributes['preferred_username']">
+            <li class="moj-header__navigation-item" id="logged-in-user"
+                sec:authentication="principal.attributes['preferred_username']">
             <li class="moj-header__navigation-item header-navigation-link">
               <form th:action="@{/logout}" method="post">
                 <button type="submit" class="sign-in-button govuk-!-font-weight-bold"
-                        th:text="#{header.signOut}">Sign out</button>
+                        th:text="#{header.signOut}">Sign out
+                </button>
               </form>
             </li>
           </ul>
@@ -87,8 +89,20 @@
     </div>
   </div>
   <div
-       th:replace="~{fragments/service-navigation :: service-navigation(${pageCategory})}"/>
+      th:replace="~{fragments/service-navigation :: service-navigation(${pageCategory})}"/>
 
+  <div class="govuk-width-container">
+
+    <div class="govuk-phase-banner" data-module="laa-hide-on-print-button">
+      <p class="govuk-phase-banner__content">
+        <strong class="govuk-tag govuk-phase-banner__content__tag" id="phase-banner-tag"
+                th:text="#{phase.banner.tag}"/>
+        <span class="govuk-phase-banner__text" id="phase-banner-descriptions"
+              th:utext="#{phase.banner.description}"/>
+      </p>
+    </div>
+
+  </div>
 </header>
 </body>
 </html>
