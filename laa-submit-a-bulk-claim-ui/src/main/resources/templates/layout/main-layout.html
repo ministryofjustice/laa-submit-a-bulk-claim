@@ -3,7 +3,7 @@
       xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml">
 <head>
   <title th:text="|#{service.name} - ${title}|"/>
-  <meta th:if="${shouldRefresh}" http-equiv="refresh" content="10">
+  <meta id="meta-refresh" th:if="${shouldRefresh}" http-equiv="refresh" content="10">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta th:if="${submissionId}" id="submissionId" name="submissionId" th:content="${submissionId}">
   <meta th:if="${claimId}" id="claimId" name="claimId"  th:content="${claimId}">
@@ -21,7 +21,7 @@
 <header th:replace="~{fragments/header :: header(${pageCategory})}"/>
 
 <div class="govuk-width-container">
-  <div data-module="laa-hide-on-print-button">
+  <div id="govuk-back-link-container" data-module="laa-hide-on-print-button">
     <th:block th:replace="${backLink}">
       Default back link (this should be replaced)
     </th:block>

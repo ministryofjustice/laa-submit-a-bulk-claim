@@ -18,7 +18,8 @@
                 th:attr="data-max-date=${maxDate}">
 
               <div class="govuk-form-group">
-                <label class="govuk-label" for="submittedDateFrom-input"
+                <label class="govuk-label" id="submittedDateFrom-label"
+                       for="submittedDateFrom-input"
                        th:text="#{search.submittedDateFrom.label}"></label>
                 <p th:replace="~{ fragments/error-components :: error-messages('submittedDateFrom')}"></p>
                 <input
@@ -27,7 +28,7 @@
                     th:classappend="${#fields.hasErrors('submittedDateFrom')} ? 'govuk-input--error'"
                     th:field="*{submittedDateFrom}"
                     type="text"
-                    aria-describedby="date-hint"
+                    aria-describedby="submittedDateFrom-label"
                     autocomplete="off">
               </div>
             </div>
@@ -44,7 +45,9 @@
                 data-module="moj-date-picker"
                 th:attr="data-max-date=${maxDate}">
               <div class="govuk-form-group">
-                <label class="govuk-label" for="submittedDateTo-input"
+                <label class="govuk-label"
+                       id="submittedDateTo-label"
+                       for="submittedDateTo-input"
                        th:text="#{search.submittedDateTo.label}"></label>
                 <p th:replace="~{ fragments/error-components :: error-messages('submittedDateTo')}"></p>
                 <input
@@ -53,7 +56,7 @@
                     th:classappend="${#fields.hasErrors('submittedDateTo')} ? 'govuk-input--error'"
                     th:field="*{submittedDateTo}"
                     type="text"
-                    aria-describedby="date-hint"
+                    aria-describedby="submittedDateTo-label"
                     autocomplete="off">
               </div>
             </div>
