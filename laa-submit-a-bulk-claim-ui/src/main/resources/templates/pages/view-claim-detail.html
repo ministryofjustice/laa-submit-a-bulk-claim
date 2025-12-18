@@ -161,26 +161,33 @@
               #{viewClaim.feeCalculation.notes.immigrationAsylumMentalHealthOnly})}"/>
           <th:block
               th:replace="~{::fee-detail-row(#{viewClaim.feeCalculation.row.jrFormFilling},
-              ${feeDetails.jrFormFilling}, null)}"/>
+              ${feeDetails.jrFormFilling},
+              #{viewClaim.feeCalculation.notes.immigrationAsylumOnly})}"/>
           <th:block
               th:replace="~{::fee-detail-row(#{viewClaim.feeCalculation.row.detentionTravelWaitingCosts},
-              ${feeDetails.detentionTravelAndWaitingCosts}, null)}"/>
+              ${feeDetails.detentionTravelAndWaitingCosts},
+              #{viewClaim.feeCalculation.notes.immigrationAsylumOnly})}"/>
           <th:block
               th:replace="~{::fee-detail-row(#{viewClaim.feeCalculation.row.cmrhTelephone},
-              ${feeDetails.cmrhTelephone}, null)}"/>
+              ${feeDetails.cmrhTelephone},
+              #{viewClaim.feeCalculation.notes.immigrationAsylumOnly})}"/>
           <th:block
               th:replace="~{::fee-detail-row(#{viewClaim.feeCalculation.row.cmrhOral},
               ${feeDetails.cmrhOral},
               #{viewClaim.feeCalculation.notes.immigrationAsylumOnly})}"/>
           <th:block
               th:replace="~{::fee-detail-row(#{viewClaim.feeCalculation.row.homeOfficeInterview},
-              ${feeDetails.homeOfficeInterview}, null)}"/>
+              ${feeDetails.homeOfficeInterview},
+              #{viewClaim.feeCalculation.notes.immigrationAsylumOnly})}"/>
           <th:block
               th:replace="~{::fee-detail-row(#{viewClaim.feeCalculation.row.substantiveHearing},
-              ${feeDetails.substantiveHearing}, null)}"/>
+              ${feeDetails.substantiveHearing},
+              #{viewClaim.feeCalculation.notes.immigrationAsylumOnly})}"/>
           <th:block
               th:replace="~{::fee-detail-row(title=#{viewClaim.feeCalculation.row.vat},
-              values=${feeDetails.vat},notes=null, rowStyle='sabc-govuk-table\_\_cell\_\_bold-bottom')}"/>
+              values=${feeDetails.vat},
+              notes=#{viewClaim.feeCalculation.notes.immigrationAsylumOnly},
+              rowStyle='sabc-govuk-table\_\_cell\_\_bold-bottom')}"/>
           <!--Total-->
           <tr class="govuk-table__row">
             <th scope="row" class="govuk-table__header sabc-govuk-table__cell__bold-bottom"
