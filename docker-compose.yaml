@@ -1,4 +1,21 @@
 services:
+  app:
+    container_name: submit-a-bulk-claim-app
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        - GIT_PACKAGE_USER=${GIT_PACKAGE_USER}
+        - GIT_PACKAGE_KEY=${GIT_PACKAGE_KEY}
+    ports:
+      - "8082:8082"
+      - "8181:8181"
+    environment:
+      - DATA_CLAIMS_API_URL=http://data-claims-api-app:8080
+      - SPRING_SECURITY_OAUTH2_CLIENT_PROVIDER_SILAR-IDENTITY_ISSUER-URI=http://laa-mock-oidc-service:9000
+      - SPRING_PROFILES_ACTIVE=local
+    depends_on:
+      - laa-mock-oidc-service
   claim-service:
     image: wiremock/wiremock:latest
     container_name: claim-service
@@ -19,3 +36,9 @@ services:
     image: laa-oidc-mock-server:latest
     ports:
       - "9000:9000"
+    healthcheck:
+      test: [ "CMD", "nc", "-z", "localhost", "9000" ] # Checks if the port is open
+      interval: 5s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
