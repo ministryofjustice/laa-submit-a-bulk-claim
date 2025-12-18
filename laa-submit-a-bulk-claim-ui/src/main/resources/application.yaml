@@ -38,6 +38,11 @@ spring:
       factory: jdk
       connect-timeout: ${REST_CLIENT_CONNECT_TIMEOUT:5000}
       read-timeout: ${REST_CLIENT_READ_TIMEOUT:40000}
+laa:
+  springboot:
+    starter:
+      metrics:
+        metric-name-prefix: submit_a_bulk_claim
 
 sds-api:
   url: ${SDS_API_URL}
