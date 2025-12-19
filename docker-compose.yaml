@@ -1,19 +1,33 @@
 services:
-  app:
+  sabc-ui:
     container_name: submit-a-bulk-claim-app
+    profiles:
+      - application
     build:
       context: .
       dockerfile: Dockerfile
       args:
         - GIT_PACKAGE_USER=${GIT_PACKAGE_USER}
         - GIT_PACKAGE_KEY=${GIT_PACKAGE_KEY}
+    environment:
+      SERVER_MAX_FILE_SIZE: 10MB
+      UPLOAD_MAX_FILE_SIZE: 10MB
+      SILAS_CLIENT_ID: ${SILAS_CLIENT_ID}
+      SILAS_CLIENT_SECRET: ${SILAS_CLIENT_SECRET}
+      SILAS_SCOPE: ${SILAS_SCOPE}
+      SILAS_TENANT_ID: ${SILAS_TENANT_ID}
+      AUTH_CLIENT_ID: ${AUTH_CLIENT_ID}
+      AUTH_CLIENT_SECRET: ${AUTH_CLIENT_SECRET}
+      AUTH_SCOPE: ${AUTH_SCOPE}
+      AUTH_TENANT_ID: ${AUTH_TENANT_ID}
+      SDS_API_URL: ${SDS_API_URL}
+      CLAIM_API_URL: http://host.docker.internal:8080
+      CLAIMS_API_ACCESS_TOKEN: f67f968e-b479-4e61-b66e-f57984931e56
+      REST_CLIENT_CONNECT_TIMEOUT: ${REST_CLIENT_CONNECT_TIMEOUT:-5000}
+      REST_CLIENT_READ_TIMEOUT: ${REST_CLIENT_READ_TIMEOUT:-40000}
     ports:
       - "8082:8082"
-      - "8181:8181"
-    environment:
-      - DATA_CLAIMS_API_URL=http://data-claims-api-app:8080
-      - SPRING_SECURITY_OAUTH2_CLIENT_PROVIDER_SILAR-IDENTITY_ISSUER-URI=http://laa-mock-oidc-service:9000
-      - SPRING_PROFILES_ACTIVE=local
+      - "8181:8081"
     depends_on:
       - laa-mock-oidc-service
   claim-service:
