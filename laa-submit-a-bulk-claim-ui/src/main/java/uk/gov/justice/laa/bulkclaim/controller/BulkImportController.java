@@ -2,7 +2,6 @@ package uk.gov.justice.laa.bulkclaim.controller;
 
 import static uk.gov.justice.laa.bulkclaim.constants.SessionConstants.SUBMISSION_ID;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -17,6 +16,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.support.SessionStatus;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import tools.jackson.databind.ObjectMapper;
 import uk.gov.justice.laa.bulkclaim.client.DataClaimsRestClient;
 import uk.gov.justice.laa.bulkclaim.dto.FileUploadForm;
 import uk.gov.justice.laa.bulkclaim.metrics.BulkClaimMetricService;
@@ -45,12 +45,11 @@ public class BulkImportController {
    * Renders the upload page.
    *
    * @param model the model to be populated with data
-   * @param oidcUser the authenticated user principal
    * @return the upload page
    */
   @GetMapping("/upload")
   public String showUploadPage(
-      Model model, @AuthenticationPrincipal OidcUser oidcUser, SessionStatus sessionStatus) {
+      Model model, SessionStatus sessionStatus) {
 
     // Clear the session due to new submission
     sessionStatus.setComplete();
