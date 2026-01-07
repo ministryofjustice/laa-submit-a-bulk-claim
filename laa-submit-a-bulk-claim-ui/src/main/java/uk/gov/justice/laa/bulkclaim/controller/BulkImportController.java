@@ -48,8 +48,7 @@ public class BulkImportController {
    * @return the upload page
    */
   @GetMapping("/upload")
-  public String showUploadPage(
-      Model model, SessionStatus sessionStatus) {
+  public String showUploadPage(Model model, SessionStatus sessionStatus) {
 
     // Clear the session due to new submission
     sessionStatus.setComplete();
