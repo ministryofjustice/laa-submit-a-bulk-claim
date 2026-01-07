@@ -1,4 +1,37 @@
 services:
+  sabc-ui:
+    container_name: submit-a-bulk-claim-app
+    profiles:
+      - application
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        - BUILD_SOURCE=internal
+      secrets:
+        - github_actor
+        - github_token
+    environment:
+      SERVER_MAX_FILE_SIZE: 10MB
+      UPLOAD_MAX_FILE_SIZE: 10MB
+      SILAS_CLIENT_ID: ${SILAS_CLIENT_ID}
+      SILAS_CLIENT_SECRET: ${SILAS_CLIENT_SECRET}
+      SILAS_SCOPE: ${SILAS_SCOPE}
+      SILAS_TENANT_ID: ${SILAS_TENANT_ID}
+      AUTH_CLIENT_ID: ${AUTH_CLIENT_ID}
+      AUTH_CLIENT_SECRET: ${AUTH_CLIENT_SECRET}
+      AUTH_SCOPE: ${AUTH_SCOPE}
+      AUTH_TENANT_ID: ${AUTH_TENANT_ID}
+      SDS_API_URL: ${SDS_API_URL}
+      CLAIM_API_URL: http://host.docker.internal:8080
+      CLAIMS_API_ACCESS_TOKEN: f67f968e-b479-4e61-b66e-f57984931e56
+      REST_CLIENT_CONNECT_TIMEOUT: ${REST_CLIENT_CONNECT_TIMEOUT:-5000}
+      REST_CLIENT_READ_TIMEOUT: ${REST_CLIENT_READ_TIMEOUT:-40000}
+    ports:
+      - "8082:8082"
+      - "8181:8081"
+    depends_on:
+      - laa-mock-oidc-service
   claim-service:
     image: wiremock/wiremock:latest
     container_name: claim-service
@@ -19,6 +52,12 @@ services:
     image: laa-oidc-mock-server:latest
     ports:
       - "9000:9000"
+    healthcheck:
+      test: [ "CMD", "nc", "-z", "localhost", "9000" ] # Checks if the port is open
+      interval: 5s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
 
   redis:
     image: redis:8-alpine
