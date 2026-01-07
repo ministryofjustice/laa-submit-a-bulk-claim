@@ -127,8 +127,8 @@ env:
   - name: REDIS_HOST
     valueFrom:
       secretKeyRef:
-        name: laa-submit-a-bulk-claim-secrets
-        key: REDIS_HOST
+        name: elasticache-redis
+        key: url
 
 securityContext:
   fsGroup: 1000
