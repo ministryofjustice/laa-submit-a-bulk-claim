@@ -30,7 +30,6 @@ import reactor.core.publisher.Mono;
 import uk.gov.justice.laa.bulkclaim.client.DataClaimsRestClient;
 import uk.gov.justice.laa.bulkclaim.config.WebMvcTestConfig;
 import uk.gov.justice.laa.bulkclaim.dto.FileUploadForm;
-import uk.gov.justice.laa.bulkclaim.metrics.BulkClaimMetricService;
 import uk.gov.justice.laa.bulkclaim.util.OidcAttributeUtils;
 import uk.gov.justice.laa.bulkclaim.validation.BulkImportFileValidator;
 import uk.gov.justice.laa.bulkclaim.validation.BulkImportFileVirusValidator;
@@ -47,7 +46,6 @@ class BulkImportControllerTest {
   @MockitoBean private BulkImportFileVirusValidator bulkImportFileVirusValidator;
   @MockitoBean private DataClaimsRestClient dataClaimsRestClient;
   @MockitoBean private OidcAttributeUtils oidcAttributeUtils;
-  @MockitoBean private BulkClaimMetricService bulkClaimMetricService;
 
   @Nested
   @DisplayName("GET: /upload")
