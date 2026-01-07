@@ -79,13 +79,13 @@ public class BulkImportController {
 
     bulkImportFileValidator.validate(fileUploadForm, bindingResult);
     if (bindingResult.hasErrors()) {
-      bulkClaimMetricService.recordFailedFileUploadSize(fileUploadForm.file(), bindingResult);
+      bulkClaimMetricService.recordFailedFileUploadSize(fileUploadForm.getFile(), bindingResult);
       return showErrorOnUpload(fileUploadForm, bindingResult, redirectAttributes);
     }
 
     bulkImportFileVirusValidator.validate(fileUploadForm, bindingResult);
     if (bindingResult.hasErrors()) {
-      bulkClaimMetricService.recordFailedFileUploadSize(fileUploadForm.file(), bindingResult);
+      bulkClaimMetricService.recordFailedFileUploadSize(fileUploadForm.getFile(), bindingResult);
       return showErrorOnUpload(fileUploadForm, bindingResult, redirectAttributes);
     }
 
@@ -93,7 +93,7 @@ public class BulkImportController {
       ResponseEntity<CreateBulkSubmission201Response> responseEntity =
           dataClaimsRestClient
               .upload(
-                  fileUploadForm.file(),
+                  fileUploadForm.getFile(),
                   oidcUser.getPreferredUsername(),
                   oidcAttributeUtils.getUserOffices(oidcUser))
               .block();
@@ -104,7 +104,7 @@ public class BulkImportController {
       redirectAttributes.addFlashAttribute(
           SUBMISSION_ID, bulkSubmissionResponse.getSubmissionIds().getFirst());
 
-      bulkClaimMetricService.recordSuccessfulFileUploadSize(fileUploadForm.file());
+      bulkClaimMetricService.recordSuccessfulFileUploadSize(fileUploadForm.getFile());
       return "redirect:/upload-is-being-checked";
     } catch (WebClientResponseException e) {
       try {
@@ -113,7 +113,7 @@ public class BulkImportController {
 
         log.error("API upload failed: {}", error.getErrorMessage());
         bulkClaimMetricService.recordFailedFileUploadSize(
-            fileUploadForm.file().getSize(), error.getErrorMessage());
+            fileUploadForm.getFile().getSize(), error.getErrorMessage());
         bindingResult.rejectValue("file", "api.error", error.getErrorMessage());
       } catch (Exception parseEx) {
         log.error("Failed to upload file to Claims API with message: {}", e.getMessage());

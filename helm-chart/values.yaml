@@ -124,6 +124,12 @@ env:
         name: laa-submit-a-bulk-claim-secrets
         key: UPLOAD_MAX_FILE_SIZE
 
+  - name: REDIS_HOST
+    valueFrom:
+      secretKeyRef:
+        name: elasticache-redis
+        key: url
+
 securityContext:
   fsGroup: 1000
   runAsUser: 1000

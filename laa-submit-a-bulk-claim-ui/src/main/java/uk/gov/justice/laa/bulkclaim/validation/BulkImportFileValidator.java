@@ -59,7 +59,7 @@ public class BulkImportFileValidator implements Validator {
   @Override
   public void validate(Object target, Errors errors) {
     FileUploadForm uploadForm = (FileUploadForm) target;
-    MultipartFile file = uploadForm.file();
+    MultipartFile file = uploadForm.getFile();
 
     // Step 1: Check if file is null or empty
     if (file == null || StringUtils.isBlank(file.getOriginalFilename())) {

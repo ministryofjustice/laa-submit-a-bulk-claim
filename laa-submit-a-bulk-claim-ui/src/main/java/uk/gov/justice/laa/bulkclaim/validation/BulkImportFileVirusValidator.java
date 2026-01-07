@@ -36,7 +36,7 @@ public class BulkImportFileVirusValidator implements Validator {
   @Override
   public void validate(Object target, Errors errors) {
     FileUploadForm uploadForm = (FileUploadForm) target;
-    MultipartFile file = uploadForm.file();
+    MultipartFile file = uploadForm.getFile();
     try {
       virusCheckService.checkVirus(file);
     } catch (VirusCheckException e) {

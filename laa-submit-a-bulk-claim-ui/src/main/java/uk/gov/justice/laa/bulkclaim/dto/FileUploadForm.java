@@ -1,12 +1,26 @@
 package uk.gov.justice.laa.bulkclaim.dto;
 
+import java.io.Serial;
+import java.io.Serializable;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.springframework.web.multipart.MultipartFile;
 
 /**
- * A DTO representing a file upload form. Acts as a wrapper for the Spring {@link MultipartFile} to
- * make {@link org.springframework.validation.BindingResult} support {@link MultipartFile}.
+ * Represents a form for handling file uploads. This class is used to encapsulate the uploaded file.
+ * Implements {@link Serializable} for serialization purposes. Note: - The {@code file} field is
+ * marked as transient to avoid serialization. - The {@link MultipartFile} type is used to handle
+ * the uploaded file data.
  *
- * @param file the file to be uploaded.
  * @author Jamie Briggs
  */
-public record FileUploadForm(MultipartFile file) {}
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+public class FileUploadForm implements Serializable {
+
+  @Serial private static final long serialVersionUID = 1L;
+
+  private transient MultipartFile file;
+}

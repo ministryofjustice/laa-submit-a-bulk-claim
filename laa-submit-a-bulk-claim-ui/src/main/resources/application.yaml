@@ -38,6 +38,12 @@ spring:
       factory: jdk
       connect-timeout: ${REST_CLIENT_CONNECT_TIMEOUT:5000}
       read-timeout: ${REST_CLIENT_READ_TIMEOUT:40000}
+  session:
+    store: redis
+  data:
+    redis:
+      host: ${REDIS_HOST}
+
 
 sds-api:
   url: ${SDS_API_URL}
