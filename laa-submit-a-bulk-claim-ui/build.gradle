@@ -10,14 +10,6 @@ repositories {
     mavenCentral()
 }
 
-dependencyManagement {
-    imports {
-        // Upgrade to fix vulnerabilities in netty
-        //mavenBom('io.netty:netty-bom:4.2.5.Final')
-
-    }
-}
-
 dependencies {
 
     implementation 'uk.gov.justice.laa.datastewardship.payments:data-claims-api-models:dd2b551'
@@ -33,8 +25,6 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-webmvc'
     implementation 'org.springframework.boot:spring-boot-starter-webflux'
     implementation 'org.reactivestreams:reactive-streams:1.0.4'
-
-    //implementation 'org.thymeleaf.extras:thymeleaf-extras-springsecurity6:3.1.3.RELEASE'
 
     implementation 'org.apache.commons:commons-lang3'
     // Front end
