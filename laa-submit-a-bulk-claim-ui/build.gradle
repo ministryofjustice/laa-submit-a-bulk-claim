@@ -1,6 +1,7 @@
 plugins {
     id 'io.freefair.lombok' version '8.14'
     id("com.diffplug.spotless") version "7.2.1"
+    id 'au.com.dius.pact' version '4.6.19'
 }
 
 apply plugin: 'uk.gov.laa.springboot.laa-spring-boot-gradle-plugin'
@@ -91,13 +92,6 @@ tasks.named('processPactTestResources') {
     duplicatesStrategy = DuplicatesStrategy.INCLUDE
 }
 
-tasks.register('publishPacts', JavaExec) {
-    main = 'au.com.dius.pact.consumer.PactPublisher'
-    classpath = sourceSets.test.runtimeClasspath
-    args = ['--broker-url=http://localhost:9292',
-            '--consumer-app-version=1.0.0',
-            '--tags=dev']
-}
 
 test {
     // Use JUnit Platform for unit tests.
@@ -147,6 +141,24 @@ spotless {
         googleJavaFormat()
     }
 }
+
+
+pact {
+    publish {
+        pactBrokerUrl = 'http://localhost:9292'
+
+        // pactBrokerUsername = 'pact_workshop'
+        // pactBrokerPassword = 'pact_workshop'
+
+        // This directory should match where your tests output the JSON files
+        pactDirectory = "$buildDir/pacts"
+
+        // Versioning is important for the broker to track changes
+        consumerVersion = project.version != 'unspecified' ? project.version : '1.0.0'
+        tags = ['dev', 'local']
+    }
+}
+
 
 tasks.compileJava {
     options.compilerArgs.addAll(['-Xlint:deprecation', '-Xlint:unchecked'])
