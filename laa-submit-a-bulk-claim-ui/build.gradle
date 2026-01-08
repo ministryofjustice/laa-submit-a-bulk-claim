@@ -86,6 +86,8 @@ tasks.register('pactTest', Test) {
     testClassesDirs = sourceSets.pactTest.output.classesDirs
     classpath = sourceSets.pactTest.runtimeClasspath
     useJUnitPlatform()
+    // Resolve the directory path to a String for the system property
+    systemProperty 'pact.rootDir', layout.buildDirectory.dir("pacts").get().asFile.path
 }
 
 tasks.named('processPactTestResources') {
@@ -146,14 +148,9 @@ spotless {
 pact {
     publish {
         pactBrokerUrl = 'http://localhost:9292'
-
-        // pactBrokerUsername = 'pact_workshop'
-        // pactBrokerPassword = 'pact_workshop'
-
-        // This directory should match where your tests output the JSON files
-        pactDirectory = "$buildDir/pacts"
-
-        // Versioning is important for the broker to track changes
+        
+        pactDirectory = layout.buildDirectory.dir("pacts").get().asFile.path
+        
         consumerVersion = project.version != 'unspecified' ? project.version : '1.0.0'
         tags = ['dev', 'local']
     }
