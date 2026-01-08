@@ -1,0 +1,33 @@
+server:
+  port: 8082
+spring:
+  profiles:
+    active: test
+  servlet:
+    multipart:
+      max-file-size: 50MB
+      max-request-size: 50MB
+
+management:
+  server:
+    port: 8182
+  # specify actuator endpoints to enable
+  endpoints:
+    web:
+      exposure:
+        include: health,info,prometheus
+
+sds-api:
+  url: xx
+
+cwa-api:
+  url: xx
+  timeout: 1
+
+
+upload-max-file-size: 10MB
+
+rest-client:
+  connect-timeout: 5
+  read-timeout: 1
+
