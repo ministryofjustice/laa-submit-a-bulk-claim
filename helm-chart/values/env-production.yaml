@@ -12,3 +12,10 @@ ingress:
       enabled: true
       value: submit-a-bulk-claim.laa.service.justice.gov.uk
       certSecretName: laa-sabc-cert
+
+autoscaling:
+  enabled: true
+  minReplicas: 2
+  maxReplicas: 8
+  targetCPUUtilizationPercentage: 60
+  targetMemoryUtilizationPercentage: 70
