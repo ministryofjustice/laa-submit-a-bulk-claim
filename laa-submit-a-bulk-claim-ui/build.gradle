@@ -60,6 +60,43 @@ dependencies {
 
     testImplementation 'org.testcontainers:mockserver:1.21.3'
     testImplementation 'org.mock-server:mockserver-client-java:5.15.0'
+
+    testImplementation 'au.com.dius.pact.consumer:junit5:4.6.19'
+}
+
+// To keep pact stuff seperate
+sourceSets {
+    pactTest {
+        java.srcDir file('src/pactTest/java')
+        resources.srcDir file('src/pactTest/resources')
+        compileClasspath += sourceSets.main.output + configurations.testRuntimeClasspath
+        runtimeClasspath += sourceSets.main.output + configurations.testRuntimeClasspath
+    }
+}
+
+configurations {
+    pactTestImplementation.extendsFrom testImplementation
+    pactTestRuntimeOnly.extendsFrom testRuntimeOnly
+}
+
+tasks.register('pactTest', Test) {
+    description = 'Runs the pact tests.'
+    group = 'verification'
+    testClassesDirs = sourceSets.pactTest.output.classesDirs
+    classpath = sourceSets.pactTest.runtimeClasspath
+    useJUnitPlatform()
+}
+
+tasks.named('processPactTestResources') {
+    duplicatesStrategy = DuplicatesStrategy.INCLUDE
+}
+
+tasks.register('publishPacts', JavaExec) {
+    main = 'au.com.dius.pact.consumer.PactPublisher'
+    classpath = sourceSets.test.runtimeClasspath
+    args = ['--broker-url=http://localhost:9292',
+            '--consumer-app-version=1.0.0',
+            '--tags=dev']
 }
 
 test {

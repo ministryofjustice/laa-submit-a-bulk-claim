@@ -1,0 +1,27 @@
+{
+  "submission_id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+  "bulk_submission_id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+  "office_account_number": "string",
+  "submission_period": "string",
+  "area_of_law": "CRIME LOWER",
+  "provider_user_id": "string",
+  "status": "CREATED",
+  "crime_lower_schedule_number": "string",
+  "legal_help_submission_reference": "string",
+  "mediation_submission_reference": "string",
+  "previous_submission_id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+  "is_nil_submission": true,
+  "number_of_claims": 0,
+  "calculated_total_amount": 0,
+  "submitted": "2026-01-08T14:36:21.263Z",
+  "created_by_user_id": "string",
+  "claims": [
+    {
+      "claim_id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+      "status": "READY_TO_PROCESS"
+    }
+  ],
+  "matter_starts": [
+    "3fa85f64-5717-4562-b3fc-2c963f66afa6"
+  ]
+}
