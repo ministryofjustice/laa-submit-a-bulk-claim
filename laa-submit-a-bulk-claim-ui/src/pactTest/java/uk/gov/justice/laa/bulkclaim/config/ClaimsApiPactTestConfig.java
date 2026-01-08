@@ -1,13 +1,22 @@
 package uk.gov.justice.laa.bulkclaim.config;
 
+import au.com.dius.pact.consumer.MockServer;
 import io.prometheus.metrics.model.registry.PrometheusRegistry;
 import org.mockito.Mockito;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.cache.CacheManager;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Primary;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.codec.ClientCodecConfigurer;
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClientManager;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.web.client.RestClient;
+import org.springframework.web.reactive.function.client.ExchangeStrategies;
+import org.springframework.web.reactive.function.client.WebClient;
+import org.springframework.web.reactive.function.client.support.WebClientAdapter;
+import org.springframework.web.service.invoker.HttpServiceProxyFactory;
+import uk.gov.justice.laa.bulkclaim.client.DataClaimsRestClient;
 import uk.gov.justice.laa.bulkclaim.metrics.BulkClaimMetricService;
 import uk.gov.justice.laa.bulkclaim.util.CurrencyUtil;
 import uk.gov.justice.laa.bulkclaim.validation.BulkImportFileValidator;
