@@ -41,7 +41,7 @@ public final class GetSubmissionPactTest extends AbstractPactTest {
     // Defines expected 200 response for existing submission
     return builder
         .given("a submission exists")
-        .uponReceiving("a request for a submission")
+        .uponReceiving("a request to fetch a specific submission")
         .matchPath("/api/v0/submissions/(" + UUID_REGEX + ")")
         .matchHeader(HttpHeaders.AUTHORIZATION, UUID_REGEX)
         .method("GET")
@@ -57,9 +57,9 @@ public final class GetSubmissionPactTest extends AbstractPactTest {
   public RequestResponsePact getSubmission404(PactDslWithProvider builder) {
     // Defines expected 404 response for missing submission
     return builder
-        .given("a submission does not exists")
-        .uponReceiving("a request for a submission")
-        .matchPath("/api/v0/submissions/" + UUID_REGEX)
+        .given("no submission exists")
+        .uponReceiving("a request to fetch a non-existent submission")
+        .matchPath("/api/v0/submissions/(" + UUID_REGEX + ")")
         .method("GET")
         .willRespondWith()
         .status(404)
