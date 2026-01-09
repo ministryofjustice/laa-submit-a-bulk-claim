@@ -12,7 +12,8 @@ public abstract class AbstractPactTest {
   public static final String CONSUMER = "laa-submit-a-bulk-claim";
   public static final String PROVIDER = "laa-data-claim-api";
 
-  protected static final String UUID_REGEX = "[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}";
+  protected static final String UUID_REGEX =
+      "[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}";
   protected static final String ANY_FORMAT_REGEX = "(.*?)";
   protected static final String ANY_NUMBER_REGEX = "([0-9]+)";
 
@@ -22,9 +23,7 @@ public abstract class AbstractPactTest {
   protected final UUID matterStartId = UUID.fromString("b2946085-44fd-477f-a827-1e12c44a89ab");
   protected final UUID messageId = UUID.fromString("1b60f94e-d29c-4522-9cb5-2e21dbe9a871");
 
-
-  @MockitoBean
-  OAuth2AuthorizedClientManager authorizedClientManager;
+  @MockitoBean OAuth2AuthorizedClientManager authorizedClientManager;
 
   public static String readJsonFromFile(final String fileName) throws Exception {
     Path path = Paths.get("src/pactTest/resources/responses/", fileName);

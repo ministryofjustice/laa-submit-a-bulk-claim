@@ -26,7 +26,8 @@ import uk.gov.justice.laa.bulkclaim.client.DataClaimsRestClient;
 import uk.gov.justice.laa.bulkclaim.config.ClaimsApiPactTestConfig;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.CreateBulkSubmission201Response;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
+@SpringBootTest(
+    webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
     properties = {"claims-api.url=http://localhost:1236"})
 @PactConsumerTest
 @PactTestFor(providerName = AbstractPactTest.PROVIDER)
@@ -35,8 +36,7 @@ import uk.gov.justice.laa.dstew.payments.claimsdata.model.CreateBulkSubmission20
 @DisplayName("POST: /api/v0/bulk-submissions PACT tests")
 public final class PostBulkSubmissionPactTest extends AbstractPactTest {
 
-  @Autowired
-  DataClaimsRestClient dataClaimsRestClient;
+  @Autowired DataClaimsRestClient dataClaimsRestClient;
 
   @SneakyThrows
   @Pact(consumer = CONSUMER)
@@ -59,7 +59,6 @@ public final class PostBulkSubmissionPactTest extends AbstractPactTest {
         .toPact();
   }
 
-
   @SneakyThrows
   @Pact(consumer = CONSUMER)
   public RequestResponsePact postBulkSubmission400(PactDslWithProvider builder) {
@@ -81,7 +80,6 @@ public final class PostBulkSubmissionPactTest extends AbstractPactTest {
         .toPact();
   }
 
-
   @Test
   @DisplayName("Verify 201 response")
   @PactTestFor(pactMethod = "postBulkSubmission201")
@@ -89,11 +87,10 @@ public final class PostBulkSubmissionPactTest extends AbstractPactTest {
     String userId = "test-user";
     List<String> offices = List.of("ABC123", "XYZ789");
     MockMultipartFile file =
-        new MockMultipartFile("file", "test.txt", "text/plain", 
-            new byte[10 * 1024 * 1024]);
+        new MockMultipartFile("file", "test.txt", "text/plain", new byte[10 * 1024 * 1024]);
 
-    ResponseEntity<CreateBulkSubmission201Response>
-        submission = dataClaimsRestClient.upload(file, userId, offices).block();
+    ResponseEntity<CreateBulkSubmission201Response> submission =
+        dataClaimsRestClient.upload(file, userId, offices).block();
     assertThat(submission).isNotNull();
     assertThat(submission.getStatusCode()).isEqualTo(HttpStatus.CREATED);
     assertThat(submission.getBody().getBulkSubmissionId()).isNotNull();
@@ -106,10 +103,9 @@ public final class PostBulkSubmissionPactTest extends AbstractPactTest {
     String userId = "test-user";
     List<String> offices = List.of("ABC123", "XYZ789");
     MockMultipartFile file =
-        new MockMultipartFile("file", "test.txt", "text/plain",
-            new byte[10 * 1024 * 1024]);
+        new MockMultipartFile("file", "test.txt", "text/plain", new byte[10 * 1024 * 1024]);
 
-    assertThrows(BadRequest.class, () -> dataClaimsRestClient.upload(file, userId, offices).block());
+    assertThrows(
+        BadRequest.class, () -> dataClaimsRestClient.upload(file, userId, offices).block());
   }
-
 }

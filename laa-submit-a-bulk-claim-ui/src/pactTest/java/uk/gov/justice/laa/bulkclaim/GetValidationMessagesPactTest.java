@@ -18,10 +18,10 @@ import org.springframework.context.annotation.Import;
 import org.springframework.http.HttpHeaders;
 import uk.gov.justice.laa.bulkclaim.client.DataClaimsRestClient;
 import uk.gov.justice.laa.bulkclaim.config.ClaimsApiPactTestConfig;
-import uk.gov.justice.laa.dstew.payments.claimsdata.model.ClaimResultSet;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.ValidationMessagesResponse;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
+@SpringBootTest(
+    webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
     properties = {"claims-api.url=http://localhost:1231"})
 @PactConsumerTest
 @PactTestFor(providerName = AbstractPactTest.PROVIDER)
@@ -30,9 +30,7 @@ import uk.gov.justice.laa.dstew.payments.claimsdata.model.ValidationMessagesResp
 @DisplayName("GET: /api/v0/validation-messages PACT tests")
 public final class GetValidationMessagesPactTest extends AbstractPactTest {
 
-  @Autowired
-  DataClaimsRestClient dataClaimsRestClient;
-
+  @Autowired DataClaimsRestClient dataClaimsRestClient;
 
   @SneakyThrows
   @Pact(consumer = CONSUMER)
@@ -82,17 +80,14 @@ public final class GetValidationMessagesPactTest extends AbstractPactTest {
         .toPact();
   }
 
-
   @Test
   @DisplayName("Verify 200 response")
   @PactTestFor(pactMethod = "getValidationMessages200")
   void verify200Response() {
-    ValidationMessagesResponse claims = dataClaimsRestClient.getValidationMessages(submissionId,
-        claimId,
-        "ERROR",
-        "Source",
-        1,
-        10).block();
+    ValidationMessagesResponse claims =
+        dataClaimsRestClient
+            .getValidationMessages(submissionId, claimId, "ERROR", "Source", 1, 10)
+            .block();
 
     assertThat(claims.getContent().size()).isEqualTo(1);
   }
@@ -101,16 +96,11 @@ public final class GetValidationMessagesPactTest extends AbstractPactTest {
   @DisplayName("Verify 200 response empty")
   @PactTestFor(pactMethod = "getValidationMessagesEmpty200")
   void verify200ResponseEmpty() {
-    ValidationMessagesResponse claims = dataClaimsRestClient.getValidationMessages(submissionId,
-        claimId,
-        "ERROR",
-        "Source",
-        1,
-        10).block();
+    ValidationMessagesResponse claims =
+        dataClaimsRestClient
+            .getValidationMessages(submissionId, claimId, "ERROR", "Source", 1, 10)
+            .block();
 
     assertThat(claims.getContent().isEmpty()).isTrue();
   }
-
-
-
 }

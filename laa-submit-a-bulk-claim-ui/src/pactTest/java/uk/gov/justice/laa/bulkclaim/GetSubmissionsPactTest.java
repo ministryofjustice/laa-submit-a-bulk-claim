@@ -1,7 +1,6 @@
 package uk.gov.justice.laa.bulkclaim;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import au.com.dius.pact.consumer.dsl.PactDslWithProvider;
 import au.com.dius.pact.consumer.junit.MockServerConfig;
@@ -10,9 +9,7 @@ import au.com.dius.pact.consumer.junit5.PactTestFor;
 import au.com.dius.pact.core.model.RequestResponsePact;
 import au.com.dius.pact.core.model.annotations.Pact;
 import java.time.LocalDate;
-import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -20,13 +17,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.HttpHeaders;
-import org.springframework.web.reactive.function.client.WebClientResponseException.NotFound;
 import uk.gov.justice.laa.bulkclaim.client.DataClaimsRestClient;
 import uk.gov.justice.laa.bulkclaim.config.ClaimsApiPactTestConfig;
-import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionResponse;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionsResultSet;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
+@SpringBootTest(
+    webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
     properties = {"claims-api.url=http://localhost:1235"})
 @PactConsumerTest
 @PactTestFor(providerName = AbstractPactTest.PROVIDER)
@@ -35,9 +31,7 @@ import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionsResultSet;
 @DisplayName("GET: /api/v0/submissions PACT tests")
 public final class GetSubmissionsPactTest extends AbstractPactTest {
 
-  @Autowired
-  DataClaimsRestClient dataClaimsRestClient;
-
+  @Autowired DataClaimsRestClient dataClaimsRestClient;
 
   @SneakyThrows
   @Pact(consumer = CONSUMER)
@@ -89,20 +83,16 @@ public final class GetSubmissionsPactTest extends AbstractPactTest {
         .toPact();
   }
 
-
   @Test
   @DisplayName("Verify 200 response")
   @PactTestFor(pactMethod = "getSubmissions200")
   void verify200Response() {
     LocalDate from = LocalDate.of(2021, 1, 1);
     LocalDate to = LocalDate.of(2025, 1, 1);
-    SubmissionsResultSet submission = dataClaimsRestClient.search(userOffices,
-        String.valueOf(submissionId),
-        from,
-        to,
-        1,
-        10,
-         "asc").block();
+    SubmissionsResultSet submission =
+        dataClaimsRestClient
+            .search(userOffices, String.valueOf(submissionId), from, to, 1, 10, "asc")
+            .block();
 
     assertThat(submission.getContent().size()).isEqualTo(1);
   }
@@ -113,17 +103,11 @@ public final class GetSubmissionsPactTest extends AbstractPactTest {
   void verify200ResponseEmpty() {
     LocalDate from = LocalDate.of(2021, 1, 1);
     LocalDate to = LocalDate.of(2025, 1, 1);
-    SubmissionsResultSet submission = dataClaimsRestClient.search(userOffices,
-        String.valueOf(submissionId),
-        from,
-        to,
-        1,
-        10,
-        "asc").block();
+    SubmissionsResultSet submission =
+        dataClaimsRestClient
+            .search(userOffices, String.valueOf(submissionId), from, to, 1, 10, "asc")
+            .block();
 
     assertThat(submission.getContent().isEmpty()).isTrue();
   }
-
-
-
 }

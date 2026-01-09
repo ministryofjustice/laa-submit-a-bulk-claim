@@ -8,7 +8,6 @@ import au.com.dius.pact.consumer.junit5.PactConsumerTest;
 import au.com.dius.pact.consumer.junit5.PactTestFor;
 import au.com.dius.pact.core.model.RequestResponsePact;
 import au.com.dius.pact.core.model.annotations.Pact;
-import java.time.LocalDate;
 import java.util.Map;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.DisplayName;
@@ -20,9 +19,9 @@ import org.springframework.http.HttpHeaders;
 import uk.gov.justice.laa.bulkclaim.client.DataClaimsRestClient;
 import uk.gov.justice.laa.bulkclaim.config.ClaimsApiPactTestConfig;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.ClaimResultSet;
-import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionsResultSet;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
+@SpringBootTest(
+    webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
     properties = {"claims-api.url=http://localhost:1231"})
 @PactConsumerTest
 @PactTestFor(providerName = AbstractPactTest.PROVIDER)
@@ -31,9 +30,7 @@ import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionsResultSet;
 @DisplayName("GET: /api/v0/claims PACT tests")
 public final class GetClaimsPactTest extends AbstractPactTest {
 
-  @Autowired
-  DataClaimsRestClient dataClaimsRestClient;
-
+  @Autowired DataClaimsRestClient dataClaimsRestClient;
 
   @SneakyThrows
   @Pact(consumer = CONSUMER)
@@ -79,15 +76,12 @@ public final class GetClaimsPactTest extends AbstractPactTest {
         .toPact();
   }
 
-
   @Test
   @DisplayName("Verify 200 response")
   @PactTestFor(pactMethod = "getClaims200")
   void verify200Response() {
-    ClaimResultSet claims = dataClaimsRestClient.getClaims(userOffices.get(0),
-        submissionId,
-        1,
-        10).getBody();
+    ClaimResultSet claims =
+        dataClaimsRestClient.getClaims(userOffices.get(0), submissionId, 1, 10).getBody();
 
     assertThat(claims.getContent().size()).isEqualTo(1);
   }
@@ -96,14 +90,9 @@ public final class GetClaimsPactTest extends AbstractPactTest {
   @DisplayName("Verify 200 response empty")
   @PactTestFor(pactMethod = "getClaimsEmpty200")
   void verify200ResponseEmpty() {
-    ClaimResultSet claims = dataClaimsRestClient.getClaims(userOffices.get(0),
-        submissionId,
-        1,
-        10).getBody();
+    ClaimResultSet claims =
+        dataClaimsRestClient.getClaims(userOffices.get(0), submissionId, 1, 10).getBody();
 
     assertThat(claims.getContent().isEmpty()).isTrue();
   }
-
-
-
 }
