@@ -19,6 +19,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
+import org.springframework.http.HttpHeaders;
 import org.springframework.web.reactive.function.client.WebClientResponseException.NotFound;
 import uk.gov.justice.laa.bulkclaim.client.DataClaimsRestClient;
 import uk.gov.justice.laa.bulkclaim.config.ClaimsApiPactTestConfig;
@@ -54,6 +55,7 @@ public final class GetSubmissionsPactTest extends AbstractPactTest {
         .matchQuery("page", "([0-9]+)")
         .matchQuery("size", "([0-9]+)")
         .matchQuery("sort", "(asc|desc)")
+        .matchHeader(HttpHeaders.AUTHORIZATION, UUID_REGEX)
         .method("GET")
         .willRespondWith()
         .status(200)
@@ -78,6 +80,7 @@ public final class GetSubmissionsPactTest extends AbstractPactTest {
         .matchQuery("page", "([0-9]+)")
         .matchQuery("size", "([0-9]+)")
         .matchQuery("sort", "(asc|desc)")
+        .matchHeader(HttpHeaders.AUTHORIZATION, UUID_REGEX)
         .method("GET")
         .willRespondWith()
         .status(200)
