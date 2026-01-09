@@ -42,7 +42,7 @@ public final class PostBulkSubmissionPactTest extends AbstractPactTest {
   @Pact(consumer = CONSUMER)
   public RequestResponsePact postBulkSubmission201(PactDslWithProvider builder) {
     String postBulkSubmissionResponse = readJsonFromFile("post-bulk-submission.json");
-    // Defines expected 201 response for existing submission
+    // Defines expected 201 response for successfully submitting valid bulk submission
     return builder
         .given("I upload a multipart file")
         .uponReceiving("a new bulk submission request")
@@ -64,7 +64,7 @@ public final class PostBulkSubmissionPactTest extends AbstractPactTest {
   @Pact(consumer = CONSUMER)
   public RequestResponsePact postBulkSubmission400(PactDslWithProvider builder) {
     String postBulkSubmissionResponse = readJsonFromFile("post-bulk-submission.json");
-    // Defines expected 400 response for existing submission
+    // Defines expected 400 response for uploading invalid bulk submission
     return builder
         .given("I upload an invalid multipart file")
         .uponReceiving("an invalid bulk submission request")
