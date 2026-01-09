@@ -12,18 +12,3 @@ ingress:
       enabled: true
       value: submit-a-bulk-claim.laa.service.justice.gov.uk
       certSecretName: laa-sabc-cert
-
-resources:
-  limits:
-    cpu: "1"
-    memory: 1Gi
-  requests:
-    cpu: 25m
-    memory: 384Mi
-
-autoscaling:
-  enabled: true
-  minReplicas: 2
-  maxReplicas: 8
-  targetCPUUtilizationPercentage: 60
-  targetMemoryUtilizationPercentage: 70

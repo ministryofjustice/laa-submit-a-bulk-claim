@@ -13,18 +13,3 @@ ingress:
 
 grafana:
   enabled: false  # Disable in development to save resources
-
-resources:
-  limits:
-    cpu: "1"
-    memory: 1Gi
-  requests:
-    cpu: 25m
-    memory: 384Mi
-
-autoscaling:
-  enabled: true
-  minReplicas: 2
-  maxReplicas: 8
-  targetCPUUtilizationPercentage: 60
-  targetMemoryUtilizationPercentage: 70
