@@ -44,7 +44,7 @@ public final class PostBulkSubmissionPactTest extends AbstractPactTest {
     String postBulkSubmissionResponse = readJsonFromFile("post-bulk-submission.json");
     // Defines expected 201 response for successfully submitting valid bulk submission
     return builder
-        .given("I upload a multipart file")
+        .given("the system is ready to process a valid bulk submission")
         .uponReceiving("a new bulk submission request")
         .path("/api/v0/bulk-submissions")
         .matchQuery("userId", "(.*?)")
@@ -66,8 +66,8 @@ public final class PostBulkSubmissionPactTest extends AbstractPactTest {
     String postBulkSubmissionResponse = readJsonFromFile("post-bulk-submission.json");
     // Defines expected 400 response for uploading invalid bulk submission
     return builder
-        .given("I upload an invalid multipart file")
-        .uponReceiving("an invalid bulk submission request")
+        .given("the submission file contains invalid data")
+        .uponReceiving("a request to create a bulk submission with invalid data")
         .path("/api/v0/bulk-submissions")
         .matchQuery("userId", "(.*?)")
         .matchQuery("offices", "([A-Z0-9]{6})")
