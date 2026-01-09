@@ -23,10 +23,10 @@ import uk.gov.justice.laa.dstew.payments.claimsdata.model.ClaimResultSet;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionsResultSet;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
-    properties = {"claims-api.url=http://localhost:1234"})
+    properties = {"claims-api.url=http://localhost:1231"})
 @PactConsumerTest
 @PactTestFor(providerName = AbstractPactTest.PROVIDER)
-@MockServerConfig(port = "1234") // Same as Claims API URL port
+@MockServerConfig(port = "1231") // Same as Claims API URL port
 @Import(ClaimsApiPactTestConfig.class)
 @DisplayName("GET: /api/v0/claims PACT tests")
 public final class GetClaimsPactTest extends AbstractPactTest {

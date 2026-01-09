@@ -27,10 +27,10 @@ import uk.gov.justice.laa.bulkclaim.config.ClaimsApiPactTestConfig;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.CreateBulkSubmission201Response;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
-    properties = {"claims-api.url=http://localhost:1234"})
+    properties = {"claims-api.url=http://localhost:1236"})
 @PactConsumerTest
 @PactTestFor(providerName = AbstractPactTest.PROVIDER)
-@MockServerConfig(port = "1234") // Same as Claims API URL port
+@MockServerConfig(port = "1236") // Same as Claims API URL port
 @Import(ClaimsApiPactTestConfig.class)
 @DisplayName("POST: /api/v0/bulk-submissions PACT tests")
 public final class PostBulkSubmissionPactTest extends AbstractPactTest {
