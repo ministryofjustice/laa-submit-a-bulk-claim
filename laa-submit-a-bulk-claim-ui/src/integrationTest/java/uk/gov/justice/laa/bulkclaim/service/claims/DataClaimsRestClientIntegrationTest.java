@@ -51,7 +51,7 @@ class DataClaimsRestClientIntegrationTest extends MockServerIntegrationTest {
   }
 
   @Nested
-  @DisplayName("GET: /api/v0/bulk-submissions")
+  @DisplayName("POST: /api/v0/bulk-submissions")
   class PostBulkSubmission {
 
     @Test
