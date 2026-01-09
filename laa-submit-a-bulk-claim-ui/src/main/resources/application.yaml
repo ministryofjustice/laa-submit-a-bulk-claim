@@ -40,10 +40,10 @@ spring:
       read-timeout: ${REST_CLIENT_READ_TIMEOUT:40000}
   session:
     store: redis
+    timeout: 15m
   data:
     redis:
-      host: ${REDIS_HOST}
-
+      url: ${REDIS_HOST}
 
 sds-api:
   url: ${SDS_API_URL}
