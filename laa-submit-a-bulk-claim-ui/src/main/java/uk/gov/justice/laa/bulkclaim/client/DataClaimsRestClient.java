@@ -109,7 +109,7 @@ public interface DataClaimsRestClient {
       @RequestParam(value = "size") Integer size);
 
   @GetExchange(value = "/submissions/{submission-id}/matter-starts/{matter-starts-id}")
-  Mono<MatterStartGet> getSubmissionMatterStarts(
+  Mono<MatterStartGet> getSubmissionMatterStart(
       @PathVariable("submission-id") UUID submissionId,
       @PathVariable("matter-starts-id") UUID claimId);
 

@@ -20,6 +20,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.web.reactive.function.client.WebClientResponseException.NotFound;
 import uk.gov.justice.laa.bulkclaim.client.DataClaimsRestClient;
 import uk.gov.justice.laa.bulkclaim.config.ClaimsApiPactTestConfig;
+import uk.gov.justice.laa.dstew.payments.claimsdata.model.ClaimResponse;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionResponse;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
@@ -28,21 +29,21 @@ import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionResponse;
 @PactTestFor(providerName = AbstractPactTest.PROVIDER)
 @MockServerConfig(port = "1234") // Same as Claims API URL port
 @Import(ClaimsApiPactTestConfig.class)
-@DisplayName("GET: /api/v0/submissions/{} PACT tests")
-public final class GetSubmissionPactTest extends AbstractPactTest {
+@DisplayName("GET: /api/v0/submissions/{}/claims/{} PACT tests")
+public final class GetClaimPactTest extends AbstractPactTest {
 
   @Autowired
   DataClaimsRestClient dataClaimsRestClient;
 
   @SneakyThrows
   @Pact(consumer = CONSUMER)
-  public RequestResponsePact getSubmission200(PactDslWithProvider builder) {
-    String submissionResponse = readJsonFromFile("get-submission-200.json");
+  public RequestResponsePact getClaim200(PactDslWithProvider builder) {
+    String submissionResponse = readJsonFromFile("get-claim-200.json");
     // Defines expected 200 response for existing submission
     return builder
-        .given("a submission exists")
-        .uponReceiving("a request for a submission")
-        .matchPath("/api/v0/submissions/(" + UUID_REGEX + ")")
+        .given("a claim exists for a submission")
+        .uponReceiving("a request for a claim within a submission")
+        .matchPath("/api/v0/submissions/(" + UUID_REGEX + ")/claims/(" + UUID_REGEX + ")")
         .matchHeader(HttpHeaders.AUTHORIZATION, UUID_REGEX)
         .method("GET")
         .willRespondWith()
@@ -54,12 +55,13 @@ public final class GetSubmissionPactTest extends AbstractPactTest {
 
   @SneakyThrows
   @Pact(consumer = CONSUMER)
-  public RequestResponsePact getSubmission404(PactDslWithProvider builder) {
-    // Defines expected 404 response for missing submission
+  public RequestResponsePact getClaim404(PactDslWithProvider builder) {
+    // Defines expected 404 response for when either submission or claim does not exist
     return builder
-        .given("a submission does not exists")
-        .uponReceiving("a request for a submission")
-        .matchPath("/api/v0/submissions/" + UUID_REGEX)
+        .given("a claim or submission does not exists for the given id's")
+        .uponReceiving("a request for a claim within a submission")
+        .matchPath("/api/v0/submissions/(" + UUID_REGEX + ")/claims/(" + UUID_REGEX + ")")
+        .matchHeader(HttpHeaders.AUTHORIZATION, UUID_REGEX)
         .method("GET")
         .willRespondWith()
         .status(404)
@@ -70,22 +72,23 @@ public final class GetSubmissionPactTest extends AbstractPactTest {
 
   @Test
   @DisplayName("Verify 200 response")
-  @PactTestFor(pactMethod = "getSubmission200")
+  @PactTestFor(pactMethod = "getClaim200")
   void verify200Response() {
-    SubmissionResponse submission = dataClaimsRestClient.getSubmission(submissionId).block();
+    ClaimResponse claimResponse = dataClaimsRestClient.getSubmissionClaim(submissionId, claimId).block();
 
-    assertThat(submission).isNotNull();
-    assertThat(submission.getSubmissionId()).isEqualTo(submissionId);
+    assertThat(claimResponse).isNotNull();
+    assertThat(claimResponse.getId()).isEqualTo(claimId.toString());
+    assertThat(claimResponse.getSubmissionId()).isEqualTo(submissionId.toString());
   }
 
   @Test
   @DisplayName("Verify 404 response")
-  @PactTestFor(pactMethod = "getSubmission404")
+  @PactTestFor(pactMethod = "getClaim404")
   void verify404Response() {
     assertThrows(
         NotFound.class,
         () ->
-            dataClaimsRestClient.getSubmission(submissionId).block());
+            dataClaimsRestClient.getSubmissionClaim(submissionId, claimId).block());
   }
 
 
