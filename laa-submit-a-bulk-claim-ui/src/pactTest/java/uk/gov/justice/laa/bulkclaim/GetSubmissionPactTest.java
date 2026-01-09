@@ -16,6 +16,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
+import org.springframework.http.HttpHeaders;
 import org.springframework.web.reactive.function.client.WebClientResponseException.NotFound;
 import uk.gov.justice.laa.bulkclaim.client.DataClaimsRestClient;
 import uk.gov.justice.laa.bulkclaim.config.ClaimsApiPactTestConfig;
@@ -41,7 +42,8 @@ public final class GetSubmissionPactTest extends AbstractPactTest {
     return builder
         .given("a submission exists")
         .uponReceiving("a request for a submission")
-        .path("/api/v0/submissions/" + submissionId)
+        .matchPath("/api/v0/submissions/(" + UUID_REGEX + ")")
+        .matchHeader(HttpHeaders.AUTHORIZATION, UUID_REGEX)
         .method("GET")
         .willRespondWith()
         .status(200)
@@ -57,7 +59,7 @@ public final class GetSubmissionPactTest extends AbstractPactTest {
     return builder
         .given("a submission does not exists")
         .uponReceiving("a request for a submission")
-        .path("/api/v0/submissions/" + submissionId)
+        .matchPath("/api/v0/submissions/" + UUID_REGEX)
         .method("GET")
         .willRespondWith()
         .status(404)
