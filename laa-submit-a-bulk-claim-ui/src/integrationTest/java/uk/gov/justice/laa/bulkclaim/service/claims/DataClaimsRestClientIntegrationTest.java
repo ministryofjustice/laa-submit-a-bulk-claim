@@ -556,7 +556,7 @@ class DataClaimsRestClientIntegrationTest extends MockServerIntegrationTest {
                   .withBody(expectJson));
       // Then
       MatterStartGet block =
-          dataClaimsRestClient.getSubmissionMatterStarts(submissionId, matterStartsId).block();
+          dataClaimsRestClient.getSubmissionMatterStart(submissionId, matterStartsId).block();
       String result = objectMapper.writeValueAsString(block);
       assertThatJsonMatches(expectJson, result);
     }
@@ -578,7 +578,7 @@ class DataClaimsRestClientIntegrationTest extends MockServerIntegrationTest {
       assertThrows(
           BadRequest.class,
           () ->
-              dataClaimsRestClient.getSubmissionMatterStarts(submissionId, matterStartsId).block());
+              dataClaimsRestClient.getSubmissionMatterStart(submissionId, matterStartsId).block());
     }
 
     @Test
@@ -616,7 +616,7 @@ class DataClaimsRestClientIntegrationTest extends MockServerIntegrationTest {
       assertThrows(
           Forbidden.class,
           () ->
-              dataClaimsRestClient.getSubmissionMatterStarts(submissionId, matterStartsId).block());
+              dataClaimsRestClient.getSubmissionMatterStart(submissionId, matterStartsId).block());
     }
 
     @Test
@@ -654,7 +654,7 @@ class DataClaimsRestClientIntegrationTest extends MockServerIntegrationTest {
       assertThrows(
           InternalServerError.class,
           () ->
-              dataClaimsRestClient.getSubmissionMatterStarts(submissionId, matterStartsId).block());
+              dataClaimsRestClient.getSubmissionMatterStart(submissionId, matterStartsId).block());
     }
   }
 
