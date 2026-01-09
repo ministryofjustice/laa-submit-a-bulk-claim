@@ -9,9 +9,6 @@ import au.com.dius.pact.consumer.junit5.PactConsumerTest;
 import au.com.dius.pact.consumer.junit5.PactTestFor;
 import au.com.dius.pact.core.model.RequestResponsePact;
 import au.com.dius.pact.core.model.annotations.Pact;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.Map;
 import java.util.UUID;
 import lombok.SneakyThrows;
@@ -31,18 +28,20 @@ import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionResponse;
 @PactTestFor(providerName = AbstractPactTest.PROVIDER)
 @MockServerConfig(port = "1234") // Same as Claims API URL port
 @Import(ClaimsApiPactTestConfig.class)
-@DisplayName("/api/v0/submission/{} PACT tests")
+@DisplayName("GET: /api/v0/submission/{} PACT tests")
 public final class GetSubmissionPactTest extends AbstractPactTest {
 
-  final UUID SUBMISSION_ID = UUID.fromString("3fa85f64-5717-4562-b3fc-2c963f66afa6");
+  public static final UUID SUBMISSION_ID = UUID.fromString("3fa85f64-5717-4562-b3fc-2c963f66afa6");
 
   @Autowired
   DataClaimsRestClient dataClaimsRestClient;
+
 
   @SneakyThrows
   @Pact(consumer = CONSUMER)
   public RequestResponsePact getSubmission200(PactDslWithProvider builder) {
     String submissionResponse = readJsonFromFile("get-submission-200.json");
+    // Defines expected 200 response for existing submission
     return builder
         .given("a submission exists")
         .uponReceiving("a request for a submission")
@@ -58,6 +57,7 @@ public final class GetSubmissionPactTest extends AbstractPactTest {
   @SneakyThrows
   @Pact(consumer = CONSUMER)
   public RequestResponsePact getSubmission404(PactDslWithProvider builder) {
+    // Defines expected 404 response for missing submission
     return builder
         .given("a submission does not exists")
         .uponReceiving("a request for a submission")
@@ -89,6 +89,7 @@ public final class GetSubmissionPactTest extends AbstractPactTest {
         () ->
             dataClaimsRestClient.getSubmission(SUBMISSION_ID).block());
   }
+
 
 
 }
