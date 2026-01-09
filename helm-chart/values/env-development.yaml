@@ -13,10 +13,3 @@ ingress:
 
 grafana:
   enabled: false  # Disable in development to save resources
-
-autoscaling:
-  enabled: true
-  minReplicas: 2
-  maxReplicas: 8
-  targetCPUUtilizationPercentage: 60
-  targetMemoryUtilizationPercentage: 70
