@@ -10,7 +10,6 @@ import au.com.dius.pact.consumer.junit5.PactTestFor;
 import au.com.dius.pact.core.model.RequestResponsePact;
 import au.com.dius.pact.core.model.annotations.Pact;
 import java.util.Map;
-import java.util.UUID;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -28,14 +27,11 @@ import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionResponse;
 @PactTestFor(providerName = AbstractPactTest.PROVIDER)
 @MockServerConfig(port = "1234") // Same as Claims API URL port
 @Import(ClaimsApiPactTestConfig.class)
-@DisplayName("GET: /api/v0/submission/{} PACT tests")
+@DisplayName("GET: /api/v0/submissions/{} PACT tests")
 public final class GetSubmissionPactTest extends AbstractPactTest {
-
-  public static final UUID SUBMISSION_ID = UUID.fromString("3fa85f64-5717-4562-b3fc-2c963f66afa6");
 
   @Autowired
   DataClaimsRestClient dataClaimsRestClient;
-
 
   @SneakyThrows
   @Pact(consumer = CONSUMER)
@@ -45,7 +41,7 @@ public final class GetSubmissionPactTest extends AbstractPactTest {
     return builder
         .given("a submission exists")
         .uponReceiving("a request for a submission")
-        .path("/api/v0/submissions/" + SUBMISSION_ID)
+        .path("/api/v0/submissions/" + submissionId)
         .method("GET")
         .willRespondWith()
         .status(200)
@@ -61,7 +57,7 @@ public final class GetSubmissionPactTest extends AbstractPactTest {
     return builder
         .given("a submission does not exists")
         .uponReceiving("a request for a submission")
-        .path("/api/v0/submissions/" + SUBMISSION_ID)
+        .path("/api/v0/submissions/" + submissionId)
         .method("GET")
         .willRespondWith()
         .status(404)
@@ -74,10 +70,10 @@ public final class GetSubmissionPactTest extends AbstractPactTest {
   @DisplayName("Verify 200 response")
   @PactTestFor(pactMethod = "getSubmission200")
   void verify200Response() {
-    SubmissionResponse submission = dataClaimsRestClient.getSubmission(SUBMISSION_ID).block();
+    SubmissionResponse submission = dataClaimsRestClient.getSubmission(submissionId).block();
 
     assertThat(submission).isNotNull();
-    assertThat(submission.getSubmissionId()).isEqualTo(SUBMISSION_ID);
+    assertThat(submission.getSubmissionId()).isEqualTo(submissionId);
   }
 
   @Test
@@ -87,7 +83,7 @@ public final class GetSubmissionPactTest extends AbstractPactTest {
     assertThrows(
         NotFound.class,
         () ->
-            dataClaimsRestClient.getSubmission(SUBMISSION_ID).block());
+            dataClaimsRestClient.getSubmission(submissionId).block());
   }
 
 
