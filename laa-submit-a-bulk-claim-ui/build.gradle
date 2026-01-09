@@ -1,6 +1,7 @@
 plugins {
     id 'io.freefair.lombok' version '8.14'
     id("com.diffplug.spotless") version "7.2.1"
+    id 'au.com.dius.pact' version '4.6.19'
 }
 
 apply plugin: 'uk.gov.laa.springboot.laa-spring-boot-gradle-plugin'
@@ -56,7 +57,39 @@ dependencies {
 
     testImplementation 'org.testcontainers:mockserver:1.21.3'
     testImplementation 'org.mock-server:mockserver-client-java:5.15.0'
+
+    testImplementation 'au.com.dius.pact.consumer:junit5:4.6.19'
 }
+
+// To keep pact stuff seperate
+sourceSets {
+    pactTest {
+        java.srcDir file('src/pactTest/java')
+        resources.srcDir file('src/pactTest/resources')
+        compileClasspath += sourceSets.main.output + configurations.testRuntimeClasspath
+        runtimeClasspath += sourceSets.main.output + configurations.testRuntimeClasspath
+    }
+}
+
+configurations {
+    pactTestImplementation.extendsFrom testImplementation
+    pactTestRuntimeOnly.extendsFrom testRuntimeOnly
+}
+
+tasks.register('pactTest', Test) {
+    description = 'Runs the pact tests.'
+    group = 'verification'
+    testClassesDirs = sourceSets.pactTest.output.classesDirs
+    classpath = sourceSets.pactTest.runtimeClasspath
+    useJUnitPlatform()
+    // Resolve the directory path to a String for the system property
+    systemProperty 'pact.rootDir', layout.buildDirectory.dir("pacts").get().asFile.path
+}
+
+tasks.named('processPactTestResources') {
+    duplicatesStrategy = DuplicatesStrategy.INCLUDE
+}
+
 
 test {
     // Use JUnit Platform for unit tests.
@@ -106,6 +139,20 @@ spotless {
         googleJavaFormat()
     }
 }
+
+
+pact {
+    publish {
+        pactBrokerUrl = System.getenv('PACT_BROKER_BASE_URL') ?: 'http://localhost:9292'
+        pactBrokerToken = System.getenv('PACT_BROKER_TOKEN') ?: 'ABC'
+
+        pactDirectory = layout.buildDirectory.dir("pacts").get().asFile.path
+        
+        consumerVersion = project.version != 'unspecified' ? project.version : '1.0.0'
+        tags = ['dev', 'local']
+    }
+}
+
 
 tasks.compileJava {
     options.compilerArgs.addAll(['-Xlint:deprecation', '-Xlint:unchecked'])

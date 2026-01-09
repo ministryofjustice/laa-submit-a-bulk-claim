@@ -1,0 +1,17 @@
+{
+  "content": [
+    {
+      "id": "1b60f94e-d29c-4522-9cb5-2e21dbe9a871",
+      "submission_id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+      "claim_id": "d4e3fa24-7d1f-4710-b7a7-0debe88421aa",
+      "type": "ERROR",
+      "source": "string",
+      "display_message": "string"
+    }
+  ],
+  "total_claims": 0,
+  "total_pages": 0,
+  "total_elements": 0,
+  "number": 0,
+  "size": 0
+}

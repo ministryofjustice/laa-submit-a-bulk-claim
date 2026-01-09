@@ -1,3 +1,9 @@
+secrets:
+  github_actor:
+    environment: GITHUB_ACTOR
+  github_token:
+    environment: GITHUB_TOKEN
+
 services:
   sabc-ui:
     container_name: submit-a-bulk-claim-app
@@ -55,7 +61,7 @@ services:
     ports:
       - "9000:9000"
     healthcheck:
-      test: [ "CMD", "nc", "-z", "localhost", "9000" ] # Checks if the port is open
+      test: ["CMD", "nc", "-z", "localhost", "9000"] # Checks if the port is open
       interval: 5s
       timeout: 5s
       retries: 5
@@ -70,7 +76,6 @@ services:
     command: redis-server --appendonly yes
     volumes:
       - redis_data:/data
-
 
 volumes:
   redis_data:
