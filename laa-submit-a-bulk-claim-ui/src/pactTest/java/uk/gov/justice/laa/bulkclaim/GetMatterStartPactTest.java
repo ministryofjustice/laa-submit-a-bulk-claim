@@ -41,8 +41,8 @@ public final class GetMatterStartPactTest extends AbstractPactTest {
     String submissionResponse = readJsonFromFile("get-matter-start-200.json");
     // Defines expected 200 response for existing matter start
     return builder
-        .given("a matter start exists for a submission")
-        .uponReceiving("a request for a matter start within a submission")
+        .given("a matter start exists for the given submission")
+        .uponReceiving("a request to fetch a specific matter start")
         .matchPath("/api/v0/submissions/(" + UUID_REGEX + ")/matter-starts/(" + UUID_REGEX + ")")
         .matchHeader(HttpHeaders.AUTHORIZATION, UUID_REGEX)
         .method("GET")
@@ -58,8 +58,8 @@ public final class GetMatterStartPactTest extends AbstractPactTest {
   public RequestResponsePact getMatterStart404(PactDslWithProvider builder) {
     // Defines expected 404 response for when either submission or matter start does not exist
     return builder
-        .given("a matter start or submission does not exists for the given id's")
-        .uponReceiving("a request for a matter start within a submission")
+        .given("no matter start or submission exists for the given IDs")
+        .uponReceiving("a request to fetch a non-existent matter start")
         .matchPath("/api/v0/submissions/(" + UUID_REGEX + ")/matter-starts/(" + UUID_REGEX + ")")
         .matchHeader(HttpHeaders.AUTHORIZATION, UUID_REGEX)
         .method("GET")

@@ -8,7 +8,6 @@ import au.com.dius.pact.consumer.junit5.PactConsumerTest;
 import au.com.dius.pact.consumer.junit5.PactTestFor;
 import au.com.dius.pact.core.model.RequestResponsePact;
 import au.com.dius.pact.core.model.annotations.Pact;
-import java.time.LocalDate;
 import java.util.Map;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.DisplayName;
@@ -20,7 +19,7 @@ import org.springframework.http.HttpHeaders;
 import uk.gov.justice.laa.bulkclaim.client.DataClaimsRestClient;
 import uk.gov.justice.laa.bulkclaim.config.ClaimsApiPactTestConfig;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.ClaimResultSet;
-import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionsResultSet;
+import uk.gov.justice.laa.dstew.payments.claimsdata.model.ValidationMessagesResponse;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
     properties = {"claims-api.url=http://localhost:1231"})
@@ -28,8 +27,8 @@ import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionsResultSet;
 @PactTestFor(providerName = AbstractPactTest.PROVIDER)
 @MockServerConfig(port = "1231") // Same as Claims API URL port
 @Import(ClaimsApiPactTestConfig.class)
-@DisplayName("GET: /api/v0/claims PACT tests")
-public final class GetClaimsPactTest extends AbstractPactTest {
+@DisplayName("GET: /api/v0/validation-messages PACT tests")
+public final class GetValidationMessagesPactTest extends AbstractPactTest {
 
   @Autowired
   DataClaimsRestClient dataClaimsRestClient;
@@ -37,15 +36,17 @@ public final class GetClaimsPactTest extends AbstractPactTest {
 
   @SneakyThrows
   @Pact(consumer = CONSUMER)
-  public RequestResponsePact getClaims200(PactDslWithProvider builder) {
-    String claimsResponse = readJsonFromFile("get-claims-200.json");
-    // Defines expected 200 response for claims response
+  public RequestResponsePact getValidationMessages200(PactDslWithProvider builder) {
+    String claimsResponse = readJsonFromFile("get-validation-messages-200.json");
+    // Defines expected 200 response for validation messages response
     return builder
-        .given("claims exist for the search criteria")
-        .uponReceiving("a request to search for claims")
-        .path("/api/v0/claims")
-        .matchQuery("submission_id", UUID_REGEX)
-        .matchQuery("office_code", "([A-Z0-9]{6})")
+        .given("validation messages exist for the search criteria")
+        .uponReceiving("a request to search for validation messages")
+        .path("/api/v0/validation-messages")
+        .matchQuery("submission-id", UUID_REGEX)
+        .matchQuery("claim-id", UUID_REGEX)
+        .matchQuery("type", "(ERROR|WARNING)")
+        .matchQuery("source", ANY_FORMAT_REGEX)
         .matchQuery("page", ANY_NUMBER_REGEX)
         .matchQuery("size", ANY_NUMBER_REGEX)
         .matchHeader(HttpHeaders.AUTHORIZATION, UUID_REGEX)
@@ -59,15 +60,17 @@ public final class GetClaimsPactTest extends AbstractPactTest {
 
   @SneakyThrows
   @Pact(consumer = CONSUMER)
-  public RequestResponsePact getClaimsEmpty200(PactDslWithProvider builder) {
+  public RequestResponsePact getValidationMessagesEmpty200(PactDslWithProvider builder) {
     String clamsResponse = readJsonFromFile("get-empty-search-200.json");
-    // Defines expected 200 response for claims response, even when empty
+    // Defines expected 200 response for validation messages response, even when empty
     return builder
-        .given("no claims exist for the search criteria")
-        .uponReceiving("a request to search for claims with no results")
-        .path("/api/v0/claims")
-        .matchQuery("office_code", "([A-Z0-9]{6})")
-        .matchQuery("submission_id", UUID_REGEX)
+        .given("no validation messages exist for the search criteria")
+        .uponReceiving("a request to search for validation messages with no results")
+        .path("/api/v0/validation-messages")
+        .matchQuery("submission-id", UUID_REGEX)
+        .matchQuery("claim-id", UUID_REGEX)
+        .matchQuery("type", "(ERROR|WARNING)")
+        .matchQuery("source", ANY_FORMAT_REGEX)
         .matchQuery("page", ANY_NUMBER_REGEX)
         .matchQuery("size", ANY_NUMBER_REGEX)
         .matchHeader(HttpHeaders.AUTHORIZATION, UUID_REGEX)
@@ -82,24 +85,28 @@ public final class GetClaimsPactTest extends AbstractPactTest {
 
   @Test
   @DisplayName("Verify 200 response")
-  @PactTestFor(pactMethod = "getClaims200")
+  @PactTestFor(pactMethod = "getValidationMessages200")
   void verify200Response() {
-    ClaimResultSet claims = dataClaimsRestClient.getClaims(userOffices.get(0),
-        submissionId,
+    ValidationMessagesResponse claims = dataClaimsRestClient.getValidationMessages(submissionId,
+        claimId,
+        "ERROR",
+        "Source",
         1,
-        10).getBody();
+        10).block();
 
     assertThat(claims.getContent().size()).isEqualTo(1);
   }
 
   @Test
   @DisplayName("Verify 200 response empty")
-  @PactTestFor(pactMethod = "getClaimsEmpty200")
+  @PactTestFor(pactMethod = "getValidationMessagesEmpty200")
   void verify200ResponseEmpty() {
-    ClaimResultSet claims = dataClaimsRestClient.getClaims(userOffices.get(0),
-        submissionId,
+    ValidationMessagesResponse claims = dataClaimsRestClient.getValidationMessages(submissionId,
+        claimId,
+        "ERROR",
+        "Source",
         1,
-        10).getBody();
+        10).block();
 
     assertThat(claims.getContent().isEmpty()).isTrue();
   }

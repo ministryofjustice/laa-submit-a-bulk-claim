@@ -41,8 +41,8 @@ public final class GetClaimPactTest extends AbstractPactTest {
     String submissionResponse = readJsonFromFile("get-claim-200.json");
     // Defines expected 200 response for existing submission
     return builder
-        .given("a claim exists for a submission")
-        .uponReceiving("a request for a claim within a submission")
+        .given("a claim exists for the given submission")
+        .uponReceiving("a request to fetch a specific claim")
         .matchPath("/api/v0/submissions/(" + UUID_REGEX + ")/claims/(" + UUID_REGEX + ")")
         .matchHeader(HttpHeaders.AUTHORIZATION, UUID_REGEX)
         .method("GET")
@@ -58,8 +58,8 @@ public final class GetClaimPactTest extends AbstractPactTest {
   public RequestResponsePact getClaim404(PactDslWithProvider builder) {
     // Defines expected 404 response for when either submission or claim does not exist
     return builder
-        .given("a claim or submission does not exists for the given id's")
-        .uponReceiving("a request for a claim within a submission")
+        .given("no claim or submission exists for the given IDs")
+        .uponReceiving("a request to fetch a non-existent claim")
         .matchPath("/api/v0/submissions/(" + UUID_REGEX + ")/claims/(" + UUID_REGEX + ")")
         .matchHeader(HttpHeaders.AUTHORIZATION, UUID_REGEX)
         .method("GET")
