@@ -20,10 +20,10 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.web.reactive.function.client.WebClientResponseException.NotFound;
 import uk.gov.justice.laa.bulkclaim.client.DataClaimsRestClient;
 import uk.gov.justice.laa.bulkclaim.config.ClaimsApiPactTestConfig;
-import uk.gov.justice.laa.dstew.payments.claimsdata.model.ClaimResponse;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.MatterStartGet;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
+@SpringBootTest(
+    webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
     properties = {"claims-api.url=http://localhost:1233"})
 @PactConsumerTest
 @PactTestFor(providerName = AbstractPactTest.PROVIDER)
@@ -32,8 +32,7 @@ import uk.gov.justice.laa.dstew.payments.claimsdata.model.MatterStartGet;
 @DisplayName("GET: /api/v0/submissions/{}/matter-starts/{} PACT tests")
 public final class GetMatterStartPactTest extends AbstractPactTest {
 
-  @Autowired
-  DataClaimsRestClient dataClaimsRestClient;
+  @Autowired DataClaimsRestClient dataClaimsRestClient;
 
   @SneakyThrows
   @Pact(consumer = CONSUMER)
@@ -69,13 +68,12 @@ public final class GetMatterStartPactTest extends AbstractPactTest {
         .toPact();
   }
 
-
   @Test
   @DisplayName("Verify 200 response")
   @PactTestFor(pactMethod = "getMatterStart200")
   void verify200Response() {
-    MatterStartGet
-        matterStart = dataClaimsRestClient.getSubmissionMatterStart(submissionId, matterStartId).block();
+    MatterStartGet matterStart =
+        dataClaimsRestClient.getSubmissionMatterStart(submissionId, matterStartId).block();
 
     assertThat(matterStart).isNotNull();
   }
@@ -86,8 +84,6 @@ public final class GetMatterStartPactTest extends AbstractPactTest {
   void verify404Response() {
     assertThrows(
         NotFound.class,
-        () ->
-            dataClaimsRestClient.getSubmissionMatterStart(submissionId, matterStartId).block());
+        () -> dataClaimsRestClient.getSubmissionMatterStart(submissionId, matterStartId).block());
   }
-
 }

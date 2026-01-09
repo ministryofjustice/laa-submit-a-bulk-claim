@@ -22,7 +22,8 @@ import uk.gov.justice.laa.bulkclaim.client.DataClaimsRestClient;
 import uk.gov.justice.laa.bulkclaim.config.ClaimsApiPactTestConfig;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionResponse;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
+@SpringBootTest(
+    webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
     properties = {"claims-api.url=http://localhost:1234"})
 @PactConsumerTest
 @PactTestFor(providerName = AbstractPactTest.PROVIDER)
@@ -31,8 +32,7 @@ import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionResponse;
 @DisplayName("GET: /api/v0/submissions/{} PACT tests")
 public final class GetSubmissionPactTest extends AbstractPactTest {
 
-  @Autowired
-  DataClaimsRestClient dataClaimsRestClient;
+  @Autowired DataClaimsRestClient dataClaimsRestClient;
 
   @SneakyThrows
   @Pact(consumer = CONSUMER)
@@ -67,7 +67,6 @@ public final class GetSubmissionPactTest extends AbstractPactTest {
         .toPact();
   }
 
-
   @Test
   @DisplayName("Verify 200 response")
   @PactTestFor(pactMethod = "getSubmission200")
@@ -82,12 +81,6 @@ public final class GetSubmissionPactTest extends AbstractPactTest {
   @DisplayName("Verify 404 response")
   @PactTestFor(pactMethod = "getSubmission404")
   void verify404Response() {
-    assertThrows(
-        NotFound.class,
-        () ->
-            dataClaimsRestClient.getSubmission(submissionId).block());
+    assertThrows(NotFound.class, () -> dataClaimsRestClient.getSubmission(submissionId).block());
   }
-
-
-
 }
