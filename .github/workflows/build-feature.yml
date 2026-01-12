@@ -16,6 +16,7 @@ jobs:
     with:
       integration_test_task: "integrationTest"
       publish_package: 'false'
+      semgrep_check: 'true'
     secrets:
       gh_token: ${{ secrets.GITHUB_TOKEN }}
 

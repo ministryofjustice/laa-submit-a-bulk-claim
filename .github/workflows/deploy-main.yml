@@ -21,6 +21,7 @@ jobs:
       junit_report: 'false'
       checkstyle_report: 'false'
       jacoco_coverage_report: 'false'
+      semgrep_check: 'true'
     secrets:
       gh_token: ${{ secrets.GITHUB_TOKEN }}
 

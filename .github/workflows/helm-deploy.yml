@@ -66,15 +66,24 @@ jobs:
 
       - name: Install or upgrade helm charts
         id: helm-install
+        env:
+          DEPLOYMENT_NAME: "${{ inputs.deployment_name }}"
+          ENVIRONMENT: "${{ inputs.environment }}"
+          REGISTRY: "${{ steps.login-ecr.outputs.registry }}"
+          ECR_REPOSITORY: "${{ vars.ECR_REPOSITORY }}"
         run: |
           set -euo pipefail
           IFS=$'\n\t'
-          echo "Deploying Helm release '${{ inputs.deployment_name }}'..."
+          echo "Deploying Helm release '$DEPLOYMENT_NAME'..."
           helm upgrade --install --wait --timeout 5m \
-            -f helm-chart/values/env-"${{ inputs.environment }}".yaml \
-            "${{ inputs.deployment_name }}" helm-chart \
-            --set global.image.repository="${{ steps.login-ecr.outputs.registry }}"/"${{ vars.ECR_REPOSITORY }}"
-            IMAGES=$(helm get manifest "${{ inputs.deployment_name }}" | yq -o=json '.' | jq -sc "[.[] | select(.kind == \"Deployment\") | select(.spec.template.spec.containers[0].image | contains(\"${{ steps.login-ecr.outputs.registry }}/${{ vars.ECR_REPOSITORY }}\")) | {image_version_tag: .metadata.labels.appVersion, release_tag: .metadata.name}]")
-            # Use heredoc for multi-line output safety
-            printf 'images<<EOF\n%s\nEOF\n' "$IMAGES" >> "$GITHUB_OUTPUT"
-            echo "Deployed Images: $(echo "$IMAGES" | jq)"
+            -f helm-chart/values/env-"$ENVIRONMENT".yaml \
+            "$DEPLOYMENT_NAME" helm-chart \
+            --set global.image.repository="$REGISTRY"/"$ECR_REPOSITORY"
+
+          IMAGES=$(helm get manifest "$DEPLOYMENT_NAME" | yq -o=json '.' | jq -sc \
+            "[.[] | select(.kind == \"Deployment\") | select(.spec.template.spec.containers[0].image | contains(\"$REGISTRY/$ECR_REPOSITORY\")) | {image_version_tag: .metadata.labels.appVersion, release_tag: .metadata.name}]")
+
+          # Use heredoc for multi-line output safety
+          printf 'images<<EOF\n%s\nEOF\n' "$IMAGES" >> "$GITHUB_OUTPUT"
+          
+          echo "Deployed Images: $(echo "$IMAGES" | jq)"
