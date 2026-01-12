@@ -24,6 +24,8 @@ jobs:
 
       - name: Authenticate to the cluster
         run: |
+          set -euo pipefail
+          IFS=$'\n\t'
           echo "${{ secrets.kube_cert }}" > ca.crt
           kubectl config set-cluster ${{ secrets.KUBE_CLUSTER }} --certificate-authority=./ca.crt --server=https://${{ secrets.KUBE_CLUSTER }}
           kubectl config set-credentials deploy-user --token=${{ secrets.KUBE_TOKEN }}
@@ -42,12 +44,16 @@ jobs:
 
       - name: Set helm chart app version
         run: |
+          set -euo pipefail
+          IFS=$'\n\t'
           yq eval-all "( .appVersion = \"${{ inputs.image_tag }}\" )" -i helm-chart/Chart.yaml
           cat helm-chart/Chart.yaml
 
       - name: Install or upgrade helm charts
         id: helm-install
         run: |
+          set -euo pipefail
+          IFS=$'\n\t'
           echo "Deploying Helm release '${{ inputs.deployment_name }}'..."
           helm upgrade --install --wait --timeout 5m \
             -f helm-chart/values/env-${{ inputs.environment }}.yaml \
