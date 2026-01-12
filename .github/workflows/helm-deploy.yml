@@ -43,10 +43,18 @@ jobs:
         id: login-ecr
 
       - name: Set helm chart app version
+        env:
+          IMAGE_TAG: ${{ inputs.image_tag }}
         run: |
           set -euo pipefail
           IFS=$'\n\t'
-          yq eval-all "( .appVersion = \"${{ inputs.image_tag }}\" )" -i helm-chart/Chart.yaml
+          
+          if [[ ! "$IMAGE_TAG" =~ ^[A-Za-z0-9._-]+$ ]]; then
+            echo "Error: Invalid image_tag format"
+            exit 1
+          fi
+          
+          yq eval-all "( .appVersion = \"$IMAGE_TAG\" )" -i helm-chart/Chart.yaml
           cat helm-chart/Chart.yaml
 
       - name: Install or upgrade helm charts
