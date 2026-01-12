@@ -9,12 +9,13 @@ on:
 
 jobs:
   build:
-    uses: ministryofjustice/laa-ccms-common-workflows/.github/workflows/gradle-build-and-publish.yml@v1.0.10
+    uses: ministryofjustice/laa-ccms-common-workflows/.github/workflows/gradle-build-and-publish.yml@v1
     permissions:
       contents: write
       packages: write
     with:
       integration_test_task: "integrationTest"
+      pact_test_task: "pactTest"
       publish_package: 'false'
       semgrep_check: 'true'
     secrets:
