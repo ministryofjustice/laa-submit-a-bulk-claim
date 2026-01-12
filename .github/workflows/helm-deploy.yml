@@ -45,16 +45,23 @@ jobs:
       - name: Set helm chart app version
         env:
           IMAGE_TAG: "${{ inputs.image_tag }}"
+          DEPLOYMENT_NAME: "${{ inputs.deployment_name }}"
         run: |
           set -euo pipefail
           IFS=$'\n\t'
           
+          # Validation: Fail early with clear messaging
           if [[ ! "$IMAGE_TAG" =~ ^[A-Za-z0-9._-]+$ ]]; then
-            echo "Error: Invalid image_tag format"
+            echo "::error::Invalid image_tag format: '$IMAGE_TAG'. Tags must only contain alphanumeric characters, dots, underscores, or hyphens."
+            exit 1
+          fi
+
+          if [[ ! "$DEPLOYMENT_NAME" =~ ^[a-z0-9-]+$ ]]; then
+            echo "::error::Invalid deployment_name: '$DEPLOYMENT_NAME'. Helm releases must be lowercase alphanumeric or hyphens."
             exit 1
           fi
           
-          yq eval-all "( .appVersion = \"$IMAGE_TAG\" )" -i helm-chart/Chart.yaml
+          yq eval '.appVersion = env(IMAGE_TAG)' -i helm-chart/Chart.yaml
           cat helm-chart/Chart.yaml
 
       - name: Install or upgrade helm charts
