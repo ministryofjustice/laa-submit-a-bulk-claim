@@ -25,6 +25,7 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-webmvc'
     implementation 'org.springframework.boot:spring-boot-starter-webflux'
     implementation 'org.reactivestreams:reactive-streams:1.0.4'
+    implementation 'org.thymeleaf.extras:thymeleaf-extras-springsecurity6'
 
     implementation 'org.apache.commons:commons-lang3'
     // Front end

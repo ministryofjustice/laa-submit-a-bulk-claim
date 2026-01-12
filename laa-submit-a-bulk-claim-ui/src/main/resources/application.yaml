@@ -39,7 +39,7 @@ spring:
       connect-timeout: ${REST_CLIENT_CONNECT_TIMEOUT:5000}
       read-timeout: ${REST_CLIENT_READ_TIMEOUT:40000}
   session:
-    store: redis
+    store-type: redis
     timeout: 15m
   data:
     redis:
