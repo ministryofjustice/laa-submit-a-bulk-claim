@@ -10,7 +10,7 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 public abstract class AbstractPactTest {
   public static final String CONSUMER = "laa-submit-a-bulk-claim";
-  public static final String PROVIDER = "laa-data-claim-api";
+  public static final String PROVIDER = "laa-data-claims-api";
 
   protected static final String UUID_REGEX =
       "[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}";
