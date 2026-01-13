@@ -57,20 +57,21 @@ public class SecurityConfig {
       HttpSecurity http,
       ClientRegistrationRepository clientRegistrationRepository,
       @Value("${app.csp}") String contentSecurityPolicy) {
-    http
-        .authorizeHttpRequests(
+    http.authorizeHttpRequests(
             authz -> //
-                authz
+            authz
                     .requestMatchers("/logged-out")
                     .permitAll()
                     .anyRequest() //
                     .authenticated())
         .csrf(Customizer.withDefaults())
-        .headers(httpSecurityHeadersConfigurer -> httpSecurityHeadersConfigurer
-            .contentSecurityPolicy(csp -> csp.policyDirectives(contentSecurityPolicy)))
+        .headers(
+            httpSecurityHeadersConfigurer ->
+                httpSecurityHeadersConfigurer.contentSecurityPolicy(
+                    csp -> csp.policyDirectives(contentSecurityPolicy)))
         .oauth2Login(
             oauth2Login -> //
-                oauth2Login.loginPage("/oauth2/authorization/silas-identity"))
+            oauth2Login.loginPage("/oauth2/authorization/silas-identity"))
         .oauth2Client(withDefaults())
         .logout(
             logout ->
