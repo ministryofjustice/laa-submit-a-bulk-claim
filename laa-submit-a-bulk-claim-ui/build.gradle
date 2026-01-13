@@ -147,11 +147,13 @@ spotless {
 
 pact {
     publish {
-        pactBrokerUrl = System.getenv('PACT_BROKER_BASE_URL') ?: 'http://localhost:9292'
-        pactBrokerToken = System.getenv('PACT_BROKER_TOKEN') ?: 'ABC'
+        pactBrokerUrl = project.findProperty('pactBrokerUrl') ?: System.getenv('PACT_BROKER_URL') ?: 'http://localhost:9292'
+        pactBrokerUsername = project.findProperty('pactBrokerUsername') ?: System.getenv('PACT_BROKER_USERNAME') ?: 'ABC'
+        pactBrokerPassword = project.findProperty('pactBrokerPassword') ?: System.getenv('PACT_BROKER_PASSWORD') ?: 'ABC'
+
 
         pactDirectory = layout.buildDirectory.dir("pacts").get().asFile.path
-        
+
         consumerVersion = project.version != 'unspecified' ? project.version : '1.0.0'
         tags = ['dev', 'local']
     }
