@@ -4,6 +4,7 @@ import org.apache.tomcat.util.http.InvalidParameterException;
 import org.apache.tomcat.util.http.fileupload.impl.SizeLimitExceededException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.ui.Model;
+import org.springframework.util.StringUtils;
 import org.springframework.validation.BeanPropertyBindingResult;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -20,11 +21,18 @@ public class MaxFileSizeExceedsHandler {
   private final BulkClaimMetricService bulkClaimMetricService;
   private final String maxFileSizeReadable;
 
+  /**
+   * Creates a handler for mapping file size exceptions to a user-facing error.
+   *
+   * @param bulkClaimMetricService metrics service for recording failed uploads
+   * @param maxFileSizeReadable maximum upload size configured for messaging
+   */
   public MaxFileSizeExceedsHandler(
       BulkClaimMetricService bulkClaimMetricService,
       @Value("${upload-max-file-size:10MB}") String maxFileSizeReadable) {
     this.bulkClaimMetricService = bulkClaimMetricService;
-    this.maxFileSizeReadable = maxFileSizeReadable;
+    this.maxFileSizeReadable =
+        StringUtils.hasText(maxFileSizeReadable) ? maxFileSizeReadable : "10MB";
   }
 
   /**
@@ -39,6 +47,13 @@ public class MaxFileSizeExceedsHandler {
     return buildErrorResponse(ex, model);
   }
 
+  /**
+   * Handles Tomcat multipart size exceptions and returns the upload page with an error message.
+   *
+   * @param ex the exception
+   * @param model the model to be populated with data
+   * @return the upload page
+   */
   @ExceptionHandler(InvalidParameterException.class)
   public String handleTomcatMaxSizeException(InvalidParameterException ex, Model model) {
     Throwable cause = ex.getCause();
@@ -48,6 +63,13 @@ public class MaxFileSizeExceedsHandler {
     return buildErrorResponse(ex, model);
   }
 
+  /**
+   * Builds the upload view response with a file size validation error.
+   *
+   * @param ex the exception
+   * @param model the model to be populated with data
+   * @return the upload page
+   */
   private String buildErrorResponse(Exception ex, Model model) {
     FileUploadForm fileUploadForm = new FileUploadForm(null);
     BindingResult bindingResult =
@@ -71,6 +93,11 @@ public class MaxFileSizeExceedsHandler {
     return "pages/upload";
   }
 
+  /**
+   * Records the size of the failed upload when it can be parsed from the exception.
+   *
+   * @param ex the exception
+   */
   private void recordFailedFileUploadSize(Exception ex) {
     if (ex instanceof MaxUploadSizeExceededException maxUploadSizeExceededException) {
       bulkClaimMetricService.recordFailedFileUploadSize(maxUploadSizeExceededException);

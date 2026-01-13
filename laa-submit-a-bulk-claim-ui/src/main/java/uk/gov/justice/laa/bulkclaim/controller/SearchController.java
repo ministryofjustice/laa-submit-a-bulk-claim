@@ -76,7 +76,7 @@ public class SearchController {
    *
    * @param submissionsSearchForm dto holding form values
    * @param bindingResult binding results for validation errors
-   * @param redirectAttributes redirect attributes for flash scoped values
+   * @param model view context model
    * @return redirect to search results when successful or back to the form if validation fails
    */
   @PostMapping("/submissions/search")
