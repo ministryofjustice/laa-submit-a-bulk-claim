@@ -29,7 +29,7 @@ jobs:
 
   assemble:
     needs: [ define-feature-version ]
-    uses: ministryofjustice/laa-ccms-common-workflows/.github/workflows/gradle-build-and-publish.yml@story/semgrep-checl
+    uses: ministryofjustice/laa-ccms-common-workflows/.github/workflows/gradle-build-and-publish.yml@v1.0.10
     permissions:
       contents: write
       packages: write
