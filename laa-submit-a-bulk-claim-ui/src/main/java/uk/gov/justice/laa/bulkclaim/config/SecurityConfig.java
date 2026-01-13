@@ -2,6 +2,9 @@ package uk.gov.justice.laa.bulkclaim.config;
 
 import static org.springframework.security.config.Customizer.withDefaults;
 
+import java.security.SecureRandom;
+import java.util.Base64;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
@@ -51,19 +54,23 @@ public class SecurityConfig {
    */
   @Bean
   public SecurityFilterChain securityFilterChain(
-      HttpSecurity http, ClientRegistrationRepository clientRegistrationRepository)
-      throws Exception {
-    http.authorizeHttpRequests(
+      HttpSecurity http,
+      ClientRegistrationRepository clientRegistrationRepository,
+      @Value("${app.csp}") String contentSecurityPolicy) {
+    http
+        .authorizeHttpRequests(
             authz -> //
-            authz
+                authz
                     .requestMatchers("/logged-out")
                     .permitAll()
                     .anyRequest() //
                     .authenticated())
         .csrf(Customizer.withDefaults())
+        .headers(httpSecurityHeadersConfigurer -> httpSecurityHeadersConfigurer
+            .contentSecurityPolicy(csp -> csp.policyDirectives(contentSecurityPolicy)))
         .oauth2Login(
             oauth2Login -> //
-            oauth2Login.loginPage("/oauth2/authorization/silas-identity"))
+                oauth2Login.loginPage("/oauth2/authorization/silas-identity"))
         .oauth2Client(withDefaults())
         .logout(
             logout ->
@@ -78,5 +85,12 @@ public class SecurityConfig {
         new OidcClientInitiatedLogoutSuccessHandler(clientRegistrationRepository);
     successHandler.setPostLogoutRedirectUri("{baseUrl}/logged-out");
     return successHandler;
+  }
+
+  private String generateNonce() {
+    SecureRandom secureRandom = new SecureRandom();
+    byte[] nonceBytes = new byte[16];
+    secureRandom.nextBytes(nonceBytes);
+    return Base64.getEncoder().encodeToString(nonceBytes);
   }
 }

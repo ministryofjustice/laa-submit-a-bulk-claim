@@ -8,15 +8,13 @@ spring:
       max-file-size: 50MB
       max-request-size: 50MB
 
-sds-api:
-  url: xx
-
-cwa-api:
-  url: xx
-  timeout: 1
-
-
-upload-max-file-size: 10MB
+app:
+  sds-api:
+    url: xx
+  cwa-api:
+    url: xx
+    timeout: 1
+  upload-max-file-size: 10MB
 
 rest-client:
   connect-timeout: 5
