@@ -1,5 +1,8 @@
 package uk.gov.justice.laa.bulkclaim.validation;
 
+import org.apache.tomcat.util.http.InvalidParameterException;
+import org.apache.tomcat.util.http.fileupload.impl.SizeLimitExceededException;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.ui.Model;
 import org.springframework.validation.BeanPropertyBindingResult;
 import org.springframework.validation.BindingResult;
@@ -15,9 +18,13 @@ import uk.gov.justice.laa.bulkclaim.metrics.BulkClaimMetricService;
 public class MaxFileSizeExceedsHandler {
 
   private final BulkClaimMetricService bulkClaimMetricService;
+private final String maxFileSizeReadable;
 
-  public MaxFileSizeExceedsHandler(BulkClaimMetricService bulkClaimMetricService) {
+  public MaxFileSizeExceedsHandler(
+      BulkClaimMetricService bulkClaimMetricService,
+      @Value("${upload-max-file-size:10MB}") String maxFileSizeReadable) {
     this.bulkClaimMetricService = bulkClaimMetricService;
+    this.maxFileSizeReadable = maxFileSizeReadable;
   }
 
   /**
@@ -29,7 +36,19 @@ public class MaxFileSizeExceedsHandler {
    */
   @ExceptionHandler(MaxUploadSizeExceededException.class)
   public String handleMaxSizeException(MaxUploadSizeExceededException ex, Model model) {
+    return buildErrorResponse(ex, model);
+  }
 
+  @ExceptionHandler(InvalidParameterException.class)
+  public String handleTomcatMaxSizeException(InvalidParameterException ex, Model model) {
+    Throwable cause = ex.getCause();
+    if (!(cause instanceof SizeLimitExceededException)) {
+      throw ex;
+    }
+    return buildErrorResponse(ex, model);
+  }
+
+  private String buildErrorResponse(Exception ex, Model model) {
     FileUploadForm fileUploadForm = new FileUploadForm(null);
     BindingResult bindingResult =
         new BeanPropertyBindingResult(
@@ -38,8 +57,8 @@ public class MaxFileSizeExceedsHandler {
     bindingResult.rejectValue(
         "file",
         "bulkImport.validation.size",
-        new String[] {"10MB"},
-        "File size too large. Maximum allowed is 10MB.");
+        new String[] {maxFileSizeReadable},
+        "File size too large. Maximum allowed is " + maxFileSizeReadable + ".");
 
     model.addAttribute(BulkImportController.FILE_UPLOAD_FORM_MODEL_ATTR, fileUploadForm);
     model.addAttribute(
@@ -47,8 +66,30 @@ public class MaxFileSizeExceedsHandler {
             + BulkImportController.FILE_UPLOAD_FORM_MODEL_ATTR,
         bindingResult);
 
-    bulkClaimMetricService.recordFailedFileUploadSize(ex);
+    recordFailedFileUploadSize(ex);
 
     return "pages/upload";
+  }
+
+  private void recordFailedFileUploadSize(Exception ex) {
+    if (ex instanceof MaxUploadSizeExceededException maxUploadSizeExceededException) {
+      bulkClaimMetricService.recordFailedFileUploadSize(maxUploadSizeExceededException);
+      return;
+    }
+    if (ex instanceof InvalidParameterException invalidParameterException) {
+      Throwable cause = invalidParameterException.getCause();
+      if (cause != null) {
+        String message = cause.getMessage();
+        if (message != null) {
+          try {
+            long size = Long.parseLong(message.replaceAll(".*size \\((\\d+)\\).*", "$1"));
+            bulkClaimMetricService.recordFailedFileUploadSize(
+                size, "File size exceeds maximum allowed");
+          } catch (NumberFormatException ignored) {
+            // Fall back to not recording size if parsing fails.
+          }
+        }
+      }
+    }
   }
 }

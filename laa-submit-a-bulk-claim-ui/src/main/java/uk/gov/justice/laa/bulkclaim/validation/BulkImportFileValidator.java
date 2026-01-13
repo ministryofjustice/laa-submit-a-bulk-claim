@@ -91,5 +91,11 @@ public class BulkImportFileValidator implements Validator {
       errors.rejectValue("file", "bulkImport.validation.mimeType");
       return;
     }
+
+    // Step 4: Validate file size after type checks for clearer errors
+    if (file.getSize() > maxFileSize) {
+      errors.rejectValue("file", "bulkImport.validation.size", new String[] {maxFileSizeReadable},
+          "File size too large. Maximum allowed is " + maxFileSizeReadable + ".");
+    }
   }
 }
