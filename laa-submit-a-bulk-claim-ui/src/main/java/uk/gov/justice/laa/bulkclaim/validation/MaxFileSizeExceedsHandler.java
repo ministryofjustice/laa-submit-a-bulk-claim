@@ -18,7 +18,7 @@ import uk.gov.justice.laa.bulkclaim.metrics.BulkClaimMetricService;
 public class MaxFileSizeExceedsHandler {
 
   private final BulkClaimMetricService bulkClaimMetricService;
-private final String maxFileSizeReadable;
+  private final String maxFileSizeReadable;
 
   public MaxFileSizeExceedsHandler(
       BulkClaimMetricService bulkClaimMetricService,

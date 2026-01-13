@@ -90,8 +90,7 @@ public class SearchController {
 
     if (bindingResult.hasErrors()) {
       model.addAttribute(SUBMISSION_SEARCH_FORM, submissionsSearchForm);
-      model.addAttribute(
-          BindingResult.MODEL_KEY_PREFIX + SUBMISSION_SEARCH_FORM, bindingResult);
+      model.addAttribute(BindingResult.MODEL_KEY_PREFIX + SUBMISSION_SEARCH_FORM, bindingResult);
       return "pages/submissions-search";
     }
 

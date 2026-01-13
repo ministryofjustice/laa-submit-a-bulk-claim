@@ -135,13 +135,10 @@ public class BulkImportController {
    * @return redirect back to upload page
    */
   private String showErrorOnUpload(
-      FileUploadForm fileUploadForm,
-      BindingResult bindingResult,
-      Model model) {
+      FileUploadForm fileUploadForm, BindingResult bindingResult, Model model) {
 
     model.addAttribute(FILE_UPLOAD_FORM_MODEL_ATTR, fileUploadForm);
-    model.addAttribute(
-        BindingResult.MODEL_KEY_PREFIX + FILE_UPLOAD_FORM_MODEL_ATTR, bindingResult);
+    model.addAttribute(BindingResult.MODEL_KEY_PREFIX + FILE_UPLOAD_FORM_MODEL_ATTR, bindingResult);
     return "pages/upload";
   }
 }
