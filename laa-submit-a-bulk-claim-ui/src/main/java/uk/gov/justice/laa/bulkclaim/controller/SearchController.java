@@ -26,7 +26,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.SessionAttributes;
 import org.springframework.web.bind.support.SessionStatus;
 import org.springframework.web.client.HttpClientErrorException;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.springframework.web.util.UriComponentsBuilder;
 import uk.gov.justice.laa.bulkclaim.client.DataClaimsRestClient;
 import uk.gov.justice.laa.bulkclaim.dto.SubmissionsSearchForm;
@@ -85,16 +84,15 @@ public class SearchController {
       @Validated @ModelAttribute(SUBMISSION_SEARCH_FORM)
           SubmissionsSearchForm submissionsSearchForm,
       BindingResult bindingResult,
-      final RedirectAttributes redirectAttributes) {
+      Model model) {
 
     String submissionId = trimToNull(submissionsSearchForm.submissionId());
 
     if (bindingResult.hasErrors()) {
-      // Store errors and form object in RedirectAttributes
-      redirectAttributes.addFlashAttribute(
-          "org.springframework.validation.BindingResult.submissionsSearchForm", bindingResult);
-      redirectAttributes.addFlashAttribute(SUBMISSION_SEARCH_FORM, submissionsSearchForm);
-      return "redirect:/submissions/search";
+      model.addAttribute(SUBMISSION_SEARCH_FORM, submissionsSearchForm);
+      model.addAttribute(
+          BindingResult.MODEL_KEY_PREFIX + SUBMISSION_SEARCH_FORM, bindingResult);
+      return "pages/submissions-search";
     }
 
     String submittedDateFrom = trimToNull(submissionsSearchForm.submittedDateFrom());
