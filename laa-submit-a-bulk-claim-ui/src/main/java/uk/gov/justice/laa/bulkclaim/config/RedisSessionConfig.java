@@ -14,5 +14,7 @@ import org.springframework.session.data.redis.config.annotation.web.http.EnableR
  * and persistent, allowing scalability and fault tolerance for the application.
  */
 @Configuration
-@EnableRedisHttpSession(redisNamespace = "submit-a-bulk-claim:session")
+@EnableRedisHttpSession(
+    redisNamespace = "submit-a-bulk-claim:session",
+    maxInactiveIntervalInSeconds = 12 * 60 * 60)
 public class RedisSessionConfig {}
