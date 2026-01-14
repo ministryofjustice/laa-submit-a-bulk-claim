@@ -16,5 +16,5 @@ import org.springframework.session.data.redis.config.annotation.web.http.EnableR
 @Configuration
 @EnableRedisHttpSession(
     redisNamespace = "submit-a-bulk-claim:session",
-    maxInactiveIntervalInSeconds = 12 * 60 * 60)
+    maxInactiveIntervalInSeconds = 60 * 60)
 public class RedisSessionConfig {}
