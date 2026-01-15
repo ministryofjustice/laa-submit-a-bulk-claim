@@ -106,3 +106,15 @@ env:
 autoscaling:
   minReplicas: 1
   maxReplicas: 2
+
+volumes:
+  - name: mock-oidc-config
+    configMap:
+      name: uat-submit-a-bulk-claim-mock-oidc
+      defaultMode: 420
+
+volumeMounts:
+  - name: mock-oidc-config
+    readOnly: true
+    mountPath: /config/application-mock-oidc.yml
+    subPath: application-mock-oidc.yml
