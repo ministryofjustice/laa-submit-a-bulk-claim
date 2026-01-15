@@ -12,6 +12,8 @@ master:
     enabled: true
     size: 8Gi
     storageClass: ""
-  serviceAccount:
-    create: false
-    name: default
+
+serviceAccount:
+  create: false
+  name: "{{ .Release.Namespace }}-service-account"
+  automountServiceAccountToken: false
