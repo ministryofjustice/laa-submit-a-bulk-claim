@@ -51,7 +51,7 @@ public final class PostBulkSubmissionPactTest extends AbstractPactTest {
         .matchQuery("offices", "([A-Z0-9]{6})")
         .matchHeader(HttpHeaders.AUTHORIZATION, UUID_REGEX)
         .method("POST")
-        .withFileUpload("file", "test.txt", "text/plain", new byte[10 * 1024 * 1024])
+        .withFileUpload("file", "test.txt", "text/plain", new byte[10])
         .willRespondWith()
         .status(201)
         .headers(Map.of("Content-Type", "application/json"))
@@ -72,7 +72,7 @@ public final class PostBulkSubmissionPactTest extends AbstractPactTest {
         .matchQuery("offices", "([A-Z0-9]{6})")
         .matchHeader(HttpHeaders.AUTHORIZATION, UUID_REGEX)
         .method("POST")
-        .withFileUpload("file", "test.txt", "text/plain", new byte[10 * 1024 * 1024])
+        .withFileUpload("file", "test.txt", "text/plain", new byte[10])
         .willRespondWith()
         .status(400)
         .headers(Map.of("Content-Type", "application/json"))
@@ -87,7 +87,7 @@ public final class PostBulkSubmissionPactTest extends AbstractPactTest {
     String userId = "test-user";
     List<String> offices = List.of("ABC123", "XYZ789");
     MockMultipartFile file =
-        new MockMultipartFile("file", "test.txt", "text/plain", new byte[10 * 1024 * 1024]);
+        new MockMultipartFile("file", "test.txt", "text/plain", new byte[10]);
 
     ResponseEntity<CreateBulkSubmission201Response> submission =
         dataClaimsRestClient.upload(file, userId, offices).block();
@@ -103,7 +103,7 @@ public final class PostBulkSubmissionPactTest extends AbstractPactTest {
     String userId = "test-user";
     List<String> offices = List.of("ABC123", "XYZ789");
     MockMultipartFile file =
-        new MockMultipartFile("file", "test.txt", "text/plain", new byte[10 * 1024 * 1024]);
+        new MockMultipartFile("file", "test.txt", "text/plain", new byte[10]);
 
     assertThrows(
         BadRequest.class, () -> dataClaimsRestClient.upload(file, userId, offices).block());
