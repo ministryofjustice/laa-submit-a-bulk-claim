@@ -42,7 +42,7 @@ public final class GetSubmissionPactTest extends AbstractPactTest {
     // Defines expected 200 response for existing submission
     return builder
         .given("a submission exists")
-        .uponReceiving("a request to fetch a specific submission")
+        .uponReceiving("a request to fetch a existing submission")
         .matchPath("/api/v0/submissions/(" + UUID_REGEX + ")")
         .matchHeader(HttpHeaders.AUTHORIZATION, UUID_REGEX)
         .method("GET")

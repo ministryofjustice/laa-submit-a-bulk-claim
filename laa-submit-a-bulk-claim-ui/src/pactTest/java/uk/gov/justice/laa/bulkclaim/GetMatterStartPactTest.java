@@ -41,7 +41,7 @@ public final class GetMatterStartPactTest extends AbstractPactTest {
     // Defines expected 200 response for existing matter start
     return builder
         .given("a matter start exists for the given submission")
-        .uponReceiving("a request to fetch a specific matter start")
+        .uponReceiving("a request to fetch a existing matter start")
         .matchPath("/api/v0/submissions/(" + UUID_REGEX + ")/matter-starts/(" + UUID_REGEX + ")")
         .matchHeader(HttpHeaders.AUTHORIZATION, UUID_REGEX)
         .method("GET")
