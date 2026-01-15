@@ -57,15 +57,12 @@ public final class GetSubmissionPactTest extends AbstractPactTest {
           body.stringType("area_of_law", "CRIME LOWER");
           body.stringType("provider_user_id", "string");
           body.stringType("status", "CREATED");
-          body.stringType("crime_lower_schedule_number", "string");
-          body.stringType("legal_help_submission_reference", "string");
-          body.stringType("mediation_submission_reference", "string");
           body.uuid("previous_submission_id",
               UUID.fromString("3fa85f64-5717-4562-b3fc-2c963f66afa6"));
           body.booleanType("is_nil_submission", true);
           body.numberType("number_of_claims", 0);
           body.numberType("calculated_total_amount", 0);
-          body.datetime("submitted", "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+          body.datetime("submitted", "yyyy-MM-dd'T'HH:mm:ssXXX");
           body.stringType("created_by_user_id", "string");
           body.minArrayLike("claims", 1, claim -> {
             claim.uuid("claim_id", UUID.fromString("3fa85f64-5717-4562-b3fc-2c963f66afa6"));
