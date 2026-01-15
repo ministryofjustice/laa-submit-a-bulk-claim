@@ -1,9 +1,7 @@
 name: Deploy UAT preview (branch)
 
 on:
-  push:
-    branches:
-      - 'chore/imporved-pipeline'
+  pull_request:
 
 permissions:
   contents: read

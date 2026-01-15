@@ -99,4 +99,8 @@ env:
         key: UPLOAD_MAX_FILE_SIZE
 
   - name: REDIS_HOST
-    value: "{{ .Release.Name }}-redis-master"
+    value: "redis://{{ .Release.Name }}-redis-master:6379"
+
+autoscaling:
+  minReplicas: 1
+  maxReplicas: 2
