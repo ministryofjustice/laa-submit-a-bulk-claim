@@ -15,7 +15,8 @@ metadata:
     nginx.ingress.kubernetes.io/session-cookie-name: route
     nginx.ingress.kubernetes.io/whitelist-source-range: {{ .Values.ingress.whitelistSourceRange | quote }}
 spec:
-  {{- $host := printf "%s-%s.%s" .Release.Name .Release.Namespace .Values.clusterDomain | trunc 57 | trimSuffix "-" }}
+  {{- $hostLabel := printf "%s-%s" .Release.Name .Release.Namespace | trunc 57 | trimSuffix "-" }}
+  {{- $host := printf "%s.%s" $hostLabel .Values.clusterDomain }}
   ingressClassName: {{ .Values.ingress.className }}
   tls:
     - hosts:

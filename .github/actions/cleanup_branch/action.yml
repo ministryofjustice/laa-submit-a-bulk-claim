@@ -45,3 +45,10 @@ runs:
     - name: Delete preview release's redis pvc (persistent volume claim)
       shell: bash
       run: kubectl delete pvc -l app.kubernetes.io/instance="${{ steps.extract_release_name.outputs.release-name }}-redis" --namespace ${{ inputs.kube-namespace }}
+
+    - name: Delete Helm release history secrets
+      shell: bash
+      run: |
+        kubectl delete secret -l name=${{ steps.extract_release_name.outputs.release-name }},owner=helm --namespace ${{ inputs.kube-namespace }} --ignore-not-found=true
+        kubectl delete secret -l name=${{ steps.extract_release_name.outputs.release-name }}-redis,owner=helm --namespace ${{ inputs.kube-namespace }} --ignore-not-found=true
+        kubectl delete secret -l name=${{ steps.extract_release_name.outputs.release-name }}-oidc-mock,owner=helm --namespace ${{ inputs.kube-namespace }} --ignore-not-found=true
