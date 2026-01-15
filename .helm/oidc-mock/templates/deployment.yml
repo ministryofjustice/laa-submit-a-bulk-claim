@@ -18,7 +18,7 @@ spec:
       volumes:
         - name: mock-oidc-config
           configMap:
-            name: {{ .Release.Name }}-mock-oidc-server
+            name: {{ .Release.Name }}-config-map
             defaultMode: 420
       securityContext:
         runAsUser: 1000
