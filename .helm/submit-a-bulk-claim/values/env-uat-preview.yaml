@@ -110,7 +110,7 @@ autoscaling:
 volumes:
   - name: mock-oidc-config
     configMap:
-      name: "{{ .Release.Name }}-oidc-mock-config-map"
+      name: "{{ .Release.Name }}-mock-oidc"
       defaultMode: 420
 
 volumeMounts:
