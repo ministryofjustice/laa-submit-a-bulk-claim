@@ -1,0 +1,23 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Release.Name }}-submit-a-bulk-claim-mock-oidc-server
+  namespace: {{ .Release.Namespace }}
+data:
+  {{- $appHost := printf "%s-submit-a-bulk-claim-%s.%s" .Release.Name .Release.Namespace .Values.clusterDomain | trunc 63 | trimSuffix "-" }}
+  application-mock-oidc.yml: |
+    spring:
+      config:
+        activate:
+          on-profile: mock-oidc
+      security:
+        oauth2:
+          authorizationserver:
+            client:
+              bulk-claim-client:
+                registration:
+                  redirect-uris:
+                    - "https://{{ $appHost }}/login/oauth2/code/silas-identity"
+                  post-logout-redirect-uris:
+                    - "https://{{ $appHost }}/logged-out"
+      

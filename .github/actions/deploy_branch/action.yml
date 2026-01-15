@@ -94,6 +94,10 @@ runs:
             -f .helm/bitnami_redis/values.yaml \
             --namespace ${KUBE_NAMESPACE} \
             --install --wait --timeout=10m
+          helm upgrade ${RELEASE_NAME}-oidc-mock .helm/oidc-mock \
+            --namespace ${KUBE_NAMESPACE} \
+            --set image.repository="${ECR_REGISTRY}/${ECR_REPOSITORY}" \
+            --install --wait --timeout=10m
         fi
 
         helm upgrade $RELEASE_NAME .helm/submit-a-bulk-claim \

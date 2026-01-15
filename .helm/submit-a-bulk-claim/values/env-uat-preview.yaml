@@ -100,6 +100,8 @@ env:
 
   - name: REDIS_HOST
     value: "redis://{{ .Release.Name }}-redis-master:6379"
+  - name: SPRING_PROFILES_ACTIVE
+    value: mock-oidc
 
 autoscaling:
   minReplicas: 1

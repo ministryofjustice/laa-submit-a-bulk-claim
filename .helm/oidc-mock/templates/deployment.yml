@@ -1,0 +1,46 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}-oidc-mock
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app: {{ .Release.Name }}-oidc-mock
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{ .Release.Name }}-oidc-mock
+  template:
+    metadata:
+      labels:
+        app: {{ .Release.Name }}-oidc-mock
+    spec:
+      volumes:
+        - name: mock-oidc-config
+          configMap:
+            name: {{ .Release.Name }}-submit-a-bulk-claim-mock-oidc-server
+            defaultMode: 420
+      securityContext:
+        runAsUser: 1000
+        runAsGroup: 1000
+        runAsNonRoot: true
+        supplementalGroups:
+          - 1
+        fsGroup: 1000
+        seccompProfile:
+          type: RuntimeDefault
+      containers:
+        - name: oidc-mock
+          image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
+          ports:
+            - containerPort: 9000
+          env:
+            - name: SPRING_CONFIG_ADDITIONAL_LOCATION
+              value: /config/
+            - name: SPRING_PROFILES_ACTIVE
+              value: mock-oidc
+          volumeMounts:
+            - name: mock-oidc-config
+              readOnly: true
+              mountPath: /config/application-mock-oidc.yml
+              subPath: application-mock-oidc.yml
