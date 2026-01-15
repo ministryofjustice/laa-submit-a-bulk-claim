@@ -1,24 +1,24 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ .Release.Name }}-oidc-mock
+  name: {{ .Release.Name }}
   namespace: {{ .Release.Namespace }}
   labels:
-    app: {{ .Release.Name }}-oidc-mock
+    app: {{ .Release.Name }}
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: {{ .Release.Name }}-oidc-mock
+      app: {{ .Release.Name }}
   template:
     metadata:
       labels:
-        app: {{ .Release.Name }}-oidc-mock
+        app: {{ .Release.Name }}
     spec:
       volumes:
         - name: mock-oidc-config
           configMap:
-            name: {{ .Release.Name }}-submit-a-bulk-claim-mock-oidc-server
+            name: {{ .Release.Name }}-mock-oidc-server
             defaultMode: 420
       securityContext:
         runAsUser: 1000

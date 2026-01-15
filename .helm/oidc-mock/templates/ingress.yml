@@ -1,11 +1,11 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: {{ .Release.Name }}-submit-a-bulk-claim-oidc-mock
+  name: {{ .Release.Name }}
   namespace: {{ .Release.Namespace }}
   annotations:
     external-dns.alpha.kubernetes.io/aws-weight: "100"
-    external-dns.alpha.kubernetes.io/set-identifier: {{ .Release.Name }}-submit-a-bulk-claim-oidc-mock-{{ .Release.Namespace }}-green
+    external-dns.alpha.kubernetes.io/set-identifier: {{ .Release.Name }}-{{ .Release.Namespace }}-green
     nginx.ingress.kubernetes.io/affinity: cookie
     nginx.ingress.kubernetes.io/affinity-mode: persistent
     nginx.ingress.kubernetes.io/enable-modsecurity: "true"
@@ -15,7 +15,7 @@ metadata:
     nginx.ingress.kubernetes.io/session-cookie-name: route
     nginx.ingress.kubernetes.io/whitelist-source-range: {{ .Values.ingress.whitelistSourceRange | quote }}
 spec:
-  {{- $host := printf "%s-submit-a-bulk-claim-oidc-mock-%s.%s" .Release.Name .Release.Namespace .Values.clusterDomain | trunc 63 | trimSuffix "-" }}
+  {{- $host := printf "%s-%s.%s" .Release.Name .Release.Namespace .Values.clusterDomain | trunc 57 | trimSuffix "-" }}
   ingressClassName: {{ .Values.ingress.className }}
   tls:
     - hosts:
@@ -28,6 +28,6 @@ spec:
             pathType: ImplementationSpecific
             backend:
               service:
-                name: {{ .Release.Name }}-oidc-mock
+                name: {{ .Release.Name }}
                 port:
                   number: {{ .Values.service.port }}

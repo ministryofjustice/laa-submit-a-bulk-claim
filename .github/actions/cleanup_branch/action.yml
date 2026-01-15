@@ -38,6 +38,10 @@ runs:
       shell: bash
       run: helm uninstall ${{ steps.extract_release_name.outputs.release-name }}-redis --namespace ${{ inputs.kube-namespace }}
 
+    - name: Delete preview release's oidc mock
+      shell: bash
+      run: helm uninstall ${{ steps.extract_release_name.outputs.release-name }}-oidc-mock --namespace ${{ inputs.kube-namespace }}
+
     - name: Delete preview release's redis pvc (persistent volume claim)
       shell: bash
       run: kubectl delete pvc -l app.kubernetes.io/instance="${{ steps.extract_release_name.outputs.release-name }}-redis" --namespace ${{ inputs.kube-namespace }}
