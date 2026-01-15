@@ -1,0 +1,25 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Values.sabc.releaseName }}-mock-oidc
+  namespace: {{ .Release.Namespace }}
+data:
+  {{- $appLabel := printf "%s-submit-a-bulk-claim-%s" .Values.sabc.releaseName .Release.Namespace | trunc 57 | trimSuffix "-" }}
+  {{- $appHost := printf "%s.%s" $appLabel .Values.clusterDomain }}
+  {{- $oidcLabel := printf "%s-%s" .Release.Name .Release.Namespace | trunc 57 | trimSuffix "-" }}
+  {{- $oidcHost := printf "%s.%s" $oidcLabel .Values.clusterDomain }}
+  application-mock-oidc.yml: |
+    spring:
+      config:
+        activate:
+          on-profile: mock-oidc
+      security:
+        oauth2:
+          client:
+            registration:
+              silas-identity:
+                redirect-uri: "https://{{ $appHost }}/login/oauth2/code/silas-identity"
+            provider:
+              silas-identity:
+                issuer-uri: https://{{ $oidcHost }}
+      

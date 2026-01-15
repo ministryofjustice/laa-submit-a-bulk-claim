@@ -1,0 +1,23 @@
+image:
+  repository: bitnami/redis
+  tag: "latest"
+
+auth:
+  enabled: false
+
+architecture: standalone
+
+master:
+  persistence:
+    enabled: true
+    size: 8Gi
+    storageClass: ""
+  serviceAccount:
+    create: false
+    name: laa-submit-a-bulk-claim-uat-service-account
+    automountServiceAccountToken: false
+
+serviceAccount:
+  create: false
+  name: laa-submit-a-bulk-claim-uat-service-account
+  automountServiceAccountToken: false

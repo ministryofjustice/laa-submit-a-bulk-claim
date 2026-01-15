@@ -42,16 +42,16 @@ jobs:
 
       - name: Set helm chart app version
         run: |
-          yq eval-all "( .appVersion = \"${{ inputs.image_tag }}\" )" -i helm-chart/Chart.yaml
-          cat helm-chart/Chart.yaml
+          yq eval-all "( .appVersion = \"${{ inputs.image_tag }}\" )" -i .helm/submit-a-bulk-claim/Chart.yaml
+          cat .helm/submit-a-bulk-claim/Chart.yaml
 
       - name: Install or upgrade helm charts
         id: helm-install
         run: |
           echo "Deploying Helm release '${{ inputs.deployment_name }}'..."
           helm upgrade --install --wait --timeout 5m \
-            -f helm-chart/values/env-${{ inputs.environment }}.yaml \
-            ${{ inputs.deployment_name }} helm-chart \
+            -f .helm/submit-a-bulk-claim/values/env-${{ inputs.environment }}.yaml \
+            ${{ inputs.deployment_name }} .helm/submit-a-bulk-claim \
             --set global.image.repository=${{ steps.login-ecr.outputs.registry }}/${{ vars.ECR_REPOSITORY }}
           IMAGES=$(helm get manifest ${{ inputs.deployment_name }} | yq -o=json '.' | jq -sc '[.[] | select(.kind == "Deployment") | select(.spec.template.spec.containers[0].image | contains("${{ steps.login-ecr.outputs.registry }}/${{ vars.ECR_REPOSITORY }}")) | {image_version_tag: .metadata.labels.appVersion, release_tag: .metadata.name}]')
           echo "images=$IMAGES" >> $GITHUB_OUTPUT
