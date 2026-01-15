@@ -1,0 +1,19 @@
+image:
+  repository: bitnami/redis
+  tag: "7.4.1-debian-12-r0"
+
+auth:
+  enabled: false
+
+architecture: standalone
+
+master:
+  persistence:
+    enabled: true
+    size: 8Gi
+    storageClass: ""
+
+serviceAccount:
+  create: false
+  name: default
+  automountServiceAccountToken: false
