@@ -110,7 +110,7 @@ autoscaling:
 volumes:
   - name: mock-oidc-config
     configMap:
-      name: uat-submit-a-bulk-claim-mock-oidc
+      name: "{{ .Release.Name }}-mock-oidc-server"
       defaultMode: 420
 
 volumeMounts:
