@@ -1,0 +1,102 @@
+env:
+  - name: AUTH_CLIENT_ID
+    valueFrom:
+      secretKeyRef:
+        name: laa-submit-a-bulk-claim-secrets
+        key: AUTH_CLIENT_ID
+
+  - name: AUTH_CLIENT_SECRET
+    valueFrom:
+      secretKeyRef:
+        name: laa-submit-a-bulk-claim-secrets
+        key: AUTH_CLIENT_SECRET
+
+  - name: AUTH_CLOUD_INSTANCE
+    value: https://login.microsoftonline.com
+
+  - name: AUTH_SCOPE
+    valueFrom:
+      secretKeyRef:
+        name: laa-submit-a-bulk-claim-secrets
+        key: AUTH_SCOPE
+
+  - name: AUTH_TENANT_ID
+    valueFrom:
+      secretKeyRef:
+        name: laa-submit-a-bulk-claim-secrets
+        key: AUTH_TENANT_ID
+
+  - name: CWA_API_URL
+    valueFrom:
+      secretKeyRef:
+        name: laa-submit-a-bulk-claim-secrets
+        key: CWA_API_URL
+
+  - name: CLAIM_API_URL
+    valueFrom:
+      secretKeyRef:
+        name: laa-submit-a-bulk-claim-secrets
+        key: CLAIM_API_URL
+
+  - name: CLAIMS_API_ACCESS_TOKEN
+    valueFrom:
+      secretKeyRef:
+        name: laa-submit-a-bulk-claim-secrets
+        key: CLAIMS_API_ACCESS_TOKEN
+
+  - name: SILAS_CLIENT_ID
+    valueFrom:
+      secretKeyRef:
+        name: laa-submit-a-bulk-claim-secrets
+        key: SILAS_CLIENT_ID
+
+  - name: SILAS_CLIENT_SECRET
+    valueFrom:
+      secretKeyRef:
+        name: laa-submit-a-bulk-claim-secrets
+        key: SILAS_CLIENT_SECRET
+
+  - name: SILAS_SCOPE
+    valueFrom:
+      secretKeyRef:
+        name: laa-submit-a-bulk-claim-secrets
+        key: SILAS_SCOPE
+
+  - name: SILAS_TENANT_ID
+    valueFrom:
+      secretKeyRef:
+        name: laa-submit-a-bulk-claim-secrets
+        key: SILAS_TENANT_ID
+
+  - name: REST_CLIENT_CONNECT_TIMEOUT
+    valueFrom:
+      secretKeyRef:
+        name: laa-submit-a-bulk-claim-secrets
+        key: REST_CLIENT_CONNECT_TIMEOUT
+
+  - name: REST_CLIENT_READ_TIMEOUT
+    valueFrom:
+      secretKeyRef:
+        name: laa-submit-a-bulk-claim-secrets
+        key: REST_CLIENT_READ_TIMEOUT
+
+  - name: SDS_API_URL
+    valueFrom:
+      secretKeyRef:
+        name: laa-submit-a-bulk-claim-secrets
+        key: SDS_API_URL
+
+  - name: SERVER_MAX_FILE_SIZE
+    valueFrom:
+      secretKeyRef:
+        name: laa-submit-a-bulk-claim-secrets
+        key: SERVER_MAX_FILE_SIZE
+
+  - name: UPLOAD_MAX_FILE_SIZE
+    valueFrom:
+      secretKeyRef:
+        name: laa-submit-a-bulk-claim-secrets
+        key: UPLOAD_MAX_FILE_SIZE
+
+  - name: REDIS_HOST
+    value: "{{ .Release.Name }}-redis-master"

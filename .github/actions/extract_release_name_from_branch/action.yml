@@ -1,0 +1,20 @@
+name: "Extract Release Name"
+description: "Converts branch name into a formatted Helm release name"
+inputs:
+  branch_name:
+    description: "The original branch name"
+    required: true
+outputs:
+  release_name:
+    description: "Formatted release name"
+    value: ${{ steps.release.outputs.release_name }}
+runs:
+  using: "composite"
+  steps:
+    - id: release
+      shell: bash
+      run: |
+        branch_name="${{ inputs.branch_name }}"
+        truncated_branch=$(echo "$branch_name" | tr '[:upper:]' '[:lower:]' | tr -s ' _/[]().' '-' | cut -c1-15 | sed 's/-$//')
+        echo "release_name=${truncated_branch}" >> $GITHUB_OUTPUT
+        echo "release_name being exported: ${truncated_branch}"
