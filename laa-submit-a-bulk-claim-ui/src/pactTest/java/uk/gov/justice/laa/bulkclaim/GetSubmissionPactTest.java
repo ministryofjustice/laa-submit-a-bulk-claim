@@ -3,6 +3,7 @@ package uk.gov.justice.laa.bulkclaim;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+import au.com.dius.pact.consumer.dsl.LambdaDsl;
 import au.com.dius.pact.consumer.dsl.PactDslWithProvider;
 import au.com.dius.pact.consumer.junit.MockServerConfig;
 import au.com.dius.pact.consumer.junit5.PactConsumerTest;
@@ -10,6 +11,7 @@ import au.com.dius.pact.consumer.junit5.PactTestFor;
 import au.com.dius.pact.core.model.RequestResponsePact;
 import au.com.dius.pact.core.model.annotations.Pact;
 import java.util.Map;
+import java.util.UUID;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -37,18 +39,48 @@ public final class GetSubmissionPactTest extends AbstractPactTest {
   @SneakyThrows
   @Pact(consumer = CONSUMER)
   public RequestResponsePact getSubmission200(PactDslWithProvider builder) {
-    String submissionResponse = readJsonFromFile("get-submission-200.json");
     // Defines expected 200 response for existing submission
     return builder
         .given("a submission exists")
-        .uponReceiving("a request to fetch a specific submission")
+        .uponReceiving("a request to fetch a existing submission")
         .matchPath("/api/v0/submissions/(" + UUID_REGEX + ")")
         .matchHeader(HttpHeaders.AUTHORIZATION, UUID_REGEX)
         .method("GET")
         .willRespondWith()
         .status(200)
         .headers(Map.of("Content-Type", "application/json"))
-        .body(submissionResponse)
+        .body(
+            LambdaDsl.newJsonBody(
+                    body -> {
+                      body.uuid(
+                          "submission_id", UUID.fromString("3fa85f64-5717-4562-b3fc-2c963f66afa6"));
+                      body.uuid(
+                          "bulk_submission_id",
+                          UUID.fromString("3fa85f64-5717-4562-b3fc-2c963f66afa6"));
+                      body.stringType("office_account_number", "string");
+                      body.stringType("submission_period", "string");
+                      body.stringType("area_of_law", "CRIME LOWER");
+                      body.stringType("provider_user_id", "string");
+                      body.stringType("status", "CREATED");
+                      body.uuid(
+                          "previous_submission_id",
+                          UUID.fromString("3fa85f64-5717-4562-b3fc-2c963f66afa6"));
+                      body.booleanType("is_nil_submission", true);
+                      body.numberType("number_of_claims", 0);
+                      body.numberType("calculated_total_amount", 0);
+                      body.datetime("submitted", "yyyy-MM-dd'T'HH:mm:ssXXX");
+                      body.stringType("created_by_user_id", "string");
+                      body.minArrayLike(
+                          "claims",
+                          1,
+                          claim -> {
+                            claim.uuid(
+                                "claim_id",
+                                UUID.fromString("3fa85f64-5717-4562-b3fc-2c963f66afa6"));
+                            claim.stringType("status", "READY_TO_PROCESS");
+                          });
+                    })
+                .build())
         .toPact();
   }
 

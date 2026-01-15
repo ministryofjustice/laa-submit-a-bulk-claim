@@ -3,6 +3,8 @@ package uk.gov.justice.laa.bulkclaim;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+import au.com.dius.pact.consumer.dsl.LambdaDsl;
+import au.com.dius.pact.consumer.dsl.LambdaDslJsonArray;
 import au.com.dius.pact.consumer.dsl.PactDslWithProvider;
 import au.com.dius.pact.consumer.junit.MockServerConfig;
 import au.com.dius.pact.consumer.junit5.PactConsumerTest;
@@ -11,6 +13,7 @@ import au.com.dius.pact.core.model.RequestResponsePact;
 import au.com.dius.pact.core.model.annotations.Pact;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -41,7 +44,6 @@ public final class PostBulkSubmissionPactTest extends AbstractPactTest {
   @SneakyThrows
   @Pact(consumer = CONSUMER)
   public RequestResponsePact postBulkSubmission201(PactDslWithProvider builder) {
-    String postBulkSubmissionResponse = readJsonFromFile("post-bulk-submission.json");
     // Defines expected 201 response for successfully submitting valid bulk submission
     return builder
         .given("the system is ready to process a valid bulk submission")
@@ -51,18 +53,25 @@ public final class PostBulkSubmissionPactTest extends AbstractPactTest {
         .matchQuery("offices", "([A-Z0-9]{6})")
         .matchHeader(HttpHeaders.AUTHORIZATION, UUID_REGEX)
         .method("POST")
-        .withFileUpload("file", "test.txt", "text/plain", new byte[10 * 1024 * 1024])
+        .withFileUpload("file", "test.txt", "text/plain", new byte[10])
         .willRespondWith()
         .status(201)
         .headers(Map.of("Content-Type", "application/json"))
-        .body(postBulkSubmissionResponse)
+        .body(
+            LambdaDsl.newJsonBody(
+                    body -> {
+                      body.uuid(
+                          "bulk_submission_id",
+                          UUID.fromString("17bec50d-f3bb-4cee-95c4-68e0ce167ea5"));
+                      body.array("submission_ids", LambdaDslJsonArray::uuid);
+                    })
+                .build())
         .toPact();
   }
 
   @SneakyThrows
   @Pact(consumer = CONSUMER)
   public RequestResponsePact postBulkSubmission400(PactDslWithProvider builder) {
-    String postBulkSubmissionResponse = readJsonFromFile("post-bulk-submission.json");
     // Defines expected 400 response for uploading invalid bulk submission
     return builder
         .given("the submission file contains invalid data")
@@ -72,11 +81,19 @@ public final class PostBulkSubmissionPactTest extends AbstractPactTest {
         .matchQuery("offices", "([A-Z0-9]{6})")
         .matchHeader(HttpHeaders.AUTHORIZATION, UUID_REGEX)
         .method("POST")
-        .withFileUpload("file", "test.txt", "text/plain", new byte[10 * 1024 * 1024])
+        .withFileUpload("file", "test.txt", "text/plain", new byte[10])
         .willRespondWith()
         .status(400)
         .headers(Map.of("Content-Type", "application/json"))
-        .body(postBulkSubmissionResponse)
+        .body(
+            LambdaDsl.newJsonBody(
+                    body -> {
+                      body.uuid(
+                          "bulk_submission_id",
+                          UUID.fromString("17bec50d-f3bb-4cee-95c4-68e0ce167ea5"));
+                      body.array("submission_ids", LambdaDslJsonArray::uuid);
+                    })
+                .build())
         .toPact();
   }
 
@@ -86,8 +103,7 @@ public final class PostBulkSubmissionPactTest extends AbstractPactTest {
   void verify201Response() {
     String userId = "test-user";
     List<String> offices = List.of("ABC123", "XYZ789");
-    MockMultipartFile file =
-        new MockMultipartFile("file", "test.txt", "text/plain", new byte[10 * 1024 * 1024]);
+    MockMultipartFile file = new MockMultipartFile("file", "test.txt", "text/plain", new byte[10]);
 
     ResponseEntity<CreateBulkSubmission201Response> submission =
         dataClaimsRestClient.upload(file, userId, offices).block();
@@ -102,8 +118,7 @@ public final class PostBulkSubmissionPactTest extends AbstractPactTest {
   void verify400Response() {
     String userId = "test-user";
     List<String> offices = List.of("ABC123", "XYZ789");
-    MockMultipartFile file =
-        new MockMultipartFile("file", "test.txt", "text/plain", new byte[10 * 1024 * 1024]);
+    MockMultipartFile file = new MockMultipartFile("file", "test.txt", "text/plain", new byte[10]);
 
     assertThrows(
         BadRequest.class, () -> dataClaimsRestClient.upload(file, userId, offices).block());

@@ -2,6 +2,7 @@ package uk.gov.justice.laa.bulkclaim;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
+import au.com.dius.pact.consumer.dsl.LambdaDsl;
 import au.com.dius.pact.consumer.dsl.PactDslWithProvider;
 import au.com.dius.pact.consumer.junit.MockServerConfig;
 import au.com.dius.pact.consumer.junit5.PactConsumerTest;
@@ -9,6 +10,7 @@ import au.com.dius.pact.consumer.junit5.PactTestFor;
 import au.com.dius.pact.core.model.RequestResponsePact;
 import au.com.dius.pact.core.model.annotations.Pact;
 import java.util.Map;
+import java.util.UUID;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -35,7 +37,6 @@ public final class GetValidationMessagesPactTest extends AbstractPactTest {
   @SneakyThrows
   @Pact(consumer = CONSUMER)
   public RequestResponsePact getValidationMessages200(PactDslWithProvider builder) {
-    String claimsResponse = readJsonFromFile("get-validation-messages-200.json");
     // Defines expected 200 response for validation messages response
     return builder
         .given("validation messages exist for the search criteria")
@@ -52,14 +53,37 @@ public final class GetValidationMessagesPactTest extends AbstractPactTest {
         .willRespondWith()
         .status(200)
         .headers(Map.of("Content-Type", "application/json"))
-        .body(claimsResponse)
+        .body(
+            LambdaDsl.newJsonBody(
+                    body -> {
+                      body.numberType("total_pages", 1);
+                      body.numberType("total_elements", 3);
+                      body.numberType("total_claims", 2);
+                      body.numberType("number", 0);
+                      body.numberType("size", 10);
+                      body.minArrayLike(
+                          "content",
+                          1,
+                          message -> {
+                            message.uuid(
+                                "id", UUID.fromString("9d21c19c-4eab-4869-ad28-db537ba3e497"));
+                            message.uuid(
+                                "claim_id",
+                                UUID.fromString("b008c43e-2153-494d-8f14-651628cd23eb"));
+                            message.uuid(
+                                "submission_id",
+                                UUID.fromString("0561d67b-30ed-412e-8231-f6296a53538d"));
+                            message.stringType("display_message", "Message description");
+                            message.stringMatcher("type", "(ERROR|WARNING)", "ERROR");
+                          });
+                    })
+                .build())
         .toPact();
   }
 
   @SneakyThrows
   @Pact(consumer = CONSUMER)
   public RequestResponsePact getValidationMessagesEmpty200(PactDslWithProvider builder) {
-    String clamsResponse = readJsonFromFile("get-empty-search-200.json");
     // Defines expected 200 response for validation messages response, even when empty
     return builder
         .given("no validation messages exist for the search criteria")
@@ -76,7 +100,17 @@ public final class GetValidationMessagesPactTest extends AbstractPactTest {
         .willRespondWith()
         .status(200)
         .headers(Map.of("Content-Type", "application/json"))
-        .body(clamsResponse)
+        .body(
+            LambdaDsl.newJsonBody(
+                    body -> {
+                      body.array("content", array -> {});
+                      body.numberType("total_pages", 0);
+                      body.numberType("total_elements", 0);
+                      body.numberType("total_claims", 0);
+                      body.numberType("number", 0);
+                      body.numberType("size", 10);
+                    })
+                .build())
         .toPact();
   }
 
