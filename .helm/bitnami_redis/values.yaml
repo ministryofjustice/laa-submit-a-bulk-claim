@@ -12,8 +12,6 @@ master:
     enabled: true
     size: 8Gi
     storageClass: ""
-
-serviceAccount:
-  create: false
-  name: default
-  automountServiceAccountToken: false
+  serviceAccount:
+    create: false
+    name: default
