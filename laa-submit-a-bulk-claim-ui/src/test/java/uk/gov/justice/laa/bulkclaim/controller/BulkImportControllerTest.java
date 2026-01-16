@@ -88,8 +88,8 @@ class BulkImportControllerTest {
                   .sessionAttr("fileUploadForm", input)
                   .with(csrf())
                   .with(oidcLogin().oidcUser(getOidcUser())))
-          .andExpect(status().is3xxRedirection())
-          .andExpect(view().name("redirect:/upload"));
+          .andExpect(status().isOk())
+          .andExpect(view().name("pages/upload"));
     }
 
     @Test
@@ -114,8 +114,8 @@ class BulkImportControllerTest {
                   .sessionAttr("fileUploadForm", input)
                   .with(csrf())
                   .with(oidcLogin().oidcUser(getOidcUser())))
-          .andExpect(status().is3xxRedirection())
-          .andExpect(view().name("redirect:/upload"));
+          .andExpect(status().isOk())
+          .andExpect(view().name("pages/upload"));
     }
 
     @Test
@@ -134,8 +134,8 @@ class BulkImportControllerTest {
                   .sessionAttr("fileUploadForm", input)
                   .with(csrf())
                   .with(oidcLogin().oidcUser(getOidcUser())))
-          .andExpect(status().is3xxRedirection())
-          .andExpect(view().name("redirect:/upload"));
+          .andExpect(status().isOk())
+          .andExpect(view().name("pages/upload"));
     }
 
     @Test
