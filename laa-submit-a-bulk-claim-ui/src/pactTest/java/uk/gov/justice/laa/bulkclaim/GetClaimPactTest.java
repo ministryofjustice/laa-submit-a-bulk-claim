@@ -154,7 +154,6 @@ public final class GetClaimPactTest extends AbstractPactTest {
           body.stringType("local_authority_number", "string");
           body.stringType("submission_period", "string");
           body.stringType("created_by_user_id", "string");
-          body.numberType("total_warnings", 0);
           body.object("fee_calculation_response", fee -> {
             fee.stringType("calculated_fee_detail_id", "string");
             fee.uuid("claim_summary_fee_id",
