@@ -6,64 +6,18 @@
     <div class="govuk-grid-row">
       <div class="govuk-grid-column-two-thirds"  data-module="laa-print-button">
         <div class="app-pros-scope govuk-body">
-          <h1 id="accessibility-statement" class="govuk-heading-xl">
-            Accessibility Statement
-          </h1>
-          <p>
-            The Legal Aid Agency is committed to making its websites accessible, in accordance with the Public Sector Bodies (Websites and Mobile Applications) (No. 2) Accessibility Regulations 2018.
-          </p>
-          <p>
-            This accessibility statement applies to the <strong>Submit a Bulk Claim</strong> service.
-          </p>
-          <h2 id="compliance-status" class="govuk-heading-m">Compliance status</h2>
-          <p>
-            This website is partially compliant with the Web Content Accessibility Guidelines version 2.2 AA standard, due to the non-compliance listed below.
-          </p>
-          <h2 id="non-accessible-content" class="govuk-heading-m">Non accessible content</h2>
-          <p>
-            The content listed below is non-accessible for the following reasons:
-          </p>
-          <p>
-            (a) non-compliance with the accessibility regulations
-          </p>
-          <p>
-            On the <strong>submission is being validated</strong> page, an automatic refresh is used. This does not meet:
-          </p>
-          <ul>
-            <li>
-              WCAG Success Criteria [WCAG 2.2 (A)] 2.2.1: MUST: Timing Adjustable
-            </li>
-          </ul>
-          <p>
-            This can prevent control over when the refresh occurs for users. We aim to meet this criterion by removing the automatic refresh and replacing it with accessible functionality with the next iteration of the service.
-          </p>
-          <p>
-            There may be other instances of non-compliance with accessibility regulations that we do not know about due to the lack of a full audit.
-          </p>
-          <h2 id="preparation-of-this-accessibility-statement" class="govuk-heading-m">
-            Preparation of this accessibility statement
-          </h2>
-          <p>
-            This statement was prepared and last reviewed on 11th January 2026.
-          </p>
-          <p>
-            The service has been automatically and manually tested using tools such as Axe and WAVE. It has been evaluated throughout its design and development phases. Due to time constraints, it has not yet been fully audited. A full accessibility audit is planned for Summer 2026.
-          </p>
-          <h2 id="feedback-and-contact-information" class="govuk-heading-m">
-            Feedback and contact information
-          </h2>
-          <p>
-            Contact us using our <a th:href="@{https://www.smartsurvey.co.uk/s/LaaSaBCbeta/}" class="govuk-link--no-visited-state">feedback survey</a> or to notify us of any compliance failures.
-          </p>
-          <h2 id="enforcement-procedure" class="govuk-heading-m">
-            Enforcement procedure
-          </h2>
-          <p>
-            The Equality and Human Rights Commission (EHRC) is responsible for enforcing the Public Sector Bodies (Websites and Mobile Applications) (No. 2) Accessibility Regulations 2018 (the ‘accessibility regulations’).
-          </p>
-          <p>
-            If you’re not happy with how we respond to your complaint, contact the Equality Advisory and Support Service (EASS).
-          </p>
+          <h1 id="accessibility-statement" class="govuk-heading-xl" th:text="#{accessibilityPage.title}"></h1>
+          <p th:utext="#{accessibilityPage.intro}"></p>
+          <h2 id="compliance-status" class="govuk-heading-m" th:text="#{accessibilityPage.titleCS}" ></h2>
+          <p th:text="#{accessibilityPage.compliance}"></p>
+          <h2 id="non-accessible-content" class="govuk-heading-m" th:text="#{accessibilityPage.titleNAC}"></h2>
+          <p th:utext="#{accessibilityPage.NAC}"></p>
+          <h2 id="preparation-of-this-accessibility-statement" class="govuk-heading-m" th:text="#{accessibilityPage.titlePOAS}"></h2>
+          <p th:utext="#{accessibilityPage.POAS}"></p>
+          <h2 id="feedback-and-contact-information" class="govuk-heading-m" th:text="#{accessibilityPage.titleFCI}"></h2>
+          <p th:utext="#{accessibilityPage.FCI}"></p>
+          <h2 id="enforcement-procedure" class="govuk-heading-m" th:text="#{accessibilityPage.titleEP}"></h2>
+          <p th:utext="#{accessibilityPage.EP}"></p>
         </div>
       </div>
     </div>
