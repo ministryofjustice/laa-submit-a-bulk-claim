@@ -50,4 +50,23 @@ public class WebMvcTestConfig {
   CacheManager cacheManager() {
     return Mockito.mock(CacheManager.class);
   }
+
+  /**
+   * This disabled the host header handling filter for tests
+   *
+   * @return
+   */
+  @Bean
+  public HostValidationFilter hostValidationFilter() {
+    return new HostValidationFilter(null) {
+      @Override
+      protected void doFilterInternal(
+          jakarta.servlet.http.HttpServletRequest request,
+          jakarta.servlet.http.HttpServletResponse response,
+          jakarta.servlet.FilterChain filterChain)
+          throws jakarta.servlet.ServletException, java.io.IOException {
+        filterChain.doFilter(request, response);
+      }
+    };
+  }
 }

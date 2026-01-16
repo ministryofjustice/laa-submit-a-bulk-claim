@@ -3,7 +3,6 @@ server:
     max-swallow-size: 500MB
   port: 8082
 
-
 spring:
   servlet:
     multipart:
@@ -45,7 +44,10 @@ spring:
     redis:
       url: ${REDIS_HOST}
 
+security:
+  allowed-hosts: ${ALLOWED_HOSTS:"localhost,localhost:8080,127.0.0.1,127.0.0.1:8080"}
 app:
+  canonical-base-url: ${CANONICAL_BASE_URL:"http://localhost:8080"}
   sds-api:
     url: ${SDS_API_URL}
   claims-api:
