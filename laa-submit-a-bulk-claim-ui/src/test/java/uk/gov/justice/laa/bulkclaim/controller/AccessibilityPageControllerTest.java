@@ -20,8 +20,7 @@ import uk.gov.justice.laa.bulkclaim.config.WebMvcTestConfig;
 @Import(WebMvcTestConfig.class)
 class AccessibilityPageControllerTest {
 
-  @Autowired
-  private MockMvcTester mockMvc;
+  @Autowired private MockMvcTester mockMvc;
 
   @MockitoBean private RestClient.Builder builder;
 
