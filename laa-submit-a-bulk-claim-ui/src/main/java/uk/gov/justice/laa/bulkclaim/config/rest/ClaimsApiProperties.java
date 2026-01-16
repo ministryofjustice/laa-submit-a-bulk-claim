@@ -7,7 +7,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  *
  * @author Jamie Briggs
  */
-@ConfigurationProperties(prefix = "claims-api")
+@ConfigurationProperties(prefix = "app.claims-api")
 public class ClaimsApiProperties extends ApiProperties {
 
   public ClaimsApiProperties(String url, String accessToken) {

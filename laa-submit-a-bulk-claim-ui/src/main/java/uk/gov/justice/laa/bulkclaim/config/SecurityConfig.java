@@ -2,6 +2,8 @@ package uk.gov.justice.laa.bulkclaim.config;
 
 import static org.springframework.security.config.Customizer.withDefaults;
 
+import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
@@ -13,6 +15,7 @@ import org.springframework.security.oauth2.client.oidc.web.logout.OidcClientInit
 import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.logout.LogoutSuccessHandler;
+import uk.gov.justice.laa.bulkclaim.service.UrlService;
 
 /**
  * Security configuration for the Bulk Upload application. This configuration sets up basic
@@ -21,7 +24,10 @@ import org.springframework.security.web.authentication.logout.LogoutSuccessHandl
 @Profile("!test") // disable security for test profile
 @Configuration(proxyBeanMethods = false)
 @EnableWebSecurity
+@RequiredArgsConstructor
 public class SecurityConfig {
+
+  private final UrlService urlService;
 
   /**
    * Configures web security to ignore requests for static resources. This allows assets like
@@ -51,8 +57,9 @@ public class SecurityConfig {
    */
   @Bean
   public SecurityFilterChain securityFilterChain(
-      HttpSecurity http, ClientRegistrationRepository clientRegistrationRepository)
-      throws Exception {
+      HttpSecurity http,
+      ClientRegistrationRepository clientRegistrationRepository,
+      @Value("${app.csp}") String contentSecurityPolicy) {
     http.authorizeHttpRequests(
             authz -> //
             authz
@@ -61,6 +68,10 @@ public class SecurityConfig {
                     .anyRequest() //
                     .authenticated())
         .csrf(Customizer.withDefaults())
+        .headers(
+            httpSecurityHeadersConfigurer ->
+                httpSecurityHeadersConfigurer.contentSecurityPolicy(
+                    csp -> csp.policyDirectives(contentSecurityPolicy)))
         .oauth2Login(
             oauth2Login -> //
             oauth2Login.loginPage("/oauth2/authorization/silas-identity"))
@@ -76,7 +87,8 @@ public class SecurityConfig {
       ClientRegistrationRepository clientRegistrationRepository) {
     OidcClientInitiatedLogoutSuccessHandler successHandler =
         new OidcClientInitiatedLogoutSuccessHandler(clientRegistrationRepository);
-    successHandler.setPostLogoutRedirectUri("{baseUrl}/logged-out");
+    String postLogoutRedirectUri = urlService.buildAbsoluteUrl("/logged-out");
+    successHandler.setPostLogoutRedirectUri(postLogoutRedirectUri);
     return successHandler;
   }
 }

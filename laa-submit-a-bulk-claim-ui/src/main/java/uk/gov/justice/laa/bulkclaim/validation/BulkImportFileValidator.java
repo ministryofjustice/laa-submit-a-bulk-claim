@@ -21,7 +21,7 @@ public class BulkImportFileValidator implements Validator {
   private final String maxFileSizeReadable;
   private final long maxFileSize;
 
-  public BulkImportFileValidator(@Value("${upload-max-file-size:10MB}") String fileSizeLimit) {
+  public BulkImportFileValidator(@Value("${app.upload-max-file-size:10MB}") String fileSizeLimit) {
     this.maxFileSizeReadable = fileSizeLimit;
     this.maxFileSize = DataSize.parse(fileSizeLimit).toBytes();
   }
