@@ -27,7 +27,7 @@ services:
       CLAIMS_API_ACCESS_TOKEN: f67f968e-b479-4e61-b66e-f57984931e56
       REST_CLIENT_CONNECT_TIMEOUT: ${REST_CLIENT_CONNECT_TIMEOUT:-5000}
       REST_CLIENT_READ_TIMEOUT: ${REST_CLIENT_READ_TIMEOUT:-40000}
-      REDIS_HOST: redis
+      REDIS_HOST: redis://redis:6379
     ports:
       - "8082:8082"
       - "8181:8081"
@@ -55,7 +55,7 @@ services:
     ports:
       - "9000:9000"
     healthcheck:
-      test: [ "CMD", "nc", "-z", "localhost", "9000" ] # Checks if the port is open
+      test: ["CMD", "nc", "-z", "localhost", "9000"] # Checks if the port is open
       interval: 5s
       timeout: 5s
       retries: 5
@@ -70,7 +70,6 @@ services:
     command: redis-server --appendonly yes
     volumes:
       - redis_data:/data
-
 
 volumes:
   redis_data:
