@@ -55,10 +55,26 @@ public final class GetMatterStartPactTest extends AbstractPactTest {
   @SneakyThrows
   @Pact(consumer = CONSUMER)
   public RequestResponsePact getMatterStart404(PactDslWithProvider builder) {
-    // Defines expected 404 response for when either submission or matter start does not exist
+    // Defines expected 404 response for when matter start does not exist
     return builder
-        .given("no matter start or submission exists for the given IDs")
+        .given("no matter starts exists")
         .uponReceiving("a request to fetch a non-existent matter start")
+        .matchPath("/api/v0/submissions/(" + UUID_REGEX + ")/matter-starts/(" + UUID_REGEX + ")")
+        .matchHeader(HttpHeaders.AUTHORIZATION, UUID_REGEX)
+        .method("GET")
+        .willRespondWith()
+        .status(404)
+        .headers(Map.of("Content-Type", "application/json"))
+        .toPact();
+  }
+
+  @SneakyThrows
+  @Pact(consumer = CONSUMER)
+  public RequestResponsePact getMatterStartNoSubmission404(PactDslWithProvider builder) {
+    // Defines expected 404 response for when matter start does not exist
+    return builder
+        .given("no submission exists")
+        .uponReceiving("a request to fetch a matter start from a non-existent submission")
         .matchPath("/api/v0/submissions/(" + UUID_REGEX + ")/matter-starts/(" + UUID_REGEX + ")")
         .matchHeader(HttpHeaders.AUTHORIZATION, UUID_REGEX)
         .method("GET")
@@ -82,6 +98,15 @@ public final class GetMatterStartPactTest extends AbstractPactTest {
   @DisplayName("Verify 404 response")
   @PactTestFor(pactMethod = "getMatterStart404")
   void verify404Response() {
+    assertThrows(
+        NotFound.class,
+        () -> dataClaimsRestClient.getSubmissionMatterStart(submissionId, matterStartId).block());
+  }
+
+  @Test
+  @DisplayName("Verify 404 response no submissions")
+  @PactTestFor(pactMethod = "getMatterStartNoSubmission404")
+  void verify404NoSubmissionResponse() {
     assertThrows(
         NotFound.class,
         () -> dataClaimsRestClient.getSubmissionMatterStart(submissionId, matterStartId).block());
