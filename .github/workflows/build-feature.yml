@@ -22,6 +22,7 @@ jobs:
       gh_token: ${{ secrets.GITHUB_TOKEN }}
 
   pact-test:
+    needs: [ build ]
     uses: ministryofjustice/laa-ccms-common-workflows/.github/workflows/pact-and-publish.yml@story/pact-publish
     permissions:
       contents: write
@@ -36,7 +37,7 @@ jobs:
       pact_broker_password: ${{ secrets.PACT_BROKER_PASSWORD }}
 
   scan-image:
-    needs: [ build ]
+    needs: [ pact-test ]
     uses: ministryofjustice/laa-ccms-common-workflows/.github/workflows/ecr-publish-image.yml@v1
     permissions:
       contents: read

@@ -85,15 +85,6 @@ public final class PostBulkSubmissionPactTest extends AbstractPactTest {
         .willRespondWith()
         .status(400)
         .headers(Map.of("Content-Type", "application/json"))
-        .body(
-            LambdaDsl.newJsonBody(
-                    body -> {
-                      body.uuid(
-                          "bulk_submission_id",
-                          UUID.fromString("17bec50d-f3bb-4cee-95c4-68e0ce167ea5"));
-                      body.array("submission_ids", LambdaDslJsonArray::uuid);
-                    })
-                .build())
         .toPact();
   }
 

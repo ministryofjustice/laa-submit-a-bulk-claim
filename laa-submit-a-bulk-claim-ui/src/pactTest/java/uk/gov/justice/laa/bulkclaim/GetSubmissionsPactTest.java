@@ -81,7 +81,6 @@ public final class GetSubmissionsPactTest extends AbstractPactTest {
                                 UUID.fromString("3fa85f64-5717-4562-b3fc-2c963f66afa6"));
                             submission.booleanType("is_nil_submission", true);
                             submission.numberType("number_of_claims", 0);
-                            submission.numberType("calculated_total_amount", 0);
                             submission.datetime("submitted", "yyyy-MM-dd'T'HH:mm:ssXXX");
                             submission.stringType("created_by_user_id", "string");
                           });
@@ -99,7 +98,7 @@ public final class GetSubmissionsPactTest extends AbstractPactTest {
   public RequestResponsePact getSubmissionsEmpty200(PactDslWithProvider builder) {
     // Defines expected 200 response for submission search, even when empty
     return builder
-        .given("no submission exist for search criteria")
+        .given("no submissions exist for the search criteria")
         .uponReceiving("a search request for submissions that returns no results")
         .path("/api/v0/submissions")
         .matchQuery("submission_id", UUID_REGEX)

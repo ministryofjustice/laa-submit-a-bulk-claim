@@ -68,11 +68,9 @@ public final class GetValidationMessagesPactTest extends AbstractPactTest {
                             message.uuid(
                                 "id", UUID.fromString("9d21c19c-4eab-4869-ad28-db537ba3e497"));
                             message.uuid(
-                                "claim_id",
-                                UUID.fromString("b008c43e-2153-494d-8f14-651628cd23eb"));
-                            message.uuid(
                                 "submission_id",
                                 UUID.fromString("0561d67b-30ed-412e-8231-f6296a53538d"));
+                            message.stringType("source", "Message source");
                             message.stringType("display_message", "Message description");
                             message.stringMatcher("type", "(ERROR|WARNING)", "ERROR");
                           });

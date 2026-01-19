@@ -40,7 +40,7 @@ public final class GetMatterStartPactTest extends AbstractPactTest {
   public RequestResponsePact getMatterStart200(PactDslWithProvider builder) {
     // Defines expected 200 response for existing matter start
     return builder
-        .given("a matter start exists for the given submission")
+        .given("a matter start exists")
         .uponReceiving("a request to fetch a existing matter start")
         .matchPath("/api/v0/submissions/(" + UUID_REGEX + ")/matter-starts/(" + UUID_REGEX + ")")
         .matchHeader(HttpHeaders.AUTHORIZATION, UUID_REGEX)
@@ -76,7 +76,6 @@ public final class GetMatterStartPactTest extends AbstractPactTest {
         .method("GET")
         .willRespondWith()
         .status(404)
-        .headers(Map.of("Content-Type", "application/json"))
         .toPact();
   }
 
@@ -92,7 +91,6 @@ public final class GetMatterStartPactTest extends AbstractPactTest {
         .method("GET")
         .willRespondWith()
         .status(404)
-        .headers(Map.of("Content-Type", "application/json"))
         .toPact();
   }
 
