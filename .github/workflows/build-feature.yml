@@ -29,7 +29,7 @@ jobs:
       packages: write
     with:
       pact_test_task: "pactTest"
-      publish_pact_results: true #Change this to false
+      publish_pact_results: true
     secrets:
       gh_token: ${{ secrets.GITHUB_TOKEN }}
       pact_broker_url: ${{ secrets.PACT_BROKER_URL }}
