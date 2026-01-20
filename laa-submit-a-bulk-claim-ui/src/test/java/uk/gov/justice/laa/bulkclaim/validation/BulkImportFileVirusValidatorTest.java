@@ -69,7 +69,7 @@ class BulkImportFileVirusValidatorTest {
         .isEqualTo("bulkImport.validation.virusScanFailed");
   }
 
-  @DisplayName("Should have errors when token provider excpetion is thrown")
+  @DisplayName("Should have errors when token provider exception is thrown")
   @Test
   void shouldHaveErrorsWhenTokenProviderException() {
     MockMultipartFile file =
