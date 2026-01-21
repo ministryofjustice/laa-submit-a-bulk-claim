@@ -130,6 +130,12 @@ env:
         name: elasticache-redis
         key: url
 
+  - name: ALLOWED_HOSTS
+    value: {{ .Values.global.ingress.externalRoute.hostname.value | quote}}
+
+  - name: CANONICAL_BASE_URL
+    value: https://{{ .Values.global.ingress.externalRoute.hostname.value | quote }}
+
 securityContext:
   fsGroup: 1000
   runAsUser: 1000

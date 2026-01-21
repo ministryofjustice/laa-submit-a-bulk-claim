@@ -24,12 +24,12 @@ jobs:
         id: get-feature-version
         run: |
           COMMIT_HASH=$(git rev-parse --short HEAD)
-          echo "feature_version=${{ steps.get-feature-name.outputs.result }}-${COMMIT_HASH}-SNAPSHOT" >> $GITHUB_OUTPUT
+          echo "feature_version=${{ steps.get-feature-name.outputs.result }}-${COMMIT_HASH}-SNAPSHOT" >> "$GITHUB_OUTPUT"
           echo "Feature version: ${{ steps.get-feature-name.outputs.result }}-${COMMIT_HASH}-SNAPSHOT"
 
   assemble:
     needs: [ define-feature-version ]
-    uses: ministryofjustice/laa-ccms-common-workflows/.github/workflows/gradle-build-and-publish.yml@v1
+    uses: ministryofjustice/laa-ccms-common-workflows/.github/workflows/gradle-build-and-publish.yml@v1.0.10
     permissions:
       contents: write
       packages: write
@@ -41,6 +41,7 @@ jobs:
       junit_report: 'false'
       checkstyle_report: 'false'
       jacoco_coverage_report: 'false'
+      semgrep_check: 'true'
     secrets:
       gh_token: ${{ secrets.GITHUB_TOKEN }}
 
