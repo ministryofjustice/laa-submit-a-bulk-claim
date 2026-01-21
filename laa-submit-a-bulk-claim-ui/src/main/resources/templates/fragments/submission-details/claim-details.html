@@ -135,7 +135,7 @@
                       th:if="${claim.escapeCase}"
                       th:text="#{submission.summary.claims.escapeCase.yes}"></strong>
               <span th:if="${claim.escapeCase == null}"
-                    th:text="'-'"></span>
+                    th:text="'NA'"></span>
               <span th:if="${claim.escapeCase != null and !claim.escapeCase}"
                     th:text="#{submission.summary.claims.escapeCase.no}"></span>
             </td>
