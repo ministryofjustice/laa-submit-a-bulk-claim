@@ -21,6 +21,8 @@ global:
   ingress:
     externalRoute:
       mojDigitalVpnRequired: false
+      hostname:
+        value: ""
     enabled: true
     className: modsec
 
@@ -131,10 +133,10 @@ env:
         key: url
 
   - name: ALLOWED_HOSTS
-    value: {{ .Values.global.ingress.externalRoute.hostname.value | quote}}
+    value: '{{ .Values.global.ingress.externalRoute.hostname.value }}'
 
   - name: CANONICAL_BASE_URL
-    value: https://{{ .Values.global.ingress.externalRoute.hostname.value | quote }}
+    value: 'https://{{ .Values.global.ingress.externalRoute.hostname.value }}'
 
 securityContext:
   fsGroup: 1000
