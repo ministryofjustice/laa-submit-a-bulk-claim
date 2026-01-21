@@ -132,12 +132,6 @@ env:
         name: elasticache-redis
         key: url
 
-  - name: ALLOWED_HOSTS
-    value: '{{ .Release.Name }}-{{ .Chart.Name }}-{{ .Release.Namespace }}.{{ .Values.global.clusterDomain }}'
-
-  - name: CANONICAL_BASE_URL
-    value: 'https://{{ .Release.Name }}-{{ .Chart.Name }}-{{ .Release.Namespace }}.{{ .Values.global.clusterDomain }}'
-
 securityContext:
   fsGroup: 1000
   runAsUser: 1000

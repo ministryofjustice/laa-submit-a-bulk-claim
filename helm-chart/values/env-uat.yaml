@@ -15,3 +15,9 @@ ingress:
 
 grafana:
   enabled: true
+
+extraEnvVars:
+  - name: ALLOWED_HOSTS
+    value: '{{ .Release.Name }}-{{ .Chart.Name }}-{{ .Release.Namespace }}.{{ .Values.global.clusterDomain }}'
+  - name: CANONICAL_BASE_URL
+    value: 'https://{{ .Release.Name }}-{{ .Chart.Name }}-{{ .Release.Namespace }}.{{ .Values.global.clusterDomain }}'
