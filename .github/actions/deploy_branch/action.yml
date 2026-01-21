@@ -67,8 +67,10 @@ runs:
 
     - name: Set helm chart app version
       shell: bash
+      env:
+        IMAGE_TAG: ${{ inputs.image-tag }}
       run: |
-        yq eval-all "( .appVersion = \"${{ inputs.image-tag }}\" )" -i .helm/submit-a-bulk-claim/Chart.yaml
+        yq eval-all "( .appVersion = \"${IMAGE_TAG}\" )" -i .helm/submit-a-bulk-claim/Chart.yaml
         cat .helm/submit-a-bulk-claim/Chart.yaml
 
     - name: Helm deployment of branch
@@ -90,19 +92,19 @@ runs:
 
         if [ "$BRANCH_NAME" != "main" ] && [ -f "$PREVIEW_VALUES_FILE" ]; then
           values_args+=("--values" "$PREVIEW_VALUES_FILE")
-          helm upgrade ${RELEASE_NAME}-redis oci://registry-1.docker.io/bitnamicharts/redis \
+          helm upgrade "${RELEASE_NAME}-redis" oci://registry-1.docker.io/bitnamicharts/redis \
             -f .helm/bitnami_redis/values.yaml \
-            --namespace ${KUBE_NAMESPACE} \
+            --namespace "$KUBE_NAMESPACE" \
             --install --wait --timeout=10m
-          helm upgrade ${RELEASE_NAME}-oidc-mock .helm/oidc-mock \
-            --namespace ${KUBE_NAMESPACE} \
+          helm upgrade "${RELEASE_NAME}-oidc-mock" .helm/oidc-mock \
+            --namespace "$KUBE_NAMESPACE" \
             --set image.repository="${ECR_REGISTRY}/${ECR_REPOSITORY}" \
             --set sabc.releaseName="${RELEASE_NAME}" \
             --install --wait --timeout=10m
         fi
 
-        helm upgrade $RELEASE_NAME .helm/submit-a-bulk-claim \
-          --namespace ${KUBE_NAMESPACE} \
+        helm upgrade "$RELEASE_NAME" .helm/submit-a-bulk-claim \
+          --namespace "$KUBE_NAMESPACE" \
           --set global.image.repository="${ECR_REGISTRY}/${ECR_REPOSITORY}" \
           "${values_args[@]}" \
           --install \
