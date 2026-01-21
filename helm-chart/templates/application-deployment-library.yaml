@@ -183,10 +183,6 @@ spec:
             {{- end }}
           {{- end }}
           {{- end }}
-          - name: ALLOWED_HOSTS
-            value: {{ include "laa-claim.hostname" . | quote }}
-          - name: CANONICAL_BASE_URL
-            value: 'https://{{ include "laa-claim.hostname" . | quote }}'
 ---
 {{- if .Values.ingress }}
   {{- if eq .Values.ingress.externalRoute.enabled true }}

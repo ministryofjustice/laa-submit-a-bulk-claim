@@ -1,5 +1,5 @@
 {{/* Generate the hostname based on whether externalRoute is enabled */}}
-{{- define "laa-claim.hostname" -}}
+{{- define "ephemeral.hostname" -}}
 {{- if and .Values.ingress.externalRoute.hostname (eq .Values.ingress.externalRoute.hostname.enabled true) -}}
 {{- .Values.ingress.externalRoute.hostname.value -}}
 {{- else -}}
