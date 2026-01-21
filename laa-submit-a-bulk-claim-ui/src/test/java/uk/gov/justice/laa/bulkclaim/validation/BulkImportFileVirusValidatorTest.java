@@ -15,6 +15,7 @@ import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.validation.SimpleErrors;
 import org.springframework.validation.Validator;
 import uk.gov.justice.laa.bulkclaim.dto.FileUploadForm;
+import uk.gov.justice.laa.bulkclaim.exception.TokenProviderException;
 import uk.gov.justice.laa.bulkclaim.exception.VirusCheckException;
 import uk.gov.justice.laa.bulkclaim.service.VirusCheckService;
 
@@ -66,5 +67,24 @@ class BulkImportFileVirusValidatorTest {
     assertThat(errors.hasErrors()).isTrue();
     assertThat(errors.getAllErrors().getFirst().getCode())
         .isEqualTo("bulkImport.validation.virusScanFailed");
+  }
+
+  @DisplayName("Should have errors when token provider exception is thrown")
+  @Test
+  void shouldHaveErrorsWhenTokenProviderException() {
+    MockMultipartFile file =
+        new MockMultipartFile("file", "test.txt", "text/plain", new byte[10 * 1024 * 1024]);
+    FileUploadForm fileUploadForm = new FileUploadForm(file);
+    SimpleErrors errors = new SimpleErrors(fileUploadForm);
+    doThrow(new TokenProviderException("Invalid SDS Token"))
+        .when(virusCheckService)
+        .checkVirus(file);
+
+    bulkClaimFileVirusValidator.validate(fileUploadForm, errors);
+
+    verify(virusCheckService, times(1)).checkVirus(file);
+    assertThat(errors.hasErrors()).isTrue();
+    assertThat(errors.getAllErrors().getFirst().getCode())
+        .isEqualTo("bulkImport.validation.uploadFailed");
   }
 }
