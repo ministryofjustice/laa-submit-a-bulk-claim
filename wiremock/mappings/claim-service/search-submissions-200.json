@@ -1,7 +1,7 @@
 {
   "request": {
     "method": "GET",
-    "urlPath": "/api/v0/submissions"
+    "urlPath": "/api/v1/submissions"
   },
   "response": {
     "status": 200,
