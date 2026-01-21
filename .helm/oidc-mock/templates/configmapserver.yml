@@ -4,7 +4,7 @@ metadata:
   name: {{ .Release.Name }}-config-map
   namespace: {{ .Release.Namespace }}
 data:
-  {{- $appLabel := printf "%s-submit-a-bulk-claim-%s" .Release.Name .Release.Namespace | trunc 57 | trimSuffix "-" }}
+  {{- $appLabel := printf "%s-submit-a-bulk-claim-%s" .Values.sabc.releaseName .Release.Namespace | trunc 57 | trimSuffix "-" }}
   {{- $appHost := printf "%s.%s" $appLabel .Values.clusterDomain }}
   application-mock-oidc.yml: |
     spring:
