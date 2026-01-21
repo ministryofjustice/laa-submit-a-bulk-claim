@@ -7,6 +7,7 @@ import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 import org.springframework.web.multipart.MultipartFile;
 import uk.gov.justice.laa.bulkclaim.dto.FileUploadForm;
+import uk.gov.justice.laa.bulkclaim.exception.TokenProviderException;
 import uk.gov.justice.laa.bulkclaim.exception.VirusCheckException;
 import uk.gov.justice.laa.bulkclaim.service.VirusCheckService;
 
@@ -42,6 +43,9 @@ public class BulkImportFileVirusValidator implements Validator {
     } catch (VirusCheckException e) {
       log.error("Virus check failed with message: {}", e.getMessage());
       errors.reject("bulkImport.validation.virusScanFailed");
+    } catch (TokenProviderException tokenProviderException) {
+      log.error("Failed to obtain SDS API access token: {}", tokenProviderException.getMessage());
+      errors.reject("bulkImport.validation.uploadFailed");
     }
   }
 }

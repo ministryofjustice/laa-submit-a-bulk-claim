@@ -41,7 +41,7 @@ import uk.gov.justice.laa.dstew.payments.claimsdata.model.*;
 @AutoConfigureMockMvc(addFilters = false)
 @Import(WebMvcTestConfig.class)
 class DataClaimsRestClientIntegrationTest extends MockServerIntegrationTest {
-  private static final String GET_ALL_MATTER_STARTS_URI = "/api/v0/submissions/%s/matter-starts";
+  private static final String GET_ALL_MATTER_STARTS_URI = "/api/v1/submissions/%s/matter-starts";
 
   protected DataClaimsRestClient dataClaimsRestClient;
 
@@ -51,7 +51,7 @@ class DataClaimsRestClientIntegrationTest extends MockServerIntegrationTest {
   }
 
   @Nested
-  @DisplayName("GET: /api/v0/bulk-submissions")
+  @DisplayName("GET: /api/v1/bulk-submissions")
   class PostBulkSubmission {
 
     @Test
@@ -70,12 +70,12 @@ class DataClaimsRestClientIntegrationTest extends MockServerIntegrationTest {
               }
               """;
       mockServerClient
-          .when(HttpRequest.request().withMethod("POST").withPath("/api/v0/bulk-submissions"))
+          .when(HttpRequest.request().withMethod("POST").withPath("/api/v1/bulk-submissions"))
           .respond(
               response()
                   .withStatusCode(201)
                   .withHeader("Content-Type", "application/json")
-                  .withHeader("Location", "/api/v0/bulk-submissions/1234567890")
+                  .withHeader("Location", "/api/v1/bulk-submissions/1234567890")
                   .withBody(expectedBody));
 
       // When
@@ -90,7 +90,7 @@ class DataClaimsRestClientIntegrationTest extends MockServerIntegrationTest {
           .isEqualTo(UUID.fromString("f7ed1cda-692e-417a-bb55-5a5135006774"));
       assertThat(result.getSubmissionIds().get(0))
           .isEqualTo(UUID.fromString("aca8d879-3dd4-4fd1-97ee-03f0d0cfd5db"));
-      assertThat(locationHeader).isEqualTo("/api/v0/bulk-submissions/1234567890");
+      assertThat(locationHeader).isEqualTo("/api/v1/bulk-submissions/1234567890");
     }
 
     @Test
@@ -100,7 +100,7 @@ class DataClaimsRestClientIntegrationTest extends MockServerIntegrationTest {
       MockMultipartFile file =
           new MockMultipartFile("file", "test.txt", "text/plain", new byte[10 * 1024 * 1024]);
       mockServerClient
-          .when(HttpRequest.request().withMethod("POST").withPath("/api/v0/bulk-submissions"))
+          .when(HttpRequest.request().withMethod("POST").withPath("/api/v1/bulk-submissions"))
           .respond(response().withStatusCode(400).withHeader("Content-Type", "application/json"));
 
       // When
@@ -116,7 +116,7 @@ class DataClaimsRestClientIntegrationTest extends MockServerIntegrationTest {
       MockMultipartFile file =
           new MockMultipartFile("file", "test.txt", "text/plain", new byte[10 * 1024 * 1024]);
       mockServerClient
-          .when(HttpRequest.request().withMethod("POST").withPath("/api/v0/bulk-submissions"))
+          .when(HttpRequest.request().withMethod("POST").withPath("/api/v1/bulk-submissions"))
           .respond(response().withStatusCode(401).withHeader("Content-Type", "application/json"));
 
       // When
@@ -132,7 +132,7 @@ class DataClaimsRestClientIntegrationTest extends MockServerIntegrationTest {
       MockMultipartFile file =
           new MockMultipartFile("file", "test.txt", "text/plain", new byte[10 * 1024 * 1024]);
       mockServerClient
-          .when(HttpRequest.request().withMethod("POST").withPath("/api/v0/bulk-submissions"))
+          .when(HttpRequest.request().withMethod("POST").withPath("/api/v1/bulk-submissions"))
           .respond(response().withStatusCode(403).withHeader("Content-Type", "application/json"));
 
       // When
@@ -148,7 +148,7 @@ class DataClaimsRestClientIntegrationTest extends MockServerIntegrationTest {
       MockMultipartFile file =
           new MockMultipartFile("file", "test.txt", "text/plain", new byte[10 * 1024 * 1024]);
       mockServerClient
-          .when(HttpRequest.request().withMethod("POST").withPath("/api/v0/bulk-submissions"))
+          .when(HttpRequest.request().withMethod("POST").withPath("/api/v1/bulk-submissions"))
           .respond(response().withStatusCode(500).withHeader("Content-Type", "application/json"));
 
       // When
@@ -159,7 +159,7 @@ class DataClaimsRestClientIntegrationTest extends MockServerIntegrationTest {
   }
 
   @Nested
-  @DisplayName("GET: /api/v0/submissions")
+  @DisplayName("GET: /api/v1/submissions")
   class GetSubmissionsSearch {
     @Test
     @DisplayName("Should return 200 and collection of submissions result")
@@ -183,7 +183,7 @@ class DataClaimsRestClientIntegrationTest extends MockServerIntegrationTest {
           }
           """;
       mockServerClient
-          .when(HttpRequest.request().withMethod("GET").withPath("/api/v0/submissions"))
+          .when(HttpRequest.request().withMethod("GET").withPath("/api/v1/submissions"))
           .respond(
               response()
                   .withStatusCode(200)
@@ -206,7 +206,7 @@ class DataClaimsRestClientIntegrationTest extends MockServerIntegrationTest {
   }
 
   @Nested
-  @DisplayName("GET: /api/v0/submissions/{submissionId}")
+  @DisplayName("GET: /api/v1/submissions/{submissionId}")
   class GetSubmission {
 
     @Test
@@ -219,7 +219,7 @@ class DataClaimsRestClientIntegrationTest extends MockServerIntegrationTest {
           .when(
               HttpRequest.request()
                   .withMethod("GET")
-                  .withPath("/api/v0/submissions/" + submissionId))
+                  .withPath("/api/v1/submissions/" + submissionId))
           .respond(
               response()
                   .withStatusCode(200)
@@ -240,7 +240,7 @@ class DataClaimsRestClientIntegrationTest extends MockServerIntegrationTest {
           .when(
               HttpRequest.request()
                   .withMethod("GET")
-                  .withPath("/api/v0/submissions/" + submissionsId))
+                  .withPath("/api/v1/submissions/" + submissionsId))
           .respond(response().withStatusCode(400).withHeader("Content-Type", "application/json"));
 
       // When
@@ -257,7 +257,7 @@ class DataClaimsRestClientIntegrationTest extends MockServerIntegrationTest {
           .when(
               HttpRequest.request()
                   .withMethod("GET")
-                  .withPath("/api/v0/submissions/" + submissionId))
+                  .withPath("/api/v1/submissions/" + submissionId))
           .respond(response().withStatusCode(401).withHeader("Content-Type", "application/json"));
 
       // When
@@ -274,7 +274,7 @@ class DataClaimsRestClientIntegrationTest extends MockServerIntegrationTest {
           .when(
               HttpRequest.request()
                   .withMethod("GET")
-                  .withPath("/api/v0/submissions/" + submissionId))
+                  .withPath("/api/v1/submissions/" + submissionId))
           .respond(response().withStatusCode(403).withHeader("Content-Type", "application/json"));
 
       // When
@@ -290,7 +290,7 @@ class DataClaimsRestClientIntegrationTest extends MockServerIntegrationTest {
           .when(
               HttpRequest.request()
                   .withMethod("GET")
-                  .withPath("/api/v0/submissions/" + submissionId))
+                  .withPath("/api/v1/submissions/" + submissionId))
           .respond(response().withStatusCode(404).withHeader("Content-Type", "application/json"));
 
       // When
@@ -306,7 +306,7 @@ class DataClaimsRestClientIntegrationTest extends MockServerIntegrationTest {
           .when(
               HttpRequest.request()
                   .withMethod("GET")
-                  .withPath("/api/v0/submissions/" + submissionId))
+                  .withPath("/api/v1/submissions/" + submissionId))
           .respond(response().withStatusCode(500).withHeader("Content-Type", "application/json"));
 
       // When
@@ -317,7 +317,7 @@ class DataClaimsRestClientIntegrationTest extends MockServerIntegrationTest {
   }
 
   @Nested
-  @DisplayName("GET: /api/v0/claims")
+  @DisplayName("GET: /api/v1/claims")
   class GetClaims {
 
     @Test
@@ -327,7 +327,7 @@ class DataClaimsRestClientIntegrationTest extends MockServerIntegrationTest {
       UUID claimId = UUID.fromString("3fa85f64-5717-4562-b3fc-2c963f66afa6");
       String expectJson = readJsonFromFile("/GetClaims200.json");
       mockServerClient
-          .when(HttpRequest.request().withMethod("GET").withPath("/api/v0/claims"))
+          .when(HttpRequest.request().withMethod("GET").withPath("/api/v1/claims"))
           .respond(
               response()
                   .withStatusCode(200)
@@ -345,7 +345,7 @@ class DataClaimsRestClientIntegrationTest extends MockServerIntegrationTest {
       // Given
       UUID claimId = UUID.fromString("3fa85f64-5717-4562-b3fc-2c963f66afa6");
       mockServerClient
-          .when(HttpRequest.request().withMethod("GET").withPath("/api/v0/claims"))
+          .when(HttpRequest.request().withMethod("GET").withPath("/api/v1/claims"))
           .respond(response().withStatusCode(400).withHeader("Content-Type", "application/json"));
 
       // When
@@ -358,7 +358,7 @@ class DataClaimsRestClientIntegrationTest extends MockServerIntegrationTest {
       // Given
       UUID claimId = UUID.fromString("3fa85f64-5717-4562-b3fc-2c963f66afa6");
       mockServerClient
-          .when(HttpRequest.request().withMethod("GET").withPath("/api/v0/claims"))
+          .when(HttpRequest.request().withMethod("GET").withPath("/api/v1/claims"))
           .respond(response().withStatusCode(401).withHeader("Content-Type", "application/json"));
 
       // When
@@ -372,7 +372,7 @@ class DataClaimsRestClientIntegrationTest extends MockServerIntegrationTest {
       // Given
       UUID claimId = UUID.fromString("3fa85f64-5717-4562-b3fc-2c963f66afa6");
       mockServerClient
-          .when(HttpRequest.request().withMethod("GET").withPath("/api/v0/claims"))
+          .when(HttpRequest.request().withMethod("GET").withPath("/api/v1/claims"))
           .respond(response().withStatusCode(403).withHeader("Content-Type", "application/json"));
 
       // When
@@ -388,7 +388,7 @@ class DataClaimsRestClientIntegrationTest extends MockServerIntegrationTest {
           .when(
               HttpRequest.request()
                   .withMethod("GET")
-                  .withPath("/api/v0/submissions/" + submissionId))
+                  .withPath("/api/v1/submissions/" + submissionId))
           .respond(response().withStatusCode(404).withHeader("Content-Type", "application/json"));
 
       // When
@@ -404,7 +404,7 @@ class DataClaimsRestClientIntegrationTest extends MockServerIntegrationTest {
           .when(
               HttpRequest.request()
                   .withMethod("GET")
-                  .withPath("/api/v0/submissions/" + submissionId))
+                  .withPath("/api/v1/submissions/" + submissionId))
           .respond(response().withStatusCode(500).withHeader("Content-Type", "application/json"));
 
       // When
@@ -415,7 +415,7 @@ class DataClaimsRestClientIntegrationTest extends MockServerIntegrationTest {
   }
 
   @Nested
-  @DisplayName("GET: /api/v0/submission/{submission-id}/claims/{claim-id}")
+  @DisplayName("GET: /api/v1/submission/{submission-id}/claims/{claim-id}")
   class GetSubmissionClaim {
 
     @Test
@@ -429,7 +429,7 @@ class DataClaimsRestClientIntegrationTest extends MockServerIntegrationTest {
           .when(
               HttpRequest.request()
                   .withMethod("GET")
-                  .withPath("/api/v0/submissions/" + submissionId + "/claims/" + claimId))
+                  .withPath("/api/v1/submissions/" + submissionId + "/claims/" + claimId))
           .respond(
               response()
                   .withStatusCode(200)
@@ -451,7 +451,7 @@ class DataClaimsRestClientIntegrationTest extends MockServerIntegrationTest {
           .when(
               HttpRequest.request()
                   .withMethod("GET")
-                  .withPath("/api/v0/submissions/" + submissionId + "/claims/" + claimId))
+                  .withPath("/api/v1/submissions/" + submissionId + "/claims/" + claimId))
           .respond(response().withStatusCode(400).withHeader("Content-Type", "application/json"));
       // When
       assertThrows(
@@ -469,7 +469,7 @@ class DataClaimsRestClientIntegrationTest extends MockServerIntegrationTest {
           .when(
               HttpRequest.request()
                   .withMethod("GET")
-                  .withPath("/api/v0/submissions/" + submissionId + "/claims/" + claimId))
+                  .withPath("/api/v1/submissions/" + submissionId + "/claims/" + claimId))
           .respond(response().withStatusCode(401).withHeader("Content-Type", "application/json"));
       // When
       assertThrows(
@@ -487,7 +487,7 @@ class DataClaimsRestClientIntegrationTest extends MockServerIntegrationTest {
           .when(
               HttpRequest.request()
                   .withMethod("GET")
-                  .withPath("/api/v0/submissions/" + submissionId + "/claims/" + claimId))
+                  .withPath("/api/v1/submissions/" + submissionId + "/claims/" + claimId))
           .respond(response().withStatusCode(403).withHeader("Content-Type", "application/json"));
       // When
       assertThrows(
@@ -505,7 +505,7 @@ class DataClaimsRestClientIntegrationTest extends MockServerIntegrationTest {
           .when(
               HttpRequest.request()
                   .withMethod("GET")
-                  .withPath("/api/v0/submissions/" + submissionId + "/claims/" + claimId))
+                  .withPath("/api/v1/submissions/" + submissionId + "/claims/" + claimId))
           .respond(response().withStatusCode(404).withHeader("Content-Type", "application/json"));
       // When
       assertThrows(
@@ -523,7 +523,7 @@ class DataClaimsRestClientIntegrationTest extends MockServerIntegrationTest {
           .when(
               HttpRequest.request()
                   .withMethod("GET")
-                  .withPath("/api/v0/submissions/" + submissionId + "/claims/" + claimId))
+                  .withPath("/api/v1/submissions/" + submissionId + "/claims/" + claimId))
           .respond(response().withStatusCode(500).withHeader("Content-Type", "application/json"));
       // When
       assertThrows(
@@ -533,7 +533,7 @@ class DataClaimsRestClientIntegrationTest extends MockServerIntegrationTest {
   }
 
   @Nested
-  @DisplayName("GET: /api/v0/submission/{submission-id}/matter-starts/{matter-starts-id}")
+  @DisplayName("GET: /api/v1/submission/{submission-id}/matter-starts/{matter-starts-id}")
   class GetSubmissionMatterStarts {
 
     @Test
@@ -548,7 +548,7 @@ class DataClaimsRestClientIntegrationTest extends MockServerIntegrationTest {
               HttpRequest.request()
                   .withMethod("GET")
                   .withPath(
-                      "/api/v0/submissions/" + submissionId + "/matter-starts/" + matterStartsId))
+                      "/api/v1/submissions/" + submissionId + "/matter-starts/" + matterStartsId))
           .respond(
               response()
                   .withStatusCode(200)
@@ -572,7 +572,7 @@ class DataClaimsRestClientIntegrationTest extends MockServerIntegrationTest {
               HttpRequest.request()
                   .withMethod("GET")
                   .withPath(
-                      "/api/v0/submissions/" + submissionId + "/matter-starts/" + matterStartsId))
+                      "/api/v1/submissions/" + submissionId + "/matter-starts/" + matterStartsId))
           .respond(response().withStatusCode(400).withHeader("Content-Type", "application/json"));
       // When
       assertThrows(
@@ -591,7 +591,7 @@ class DataClaimsRestClientIntegrationTest extends MockServerIntegrationTest {
           .when(
               HttpRequest.request()
                   .withMethod("GET")
-                  .withPath("/api/v0/submissions/" + submissionId + "/claims/" + matterStartsId))
+                  .withPath("/api/v1/submissions/" + submissionId + "/claims/" + matterStartsId))
           .respond(response().withStatusCode(401).withHeader("Content-Type", "application/json"));
       // When
       assertThrows(
@@ -610,7 +610,7 @@ class DataClaimsRestClientIntegrationTest extends MockServerIntegrationTest {
               HttpRequest.request()
                   .withMethod("GET")
                   .withPath(
-                      "/api/v0/submissions/" + submissionId + "/matter-starts/" + matterStartsId))
+                      "/api/v1/submissions/" + submissionId + "/matter-starts/" + matterStartsId))
           .respond(response().withStatusCode(403).withHeader("Content-Type", "application/json"));
       // When
       assertThrows(
@@ -629,7 +629,7 @@ class DataClaimsRestClientIntegrationTest extends MockServerIntegrationTest {
           .when(
               HttpRequest.request()
                   .withMethod("GET")
-                  .withPath("/api/v0/submissions/" + submissionId + "/claims/" + claimId))
+                  .withPath("/api/v1/submissions/" + submissionId + "/claims/" + claimId))
           .respond(response().withStatusCode(404).withHeader("Content-Type", "application/json"));
       // When
       assertThrows(
@@ -648,7 +648,7 @@ class DataClaimsRestClientIntegrationTest extends MockServerIntegrationTest {
               HttpRequest.request()
                   .withMethod("GET")
                   .withPath(
-                      "/api/v0/submissions/" + submissionId + "/matter-starts/" + matterStartsId))
+                      "/api/v1/submissions/" + submissionId + "/matter-starts/" + matterStartsId))
           .respond(response().withStatusCode(500).withHeader("Content-Type", "application/json"));
       // When
       assertThrows(
@@ -659,7 +659,7 @@ class DataClaimsRestClientIntegrationTest extends MockServerIntegrationTest {
   }
 
   @Nested
-  @DisplayName("GET: /api/v0/validation-messages")
+  @DisplayName("GET: /api/v1/validation-messages")
   class GetValidationErrors {
 
     @Test
@@ -669,7 +669,7 @@ class DataClaimsRestClientIntegrationTest extends MockServerIntegrationTest {
       UUID submissionId = UUID.fromString("3fa85f64-5717-4562-b3fc-2c963f66afa6");
       String expectJson = readJsonFromFile("/GetValidationMessage200.json");
       mockServerClient
-          .when(HttpRequest.request().withMethod("GET").withPath("/api/v0/validation-messages"))
+          .when(HttpRequest.request().withMethod("GET").withPath("/api/v1/validation-messages"))
           .respond(
               response()
                   .withStatusCode(200)
@@ -691,7 +691,7 @@ class DataClaimsRestClientIntegrationTest extends MockServerIntegrationTest {
       UUID submissionId = UUID.fromString("3fa85f64-5717-4562-b3fc-2c963f66afa6");
       String expectJson = readJsonFromFile("/GetValidationMessages200.json");
       mockServerClient
-          .when(HttpRequest.request().withMethod("GET").withPath("/api/v0/validation-messages"))
+          .when(HttpRequest.request().withMethod("GET").withPath("/api/v1/validation-messages"))
           .respond(
               response()
                   .withStatusCode(200)
@@ -712,7 +712,7 @@ class DataClaimsRestClientIntegrationTest extends MockServerIntegrationTest {
       // Given
       UUID submissionId = UUID.fromString("3fa85f64-5717-4562-b3fc-2c963f66afa6");
       mockServerClient
-          .when(HttpRequest.request().withMethod("GET").withPath("/api/v0/validation-messages"))
+          .when(HttpRequest.request().withMethod("GET").withPath("/api/v1/validation-messages"))
           .respond(response().withStatusCode(400).withHeader("Content-Type", "application/json"));
 
       // When
@@ -730,7 +730,7 @@ class DataClaimsRestClientIntegrationTest extends MockServerIntegrationTest {
       // Given
       UUID submissionId = UUID.fromString("3fa85f64-5717-4562-b3fc-2c963f66afa6");
       mockServerClient
-          .when(HttpRequest.request().withMethod("GET").withPath("/api/v0/validation-messages"))
+          .when(HttpRequest.request().withMethod("GET").withPath("/api/v1/validation-messages"))
           .respond(response().withStatusCode(401).withHeader("Content-Type", "application/json"));
 
       // When
@@ -748,7 +748,7 @@ class DataClaimsRestClientIntegrationTest extends MockServerIntegrationTest {
       // Given
       UUID submissionId = UUID.fromString("3fa85f64-5717-4562-b3fc-2c963f66afa6");
       mockServerClient
-          .when(HttpRequest.request().withMethod("GET").withPath("/api/v0/validation-messages"))
+          .when(HttpRequest.request().withMethod("GET").withPath("/api/v1/validation-messages"))
           .respond(response().withStatusCode(403).withHeader("Content-Type", "application/json"));
 
       // When
@@ -766,7 +766,7 @@ class DataClaimsRestClientIntegrationTest extends MockServerIntegrationTest {
       // Given
       UUID submissionId = UUID.fromString("3fa85f64-5717-4562-b3fc-2c963f66afa6");
       mockServerClient
-          .when(HttpRequest.request().withMethod("GET").withPath("/api/v0/validation-messages"))
+          .when(HttpRequest.request().withMethod("GET").withPath("/api/v1/validation-messages"))
           .respond(response().withStatusCode(404).withHeader("Content-Type", "application/json"));
 
       // When
@@ -784,7 +784,7 @@ class DataClaimsRestClientIntegrationTest extends MockServerIntegrationTest {
       // Given
       UUID submissionId = UUID.fromString("3fa85f64-5717-4562-b3fc-2c963f66afa6");
       mockServerClient
-          .when(HttpRequest.request().withMethod("GET").withPath("/api/v0/validation-messages"))
+          .when(HttpRequest.request().withMethod("GET").withPath("/api/v1/validation-messages"))
           .respond(response().withStatusCode(500).withHeader("Content-Type", "application/json"));
 
       // When

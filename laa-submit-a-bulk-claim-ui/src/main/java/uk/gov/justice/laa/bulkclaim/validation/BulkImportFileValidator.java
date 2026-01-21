@@ -21,7 +21,7 @@ public class BulkImportFileValidator implements Validator {
   private final String maxFileSizeReadable;
   private final long maxFileSize;
 
-  public BulkImportFileValidator(@Value("${upload-max-file-size:10MB}") String fileSizeLimit) {
+  public BulkImportFileValidator(@Value("${app.upload-max-file-size:10MB}") String fileSizeLimit) {
     this.maxFileSizeReadable = fileSizeLimit;
     this.maxFileSize = DataSize.parse(fileSizeLimit).toBytes();
   }
@@ -90,6 +90,15 @@ public class BulkImportFileValidator implements Validator {
         || (lowercaseFileName.endsWith(".txt") && !("text/plain".equals(contentType)))) {
       errors.rejectValue("file", "bulkImport.validation.mimeType");
       return;
+    }
+
+    // Step 4: Validate file size after type checks for clearer errors
+    if (file.getSize() > maxFileSize) {
+      errors.rejectValue(
+          "file",
+          "bulkImport.validation.size",
+          new String[] {maxFileSizeReadable},
+          "File size too large. Maximum allowed is " + maxFileSizeReadable + ".");
     }
   }
 }

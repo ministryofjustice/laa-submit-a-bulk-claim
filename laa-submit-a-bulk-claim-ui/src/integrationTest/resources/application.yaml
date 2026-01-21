@@ -17,15 +17,14 @@ management:
       exposure:
         include: health,info,prometheus
 
-sds-api:
-  url: xx
-
-cwa-api:
-  url: xx
-  timeout: 1
-
-
-upload-max-file-size: 10MB
+app:
+  canonical-base-url: "http://localhost:8080"
+  sds-api:
+    url: xx
+  cwa-api:
+    url: xx
+    timeout: 1
+  upload-max-file-size: 10MB
 
 rest-client:
   connect-timeout: 5
