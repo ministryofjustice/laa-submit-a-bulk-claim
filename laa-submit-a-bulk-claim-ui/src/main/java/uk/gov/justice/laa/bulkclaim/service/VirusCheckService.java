@@ -20,7 +20,7 @@ public class VirusCheckService {
   private final RestClient restClient;
   private final TokenService tokenService;
 
-  @Value("${sds-api.url}")
+  @Value("${app.sds-api.url}")
   private String sdsApiUrl;
 
   /**

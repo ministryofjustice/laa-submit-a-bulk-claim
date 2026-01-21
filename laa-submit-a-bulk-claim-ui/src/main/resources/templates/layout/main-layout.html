@@ -17,7 +17,6 @@
   <link rel="icon" th:href="@{/webjars/govuk-frontend/dist/govuk/assets/images/favicon.svg}" type="image/svg+xml">
 </head>
 <body class="govuk-template__body">
-<script>document.body.className += ' js-enabled' + ('noModule' in HTMLScriptElement.prototype ? ' govuk-frontend-supported' : '');</script>
 <header th:replace="~{fragments/header :: header(${pageCategory})}"/>
 
 <div class="govuk-width-container">
@@ -30,7 +29,7 @@
     <p>Default content (this should be replaced)</p>
   </main>
 </div>
-<footer th:replace="~{fragments/footer :: footer}"></footer>
+<footer th:replace="~{fragments/footer :: footer}"/>
 <th:block th:insert="~{fragments/page-scripts :: script}" />
 </body>
 </html>
