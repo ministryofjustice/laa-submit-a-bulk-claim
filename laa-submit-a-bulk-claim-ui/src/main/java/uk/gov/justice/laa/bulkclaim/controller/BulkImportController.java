@@ -55,7 +55,7 @@ public class BulkImportController {
 
     // Always ensure there's a form object in the model if not already present
     if (!model.containsAttribute(FILE_UPLOAD_FORM_MODEL_ATTR)) {
-      model.addAttribute(FILE_UPLOAD_FORM_MODEL_ATTR, new FileUploadForm(null));
+      model.addAttribute(FILE_UPLOAD_FORM_MODEL_ATTR, new FileUploadForm());
     }
 
     return "pages/upload";
@@ -73,18 +73,19 @@ public class BulkImportController {
       @ModelAttribute(FILE_UPLOAD_FORM_MODEL_ATTR) FileUploadForm fileUploadForm,
       BindingResult bindingResult,
       @AuthenticationPrincipal OidcUser oidcUser,
+      Model model,
       RedirectAttributes redirectAttributes) {
 
     bulkImportFileValidator.validate(fileUploadForm, bindingResult);
     if (bindingResult.hasErrors()) {
       bulkClaimMetricService.recordFailedFileUploadSize(fileUploadForm.getFile(), bindingResult);
-      return showErrorOnUpload(fileUploadForm, bindingResult, redirectAttributes);
+      return showErrorOnUpload(fileUploadForm, bindingResult, model);
     }
 
     bulkImportFileVirusValidator.validate(fileUploadForm, bindingResult);
     if (bindingResult.hasErrors()) {
       bulkClaimMetricService.recordFailedFileUploadSize(fileUploadForm.getFile(), bindingResult);
-      return showErrorOnUpload(fileUploadForm, bindingResult, redirectAttributes);
+      return showErrorOnUpload(fileUploadForm, bindingResult, model);
     }
 
     try {
@@ -118,12 +119,12 @@ public class BulkImportController {
         bindingResult.reject("bulkImport.validation.uploadFailed");
       }
 
-      return showErrorOnUpload(fileUploadForm, bindingResult, redirectAttributes);
+      return showErrorOnUpload(fileUploadForm, bindingResult, model);
 
     } catch (Exception e) {
       log.error("Failed to upload file to Claims API with message: {}", e.getMessage());
       bindingResult.reject("bulkImport.validation.uploadFailed");
-      return showErrorOnUpload(fileUploadForm, bindingResult, redirectAttributes);
+      return showErrorOnUpload(fileUploadForm, bindingResult, model);
     }
   }
 
@@ -134,13 +135,10 @@ public class BulkImportController {
    * @return redirect back to upload page
    */
   private String showErrorOnUpload(
-      FileUploadForm fileUploadForm,
-      BindingResult bindingResult,
-      RedirectAttributes redirectAttributes) {
+      FileUploadForm fileUploadForm, BindingResult bindingResult, Model model) {
 
-    redirectAttributes.addFlashAttribute(FILE_UPLOAD_FORM_MODEL_ATTR, fileUploadForm);
-    redirectAttributes.addFlashAttribute(
-        "org.springframework.validation.BindingResult.fileUploadForm", bindingResult);
-    return "redirect:/upload";
+    model.addAttribute(FILE_UPLOAD_FORM_MODEL_ATTR, fileUploadForm);
+    model.addAttribute(BindingResult.MODEL_KEY_PREFIX + FILE_UPLOAD_FORM_MODEL_ATTR, bindingResult);
+    return "pages/upload";
   }
 }
