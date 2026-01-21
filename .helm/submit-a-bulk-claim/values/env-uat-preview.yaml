@@ -44,18 +44,6 @@ env:
         name: laa-submit-a-bulk-claim-secrets
         key: CLAIMS_API_ACCESS_TOKEN
 
-  - name: SILAS_CLIENT_ID
-    valueFrom:
-      secretKeyRef:
-        name: laa-submit-a-bulk-claim-secrets
-        key: SILAS_CLIENT_ID
-
-  - name: SILAS_CLIENT_SECRET
-    valueFrom:
-      secretKeyRef:
-        name: laa-submit-a-bulk-claim-secrets
-        key: SILAS_CLIENT_SECRET
-
   - name: SILAS_SCOPE
     valueFrom:
       secretKeyRef:
@@ -98,11 +86,18 @@ env:
         name: laa-submit-a-bulk-claim-secrets
         key: UPLOAD_MAX_FILE_SIZE
 
+  # Adjusted for mock OIDC setup
+  - name: SILAS_CLIENT_ID
+    value: bulk-claim-client
+  - name: SILAS_CLIENT_SECRET
+    value: secret
   - name: REDIS_HOST
     value: "redis://{{ .Release.Name }}-redis-master:6379"
+  - name: SPRING_CONFIG_ADDITIONAL_LOCATION
+    value: /config/
   - name: SPRING_PROFILES_ACTIVE
     value: mock-oidc
-
+            
 autoscaling:
   minReplicas: 1
   maxReplicas: 2
