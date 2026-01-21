@@ -133,10 +133,10 @@ env:
         key: url
 
   - name: ALLOWED_HOSTS
-    value: '{{ .Values.global.ingress.externalRoute.hostname.value }}'
+    value: '{{ .Release.Name }}-{{ .Chart.Name }}-{{ .Release.Namespace }}.{{ .Values.global.clusterDomain }}'
 
   - name: CANONICAL_BASE_URL
-    value: 'https://{{ .Values.global.ingress.externalRoute.hostname.value }}'
+    value: 'https://{{ .Release.Name }}-{{ .Chart.Name }}-{{ .Release.Namespace }}.{{ .Values.global.clusterDomain }}'
 
 securityContext:
   fsGroup: 1000
