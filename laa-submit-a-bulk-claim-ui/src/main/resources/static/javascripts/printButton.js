@@ -19,7 +19,7 @@ document.addEventListener('DOMContentLoaded', () => {
       '[data-module="laa-print-button"]')
   if (laaPrintButton) {
     const printButtonSection = `
-        <div class="govuk-grid-column-quarter govuk-!-text-align-right">
+        <div class="govuk-grid-column-one-quarter govuk-!-text-align-right">
           <button type="button" class="govuk-button govuk-button--secondary"
                   data-module="govuk-button" id="print-button">
             Print this page
