@@ -34,6 +34,8 @@ jobs:
       contents: write
       packages: write
     with:
+      java_version: '25'
+      java_distribution: 'corretto'
       build_command: 'assemble'
       publish_package: 'false'
       override_version: ${{ needs.define-feature-version.outputs.feature_version }}
