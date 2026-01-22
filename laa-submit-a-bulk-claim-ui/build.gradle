@@ -12,7 +12,7 @@ repositories {
 
 dependencies {
 
-    implementation 'uk.gov.justice.laa.datastewardship.payments:data-claims-api-models:dd2b551'
+    implementation 'uk.gov.justice.laa.datastewardship.payments:data-claims-api-models:6ec4cb7'
 
     //Common exception handling
     implementation 'uk.gov.laa.springboot:laa-spring-boot-starter-application-exception'

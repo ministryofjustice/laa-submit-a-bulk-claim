@@ -111,8 +111,7 @@
       "ait_hearing_centre_code": "string",
       "is_substantive_hearing": true,
       "ho_interview": 0,
-      "local_authority_number": "string",
-      "total_value": "1197.78"
+      "local_authority_number": "string"
     }
   }
 }
