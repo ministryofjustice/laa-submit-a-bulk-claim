@@ -4,9 +4,13 @@
 <main class="govuk-main-wrapper" id="main-content">
   <div class="govuk-width-container">
     <div class="govuk-grid-row">
-      <div class="govuk-grid-column-two-thirds"  data-module="laa-print-button">
+      <div class="govuk-grid-column-full"  data-module="laa-print-button">
+        <h1 id="accessibility-statement" class="govuk-heading-xl" th:text="#{accessibilityPage.title}"></h1>
+      </div>
+    </div>
+    <div class="govuk-grid-row">
+      <div class="govuk-grid-column-full">
         <div class="app-pros-scope govuk-body">
-          <h1 id="accessibility-statement" class="govuk-heading-xl" th:text="#{accessibilityPage.title}"></h1>
           <p th:utext="#{accessibilityPage.intro}"></p>
           <h2 id="compliance-status" class="govuk-heading-m" th:text="#{accessibilityPage.titleCS}" ></h2>
           <p th:text="#{accessibilityPage.compliance}"></p>
