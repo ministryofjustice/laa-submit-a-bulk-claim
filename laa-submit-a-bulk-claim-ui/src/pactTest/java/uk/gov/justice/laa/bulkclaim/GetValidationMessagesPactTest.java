@@ -24,7 +24,7 @@ import uk.gov.justice.laa.dstew.payments.claimsdata.model.ValidationMessagesResp
 
 @SpringBootTest(
     webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
-    properties = {"claims-api.url=http://localhost:1231"})
+    properties = {"app.claims-api.url=http://localhost:1231"})
 @PactConsumerTest
 @PactTestFor(providerName = AbstractPactTest.PROVIDER)
 @MockServerConfig(port = "1231") // Same as Claims API URL port

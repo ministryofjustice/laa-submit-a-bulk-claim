@@ -15,21 +15,25 @@ management:
       exposure:
         include: health,info,prometheus
 
-sds-api:
-  url: xx
 
-cwa-api:
-  url: xx
-  timeout: 1
+security:
+  allowed-hosts: ""
+app:
+  canonical-base-url: ${"http://localhost:8080"}
+  sds-api:
+    url: xx
+
+  cwa-api:
+    url: xx
+    timeout: 1
 
 
-claims-api:
-  # This is a random UUID and does not represent a key for any service. This is to ensure that
-  #  contracts created demonstrate a check for an access-token as part of a consumer request.
-  access-token: e37da3d4-b8bc-4204-9528-deb6fa3bb39d
+  claims-api:
+    # This is a random UUID and does not represent a key for any service. This is to ensure that
+    #  contracts created demonstrate a check for an access-token as part of a consumer request.
+    access-token: e37da3d4-b8bc-4204-9528-deb6fa3bb39d
 
-
-upload-max-file-size: 10MB
+  upload-max-file-size: 10MB
 
 rest-client:
   connect-timeout: 5
