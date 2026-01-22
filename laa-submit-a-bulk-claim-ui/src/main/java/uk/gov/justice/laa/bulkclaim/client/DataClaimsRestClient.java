@@ -29,7 +29,7 @@ import uk.gov.justice.laa.dstew.payments.claimsdata.model.ValidationMessagesResp
  *
  * @author Jamie Briggs
  */
-@HttpExchange("/api/v0")
+@HttpExchange("/api/v1")
 public interface DataClaimsRestClient {
 
   /**

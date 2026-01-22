@@ -29,7 +29,6 @@
   "mediation_time_minutes": 0,
   "outreach_location": "string",
   "referral_source": "string",
-  "total_value": 50.51,
   "client_forename": "string",
   "client_surname": "string",
   "client_date_of_birth": "2025-08-14",
