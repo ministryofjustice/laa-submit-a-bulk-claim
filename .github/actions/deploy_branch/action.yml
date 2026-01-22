@@ -73,6 +73,14 @@ runs:
         yq eval-all "( .appVersion = \"${IMAGE_TAG}\" )" -i .helm/submit-a-bulk-claim/Chart.yaml
         cat .helm/submit-a-bulk-claim/Chart.yaml
 
+    - name: Fetch IP Allowlist
+      id: ip-allowlist
+      shell: bash
+      run: |
+        CIDRS=$(curl -s https://raw.githubusercontent.com/ministryofjustice/laa-ip-allowlist/main/cidrs.txt | tr -d ' ' | tr '\n' ',' | sed 's/,$//')
+        CIDRS_ARRAY="{${CIDRS}}"
+        echo "cidrs=${CIDRS_ARRAY}" >> "$GITHUB_OUTPUT"
+
     - name: Helm deployment of branch
       shell: bash
       env:
@@ -85,6 +93,7 @@ runs:
         PREVIEW_VALUES_FILE: .helm/submit-a-bulk-claim/values/env-${{ inputs.app-environment }}-preview.yaml
         RELEASE_NAME: ${{ steps.extract_release_name.outputs.release-name }}
         BRANCH_NAME: ${{ steps.extract_release_name.outputs.branch-name }}
+        CIDRS_ARRAY: ${{ steps.ip-allowlist.outputs.cidrs }}
       run: |
         echo "Deploying image tag: $IMAGE_TAG under release name: $RELEASE_NAME to namespace: $KUBE_NAMESPACE"
 
@@ -100,9 +109,11 @@ runs:
             --namespace "$KUBE_NAMESPACE" \
             --set image.repository="${ECR_REGISTRY}/${ECR_REPOSITORY}" \
             --set sabc.releaseName="${RELEASE_NAME}" \
+            --set ingress.whitelistSourceRange="${CIDRS_ARRAY}" \
             --install --wait --timeout=10m
           helm upgrade "pda-mock" .helm/pda-mock \
             --namespace "$KUBE_NAMESPACE" \
+            --set ingress.whitelistSourceRange="${CIDRS_ARRAY}" \
             --install --wait --timeout=10m
         fi
 

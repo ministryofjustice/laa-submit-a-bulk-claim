@@ -45,11 +45,13 @@ jobs:
     permissions:
       id-token: write
       contents: read
+      issues: write
     steps:
       - name: Checkout
         uses: actions/checkout@v6
 
       - name: Deploy UAT preview branch
+        id: deploy
         uses: ./.github/actions/deploy_branch
         with:
           ecr-region: ${{ vars.ECR_REGION }}
@@ -61,3 +63,58 @@ jobs:
           kube-namespace: ${{ secrets.KUBE_NAMESPACE }}
           app-environment: uat
           image-tag: ${{ needs.ecr-publish-image.outputs.published_image_version }}
+
+      - name: Comment on PR with UI ingress URL
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const releaseName = '${{ steps.deploy.outputs.release-name }}';
+            const namespace = '${{ secrets.KUBE_NAMESPACE }}';
+            const clusterDomain = 'apps.live.cloud-platform.service.justice.gov.uk';
+            const chartName = 'submit-a-bulk-claim';
+            const hostname = `${releaseName}-${chartName}-${namespace}.${clusterDomain}`;
+            const url = `https://${hostname}`;
+
+            const prNumber = context.issue.number;
+            if (!prNumber) {
+              console.log('No PR found, skipping comment');
+              return;
+            }
+
+            const { data: comments } = await github.rest.issues.listComments({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: prNumber
+            });
+
+            const commentBody = [
+              '## Ephemeral Environment Deployed',
+              '',
+              `**UI URL:** ${url}`,
+              '',
+              `**Release:** ${releaseName}`
+            ].join('\n');
+            const botComment = comments.find(comment =>
+              comment.user.type === 'Bot' &&
+              comment.body.includes('## Ephemeral Environment Deployed') &&
+              comment.body.includes(hostname)
+            );
+
+            if (botComment) {
+              await github.rest.issues.updateComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                comment_id: botComment.id,
+                body: commentBody
+              });
+              console.log(`Updated existing comment #${botComment.id} on PR #${prNumber}`);
+            } else {
+              await github.rest.issues.createComment({
+                issue_number: prNumber,
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                body: commentBody
+              });
+              console.log(`Posted new comment to PR #${prNumber}`);
+            }

@@ -13,7 +13,7 @@ metadata:
       SecRuleEngine On
       SecDefaultAction "phase:2,pass,log,tag:github_team=laa-submit-a-bulk-claim"
     nginx.ingress.kubernetes.io/session-cookie-name: route
-    nginx.ingress.kubernetes.io/whitelist-source-range: {{ .Values.ingress.whitelistSourceRange | quote }}
+    nginx.ingress.kubernetes.io/whitelist-source-range: {{- if kindIs "slice" .Values.ingress.whitelistSourceRange -}}{{ join "," .Values.ingress.whitelistSourceRange | quote }}{{- else -}}{{ .Values.ingress.whitelistSourceRange | quote }}{{- end }}
 spec:
   {{- $hostLabel := printf "%s-%s" .Release.Name .Release.Namespace | trunc 57 | trimSuffix "-" }}
   {{- $host := printf "%s.%s" $hostLabel .Values.clusterDomain }}
