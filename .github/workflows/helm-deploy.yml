@@ -72,8 +72,8 @@ jobs:
             exit 1
           fi
           
-          yq eval '.appVersion = env(IMAGE_TAG)' -i helm-chart/Chart.yaml
-          cat helm-chart/Chart.yaml
+          yq eval '.appVersion = env(IMAGE_TAG)' -i .helm/submit-a-bulk-claim/Chart.yaml
+          cat .helm/submit-a-bulk-claim/Chart.yaml
 
       - name: Install or upgrade helm charts
         id: helm-install
@@ -87,8 +87,8 @@ jobs:
           IFS=$'\n\t'
           echo "Deploying Helm release '$DEPLOYMENT_NAME'..."
           helm upgrade --install --wait --timeout 5m \
-            -f helm-chart/values/env-"$ENVIRONMENT".yaml \
-            "$DEPLOYMENT_NAME" helm-chart \
+            -f .helm/submit-a-bulk-claim/values/env-"$ENVIRONMENT".yaml \
+            "$DEPLOYMENT_NAME" .helm/submit-a-bulk-claim \
             --set global.image.repository="$REGISTRY"/"$ECR_REPOSITORY"
 
           IMAGES=$(helm get manifest "$DEPLOYMENT_NAME" | yq -o=json '.' | jq -sc \
