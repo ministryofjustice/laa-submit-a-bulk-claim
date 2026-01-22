@@ -68,7 +68,7 @@ a lightweight web UI.
 
 ## Tech Stack
 
-- Java 21, Spring Boot, Spring Security, Spring WebFlux clients
+- Java 25, Spring Boot, Spring Security, Spring WebFlux clients
 - Thymeleaf, HTMX, and GOV.UK Design System components
 - Gradle build tooling
 - MapStruct for DTO/view-model mapping
@@ -79,7 +79,7 @@ a lightweight web UI.
 
 ### Prerequisites
 
-- Java 21 or higher
+- Java 25 or higher
 - Gradle (or use the included Gradle wrapper)
 - Docker Desktop for dependency containers
 - GitHub Packages credentials configured for the [
