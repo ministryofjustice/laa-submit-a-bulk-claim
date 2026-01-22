@@ -23,6 +23,21 @@ jobs:
     secrets:
       gh_token: ${{ secrets.GITHUB_TOKEN }}
 
+  pact-test:
+    needs: [ assemble ]
+    uses: ministryofjustice/laa-ccms-common-workflows/.github/workflows/pact-and-publish.yml@story/pact-publish
+    permissions:
+      contents: write
+      packages: write
+    with:
+      pacticipant_name: "laa-submit-a-bulk-claim"
+      pact_test_task: "pactTest"
+    secrets:
+      gh_token: ${{ secrets.GITHUB_TOKEN }}
+      pact_broker_url: ${{ secrets.PACT_BROKER_URL }}
+      pact_broker_username: ${{ secrets.PACT_BROKER_USERNAME }}
+      pact_broker_password: ${{ secrets.PACT_BROKER_PASSWORD }}
+
   ecr-publish-image:
     needs: [ assemble ]
     uses: ministryofjustice/laa-ccms-common-workflows/.github/workflows/ecr-publish-image.yml@v1
@@ -39,7 +54,9 @@ jobs:
       ecr_role_to_assume: ${{ secrets.ECR_ROLE_TO_ASSUME }}
 
   deploy-uat-preview:
-    needs: [ ecr-publish-image ]
+    needs:
+      - pact-test
+      - ecr-publish-image
     runs-on: ubuntu-latest
     environment: uat
     permissions:
