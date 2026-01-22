@@ -98,7 +98,7 @@ jobs:
           
           echo "Deployed Images: $(echo "$IMAGES" | jq)"
 
-      - name: Record deployment to pact broker?
+      - name: Record deployment to pact broker
         id: record-deployment-to-pact-broker
         uses: ministryofjustice/laa-ccms-common-workflows/.github/actions/pact-record-deployment@story/pact-publish
         with:
