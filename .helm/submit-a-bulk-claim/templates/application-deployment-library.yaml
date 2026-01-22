@@ -29,6 +29,10 @@ spec:
         runAsGroup: {{ .Values.securityContext.runAsGroup }}
         runAsNonRoot: true
       {{- end }}
+      {{- if .Values.volumes }}
+      volumes:
+        {{- tpl (toYaml .Values.volumes) $ | nindent 8 }}
+      {{- end }}
       containers:
         - name: {{ .Release.Name }}-{{ .Chart.Name }}
           securityContext:
@@ -42,6 +46,10 @@ spec:
           image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
           {{ else }}
           image: {{ .Values.global.image.repository }}:{{ .Chart.AppVersion }}
+          {{- end }}
+          {{- if .Values.volumeMounts }}
+          volumeMounts:
+            {{- tpl (toYaml .Values.volumeMounts) $ | nindent 12 }}
           {{- end }}
           imagePullPolicy: IfNotPresent
           {{ if .Values.command }}
