@@ -31,7 +31,7 @@ import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionResponse;
 @PactTestFor(providerName = AbstractPactTest.PROVIDER)
 @MockServerConfig(port = "1234") // Same as Claims API URL port
 @Import(ClaimsApiPactTestConfig.class)
-@DisplayName("GET: /api/v0/submissions/{} PACT tests")
+@DisplayName("GET: /api/v1/submissions/{} PACT tests")
 public final class GetSubmissionPactTest extends AbstractPactTest {
 
   @Autowired DataClaimsRestClient dataClaimsRestClient;
@@ -43,7 +43,7 @@ public final class GetSubmissionPactTest extends AbstractPactTest {
     return builder
         .given("a submission exists")
         .uponReceiving("a request to fetch a existing submission")
-        .matchPath("/api/v0/submissions/(" + UUID_REGEX + ")")
+        .matchPath("/api/v1/submissions/(" + UUID_REGEX + ")")
         .matchHeader(HttpHeaders.AUTHORIZATION, UUID_REGEX)
         .method("GET")
         .willRespondWith()
@@ -91,7 +91,7 @@ public final class GetSubmissionPactTest extends AbstractPactTest {
     return builder
         .given("no submission exists")
         .uponReceiving("a request to fetch a non-existent submission")
-        .matchPath("/api/v0/submissions/(" + UUID_REGEX + ")")
+        .matchPath("/api/v1/submissions/(" + UUID_REGEX + ")")
         .method("GET")
         .willRespondWith()
         .status(404)

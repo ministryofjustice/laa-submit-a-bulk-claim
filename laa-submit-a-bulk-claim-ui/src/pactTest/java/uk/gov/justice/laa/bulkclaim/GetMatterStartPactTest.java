@@ -30,7 +30,7 @@ import uk.gov.justice.laa.dstew.payments.claimsdata.model.MatterStartGet;
 @PactTestFor(providerName = AbstractPactTest.PROVIDER)
 @MockServerConfig(port = "1233") // Same as Claims API URL port
 @Import(ClaimsApiPactTestConfig.class)
-@DisplayName("GET: /api/v0/submissions/{}/matter-starts/{} PACT tests")
+@DisplayName("GET: /api/v1/submissions/{}/matter-starts/{} PACT tests")
 public final class GetMatterStartPactTest extends AbstractPactTest {
 
   @Autowired DataClaimsRestClient dataClaimsRestClient;
@@ -42,7 +42,7 @@ public final class GetMatterStartPactTest extends AbstractPactTest {
     return builder
         .given("a matter start exists")
         .uponReceiving("a request to fetch a existing matter start")
-        .matchPath("/api/v0/submissions/(" + UUID_REGEX + ")/matter-starts/(" + UUID_REGEX + ")")
+        .matchPath("/api/v1/submissions/(" + UUID_REGEX + ")/matter-starts/(" + UUID_REGEX + ")")
         .matchHeader(HttpHeaders.AUTHORIZATION, UUID_REGEX)
         .method("GET")
         .willRespondWith()
@@ -71,7 +71,7 @@ public final class GetMatterStartPactTest extends AbstractPactTest {
     return builder
         .given("no matter starts exists")
         .uponReceiving("a request to fetch a non-existent matter start")
-        .matchPath("/api/v0/submissions/(" + UUID_REGEX + ")/matter-starts/(" + UUID_REGEX + ")")
+        .matchPath("/api/v1/submissions/(" + UUID_REGEX + ")/matter-starts/(" + UUID_REGEX + ")")
         .matchHeader(HttpHeaders.AUTHORIZATION, UUID_REGEX)
         .method("GET")
         .willRespondWith()
@@ -86,7 +86,7 @@ public final class GetMatterStartPactTest extends AbstractPactTest {
     return builder
         .given("no submission exists")
         .uponReceiving("a request to fetch a matter start from a non-existent submission")
-        .matchPath("/api/v0/submissions/(" + UUID_REGEX + ")/matter-starts/(" + UUID_REGEX + ")")
+        .matchPath("/api/v1/submissions/(" + UUID_REGEX + ")/matter-starts/(" + UUID_REGEX + ")")
         .matchHeader(HttpHeaders.AUTHORIZATION, UUID_REGEX)
         .method("GET")
         .willRespondWith()

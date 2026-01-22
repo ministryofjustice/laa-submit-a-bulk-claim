@@ -29,7 +29,7 @@ import uk.gov.justice.laa.dstew.payments.claimsdata.model.ClaimResultSet;
 @PactTestFor(providerName = AbstractPactTest.PROVIDER)
 @MockServerConfig(port = "1231") // Same as Claims API URL port
 @Import(ClaimsApiPactTestConfig.class)
-@DisplayName("GET: /api/v0/claims PACT tests")
+@DisplayName("GET: /api/v1/claims PACT tests")
 public final class GetClaimsPactTest extends AbstractPactTest {
 
   @Autowired DataClaimsRestClient dataClaimsRestClient;
@@ -41,7 +41,7 @@ public final class GetClaimsPactTest extends AbstractPactTest {
     return builder
         .given("claims exist for the search criteria")
         .uponReceiving("a request to search for claims")
-        .path("/api/v0/claims")
+        .path("/api/v1/claims")
         .matchQuery("submission_id", UUID_REGEX)
         .matchQuery("office_code", "([A-Z0-9]{6})")
         .matchQuery("page", ANY_NUMBER_REGEX)
@@ -227,7 +227,7 @@ public final class GetClaimsPactTest extends AbstractPactTest {
     return builder
         .given("no claims exist for the search criteria")
         .uponReceiving("a request to search for claims with no results")
-        .path("/api/v0/claims")
+        .path("/api/v1/claims")
         .matchQuery("office_code", "([A-Z0-9]{6})")
         .matchQuery("submission_id", UUID_REGEX)
         .matchQuery("page", ANY_NUMBER_REGEX)

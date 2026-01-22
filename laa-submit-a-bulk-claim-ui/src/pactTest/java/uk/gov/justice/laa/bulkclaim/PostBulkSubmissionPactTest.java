@@ -36,7 +36,7 @@ import uk.gov.justice.laa.dstew.payments.claimsdata.model.CreateBulkSubmission20
 @PactTestFor(providerName = AbstractPactTest.PROVIDER)
 @MockServerConfig(port = "1236") // Same as Claims API URL port
 @Import(ClaimsApiPactTestConfig.class)
-@DisplayName("POST: /api/v0/bulk-submissions PACT tests")
+@DisplayName("POST: /api/v1/bulk-submissions PACT tests")
 public final class PostBulkSubmissionPactTest extends AbstractPactTest {
 
   @Autowired DataClaimsRestClient dataClaimsRestClient;
@@ -48,7 +48,7 @@ public final class PostBulkSubmissionPactTest extends AbstractPactTest {
     return builder
         .given("the system is ready to process a valid bulk submission")
         .uponReceiving("a new bulk submission request")
-        .path("/api/v0/bulk-submissions")
+        .path("/api/v1/bulk-submissions")
         .matchQuery("userId", ANY_FORMAT_REGEX)
         .matchQuery("offices", "([A-Z0-9]{6})")
         .matchHeader(HttpHeaders.AUTHORIZATION, UUID_REGEX)
@@ -76,7 +76,7 @@ public final class PostBulkSubmissionPactTest extends AbstractPactTest {
     return builder
         .given("the submission file contains invalid data")
         .uponReceiving("a request to create a bulk submission with invalid data")
-        .path("/api/v0/bulk-submissions")
+        .path("/api/v1/bulk-submissions")
         .matchQuery("userId", ANY_FORMAT_REGEX)
         .matchQuery("offices", "([A-Z0-9]{6})")
         .matchHeader(HttpHeaders.AUTHORIZATION, UUID_REGEX)

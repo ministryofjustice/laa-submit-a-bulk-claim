@@ -29,7 +29,7 @@ import uk.gov.justice.laa.dstew.payments.claimsdata.model.ValidationMessagesResp
 @PactTestFor(providerName = AbstractPactTest.PROVIDER)
 @MockServerConfig(port = "1231") // Same as Claims API URL port
 @Import(ClaimsApiPactTestConfig.class)
-@DisplayName("GET: /api/v0/validation-messages PACT tests")
+@DisplayName("GET: /api/v1/validation-messages PACT tests")
 public final class GetValidationMessagesPactTest extends AbstractPactTest {
 
   @Autowired DataClaimsRestClient dataClaimsRestClient;
@@ -41,7 +41,7 @@ public final class GetValidationMessagesPactTest extends AbstractPactTest {
     return builder
         .given("validation messages exist for the search criteria")
         .uponReceiving("a request to search for validation messages")
-        .path("/api/v0/validation-messages")
+        .path("/api/v1/validation-messages")
         .matchQuery("submission-id", UUID_REGEX)
         .matchQuery("claim-id", UUID_REGEX)
         .matchQuery("type", "(ERROR|WARNING)")
@@ -86,7 +86,7 @@ public final class GetValidationMessagesPactTest extends AbstractPactTest {
     return builder
         .given("no validation messages exist for the search criteria")
         .uponReceiving("a request to search for validation messages with no results")
-        .path("/api/v0/validation-messages")
+        .path("/api/v1/validation-messages")
         .matchQuery("submission-id", UUID_REGEX)
         .matchQuery("claim-id", UUID_REGEX)
         .matchQuery("type", "(ERROR|WARNING)")
