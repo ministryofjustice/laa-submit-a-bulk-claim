@@ -10,15 +10,9 @@
       <p class="govuk-body govuk-!-margin-bottom-6" th:text="#{landing.intro.line3}"/>
 
       <h2 class="govuk-heading-l" th:text="#{landing.beforeStart.heading}"/>
-      <p class="govuk-body" th:text="#{landing.beforeStart.description}"/>
       <p class="govuk-body"
          th:utext="#{landing.beforeStart.files(
-     ${@environment.getProperty('links.bulk-upload-spreadsheet')},
-     ${@environment.getProperty('links.bulk-upload-spreadsheet-guide')})}"></p>
-      <p class="govuk-body"
-         th:utext="#{landing.beforeStart.guidance(
      ${@environment.getProperty('links.bulk-upload-guidance')})}"></p>
-
       <a class="govuk-button govuk-button--start"
          th:href="@{/upload}"
          role="button"
