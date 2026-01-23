@@ -16,11 +16,11 @@ public abstract class AbstractPactTest {
       "([a-zA-Z0-9 !\"£$%^&*()_+\\-=\\[\\]{};'#:@~,./<>?\\\\|`¬]+)";
   protected static final String ANY_NUMBER_REGEX = "([0-9]+)";
 
-  protected final List<String> userOffices = List.of("ABC123", "XYZ789");
-  protected final UUID bulkSubmissionId = UUID.randomUUID();
-  protected final UUID submissionId = UUID.randomUUID();
-  protected final UUID claimId = UUID.randomUUID();
-  protected final UUID matterStartId = UUID.randomUUID();
+  protected static final List<String> USER_OFFICES = List.of("ABC123", "XYZ789");
+  protected static final UUID BULK_SUBMISSION_ID = UUID.randomUUID();
+  protected static final UUID SUBMISSION_ID = UUID.randomUUID();
+  protected static final UUID CLAIM_ID = UUID.randomUUID();
+  protected static final UUID MATTER_START_ID = UUID.randomUUID();
 
   @MockitoBean OAuth2AuthorizedClientManager authorizedClientManager;
 }

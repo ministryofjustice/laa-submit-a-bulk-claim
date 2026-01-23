@@ -134,7 +134,7 @@ public final class GetSubmissionsPactTest extends AbstractPactTest {
     LocalDate to = LocalDate.of(2025, 1, 1);
     SubmissionsResultSet submission =
         dataClaimsRestClient
-            .search(userOffices, String.valueOf(submissionId), from, to, 1, 10, "asc")
+            .search(USER_OFFICES, String.valueOf(SUBMISSION_ID), from, to, 1, 10, "asc")
             .block();
 
     assertThat(submission.getContent().size()).isEqualTo(1);
@@ -148,7 +148,7 @@ public final class GetSubmissionsPactTest extends AbstractPactTest {
     LocalDate to = LocalDate.of(2025, 1, 1);
     SubmissionsResultSet submission =
         dataClaimsRestClient
-            .search(userOffices, String.valueOf(submissionId), from, to, 1, 10, "asc")
+            .search(USER_OFFICES, String.valueOf(SUBMISSION_ID), from, to, 1, 10, "asc")
             .block();
 
     assertThat(submission.getContent().isEmpty()).isTrue();

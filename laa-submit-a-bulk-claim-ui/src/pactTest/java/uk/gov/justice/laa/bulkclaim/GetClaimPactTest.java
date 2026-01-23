@@ -52,9 +52,9 @@ public final class GetClaimPactTest extends AbstractPactTest {
         .body(
             LambdaDsl.newJsonBody(
                     body -> {
-                      body.uuid("id", claimId);
+                      body.uuid("id", CLAIM_ID);
                       body.uuid(
-                          "submission_id", submissionId);
+                          "submission_id", SUBMISSION_ID);
                       body.stringType("status", "READY_TO_PROCESS");
                       body.stringType("schedule_reference", "string");
                       body.numberType("line_number", 0);
@@ -165,7 +165,7 @@ public final class GetClaimPactTest extends AbstractPactTest {
                                 UUID.fromString("3fa85f64-5717-4562-b3fc-2c963f66afa6"));
                             fee.uuid(
                                 "claim_id",
-                                claimId);
+                                CLAIM_ID);
                             fee.stringType("fee_code", "string");
                             fee.stringType("fee_code_description", "string");
                             fee.stringType("fee_type", "HOURLY");
@@ -246,11 +246,11 @@ public final class GetClaimPactTest extends AbstractPactTest {
   @PactTestFor(pactMethod = "getClaim200")
   void verify200Response() {
     ClaimResponse claimResponse =
-        dataClaimsRestClient.getSubmissionClaim(submissionId, claimId).block();
+        dataClaimsRestClient.getSubmissionClaim(SUBMISSION_ID, CLAIM_ID).block();
 
     assertThat(claimResponse).isNotNull();
-    assertThat(claimResponse.getId()).isEqualTo(claimId.toString());
-    assertThat(claimResponse.getSubmissionId()).isEqualTo(submissionId.toString());
+    assertThat(claimResponse.getId()).isEqualTo(CLAIM_ID.toString());
+    assertThat(claimResponse.getSubmissionId()).isEqualTo(SUBMISSION_ID.toString());
   }
 
   @Test
@@ -259,7 +259,7 @@ public final class GetClaimPactTest extends AbstractPactTest {
   void verify404Response() {
     assertThrows(
         NotFound.class,
-        () -> dataClaimsRestClient.getSubmissionClaim(submissionId, claimId).block());
+        () -> dataClaimsRestClient.getSubmissionClaim(SUBMISSION_ID, CLAIM_ID).block());
   }
 
   @Test
@@ -268,6 +268,6 @@ public final class GetClaimPactTest extends AbstractPactTest {
   void verify404ResponseNoSubmission() {
     assertThrows(
         NotFound.class,
-        () -> dataClaimsRestClient.getSubmissionClaim(submissionId, claimId).block());
+        () -> dataClaimsRestClient.getSubmissionClaim(SUBMISSION_ID, CLAIM_ID).block());
   }
 }

@@ -53,10 +53,10 @@ public final class GetSubmissionPactTest extends AbstractPactTest {
             LambdaDsl.newJsonBody(
                     body -> {
                       body.uuid(
-                          "submission_id", submissionId);
+                          "submission_id", SUBMISSION_ID);
                       body.uuid(
                           "bulk_submission_id",
-                         bulkSubmissionId);
+                          BULK_SUBMISSION_ID);
                       body.stringType("office_account_number", "string");
                       body.stringType("submission_period", "string");
                       body.stringType("area_of_law", "CRIME LOWER");
@@ -76,7 +76,7 @@ public final class GetSubmissionPactTest extends AbstractPactTest {
                           claim -> {
                             claim.uuid(
                                 "claim_id",
-                                claimId);
+                                CLAIM_ID);
                             claim.stringType("status", "READY_TO_PROCESS");
                           });
                     })
@@ -103,16 +103,16 @@ public final class GetSubmissionPactTest extends AbstractPactTest {
   @DisplayName("Verify 200 response")
   @PactTestFor(pactMethod = "getSubmission200")
   void verify200Response() {
-    SubmissionResponse submission = dataClaimsRestClient.getSubmission(submissionId).block();
+    SubmissionResponse submission = dataClaimsRestClient.getSubmission(SUBMISSION_ID).block();
 
     assertThat(submission).isNotNull();
-    assertThat(submission.getSubmissionId()).isEqualTo(submissionId);
+    assertThat(submission.getSubmissionId()).isEqualTo(SUBMISSION_ID);
   }
 
   @Test
   @DisplayName("Verify 404 response")
   @PactTestFor(pactMethod = "getSubmission404")
   void verify404Response() {
-    assertThrows(NotFound.class, () -> dataClaimsRestClient.getSubmission(submissionId).block());
+    assertThrows(NotFound.class, () -> dataClaimsRestClient.getSubmission(SUBMISSION_ID).block());
   }
 }

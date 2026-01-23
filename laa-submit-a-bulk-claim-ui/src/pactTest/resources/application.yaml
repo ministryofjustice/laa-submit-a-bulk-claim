@@ -1,5 +1,3 @@
-server:
-  port: 8082
 spring:
   profiles:
     active: test
@@ -7,14 +5,6 @@ spring:
     multipart:
       max-file-size: 50MB
       max-request-size: 50MB
-
-management:
-  # specify actuator endpoints to enable
-  endpoints:
-    web:
-      exposure:
-        include: health,info,prometheus
-
 
 security:
   allowed-hosts: ""
@@ -25,17 +15,9 @@ app:
 
   cwa-api:
     url: xx
-    timeout: 1
-
 
   claims-api:
     # This is a random UUID and does not represent a key for any service. This is to ensure that
     #  contracts created demonstrate a check for an access-token as part of a consumer request.
     access-token: e37da3d4-b8bc-4204-9528-deb6fa3bb39d
-
-  upload-max-file-size: 10MB
-
-rest-client:
-  connect-timeout: 5
-  read-timeout: 1
 

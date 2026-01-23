@@ -255,7 +255,7 @@ public final class GetClaimsPactTest extends AbstractPactTest {
   @PactTestFor(pactMethod = "getClaims200")
   void verify200Response() {
     ClaimResultSet claims =
-        dataClaimsRestClient.getClaims(userOffices.get(0), submissionId, 1, 10).getBody();
+        dataClaimsRestClient.getClaims(USER_OFFICES.get(0), SUBMISSION_ID, 1, 10).getBody();
 
     assertThat(claims.getContent().size()).isEqualTo(1);
   }
@@ -265,7 +265,7 @@ public final class GetClaimsPactTest extends AbstractPactTest {
   @PactTestFor(pactMethod = "getClaimsEmpty200")
   void verify200ResponseEmpty() {
     ClaimResultSet claims =
-        dataClaimsRestClient.getClaims(userOffices.get(0), submissionId, 1, 10).getBody();
+        dataClaimsRestClient.getClaims(USER_OFFICES.get(0), SUBMISSION_ID, 1, 10).getBody();
 
     assertThat(claims.getContent().isEmpty()).isTrue();
   }

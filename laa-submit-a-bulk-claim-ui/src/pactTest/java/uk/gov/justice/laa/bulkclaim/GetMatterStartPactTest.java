@@ -99,7 +99,7 @@ public final class GetMatterStartPactTest extends AbstractPactTest {
   @PactTestFor(pactMethod = "getMatterStart200")
   void verify200Response() {
     MatterStartGet matterStart =
-        dataClaimsRestClient.getSubmissionMatterStart(submissionId, matterStartId).block();
+        dataClaimsRestClient.getSubmissionMatterStart(SUBMISSION_ID, MATTER_START_ID).block();
 
     assertThat(matterStart).isNotNull();
   }
@@ -110,7 +110,7 @@ public final class GetMatterStartPactTest extends AbstractPactTest {
   void verify404Response() {
     assertThrows(
         NotFound.class,
-        () -> dataClaimsRestClient.getSubmissionMatterStart(submissionId, matterStartId).block());
+        () -> dataClaimsRestClient.getSubmissionMatterStart(SUBMISSION_ID, MATTER_START_ID).block());
   }
 
   @Test
@@ -119,6 +119,6 @@ public final class GetMatterStartPactTest extends AbstractPactTest {
   void verify404NoSubmissionResponse() {
     assertThrows(
         NotFound.class,
-        () -> dataClaimsRestClient.getSubmissionMatterStart(submissionId, matterStartId).block());
+        () -> dataClaimsRestClient.getSubmissionMatterStart(SUBMISSION_ID, MATTER_START_ID).block());
   }
 }
