@@ -56,7 +56,9 @@ jobs:
       ecr_role_to_assume: ${{ secrets.ECR_ROLE_TO_ASSUME }}
 
   deploy-uat:
-    needs: [ ecr-publish-image ]
+    needs:
+      - ecr-publish-image
+      - pact-test
     permissions:
       id-token: write
       contents: read
