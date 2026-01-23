@@ -22,6 +22,17 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v6
 
+      # Add again once checking pipelines
+      #- name: Can I deploy?
+      #  id: can-i-deploy
+      #  uses: ministryofjustice/laa-ccms-common-workflows/.github/actions/pact-can-i-deploy@story/pact-publish
+      #  with:
+      #    pacticipant: 'laa-submit-a-bulk-claim'
+      #    environment: ${{ inputs.environment }}
+      #    pact_broker_url: ${{ secrets.pact_broker_url }}
+      #    pact_broker_username: ${{ secrets.pact_broker_username }}
+      #    pact_broker_password: ${{ secrets.pact_broker_password }}
+
       - name: Authenticate to the cluster
         run: |
           set -euo pipefail
@@ -87,3 +98,13 @@ jobs:
           printf 'images<<EOF\n%s\nEOF\n' "$IMAGES" >> "$GITHUB_OUTPUT"
           
           echo "Deployed Images: $(echo "$IMAGES" | jq)"
+
+      - name: Record deployment to pact broker
+        id: record-deployment-to-pact-broker
+        uses: ministryofjustice/laa-ccms-common-workflows/.github/actions/pact-record-deployment@story/pact-publish
+        with:
+          pacticipant: 'laa-submit-a-bulk-claim'
+          environment: ${{ inputs.environment }}
+          pact_broker_url: ${{ secrets.pact_broker_url }}
+          pact_broker_username: ${{ secrets.pact_broker_username }}
+          pact_broker_password: ${{ secrets.pact_broker_password }}
