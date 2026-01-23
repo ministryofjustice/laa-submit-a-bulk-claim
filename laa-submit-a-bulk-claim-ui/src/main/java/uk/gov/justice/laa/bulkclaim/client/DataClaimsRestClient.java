@@ -29,7 +29,7 @@ import uk.gov.justice.laa.dstew.payments.claimsdata.model.ValidationMessagesResp
  *
  * @author Jamie Briggs
  */
-@HttpExchange("/api/v0")
+@HttpExchange("/api/v1")
 public interface DataClaimsRestClient {
 
   /**
@@ -109,7 +109,7 @@ public interface DataClaimsRestClient {
       @RequestParam(value = "size") Integer size);
 
   @GetExchange(value = "/submissions/{submission-id}/matter-starts/{matter-starts-id}")
-  Mono<MatterStartGet> getSubmissionMatterStarts(
+  Mono<MatterStartGet> getSubmissionMatterStart(
       @PathVariable("submission-id") UUID submissionId,
       @PathVariable("matter-starts-id") UUID claimId);
 

@@ -1,0 +1,30 @@
+<!DOCTYPE HTML>
+<html lang="en" class="govuk-template" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{ layout/main-layout :: layout(#{search.title},~{::main}, ~{}, 'search-submissions')}">
+<main class="govuk-main-wrapper" id="main-content">
+  <div class="govuk-width-container">
+    <div class="govuk-grid-row">
+      <div class="govuk-grid-column-full"  data-module="laa-print-button">
+        <h1 id="accessibility-statement" class="govuk-heading-xl" th:text="#{accessibilityPage.title}"></h1>
+      </div>
+    </div>
+    <div class="govuk-grid-row">
+      <div class="govuk-grid-column-full">
+        <div class="app-pros-scope govuk-body">
+          <p th:utext="#{accessibilityPage.intro}"></p>
+          <h2 id="compliance-status" class="govuk-heading-m" th:text="#{accessibilityPage.titleCS}" ></h2>
+          <p th:text="#{accessibilityPage.compliance}"></p>
+          <h2 id="non-accessible-content" class="govuk-heading-m" th:text="#{accessibilityPage.titleNAC}"></h2>
+          <p th:utext="#{accessibilityPage.NAC}"></p>
+          <h2 id="preparation-of-this-accessibility-statement" class="govuk-heading-m" th:text="#{accessibilityPage.titlePOAS}"></h2>
+          <p th:utext="#{accessibilityPage.POAS}"></p>
+          <h2 id="feedback-and-contact-information" class="govuk-heading-m" th:text="#{accessibilityPage.titleFCI}"></h2>
+          <p th:utext="#{accessibilityPage.FCI}"></p>
+          <h2 id="enforcement-procedure" class="govuk-heading-m" th:text="#{accessibilityPage.titleEP}"></h2>
+          <p th:utext="#{accessibilityPage.EP}"></p>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+</html>

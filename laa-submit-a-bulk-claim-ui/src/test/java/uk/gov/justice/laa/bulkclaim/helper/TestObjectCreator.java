@@ -46,7 +46,6 @@ public final class TestObjectCreator {
         .mediationTimeMinutes(5)
         .outreachLocation("outreach-location")
         .referralSource("referral-source")
-        .totalValue(new BigDecimal("1234.56"))
         .clientForename("client-forename")
         .clientSurname("client-surname")
         .clientDateOfBirth("1995-01-01")

@@ -1,8 +1,10 @@
 package uk.gov.justice.laa.bulkclaim.provider;
 
+import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.security.oauth2.client.ClientAuthorizationException;
 import org.springframework.security.oauth2.client.OAuth2AuthorizeRequest;
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClient;
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClientManager;
@@ -15,6 +17,11 @@ import uk.gov.justice.laa.bulkclaim.exception.TokenProviderException;
 @RequiredArgsConstructor
 public class TokenProvider {
 
+  static final String CACHE_NAME = "tokenCache";
+  static final String CACHE_KEY = "'sdsAccessToken'";
+  static final String CLIENT_REGISTRATION_ID = "moj-identity";
+  static final String PRINCIPAL_NAME = "moj-identity-client";
+
   private final OAuth2AuthorizedClientManager authorizedClientManager;
 
   /**
@@ -22,21 +29,29 @@ public class TokenProvider {
    *
    * @return the access token
    */
-  @Cacheable(value = "tokenCache", key = "'sdsAccessToken'")
+  @Cacheable(value = CACHE_NAME, key = CACHE_KEY)
   public OAuth2AccessToken getTokenFromProvider() {
-    OAuth2AuthorizeRequest authorizeRequest =
-        OAuth2AuthorizeRequest.withClientRegistrationId("moj-identity")
-            .principal("moj-identity-client")
-            .build();
+    try {
+      OAuth2AuthorizedClient authorizedClient =
+          authorizedClientManager.authorize(buildAuthorizeRequest());
 
-    OAuth2AuthorizedClient authorizedClient = authorizedClientManager.authorize(authorizeRequest);
-    if (authorizedClient == null || authorizedClient.getAccessToken() == null) {
-      throw new TokenProviderException("Failed to obtain SDS API access token");
+      if (Objects.isNull(authorizedClient)
+          || Objects.requireNonNull(authorizedClient).getAccessToken() == null) {
+        throw new TokenProviderException("Failed to obtain SDS API access token");
+      }
+
+      return authorizedClient.getAccessToken();
+    } catch (ClientAuthorizationException clientAuthorizationException) {
+      throw new TokenProviderException(clientAuthorizationException.getMessage());
     }
-
-    return authorizedClient.getAccessToken();
   }
 
-  @CacheEvict(value = "tokenCache", key = "'sdsAccessToken'")
+  @CacheEvict(value = CACHE_NAME, key = CACHE_KEY)
   public void evictToken() {}
+
+  private OAuth2AuthorizeRequest buildAuthorizeRequest() {
+    return OAuth2AuthorizeRequest.withClientRegistrationId(CLIENT_REGISTRATION_ID)
+        .principal(PRINCIPAL_NAME)
+        .build();
+  }
 }
