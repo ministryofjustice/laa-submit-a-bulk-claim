@@ -52,19 +52,14 @@ public final class GetSubmissionPactTest extends AbstractPactTest {
         .body(
             LambdaDsl.newJsonBody(
                     body -> {
-                      body.uuid(
-                          "submission_id", SUBMISSION_ID);
-                      body.uuid(
-                          "bulk_submission_id",
-                          BULK_SUBMISSION_ID);
+                      body.uuid("submission_id", SUBMISSION_ID);
+                      body.uuid("bulk_submission_id", BULK_SUBMISSION_ID);
                       body.stringType("office_account_number", "string");
                       body.stringType("submission_period", "string");
                       body.stringType("area_of_law", "CRIME LOWER");
                       body.stringType("provider_user_id", "string");
                       body.stringType("status", "CREATED");
-                      body.uuid(
-                          "previous_submission_id",
-                          UUID.randomUUID());
+                      body.uuid("previous_submission_id", UUID.randomUUID());
                       body.booleanType("is_nil_submission", true);
                       body.numberType("number_of_claims", 0);
                       body.numberType("calculated_total_amount", 0);
@@ -74,9 +69,7 @@ public final class GetSubmissionPactTest extends AbstractPactTest {
                           "claims",
                           1,
                           claim -> {
-                            claim.uuid(
-                                "claim_id",
-                                CLAIM_ID);
+                            claim.uuid("claim_id", CLAIM_ID);
                             claim.stringType("status", "READY_TO_PROCESS");
                           });
                     })

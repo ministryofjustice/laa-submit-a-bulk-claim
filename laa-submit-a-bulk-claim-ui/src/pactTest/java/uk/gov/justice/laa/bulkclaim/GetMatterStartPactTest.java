@@ -110,7 +110,8 @@ public final class GetMatterStartPactTest extends AbstractPactTest {
   void verify404Response() {
     assertThrows(
         NotFound.class,
-        () -> dataClaimsRestClient.getSubmissionMatterStart(SUBMISSION_ID, MATTER_START_ID).block());
+        () ->
+            dataClaimsRestClient.getSubmissionMatterStart(SUBMISSION_ID, MATTER_START_ID).block());
   }
 
   @Test
@@ -119,6 +120,7 @@ public final class GetMatterStartPactTest extends AbstractPactTest {
   void verify404NoSubmissionResponse() {
     assertThrows(
         NotFound.class,
-        () -> dataClaimsRestClient.getSubmissionMatterStart(SUBMISSION_ID, MATTER_START_ID).block());
+        () ->
+            dataClaimsRestClient.getSubmissionMatterStart(SUBMISSION_ID, MATTER_START_ID).block());
   }
 }
