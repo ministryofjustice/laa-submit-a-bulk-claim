@@ -53,8 +53,7 @@ public final class GetClaimPactTest extends AbstractPactTest {
             LambdaDsl.newJsonBody(
                     body -> {
                       body.uuid("id", CLAIM_ID);
-                      body.uuid(
-                          "submission_id", SUBMISSION_ID);
+                      body.uuid("submission_id", SUBMISSION_ID);
                       body.stringType("status", "READY_TO_PROCESS");
                       body.stringType("schedule_reference", "string");
                       body.numberType("line_number", 0);
@@ -163,9 +162,7 @@ public final class GetClaimPactTest extends AbstractPactTest {
                             fee.uuid(
                                 "claim_summary_fee_id",
                                 UUID.fromString("3fa85f64-5717-4562-b3fc-2c963f66afa6"));
-                            fee.uuid(
-                                "claim_id",
-                                CLAIM_ID);
+                            fee.uuid("claim_id", CLAIM_ID);
                             fee.stringType("fee_code", "string");
                             fee.stringType("fee_code_description", "string");
                             fee.stringType("fee_type", "HOURLY");
