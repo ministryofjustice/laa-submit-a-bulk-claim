@@ -150,8 +150,6 @@ ingress:
 probe:
   enabled: true
 
-stickiness:
-  enabled: true
 resources:
   limits:
     cpu: "1"
