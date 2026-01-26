@@ -79,3 +79,6 @@ jobs:
           kube-namespace: ${{ secrets.KUBE_NAMESPACE }}
           app-environment: uat
           image-tag: ${{ needs.ecr-publish-image.outputs.published_image_version }}
+          pact_broker_url: ${{ secrets.pact_broker_url }}
+          pact_broker_username: ${{ secrets.pact_broker_username }}
+          pact_broker_password: ${{ secrets.pact_broker_password }}

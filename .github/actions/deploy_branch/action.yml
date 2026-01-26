@@ -28,6 +28,12 @@ inputs:
   image-tag:
     description: "Docker image tag to deploy"
     required: true
+  pact_broker_url:
+    required: true
+  pact_broker_username:
+    required: true
+  pact_broker_password:
+    required: true
 
 outputs:
   branch-name:
@@ -126,7 +132,7 @@ runs:
       uses: ministryofjustice/laa-ccms-common-workflows/.github/actions/pact-record-deployment@story/pact-publish
       with:
         pacticipant: 'laa-submit-a-bulk-claim'
-        environment: ${{ inputs.environment }}
-        pact_broker_url: ${{ secrets.pact_broker_url }}
-        pact_broker_username: ${{ secrets.pact_broker_username }}
-        pact_broker_password: ${{ secrets.pact_broker_password }}
+        environment: ${{ steps.extract_release_name.outputs.release-name }}
+        pact_broker_url: ${{ inputs.pact_broker_url }}
+        pact_broker_username: ${{ inputs.pact_broker_username }}
+        pact_broker_password: ${{ inputs.pact_broker_password }}
