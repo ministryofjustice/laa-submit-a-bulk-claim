@@ -79,24 +79,6 @@ jobs:
       ecr_region: ${{ vars.ECR_REGION }}
       ecr_role_to_assume: ${{ secrets.ECR_ROLE_TO_ASSUME }}
 
-  claims-api-pact-verification:
-    needs: [pact-test]
-    id: trigger-claims-api-pact-verification
-    uses: ministryofjustice/laa-data-claims-api/.github/workflows/pact-provider-webhook.yml@main
-    permissions:
-      contents: write
-      id-token: write
-    with:
-      pact_test_task: ":claims-data:service:pactTest"
-      provider_name: "laa-data-claims-api"
-      consumer: 'laa-submit-a-bulk-claim'
-      consumerBranch: ${{ env.GIT_BRANCH }}
-    secrets:
-      gh_token: ${{ secrets.GH_CLAIMS_PAT_TOKEN }}
-      pact_broker_url: ${{ secrets.PACT_BROKER_URL }}
-      pact_broker_username: ${{ secrets.PACT_BROKER_USERNAME }}
-      pact_broker_password: ${{ secrets.PACT_BROKER_PASSWORD }}
-
   deploy-uat-preview:
     needs:
       - pact-test
