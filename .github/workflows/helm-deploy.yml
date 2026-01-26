@@ -22,6 +22,27 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v6
 
+      - name: Set branch name
+        run: echo "GIT_BRANCH=${GITHUB_HEAD_REF:-${GITHUB_REF_NAME}}" >> $GITHUB_ENV
+
+      - name: Run Claims API PACT Verification
+        id: trigger-claims-api-pact-verification
+        uses: ministryofjustice/laa-data-claims-api/.github/workflows/pact-provider-webhook.yml@main
+        permissions:
+          contents: write
+          id-token: write
+        with:
+          pact_test_task: ":claims-data:service:pactTest"
+          provider_name: "laa-data-claims-api"
+          consumer: 'laa-submit-a-bulk-claim'
+          consumerBranch: ${{ env.GIT_BRANCH }}
+        secrets:
+          gh_token: ${{ secrets.GH_CLAIMS_PAT_TOKEN }}
+          pact_broker_url: ${{ secrets.PACT_BROKER_URL }}
+          pact_broker_username: ${{ secrets.PACT_BROKER_USERNAME }}
+          pact_broker_password: ${{ secrets.PACT_BROKER_PASSWORD }}
+
+
       # Add again once checking pipelines
       - name: Can I deploy?
         id: can-i-deploy
