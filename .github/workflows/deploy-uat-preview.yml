@@ -35,7 +35,7 @@ jobs:
       publish_pact_results: 'true'
     secrets:
       gh_token: ${{ secrets.GITHUB_TOKEN }}
-      pact_broker_url: ${{ secrets.PACT_BROKER_URL }}
+      pact_broker_url: 'https://laa-data-pact-broker.apps.live.cloud-platform.service.justice.gov.uk/'
       pact_broker_username: ${{ secrets.PACT_BROKER_USERNAME }}
       pact_broker_password: ${{ secrets.PACT_BROKER_PASSWORD }}
 
@@ -79,6 +79,6 @@ jobs:
           kube-namespace: ${{ secrets.KUBE_NAMESPACE }}
           app-environment: uat
           image-tag: ${{ needs.ecr-publish-image.outputs.published_image_version }}
-          pact_broker_url: ${{ secrets.pact_broker_url }}
+          pact_broker_url: 'https://laa-data-pact-broker.apps.live.cloud-platform.service.justice.gov.uk/'
           pact_broker_username: ${{ secrets.pact_broker_username }}
           pact_broker_password: ${{ secrets.pact_broker_password }}
