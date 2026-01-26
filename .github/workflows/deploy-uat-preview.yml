@@ -19,7 +19,7 @@ jobs:
           set -euo pipefail
           commit_hash=$(git rev-parse --short HEAD)
           version=$(awk -F= '/^version=/{print $2}' gradle.properties)
-          echo "preview_version=submit-a-bulk-claim-${version}-${commit_hash}" >> "$GITHUB_OUTPUT"
+          echo "preview_version=${version}-${commit_hash}" >> "$GITHUB_OUTPUT"
           echo "Preview version: submit-a-bulk-claim-${version}-${commit_hash}"
 
   assemble:
