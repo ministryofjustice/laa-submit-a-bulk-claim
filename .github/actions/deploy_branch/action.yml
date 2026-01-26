@@ -109,3 +109,11 @@ runs:
           "${values_args[@]}" \
           --install \
           --wait --timeout=10m
+
+    - name: Update image tags
+      uses: ./.github/actions/ecr-update-image-tags
+      with:
+        images: ${{ steps.helm-images.outputs.images }}
+        role_to_assume: ${{ inputs.ecr-role-to-assume }}
+        aws_region: ${{ inputs.ecr-region }}
+        ecr_repository: ${{ inputs.ecr-repository }}
