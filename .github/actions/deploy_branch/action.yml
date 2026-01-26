@@ -74,6 +74,7 @@ runs:
         cat .helm/submit-a-bulk-claim/Chart.yaml
 
     - name: Helm deployment of branch
+      id: helm-install
       shell: bash
       env:
         ECR_REPOSITORY: ${{ inputs.ecr-repository }}
@@ -110,10 +111,18 @@ runs:
           --install \
           --wait --timeout=10m
 
+        IMAGES=$(helm get manifest "$RELEASE_NAME" --namespace "$KUBE_NAMESPACE" | yq -o=json '.' | jq -sc \
+            "[.[] | select(.kind == \"Deployment\") | select(.spec.template.spec.containers[0].image | contains(\"$ECR_REGISTRY/$ECR_REPOSITORY\")) | {image_version_tag: .metadata.labels.appVersion, release_tag: .metadata.name}]")
+
+        # Use heredoc for multi-line output safety
+        printf 'images<<EOF\n%s\nEOF\n' "$IMAGES" >> "$GITHUB_OUTPUT"
+        
+        echo "Deployed Images: $(echo "$IMAGES" | jq)"
+
     - name: Update image tags
       uses: ./.github/actions/ecr-update-image-tags
       with:
-        images: ${{ steps.helm-images.outputs.images }}
+        images: ${{ steps.helm-install.outputs.images }}
         role_to_assume: ${{ inputs.ecr-role-to-assume }}
         aws_region: ${{ inputs.ecr-region }}
         ecr_repository: ${{ inputs.ecr-repository }}
