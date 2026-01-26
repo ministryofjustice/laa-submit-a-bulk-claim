@@ -11,6 +11,7 @@ import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 /**
@@ -62,7 +63,7 @@ public class HostValidationFilter extends OncePerRequestFilter {
       return Set.of();
     }
     return allowedHosts.stream()
-        .filter(entry -> entry != null && !entry.isBlank())
+        .filter(StringUtils::hasText)
         .map(entry -> entry.split(":")[0])
         .collect(Collectors.toSet());
   }
