@@ -99,6 +99,15 @@ jobs:
           
           echo "Deployed Images: $(echo "$IMAGES" | jq)"
 
+      - name: Update image tags
+        if: ${{ success() && contains(fromJson('["uat", "stg", "prod"]'), inputs.deployment_name) }}
+        uses: ./.github/actions/ecr-update-image-tags
+        with:
+          images: ${{ steps.helm-install.outputs.images }}
+          role_to_assume: ${{ secrets.ecr_role_to_assume }}
+          aws_region: ${{ vars.ECR_REGION }}
+          ecr_repository: ${{ vars.ECR_REPOSITORY }}
+
       - name: Record deployment to pact broker
         id: record-deployment-to-pact-broker
         uses: ministryofjustice/laa-ccms-common-workflows/.github/actions/pact-record-deployment@story/pact-publish
