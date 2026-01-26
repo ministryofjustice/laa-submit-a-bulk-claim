@@ -2,6 +2,9 @@ name: Build OIDC mock image
 
 on:
   workflow_call:
+    secrets:
+      ECR_ROLE_TO_ASSUME:
+        required: true
     outputs:
       oidc_mock_tag:
         description: "OIDC mock image tag pushed to ECR"
