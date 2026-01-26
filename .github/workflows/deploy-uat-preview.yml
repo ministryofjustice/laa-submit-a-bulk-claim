@@ -7,7 +7,23 @@ permissions:
   contents: read
 
 jobs:
+  define-preview-version:
+    runs-on: ubuntu-latest
+    outputs:
+      preview_version: ${{ steps.get-preview-version.outputs.preview_version }}
+    steps:
+      - uses: actions/checkout@v6
+      - name: Get preview version
+        id: get-preview-version
+        run: |
+          set -euo pipefail
+          commit_hash=$(git rev-parse --short HEAD)
+          version=$(awk -F= '/^version=/{print $2}' gradle.properties)
+          echo "preview_version=submit-a-bulk-claim-${version}-${commit_hash}" >> "$GITHUB_OUTPUT"
+          echo "Preview version: submit-a-bulk-claim-${version}-${commit_hash}"
+
   assemble:
+    needs: [ define-preview-version ]
     uses: ministryofjustice/laa-ccms-common-workflows/.github/workflows/gradle-build-and-publish.yml@v1
     permissions:
       contents: write
@@ -15,6 +31,7 @@ jobs:
     with:
       build_command: 'assemble'
       publish_package: 'false'
+      override_version: ${{ needs.define-preview-version.outputs.preview_version }}
       junit_results: 'false'
       junit_report: 'false'
       checkstyle_report: 'false'
