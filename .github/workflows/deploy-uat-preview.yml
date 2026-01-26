@@ -80,6 +80,7 @@ jobs:
       ecr_role_to_assume: ${{ secrets.ECR_ROLE_TO_ASSUME }}
 
   claims-api-pact-verification:
+    needs: [pact-test]
     id: trigger-claims-api-pact-verification
     uses: ministryofjustice/laa-data-claims-api/.github/workflows/pact-provider-webhook.yml@main
     permissions:
