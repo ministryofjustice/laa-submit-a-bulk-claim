@@ -28,6 +28,9 @@ inputs:
   image-tag:
     description: "Docker image tag to deploy"
     required: true
+  oidc-mock-image-tag:
+    description: "OIDC mock image tag to deploy (preview only)"
+    required: false
 
 outputs:
   branch-name:
@@ -86,6 +89,7 @@ runs:
         PREVIEW_VALUES_FILE: .helm/submit-a-bulk-claim/values/env-${{ inputs.app-environment }}-preview.yaml
         RELEASE_NAME: ${{ steps.extract_release_name.outputs.release-name }}
         BRANCH_NAME: ${{ steps.extract_release_name.outputs.branch-name }}
+        OIDC_IMAGE_TAG: ${{ inputs.oidc-mock-image-tag }}
       run: |
         echo "Deploying image tag: $IMAGE_TAG under release name: $RELEASE_NAME to namespace: $KUBE_NAMESPACE"
 
@@ -97,10 +101,16 @@ runs:
             -f .helm/bitnami_redis/values.yaml \
             --namespace "$KUBE_NAMESPACE" \
             --install --wait --timeout=10m
+          oidc_values_args=(
+            --set image.repository="${ECR_REGISTRY}/${ECR_REPOSITORY}"
+            --set sabc.releaseName="${RELEASE_NAME}"
+          )
+          if [ -n "$OIDC_IMAGE_TAG" ]; then
+            oidc_values_args+=(--set image.tag="${OIDC_IMAGE_TAG}")
+          fi
           helm upgrade "${RELEASE_NAME}-oidc-mock" .helm/oidc-mock \
             --namespace "$KUBE_NAMESPACE" \
-            --set image.repository="${ECR_REGISTRY}/${ECR_REPOSITORY}" \
-            --set sabc.releaseName="${RELEASE_NAME}" \
+            "${oidc_values_args[@]}" \
             --install --wait --timeout=10m
         fi
 

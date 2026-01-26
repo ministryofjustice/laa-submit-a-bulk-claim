@@ -55,6 +55,9 @@ jobs:
       pact_broker_username: ${{ secrets.PACT_BROKER_USERNAME }}
       pact_broker_password: ${{ secrets.PACT_BROKER_PASSWORD }}
 
+  build-oidc-mock-image:
+    uses: ./.github/workflows/build-oidc-mock-image.yml
+
   ecr-publish-image:
     needs: [ assemble ]
     uses: ministryofjustice/laa-ccms-common-workflows/.github/workflows/ecr-publish-image.yml@v1
@@ -74,6 +77,7 @@ jobs:
     needs:
       - pact-test
       - ecr-publish-image
+      - build-oidc-mock-image
     runs-on: ubuntu-latest
     environment: uat
     permissions:
@@ -95,3 +99,4 @@ jobs:
           kube-namespace: ${{ secrets.KUBE_NAMESPACE }}
           app-environment: uat
           image-tag: ${{ needs.ecr-publish-image.outputs.published_image_version }}
+          oidc-mock-image-tag: ${{ needs.build-oidc-mock-image.outputs.oidc_mock_tag }}
