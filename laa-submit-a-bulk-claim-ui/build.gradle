@@ -173,13 +173,13 @@ pact {
         def branchName = providers.environmentVariable('GIT_BRANCH').getOrElse('main')
 
         // If we have a SHA, append it to the version for uniqueness
-        consumerVersion = gitSha ? "${projectVersion}-${gitSha}" : projectVersion
+        consumerVersion = gitSha ? gitSha : projectVersion
 
         // For newer Pact Brokers (Recommended)
         consumerBranch = branchName
 
         // For older Brokers/compatibility
-        tags = [branchName]
+        tags = [branchName, projectVersion]
 
         // Optional: add a generic 'dev' tag for anything not on main
         if (branchName != 'main' && branchName != 'master') {
