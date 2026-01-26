@@ -45,6 +45,17 @@ runs:
       id: extract_release_name
       uses: ./.github/actions/get_release_name
 
+    # Add again once checking pipelines
+    - name: Can I deploy?
+      id: can-i-deploy
+      uses: ministryofjustice/laa-ccms-common-workflows/.github/actions/pact-can-i-deploy@story/pact-publish
+      with:
+        pacticipant: 'laa-submit-a-bulk-claim'
+        environment: ${{ steps.extract_release_name.outputs.release-name }}
+        pact_broker_url: ${{ secrets.pact_broker_url }}
+        pact_broker_username: ${{ secrets.pact_broker_username }}
+        pact_broker_password: ${{ secrets.pact_broker_password }}
+
     - name: Authenticate to the cluster
       uses: ministryofjustice/laa-reusable-github-actions/.github/actions/authenticate_to_cluster@2aa2676c3cd9876ec7037ee8b3d729d0306cb7c6
       with:
@@ -109,3 +120,13 @@ runs:
           "${values_args[@]}" \
           --install \
           --wait --timeout=10m
+
+    - name: Record deployment to pact broker
+      id: record-deployment-to-pact-broker
+      uses: ministryofjustice/laa-ccms-common-workflows/.github/actions/pact-record-deployment@story/pact-publish
+      with:
+        pacticipant: 'laa-submit-a-bulk-claim'
+        environment: ${{ inputs.environment }}
+        pact_broker_url: ${{ secrets.pact_broker_url }}
+        pact_broker_username: ${{ secrets.pact_broker_username }}
+        pact_broker_password: ${{ secrets.pact_broker_password }}
