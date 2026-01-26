@@ -49,9 +49,10 @@ jobs:
     with:
       pacticipant_name: "laa-submit-a-bulk-claim"
       pact_test_task: "pactTest"
+      publish_pact_results: 'true'
     secrets:
       gh_token: ${{ secrets.GITHUB_TOKEN }}
-      pact_broker_url: ${{ secrets.PACT_BROKER_URL }}
+      pact_broker_url: 'https://laa-data-pact-broker.apps.live.cloud-platform.service.justice.gov.uk/'
       pact_broker_username: ${{ secrets.PACT_BROKER_USERNAME }}
       pact_broker_password: ${{ secrets.PACT_BROKER_PASSWORD }}
 
@@ -100,3 +101,6 @@ jobs:
           app-environment: uat
           image-tag: ${{ needs.ecr-publish-image.outputs.published_image_version }}
           oidc-mock-image-tag: ${{ needs.build-oidc-mock-image.outputs.oidc_mock_tag }}
+          pact_broker_url: 'https://laa-data-pact-broker.apps.live.cloud-platform.service.justice.gov.uk/'
+          pact_broker_username: ${{ secrets.pact_broker_username }}
+          pact_broker_password: ${{ secrets.pact_broker_password }}
