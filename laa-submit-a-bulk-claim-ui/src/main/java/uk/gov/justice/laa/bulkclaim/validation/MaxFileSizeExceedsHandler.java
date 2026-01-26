@@ -29,7 +29,7 @@ public class MaxFileSizeExceedsHandler {
    */
   public MaxFileSizeExceedsHandler(
       BulkClaimMetricService bulkClaimMetricService,
-      @Value("${upload-max-file-size:10MB}") String maxFileSizeReadable) {
+      @Value("${app.upload-max-file-size:10MB}") String maxFileSizeReadable) {
     this.bulkClaimMetricService = bulkClaimMetricService;
     this.maxFileSizeReadable =
         StringUtils.hasText(maxFileSizeReadable) ? maxFileSizeReadable : "10MB";

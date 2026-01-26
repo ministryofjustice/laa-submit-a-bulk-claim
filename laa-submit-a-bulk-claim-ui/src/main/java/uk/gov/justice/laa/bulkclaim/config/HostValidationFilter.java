@@ -5,9 +5,13 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 /**
@@ -51,6 +55,16 @@ public class HostValidationFilter extends OncePerRequestFilter {
     }
     // Strip port if present for comparison
     String hostname = host.split(":")[0];
-    return !securityProperties.getAllowedHosts().contains(hostname);
+    return !allowedHostnames(securityProperties.getAllowedHosts()).contains(hostname);
+  }
+
+  private Set<String> allowedHostnames(List<String> allowedHosts) {
+    if (allowedHosts == null) {
+      return Set.of();
+    }
+    return allowedHosts.stream()
+        .filter(StringUtils::hasText)
+        .map(entry -> entry.split(":")[0])
+        .collect(Collectors.toSet());
   }
 }
