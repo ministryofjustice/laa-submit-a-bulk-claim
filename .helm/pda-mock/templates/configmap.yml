@@ -1,0 +1,556 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Release.Name }}-mappings
+  namespace: {{ .Release.Namespace }}
+data:
+  pda-medi.json: |-
+    {
+      "request": {
+        "method": "GET",
+        "urlPathPattern": "/api/v1/provider-offices/[a-zA-Z0-9\\\\-]+/schedules",
+        "queryParameters": {
+          "areaOfLaw": {
+            "equalTo": "MEDIATION"
+          }
+        }
+      },
+      "scenarioName": "get schedules",
+      "response": {
+        "status": 200,
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "jsonBody": {
+          "firm": {
+            "firmNumber": "1",
+            "firmId": 1,
+            "ccmsFirmId": 2,
+            "parentFirmId": null,
+            "firmName": "AWESOME ALL TEST DATA LTD",
+            "firmType": "Legal Services Provider",
+            "constitutionalStatus": "Limited Company"
+          },
+          "office": {
+            "firmOfficeId": 3,
+            "ccmsFirmOfficeId": 4,
+            "firmOfficeCode": "1A234B",
+            "officeName": "1A234B,AWESOME OFFICE",
+            "officeCodeAlt": "AWESOME ALL TEST DATA LTD",
+            "type": "Legal Services Supplier (Civil/Crime/Both/Mediator)"
+          },
+          "pds": false,
+          "schedules": [
+            {
+              "contractType": "Standard",
+              "contractDescription": "All Standard Mediation Contract",
+              "contractNumber": "3333",
+              "contractReference": "01/1A234B/ALL/3",
+              "contractStatus": "Open",
+              "contractAuthorizationStatus": "APPROVED",
+              "contractStartDate": "2000-01-01",
+              "contractEndDate": "2099-12-31",
+              "areaOfLaw": "MEDIATION",
+              "scheduleType": "Standard",
+              "scheduleNumber": "1A234B/ALL/03",
+              "scheduleContractNumber": "1034797",
+              "scheduleContractReference": "01/1A234B/ALL/3",
+              "scheduleAuthorizationStatus": "APPROVED",
+              "scheduleStatus": "Open",
+              "scheduleStartDate": "2000-01-01",
+              "scheduleEndDate": "2099-12-31",
+              "scheduleLines": [
+                {
+                  "areaOfLaw": "MEDIATION",
+                  "categoryOfLaw": "MEDI",
+                  "description": "Mediation (Mediation).Mediation"
+                }
+              ],
+              "nmsAuths": []
+            }
+          ]
+        }
+      }
+    }
+  pda-all-areas.json: |-
+    {
+      "request": {
+        "method": "GET",
+        "urlPathPattern": "/api/v1/provider-offices/[a-zA-Z0-9\\\\-]+/schedules",
+        "queryParameters": {
+          "areaOfLaw": {
+            "absent": true
+          }
+        }
+      },
+      "scenarioName": "get schedules",
+      "response": {
+        "status": 200,
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "jsonBody": {
+          "firm": {
+            "firmNumber": "1",
+            "firmId": 1,
+            "ccmsFirmId": 2,
+            "parentFirmId": null,
+            "firmName": "AWESOME ALL TEST DATA LTD",
+            "firmType": "Legal Services Provider",
+            "constitutionalStatus": "Limited Company"
+          },
+          "office": {
+            "firmOfficeId": 3,
+            "ccmsFirmOfficeId": 4,
+            "firmOfficeCode": "1A234B",
+            "officeName": "1A234B,AWESOME OFFICE",
+            "officeCodeAlt": "AWESOME ALL TEST DATA LTD",
+            "type": "Legal Services Supplier (Civil/Crime/Both/Mediator)"
+          },
+          "pds": false,
+          "schedules": [
+            {
+              "contractType": "Standard",
+              "contractDescription": "All Standard Civil Contract",
+              "contractNumber": "1111",
+              "contractReference": "01/1A234B/ALL/1",
+              "contractStatus": "Open",
+              "contractAuthorizationStatus": "APPROVED",
+              "contractStartDate": "2000-01-01",
+              "contractEndDate": "2099-12-31",
+              "areaOfLaw": "LEGAL HELP",
+              "scheduleType": "Standard",
+              "scheduleNumber": "1A234B/ALL/01",
+              "scheduleContractNumber": "1034797",
+              "scheduleContractReference": "01/1A234B/ALL/1",
+              "scheduleAuthorizationStatus": "APPROVED",
+              "scheduleStatus": "Open",
+              "scheduleStartDate": "2000-01-01",
+              "scheduleEndDate": "2099-12-31",
+              "scheduleLines": [
+                {
+                  "areaOfLaw": "LEGAL HELP",
+                  "categoryOfLaw": "AAP",
+                  "description": "Legal Help (Civil).Claims Against Public Authorities"
+                },
+                {
+                  "areaOfLaw": "LEGAL HELP",
+                  "categoryOfLaw": "COM",
+                  "description": "Legal Help (Civil).Community Care"
+                },
+                {
+                  "areaOfLaw": "LEGAL HELP",
+                  "categoryOfLaw": "CON",
+                  "description": "Legal Help (Civil).Consumer General Contract"
+                },
+                {
+                  "areaOfLaw": "LEGAL HELP",
+                  "categoryOfLaw": "DEB",
+                  "description": "Legal Help (Civil).Debt"
+                },
+                {
+                  "areaOfLaw": "LEGAL HELP",
+                  "categoryOfLaw": "DISC",
+                  "description": "Legal Help (Civil).Discrimination"
+                },
+                {
+                  "areaOfLaw": "LEGAL HELP",
+                  "categoryOfLaw": "EDU",
+                  "description": "Legal Help (Civil).Education"
+                },
+                {
+                  "areaOfLaw": "LEGAL HELP",
+                  "categoryOfLaw": "EMP",
+                  "description": "Legal Help (Civil).Employment"
+                },
+                {
+                  "areaOfLaw": "LEGAL HELP",
+                  "categoryOfLaw": "HOU",
+                  "description": "Legal Help (Civil).Housing"
+                },
+                {
+                  "areaOfLaw": "LEGAL HELP",
+                  "categoryOfLaw": "IMMAS",
+                  "description": "Legal Help (Civil).Immigration - Asylum"
+                },
+                {
+                  "areaOfLaw": "LEGAL HELP",
+                  "categoryOfLaw": "IMMOT",
+                  "description": "Legal Help (Civil).Immigration"
+                },
+                {
+                  "areaOfLaw": "LEGAL HELP",
+                  "categoryOfLaw": "MAT",
+                  "description": "Legal Help (Civil).Family",
+                  "devolvedPowersStatus": "Yes - Excluding JR Proceedings"
+                },
+                {
+                  "areaOfLaw": "LEGAL HELP",
+                  "categoryOfLaw": "MED",
+                  "description": "Legal Help (Civil).Clinical Negligence"
+                },
+                {
+                  "areaOfLaw": "LEGAL HELP",
+                  "categoryOfLaw": "MHE",
+                  "description": "Legal Help (Civil).Mental Health"
+                },
+                {
+                  "areaOfLaw": "LEGAL HELP",
+                  "categoryOfLaw": "MSC",
+                  "description": "Legal Help (Civil).Residual(Miscellaneous)",
+                  "devolvedPowersStatus": "Yes - Excluding JR Proceedings"
+                },
+                {
+                  "areaOfLaw": "LEGAL HELP",
+                  "categoryOfLaw": "PI",
+                  "description": "Legal Help (Civil).Personal Injury"
+                },
+                {
+                  "areaOfLaw": "LEGAL HELP",
+                  "categoryOfLaw": "PUB",
+                  "description": "Legal Help (Civil).Public Law"
+                },
+                {
+                  "areaOfLaw": "LEGAL HELP",
+                  "categoryOfLaw": "WB",
+                  "description": "Legal Help (Civil).Welfare Benefits"
+                },
+                {
+                  "areaOfLaw": "LEGAL HELP",
+                  "categoryOfLaw": "ELA",
+                  "description": "Legal Help (Civil).Early Legal Advice"
+                },
+                {
+                  "areaOfLaw": "LEGAL HELP",
+                  "categoryOfLaw": "RESIDUAL",
+                  "description": "Legal Help (Civil).Residual List"
+                }
+              ],
+              "nmsAuths": []
+            },
+            {
+              "contractType": "Standard",
+              "contractDescription": "All Standard Crime Contract",
+              "contractNumber": "2222",
+              "contractReference": "01/1A234B/ALL/2",
+              "contractStatus": "Open",
+              "contractAuthorizationStatus": "APPROVED",
+              "contractStartDate": "2000-01-01",
+              "contractEndDate": "2099-12-31",
+              "areaOfLaw": "CRIME LOWER",
+              "scheduleType": "Standard",
+              "scheduleNumber": "1A234B/ALL/02",
+              "scheduleContractNumber": "1034797",
+              "scheduleContractReference": "01/1A234B/ALL/2",
+              "scheduleAuthorizationStatus": "APPROVED",
+              "scheduleStatus": "Open",
+              "scheduleStartDate": "2000-01-01",
+              "scheduleEndDate": "2099-12-31",
+              "scheduleLines": [
+                {
+                  "areaOfLaw": "CRIME LOWER",
+                  "categoryOfLaw": "ALL",
+                  "description": "Crime Lower (Crime).All Classes"
+                },
+                {
+                  "areaOfLaw": "CRIME LOWER",
+                  "categoryOfLaw": "APPEALS",
+                  "description": "Crime Lower (Crime).Appeals and Reviews"
+                },
+                {
+                  "areaOfLaw": "CRIME LOWER",
+                  "categoryOfLaw": "CRIME",
+                  "description": "Crime Lower (Crime).Crime"
+                },
+                {
+                  "areaOfLaw": "CRIME LOWER",
+                  "categoryOfLaw": "INVEST",
+                  "description": "Crime Lower (Crime).Criminal Investigations and Criminal Proceedings"
+                },
+                {
+                  "areaOfLaw": "CRIME LOWER",
+                  "categoryOfLaw": "PRISON",
+                  "description": "Crime Lower (Crime).Prison Law"
+                }
+              ],
+              "nmsAuths": []
+            },
+            {
+              "contractType": "Standard",
+              "contractDescription": "All Standard Mediation Contract",
+              "contractNumber": "3333",
+              "contractReference": "01/1A234B/ALL/3",
+              "contractStatus": "Open",
+              "contractAuthorizationStatus": "APPROVED",
+              "contractStartDate": "2000-01-01",
+              "contractEndDate": "2099-12-31",
+              "areaOfLaw": "MEDIATION",
+              "scheduleType": "Standard",
+              "scheduleNumber": "1A234B/ALL/03",
+              "scheduleContractNumber": "1034797",
+              "scheduleContractReference": "01/1A234B/ALL/3",
+              "scheduleAuthorizationStatus": "APPROVED",
+              "scheduleStatus": "Open",
+              "scheduleStartDate": "2000-01-01",
+              "scheduleEndDate": "2099-12-31",
+              "scheduleLines": [
+                {
+                  "areaOfLaw": "MEDIATION",
+                  "categoryOfLaw": "MEDI",
+                  "description": "Mediation (Mediation).Mediation"
+                }
+              ],
+              "nmsAuths": []
+            }
+          ]
+        }
+      }
+    }
+  pda-crime.json: |-
+    {
+      "request": {
+        "method": "GET",
+        "urlPathPattern": "/api/v1/provider-offices/[a-zA-Z0-9\\\\-]+/schedules",
+        "queryParameters": {
+          "areaOfLaw": {
+            "equalTo": "CRIME LOWER"
+          }
+        }
+      },
+      "scenarioName": "get schedules",
+      "response": {
+        "status": 200,
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "jsonBody": {
+          "firm": {
+            "firmNumber": "1",
+            "firmId": 1,
+            "ccmsFirmId": 2,
+            "parentFirmId": null,
+            "firmName": "AWESOME ALL TEST DATA LTD",
+            "firmType": "Legal Services Provider",
+            "constitutionalStatus": "Limited Company"
+          },
+          "office": {
+            "firmOfficeId": 3,
+            "ccmsFirmOfficeId": 4,
+            "firmOfficeCode": "1A234B",
+            "officeName": "1A234B,AWESOME OFFICE",
+            "officeCodeAlt": "AWESOME ALL TEST DATA LTD",
+            "type": "Legal Services Supplier (Civil/Crime/Both/Mediator)"
+          },
+          "pds": false,
+          "schedules": [
+            {
+              "contractType": "Standard",
+              "contractDescription": "All Standard Crime Contract",
+              "contractNumber": "2222",
+              "contractReference": "01/1A234B/ALL/2",
+              "contractStatus": "Open",
+              "contractAuthorizationStatus": "APPROVED",
+              "contractStartDate": "2000-01-01",
+              "contractEndDate": "2099-12-31",
+              "areaOfLaw": "CRIME LOWER",
+              "scheduleType": "Standard",
+              "scheduleNumber": "1A234B/ALL/02",
+              "scheduleContractNumber": "1034797",
+              "scheduleContractReference": "01/1A234B/ALL/2",
+              "scheduleAuthorizationStatus": "APPROVED",
+              "scheduleStatus": "Open",
+              "scheduleStartDate": "2000-01-01",
+              "scheduleEndDate": "2099-12-31",
+              "scheduleLines": [
+                {
+                  "areaOfLaw": "CRIME LOWER",
+                  "categoryOfLaw": "ALL",
+                  "description": "Crime Lower (Crime).All Classes"
+                },
+                {
+                  "areaOfLaw": "CRIME LOWER",
+                  "categoryOfLaw": "APPEALS",
+                  "description": "Crime Lower (Crime).Appeals and Reviews"
+                },
+                {
+                  "areaOfLaw": "CRIME LOWER",
+                  "categoryOfLaw": "CRIME",
+                  "description": "Crime Lower (Crime).Crime"
+                },
+                {
+                  "areaOfLaw": "CRIME LOWER",
+                  "categoryOfLaw": "INVEST",
+                  "description": "Crime Lower (Crime).Criminal Investigations and Criminal Proceedings"
+                },
+                {
+                  "areaOfLaw": "CRIME LOWER",
+                  "categoryOfLaw": "PRISON",
+                  "description": "Crime Lower (Crime).Prison Law"
+                }
+              ],
+              "nmsAuths": []
+            }
+          ]
+        }
+      }
+    }
+  pda-legal.json: |-
+    {
+      "request": {
+        "method": "GET",
+        "urlPathPattern": "/api/v1/provider-offices/[a-zA-Z0-9\\\\-]+/schedules",
+        "queryParameters": {
+          "areaOfLaw": {
+            "equalTo": "LEGAL HELP"
+          }
+        }
+      },
+      "scenarioName": "get schedules",
+      "response": {
+        "status": 200,
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "jsonBody": {
+          "firm": {
+            "firmNumber": "1",
+            "firmId": 1,
+            "ccmsFirmId": 2,
+            "parentFirmId": null,
+            "firmName": "AWESOME ALL TEST DATA LTD",
+            "firmType": "Legal Services Provider",
+            "constitutionalStatus": "Limited Company"
+          },
+          "office": {
+            "firmOfficeId": 3,
+            "ccmsFirmOfficeId": 4,
+            "firmOfficeCode": "1A234B",
+            "officeName": "1A234B,AWESOME OFFICE",
+            "officeCodeAlt": "AWESOME ALL TEST DATA LTD",
+            "type": "Legal Services Supplier (Civil/Crime/Both/Mediator)"
+          },
+          "pds": false,
+          "schedules": [
+            {
+              "contractType": "Standard",
+              "contractDescription": "All Standard Civil Contract",
+              "contractNumber": "1111",
+              "contractReference": "01/1A234B/ALL/1",
+              "contractStatus": "Open",
+              "contractAuthorizationStatus": "APPROVED",
+              "contractStartDate": "2000-01-01",
+              "contractEndDate": "2099-12-31",
+              "areaOfLaw": "LEGAL HELP",
+              "scheduleType": "Standard",
+              "scheduleNumber": "1A234B/ALL/01",
+              "scheduleContractNumber": "1034797",
+              "scheduleContractReference": "01/1A234B/ALL/1",
+              "scheduleAuthorizationStatus": "APPROVED",
+              "scheduleStatus": "Open",
+              "scheduleStartDate": "2000-01-01",
+              "scheduleEndDate": "2099-12-31",
+              "scheduleLines": [
+                {
+                  "areaOfLaw": "LEGAL HELP",
+                  "categoryOfLaw": "AAP",
+                  "description": "Legal Help (Civil).Claims Against Public Authorities"
+                },
+                {
+                  "areaOfLaw": "LEGAL HELP",
+                  "categoryOfLaw": "COM",
+                  "description": "Legal Help (Civil).Community Care"
+                },
+                {
+                  "areaOfLaw": "LEGAL HELP",
+                  "categoryOfLaw": "CON",
+                  "description": "Legal Help (Civil).Consumer General Contract"
+                },
+                {
+                  "areaOfLaw": "LEGAL HELP",
+                  "categoryOfLaw": "DEB",
+                  "description": "Legal Help (Civil).Debt"
+                },
+                {
+                  "areaOfLaw": "LEGAL HELP",
+                  "categoryOfLaw": "DISC",
+                  "description": "Legal Help (Civil).Discrimination"
+                },
+                {
+                  "areaOfLaw": "LEGAL HELP",
+                  "categoryOfLaw": "EDU",
+                  "description": "Legal Help (Civil).Education"
+                },
+                {
+                  "areaOfLaw": "LEGAL HELP",
+                  "categoryOfLaw": "EMP",
+                  "description": "Legal Help (Civil).Employment"
+                },
+                {
+                  "areaOfLaw": "LEGAL HELP",
+                  "categoryOfLaw": "HOU",
+                  "description": "Legal Help (Civil).Housing"
+                },
+                {
+                  "areaOfLaw": "LEGAL HELP",
+                  "categoryOfLaw": "IMMAS",
+                  "description": "Legal Help (Civil).Immigration - Asylum"
+                },
+                {
+                  "areaOfLaw": "LEGAL HELP",
+                  "categoryOfLaw": "IMMOT",
+                  "description": "Legal Help (Civil).Immigration"
+                },
+                {
+                  "areaOfLaw": "LEGAL HELP",
+                  "categoryOfLaw": "MAT",
+                  "description": "Legal Help (Civil).Family",
+                  "devolvedPowersStatus": "Yes - Excluding JR Proceedings"
+                },
+                {
+                  "areaOfLaw": "LEGAL HELP",
+                  "categoryOfLaw": "MED",
+                  "description": "Legal Help (Civil).Clinical Negligence"
+                },
+                {
+                  "areaOfLaw": "LEGAL HELP",
+                  "categoryOfLaw": "MHE",
+                  "description": "Legal Help (Civil).Mental Health"
+                },
+                {
+                  "areaOfLaw": "LEGAL HELP",
+                  "categoryOfLaw": "MSC",
+                  "description": "Legal Help (Civil).Residual(Miscellaneous)",
+                  "devolvedPowersStatus": "Yes - Excluding JR Proceedings"
+                },
+                {
+                  "areaOfLaw": "LEGAL HELP",
+                  "categoryOfLaw": "PI",
+                  "description": "Legal Help (Civil).Personal Injury"
+                },
+                {
+                  "areaOfLaw": "LEGAL HELP",
+                  "categoryOfLaw": "PUB",
+                  "description": "Legal Help (Civil).Public Law"
+                },
+                {
+                  "areaOfLaw": "LEGAL HELP",
+                  "categoryOfLaw": "WB",
+                  "description": "Legal Help (Civil).Welfare Benefits"
+                },
+                {
+                  "areaOfLaw": "LEGAL HELP",
+                  "categoryOfLaw": "ELA",
+                  "description": "Legal Help (Civil).Early Legal Advice"
+                },
+                {
+                  "areaOfLaw": "LEGAL HELP",
+                  "categoryOfLaw": "RESIDUAL",
+                  "description": "Legal Help (Civil).Residual List"
+                }
+              ],
+              "nmsAuths": []
+            }
+          ]
+        }
+      }
+    }

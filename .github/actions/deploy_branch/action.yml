@@ -101,6 +101,9 @@ runs:
             --set image.repository="${ECR_REGISTRY}/${ECR_REPOSITORY}" \
             --set sabc.releaseName="${RELEASE_NAME}" \
             --install --wait --timeout=10m
+          helm upgrade "pda-mock" .helm/pda-mock \
+            --namespace "$KUBE_NAMESPACE" \
+            --install --wait --timeout=10m
         fi
 
         helm upgrade "$RELEASE_NAME" .helm/submit-a-bulk-claim \
