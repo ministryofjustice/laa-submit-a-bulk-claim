@@ -58,6 +58,10 @@ jobs:
 
   build-oidc-mock-image:
     uses: ./.github/workflows/build-oidc-mock-image.yml
+    permissions:
+      id-token: write
+      contents: read
+      packages: read
 
   ecr-publish-image:
     needs: [ assemble ]
