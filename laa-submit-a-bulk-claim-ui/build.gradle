@@ -161,7 +161,7 @@ spotless {
 
 pact {
     publish {
-        pactBrokerUrl = project.findProperty('pactBrokerUrl') ?: System.getenv('PACT_BROKER_URL') ?: 'http://localhost:9292'
+        pactBrokerUrl = project.findProperty('pactBrokerUrl') ?: System.getenv('PACT_BROKER_URL') ?: 'https://laa-data-pact-broker.apps.live.cloud-platform.service.justice.gov.uk/'
         pactBrokerUsername = project.findProperty('pactBrokerUsername') ?: System.getenv('PACT_BROKER_USERNAME') ?: 'ABC'
         pactBrokerPassword = project.findProperty('pactBrokerPassword') ?: System.getenv('PACT_BROKER_PASSWORD') ?: 'ABC'
 
