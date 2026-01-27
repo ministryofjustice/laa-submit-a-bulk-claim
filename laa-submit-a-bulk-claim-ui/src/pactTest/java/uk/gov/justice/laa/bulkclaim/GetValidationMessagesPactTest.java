@@ -22,6 +22,29 @@ import uk.gov.justice.laa.bulkclaim.client.DataClaimsRestClient;
 import uk.gov.justice.laa.bulkclaim.config.ClaimsApiPactTestConfig;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.ValidationMessagesResponse;
 
+/**
+ * For this PactTest, it spins up a MockWebServer which is used to act as the API we're testing
+ * against (in this case the claims API). After all the tests have run, a pact is generated based on
+ * all the passing tests. This pact will be published to the Pact Broker server. The Claims API will
+ * then verify itself against the generated pact to ensure it remains compatible with it's
+ * consumers.
+ *
+ * <p>For the various {@link Pact} annotations, a scenario is created. There are multiple parts of
+ * a {@link RequestResponsePact}:
+ * <ul>
+ *
+ * <li>Given: This explains the state of what the Claims API should be in when expecting this
+ * request. For example, if "a claim exists", then the API should make sure it has a Claim to be
+ * used for the request. Given values can be reused across multiple scenarios.</li>
+ * <li>Upon Receiving: This value details the scenario we are testing.</li>
+ * <li>Match Path: The path we wish to match against for the contract.</li>
+ * <li>Match Header: The header we wish to match against (authorization key).</li>
+ * <li>Method: The HTTP method.</li>
+ * </ul>
+ * </p>
+ *
+ * @author Jamie Briggs
+ */
 @SpringBootTest(
     webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
     properties = {"app.claims-api.url=http://localhost:1231"})

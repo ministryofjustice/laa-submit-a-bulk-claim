@@ -14,7 +14,9 @@ public abstract class AbstractPactTest {
 
   protected static final String ANY_FORMAT_REGEX =
       "([a-zA-Z0-9 !\"£$%^&*()_+\\-=\\[\\]{};'#:@~,./<>?\\\\|`¬]+)";
-  protected static final String ANY_NUMBER_REGEX = "([0-9]+)";
+
+  // Any number, but not 0 alone.
+  protected static final String ANY_NUMBER_REGEX = "([1-9][0-9]*|[0-9]{2,})";
 
   protected static final List<String> USER_OFFICES = List.of("ABC123", "XYZ789");
   protected static final UUID BULK_SUBMISSION_ID = UUID.randomUUID();

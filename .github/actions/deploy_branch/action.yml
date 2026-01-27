@@ -31,6 +31,9 @@ inputs:
   oidc-mock-image-tag:
     description: "OIDC mock image tag to deploy (preview only)"
     required: false
+  run-pact-can-i-deploy:
+    required: false
+    default: "true"
   pact_broker_url:
     required: true
   pact_broker_username:
@@ -59,6 +62,7 @@ runs:
       id: can-i-deploy
       uses: ministryofjustice/laa-ccms-common-workflows/.github/actions/pact-can-i-deploy@story/pact-publish
       with:
+        run_can_i_deploy: ${{ inputs.run-pact-can-i-deploy }}
         pacticipant: 'laa-submit-a-bulk-claim'
         environment: ${{ steps.extract_release_name.outputs.release-name }}
         pact_broker_url: 'https://laa-data-pact-broker.apps.live.cloud-platform.service.justice.gov.uk/'
