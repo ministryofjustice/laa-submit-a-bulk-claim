@@ -2,8 +2,10 @@ plugins {
     id 'io.freefair.lombok' version '8.14'
     id("com.diffplug.spotless") version "7.2.1"
     id 'au.com.dius.pact' version '4.6.19'
+    id "io.sentry.jvm.gradle" version "5.12.2"
 }
 
+def versions = [sentry : '8.31.0']
 apply plugin: 'uk.gov.laa.springboot.laa-spring-boot-gradle-plugin'
 
 repositories {
@@ -11,6 +13,16 @@ repositories {
     mavenCentral()
 }
 
+
+
+dependencyManagement {
+    dependencies {
+        dependencySet(group: 'io.sentry', version: versions.sentry) {
+            entry 'sentry-spring-boot-starter'
+            entry 'sentry-logback'
+        }
+    }
+}
 dependencies {
     // Upgrade to fix CVE-2026-1225 vulnerability in logback-core
     implementation 'ch.qos.logback:logback-core:1.5.25'
@@ -51,6 +63,10 @@ dependencies {
 
     implementation 'org.springframework.boot:spring-boot-starter-data-redis'
     implementation 'org.springframework.session:spring-session-data-redis'
+    // Sentry
+    implementation platform("io.sentry:sentry-bom:$versions.sentry")
+    implementation "io.sentry:sentry-logback:$versions.sentry"
+    implementation "io.sentry:sentry-spring-boot-4:$versions.sentry"
 
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
 

@@ -191,6 +191,24 @@ spec:
             {{- end }}
           {{- end }}
           {{- end }}
+          {{/*
+            Define Sentry environment variables
+          */}}
+          {{- if .Values.sentry }}
+            {{- if .Values.sentry.enabled  }}
+          - name: SENTRY_ENABLED
+            value: "true"
+          - name: SENTRY_DSN
+            valueFrom:
+              secretKeyRef:
+                name: laa-submit-a-bulk-claim-secrets
+                key: SENTRY_DSN
+          - name: SENTRY_ENVIRONMENT
+            value: {{ .Values.sentry.environment | quote }}
+          - name: SENTRY_TRACES_SAMPLE_RATE
+            value: {{ .Values.sentry.tracesSampleRate | quote }}
+          {{- end }}
+          {{- end }}
 ---
 {{- if .Values.ingress }}
   {{- if eq .Values.ingress.externalRoute.enabled true }}
