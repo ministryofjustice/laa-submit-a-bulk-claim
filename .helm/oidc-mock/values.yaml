@@ -2,7 +2,7 @@ clusterDomain: apps.live.cloud-platform.service.justice.gov.uk
 
 image:
   repository: ""
-  tag: oidc-mock-dab04b21a9749e60495f54316810bb98d900b75f
+  tag: oidc-mock-UNSET
 
 ingress:
   className: modsec-non-prod
