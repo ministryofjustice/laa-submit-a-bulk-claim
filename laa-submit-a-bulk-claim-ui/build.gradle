@@ -5,7 +5,7 @@ plugins {
     id "io.sentry.jvm.gradle" version "5.12.2"
 }
 
-def versions = [sentry : '8.28.0']
+def versions = [sentry : '8.31.0']
 apply plugin: 'uk.gov.laa.springboot.laa-spring-boot-gradle-plugin'
 
 repositories {
@@ -67,7 +67,6 @@ dependencies {
     implementation platform("io.sentry:sentry-bom:$versions.sentry")
     implementation "io.sentry:sentry-logback:$versions.sentry"
     implementation "io.sentry:sentry-spring-boot-4:$versions.sentry"
-   // implementation "io.sentry:sentry-spring-boot-starter-jakarta:$versions.sentry"
 
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
 
