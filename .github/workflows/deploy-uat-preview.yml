@@ -7,7 +7,23 @@ permissions:
   contents: read
 
 jobs:
+  define-preview-version:
+    runs-on: ubuntu-latest
+    outputs:
+      preview_version: ${{ steps.get-preview-version.outputs.preview_version }}
+    steps:
+      - uses: actions/checkout@v6
+      - name: Get preview version
+        id: get-preview-version
+        run: |
+          set -euo pipefail
+          commit_hash=$(git rev-parse --short HEAD)
+          version=$(awk -F= '/^version=/{print $2}' gradle.properties)
+          echo "preview_version=${version}-${commit_hash}" >> "$GITHUB_OUTPUT"
+          echo "Preview version: submit-a-bulk-claim-${version}-${commit_hash}"
+
   assemble:
+    needs: [ define-preview-version ]
     uses: ministryofjustice/laa-ccms-common-workflows/.github/workflows/gradle-build-and-publish.yml@v1
     permissions:
       contents: write
@@ -15,6 +31,7 @@ jobs:
     with:
       build_command: 'assemble'
       publish_package: 'false'
+      override_version: ${{ needs.define-preview-version.outputs.preview_version }}
       junit_results: 'false'
       junit_report: 'false'
       checkstyle_report: 'false'
@@ -32,11 +49,20 @@ jobs:
     with:
       pacticipant_name: "laa-submit-a-bulk-claim"
       pact_test_task: "pactTest"
+      publish_pact_results: 'true'
     secrets:
       gh_token: ${{ secrets.GITHUB_TOKEN }}
-      pact_broker_url: ${{ secrets.PACT_BROKER_URL }}
+      pact_broker_url: 'https://laa-data-pact-broker.apps.live.cloud-platform.service.justice.gov.uk/'
       pact_broker_username: ${{ secrets.PACT_BROKER_USERNAME }}
       pact_broker_password: ${{ secrets.PACT_BROKER_PASSWORD }}
+
+  build-oidc-mock-image:
+    uses: ./.github/workflows/build-oidc-mock-image.yml
+    permissions:
+      id-token: write
+      contents: read
+      packages: read
+    secrets: inherit
 
   ecr-publish-image:
     needs: [ assemble ]
@@ -57,6 +83,7 @@ jobs:
     needs:
       - pact-test
       - ecr-publish-image
+      - build-oidc-mock-image
     runs-on: ubuntu-latest
     environment: uat
     permissions:
@@ -78,3 +105,7 @@ jobs:
           kube-namespace: ${{ secrets.KUBE_NAMESPACE }}
           app-environment: uat
           image-tag: ${{ needs.ecr-publish-image.outputs.published_image_version }}
+          oidc-mock-image-tag: ${{ needs.build-oidc-mock-image.outputs.oidc_mock_tag }}
+          pact_broker_url: 'https://laa-data-pact-broker.apps.live.cloud-platform.service.justice.gov.uk/'
+          pact_broker_username: ${{ secrets.pact_broker_username }}
+          pact_broker_password: ${{ secrets.pact_broker_password }}

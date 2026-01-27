@@ -23,15 +23,15 @@ jobs:
         uses: actions/checkout@v6
 
       # Add again once checking pipelines
-      #- name: Can I deploy?
-      #  id: can-i-deploy
-      #  uses: ministryofjustice/laa-ccms-common-workflows/.github/actions/pact-can-i-deploy@story/pact-publish
-      #  with:
-      #    pacticipant: 'laa-submit-a-bulk-claim'
-      #    environment: ${{ inputs.environment }}
-      #    pact_broker_url: ${{ secrets.pact_broker_url }}
-      #    pact_broker_username: ${{ secrets.pact_broker_username }}
-      #    pact_broker_password: ${{ secrets.pact_broker_password }}
+      - name: Can I deploy?
+        id: can-i-deploy
+        uses: ministryofjustice/laa-ccms-common-workflows/.github/actions/pact-can-i-deploy@story/pact-publish
+        with:
+          pacticipant: 'laa-submit-a-bulk-claim'
+          environment: ${{ inputs.environment }}
+          pact_broker_url: 'https://laa-data-pact-broker.apps.live.cloud-platform.service.justice.gov.uk/'
+          pact_broker_username: ${{ secrets.pact_broker_username }}
+          pact_broker_password: ${{ secrets.pact_broker_password }}
 
       - name: Authenticate to the cluster
         run: |
@@ -99,12 +99,21 @@ jobs:
           
           echo "Deployed Images: $(echo "$IMAGES" | jq)"
 
+      - name: Update image tags
+        if: ${{ success() && contains(fromJson('["uat", "stg", "prod"]'), inputs.deployment_name) }}
+        uses: ./.github/actions/ecr-update-image-tags
+        with:
+          images: ${{ steps.helm-install.outputs.images }}
+          role_to_assume: ${{ secrets.ecr_role_to_assume }}
+          aws_region: ${{ vars.ECR_REGION }}
+          ecr_repository: ${{ vars.ECR_REPOSITORY }}
+
       - name: Record deployment to pact broker
         id: record-deployment-to-pact-broker
         uses: ministryofjustice/laa-ccms-common-workflows/.github/actions/pact-record-deployment@story/pact-publish
         with:
           pacticipant: 'laa-submit-a-bulk-claim'
           environment: ${{ inputs.environment }}
-          pact_broker_url: ${{ secrets.pact_broker_url }}
+          pact_broker_url: 'https://laa-data-pact-broker.apps.live.cloud-platform.service.justice.gov.uk/'
           pact_broker_username: ${{ secrets.pact_broker_username }}
           pact_broker_password: ${{ secrets.pact_broker_password }}
