@@ -31,19 +31,18 @@ import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionResponse;
  * then verify itself against the generated pact to ensure it remains compatible with it's
  * consumers.
  *
- * <p>For the various {@link Pact} annotations, a scenario is created. There are multiple parts of
- * a {@link RequestResponsePact}:
- * <ul>
+ * <p>For the various {@link Pact} annotations, a scenario is created. There are multiple parts of a
+ * {@link RequestResponsePact}:
  *
- * <li>Given: This explains the state of what the Claims API should be in when expecting this
- * request. For example, if "a claim exists", then the API should make sure it has a Claim to be
- * used for the request. Given values can be reused across multiple scenarios.</li>
- * <li>Upon Receiving: This value details the scenario we are testing.</li>
- * <li>Match Path: The path we wish to match against for the contract.</li>
- * <li>Match Header: The header we wish to match against (authorization key).</li>
- * <li>Method: The HTTP method.</li>
+ * <ul>
+ *   <li>Given: This explains the state of what the Claims API should be in when expecting this
+ *       request. For example, if "a claim exists", then the API should make sure it has a Claim to
+ *       be used for the request. Given values can be reused across multiple scenarios.
+ *   <li>Upon Receiving: This value details the scenario we are testing.
+ *   <li>Match Path: The path we wish to match against for the contract.
+ *   <li>Match Header: The header we wish to match against (authorization key).
+ *   <li>Method: The HTTP method.
  * </ul>
- * </p>
  *
  * @author Jamie Briggs
  */
