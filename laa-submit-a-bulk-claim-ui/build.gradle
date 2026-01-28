@@ -197,8 +197,12 @@ pact {
         // For older Brokers/compatibility
         tags = [branchName, projectVersion]
 
+        // Add 'release' tag if branchName matches semantic version pattern (X.X.XXX)
+        if (branchName ==~ /\d+\.\d+\.\d+/) {
+            tags.add('release')
+        }
         // Optional: add a generic 'dev' tag for anything not on main
-        if (branchName != 'main' && branchName != 'master') {
+        else if (branchName != 'main' && branchName != 'master') {
             tags.add('dev')
         }
 

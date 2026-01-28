@@ -16,7 +16,7 @@ jobs:
       packages: write
     with:
       build_command: 'assemble'
-      publish_package: 'false'
+      publish_package: false
       junit_results: 'false'
       junit_report: 'false'
       checkstyle_report: 'false'
@@ -34,7 +34,7 @@ jobs:
     with:
       pacticipant_name: "laa-submit-a-bulk-claim"
       pact_test_task: "pactTest"
-      publish_pact_results: 'true'
+      publish_pact_results: true
     secrets:
       gh_token: ${{ secrets.GITHUB_TOKEN }}
       pact_broker_url: 'https://laa-data-pact-broker.apps.live.cloud-platform.service.justice.gov.uk/'
