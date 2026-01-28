@@ -5,6 +5,11 @@ import java.util.UUID;
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClientManager;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
+/**
+ * Base class for Pact tests.
+ *
+ * @author Jamie Briggs
+ */
 public abstract class AbstractPactTest {
   public static final String CONSUMER = "laa-submit-a-bulk-claim";
   public static final String PROVIDER = "laa-data-claims-api";

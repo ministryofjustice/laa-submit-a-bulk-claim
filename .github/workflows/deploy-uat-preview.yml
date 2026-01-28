@@ -30,7 +30,7 @@ jobs:
       packages: write
     with:
       build_command: 'assemble'
-      publish_package: 'false'
+      publish_package: false
       override_version: ${{ needs.define-preview-version.outputs.preview_version }}
       junit_results: 'false'
       junit_report: 'false'
@@ -49,7 +49,9 @@ jobs:
     with:
       pacticipant_name: "laa-submit-a-bulk-claim"
       pact_test_task: "pactTest"
-      publish_pact_results: 'true'
+      publish_pact_results: true
+      enable_can_i_merge: true
+      provider_name: "laa-data-claims-api"
     secrets:
       gh_token: ${{ secrets.GITHUB_TOKEN }}
       pact_broker_url: 'https://laa-data-pact-broker.apps.live.cloud-platform.service.justice.gov.uk/'
@@ -109,4 +111,4 @@ jobs:
           pact_broker_url: 'https://laa-data-pact-broker.apps.live.cloud-platform.service.justice.gov.uk/'
           pact_broker_username: ${{ secrets.pact_broker_username }}
           pact_broker_password: ${{ secrets.pact_broker_password }}
-          run-pact-can-i-deploy: 'false'
+          run-pact-can-i-deploy: false
