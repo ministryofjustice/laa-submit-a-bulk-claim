@@ -247,7 +247,7 @@
         </table>
       </div>
       <div
-          th:with="claimDetailsUrl='/view-submission-detail'">
+          th:with="claimDetailsUrl=@{/view-submission-detail(navTab='CLAIM_DETAILS', submissionId=${submissionId})}">
         <th:block th:if="${claimDetails != null}"
                   th:insert="~{fragments/pagination :: pagination(currentUrl=${claimDetailsUrl},
            page=${claimDetails.pagination})}">
