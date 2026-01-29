@@ -8,6 +8,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.web.client.RestClient;
 import uk.gov.justice.laa.bulkclaim.metrics.BulkClaimMetricService;
 import uk.gov.justice.laa.bulkclaim.util.CurrencyUtil;
+import uk.gov.justice.laa.bulkclaim.util.ThymeleafHrefUtils;
 
 /**
  * Test configuration for Spring MVC tests. Handles creating beans which otherwise would not be
@@ -49,6 +50,11 @@ public class WebMvcTestConfig {
   @Bean
   CacheManager cacheManager() {
     return Mockito.mock(CacheManager.class);
+  }
+
+  @Bean
+  ThymeleafHrefUtils thymeleafHrefUtils() {
+    return new ThymeleafHrefUtils();
   }
 
   /**

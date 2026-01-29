@@ -34,10 +34,10 @@ public class ThymeleafHrefUtils {
       String value = params[i + 1];
 
       if (value != null && !value.isEmpty()) {
-        uriComponentsBuilder.queryParam(key, value);
+        uriComponentsBuilder.replaceQueryParam(key, value);
       }
     }
 
-    return uriComponentsBuilder.toUriString();
+    return uriComponentsBuilder.build().toUriString();
   }
 }
