@@ -56,6 +56,7 @@ public final class ClaimDetailController {
       @RequestParam(value = "navTab", required = false, defaultValue = "CLAIM_DETAILS")
           final ViewSubmissionNavigationTab navigationTab) {
 
+    model.addAttribute(CLAIM_ID, claimReference);
     String uri =
         UriComponentsBuilder.fromPath("/view-claim-detail")
             .queryParam("page", page)
