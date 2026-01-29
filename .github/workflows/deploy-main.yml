@@ -67,6 +67,7 @@ jobs:
     with:
       environment: uat
       deployment_name: uat
+      claim_api_environment_name: main
       image_tag: ${{ needs.ecr-publish-image.outputs.published_image_version }}
     secrets: inherit
 
@@ -82,6 +83,7 @@ jobs:
     with:
       environment: staging
       deployment_name: stg
+      claim_api_environment_name: stg
       image_tag: ${{ needs.ecr-publish-image.outputs.published_image_version }}
     secrets: inherit
 
@@ -97,5 +99,6 @@ jobs:
     with:
       environment: production
       deployment_name: prod
+      claim_api_environment_name: prod
       image_tag: ${{ needs.ecr-publish-image.outputs.published_image_version }}
     secrets: inherit
