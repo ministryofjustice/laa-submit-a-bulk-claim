@@ -16,7 +16,11 @@
           <span th:text="#{submission.summary.panel.body}"></span>
           <a class="govuk-notification-banner__link"
              th:href="${@environment.getProperty('links.bulk-upload-amendments')}"
-             th:text="#{submission.summary.panel.requestAmendment}"></a>.
+             target="_blank"
+             rel="noopener noreferrer">
+            <span th:text="#{submission.summary.panel.requestAmendment}"></span>
+            <span class="govuk-visually-hidden"> (opens in a new tab)</span>
+          </a>.
         </p>
       </div>
     </div>
