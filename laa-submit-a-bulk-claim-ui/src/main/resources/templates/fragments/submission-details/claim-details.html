@@ -34,7 +34,7 @@
                 th:text="#{submission.summary.claims.table.feeCode}"></th>
             <th scope="col" class="govuk-table__header" aria-sort="none"
                 th:text="#{submission.summary.claims.table.dateWorkConcluded}"></th>
-            <th scope="col" class="govuk-table__header" aria-sort="none"
+            <th scope="col" class="govuk-table__header govuk-table__header--numeric" aria-sort="none"
                 th:text="#{submission.summary.claims.table.calculatedValue}"></th>
             <th scope="col" class="govuk-table__header" aria-sort="none"
                 th:text="#{submission.summary.claims.table.escapeCase}"></th>
@@ -57,7 +57,7 @@
                 th:text="#{submission.summary.claims.table.ucn}"></th>
             <th scope="col" class="govuk-table__header" aria-sort="none"
                 th:text="#{submission.summary.claims.table.feeCode}"></th>
-            <th scope="col" class="govuk-table__header" aria-sort="none"
+            <th scope="col" class="govuk-table__header govuk-table__header--numeric" aria-sort="none"
                 th:text="#{submission.summary.claims.table.calculatedValue}"></th>
             <th scope="col" class="govuk-table__header" aria-sort="none"
                 th:text="#{submission.summary.claims.table.escapeCase}"></th>
@@ -84,7 +84,7 @@
                 th:text="#{submission.summary.claims.table.client2Ucn}"></th>
             <th scope="col" class="govuk-table__header" aria-sort="none"
                 th:text="#{submission.summary.claims.table.feeCode}"></th>
-            <th scope="col" class="govuk-table__header" aria-sort="none"
+            <th scope="col" class="govuk-table__header govuk-table__header--numeric" aria-sort="none"
                 th:text="#{submission.summary.claims.table.calculatedValue}"></th>
           </tr>
           </thead>
@@ -102,7 +102,7 @@
                 th:text="#{submission.summary.claims.table.ucn}"></th>
             <th scope="col" class="govuk-table__header" aria-sort="none"
                 th:text="#{submission.summary.claims.table.feeCode}"></th>
-            <th scope="col" class="govuk-table__header" aria-sort="none"
+            <th scope="col" class="govuk-table__header govuk-table__header--numeric" aria-sort="none"
                 th:text="#{submission.summary.claims.table.calculatedValue}"></th>
             <th scope="col" class="govuk-table__header" aria-sort="none"
                 th:text="#{submission.summary.claims.table.messages}"></th>
@@ -128,7 +128,7 @@
                 th:text="${claim.feeCode ?: '-'}"></td>
             <td class="govuk-table__cell"
                 th:text="${claim.concludedOrClaimedDate != null ? #temporals.format(claim.concludedOrClaimedDate, 'dd MMM yyyy') : '-'}"></td>
-            <td class="govuk-table__cell"
+            <td class="govuk-table__cell govuk-table__cell--numeric"
                 th:text="${claim.costsDetails != null && claim.costsDetails.claimValue != null ? @currencyUtil.toString(claim.costsDetails.claimValue) : '-'}"></td>
             <td class="govuk-table__cell">
               <strong class="govuk-tag govuk-tag--pink"
@@ -167,7 +167,7 @@
                 th:text="${claim.ucn ?: '-'}"></td>
             <td class="govuk-table__cell"
                 th:text="${claim.feeCode ?: '-'}"></td>
-            <td class="govuk-table__cell"
+            <td class="govuk-table__cell govuk-table__cell--numeric"
                 th:text="${claim.costsDetails != null && claim.costsDetails.claimValue != null ? @currencyUtil.toString(claim.costsDetails.claimValue) : '-'}"></td>
             <td class="govuk-table__cell">
               <strong class="govuk-tag govuk-tag--pink"
@@ -210,7 +210,7 @@
                 th:text="${claim.client2Ucn ?: '-'}"></td>
             <td class="govuk-table__cell"
                 th:text="${claim.feeCode ?: '-'}"></td>
-            <td class="govuk-table__cell"
+            <td class="govuk-table__cell govuk-table__cell--numeric"
                 th:text="${claim.costsDetails != null && claim.costsDetails.claimValue != null ? @currencyUtil.toString(claim.costsDetails.claimValue) : '-'}"></td>
           </tr>
           </tbody>
@@ -232,7 +232,7 @@
                 th:text="${claim.ucn ?: '-'}"></td>
             <td class="govuk-table__cell"
                 th:text="${claim.feeCode ?: '-'}"></td>
-            <td class="govuk-table__cell"
+            <td class="govuk-table__cell govuk-table__cell--numeric"
                 th:text="${claim.costsDetails != null && claim.costsDetails.claimValue != null ? @currencyUtil.toString(claim.costsDetails.claimValue) : '-'}"></td>
             <td class="govuk-table__cell">
               <a class="govuk-link"
