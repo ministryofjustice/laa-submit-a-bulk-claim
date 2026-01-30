@@ -66,6 +66,10 @@ public class SubmissionDetailController {
       @PathVariable("submissionReference") UUID submissionReference,
       @SessionAttribute(value = "submissions", required = false) SubmissionsResultSet submissions,
       @SessionAttribute(value = SUBMISSION_ID, required = false) UUID submissionId,
+      @RequestParam(value = "page", defaultValue = "0") final int page,
+      @RequestParam(value = "messagesPage", defaultValue = "0") final int messagesPage,
+      @RequestParam(value = "navTab", required = false, defaultValue = "CLAIM_DETAILS")
+          ViewSubmissionNavigationTab navigationTab,
       RedirectAttributes redirectAttributes) {
 
     // Validate that either submissions or submissionId is available
@@ -98,6 +102,9 @@ public class SubmissionDetailController {
     String uri =
         UriComponentsBuilder.fromPath("/view-submission-detail")
             .queryParam(SUBMISSION_ID, submissionReference)
+            .queryParam("page", page)
+            .queryParam("messagesPage", messagesPage)
+            .queryParam("navTab", navigationTab.toString())
             .toUriString();
 
     // Otherwise, redirect to the standard submission details view
