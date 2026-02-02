@@ -45,6 +45,18 @@ public interface ClaimFeeCalculationBreakdownMapper {
               java(toBulkClaimCostItem(claimResponse.getNetCounselCostsAmount(),
               claimResponse.getFeeCalculationResponse().getNetCostOfCounselAmount()))""")
   @Mapping(
+      target = "travelCosts",
+      expression =
+          """
+              java(toBulkClaimCostItem(claimResponse.getTravelWaitingCostsAmount(),
+              claimResponse.getFeeCalculationResponse().getNetTravelCostsAmount()))""")
+  @Mapping(
+      target = "waitingCosts",
+      expression =
+          """
+              java(toBulkClaimCostItem(claimResponse.getNetWaitingCostsAmount(),
+              claimResponse.getFeeCalculationResponse().getNetWaitingCostsAmount()))""")
+  @Mapping(
       target = "travelAndWaitingCosts",
       expression =
           """
