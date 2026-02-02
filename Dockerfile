@@ -16,7 +16,7 @@ RUN --mount=type=cache,target=/root/.gradle \
     --mount=type=secret,id=github_token \
     export GITHUB_ACTOR="$(cat /run/secrets/github_actor)" && \
     export GITHUB_TOKEN="$(cat /run/secrets/github_token)" && \
-    gradle :laa-submit-a-bulk-claim-ui:spotlessApply build \
+    gradle build \
     -x test \
     -x spotlessJava \
     -x checkstyleMain \
