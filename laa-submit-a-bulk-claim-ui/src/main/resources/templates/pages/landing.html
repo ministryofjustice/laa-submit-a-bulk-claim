@@ -7,7 +7,14 @@
       <h1 class="govuk-heading-xl" th:text="#{landing.heading}"/>
       <p class="govuk-body" th:text="#{landing.intro.line1}"/>
       <p class="govuk-body" th:text="#{landing.intro.line2}"/>
-      <p class="govuk-body govuk-!-margin-bottom-6" th:text="#{landing.intro.line3}"/>
+      <th:block th:with="overrideMessage=${@environment.getProperty('app.landing.deadline-override-message')}">
+        <p class="govuk-body govuk-!-margin-bottom-6"
+           th:if="${overrideMessage != null and !#strings.isEmpty(overrideMessage)}"
+           th:text="${overrideMessage}"/>
+        <p class="govuk-body govuk-!-margin-bottom-6"
+           th:unless="${overrideMessage != null and !#strings.isEmpty(overrideMessage)}"
+           th:text="#{landing.intro.line3}"/>
+      </th:block>
 
       <h2 class="govuk-heading-l" th:text="#{landing.beforeStart.heading}"/>
       <p class="govuk-body"

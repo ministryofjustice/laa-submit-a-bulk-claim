@@ -117,7 +117,6 @@
             <button class="moj-alert__dismiss" hidden>Dismiss</button>
           </div>
         </div>
-
       </div>
       <div class="govuk-grid-column-full">
         <table class="govuk-table">
@@ -187,7 +186,7 @@
           <th:block
               th:replace="~{::fee-detail-row(title=#{viewClaim.feeCalculation.row.vat},
               values=${feeDetails.vat},
-              notes=#{viewClaim.feeCalculation.notes.immigrationAsylumOnly},
+              notes=null,
               rowStyle='sabc-govuk-table\_\_cell\_\_bold-bottom')}"/>
           <!--Total-->
           <tr class="govuk-table__row">
