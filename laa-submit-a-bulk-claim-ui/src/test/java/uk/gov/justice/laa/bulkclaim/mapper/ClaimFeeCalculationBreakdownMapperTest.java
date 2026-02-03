@@ -36,6 +36,8 @@ class ClaimFeeCalculationBreakdownMapperTest {
             .disbursementAmount(BigDecimal.valueOf(1300.30))
             .disbursementVatAmount(BigDecimal.valueOf(1400.40))
             .netCostOfCounselAmount(BigDecimal.valueOf(1500.50))
+            .netTravelCostsAmount(BigDecimal.valueOf(111.01))
+            .netWaitingCostsAmount(BigDecimal.valueOf(111.02))
             .travelAndWaitingCostsAmount(BigDecimal.valueOf(1600.60))
             .jrFormFillingAmount(BigDecimal.valueOf(1800.80))
             .detentionTravelAndWaitingCostsAmount(BigDecimal.valueOf(1700.70))
@@ -90,6 +92,18 @@ class ClaimFeeCalculationBreakdownMapperTest {
           softAssertions
               .assertThat(result.travelAndWaitingCosts().calculatedValue())
               .isEqualTo(monetaryValue(1600.60));
+          softAssertions
+              .assertThat(result.travelCosts().enteredValue())
+              .isEqualTo(monetaryValue(500.50));
+          softAssertions
+              .assertThat(result.travelCosts().calculatedValue())
+              .isEqualTo(monetaryValue(111.01));
+          softAssertions
+              .assertThat(result.waitingCosts().enteredValue())
+              .isEqualTo(monetaryValue(400.40));
+          softAssertions
+              .assertThat(result.waitingCosts().calculatedValue())
+              .isEqualTo(monetaryValue(111.02));
           softAssertions
               .assertThat(result.jrFormFilling().enteredValue())
               .isEqualTo(monetaryValue(800.80));
