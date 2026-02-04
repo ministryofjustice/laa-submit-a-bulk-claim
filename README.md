@@ -194,7 +194,7 @@ server claims.
 
 - Default configuration lives in `laa-submit-a-bulk-claim-ui/src/main/resources/application.yaml`.
 - Override secrets via environment variables or Spring profiles. Kubernetes deployments source them
-  from `laa-submit-a-bulk-claim-secrets` (see `helm-chart/values.yaml`).
+  from `laa-submit-a-bulk-claim-secrets` (see `.helm/submit-a-bulk-claim/values.yaml`).
 - Upload limits can be adjusted with `UPLOAD_MAX_FILE_SIZE` and `SERVER_MAX_FILE_SIZE`.
 
 ## Testing
@@ -218,8 +218,8 @@ repository.
 - GitHub Actions pipelines under `.github/workflows` build, scan, and publish Docker images.
     - `build-main.yml` tags merged changes on `main` and publishes artifacts.
     - `deploy-main.yml` produces release images, pushes to ECR, and triggers helm deployments.
-- Kubernetes manifests are defined in `helm-chart/` with environment-specific overrides under
-  `helm-chart/values/`.
+- Kubernetes manifests are defined in `.helm/submit-a-bulk-claim/` with environment-specific overrides under
+  `.helm/submit-a-bulk-claim/values/`.
 - Deployments run on the MoJ Cloud Platform with ModSec ingress and pod security settings defined in
   chart values.
 
@@ -251,7 +251,7 @@ repository.
   translating API responses to view models.
 - `laa-submit-a-bulk-claim-ui/src/main/resources/templates` – Thymeleaf views.
 - `wiremock/mappings` – Local stubs for dependent APIs.
-- `helm-chart/` – Helm chart used by GitHub Actions deploy workflows.
+- `.helm/submit-a-bulk-claim/` – Helm chart used by GitHub Actions deploy workflows.
 
 ## Contributing
 

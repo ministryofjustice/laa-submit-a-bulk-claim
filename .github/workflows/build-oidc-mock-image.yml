@@ -1,0 +1,60 @@
+name: Build OIDC mock image
+
+on:
+  workflow_call:
+    secrets:
+      ECR_ROLE_TO_ASSUME:
+        required: true
+    outputs:
+      oidc_mock_tag:
+        description: "OIDC mock image tag pushed to ECR"
+        value: ${{ jobs.build.outputs.oidc_mock_tag }}
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: read
+      packages: read
+    outputs:
+      oidc_mock_tag: ${{ steps.build.outputs.oidc_mock_tag }}
+    steps:
+      - name: Checkout OIDC mock repo
+        uses: actions/checkout@v6
+        with:
+          repository: ministryofjustice/laa-oidc-mock-server
+
+      - name: Log in to GHCR
+        run: |
+          echo "${{ github.token }}" | docker login ghcr.io \
+            -u ${{ github.actor }} --password-stdin
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v4
+
+      - name: Gradle assemble
+        run: ./gradlew assemble
+
+      - name: Configure aws credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.ECR_ROLE_TO_ASSUME }}
+          aws-region: ${{ vars.ECR_REGION }}
+
+      - name: Login ecr
+        uses: aws-actions/amazon-ecr-login@v2
+        id: login-ecr
+
+      - name: Build and push OIDC mock image
+        id: build
+        run: |
+          set -euo pipefail
+          image_tag="oidc-mock-${GITHUB_SHA}"
+          image="${{ steps.login-ecr.outputs.registry }}/${{ vars.ECR_REPOSITORY }}:${image_tag}"
+          echo "Building image: $image"
+          docker build -f Dockerfile -t "$image" .
+          echo "Pushing image..."
+          docker push "$image"
+          echo "Pushed to ECR: $image"
+          echo "oidc_mock_tag=$image_tag" >> "$GITHUB_OUTPUT"

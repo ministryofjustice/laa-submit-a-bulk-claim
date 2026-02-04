@@ -12,9 +12,12 @@ import org.springframework.util.Assert;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.SessionAttributes;
+import org.springframework.web.util.UriComponentsBuilder;
 import uk.gov.justice.laa.bulkclaim.builder.SubmissionMessagesBuilder;
 import uk.gov.justice.laa.bulkclaim.client.DataClaimsRestClient;
+import uk.gov.justice.laa.bulkclaim.constants.ViewSubmissionNavigationTab;
 import uk.gov.justice.laa.bulkclaim.dto.submission.messages.MessagesSummary;
 import uk.gov.justice.laa.bulkclaim.exception.SubmitBulkClaimException;
 import uk.gov.justice.laa.bulkclaim.mapper.ClaimFeeCalculationBreakdownMapper;
@@ -46,10 +49,21 @@ public final class ClaimDetailController {
    * @return the redirect to view a claim detail
    */
   @GetMapping("/submission/claim/{claimReference}")
-  public String getClaimDetail(Model model, @PathVariable("claimReference") UUID claimReference) {
-    model.addAttribute(CLAIM_ID, claimReference);
+  public String getClaimDetail(
+      Model model,
+      @PathVariable("claimReference") UUID claimReference,
+      @RequestParam(value = "page", defaultValue = "0") final int page,
+      @RequestParam(value = "navTab", required = false, defaultValue = "CLAIM_DETAILS")
+          final ViewSubmissionNavigationTab navigationTab) {
 
-    return "redirect:/view-claim-detail";
+    model.addAttribute(CLAIM_ID, claimReference);
+    String uri =
+        UriComponentsBuilder.fromPath("/view-claim-detail")
+            .queryParam("page", page)
+            .queryParam("navTab", navigationTab.toString())
+            .toUriString();
+
+    return "redirect:" + uri;
   }
 
   /**
@@ -64,7 +78,13 @@ public final class ClaimDetailController {
   public String getClaimDetail(
       Model model,
       @ModelAttribute(SUBMISSION_ID) final UUID submissionId,
-      @ModelAttribute(CLAIM_ID) final UUID claimId) {
+      @ModelAttribute(CLAIM_ID) final UUID claimId,
+      @RequestParam(value = "page", defaultValue = "0") final int page,
+      @RequestParam(value = "navTab", required = false, defaultValue = "CLAIM_DETAILS")
+          final ViewSubmissionNavigationTab navigationTab) {
+
+    model.addAttribute("page", page);
+    model.addAttribute("navigationTab", navigationTab.toString());
 
     ClaimResponse claimResponse =
         dataClaimsRestClient

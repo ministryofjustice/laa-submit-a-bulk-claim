@@ -15,7 +15,7 @@
 
         <h1 class="govuk-heading-xl" th:text="#{bulkImport.heading}"/>
         <p class="govuk-body-l"
-           th:text="#{bulkImport.maxSize(${@environment.getProperty('upload-max-file-size')})}"/>
+           th:text="#{bulkImport.maxSize(${@environment.getProperty('app.upload-max-file-size')})}"/>
         <p class="govuk-body govuk-!-margin-bottom-6" th:text="#{bulkImport.nextStep}"/>
 
         <div class="govuk-form-group"

@@ -91,7 +91,10 @@ class SubmissionDetailControllerTest {
                       .with(oidcLogin().oidcUser(ControllerTestHelper.getOidcUser()))
                       .session(session)))
           .hasStatus3xxRedirection()
-          .hasRedirectedUrl("/view-submission-detail?submissionId=" + submissionReference);
+          .hasRedirectedUrl(
+              "/view-submission-detail?submissionId="
+                  + submissionReference
+                  + "&page=0&messagesPage=0&navTab=CLAIM_DETAILS");
     }
 
     @Test
