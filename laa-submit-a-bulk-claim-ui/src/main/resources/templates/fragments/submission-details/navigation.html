@@ -1,4 +1,4 @@
-<th:block th:fragment="navigation(claimCount, messageCount)">
+<th:block th:fragment="navigation(claimCount, messageCount, matterStartsCount)">
   <div class="govuk-grid-column-full">
     <nav class="moj-sub-navigation" aria-label="Sub navigation">
       <ul class="moj-sub-navigation__list"
@@ -21,13 +21,13 @@
              th:text="#{submission.summary.nav.messages(${messageCount})}"></a>
         </li>
         <li class="moj-sub-navigation__item"
-            th:unless="${#strings.containsIgnoreCase(submissionSummary?.areaOfLaw, 'crime')}">
+            th:unless="${isCrimeLower}">
           <a class="moj-sub-navigation__link"
              th:with="isCurrent=${navTab.toString() == 'MATTER_STARTS'},
               url=@{${baseUrl}(navTab=${navTab.MATTER_STARTS.toString()})}"
              th:attr="aria-current=${isCurrent ? 'page' : null}"
              th:href="${isCurrent ? '#matter-starts' : url}"
-             th:text="#{viewSubmission.matterStarts.subHeading}"></a>
+             th:text="#{submission.summary.nav.matterStarts(${matterStartsCount})}"></a>
         </li>
       </ul>
     </nav>
