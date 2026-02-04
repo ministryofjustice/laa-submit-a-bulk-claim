@@ -53,6 +53,7 @@ public final class ClaimDetailController {
       Model model,
       @PathVariable("claimReference") UUID claimReference,
       @RequestParam(value = "page", defaultValue = "0") final int page,
+      @RequestParam(value = "messagesPage", defaultValue = "0") final int messagesPage,
       @RequestParam(value = "navTab", required = false, defaultValue = "CLAIM_DETAILS")
           final ViewSubmissionNavigationTab navigationTab) {
 
@@ -60,6 +61,7 @@ public final class ClaimDetailController {
     String uri =
         UriComponentsBuilder.fromPath("/view-claim-detail")
             .queryParam("page", page)
+            .queryParam("messagesPage", messagesPage)
             .queryParam("navTab", navigationTab.toString())
             .toUriString();
 
@@ -80,10 +82,12 @@ public final class ClaimDetailController {
       @ModelAttribute(SUBMISSION_ID) final UUID submissionId,
       @ModelAttribute(CLAIM_ID) final UUID claimId,
       @RequestParam(value = "page", defaultValue = "0") final int page,
+      @RequestParam(value = "messagesPage", defaultValue = "0") final int messagesPage,
       @RequestParam(value = "navTab", required = false, defaultValue = "CLAIM_DETAILS")
           final ViewSubmissionNavigationTab navigationTab) {
 
     model.addAttribute("page", page);
+    model.addAttribute("messagesPage", messagesPage);
     model.addAttribute("navigationTab", navigationTab.toString());
 
     ClaimResponse claimResponse =

@@ -157,7 +157,7 @@ class SubmissionMessagesBuilderTest {
         new ValidationMessagesResponse().content(List.of(error)).totalElements(1).totalClaims(1);
 
     when(dataClaimsRestClient.getValidationMessages(
-        submissionId, claimId, ValidationMessageType.ERROR.toString(), null, 0, 10))
+            submissionId, null, ValidationMessageType.ERROR.toString(), null, 0, 10))
         .thenReturn(Mono.just(errorResponse));
 
     MessageRow mappedError =

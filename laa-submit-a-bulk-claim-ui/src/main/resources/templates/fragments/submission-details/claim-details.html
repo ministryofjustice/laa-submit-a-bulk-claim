@@ -115,7 +115,7 @@
               th:each="claim, idx : ${claimDetails.submissionClaims}">
             <td class="govuk-table__cell">
               <a class="govuk-link"
-                 th:href="@{/submission/claim/{id}(id=${claim.id})}"
+                 th:href="@{/submission/claim/{id}(id=${claim.id}, page=${page})}"
                  th:text="#{submission.summary.claims.viewLink}"></a>
 
             </td>
@@ -144,7 +144,7 @@
             <td class="govuk-table__cell">
               <a class="govuk-link"
                  th:if="${claim.totalMessages > 0}"
-                 th:href="@{/submission/claim/{id}(id=${claim.id})}"
+                 th:href="@{/submission/claim/{id}(id=${claim.id}, page=${page})}"
                  th:text="#{submission.summary.claims.messages.count(${claim.totalMessages})}"></a>
             </td>
           </tr>
@@ -156,7 +156,7 @@
               th:each="claim, idx : ${claimDetails.submissionClaims}">
             <td class="govuk-table__cell" th:with="claimDetailsUrl=@{/submission/claim/{id}(id=${claim.id})}">
               <a class="govuk-link"
-                 th:href="${@thymeleafHrefUtils.build(claimDetailsUrl, 'page', claimDetails.pagination.number, 'navTab', 'CLAIM_DETAILS')}"
+                 th:href="${@thymeleafHrefUtils.build(claimDetailsUrl, 'page', page, 'navTab', 'CLAIM_DETAILS')}"
                  th:text="#{submission.summary.claims.viewLink}"></a>
             </td>
             <td class="govuk-table__cell"
@@ -184,7 +184,7 @@
             <td class="govuk-table__cell" th:with="claimDetailsUrl=@{/submission/claim/{id}(id=${claim.id})}">
               <a class="govuk-link"
                  th:if="${claim.totalMessages > 0}"
-                 th:href="${@thymeleafHrefUtils.build(claimDetailsUrl, 'page', claimDetails.pagination.number, 'navTab', 'CLAIM_DETAILS')}"
+                 th:href="${@thymeleafHrefUtils.build(claimDetailsUrl, 'page', page, 'navTab', 'CLAIM_DETAILS')}"
                  th:text="#{submission.summary.claims.messages.count(${claim.totalMessages})}"></a>
             </td>
           </tr>
@@ -196,7 +196,7 @@
               th:each="claim, idx : ${claimDetails.submissionClaims}">
             <td class="govuk-table__cell">
               <a class="govuk-link"
-                 th:href="@{/submission/claim/{id}(id=${claim.id})}"
+                 th:href="@{/submission/claim/{id}(id=${claim.id}, page=${page})}"
                  th:text="#{submission.summary.claims.viewLink}"></a>
             </td>
             <td class="govuk-table__cell"
@@ -225,7 +225,7 @@
               th:each="claim, idx : ${claimDetails.submissionClaims}">
             <td class="govuk-table__cell">
               <a class="govuk-link"
-                 th:href="@{/submission/claim/{id}(id=${claim.id})}"
+                 th:href="@{/submission/claim/{id}(id=${claim.id}, page=${page})}"
                  th:text="#{submission.summary.claims.viewLink}"></a>
             </td>
             <td class="govuk-table__cell"
@@ -242,7 +242,7 @@
             <td class="govuk-table__cell">
               <a class="govuk-link"
                  th:if="${claim.totalMessages > 0}"
-                 th:href="@{/submission/claim/{id}(id=${claim.id})}"
+                 th:href="@{/submission/claim/{id}(id=${claim.id}, page=${page})}"
                  th:text="#{submission.summary.claims.messages.count(${claim.totalMessages})}"></a>
             </td>
           </tr>

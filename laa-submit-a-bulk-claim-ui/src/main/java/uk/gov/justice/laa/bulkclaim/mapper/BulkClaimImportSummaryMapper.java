@@ -86,7 +86,10 @@ public interface BulkClaimImportSummaryMapper {
   @Mapping(target = "client2Ucn", source = "claimResponse.client2Ucn")
   @Mapping(target = "crimeMatterTypeCode", source = "claimResponse.crimeMatterTypeCode")
   @Mapping(target = "submissionReference", source = "message.submissionId")
-  @Mapping(target = "claimReference", source = "message.claimId", qualifiedByName = "toClaimReference")
+  @Mapping(
+      target = "claimReference",
+      source = "message.claimId",
+      qualifiedByName = "toClaimReference")
   @Mapping(target = "message", source = "message.displayMessage")
   @Mapping(target = "type", source = "message.type")
   MessageRow toSubmissionSummaryClaimMessage(
