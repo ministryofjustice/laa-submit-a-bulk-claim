@@ -244,7 +244,9 @@ public class SubmissionDetailController {
   }
 
   private void addCounts(
-      Model model, SubmissionClaimsDetails claimDetails, MessagesSummary messagesSummary,
+      Model model,
+      SubmissionClaimsDetails claimDetails,
+      MessagesSummary messagesSummary,
       List<SubmissionMatterStartsRow> matterStartsDetails) {
 
     int claimCount =
@@ -256,9 +258,10 @@ public class SubmissionDetailController {
     int messageCount =
         Optional.ofNullable(messagesSummary).map(MessagesSummary::totalMessageCount).orElse(0);
 
-    long matterStartsCount = matterStartsDetails.stream()
-        .mapToLong(SubmissionMatterStartsRow::numberOfMatterStarts)
-        .sum();
+    long matterStartsCount =
+        matterStartsDetails.stream()
+            .mapToLong(SubmissionMatterStartsRow::numberOfMatterStarts)
+            .sum();
 
     model.addAttribute("claimCount", claimCount);
     model.addAttribute("messageCount", messageCount);
