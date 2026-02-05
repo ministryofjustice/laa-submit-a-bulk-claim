@@ -5,7 +5,6 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockserver.model.HttpResponse.response;
 
 import java.time.Duration;
-import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
@@ -192,12 +191,11 @@ class DataClaimsRestClientIntegrationTest extends MockServerIntegrationTest {
 
       List<String> offices = List.of("1");
       String submissionId = "1234";
-      LocalDate from = LocalDate.of(2025, 8, 1);
-      LocalDate to = LocalDate.of(2025, 8, 31);
+      String submissionPeriod = "JAN-2025";
 
       SubmissionsResultSet response =
           dataClaimsRestClient
-              .search(offices, submissionId, from, to, 0, 10, null)
+              .search(offices, submissionId, submissionPeriod, 0, 10, null)
               .block(Duration.ofSeconds(2));
       assertThat(response.toString()).isNotEmpty();
       assertThat(response.getContent().getFirst().getSubmissionId().toString())
