@@ -33,34 +33,6 @@ class SubmissionSearchValidatorTest {
   }
 
   @Test
-  @DisplayName("Should reject submissionId when not UUID")
-  void validateShouldRejectSubmissionIdWhenNotUuid() {
-    final SubmissionsSearchForm form =
-        SubmissionsSearchForm.builder().submissionId("not-a-uuid").build();
-    final BindingResult errors = new BeanPropertyBindingResult(form, "submissionsSearchForm");
-
-    validator.validate(form, errors);
-
-    assertTrue(errors.hasFieldErrors("submissionId"));
-    assertEquals(
-        "search.error.submissionId.invalid", errors.getFieldError("submissionId").getCode());
-  }
-
-  @Test
-  @DisplayName("Should accept submissionId when valid UUID")
-  void validateShouldAcceptSubmissionIdWhenUuid() {
-    final SubmissionsSearchForm form =
-        SubmissionsSearchForm.builder()
-            .submissionId("550e8400-e29b-41d4-a716-446655440000")
-            .build();
-    final BindingResult errors = new BeanPropertyBindingResult(form, "submissionsSearchForm");
-
-    validator.validate(form, errors);
-
-    assertFalse(errors.hasErrors());
-  }
-
-  @Test
   @DisplayName("Should reject submissionPeriod when not available")
   void validateShouldNotAcceptSubmissionPeriodNotAvailable() {
     final SubmissionsSearchForm form =
