@@ -2,31 +2,26 @@
   <div class="search-panel govuk-!-margin-bottom-6">
     <fieldset class="govuk-fieldset"
               th:with="maxDate=${#temporals.format(#temporals.createNow(), 'd/M/yyyy')}">
-      <legend class="govuk-fieldset__legend govuk-fieldset__legend--s">
-        <span th:text="#{search.legend}"></span>
-        <div class="govuk-body" th:text="#{search.dateHint}"></div>
-      </legend>
 
+      <div class="govuk-body govuk-input--width-10">
+        <div class="autocomplete-wrapper ">
+          <label class="govuk-label govuk-label--s" for="submission-period">Submission period</label>
+          <select class="govuk-select" name="submission-period" id="submission-period"
+                  th:field="*{submissionPeriod}"
+                  data-module="make-autocomplete">
 
+            <option value="" selected></option>
+            <option
+                th:each="period, idx : ${@submissionPeriodUtil.getAllPossibleSubmissionPeriods()}"
+                th:value="${period.getKey()}"
+                th:id="|submission-period-${idx.index}|"
+                th:text="${period.getValue()}">Submission Period Option
+            </option>
+          </select>
+        </div>
+      </div>
     </fieldset>
 
-    <div class="govuk-body govuk-input--width-10">
-      <div class="autocomplete-wrapper ">
-        <label class="govuk-label" for="submission-period">Submission period</label>
-        <select class="govuk-select" name="submission-period" id="submission-period"
-                th:field="*{submissionPeriod}"
-                data-module="make-autocomplete">
-
-          <option value="" selected></option>
-          <option th:each="period, idx : ${@submissionPeriodUtil.getAllPossibleSubmissionPeriods()}" th:value="${period.getKey()}"
-                  th:id="|submission-period-${idx.index}|"
-                  th:text="${period.getValue()}">Submission Period Option</option>
-        </select>
-      </div>
-    </div>
-
-
-    <p class="govuk-label govuk-label--s" th:text="#{search.or}"></p>
 
     <div
         class="govuk-form-group govuk-!-width-two-thirds govuk-!-margin-top-4"
