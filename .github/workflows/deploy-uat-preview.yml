@@ -22,14 +22,13 @@ jobs:
           echo "preview_version=${version}-${commit_hash}" >> "$GITHUB_OUTPUT"
           echo "Preview version: submit-a-bulk-claim-${version}-${commit_hash}"
 
-  assemble:
+  build-and-test:
     needs: [ define-preview-version ]
     uses: ministryofjustice/laa-ccms-common-workflows/.github/workflows/gradle-build-and-publish.yml@v1
     permissions:
       contents: write
       packages: write
     with:
-      build_command: 'assemble'
       publish_package: false
       override_version: ${{ needs.define-preview-version.outputs.preview_version }}
       junit_results: 'false'
@@ -41,7 +40,7 @@ jobs:
       gh_token: ${{ secrets.GITHUB_TOKEN }}
 
   pact-test:
-    needs: [ assemble ]
+    needs: [ build-and-test ]
     uses: ministryofjustice/laa-ccms-common-workflows/.github/workflows/pact-and-publish.yml@story/pact-publish
     permissions:
       contents: write
@@ -67,7 +66,7 @@ jobs:
     secrets: inherit
 
   ecr-publish-image:
-    needs: [ assemble ]
+    needs: [ build-and-test ]
     uses: ministryofjustice/laa-ccms-common-workflows/.github/workflows/ecr-publish-image.yml@v1
     permissions:
       contents: read
