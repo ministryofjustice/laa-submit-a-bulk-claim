@@ -57,21 +57,14 @@ import uk.gov.justice.laa.dstew.payments.claimsdata.model.ValidationMessageType;
 @DisplayName("Submission detail controller test")
 class SubmissionDetailControllerTest {
 
-  @Autowired
-  private MockMvcTester mockMvc;
+  @Autowired private MockMvcTester mockMvc;
 
-  @MockitoBean
-  private SubmissionSummaryBuilder submissionSummaryBuilder;
-  @MockitoBean
-  private SubmissionClaimDetailsBuilder submissionClaimDetailsBuilder;
-  @MockitoBean
-  private SubmissionMatterStartsDetailsBuilder submissionMatterStartsDetailsBuilder;
-  @MockitoBean
-  private DataClaimsRestClient dataClaimsRestClient;
-  @MockitoBean
-  private SubmissionMessagesBuilder submissionMessagesBuilder;
-  @MockitoBean
-  private PaginationUtil paginationUtil;
+  @MockitoBean private SubmissionSummaryBuilder submissionSummaryBuilder;
+  @MockitoBean private SubmissionClaimDetailsBuilder submissionClaimDetailsBuilder;
+  @MockitoBean private SubmissionMatterStartsDetailsBuilder submissionMatterStartsDetailsBuilder;
+  @MockitoBean private DataClaimsRestClient dataClaimsRestClient;
+  @MockitoBean private SubmissionMessagesBuilder submissionMessagesBuilder;
+  @MockitoBean private PaginationUtil paginationUtil;
 
   @Nested
   @DisplayName("GET: /submission/{submissionId}")
@@ -93,10 +86,10 @@ class SubmissionDetailControllerTest {
 
       // When / Then
       assertThat(
-          mockMvc.perform(
-              get("/submission/" + submissionReference)
-                  .with(oidcLogin().oidcUser(ControllerTestHelper.getOidcUser()))
-                  .session(session)))
+              mockMvc.perform(
+                  get("/submission/" + submissionReference)
+                      .with(oidcLogin().oidcUser(ControllerTestHelper.getOidcUser()))
+                      .session(session)))
           .hasStatus3xxRedirection()
           .hasRedirectedUrl(
               "/view-submission-detail?submissionId="
@@ -142,10 +135,10 @@ class SubmissionDetailControllerTest {
       session.setAttribute("submissions", submissions);
 
       assertThat(
-          mockMvc.perform(
-              get("/submission/" + submissionReference)
-                  .with(oidcLogin().oidcUser(ControllerTestHelper.getOidcUser()))
-                  .session(session)))
+              mockMvc.perform(
+                  get("/submission/" + submissionReference)
+                      .with(oidcLogin().oidcUser(ControllerTestHelper.getOidcUser()))
+                      .session(session)))
           .failure()
           .hasMessageContaining("403 FORBIDDEN");
     }
@@ -182,19 +175,19 @@ class SubmissionDetailControllerTest {
       when(submissionClaimDetailsBuilder.build(any(), anyInt(), anyInt()))
           .thenReturn(
               new SubmissionClaimsDetails(Collections.emptyList(), pagination, BigDecimal.ZERO));
-      when(submissionMatterStartsDetailsBuilder.build(any())).thenReturn(
-          Arrays.asList(new SubmissionMatterStartsRow("Description", 34)));
+      when(submissionMatterStartsDetailsBuilder.build(any()))
+          .thenReturn(Arrays.asList(new SubmissionMatterStartsRow("Description", 34)));
       // When / Then
       assertThat(
-          mockMvc.perform(
-              get("/view-submission-detail?submissionId=" + submissionReference)
-                  .with(oidcLogin().oidcUser(ControllerTestHelper.getOidcUser()))
-                  .sessionAttr("submissionId", submissionReference)))
+              mockMvc.perform(
+                  get("/view-submission-detail?submissionId=" + submissionReference)
+                      .with(oidcLogin().oidcUser(ControllerTestHelper.getOidcUser()))
+                      .sessionAttr("submissionId", submissionReference)))
           .hasStatusOk()
           .hasViewName("pages/view-submission-detail-accepted");
       verify(submissionClaimDetailsBuilder, times(1)).build(any(), anyInt(), anyInt());
-      verify(submissionMessagesBuilder, times(1)).build(
-          submissionReference, null, ValidationMessageType.WARNING, 0, 10);
+      verify(submissionMessagesBuilder, times(1))
+          .build(submissionReference, null, ValidationMessageType.WARNING, 0, 10);
       verify(submissionMatterStartsDetailsBuilder, times(1)).build(any());
     }
 
@@ -225,15 +218,15 @@ class SubmissionDetailControllerTest {
       when(submissionMessagesBuilder.buildErrors(any(), anyInt(), anyInt()))
           .thenReturn(
               new MessagesSummary(Collections.emptyList(), 0, 0, pagination, MessagesSource.CLAIM));
-      when(submissionMatterStartsDetailsBuilder.build(any())).thenReturn(
-          Arrays.asList(new SubmissionMatterStartsRow("Description", 34)));
+      when(submissionMatterStartsDetailsBuilder.build(any()))
+          .thenReturn(Arrays.asList(new SubmissionMatterStartsRow("Description", 34)));
       // When / Then
       assertThat(
-          mockMvc.perform(
-              get("/view-submission-detail?navTab=CLAIM_DETAILS&submissionId="
-                  + submissionReference)
-                  .with(oidcLogin().oidcUser(ControllerTestHelper.getOidcUser()))
-                  .sessionAttr("submissionId", submissionReference)))
+              mockMvc.perform(
+                  get("/view-submission-detail?navTab=CLAIM_DETAILS&submissionId="
+                          + submissionReference)
+                      .with(oidcLogin().oidcUser(ControllerTestHelper.getOidcUser()))
+                      .sessionAttr("submissionId", submissionReference)))
           .hasStatusOk()
           .hasViewName("pages/view-submission-detail-invalid");
 
@@ -276,11 +269,11 @@ class SubmissionDetailControllerTest {
       when(submissionMatterStartsDetailsBuilder.build(any())).thenReturn(matterTypes);
       // When / Then
       assertThat(
-          mockMvc.perform(
-              get("/view-submission-detail?navTab=MATTER_STARTS&submissionId="
-                  + submissionReference)
-                  .with(oidcLogin().oidcUser(ControllerTestHelper.getOidcUser()))
-                  .sessionAttr("submissionId", submissionReference)))
+              mockMvc.perform(
+                  get("/view-submission-detail?navTab=MATTER_STARTS&submissionId="
+                          + submissionReference)
+                      .with(oidcLogin().oidcUser(ControllerTestHelper.getOidcUser()))
+                      .sessionAttr("submissionId", submissionReference)))
           .hasStatusOk()
           .hasViewName("pages/view-submission-detail-accepted");
       verify(submissionClaimDetailsBuilder).build(any(), anyInt(), anyInt());
@@ -340,11 +333,11 @@ class SubmissionDetailControllerTest {
       when(dataClaimsRestClient.getSubmission(submissionReference)).thenReturn(Mono.empty());
       // When / Then
       assertThat(
-          mockMvc.perform(
-              get("/view-submission-detail?navTab=MATTER_STARTS&submissionId="
-                  + submissionReference)
-                  .with(oidcLogin().oidcUser(ControllerTestHelper.getOidcUser()))
-                  .sessionAttr("submissionId", submissionReference)))
+              mockMvc.perform(
+                  get("/view-submission-detail?navTab=MATTER_STARTS&submissionId="
+                          + submissionReference)
+                      .with(oidcLogin().oidcUser(ControllerTestHelper.getOidcUser()))
+                      .sessionAttr("submissionId", submissionReference)))
           .failure()
           .hasMessageEndingWith("Submission bceac49c-d756-4e05-8e28-3334b84b6fe8 does not exist");
     }
