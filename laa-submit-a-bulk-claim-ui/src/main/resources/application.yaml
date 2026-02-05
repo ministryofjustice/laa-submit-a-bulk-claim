@@ -57,6 +57,8 @@ app:
     accessToken: ${CLAIMS_API_ACCESS_TOKEN}
   upload-max-file-size: ${UPLOAD_MAX_FILE_SIZE}
   csp: default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; font-src 'self' data:; object-src 'none'; frame-ancestors 'none'; base-uri 'self';
+  submission:
+    minimum-period: ${SUBMISSION_MINIMUM_PERIOD:APR-2015}
 
 links:
   laa-homepage: https://www.gov.uk/government/organisations/legal-aid-agency
@@ -88,3 +90,4 @@ management:
           - health
           - info
           - prometheus
+

@@ -65,7 +65,7 @@ public class SearchController {
   @GetMapping("/submissions/search")
   public String search(Model model, SessionStatus sessionStatus) {
     if (!model.containsAttribute(SUBMISSION_SEARCH_FORM)) {
-      model.addAttribute(SUBMISSION_SEARCH_FORM, new SubmissionsSearchForm(null, null, null));
+      model.addAttribute(SUBMISSION_SEARCH_FORM, new SubmissionsSearchForm(null, null));
     }
     sessionStatus.setComplete();
     return "pages/submissions-search";
@@ -87,15 +87,13 @@ public class SearchController {
       Model model) {
 
     String submissionId = trimToNull(submissionsSearchForm.submissionId());
+    String submissionPeriod = trimToNull(submissionsSearchForm.submissionPeriod());
 
     if (bindingResult.hasErrors()) {
       model.addAttribute(SUBMISSION_SEARCH_FORM, submissionsSearchForm);
       model.addAttribute(BindingResult.MODEL_KEY_PREFIX + SUBMISSION_SEARCH_FORM, bindingResult);
       return "pages/submissions-search";
     }
-
-    String submittedDateFrom = trimToNull(submissionsSearchForm.submittedDateFrom());
-    String submittedDateTo = trimToNull(submissionsSearchForm.submittedDateTo());
 
     UriComponentsBuilder redirectUrl =
         UriComponentsBuilder.fromPath("/submissions/search/results")
@@ -104,11 +102,8 @@ public class SearchController {
     if (submissionId != null) {
       redirectUrl.queryParam("submissionId", submissionId);
     }
-    if (submittedDateFrom != null) {
-      redirectUrl.queryParam("submittedDateFrom", submittedDateFrom);
-    }
-    if (submittedDateTo != null) {
-      redirectUrl.queryParam("submittedDateTo", submittedDateTo);
+    if (submissionPeriod != null) {
+      redirectUrl.queryParam("submissionPeriod", submissionPeriod);
     }
 
     return "redirect:" + redirectUrl.build().toUriString();
@@ -119,8 +114,7 @@ public class SearchController {
    *
    * @param page requested page number
    * @param submissionId submission id filter
-   * @param submittedDateFrom submitted date from filter
-   * @param submittedDateTo submitted date to filter
+   * @param submissionPeriod submission period filter
    * @param model view context model
    * @param oidcUser authenticated user
    * @param sessionStatus session status for clearing session attributes
@@ -131,8 +125,7 @@ public class SearchController {
   public String submissionsSearchResults(
       @RequestParam(value = "page", defaultValue = "0") final int page,
       @RequestParam(value = "submissionId", required = false) String submissionId,
-      @RequestParam(value = "submittedDateFrom", required = false) String submittedDateFrom,
-      @RequestParam(value = "submittedDateTo", required = false) String submittedDateTo,
+      @RequestParam(value = "submissionPeriod", required = false) String submissionPeriod,
       Model model,
       @AuthenticationPrincipal OidcUser oidcUser,
       SessionStatus sessionStatus,
@@ -141,12 +134,8 @@ public class SearchController {
     sessionStatus.setComplete();
 
     SubmissionsSearchForm submissionsSearchForm =
-        new SubmissionsSearchForm(
-            trimToNull(submissionId), trimToNull(submittedDateFrom), trimToNull(submittedDateTo));
+        new SubmissionsSearchForm(trimToNull(submissionId), trimToNull(submissionPeriod));
     model.addAttribute(SUBMISSION_SEARCH_FORM, submissionsSearchForm);
-
-    LocalDate submittedDateFromParsed = parseDate(submissionsSearchForm.submittedDateFrom());
-    LocalDate submittedDateToParsed = parseDate(submissionsSearchForm.submittedDateTo());
 
     List<String> offices = oidcAttributeUtils.getUserOffices(oidcUser);
 
@@ -156,8 +145,7 @@ public class SearchController {
               .search(
                   offices,
                   submissionsSearchForm.submissionId(),
-                  submittedDateFromParsed,
-                  submittedDateToParsed,
+                  submissionsSearchForm.submissionPeriod(),
                   page,
                   DEFAULT_PAGE_SIZE,
                   DEFAULT_SEARCH_PAGE_SORT)
