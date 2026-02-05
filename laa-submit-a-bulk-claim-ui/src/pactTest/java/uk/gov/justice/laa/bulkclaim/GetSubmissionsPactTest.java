@@ -9,6 +9,7 @@ import au.com.dius.pact.consumer.junit5.PactConsumerTest;
 import au.com.dius.pact.consumer.junit5.PactTestFor;
 import au.com.dius.pact.core.model.RequestResponsePact;
 import au.com.dius.pact.core.model.annotations.Pact;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import lombok.SneakyThrows;
@@ -67,6 +68,7 @@ public final class GetSubmissionsPactTest extends AbstractPactTest {
         .matchQuery("submission_id", UUID_REGEX)
         .matchQuery("submission_period", "([A-Z]{3}-[0-9]{4})")
         .matchQuery("offices", "([A-Z0-9]{6})")
+        .matchQuery("area_of_law", "(LEGAL HELP|CRIME LOWER|MEDIATION)")
         .matchQuery("page", ANY_NUMBER_REGEX)
         .matchQuery("size", ANY_NUMBER_REGEX)
         .matchQuery("sort", "(asc|desc)")
@@ -150,12 +152,16 @@ public final class GetSubmissionsPactTest extends AbstractPactTest {
   @PactTestFor(pactMethod = "getSubmissions200")
   void verify200Response() {
     String submissionPeriod = "JAN-2025";
-    SubmissionsResultSet submission =
-        dataClaimsRestClient
-            .search(USER_OFFICES, String.valueOf(SUBMISSION_ID), submissionPeriod, 1, 10, "asc")
-            .block();
-
-    assertThat(submission.getContent().size()).isEqualTo(1);
+    try {
+      SubmissionsResultSet submission =
+          dataClaimsRestClient
+              .search(
+                  USER_OFFICES, submissionPeriod, "LEGAL HELP", List.of("CREATED"), 10, 10, "asc")
+              .block();
+      assertThat(submission.getContent().size()).isEqualTo(1);
+    } catch (Exception e) {
+      throw new RuntimeException(e);
+    }
   }
 
   @Test
@@ -165,7 +171,7 @@ public final class GetSubmissionsPactTest extends AbstractPactTest {
     String submissionPeriod = "JAN-2025";
     SubmissionsResultSet submission =
         dataClaimsRestClient
-            .search(USER_OFFICES, String.valueOf(SUBMISSION_ID), submissionPeriod, 1, 10, "asc")
+            .search(USER_OFFICES, submissionPeriod, "LEGAL HELP", List.of("CREATED"), 10, 10, "asc")
             .block();
 
     assertThat(submission.getContent().isEmpty()).isTrue();
