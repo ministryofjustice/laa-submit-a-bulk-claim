@@ -39,18 +39,18 @@ class SubmissionPeriodUtilTest {
 
   @ParameterizedTest
   @CsvSource({
-      "JAN-2010, 201001",
-      "FEB-2011, 201102",
-      "MAR-2012, 201203",
-      "APR-2013, 201304",
-      "MAY-2014, 201405",
-      "JUN-2015, 201506",
-      "JUL-2016, 201607",
-      "AUG-2017, 201708",
-      "SEP-2018, 201809",
-      "OCT-2019, 201910",
-      "NOV-2020, 202011",
-      "DEC-2021, 202112"
+    "JAN-2010, 201001",
+    "FEB-2011, 201102",
+    "MAR-2012, 201203",
+    "APR-2013, 201304",
+    "MAY-2014, 201405",
+    "JUN-2015, 201506",
+    "JUL-2016, 201607",
+    "AUG-2017, 201708",
+    "SEP-2018, 201809",
+    "OCT-2019, 201910",
+    "NOV-2020, 202011",
+    "DEC-2021, 202112"
   })
   @DisplayName("Should get submission period sort value")
   void shouldGetSubmissionPeriod(String input, int expected) {
