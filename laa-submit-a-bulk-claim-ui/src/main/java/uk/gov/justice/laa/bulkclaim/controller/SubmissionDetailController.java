@@ -126,6 +126,10 @@ public class SubmissionDetailController {
       @RequestParam(value = SUBMISSION_ID) UUID submissionId,
       @RequestParam(value = "navTab", required = false, defaultValue = "CLAIM_DETAILS")
           ViewSubmissionNavigationTab navigationTab) {
+    // Adding page and messagesPage to model
+    model.addAttribute("page", page);
+    model.addAttribute("messagesPage", messagesPage);
+
     final SubmissionResponse submissionResponse =
         dataClaimsRestClient
             .getSubmission(submissionId)

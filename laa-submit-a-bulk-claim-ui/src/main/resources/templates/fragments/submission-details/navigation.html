@@ -14,8 +14,8 @@
         </li>
         <li class="moj-sub-navigation__item" th:if="${messagesSummary != null}">
           <a class="moj-sub-navigation__link"
-             th:with="isCurrent=${navTab.toString() == 'CLAIM_ERRORS'},
-              url=@{${baseUrl}(navTab=${navTab.CLAIM_ERRORS.toString()})}"
+             th:with="isCurrent=${navTab.toString() == 'CLAIM_MESSAGES'},
+              url=@{${baseUrl}(navTab=${navTab.CLAIM_MESSAGES.toString()})}"
              th:attr="aria-current=${isCurrent ? 'page' : null}"
              th:href="${isCurrent ? '#messages' : url}"
              th:text="#{submission.summary.nav.messages(${messageCount})}"></a>
