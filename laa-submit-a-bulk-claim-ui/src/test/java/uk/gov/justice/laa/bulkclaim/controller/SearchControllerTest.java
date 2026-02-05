@@ -1,9 +1,13 @@
 package uk.gov.justice.laa.bulkclaim.controller;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.anyInt;
+import static org.mockito.Mockito.anyList;
+import static org.mockito.Mockito.eq;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 import static uk.gov.justice.laa.bulkclaim.controller.ControllerTestHelper.getOidcUser;
-import static uk.gov.justice.laa.bulkclaim.controller.SearchController.SUBMISSION_SEARCH_FORM;
 
 import jakarta.servlet.http.HttpSession;
 import java.util.Collections;
@@ -26,7 +30,9 @@ import uk.gov.justice.laa.bulkclaim.dto.SubmissionsSearchForm;
 import uk.gov.justice.laa.bulkclaim.util.OidcAttributeUtils;
 import uk.gov.justice.laa.bulkclaim.util.PaginationUtil;
 import uk.gov.justice.laa.bulkclaim.validation.SubmissionSearchValidator;
+import uk.gov.justice.laa.dstew.payments.claimsdata.model.AreaOfLaw;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.Page;
+import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionStatus;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionsResultSet;
 
 @AutoConfigureMockMvc(addFilters = false)
@@ -64,7 +70,8 @@ class SearchControllerTest {
   @DisplayName("Handle search should redirect to form if validation errors")
   void handleSearchShouldRedirectBackOnErrors() {
     when(bindingResult.hasErrors()).thenReturn(true);
-    final SubmissionsSearchForm form = new SubmissionsSearchForm("1234", "01/01/2024");
+    final SubmissionsSearchForm form =
+        SubmissionsSearchForm.builder().submissionPeriod("01/01/2024").build();
     final Model localModel = new ExtendedModelMap();
 
     String view = searchController.handleSearch(form, bindingResult, localModel);
@@ -78,13 +85,19 @@ class SearchControllerTest {
   void handleSearchShouldRedirectWithParamsOnSuccess() {
     when(bindingResult.hasErrors()).thenReturn(false);
     final SubmissionsSearchForm form =
-        new SubmissionsSearchForm("704b3dda-4aec-4883-a263-000d86511289", "JAN-2024");
+        SubmissionsSearchForm.builder()
+            .submissionPeriod("JAN-2024")
+            .areaOfLaw(AreaOfLaw.CRIME_LOWER)
+            .offices(List.of("12345"))
+            .submissionStatus(SubmissionStatus.CREATED)
+            .build();
     final Model localModel = new ExtendedModelMap();
 
     String view = searchController.handleSearch(form, bindingResult, localModel);
 
     assertEquals(
-        "redirect:/submissions/search/results?page=0&submissionId=704b3dda-4aec-4883-a263-000d86511289&submissionPeriod=JAN-2024",
+        "redirect:/submissions/search/results?page=0&submissionPeriod=JAN-2024&areaOfLaw=CRIME "
+            + "LOWER&offices=12345&submissionStatus=CREATED",
         view);
   }
 
@@ -99,14 +112,22 @@ class SearchControllerTest {
     response.setTotalPages(1);
 
     when(oidcAttributeUtils.getUserOffices(any())).thenReturn(List.of("1"));
-    when(claimsRestService.search(anyList(), any(), any(), anyInt(), anyInt(), any()))
+    when(claimsRestService.search(anyList(), any(), any(), any(), anyInt(), anyInt(), any()))
         .thenReturn(Mono.just(response));
     when(paginationUtil.fromSubmissionsResultSet(response, 0, 10))
         .thenReturn(new Page().totalElements(1));
 
     String view =
         searchController.submissionsSearchResults(
-            0, "1234", "JAN-2024", model, getOidcUser(), sessionStatus, session);
+            0,
+            "JAN-2024",
+            AreaOfLaw.CRIME_LOWER,
+            Collections.emptyList(),
+            SubmissionStatus.CREATED,
+            model,
+            getOidcUser(),
+            sessionStatus,
+            session);
 
     verify(sessionStatus).setComplete();
     verify(model).addAttribute(eq("pagination"), any(Page.class));
@@ -120,12 +141,12 @@ class SearchControllerTest {
       "Submissions search results should return error when HttpClientErrorException is thrown")
   void submissionsSearchResultsShouldReturnErrorOnHttpClientError() {
     when(oidcAttributeUtils.getUserOffices(any())).thenReturn(List.of("1"));
-    when(claimsRestService.search(anyList(), any(), any(), anyInt(), anyInt(), any()))
+    when(claimsRestService.search(anyList(), any(), any(), any(), anyInt(), anyInt(), any()))
         .thenThrow(BadRequest.class);
 
     String view =
         searchController.submissionsSearchResults(
-            0, "1234", null, model, getOidcUser(), sessionStatus, session);
+            0, null, null, null, null, model, getOidcUser(), sessionStatus, session);
 
     assertEquals("error", view);
   }
@@ -134,36 +155,13 @@ class SearchControllerTest {
   @DisplayName("Submissions search results should return error when generic exception is thrown")
   void submissionsSearchResultsShouldReturnErrorOnGenericException() {
     when(oidcAttributeUtils.getUserOffices(any())).thenReturn(List.of("1"));
-    when(claimsRestService.search(anyList(), any(), any(), anyInt(), anyInt(), any()))
+    when(claimsRestService.search(anyList(), any(), any(), any(), anyInt(), anyInt(), any()))
         .thenThrow(new RuntimeException("Boom"));
 
     String view =
         searchController.submissionsSearchResults(
-            0, "1234", null, model, getOidcUser(), sessionStatus, session);
+            0, "1234", null, null, null, model, getOidcUser(), sessionStatus, session);
 
     assertEquals("error", view);
-  }
-
-  @Test
-  @DisplayName("Submissions search results should handle invalid date formats gracefully")
-  void submissionsSearchResultsShouldHandleInvalidDates() {
-    final SubmissionsResultSet response = new SubmissionsResultSet();
-    response.setContent(Collections.emptyList());
-
-    when(oidcAttributeUtils.getUserOffices(any())).thenReturn(List.of("1"));
-    when(claimsRestService.search(anyList(), any(), any(), anyInt(), anyInt(), any()))
-        .thenReturn(Mono.just(response));
-    when(paginationUtil.fromSubmissionsResultSet(response, 0, 10))
-        .thenReturn(new Page().totalElements(0));
-
-    String view =
-        searchController.submissionsSearchResults(
-            0, "1234", "invalid-date", model, getOidcUser(), sessionStatus, session);
-
-    verify(model).addAttribute(eq(SUBMISSION_SEARCH_FORM), any(SubmissionsSearchForm.class));
-    verify(model).addAttribute(eq("pagination"), any(Page.class));
-    verify(model).addAttribute("submissions", response);
-    verify(session).setAttribute("submissions", response);
-    assertEquals("pages/submissions-search-results", view);
   }
 }

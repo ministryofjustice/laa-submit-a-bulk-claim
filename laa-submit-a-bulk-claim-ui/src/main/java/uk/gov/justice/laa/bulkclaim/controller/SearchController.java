@@ -7,7 +7,9 @@ import jakarta.servlet.http.HttpSession;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
+import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -32,7 +34,9 @@ import uk.gov.justice.laa.bulkclaim.dto.SubmissionsSearchForm;
 import uk.gov.justice.laa.bulkclaim.util.OidcAttributeUtils;
 import uk.gov.justice.laa.bulkclaim.util.PaginationUtil;
 import uk.gov.justice.laa.bulkclaim.validation.SubmissionSearchValidator;
+import uk.gov.justice.laa.dstew.payments.claimsdata.model.AreaOfLaw;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.Page;
+import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionStatus;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionsResultSet;
 
 /** Controller for handling search requests related to bulk uploads. */
@@ -65,7 +69,7 @@ public class SearchController {
   @GetMapping("/submissions/search")
   public String search(Model model, SessionStatus sessionStatus) {
     if (!model.containsAttribute(SUBMISSION_SEARCH_FORM)) {
-      model.addAttribute(SUBMISSION_SEARCH_FORM, new SubmissionsSearchForm(null, null));
+      model.addAttribute(SUBMISSION_SEARCH_FORM, new SubmissionsSearchForm(null, null, null, null));
     }
     sessionStatus.setComplete();
     return "pages/submissions-search";
@@ -86,9 +90,6 @@ public class SearchController {
       BindingResult bindingResult,
       Model model) {
 
-    String submissionId = trimToNull(submissionsSearchForm.submissionId());
-    String submissionPeriod = trimToNull(submissionsSearchForm.submissionPeriod());
-
     if (bindingResult.hasErrors()) {
       model.addAttribute(SUBMISSION_SEARCH_FORM, submissionsSearchForm);
       model.addAttribute(BindingResult.MODEL_KEY_PREFIX + SUBMISSION_SEARCH_FORM, bindingResult);
@@ -99,11 +100,24 @@ public class SearchController {
         UriComponentsBuilder.fromPath("/submissions/search/results")
             .queryParam("page", DEFAULT_PAGE);
 
-    if (submissionId != null) {
-      redirectUrl.queryParam("submissionId", submissionId);
-    }
+    String submissionPeriod = trimToNull(submissionsSearchForm.submissionPeriod());
     if (submissionPeriod != null) {
       redirectUrl.queryParam("submissionPeriod", submissionPeriod);
+    }
+
+    AreaOfLaw areaOfLaw = submissionsSearchForm.areaOfLaw();
+    if (areaOfLaw != null) {
+      redirectUrl.queryParam("areaOfLaw", areaOfLaw);
+    }
+
+    List<String> offices = submissionsSearchForm.offices();
+    if (offices != null) {
+      redirectUrl.queryParam("offices", offices);
+    }
+
+    SubmissionStatus submissionStatus = submissionsSearchForm.submissionStatus();
+    if (submissionStatus != null) {
+      redirectUrl.queryParam("submissionStatus", submissionStatus);
     }
 
     return "redirect:" + redirectUrl.build().toUriString();
@@ -113,7 +127,6 @@ public class SearchController {
    * Handles Submission page results.
    *
    * @param page requested page number
-   * @param submissionId submission id filter
    * @param submissionPeriod submission period filter
    * @param model view context model
    * @param oidcUser authenticated user
@@ -124,8 +137,10 @@ public class SearchController {
   @GetMapping("/submissions/search/results")
   public String submissionsSearchResults(
       @RequestParam(value = "page", defaultValue = "0") final int page,
-      @RequestParam(value = "submissionId", required = false) String submissionId,
       @RequestParam(value = "submissionPeriod", required = false) String submissionPeriod,
+      @RequestParam(value = "areaOfLaw", required = false) AreaOfLaw areaOfLaw,
+      @RequestParam(value = "offices", required = false) List<String> offices,
+      @RequestParam(value = "submissionStatus", required = false) SubmissionStatus submissionStatus,
       Model model,
       @AuthenticationPrincipal OidcUser oidcUser,
       SessionStatus sessionStatus,
@@ -134,18 +149,26 @@ public class SearchController {
     sessionStatus.setComplete();
 
     SubmissionsSearchForm submissionsSearchForm =
-        new SubmissionsSearchForm(trimToNull(submissionId), trimToNull(submissionPeriod));
+        new SubmissionsSearchForm(
+            trimToNull(submissionPeriod), areaOfLaw, offices, submissionStatus);
     model.addAttribute(SUBMISSION_SEARCH_FORM, submissionsSearchForm);
 
-    List<String> offices = oidcAttributeUtils.getUserOffices(oidcUser);
+    // TODO: Filter this list rather than user inputed for security
+    List<String> userOffices = oidcAttributeUtils.getUserOffices(oidcUser);
 
     try {
       SubmissionsResultSet submissionsResults =
           claimsRestService
               .search(
-                  offices,
-                  submissionsSearchForm.submissionId(),
+                  userOffices,
                   submissionsSearchForm.submissionPeriod(),
+                  Objects.isNull(submissionsSearchForm.areaOfLaw())
+                      ? null
+                      : submissionsSearchForm.areaOfLaw().getValue(),
+                  Objects.isNull(submissionsSearchForm.submissionStatus())
+                      ? null
+                      : Collections.singletonList(
+                          submissionsSearchForm.submissionStatus().getValue()),
                   page,
                   DEFAULT_PAGE_SIZE,
                   DEFAULT_SEARCH_PAGE_SORT)
