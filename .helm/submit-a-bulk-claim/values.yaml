@@ -135,6 +135,12 @@ env:
         name: laa-submit-a-bulk-claim-secrets
         key: APP_LANDING_DEADLINE_OVERRIDE_MESSAGE
         optional: true
+  - name: SUBMISSION_MINIMUM_PERIOD
+    valueFrom:
+      secretKeyRef:
+        name: laa-submit-a-bulk-claim-secrets
+        key: SUBMISSION_MINIMUM_PERIOD
+        optional: true
 
 extraEnvVars:
   - name: ALLOWED_HOSTS

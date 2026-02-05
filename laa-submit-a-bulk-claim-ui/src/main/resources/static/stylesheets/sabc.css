@@ -1,3 +1,7 @@
 .sabc-govuk-table__cell__bold-bottom{
   border-bottom: 1.5px solid #000 !important;
 }
+
+.govuk-extension__background_white{
+  background-color: white;
+}

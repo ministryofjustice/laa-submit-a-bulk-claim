@@ -9,7 +9,6 @@ import au.com.dius.pact.consumer.junit5.PactConsumerTest;
 import au.com.dius.pact.consumer.junit5.PactTestFor;
 import au.com.dius.pact.core.model.RequestResponsePact;
 import au.com.dius.pact.core.model.annotations.Pact;
-import java.time.LocalDate;
 import java.util.Map;
 import java.util.UUID;
 import lombok.SneakyThrows;
@@ -66,8 +65,7 @@ public final class GetSubmissionsPactTest extends AbstractPactTest {
         .uponReceiving("a search request for submissions")
         .path("/api/v1/submissions")
         .matchQuery("submission_id", UUID_REGEX)
-        .queryMatchingISODate("submitted_date_from")
-        .queryMatchingISODate("submitted_date_to")
+        .matchQuery("submission_period", "([A-Z]{3}-[0-9]{4})")
         .matchQuery("offices", "([A-Z0-9]{6})")
         .matchQuery("page", ANY_NUMBER_REGEX)
         .matchQuery("size", ANY_NUMBER_REGEX)
@@ -124,8 +122,7 @@ public final class GetSubmissionsPactTest extends AbstractPactTest {
         .uponReceiving("a search request for submissions that returns no results")
         .path("/api/v1/submissions")
         .matchQuery("submission_id", UUID_REGEX)
-        .queryMatchingISODate("submitted_date_from")
-        .queryMatchingISODate("submitted_date_to")
+        .matchQuery("submission_period", "([A-Z]{3}-[0-9]{4})")
         .matchQuery("offices", "([A-Z0-9]{6})")
         .matchQuery("page", ANY_NUMBER_REGEX)
         .matchQuery("size", ANY_NUMBER_REGEX)
@@ -152,11 +149,10 @@ public final class GetSubmissionsPactTest extends AbstractPactTest {
   @DisplayName("Verify 200 response")
   @PactTestFor(pactMethod = "getSubmissions200")
   void verify200Response() {
-    LocalDate from = LocalDate.of(2021, 1, 1);
-    LocalDate to = LocalDate.of(2025, 1, 1);
+    String submissionPeriod = "JAN-2025";
     SubmissionsResultSet submission =
         dataClaimsRestClient
-            .search(USER_OFFICES, String.valueOf(SUBMISSION_ID), from, to, 1, 10, "asc")
+            .search(USER_OFFICES, String.valueOf(SUBMISSION_ID), submissionPeriod, 1, 10, "asc")
             .block();
 
     assertThat(submission.getContent().size()).isEqualTo(1);
@@ -166,11 +162,10 @@ public final class GetSubmissionsPactTest extends AbstractPactTest {
   @DisplayName("Verify 200 response empty")
   @PactTestFor(pactMethod = "getSubmissionsEmpty200")
   void verify200ResponseEmpty() {
-    LocalDate from = LocalDate.of(2021, 1, 1);
-    LocalDate to = LocalDate.of(2025, 1, 1);
+    String submissionPeriod = "JAN-2025";
     SubmissionsResultSet submission =
         dataClaimsRestClient
-            .search(USER_OFFICES, String.valueOf(SUBMISSION_ID), from, to, 1, 10, "asc")
+            .search(USER_OFFICES, String.valueOf(SUBMISSION_ID), submissionPeriod, 1, 10, "asc")
             .block();
 
     assertThat(submission.getContent().isEmpty()).isTrue();
