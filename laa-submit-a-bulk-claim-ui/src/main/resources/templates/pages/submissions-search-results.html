@@ -2,6 +2,7 @@
 <html lang="en" class="govuk-template" xmlns:th="http://www.thymeleaf.org"
       th:replace="~{ layout/main-layout :: layout(#{search.title},~{::main},~{}, 'search-submissions')}">
 <main class="govuk-main-wrapper" id="main-content">
+
   <div class="govuk-width-container">
 
     <div class="govuk-grid-row">
@@ -12,73 +13,151 @@
         <div class="govuk-grid-column-full">
           <div th:replace="~{fragments/error-components :: error-summary}"/>
         </div>
+
         <div class="govuk-grid-column-full" data-module="laa-print-button">
           <h1 class="govuk-heading-l" th:text="#{search.title}"></h1>
         </div>
 
         <div class="govuk-grid-column-full">
-          <th:block th:insert="~{fragments/submission-search :: form(${submissionsSearchForm})}"/>
+          <div class="moj-filter-layout">
+            <div class="moj-filter-layout__filter">
+              <div class="moj-filter" data-module="moj-filter">
+                <div class="moj-filter__header">
+                  <div class="moj-filter__header-title">
+                    <h2 class="govuk-heading-m" th:text="#{search.filter.subheading}">Filter</h2>
+                  </div>
+                  <div class="moj-filter__header-action">
+                  </div>
+                </div>
+                <div class="moj-filter__content">
+                  <div class="moj-filter__selected">
+                    <div class="moj-filter__selected-heading">
+                      <div class="moj-filter__heading-title">
+                        <h2 class="govuk-heading-m" th:text="#{search.filter.selected}"></h2>
+                      </div>
+                      <div class="moj-filter__heading-action">
+                        <p><a class="govuk-link govuk-link--no-visited-state"
+                              th:href="@{/submissions/search}"
+                              th:text="#{search.filter.clear}"></a></p>
+                      </div>
+                    </div>
+                    <th:block th:if="${submissionsSearchForm.submissionPeriod}">
+                      <h3 class="govuk-heading-s govuk-!-margin-bottom-0"
+                          th:text="#{search.submissionPeriod}"></h3>
+                      <ul class="moj-filter-tags">
+                        <li>
+                          <a class="moj-filter__tag" href="#"><span class="govuk-visually-hidden"
+                                                                    th:text="#{search.filter.removeFilter}"></span>
+                            <th:block
+                                th:text="${submissionsSearchForm.submissionPeriod}"></th:block>
+                          </a>
+                        </li>
+                      </ul>
+                    </th:block>
+                    <th:block th:unless="${#arrays.isEmpty(submissionsSearchForm.offices())}">
+
+                      <h3 class="govuk-heading-s govuk-!-margin-bottom-0"
+                          th:text="#{search.offices}"></h3>
+                      <ul class="moj-filter-tags">
+                        <li th:each="office : ${submissionsSearchForm.offices()}">
+                          <a class="moj-filter__tag" href="#"><span class="govuk-visually-hidden"
+                                                                    th:text="#{search.filter.removeFilter}"></span>
+                            <th:block th:text="${office}"></th:block>
+                          </a>
+                        </li>
+                      </ul>
+                    </th:block>
+                  </div>
+                  <div class="moj-filter__options">
+                    <button
+                        type="submit"
+                        class="govuk-button"
+                        data-module="govuk-button"
+                        id="searchButton"
+                        data-govuk-button-init=""
+                        th:text="#{search.filter.apply}">
+                    </button>
+
+                    <th:block
+                        th:insert="~{fragments/submission-search :: form(${submissionsSearchForm})}"/>
+
+
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="moj-filter-layout__content">
+              <div class="moj-action-bar">
+                <div class="moj-action-bar__filter"></div>
+              </div>
+              <div class="moj-scrollable-pane">
+                <p class="govuk-body" th:if="${#lists.isEmpty(submissions.content)}">
+                  No submissions were found.
+                </p>
+                <h2 class="govuk-heading-m govuk-!-margin-bottom-0"
+                    th:if="${!#lists.isEmpty(submissions.content)}"
+                    th:text="#{search.result.heading(${submissions.totalElements})}">
+                </h2>
+                <br>
+                <div class="upload-table" th:if="${!#lists.isEmpty(submissions.content)}">
+
+                  <table class="govuk-table" data-module="moj-sortable-table">
+                    <thead class="govuk-table__head">
+                    <tr class="govuk-table__row">
+                      <th scope="col" class="govuk-table__header" aria-sort="descending"
+                          th:text="#{search.result.header.submission}">
+                      <th scope="col" class="govuk-table__header" aria-sort="none"
+                          th:text="#{search.result.header.office}">
+                      <th scope="col" class="govuk-table__header" aria-sort="none"
+                          th:text="#{search.result.header.area}">
+                      <th scope="col" class="govuk-table__header" aria-sort="none"
+                          th:text="#{search.result.header.submissionPeriod}">
+                      <th scope="col" class="govuk-table__header" aria-sort="none"
+                          th:text="#{common.status}">
+                    </tr>
+                    </thead>
+                    <tbody class="govuk-table__body">
+
+                    <tr class="govuk-table__row" th:each="submission : ${submissions.getContent}">
+                      <td class="govuk-table__cell">
+                        <a class="govuk-link--no-visited-state"
+                           th:href="@{/submission/{submission_ref}(submission_ref=${submission.getSubmissionId})}"
+                           th:text="${submission.getSubmitted != null ?
+                           #temporals.format(submission.getSubmitted, 'dd MMM yyyy ''at'' HH:mm:ss') :
+                           #strings.substring(submission.getSubmissionId, 24, 36)}">
+                        </a>
+                      </td>
+                      <td class="govuk-table__cell"
+                          th:text="${submission.getOfficeAccountNumber != null ? submission.getOfficeAccountNumber : '-'}">
+                      </td>
+                      <td class="govuk-table__cell"
+                          th:text="${submission.getAreaOfLaw != null ? #strings.capitalize(#strings.toLowerCase(submission.getAreaOfLaw)) : '-' }"></td>
+
+                      <td class="govuk-table__cell"
+                          th:data-sort-value="${@submissionPeriodUtil.getSortOrderFromSubmissionPeriod(submission)}"
+                          th:text="${@submissionPeriodUtil.getSubmissionPeriod(submission)}"></td>
+                      <td class="govuk-table__cell" th:text="${submission.getStatus != null ?
+                                   #strings.replace(#strings.capitalize(#strings.toLowerCase(submission.getStatus)), '_', ' ') : '-' }"></td>
+                    </tr>
+                    </tbody>
+                  </table>
+
+                </div>
+
+              </div>
+              <nav th:replace="~{fragments/pagination :: pagination(currentUrl='/submissions/search/results', page=${pagination},
+                                    submissionPeriod=${submissionsSearchForm.submissionPeriod()},
+                                    areaOfLaw=${submissionsSearchForm.areaOfLaw()},
+                                    offices=${submissionsSearchForm.offices()},
+                                    submissionStatus=${submissionsSearchForm.submissionStatus()})}"></nav>
+            </div>
+
+          </div>
+
         </div>
+
       </form>
 
-      <div class="govuk-grid-column-full">
-        <p class="govuk-body" th:if="${#lists.isEmpty(submissions.content)}">
-          No submissions were found.
-        </p>
-        <h2 class="govuk-heading-m govuk-!-margin-bottom-0"
-            th:if="${!#lists.isEmpty(submissions.content)}"
-            th:text="#{search.result.heading(${submissions.totalElements})}">
-        </h2>
-        <br>
-        <div class="upload-table" th:if="${!#lists.isEmpty(submissions.content)}">
-          <table class="govuk-table" data-module="moj-sortable-table">
-            <thead class="govuk-table__head">
-            <tr class="govuk-table__row">
-              <th scope="col" class="govuk-table__header" aria-sort="descending"
-                  th:text="#{search.result.header.submission}">
-              <th scope="col" class="govuk-table__header" aria-sort="none"
-                  th:text="#{search.result.header.office}">
-              <th scope="col" class="govuk-table__header" aria-sort="none"
-                  th:text="#{search.result.header.area}">
-              <th scope="col" class="govuk-table__header" aria-sort="none"
-                  th:text="#{search.result.header.submissionPeriod}">
-              <th scope="col" class="govuk-table__header" aria-sort="none"
-                  th:text="#{common.status}">
-            </tr>
-            </thead>
-            <tbody class="govuk-table__body">
-
-            <tr class="govuk-table__row" th:each="submission : ${submissions.getContent}">
-              <td class="govuk-table__cell">
-                <a class="govuk-link--no-visited-state"
-                   th:href="@{/submission/{submission_ref}(submission_ref=${submission.getSubmissionId})}"
-                   th:text="${submission.getSubmitted != null ?
-                     #temporals.format(submission.getSubmitted, 'dd MMM yyyy ''at'' HH:mm:ss') :
-                     #strings.substring(submission.getSubmissionId, 24, 36)}">
-                </a>
-              </td>
-              <td class="govuk-table__cell"
-                  th:text="${submission.getOfficeAccountNumber != null ? submission.getOfficeAccountNumber : '-'}">
-              </td>
-              <td class="govuk-table__cell"
-                  th:text="${submission.getAreaOfLaw != null ? #strings.capitalize(#strings.toLowerCase(submission.getAreaOfLaw)) : '-' }"></td>
-
-              <td class="govuk-table__cell"
-                  th:data-sort-value="${@submissionPeriodUtil.getSortOrderFromSubmissionPeriod(submission)}"
-                  th:text="${@submissionPeriodUtil.getSubmissionPeriod(submission)}"></td>
-              <td class="govuk-table__cell" th:text="${submission.getStatus != null ?
-                             #strings.replace(#strings.capitalize(#strings.toLowerCase(submission.getStatus)), '_', ' ') : '-' }"></td>
-            </tr>
-            </tbody>
-          </table>
-          <nav th:replace="~{fragments/pagination :: pagination(currentUrl='/submissions/search/results', page=${pagination},
-                              submissionPeriod=${submissionsSearchForm.submissionPeriod()},
-                              areaOfLaw=${submissionsSearchForm.areaOfLaw()},
-                              offices=${submissionsSearchForm.offices()},
-                              submissionStatus=${submissionsSearchForm.submissionStatus()})}"></nav>
-        </div>
-
-      </div>
     </div>
 
 
