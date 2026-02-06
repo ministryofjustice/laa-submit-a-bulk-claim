@@ -71,8 +71,10 @@ public class SearchController {
       Model model, SessionStatus sessionStatus, @AuthenticationPrincipal OidcUser oidcUser) {
     List<String> userOffices = oidcAttributeUtils.getUserOffices(oidcUser);
     if (!model.containsAttribute(SUBMISSION_SEARCH_FORM)) {
+      // Only submissionStatus has to be set to "All" as default to select the default radio
+      // option on the frontend.
       model.addAttribute(
-          SUBMISSION_SEARCH_FORM, new SubmissionsSearchForm(null, null, userOffices, null));
+          SUBMISSION_SEARCH_FORM, new SubmissionsSearchForm(null, null, userOffices, "All"));
     }
     model.addAttribute("userOffices", userOffices);
     sessionStatus.setComplete();
@@ -89,6 +91,7 @@ public class SearchController {
    */
   @PostMapping("/submissions/search")
   public String handleSearch(
+      @AuthenticationPrincipal OidcUser oidcUser,
       @Validated @ModelAttribute(SUBMISSION_SEARCH_FORM)
           SubmissionsSearchForm submissionsSearchForm,
       BindingResult bindingResult,
@@ -97,6 +100,9 @@ public class SearchController {
     if (bindingResult.hasErrors()) {
       model.addAttribute(SUBMISSION_SEARCH_FORM, submissionsSearchForm);
       model.addAttribute(BindingResult.MODEL_KEY_PREFIX + SUBMISSION_SEARCH_FORM, bindingResult);
+      List<String> userOffices = oidcAttributeUtils.getUserOffices(oidcUser);
+      model.addAttribute("userOffices", userOffices);
+
       return "pages/submissions-search";
     }
 
@@ -122,6 +128,8 @@ public class SearchController {
     String submissionStatus = trimToNull(submissionsSearchForm.submissionStatus());
     if (submissionStatus != null) {
       redirectUrl.queryParam("submissionStatus", submissionStatus);
+    } else {
+      redirectUrl.queryParam("submissionStatus", "All");
     }
 
     return "redirect:" + redirectUrl.build().toUriString();
@@ -199,7 +207,7 @@ public class SearchController {
       return null;
     }
     try {
-      return AreaOfLaw.fromValue(submissionsSearchForm.areaOfLaw());
+      return AreaOfLaw.fromValue(submissionsSearchForm.areaOfLaw().replace("_", " ").toUpperCase());
     } catch (IllegalArgumentException e) {
       return null;
     }

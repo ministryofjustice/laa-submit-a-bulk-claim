@@ -2,6 +2,10 @@
   <div class="search-panel govuk-!-margin-bottom-6">
     <div class="govuk-grid-row">
 
+      <div class="govuk-grid-column-full">
+        <h2 class="govuk-heading-m" th:text="#{search.filter.subheading}"></h2>
+      </div>
+
       <div class="govuk-grid-column-one-third">
 
         <fieldset class="govuk-fieldset">
@@ -34,7 +38,7 @@
             <select class="govuk-select" id="area-of-law"
                     th:field="*{areaOfLaw}">
 
-              <option value="All" selected>All</option>
+              <option value="" th:text="#{search.error.areaOfLaw.all}" selected>All</option>
               <option
                   th:with="value=${T(uk.gov.justice.laa.dstew.payments.claimsdata.model.AreaOfLaw).LEGAL_HELP}"
                   th:value="${value.name()}"
@@ -65,7 +69,8 @@
                 </legend>
                 <div class="govuk-radios govuk-radios--small" data-module="govuk-radios">
                   <div class="govuk-radios__item">
-                    <input class="govuk-radios__input" id="all-radio-option" th:field="*{submissionStatus}" type="radio" checked value="">
+                    <input class="govuk-radios__input" id="all-radio-option" th:field="*{submissionStatus}" type="radio"
+                           th:value="All">
                     <label class="govuk-label govuk-radios__label" for="all-radio-option"
                            th:text="#{search.outcome.all}"></label>
                   </div>
@@ -132,19 +137,10 @@
 
           </div>
         </details>-->
-
-        <details class="govuk-details">
-          <summary class="govuk-details__summary">
-            <span class="govuk-details__summary-text">
-              Filter by office (small selects)
-            </span>
-          </summary>
-          <div class="govuk-details__text">
-
             <div class="govuk-form-group">
               <fieldset class="govuk-fieldset">
-                <legend class="govuk-fieldset__legend govuk-fieldset__legend--s">
-                  Offices
+                <legend class="govuk-fieldset__legend govuk-fieldset__legend--s"
+                  th:text="#{search.offices}">
                 </legend>
                 <div class="govuk-checkboxes govuk-checkboxes--small" data-module="govuk-checkboxes">
                   <th:block  th:each="office,idx : ${userOffices}">
@@ -162,10 +158,6 @@
                 </div>
               </fieldset>
             </div>
-
-
-          </div>
-        </details>
       </div>
 
       <div class="govuk-grid-column-full">

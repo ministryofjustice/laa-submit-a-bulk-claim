@@ -74,7 +74,7 @@ class SearchControllerTest {
         SubmissionsSearchForm.builder().submissionPeriod("01/01/2024").build();
     final Model localModel = new ExtendedModelMap();
 
-    String view = searchController.handleSearch(form, bindingResult, localModel);
+    String view = searchController.handleSearch(getOidcUser(), form, bindingResult, localModel);
 
     assertEquals("pages/submissions-search", view);
     assertEquals(form, localModel.getAttribute("submissionsSearchForm"));
@@ -93,7 +93,7 @@ class SearchControllerTest {
             .build();
     final Model localModel = new ExtendedModelMap();
 
-    String view = searchController.handleSearch(form, bindingResult, localModel);
+    String view = searchController.handleSearch(getOidcUser(), form, bindingResult, localModel);
 
     assertEquals(
         "redirect:/submissions/search/results?page=0&submissionPeriod=JAN-2024&areaOfLaw=CRIME "

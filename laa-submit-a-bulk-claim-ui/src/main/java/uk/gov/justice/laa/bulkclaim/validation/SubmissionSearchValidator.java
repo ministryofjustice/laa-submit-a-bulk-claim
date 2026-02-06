@@ -22,9 +22,9 @@ import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionStatus;
  *   <li>Validates the submission status to ensure it matches one of the predefined options.
  * </ul>
  *
- * <p>Does not handle office validation, as
- * {@link uk.gov.justice.laa.bulkclaim.controller.SearchController} already
- * filters out offices which the user is not part of.</p>
+ * <p>Does not handle office validation, as {@link
+ * uk.gov.justice.laa.bulkclaim.controller.SearchController} already filters out offices which the
+ * user is not part of.
  *
  * <p>Errors and validation failures are reported using the {@code Errors} interface.
  *
@@ -49,9 +49,7 @@ public class SubmissionSearchValidator implements Validator {
     return SubmissionsSearchForm.class.isAssignableFrom(clazz);
   }
 
-  /**
-   * Validates the submission's search form inputs.
-   */
+  /** Validates the submission's search form inputs. */
   @Override
   public void validate(Object target, Errors errors) {
     SubmissionsSearchForm form = (SubmissionsSearchForm) target;
@@ -76,7 +74,7 @@ public class SubmissionSearchValidator implements Validator {
   private void validateAreaOfLaw(Errors errors, SubmissionsSearchForm form) {
     if (!StringUtils.isEmpty(form.areaOfLaw())) {
       try {
-        AreaOfLaw.fromValue(form.areaOfLaw());
+        AreaOfLaw.fromValue(form.areaOfLaw().replace("_", " "));
       } catch (IllegalArgumentException e) {
         errors.rejectValue(
             AREA_OF_LAW,
@@ -87,13 +85,13 @@ public class SubmissionSearchValidator implements Validator {
   }
 
   private void validateSubmissionStatus(Errors errors, SubmissionsSearchForm form) {
-    if (!StringUtils.isEmpty(form.submissionStatus())) {
+    if (!StringUtils.isEmpty(form.submissionStatus()) && !"All".equals(form.submissionStatus())) {
       try {
         SubmissionStatus.fromValue(form.submissionStatus());
       } catch (IllegalArgumentException e) {
         errors.rejectValue(
             SUBMISSION_STATUS,
-            "search.error.submissionStatus.invalid",
+            "search.error.submissionOutcome.invalid",
             "Area of law must be one of the following: " + AreaOfLaw.values());
       }
     }
