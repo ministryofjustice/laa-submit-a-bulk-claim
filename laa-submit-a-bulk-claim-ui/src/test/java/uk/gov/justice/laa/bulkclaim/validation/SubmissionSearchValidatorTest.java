@@ -161,6 +161,19 @@ class SubmissionSearchValidatorTest {
       assertFalse(errors.hasFieldErrors(SUBMISSION_STATUS));
     }
 
+    @Test
+    @DisplayName("Should have no errors when submission status is 'All'")
+    void shouldHaveNoErrorsWhenSubmissionStatusIsAll() {
+      // Given
+      SubmissionsSearchForm form = SubmissionsSearchForm.builder().submissionStatus("All").build();
+      final BindingResult errors = new BeanPropertyBindingResult(form, "submissionsSearchForm");
+
+      // When
+      validator.validate(form, errors);
+      // Then
+      assertFalse(errors.hasFieldErrors(SUBMISSION_STATUS));
+    }
+
     @ParameterizedTest
     @NullAndEmptySource
     @DisplayName("Should have no errors when submission status empty")
@@ -190,7 +203,7 @@ class SubmissionSearchValidatorTest {
       // Then
       assertTrue(errors.hasFieldErrors(SUBMISSION_STATUS));
       assertEquals(
-          "search.error.submissionStatus.invalid",
+          "search.error.submissionOutcome.invalid",
           errors.getFieldError(SUBMISSION_STATUS).getCode());
     }
   }
