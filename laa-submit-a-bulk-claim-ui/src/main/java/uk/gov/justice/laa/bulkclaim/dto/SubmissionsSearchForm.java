@@ -2,8 +2,6 @@ package uk.gov.justice.laa.bulkclaim.dto;
 
 import java.util.List;
 import lombok.Builder;
-import uk.gov.justice.laa.dstew.payments.claimsdata.model.AreaOfLaw;
-import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionStatus;
 
 /**
  * DTO to hold claims search form values.
@@ -15,7 +13,4 @@ import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionStatus;
  */
 @Builder
 public record SubmissionsSearchForm(
-    String submissionPeriod,
-    AreaOfLaw areaOfLaw,
-    List<String> offices,
-    SubmissionStatus submissionStatus) {}
+    String submissionPeriod, String areaOfLaw, List<String> offices, String submissionStatus) {}
