@@ -113,14 +113,3 @@ volumeMounts:
     readOnly: true
     mountPath: /config/application-mock-oidc.yml
     subPath: application-mock-oidc.yml
-
-downtime:
-  scheduler:
-    enabled: false
-  page:
-    enabled: true
-    port: 8080
-    replicas: 1
-    system:
-      name: "Submit a bulk claim"
-      url: "https://submit-a-bulk-claim.laa.service.justice.gov.uk"
