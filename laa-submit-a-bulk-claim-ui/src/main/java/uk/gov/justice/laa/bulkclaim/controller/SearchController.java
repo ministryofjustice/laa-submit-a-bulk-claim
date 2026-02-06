@@ -70,15 +70,42 @@ public class SearchController {
   public String search(
       Model model, SessionStatus sessionStatus, @AuthenticationPrincipal OidcUser oidcUser) {
     List<String> userOffices = oidcAttributeUtils.getUserOffices(oidcUser);
+    // Only submissionStatus has to be set to "All" as default to select the default radio
+    // option on the frontend.
+    SubmissionsSearchForm submissionsSearchForm = new SubmissionsSearchForm(null, null, userOffices, "All");
     if (!model.containsAttribute(SUBMISSION_SEARCH_FORM)) {
-      // Only submissionStatus has to be set to "All" as default to select the default radio
-      // option on the frontend.
       model.addAttribute(
-          SUBMISSION_SEARCH_FORM, new SubmissionsSearchForm(null, null, userOffices, "All"));
+          SUBMISSION_SEARCH_FORM, submissionsSearchForm);
     }
     model.addAttribute("userOffices", userOffices);
     sessionStatus.setComplete();
-    return "pages/submissions-search";
+    UriComponentsBuilder redirectUrl =
+        UriComponentsBuilder.fromPath("/submissions/search/results")
+            .queryParam("page", DEFAULT_PAGE);
+
+    String submissionPeriod = trimToNull(submissionsSearchForm.submissionPeriod());
+    if (submissionPeriod != null) {
+      redirectUrl.queryParam("submissionPeriod", submissionPeriod);
+    }
+
+    String areaOfLaw = trimToNull(submissionsSearchForm.areaOfLaw());
+    if (areaOfLaw != null) {
+      redirectUrl.queryParam("areaOfLaw", areaOfLaw);
+    }
+
+    List<String> offices = submissionsSearchForm.offices();
+    if (offices != null) {
+      redirectUrl.queryParam("offices", offices);
+    }
+
+    String submissionStatus = trimToNull(submissionsSearchForm.submissionStatus());
+    if (submissionStatus != null) {
+      redirectUrl.queryParam("submissionStatus", submissionStatus);
+    } else {
+      redirectUrl.queryParam("submissionStatus", "All");
+    }
+
+    return "redirect:" + redirectUrl.build().toUriString();
   }
 
   /**
@@ -103,6 +130,7 @@ public class SearchController {
       List<String> userOffices = oidcAttributeUtils.getUserOffices(oidcUser);
       model.addAttribute("userOffices", userOffices);
 
+      // TODO: How do I handle this whilst using a filter?
       return "pages/submissions-search";
     }
 
