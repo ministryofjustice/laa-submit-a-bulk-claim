@@ -73,7 +73,7 @@ jobs:
       id-token: write
     with:
       jar_subproject: 'laa-submit-a-bulk-claim-ui'
-      image_version: ${{ format('{0}-{1}', vars.IMAGE_PREFIX, needs.assemble.outputs.published_artifact_version) }}
+      image_version: ${{ format('{0}-{1}', vars.IMAGE_PREFIX, needs.build-and-test.outputs.published_artifact_version) }}
     secrets:
       gh_token: ${{ secrets.GITHUB_TOKEN }}
       ecr_repository: ${{ vars.ECR_REPOSITORY }}
