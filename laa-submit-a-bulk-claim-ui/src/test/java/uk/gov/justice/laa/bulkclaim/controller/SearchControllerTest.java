@@ -59,7 +59,7 @@ class SearchControllerTest {
   void searchShouldAddFormIfNotPresent() {
     when(model.containsAttribute("submissionsSearchForm")).thenReturn(false);
 
-    String view = searchController.search(model, sessionStatus);
+    String view = searchController.search(model, sessionStatus, getOidcUser());
 
     verify(model).addAttribute(eq("submissionsSearchForm"), any(SubmissionsSearchForm.class));
     verify(sessionStatus).setComplete();
@@ -87,9 +87,9 @@ class SearchControllerTest {
     final SubmissionsSearchForm form =
         SubmissionsSearchForm.builder()
             .submissionPeriod("JAN-2024")
-            .areaOfLaw(AreaOfLaw.CRIME_LOWER)
+            .areaOfLaw(AreaOfLaw.CRIME_LOWER.getValue())
             .offices(List.of("12345"))
-            .submissionStatus(SubmissionStatus.CREATED)
+            .submissionStatus(SubmissionStatus.CREATED.getValue())
             .build();
     final Model localModel = new ExtendedModelMap();
 
@@ -121,9 +121,9 @@ class SearchControllerTest {
         searchController.submissionsSearchResults(
             0,
             "JAN-2024",
-            AreaOfLaw.CRIME_LOWER,
+            AreaOfLaw.CRIME_LOWER.name(),
             Collections.emptyList(),
-            SubmissionStatus.CREATED,
+            SubmissionStatus.CREATED.name(),
             model,
             getOidcUser(),
             sessionStatus,

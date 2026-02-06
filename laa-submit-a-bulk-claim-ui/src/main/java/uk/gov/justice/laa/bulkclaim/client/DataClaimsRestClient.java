@@ -13,12 +13,14 @@ import org.springframework.web.service.annotation.GetExchange;
 import org.springframework.web.service.annotation.HttpExchange;
 import org.springframework.web.service.annotation.PostExchange;
 import reactor.core.publisher.Mono;
+import uk.gov.justice.laa.dstew.payments.claimsdata.model.AreaOfLaw;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.ClaimResponse;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.ClaimResultSet;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.CreateBulkSubmission201Response;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.MatterStartGet;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.MatterStartResultSet;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionResponse;
+import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionStatus;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionsResultSet;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.ValidationMessagesResponse;
 
@@ -60,8 +62,9 @@ public interface DataClaimsRestClient {
   Mono<SubmissionsResultSet> search(
       @RequestParam(value = "offices") List<String> offices,
       @RequestParam(value = "submission_period", required = false) String submissionPeriod,
-      @RequestParam(value = "area_of_law", required = false) String areaOfLaw,
-      @RequestParam(value = "submissionStatus", required = false) List<String> submissionStatus,
+      @RequestParam(value = "area_of_law", required = false) AreaOfLaw areaOfLaw,
+      @RequestParam(value = "submission_statuses", required = false)
+          List<SubmissionStatus> submissionStatus,
       @RequestParam(value = "page", required = false, defaultValue = "0") Integer page,
       @RequestParam(value = "size", required = false, defaultValue = "10") Integer size,
       @RequestParam(value = "sort", required = false) String sort);
