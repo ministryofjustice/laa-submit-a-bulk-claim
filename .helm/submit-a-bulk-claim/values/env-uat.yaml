@@ -1,6 +1,6 @@
 replicas: 1
 metrics:
-  mainReleaseName: staging
+  mainReleaseName: uat
 ingress:
   externalRoute:
     enabled: true
@@ -26,3 +26,8 @@ downtime:
     system:
       name: "Submit a bulk claim"
       url: "https://submit-a-bulk-claim.laa.service.justice.gov.uk"
+      
+sentry:
+  enabled: true
+  environment: uat
+  tracesSampleRate: 0.25

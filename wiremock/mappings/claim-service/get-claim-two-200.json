@@ -1,7 +1,7 @@
 {
   "request": {
     "method": "GET",
-    "urlPathPattern": "/api/v0/submissions/[a-f0-9\\-]+/claims/[a-f0-9\\-]+"
+    "urlPathPattern": "/api/v1/submissions/[a-f0-9\\-]+/claims/[a-f0-9\\-]+"
   },
   "scenarioName": "get claim",
   "requiredScenarioState": "claim-two",
@@ -111,8 +111,7 @@
       "ait_hearing_centre_code": "string",
       "is_substantive_hearing": true,
       "ho_interview": 0,
-      "local_authority_number": "string",
-      "total_value": "562.32"
+      "local_authority_number": "string"
     }
   }
 }

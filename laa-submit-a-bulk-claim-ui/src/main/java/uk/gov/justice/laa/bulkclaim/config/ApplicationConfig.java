@@ -1,13 +1,14 @@
 package uk.gov.justice.laa.bulkclaim.config;
 
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.client.RestClient;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.springframework.web.servlet.resource.LiteWebJarsResourceResolver;
+import tools.jackson.databind.DeserializationFeature;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.json.JsonMapper;
 
 /**
  * Adds application config regarding webjar locations.
@@ -38,8 +39,17 @@ public class ApplicationConfig implements WebMvcConfigurer {
     return builder.build();
   }
 
+  /**
+   * Creates and configures an instance of {@link ObjectMapper}. The configured {@link ObjectMapper}
+   * is built to ignore unknown properties during deserialization by disabling the {@link
+   * DeserializationFeature#FAIL_ON_UNKNOWN_PROPERTIES} feature.
+   *
+   * @return a configured {@link ObjectMapper} instance
+   */
   @Bean
   public ObjectMapper objectMapper() {
-    return new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+    return JsonMapper.builder()
+        .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
+        .build();
   }
 }

@@ -105,7 +105,6 @@ class SubmissionClaimRowMapperTest {
             .disbursementsVatAmount(new BigDecimal("17.50"))
             .netWaitingCostsAmount(new BigDecimal("400.40"))
             .travelWaitingCostsAmount(new BigDecimal("500.50"))
-            .totalValue(new BigDecimal("1234.56"))
             .feeCalculationResponse(
                 FeeCalculationPatch.builder().totalAmount(new BigDecimal("1234.56")).build())
             .build();

@@ -3,10 +3,12 @@ package uk.gov.justice.laa.bulkclaim.config;
 import io.prometheus.metrics.model.registry.PrometheusRegistry;
 import org.mockito.Mockito;
 import org.springframework.boot.test.context.TestConfiguration;
+import org.springframework.cache.CacheManager;
 import org.springframework.context.annotation.Bean;
 import org.springframework.web.client.RestClient;
 import uk.gov.justice.laa.bulkclaim.metrics.BulkClaimMetricService;
 import uk.gov.justice.laa.bulkclaim.util.CurrencyUtil;
+import uk.gov.justice.laa.bulkclaim.util.ThymeleafHrefUtils;
 
 /**
  * Test configuration for Spring MVC tests. Handles creating beans which otherwise would not be
@@ -43,5 +45,34 @@ public class WebMvcTestConfig {
   @Bean
   BulkClaimMetricService bulkClaimMetricService(PrometheusRegistry prometheusRegistry) {
     return new BulkClaimMetricService(prometheusRegistry);
+  }
+
+  @Bean
+  CacheManager cacheManager() {
+    return Mockito.mock(CacheManager.class);
+  }
+
+  @Bean
+  ThymeleafHrefUtils thymeleafHrefUtils() {
+    return new ThymeleafHrefUtils();
+  }
+
+  /**
+   * This disabled the host header handling filter for tests
+   *
+   * @return
+   */
+  @Bean
+  public HostValidationFilter hostValidationFilter() {
+    return new HostValidationFilter(null) {
+      @Override
+      protected void doFilterInternal(
+          jakarta.servlet.http.HttpServletRequest request,
+          jakarta.servlet.http.HttpServletResponse response,
+          jakarta.servlet.FilterChain filterChain)
+          throws jakarta.servlet.ServletException, java.io.IOException {
+        filterChain.doFilter(request, response);
+      }
+    };
   }
 }

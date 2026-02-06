@@ -9,6 +9,10 @@ on:
       deployment_name:
         required: true
         type: string
+      claim_api_environment_name:
+        required: true
+        type: string
+        description: The name of the environment which Claims API is deployed to
       image_tag:
         required: true
         type: string
@@ -22,37 +26,100 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v6
 
+      - name: Set branch name
+        run: echo "GIT_BRANCH=${GITHUB_HEAD_REF:-${GITHUB_REF_NAME}}" >> $GITHUB_ENV
+
+      - name: Can I deploy?
+        id: can-i-deploy
+        uses: ministryofjustice/laa-ccms-common-workflows/.github/actions/pact-can-i-deploy@story/pact-publish
+        with:
+          pacticipant: 'laa-submit-a-bulk-claim'
+          environment: ${{ inputs.claim_api_environment_name }}
+          pact_broker_url: 'https://laa-data-pact-broker.apps.live.cloud-platform.service.justice.gov.uk/'
+          pact_broker_username: ${{ secrets.pact_broker_username }}
+          pact_broker_password: ${{ secrets.pact_broker_password }}
+
       - name: Authenticate to the cluster
         run: |
+          set -euo pipefail
+          IFS=$'\n\t'
           echo "${{ secrets.kube_cert }}" > ca.crt
-          kubectl config set-cluster ${{ secrets.KUBE_CLUSTER }} --certificate-authority=./ca.crt --server=https://${{ secrets.KUBE_CLUSTER }}
-          kubectl config set-credentials deploy-user --token=${{ secrets.KUBE_TOKEN }}
-          kubectl config set-context ${{ secrets.KUBE_CLUSTER }} --cluster=${{ secrets.KUBE_CLUSTER }} --user=deploy-user --namespace=${{ secrets.KUBE_NAMESPACE }}
-          kubectl config use-context ${{ secrets.KUBE_CLUSTER }}
+          kubectl config set-cluster "${{ secrets.KUBE_CLUSTER }}" --certificate-authority=./ca.crt --server=https://"${{ secrets.KUBE_CLUSTER }}"
+          kubectl config set-credentials deploy-user --token="${{ secrets.KUBE_TOKEN }}"
+          kubectl config set-context "${{ secrets.KUBE_CLUSTER }}" --cluster="${{ secrets.KUBE_CLUSTER }}" --user=deploy-user --namespace="${{ secrets.KUBE_NAMESPACE }}"
+          kubectl config use-context "${{ secrets.KUBE_CLUSTER }}"
 
       - name: Configure aws credentials
         uses: aws-actions/configure-aws-credentials@v5
         with:
-          role-to-assume: ${{ secrets.ecr_role_to_assume }}
-          aws-region: ${{ vars.ECR_REGION }}
+          role-to-assume: "${{ secrets.ecr_role_to_assume }}"
+          aws-region: "${{ vars.ECR_REGION }}"
 
       - name: Login ecr
         uses: aws-actions/amazon-ecr-login@v2
         id: login-ecr
 
       - name: Set helm chart app version
+        env:
+          IMAGE_TAG: "${{ inputs.image_tag }}"
+          DEPLOYMENT_NAME: "${{ inputs.deployment_name }}"
         run: |
-          yq eval-all "( .appVersion = \"${{ inputs.image_tag }}\" )" -i helm-chart/Chart.yaml
-          cat helm-chart/Chart.yaml
+          set -euo pipefail
+          IFS=$'\n\t'
+          
+          # Validation: Fail early with clear messaging
+          if [[ ! "$IMAGE_TAG" =~ ^[A-Za-z0-9._-]+$ ]]; then
+            echo "::error::Invalid image_tag format: '$IMAGE_TAG'. Tags must only contain alphanumeric characters, dots, underscores, or hyphens."
+            exit 1
+          fi
+
+          if [[ ! "$DEPLOYMENT_NAME" =~ ^[a-z0-9-]+$ ]]; then
+            echo "::error::Invalid deployment_name: '$DEPLOYMENT_NAME'. Helm releases must be lowercase alphanumeric or hyphens."
+            exit 1
+          fi
+          
+          yq eval '.appVersion = env(IMAGE_TAG)' -i .helm/submit-a-bulk-claim/Chart.yaml
+          cat .helm/submit-a-bulk-claim/Chart.yaml
 
       - name: Install or upgrade helm charts
         id: helm-install
+        env:
+          DEPLOYMENT_NAME: "${{ inputs.deployment_name }}"
+          ENVIRONMENT: "${{ inputs.environment }}"
+          REGISTRY: "${{ steps.login-ecr.outputs.registry }}"
+          ECR_REPOSITORY: "${{ vars.ECR_REPOSITORY }}"
         run: |
-          echo "Deploying Helm release '${{ inputs.deployment_name }}'..."
+          set -euo pipefail
+          IFS=$'\n\t'
+          echo "Deploying Helm release '$DEPLOYMENT_NAME'..."
           helm upgrade --install --wait --timeout 5m \
-            -f helm-chart/values/env-${{ inputs.environment }}.yaml \
-            ${{ inputs.deployment_name }} helm-chart \
-            --set global.image.repository=${{ steps.login-ecr.outputs.registry }}/${{ vars.ECR_REPOSITORY }}
-          IMAGES=$(helm get manifest ${{ inputs.deployment_name }} | yq -o=json '.' | jq -sc '[.[] | select(.kind == "Deployment") | select(.spec.template.spec.containers[0].image | contains("${{ steps.login-ecr.outputs.registry }}/${{ vars.ECR_REPOSITORY }}")) | {image_version_tag: .metadata.labels.appVersion, release_tag: .metadata.name}]')
-          echo "images=$IMAGES" >> $GITHUB_OUTPUT
-          echo "Deployed Images: $(echo $IMAGES | jq)"
+            -f .helm/submit-a-bulk-claim/values/env-"$ENVIRONMENT".yaml \
+            "$DEPLOYMENT_NAME" .helm/submit-a-bulk-claim \
+            --set global.image.repository="$REGISTRY"/"$ECR_REPOSITORY"
+
+          IMAGES=$(helm get manifest "$DEPLOYMENT_NAME" | yq -o=json '.' | jq -sc \
+            "[.[] | select(.kind == \"Deployment\") | select(.spec.template.spec.containers[0].image | contains(\"$REGISTRY/$ECR_REPOSITORY\")) | {image_version_tag: .metadata.labels.appVersion, release_tag: .metadata.name}]")
+
+          # Use heredoc for multi-line output safety
+          printf 'images<<EOF\n%s\nEOF\n' "$IMAGES" >> "$GITHUB_OUTPUT"
+          
+          echo "Deployed Images: $(echo "$IMAGES" | jq)"
+
+      - name: Update image tags
+        if: ${{ success() && contains(fromJson('["uat", "stg", "prod"]'), inputs.deployment_name) }}
+        uses: ./.github/actions/ecr-update-image-tags
+        with:
+          images: ${{ steps.helm-install.outputs.images }}
+          role_to_assume: ${{ secrets.ecr_role_to_assume }}
+          aws_region: ${{ vars.ECR_REGION }}
+          ecr_repository: ${{ vars.ECR_REPOSITORY }}
+
+      - name: Record deployment to pact broker
+        id: record-deployment-to-pact-broker
+        uses: ministryofjustice/laa-ccms-common-workflows/.github/actions/pact-record-deployment@story/pact-publish
+        with:
+          pacticipant: 'laa-submit-a-bulk-claim'
+          environment: ${{ inputs.claim_api_environment_name }}
+          pact_broker_url: 'https://laa-data-pact-broker.apps.live.cloud-platform.service.justice.gov.uk/'
+          pact_broker_username: ${{ secrets.pact_broker_username }}
+          pact_broker_password: ${{ secrets.pact_broker_password }}

@@ -18,8 +18,8 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
+import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.ResponseEntity;
 import org.springframework.mock.web.MockMultipartFile;
@@ -88,8 +88,8 @@ class BulkImportControllerTest {
                   .sessionAttr("fileUploadForm", input)
                   .with(csrf())
                   .with(oidcLogin().oidcUser(getOidcUser())))
-          .andExpect(status().is3xxRedirection())
-          .andExpect(view().name("redirect:/upload"));
+          .andExpect(status().isOk())
+          .andExpect(view().name("pages/upload"));
     }
 
     @Test
@@ -114,8 +114,8 @@ class BulkImportControllerTest {
                   .sessionAttr("fileUploadForm", input)
                   .with(csrf())
                   .with(oidcLogin().oidcUser(getOidcUser())))
-          .andExpect(status().is3xxRedirection())
-          .andExpect(view().name("redirect:/upload"));
+          .andExpect(status().isOk())
+          .andExpect(view().name("pages/upload"));
     }
 
     @Test
@@ -134,8 +134,8 @@ class BulkImportControllerTest {
                   .sessionAttr("fileUploadForm", input)
                   .with(csrf())
                   .with(oidcLogin().oidcUser(getOidcUser())))
-          .andExpect(status().is3xxRedirection())
-          .andExpect(view().name("redirect:/upload"));
+          .andExpect(status().isOk())
+          .andExpect(view().name("pages/upload"));
     }
 
     @Test

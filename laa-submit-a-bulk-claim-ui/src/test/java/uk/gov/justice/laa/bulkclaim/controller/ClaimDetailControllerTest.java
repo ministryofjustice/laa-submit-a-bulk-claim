@@ -15,8 +15,8 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
+import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.assertj.MockMvcTester;
@@ -31,13 +31,14 @@ import uk.gov.justice.laa.bulkclaim.dto.submission.messages.MessagesSummary;
 import uk.gov.justice.laa.bulkclaim.helper.TestObjectCreator;
 import uk.gov.justice.laa.bulkclaim.mapper.ClaimFeeCalculationBreakdownMapper;
 import uk.gov.justice.laa.bulkclaim.mapper.ClaimSummaryMapper;
+import uk.gov.justice.laa.bulkclaim.util.ThymeleafHrefUtils;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.AreaOfLaw;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.ClaimResponse;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionResponse;
 
 @WebMvcTest(ClaimDetailController.class)
 @AutoConfigureMockMvc
-@Import(WebMvcTestConfig.class)
+@Import({WebMvcTestConfig.class, ThymeleafHrefUtils.class})
 @DisplayName("Claim detail controller test")
 class ClaimDetailControllerTest {
 
@@ -62,7 +63,7 @@ class ClaimDetailControllerTest {
                   get("/submission/claim/" + claimId)
                       .with(oidcLogin().oidcUser(ControllerTestHelper.getOidcUser()))))
           .hasStatus3xxRedirection()
-          .hasRedirectedUrl("/view-claim-detail");
+          .hasRedirectedUrl("/view-claim-detail?page=0&messagesPage=0&navTab=CLAIM_DETAILS");
     }
   }
 

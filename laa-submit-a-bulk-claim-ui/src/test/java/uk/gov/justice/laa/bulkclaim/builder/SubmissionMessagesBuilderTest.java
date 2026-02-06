@@ -5,6 +5,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -57,6 +58,7 @@ class SubmissionMessagesBuilderTest {
     MessageRow mappedError =
         new MessageRow(
             submissionId,
+            Optional.empty(),
             "UFN123",
             "UCN456",
             "John Doe",
@@ -116,6 +118,52 @@ class SubmissionMessagesBuilderTest {
     MessageRow mappedError =
         new MessageRow(
             submissionId,
+            Optional.empty(),
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            "Missing claimId",
+            "ERROR");
+
+    when(bulkClaimImportSummaryMapper.toSubmissionSummaryClaimMessage(any(), any()))
+        .thenReturn(mappedError);
+
+    MessagesSummary result = builder.buildErrors(submissionId, 0, 10);
+
+    assertThat(result.messages()).containsExactly(mappedError);
+    assertThat(result.totalMessageCount()).isEqualTo(1);
+    assertThat(result.totalClaimsWithErrors()).isEqualTo(1);
+  }
+
+  @Test
+  @DisplayName("should build claim error summary with default claim response when claimId is set")
+  void shouldBuildSummaryWithDefaultClaimResponseWhenClaimIdIsSet() {
+    UUID submissionId = UUID.randomUUID();
+    UUID claimId = UUID.randomUUID();
+
+    ValidationMessageBase error =
+        new ValidationMessageBase()
+            .submissionId(submissionId)
+            .claimId(null)
+            .displayMessage("Missing claimId");
+
+    ValidationMessagesResponse errorResponse =
+        new ValidationMessagesResponse().content(List.of(error)).totalElements(1).totalClaims(1);
+
+    when(dataClaimsRestClient.getValidationMessages(
+            submissionId, null, ValidationMessageType.ERROR.toString(), null, 0, 10))
+        .thenReturn(Mono.just(errorResponse));
+
+    MessageRow mappedError =
+        new MessageRow(
+            submissionId,
+            Optional.of(claimId),
             null,
             null,
             null,

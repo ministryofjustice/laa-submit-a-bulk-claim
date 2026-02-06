@@ -124,6 +124,24 @@ env:
         name: laa-submit-a-bulk-claim-secrets
         key: UPLOAD_MAX_FILE_SIZE
 
+  - name: REDIS_HOST
+    valueFrom:
+      secretKeyRef:
+        name: elasticache-redis
+        key: url
+  - name: APP_LANDING_DEADLINE_OVERRIDE_MESSAGE
+    valueFrom:
+      secretKeyRef:
+        name: laa-submit-a-bulk-claim-secrets
+        key: APP_LANDING_DEADLINE_OVERRIDE_MESSAGE
+        optional: true
+
+extraEnvVars:
+  - name: ALLOWED_HOSTS
+    value: '{{ .Release.Name }}-{{ .Chart.Name }}-{{ .Release.Namespace }}.{{ .Values.global.clusterDomain }}'
+  - name: CANONICAL_BASE_URL
+    value: 'https://{{ .Release.Name }}-{{ .Chart.Name }}-{{ .Release.Namespace }}.{{ .Values.global.clusterDomain }}'
+
 securityContext:
   fsGroup: 1000
   runAsUser: 1000
@@ -138,8 +156,19 @@ ingress:
 probe:
   enabled: true
 
-stickiness:
+resources:
+  limits:
+    cpu: "1"
+    memory: 1Gi
+  requests:
+    cpu: 25m
+    memory: 384Mi
+
+autoscaling:
   enabled: true
+  minReplicas: 2
+  maxReplicas: 8
+  targetCPUUtilizationPercentage: 60
 
 downtime:
   scheduler:
@@ -160,3 +189,4 @@ downtime:
     system:
       name: "Submit a bulk claim"
       url: "https://submit-a-bulk-claim.laa.service.justice.gov.uk"
+

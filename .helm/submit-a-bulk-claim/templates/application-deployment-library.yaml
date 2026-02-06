@@ -29,6 +29,10 @@ spec:
         runAsGroup: {{ .Values.securityContext.runAsGroup }}
         runAsNonRoot: true
       {{- end }}
+      {{- if .Values.volumes }}
+      volumes:
+        {{- tpl (toYaml .Values.volumes) $ | nindent 8 }}
+      {{- end }}
       containers:
         - name: {{ .Release.Name }}-{{ .Chart.Name }}
           securityContext:
@@ -42,6 +46,10 @@ spec:
           image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
           {{ else }}
           image: {{ .Values.global.image.repository }}:{{ .Chart.AppVersion }}
+          {{- end }}
+          {{- if .Values.volumeMounts }}
+          volumeMounts:
+            {{- tpl (toYaml .Values.volumeMounts) $ | nindent 12 }}
           {{- end }}
           imagePullPolicy: IfNotPresent
           {{ if .Values.command }}
@@ -181,6 +189,24 @@ spec:
                 key: {{ .valueFrom.secretKeyRef.key }}
               {{- end }}
             {{- end }}
+          {{- end }}
+          {{- end }}
+          {{/*
+            Define Sentry environment variables
+          */}}
+          {{- if .Values.sentry }}
+            {{- if .Values.sentry.enabled  }}
+          - name: SENTRY_ENABLED
+            value: "true"
+          - name: SENTRY_DSN
+            valueFrom:
+              secretKeyRef:
+                name: laa-submit-a-bulk-claim-secrets
+                key: SENTRY_DSN
+          - name: SENTRY_ENVIRONMENT
+            value: {{ .Values.sentry.environment | quote }}
+          - name: SENTRY_TRACES_SAMPLE_RATE
+            value: {{ .Values.sentry.tracesSampleRate | quote }}
           {{- end }}
           {{- end }}
 ---

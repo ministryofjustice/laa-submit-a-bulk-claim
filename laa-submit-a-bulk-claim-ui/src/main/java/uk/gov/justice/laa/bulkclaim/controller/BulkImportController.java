@@ -2,7 +2,6 @@ package uk.gov.justice.laa.bulkclaim.controller;
 
 import static uk.gov.justice.laa.bulkclaim.constants.SessionConstants.SUBMISSION_ID;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -17,6 +16,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.support.SessionStatus;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import tools.jackson.databind.ObjectMapper;
 import uk.gov.justice.laa.bulkclaim.client.DataClaimsRestClient;
 import uk.gov.justice.laa.bulkclaim.dto.FileUploadForm;
 import uk.gov.justice.laa.bulkclaim.metrics.BulkClaimMetricService;
@@ -45,19 +45,17 @@ public class BulkImportController {
    * Renders the upload page.
    *
    * @param model the model to be populated with data
-   * @param oidcUser the authenticated user principal
    * @return the upload page
    */
   @GetMapping("/upload")
-  public String showUploadPage(
-      Model model, @AuthenticationPrincipal OidcUser oidcUser, SessionStatus sessionStatus) {
+  public String showUploadPage(Model model, SessionStatus sessionStatus) {
 
     // Clear the session due to new submission
     sessionStatus.setComplete();
 
     // Always ensure there's a form object in the model if not already present
     if (!model.containsAttribute(FILE_UPLOAD_FORM_MODEL_ATTR)) {
-      model.addAttribute(FILE_UPLOAD_FORM_MODEL_ATTR, new FileUploadForm(null));
+      model.addAttribute(FILE_UPLOAD_FORM_MODEL_ATTR, new FileUploadForm());
     }
 
     return "pages/upload";
@@ -75,25 +73,26 @@ public class BulkImportController {
       @ModelAttribute(FILE_UPLOAD_FORM_MODEL_ATTR) FileUploadForm fileUploadForm,
       BindingResult bindingResult,
       @AuthenticationPrincipal OidcUser oidcUser,
+      Model model,
       RedirectAttributes redirectAttributes) {
 
     bulkImportFileValidator.validate(fileUploadForm, bindingResult);
     if (bindingResult.hasErrors()) {
-      bulkClaimMetricService.recordFailedFileUploadSize(fileUploadForm.file(), bindingResult);
-      return showErrorOnUpload(fileUploadForm, bindingResult, redirectAttributes);
+      bulkClaimMetricService.recordFailedFileUploadSize(fileUploadForm.getFile(), bindingResult);
+      return showErrorOnUpload(fileUploadForm, bindingResult, model);
     }
 
     bulkImportFileVirusValidator.validate(fileUploadForm, bindingResult);
     if (bindingResult.hasErrors()) {
-      bulkClaimMetricService.recordFailedFileUploadSize(fileUploadForm.file(), bindingResult);
-      return showErrorOnUpload(fileUploadForm, bindingResult, redirectAttributes);
+      bulkClaimMetricService.recordFailedFileUploadSize(fileUploadForm.getFile(), bindingResult);
+      return showErrorOnUpload(fileUploadForm, bindingResult, model);
     }
 
     try {
       ResponseEntity<CreateBulkSubmission201Response> responseEntity =
           dataClaimsRestClient
               .upload(
-                  fileUploadForm.file(),
+                  fileUploadForm.getFile(),
                   oidcUser.getPreferredUsername(),
                   oidcAttributeUtils.getUserOffices(oidcUser))
               .block();
@@ -104,7 +103,7 @@ public class BulkImportController {
       redirectAttributes.addFlashAttribute(
           SUBMISSION_ID, bulkSubmissionResponse.getSubmissionIds().getFirst());
 
-      bulkClaimMetricService.recordSuccessfulFileUploadSize(fileUploadForm.file());
+      bulkClaimMetricService.recordSuccessfulFileUploadSize(fileUploadForm.getFile());
       return "redirect:/upload-is-being-checked";
     } catch (WebClientResponseException e) {
       try {
@@ -113,19 +112,19 @@ public class BulkImportController {
 
         log.error("API upload failed: {}", error.getErrorMessage());
         bulkClaimMetricService.recordFailedFileUploadSize(
-            fileUploadForm.file().getSize(), error.getErrorMessage());
+            fileUploadForm.getFile().getSize(), error.getErrorMessage());
         bindingResult.rejectValue("file", "api.error", error.getErrorMessage());
       } catch (Exception parseEx) {
         log.error("Failed to upload file to Claims API with message: {}", e.getMessage());
         bindingResult.reject("bulkImport.validation.uploadFailed");
       }
 
-      return showErrorOnUpload(fileUploadForm, bindingResult, redirectAttributes);
+      return showErrorOnUpload(fileUploadForm, bindingResult, model);
 
     } catch (Exception e) {
       log.error("Failed to upload file to Claims API with message: {}", e.getMessage());
       bindingResult.reject("bulkImport.validation.uploadFailed");
-      return showErrorOnUpload(fileUploadForm, bindingResult, redirectAttributes);
+      return showErrorOnUpload(fileUploadForm, bindingResult, model);
     }
   }
 
@@ -136,13 +135,10 @@ public class BulkImportController {
    * @return redirect back to upload page
    */
   private String showErrorOnUpload(
-      FileUploadForm fileUploadForm,
-      BindingResult bindingResult,
-      RedirectAttributes redirectAttributes) {
+      FileUploadForm fileUploadForm, BindingResult bindingResult, Model model) {
 
-    redirectAttributes.addFlashAttribute(FILE_UPLOAD_FORM_MODEL_ATTR, fileUploadForm);
-    redirectAttributes.addFlashAttribute(
-        "org.springframework.validation.BindingResult.fileUploadForm", bindingResult);
-    return "redirect:/upload";
+    model.addAttribute(FILE_UPLOAD_FORM_MODEL_ATTR, fileUploadForm);
+    model.addAttribute(BindingResult.MODEL_KEY_PREFIX + FILE_UPLOAD_FORM_MODEL_ATTR, bindingResult);
+    return "pages/upload";
   }
 }

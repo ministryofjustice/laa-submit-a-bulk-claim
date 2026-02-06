@@ -34,7 +34,7 @@ class MaxFileSizeExceedsHandlerTest {
         .isInstanceOf(FileUploadForm.class);
     FileUploadForm fileUploadForm =
         (FileUploadForm) model.getAttribute(BulkImportController.FILE_UPLOAD_FORM_MODEL_ATTR);
-    assertThat(fileUploadForm.file()).isNull();
+    assertThat(fileUploadForm.getFile()).isNull();
 
     Object bindingResultAttribute =
         model.getAttribute(

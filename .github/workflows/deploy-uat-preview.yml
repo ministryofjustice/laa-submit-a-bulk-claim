@@ -1,0 +1,113 @@
+name: Deploy UAT preview (branch)
+
+on:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  define-preview-version:
+    runs-on: ubuntu-latest
+    outputs:
+      preview_version: ${{ steps.get-preview-version.outputs.preview_version }}
+    steps:
+      - uses: actions/checkout@v6
+      - name: Get preview version
+        id: get-preview-version
+        run: |
+          set -euo pipefail
+          commit_hash=$(git rev-parse --short HEAD)
+          version=$(awk -F= '/^version=/{print $2}' gradle.properties)
+          echo "preview_version=${version}-${commit_hash}" >> "$GITHUB_OUTPUT"
+          echo "Preview version: submit-a-bulk-claim-${version}-${commit_hash}"
+
+  build-and-test:
+    needs: [ define-preview-version ]
+    uses: ministryofjustice/laa-ccms-common-workflows/.github/workflows/gradle-build-and-publish.yml@v1
+    permissions:
+      contents: write
+      packages: write
+    with:
+      publish_package: false
+      override_version: ${{ needs.define-preview-version.outputs.preview_version }}
+      junit_results: 'false'
+      junit_report: 'false'
+      checkstyle_report: 'false'
+      jacoco_coverage_report: 'false'
+      semgrep_check: 'true'
+    secrets:
+      gh_token: ${{ secrets.GITHUB_TOKEN }}
+
+  pact-test:
+    needs: [ build-and-test ]
+    uses: ministryofjustice/laa-ccms-common-workflows/.github/workflows/pact-and-publish.yml@story/pact-publish
+    permissions:
+      contents: write
+      packages: write
+    with:
+      pacticipant_name: "laa-submit-a-bulk-claim"
+      pact_test_task: "pactTest"
+      publish_pact_results: true
+      enable_can_i_merge: true
+      provider_name: "laa-data-claims-api"
+    secrets:
+      gh_token: ${{ secrets.GITHUB_TOKEN }}
+      pact_broker_url: 'https://laa-data-pact-broker.apps.live.cloud-platform.service.justice.gov.uk/'
+      pact_broker_username: ${{ secrets.PACT_BROKER_USERNAME }}
+      pact_broker_password: ${{ secrets.PACT_BROKER_PASSWORD }}
+
+  build-oidc-mock-image:
+    uses: ./.github/workflows/build-oidc-mock-image.yml
+    permissions:
+      id-token: write
+      contents: read
+      packages: read
+    secrets: inherit
+
+  ecr-publish-image:
+    needs: [ build-and-test ]
+    uses: ministryofjustice/laa-ccms-common-workflows/.github/workflows/ecr-publish-image.yml@v1
+    permissions:
+      contents: read
+      id-token: write
+    with:
+      jar_subproject: 'laa-submit-a-bulk-claim-ui'
+      image_version: ${{ format('{0}-{1}', vars.IMAGE_PREFIX, needs.assemble.outputs.published_artifact_version) }}
+    secrets:
+      gh_token: ${{ secrets.GITHUB_TOKEN }}
+      ecr_repository: ${{ vars.ECR_REPOSITORY }}
+      ecr_region: ${{ vars.ECR_REGION }}
+      ecr_role_to_assume: ${{ secrets.ECR_ROLE_TO_ASSUME }}
+
+  deploy-uat-preview:
+    needs:
+      - pact-test
+      - ecr-publish-image
+      - build-oidc-mock-image
+    runs-on: ubuntu-latest
+    environment: uat
+    permissions:
+      id-token: write
+      contents: read
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Deploy UAT preview branch
+        uses: ./.github/actions/deploy_branch
+        with:
+          ecr-region: ${{ vars.ECR_REGION }}
+          ecr-role-to-assume: ${{ secrets.ECR_ROLE_TO_ASSUME }}
+          ecr-repository: ${{ vars.ECR_REPOSITORY }}
+          kube-cert: ${{ secrets.KUBE_CERT }}
+          kube-token: ${{ secrets.KUBE_TOKEN }}
+          kube-cluster: ${{ secrets.KUBE_CLUSTER }}
+          kube-namespace: ${{ secrets.KUBE_NAMESPACE }}
+          app-environment: uat
+          image-tag: ${{ needs.ecr-publish-image.outputs.published_image_version }}
+          oidc-mock-image-tag: ${{ needs.build-oidc-mock-image.outputs.oidc_mock_tag }}
+          pact_broker_url: 'https://laa-data-pact-broker.apps.live.cloud-platform.service.justice.gov.uk/'
+          pact_broker_username: ${{ secrets.pact_broker_username }}
+          pact_broker_password: ${{ secrets.pact_broker_password }}
+          run-pact-can-i-deploy: false

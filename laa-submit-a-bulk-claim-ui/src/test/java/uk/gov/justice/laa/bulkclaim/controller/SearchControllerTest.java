@@ -13,13 +13,12 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
+import org.springframework.ui.ExtendedModelMap;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.support.SessionStatus;
 import org.springframework.web.client.HttpClientErrorException.BadRequest;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-import org.springframework.web.servlet.mvc.support.RedirectAttributesModelMap;
 import reactor.core.publisher.Mono;
 import uk.gov.justice.laa.bulkclaim.client.DataClaimsRestClient;
 import uk.gov.justice.laa.bulkclaim.dto.SubmissionsSearchForm;
@@ -65,12 +64,12 @@ class SearchControllerTest {
   void handleSearchShouldRedirectBackOnErrors() {
     when(bindingResult.hasErrors()).thenReturn(true);
     final SubmissionsSearchForm form = new SubmissionsSearchForm("1234", "01/01/2024", null);
-    final RedirectAttributes redirectAttributes = new RedirectAttributesModelMap();
+    final Model localModel = new ExtendedModelMap();
 
-    String view = searchController.handleSearch(form, bindingResult, redirectAttributes);
+    String view = searchController.handleSearch(form, bindingResult, localModel);
 
-    assertEquals("redirect:/submissions/search", view);
-    assertEquals(form, redirectAttributes.getFlashAttributes().get("submissionsSearchForm"));
+    assertEquals("pages/submissions-search", view);
+    assertEquals(form, localModel.getAttribute("submissionsSearchForm"));
   }
 
   @Test
@@ -80,9 +79,9 @@ class SearchControllerTest {
     final SubmissionsSearchForm form =
         new SubmissionsSearchForm(
             "704b3dda-4aec-4883-a263-000d86511289", "01/01/2024", "02/01/2024");
-    final RedirectAttributes redirectAttributes = new RedirectAttributesModelMap();
+    final Model localModel = new ExtendedModelMap();
 
-    String view = searchController.handleSearch(form, bindingResult, redirectAttributes);
+    String view = searchController.handleSearch(form, bindingResult, localModel);
 
     assertEquals(
         "redirect:/submissions/search/results?page=0&submissionId=704b3dda-4aec-4883-a263-000d86511289&submittedDateFrom=01/01/2024&submittedDateTo=02/01/2024",
