@@ -23,3 +23,22 @@ sentry:
   enabled: true
   environment: production
   tracesSampleRate: 0.2
+
+downtime:
+  scheduler:
+    enabled: true
+    serviceAccountName: laa-submit-a-bulk-claim-production-service-account
+    jobs:
+      - name: scale-down
+        schedule: "30 21 * * *"
+        action: down
+      - name: scale-up
+        schedule: "00 7 * * *"
+        action: up
+  page:
+    enabled: true
+    port: 8080
+    replicas: 1
+    system:
+      name: "Submit a bulk claim"
+      url: "https://submit-a-bulk-claim.laa.service.justice.gov.uk"

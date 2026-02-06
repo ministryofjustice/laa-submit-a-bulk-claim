@@ -203,7 +203,8 @@ spec:
 
 {{- if default false (default (dict) (default (dict) $.Values.downtime).scheduler).enabled }}
 {{- range (default (list) (default (dict) (default (dict) $.Values.downtime).scheduler).jobs) }}
-{{- $targetDeployment := default (default $.Release.Name (default "" (default (dict) (default (dict) $.Values.downtime).scheduler).deployment)) .deployment }}
+{{- $defaultDeployment := printf "%s-%s" $.Release.Name $.Chart.Name }}
+{{- $targetDeployment := default $defaultDeployment (default (default "" (default (dict) (default (dict) $.Values.downtime).scheduler).deployment) .deployment) }}
 ---
 apiVersion: batch/v1
 kind: CronJob

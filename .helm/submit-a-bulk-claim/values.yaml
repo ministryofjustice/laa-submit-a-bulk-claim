@@ -173,14 +173,13 @@ autoscaling:
 downtime:
   scheduler:
     enabled: true
-    deployment: submit-a-bulk-claim
     serviceAccountName: laa-submit-a-bulk-claim-production-service-account
     jobs:
       - name: scale-down
         schedule: "30 21 * * *"
         action: down
       - name: scale-up
-        schedule: "55 6 * * *"
+        schedule: "00 7 * * *"
         action: up
   page:
     enabled: true
@@ -189,4 +188,3 @@ downtime:
     system:
       name: "Submit a bulk claim"
       url: "https://submit-a-bulk-claim.laa.service.justice.gov.uk"
-
