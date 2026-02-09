@@ -21,6 +21,8 @@ import org.springframework.context.annotation.Import;
 import org.springframework.http.HttpHeaders;
 import uk.gov.justice.laa.bulkclaim.client.DataClaimsRestClient;
 import uk.gov.justice.laa.bulkclaim.config.ClaimsApiPactTestConfig;
+import uk.gov.justice.laa.dstew.payments.claimsdata.model.AreaOfLaw;
+import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionStatus;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionsResultSet;
 
 /**
@@ -65,10 +67,13 @@ public final class GetSubmissionsPactTest extends AbstractPactTest {
         .given("a submission exists for the search criteria")
         .uponReceiving("a search request for submissions")
         .path("/api/v1/submissions")
-        .matchQuery("submission_id", UUID_REGEX)
         .matchQuery("submission_period", "([A-Z]{3}-[0-9]{4})")
         .matchQuery("offices", "([A-Z0-9]{6})")
-        .matchQuery("area_of_law", "(LEGAL HELP|CRIME LOWER|MEDIATION)")
+        .matchQuery("area_of_law", "(LEGAL_HELP|CRIME_LOWER|MEDIATION)")
+        .matchQuery(
+            "submission_statuses",
+            "(CREATED|READY_FOR_VALIDATION|VALIDATION_IN_PROGRESS|VALIDATION_SUCCEEDED"
+                + "|VALIDATION_FAILED|REPLACED)")
         .matchQuery("page", ANY_NUMBER_REGEX)
         .matchQuery("size", ANY_NUMBER_REGEX)
         .matchQuery("sort", "(asc|desc)")
@@ -123,9 +128,13 @@ public final class GetSubmissionsPactTest extends AbstractPactTest {
         .given("no submissions exist for the search criteria")
         .uponReceiving("a search request for submissions that returns no results")
         .path("/api/v1/submissions")
-        .matchQuery("submission_id", UUID_REGEX)
         .matchQuery("submission_period", "([A-Z]{3}-[0-9]{4})")
         .matchQuery("offices", "([A-Z0-9]{6})")
+        .matchQuery("area_of_law", "(LEGAL_HELP|CRIME_LOWER|MEDIATION)")
+        .matchQuery(
+            "submission_statuses",
+            "(CREATED|READY_FOR_VALIDATION|VALIDATION_IN_PROGRESS|VALIDATION_SUCCEEDED"
+                + "|VALIDATION_FAILED|REPLACED)")
         .matchQuery("page", ANY_NUMBER_REGEX)
         .matchQuery("size", ANY_NUMBER_REGEX)
         .matchQuery("sort", "(asc|desc)")
@@ -156,7 +165,13 @@ public final class GetSubmissionsPactTest extends AbstractPactTest {
       SubmissionsResultSet submission =
           dataClaimsRestClient
               .search(
-                  USER_OFFICES, submissionPeriod, "LEGAL HELP", List.of("CREATED"), 10, 10, "asc")
+                  USER_OFFICES,
+                  submissionPeriod,
+                  AreaOfLaw.LEGAL_HELP,
+                  List.of(SubmissionStatus.CREATED),
+                  10,
+                  10,
+                  "asc")
               .block();
       assertThat(submission.getContent().size()).isEqualTo(1);
     } catch (Exception e) {
@@ -171,7 +186,14 @@ public final class GetSubmissionsPactTest extends AbstractPactTest {
     String submissionPeriod = "JAN-2025";
     SubmissionsResultSet submission =
         dataClaimsRestClient
-            .search(USER_OFFICES, submissionPeriod, "LEGAL HELP", List.of("CREATED"), 10, 10, "asc")
+            .search(
+                USER_OFFICES,
+                submissionPeriod,
+                AreaOfLaw.LEGAL_HELP,
+                List.of(SubmissionStatus.CREATED),
+                10,
+                10,
+                "asc")
             .block();
 
     assertThat(submission.getContent().isEmpty()).isTrue();
