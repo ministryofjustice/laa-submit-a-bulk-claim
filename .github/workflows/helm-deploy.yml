@@ -50,7 +50,7 @@ jobs:
           kubectl config use-context "${{ secrets.KUBE_CLUSTER }}"
 
       - name: Configure aws credentials
-        uses: aws-actions/configure-aws-credentials@v5
+        uses: aws-actions/configure-aws-credentials@v6
         with:
           role-to-assume: "${{ secrets.ecr_role_to_assume }}"
           aws-region: "${{ vars.ECR_REGION }}"
