@@ -18,7 +18,7 @@
           <h1 class="govuk-heading-l" th:text="#{search.title}"></h1>
         </div>
 
-        <div class="govuk-grid-column-full">
+        <div class="govuk-grid-column-full" data-module="laa-hide-on-print-button">
           <div class="moj-filter-layout">
             <div class="moj-filter-layout__filter">
               <div class="moj-filter" data-module="moj-filter">
@@ -46,10 +46,44 @@
                           th:text="#{search.submissionPeriod}"></h3>
                       <ul class="moj-filter-tags">
                         <li>
-                          <a class="moj-filter__tag" href="#"><span class="govuk-visually-hidden"
-                                                                    th:text="#{search.filter.removeFilter}"></span>
+                          <a class="moj-filter__tag"
+                            th:href="${@thymeleafHrefUtils.removeQueryParamValue(viewRequestContext, 'submissionPeriod', submissionsSearchForm.submissionPeriod())}">
+                            <span class="govuk-visually-hidden"
+                              th:text="#{search.filter.removeFilter}"></span>
                             <th:block
-                                th:text="${submissionsSearchForm.submissionPeriod}"></th:block>
+                                th:text="${@submissionPeriodUtil.toLongFormat(submissionsSearchForm.submissionPeriod)}"></th:block>
+                          </a>
+                        </li>
+                      </ul>
+                    </th:block>
+                    <th:block th:if="${submissionsSearchForm.areaOfLaw()}">
+                      <h3 class="govuk-heading-s govuk-!-margin-bottom-0"
+                          th:text="#{search.areaOfLaw}"></h3>
+                      <ul class="moj-filter-tags">
+                        <li>
+                          <a class="moj-filter__tag"
+                             th:href="${@thymeleafHrefUtils.removeQueryParamValue(viewRequestContext, 'areaOfLaw', submissionsSearchForm.areaOfLaw())}">
+                            <span class="govuk-visually-hidden"
+                                  th:text="#{search.filter.removeFilter}"></span>
+                            <th:block
+                                th:with="value=${#strings.replace(#strings.toLowerCase(submissionsSearchForm.areaOfLaw()), '_', ' ')}"
+                                th:text="${#strings.toUpperCase(#strings.substring(value, 0, 1)) + #strings.substring(value, 1)}"></th:block>
+                          </a>
+                        </li>
+                      </ul>
+                    </th:block>
+                    <th:block th:if="${submissionsSearchForm.submissionStatus()} and ${!#strings.equalsIgnoreCase(submissionsSearchForm.submissionStatus(), 'all')}">
+                      <h3 class="govuk-heading-s govuk-!-margin-bottom-0"
+                          th:text="#{search.outcome}"></h3>
+                      <ul class="moj-filter-tags">
+                        <li>
+                          <a class="moj-filter__tag"
+                             th:href="${@thymeleafHrefUtils.removeQueryParamValue(viewRequestContext, 'submissionStatus', submissionsSearchForm.submissionStatus())}">
+                            <span class="govuk-visually-hidden"
+                                  th:text="#{search.filter.removeFilter}"></span>
+                            <th:block
+                                th:with="value=${#strings.replace(#strings.toLowerCase(submissionsSearchForm.submissionStatus()), '_', ' ')}"
+                                th:text="${#strings.toUpperCase(#strings.substring(value, 0, 1)) + #strings.substring(value, 1)}"></th:block>
                           </a>
                         </li>
                       </ul>
@@ -60,8 +94,10 @@
                           th:text="#{search.offices}"></h3>
                       <ul class="moj-filter-tags">
                         <li th:each="office : ${submissionsSearchForm.offices()}">
-                          <a class="moj-filter__tag" href="#"><span class="govuk-visually-hidden"
-                                                                    th:text="#{search.filter.removeFilter}"></span>
+                          <a class="moj-filter__tag"
+                             th:href="${@thymeleafHrefUtils.removeQueryParamValue(viewRequestContext, 'offices', office)}">
+                            <span class="govuk-visually-hidden"
+                              th:text="#{search.filter.removeFilter}"></span>
                             <th:block th:text="${office}"></th:block>
                           </a>
                         </li>
@@ -86,7 +122,7 @@
                 </div>
               </div>
             </div>
-            <div class="moj-filter-layout__content">
+            <div class="moj-filter-layout__content" >
               <div class="moj-action-bar">
                 <div class="moj-action-bar__filter"></div>
               </div>

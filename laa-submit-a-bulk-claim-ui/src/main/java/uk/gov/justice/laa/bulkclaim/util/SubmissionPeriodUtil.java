@@ -81,6 +81,13 @@ public class SubmissionPeriodUtil {
     return ym.format(OUT_FMT);
   }
 
+  public String toLongFormat(String submissionPeriod) {
+    if (submissionPeriod == null || submissionPeriod.isBlank()) {
+      return null;
+    }
+    return YearMonth.parse(submissionPeriod.trim(), IN_FMT).format(OUT_FMT);
+  }
+
   /**
    * Computes a numeric sort order value from the submission period of the provided {@code
    * SubmissionBase} instance. The submission period is expected to be in the format "MMM-uuuu"

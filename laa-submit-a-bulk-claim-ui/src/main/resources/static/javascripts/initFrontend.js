@@ -18,7 +18,7 @@ if ($filter) {
 
   new FilterToggleButton($filter, {
     bigModeMediaQuery: '(min-width: 48.0625em)',
-    startHidden: true,
+    startHidden: false,
     toggleButton: {
       showText: 'Show filter',
       hideText: 'Hide filter',

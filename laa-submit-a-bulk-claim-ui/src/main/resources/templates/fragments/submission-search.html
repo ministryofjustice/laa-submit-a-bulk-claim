@@ -97,41 +97,6 @@
       </div>
     </fieldset>
   </div>
-  <!--  <details class="govuk-details">
-      <summary class="govuk-details__summary">
-        <span class="govuk-details__summary-text">
-          Filter by office (multi select)
-        </span>
-      </summary>
-      <div class="govuk-details__text">
-
-        <table class="govuk-table" data-module="moj-multi-select" data-id-prefix="offices-">
-          <thead class="govuk-table__head">
-          <tr class="govuk-table__row">
-            <th class="govuk-table__header" scope="col" id="offices-select-all"></th>
-            <th class="govuk-table__header" scope="col">Office</th>
-          </tr>
-          </thead>
-          <tbody class="govuk-table__body">
-          <tr class="govuk-table__row govuk-table__row&#45;&#45;selected"
-              th:each="office,idx : ${userOffices}">
-            <td class="govuk-table__cell">
-              <div
-                  class="govuk-checkboxes__item govuk-checkboxes&#45;&#45;small moj-multi-select__checkbox">
-                <input type="checkbox" class="govuk-checkboxes__input"
-                       th:value="${office}" th:id="|${idx.index}-office-checkbox|">
-                <label class="govuk-label govuk-checkboxes__label" th:for="|${idx.index}-office-checkbox|">
-                  <span class="govuk-visually-hidden" th:text="|Select ${office}|"></span>
-                </label>
-              </div>
-            </td>
-            <td class="govuk-table__cell" th:text="${office}"></td>
-          </tr>
-          </tbody>
-        </table>
-
-      </div>
-    </details>-->
   <div class="govuk-form-group">
     <fieldset class="govuk-fieldset">
       <legend class="govuk-fieldset__legend govuk-fieldset__legend--m"

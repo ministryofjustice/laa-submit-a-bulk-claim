@@ -3,7 +3,9 @@ package uk.gov.justice.laa.bulkclaim.controller;
 import static uk.gov.justice.laa.bulkclaim.constants.SessionConstants.CLAIM_ID;
 import static uk.gov.justice.laa.bulkclaim.constants.SessionConstants.SUBMISSION_ID;
 
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
+import java.net.http.HttpRequest;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
@@ -16,6 +18,8 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.core.oidc.user.OidcUser;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 import org.springframework.util.StringUtils;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
@@ -33,6 +37,7 @@ import uk.gov.justice.laa.bulkclaim.client.DataClaimsRestClient;
 import uk.gov.justice.laa.bulkclaim.dto.SubmissionsSearchForm;
 import uk.gov.justice.laa.bulkclaim.util.OidcAttributeUtils;
 import uk.gov.justice.laa.bulkclaim.util.PaginationUtil;
+import uk.gov.justice.laa.bulkclaim.util.ThymeleafHrefUtils.ViewRequestContext;
 import uk.gov.justice.laa.bulkclaim.validation.SubmissionSearchValidator;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.AreaOfLaw;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.Page;
@@ -176,6 +181,7 @@ public class SearchController {
    */
   @GetMapping("/submissions/search/results")
   public String submissionsSearchResults(
+      HttpServletRequest httpRequest,
       @RequestParam(value = "page", defaultValue = "0") final int page,
       @RequestParam(value = "submissionPeriod", required = false) String submissionPeriod,
       @RequestParam(value = "areaOfLaw", required = false) String areaOfLaw,
@@ -185,6 +191,12 @@ public class SearchController {
       @AuthenticationPrincipal OidcUser oidcUser,
       SessionStatus sessionStatus,
       HttpSession session) {
+
+    MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
+    httpRequest.getParameterMap().forEach((k, values) -> params.put(k, List.of(values)));
+
+    ViewRequestContext viewRequestContext = new ViewRequestContext(httpRequest.getServletPath(), params);
+    model.addAttribute("viewRequestContext", viewRequestContext);
 
     sessionStatus.setComplete();
 
