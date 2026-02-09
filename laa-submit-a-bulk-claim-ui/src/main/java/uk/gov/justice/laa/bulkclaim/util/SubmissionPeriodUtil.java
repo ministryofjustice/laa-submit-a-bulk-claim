@@ -81,6 +81,14 @@ public class SubmissionPeriodUtil {
     return ym.format(OUT_FMT);
   }
 
+  /**
+   * Converts a submission period string from the format "MMM-uuuu" (e.g., "Jan-2023") to the format
+   * "MMMM uuuu" (e.g., "January 2023").
+   *
+   * @param submissionPeriod the submission period string to be converted.
+   * @return the formatted submission period string, or {@code null} if the input period is {@code
+   *     null} or blank.
+   */
   public String toLongFormat(String submissionPeriod) {
     if (submissionPeriod == null || submissionPeriod.isBlank()) {
       return null;

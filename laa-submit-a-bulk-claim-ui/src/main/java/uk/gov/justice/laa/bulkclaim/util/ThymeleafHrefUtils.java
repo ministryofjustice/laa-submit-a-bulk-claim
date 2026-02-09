@@ -6,7 +6,6 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.web.util.UriBuilder;
 import org.springframework.web.util.UriComponentsBuilder;
 
-
 /**
  * Utility class for building URLs with query parameters.
  *
@@ -20,7 +19,7 @@ public class ThymeleafHrefUtils {
    * null or empty.
    *
    * @param baseUrl The base URL to append to.
-   * @param params  The key-value pairs of query parameters.
+   * @param params The key-value pairs of query parameters.
    * @return The built URL.
    */
   public String build(String baseUrl, String... params) {
@@ -45,25 +44,39 @@ public class ThymeleafHrefUtils {
     return uriComponentsBuilder.build().toUriString();
   }
 
-  public String removeQueryParamValue(ViewRequestContext servletPath, String key,
-      String valueToRemove) {
+  /**
+   * Removes a request parameter value from the provider servlet path.
+   *
+   * @param servletPath object containing servlet path and query params
+   * @param key the request parameter key
+   * @param valueToRemove the request parameter value to remove
+   * @return a built URL
+   */
+  public String removeQueryParamValue(
+      ViewRequestContext servletPath, String key, String valueToRemove) {
     UriBuilder uriBuilder = UriComponentsBuilder.fromUriString(servletPath.servletPath());
-    servletPath.queryParams().forEach((k, v) -> {
-      if (k.equals(key)) {
-        List<String> list = v.stream().filter(s -> !s.equals(valueToRemove)).toList();
-        if (!list.isEmpty()) {
-          uriBuilder.queryParam(
-              k, list);
-        }
-      } else {
-        uriBuilder.queryParam(
-            k, v);
-      }
-    });
+    servletPath
+        .queryParams()
+        .forEach(
+            (k, v) -> {
+              if (k.equals(key)) {
+                List<String> list = v.stream().filter(s -> !s.equals(valueToRemove)).toList();
+                if (!list.isEmpty()) {
+                  uriBuilder.queryParam(k, list);
+                }
+              } else {
+                uriBuilder.queryParam(k, v);
+              }
+            });
     return uriBuilder.toUriString();
   }
 
-  public record ViewRequestContext(String servletPath, MultiValueMap<String, String> queryParams) {
-
-  }
+  /**
+   * Represents the context of a view request, which includes the servlet path and query parameters
+   * associated with the request.
+   *
+   * <p>This record is typically used to encapsulate essential data for processing or building URLs
+   * for HTTP requests and responses within the application.
+   */
+  public record ViewRequestContext(String servletPath, MultiValueMap<String, String> queryParams) {}
 }

@@ -5,7 +5,6 @@ import static uk.gov.justice.laa.bulkclaim.constants.SessionConstants.SUBMISSION
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
-import java.net.http.HttpRequest;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
@@ -77,10 +76,10 @@ public class SearchController {
     List<String> userOffices = oidcAttributeUtils.getUserOffices(oidcUser);
     // Only submissionStatus has to be set to "All" as default to select the default radio
     // option on the frontend.
-    SubmissionsSearchForm submissionsSearchForm = new SubmissionsSearchForm(null, null, userOffices, "All");
+    SubmissionsSearchForm submissionsSearchForm =
+        new SubmissionsSearchForm(null, null, userOffices, "All");
     if (!model.containsAttribute(SUBMISSION_SEARCH_FORM)) {
-      model.addAttribute(
-          SUBMISSION_SEARCH_FORM, submissionsSearchForm);
+      model.addAttribute(SUBMISSION_SEARCH_FORM, submissionsSearchForm);
     }
     model.addAttribute("userOffices", userOffices);
     sessionStatus.setComplete();
@@ -195,7 +194,8 @@ public class SearchController {
     MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
     httpRequest.getParameterMap().forEach((k, values) -> params.put(k, List.of(values)));
 
-    ViewRequestContext viewRequestContext = new ViewRequestContext(httpRequest.getServletPath(), params);
+    ViewRequestContext viewRequestContext =
+        new ViewRequestContext(httpRequest.getServletPath(), params);
     model.addAttribute("viewRequestContext", viewRequestContext);
 
     sessionStatus.setComplete();
