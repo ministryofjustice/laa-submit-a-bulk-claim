@@ -228,7 +228,7 @@ metadata:
     {{- end }}
     external-dns.alpha.kubernetes.io/set-identifier: {{ .Release.Name }}-{{ .Chart.Name }}-{{ .Release.Namespace }}-green
     external-dns.alpha.kubernetes.io/aws-weight: "100"
-    {{- if and .Values.enabled (default false ((default (dict) (default (dict) .Values.downtime).page).enabled)) }}
+    {{- if and (default true .Values.enabled) (default false ((default (dict) (default (dict) .Values.downtime).page).enabled)) }}
     nginx.ingress.kubernetes.io/custom-http-errors: '503'
     nginx.ingress.kubernetes.io/default-backend: {{ .Release.Name }}-{{ .Chart.Name }}-error-page-service
     {{- end }}
