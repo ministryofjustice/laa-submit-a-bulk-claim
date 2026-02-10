@@ -1,0 +1,51 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app: {{ .Release.Name }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{ .Release.Name }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Release.Name }}
+    spec:
+      securityContext:
+        runAsUser: 1000
+        runAsGroup: 1000
+        runAsNonRoot: true
+        supplementalGroups:
+          - 1
+        fsGroup: 1000
+        seccompProfile:
+          type: RuntimeDefault
+      containers:
+        - name: wiremock
+          image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
+          args:
+            - "--global-response-templating"
+            - "--disable-gzip"
+            - "--verbose"
+          ports:
+            - containerPort: {{ .Values.service.port }}
+          volumeMounts:
+            - name: mappings
+              mountPath: /home/wiremock/mappings/provider-details-api
+      volumes:
+        - name: mappings
+          configMap:
+            name: {{ .Release.Name }}-mappings
+            items:
+              - key: pda-medi.json
+                path: pda-medi.json
+              - key: pda-all-areas.json
+                path: pda-all-areas.json
+              - key: pda-crime.json
+                path: pda-crime.json
+              - key: pda-legal.json
+                path: pda-legal.json

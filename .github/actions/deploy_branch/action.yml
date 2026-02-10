@@ -133,6 +133,9 @@ runs:
             --namespace "$KUBE_NAMESPACE" \
             "${oidc_values_args[@]}" \
             --install --wait --timeout=10m
+          helm upgrade "pda-mock" .helm/pda-mock \
+            --namespace "$KUBE_NAMESPACE" \
+            --install --wait --timeout=10m
         fi
 
         helm upgrade "$RELEASE_NAME" .helm/submit-a-bulk-claim \
