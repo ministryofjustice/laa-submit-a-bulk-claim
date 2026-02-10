@@ -146,12 +146,7 @@ public class SubmissionDetailController {
     if (submissionAccepted) {
       submissionSummary =
           handleAcceptedSubmission(
-              model,
-              submissionSummary,
-              submissionResponse,
-              submissionId,
-              page,
-              messagesPage);
+              model, submissionSummary, submissionResponse, submissionId, page, messagesPage);
       addCommonSubmissionAttributes(
           model, submissionSummary, submissionResponse, navigationTab, submissionId);
       return "pages/view-submission-detail-accepted";

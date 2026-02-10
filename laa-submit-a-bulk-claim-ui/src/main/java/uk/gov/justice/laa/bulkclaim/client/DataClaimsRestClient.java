@@ -93,6 +93,24 @@ public interface DataClaimsRestClient {
       @PathVariable("submission-id") UUID submissionId, @PathVariable("claim-id") UUID claimId);
 
   /**
+   * Get claims in a submission, filtering by office code, and using page number and size. Orders by
+   * line number by default
+   *
+   * @param officeCode the office code of the claims to be retrieved
+   * @param submissionId the submission id of the claims to be retrieved
+   * @param page the page number
+   * @param size the page size
+   * @return 200 OK with JSON body containing the list of matched claims
+   */
+  default ResponseEntity<ClaimResultSet> getClaims(
+      @RequestParam(value = "office_code") String officeCode,
+      @RequestParam(value = "submission_id") UUID submissionId,
+      @RequestParam(value = "page") Integer page,
+      @RequestParam(value = "size") Integer size) {
+    return getClaims(officeCode, submissionId, page, size, "lineNumber,asc");
+  }
+
+  /**
    * Get claims in a submission, filtering by office code, and using page number and size.
    *
    * @param officeCode the office code of the claims to be retrieved
@@ -106,7 +124,8 @@ public interface DataClaimsRestClient {
       @RequestParam(value = "office_code") String officeCode,
       @RequestParam(value = "submission_id") UUID submissionId,
       @RequestParam(value = "page") Integer page,
-      @RequestParam(value = "size") Integer size);
+      @RequestParam(value = "size") Integer size,
+      @RequestParam(value = "sort", required = false) String sort);
 
   @GetExchange(value = "/submissions/{submission-id}/matter-starts/{matter-starts-id}")
   Mono<MatterStartGet> getSubmissionMatterStart(
