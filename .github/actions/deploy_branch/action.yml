@@ -28,6 +28,18 @@ inputs:
   image-tag:
     description: "Docker image tag to deploy"
     required: true
+  oidc-mock-image-tag:
+    description: "OIDC mock image tag to deploy (preview only)"
+    required: false
+  run-pact-can-i-deploy:
+    required: false
+    default: "true"
+  pact_broker_url:
+    required: true
+  pact_broker_username:
+    required: true
+  pact_broker_password:
+    required: true
 
 outputs:
   branch-name:
@@ -44,6 +56,18 @@ runs:
     - name: Extract release name
       id: extract_release_name
       uses: ./.github/actions/get_release_name
+
+    # Add again once checking pipelines
+    - name: Can I deploy?
+      id: can-i-deploy
+      uses: ministryofjustice/laa-ccms-common-workflows/.github/actions/pact-can-i-deploy@story/pact-publish
+      with:
+        run_can_i_deploy: ${{ inputs.run-pact-can-i-deploy }}
+        pacticipant: 'laa-submit-a-bulk-claim'
+        environment: ${{ steps.extract_release_name.outputs.release-name }}
+        pact_broker_url: 'https://laa-data-pact-broker.apps.live.cloud-platform.service.justice.gov.uk/'
+        pact_broker_username: ${{ secrets.pact_broker_username }}
+        pact_broker_password: ${{ secrets.pact_broker_password }}
 
     - name: Authenticate to the cluster
       uses: ministryofjustice/laa-reusable-github-actions/.github/actions/authenticate_to_cluster@2aa2676c3cd9876ec7037ee8b3d729d0306cb7c6
@@ -74,6 +98,7 @@ runs:
         cat .helm/submit-a-bulk-claim/Chart.yaml
 
     - name: Helm deployment of branch
+      id: helm-install
       shell: bash
       env:
         ECR_REPOSITORY: ${{ inputs.ecr-repository }}
@@ -85,6 +110,7 @@ runs:
         PREVIEW_VALUES_FILE: .helm/submit-a-bulk-claim/values/env-${{ inputs.app-environment }}-preview.yaml
         RELEASE_NAME: ${{ steps.extract_release_name.outputs.release-name }}
         BRANCH_NAME: ${{ steps.extract_release_name.outputs.branch-name }}
+        OIDC_IMAGE_TAG: ${{ inputs.oidc-mock-image-tag }}
       run: |
         echo "Deploying image tag: $IMAGE_TAG under release name: $RELEASE_NAME to namespace: $KUBE_NAMESPACE"
 
@@ -96,10 +122,16 @@ runs:
             -f .helm/bitnami_redis/values.yaml \
             --namespace "$KUBE_NAMESPACE" \
             --install --wait --timeout=10m
+          oidc_values_args=(
+            --set image.repository="${ECR_REGISTRY}/${ECR_REPOSITORY}"
+            --set sabc.releaseName="${RELEASE_NAME}"
+          )
+          if [ -n "$OIDC_IMAGE_TAG" ]; then
+            oidc_values_args+=(--set image.tag="${OIDC_IMAGE_TAG}")
+          fi
           helm upgrade "${RELEASE_NAME}-oidc-mock" .helm/oidc-mock \
             --namespace "$KUBE_NAMESPACE" \
-            --set image.repository="${ECR_REGISTRY}/${ECR_REPOSITORY}" \
-            --set sabc.releaseName="${RELEASE_NAME}" \
+            "${oidc_values_args[@]}" \
             --install --wait --timeout=10m
           helm upgrade "pda-mock" .helm/pda-mock \
             --namespace "$KUBE_NAMESPACE" \
@@ -112,3 +144,29 @@ runs:
           "${values_args[@]}" \
           --install \
           --wait --timeout=10m
+  
+        IMAGES=$(helm get manifest "$RELEASE_NAME" --namespace "$KUBE_NAMESPACE" | yq -o=json '.' | jq -sc \
+            "[.[] | select(.kind == \"Deployment\") | select(.spec.template.spec.containers[0].image | contains(\"$ECR_REGISTRY/$ECR_REPOSITORY\")) | {image_version_tag: .metadata.labels.appVersion, release_tag: .metadata.name}]")
+
+        # Use heredoc for multi-line output safety
+        printf 'images<<EOF\n%s\nEOF\n' "$IMAGES" >> "$GITHUB_OUTPUT"
+        
+        echo "Deployed Images: $(echo "$IMAGES" | jq)"
+
+    - name: Update image tags
+      uses: ./.github/actions/ecr-update-image-tags
+      with:
+        images: ${{ steps.helm-install.outputs.images }}
+        role_to_assume: ${{ inputs.ecr-role-to-assume }}
+        aws_region: ${{ inputs.ecr-region }}
+        ecr_repository: ${{ inputs.ecr-repository }}
+
+    - name: Record deployment to pact broker
+      id: record-deployment-to-pact-broker
+      uses: ministryofjustice/laa-ccms-common-workflows/.github/actions/pact-record-deployment@story/pact-publish
+      with:
+        pacticipant: 'laa-submit-a-bulk-claim'
+        environment: ${{ steps.extract_release_name.outputs.release-name }}
+        pact_broker_url: ${{ inputs.pact_broker_url }}
+        pact_broker_username: ${{ inputs.pact_broker_username }}
+        pact_broker_password: ${{ inputs.pact_broker_password }}

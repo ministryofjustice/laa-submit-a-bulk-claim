@@ -11,7 +11,8 @@ import lombok.Builder;
  * @param netDisbursments the net disbursements.
  * @param disbursementVat the disbursement VAT.
  * @param netCostOfCounsel the net cost of counsel.
- * @param travelAndWaitingCosts the travel and waiting costs.
+ * @param travelCosts the travel costs.
+ * @param waitingCosts the waiting costs.
  * @param adjournedHearingFee the adjourned hearing fee.
  * @param jrFormFilling the JR form filling.
  * @param detentionTravelAndWaitingCosts the detention travel and waiting costs.
@@ -29,7 +30,9 @@ public record ClaimFeeCalculationBreakdown(
     BulkClaimCostItem netDisbursments,
     BulkClaimCostItem disbursementVat,
     BulkClaimCostItem netCostOfCounsel,
-    BulkClaimCostItem travelAndWaitingCosts,
+    BulkClaimCostItem travelCosts, /* Crime Lower */
+    BulkClaimCostItem waitingCosts, /* Crime Lower */
+    BulkClaimCostItem travelAndWaitingCosts, /* Legal Help */
     BulkClaimCostItem adjournedHearingFee,
     BulkClaimCostItem jrFormFilling,
     BulkClaimCostItem detentionTravelAndWaitingCosts,

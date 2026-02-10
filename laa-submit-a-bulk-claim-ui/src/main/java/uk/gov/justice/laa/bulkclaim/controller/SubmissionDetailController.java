@@ -66,6 +66,10 @@ public class SubmissionDetailController {
       @PathVariable("submissionReference") UUID submissionReference,
       @SessionAttribute(value = "submissions", required = false) SubmissionsResultSet submissions,
       @SessionAttribute(value = SUBMISSION_ID, required = false) UUID submissionId,
+      @RequestParam(value = "page", defaultValue = "0") final int page,
+      @RequestParam(value = "messagesPage", defaultValue = "0") final int messagesPage,
+      @RequestParam(value = "navTab", required = false, defaultValue = "CLAIM_DETAILS")
+          ViewSubmissionNavigationTab navigationTab,
       RedirectAttributes redirectAttributes) {
 
     // Validate that either submissions or submissionId is available
@@ -98,6 +102,9 @@ public class SubmissionDetailController {
     String uri =
         UriComponentsBuilder.fromPath("/view-submission-detail")
             .queryParam(SUBMISSION_ID, submissionReference)
+            .queryParam("page", page)
+            .queryParam("messagesPage", messagesPage)
+            .queryParam("navTab", navigationTab.toString())
             .toUriString();
 
     // Otherwise, redirect to the standard submission details view
@@ -119,6 +126,10 @@ public class SubmissionDetailController {
       @RequestParam(value = SUBMISSION_ID) UUID submissionId,
       @RequestParam(value = "navTab", required = false, defaultValue = "CLAIM_DETAILS")
           ViewSubmissionNavigationTab navigationTab) {
+    // Adding page and messagesPage to model
+    model.addAttribute("page", page);
+    model.addAttribute("messagesPage", messagesPage);
+
     final SubmissionResponse submissionResponse =
         dataClaimsRestClient
             .getSubmission(submissionId)
@@ -183,8 +194,20 @@ public class SubmissionDetailController {
             submissionId, null, ValidationMessageType.WARNING, messagesPage, DEFAULT_PAGE_SIZE);
     model.addAttribute("messagesSummary", messagesSummary);
 
-    addCounts(model, claimDetails, messagesSummary);
-    addMatterStartsIfApplicable(model, submissionResponse, navigationTab);
+    List<SubmissionMatterStartsRow> matterStartsDetails =
+        submissionMatterStartsDetailsBuilder.build(submissionResponse);
+    model.addAttribute("matterStartsDetails", matterStartsDetails);
+
+    boolean isCrimeLower =
+        Optional.ofNullable(submissionResponse.getAreaOfLaw())
+            .map(AreaOfLaw::getValue)
+            .map(String::toLowerCase)
+            .map(area -> area.contains("crime"))
+            .orElse(false);
+
+    model.addAttribute("isCrimeLower", isCrimeLower);
+
+    addCounts(model, claimDetails, messagesSummary, matterStartsDetails);
 
     return submissionSummary;
   }
@@ -200,32 +223,11 @@ public class SubmissionDetailController {
         submissionMessagesBuilder.buildErrors(submissionId, page, DEFAULT_PAGE_SIZE);
     model.addAttribute("messagesSummary", messagesSummary);
 
-    addCounts(model, claimDetails, messagesSummary);
-  }
+    List<SubmissionMatterStartsRow> matterStartsDetails =
+        submissionMatterStartsDetailsBuilder.build(submissionResponse);
+    model.addAttribute("matterStartsDetails", matterStartsDetails);
 
-  private void addMatterStartsIfApplicable(
-      Model model,
-      SubmissionResponse submissionResponse,
-      ViewSubmissionNavigationTab navigationTab) {
-
-    boolean isCrimeArea =
-        Optional.ofNullable(submissionResponse.getAreaOfLaw())
-            .map(AreaOfLaw::getValue)
-            .map(String::toLowerCase)
-            .map(area -> area.contains("crime"))
-            .orElse(false);
-
-    if (ViewSubmissionNavigationTab.MATTER_STARTS.equals(navigationTab) && !isCrimeArea) {
-      List<SubmissionMatterStartsRow> matterStartsDetails =
-          submissionMatterStartsDetailsBuilder.build(submissionResponse);
-      model.addAttribute("matterStartsDetails", matterStartsDetails);
-      // For mediation submissions
-      model.addAttribute(
-          "totalMatterStarts",
-          matterStartsDetails.stream()
-              .mapToLong(SubmissionMatterStartsRow::numberOfMatterStarts)
-              .sum());
-    }
+    addCounts(model, claimDetails, messagesSummary, matterStartsDetails);
   }
 
   private void addCommonSubmissionAttributes(
@@ -242,7 +244,10 @@ public class SubmissionDetailController {
   }
 
   private void addCounts(
-      Model model, SubmissionClaimsDetails claimDetails, MessagesSummary messagesSummary) {
+      Model model,
+      SubmissionClaimsDetails claimDetails,
+      MessagesSummary messagesSummary,
+      List<SubmissionMatterStartsRow> matterStartsDetails) {
 
     int claimCount =
         Optional.ofNullable(claimDetails)
@@ -253,7 +258,13 @@ public class SubmissionDetailController {
     int messageCount =
         Optional.ofNullable(messagesSummary).map(MessagesSummary::totalMessageCount).orElse(0);
 
+    long matterStartsCount =
+        matterStartsDetails.stream()
+            .mapToLong(SubmissionMatterStartsRow::numberOfMatterStarts)
+            .sum();
+
     model.addAttribute("claimCount", claimCount);
     model.addAttribute("messageCount", messageCount);
+    model.addAttribute("matterStartsCount", matterStartsCount);
   }
 }

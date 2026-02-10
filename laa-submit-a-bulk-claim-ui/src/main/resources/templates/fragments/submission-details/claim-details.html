@@ -34,7 +34,7 @@
                 th:text="#{submission.summary.claims.table.feeCode}"></th>
             <th scope="col" class="govuk-table__header" aria-sort="none"
                 th:text="#{submission.summary.claims.table.dateWorkConcluded}"></th>
-            <th scope="col" class="govuk-table__header" aria-sort="none"
+            <th scope="col" class="govuk-table__header govuk-table__header--numeric" aria-sort="none"
                 th:text="#{submission.summary.claims.table.calculatedValue}"></th>
             <th scope="col" class="govuk-table__header" aria-sort="none"
                 th:text="#{submission.summary.claims.table.escapeCase}"></th>
@@ -57,7 +57,7 @@
                 th:text="#{submission.summary.claims.table.ucn}"></th>
             <th scope="col" class="govuk-table__header" aria-sort="none"
                 th:text="#{submission.summary.claims.table.feeCode}"></th>
-            <th scope="col" class="govuk-table__header" aria-sort="none"
+            <th scope="col" class="govuk-table__header govuk-table__header--numeric" aria-sort="none"
                 th:text="#{submission.summary.claims.table.calculatedValue}"></th>
             <th scope="col" class="govuk-table__header" aria-sort="none"
                 th:text="#{submission.summary.claims.table.escapeCase}"></th>
@@ -84,7 +84,7 @@
                 th:text="#{submission.summary.claims.table.client2Ucn}"></th>
             <th scope="col" class="govuk-table__header" aria-sort="none"
                 th:text="#{submission.summary.claims.table.feeCode}"></th>
-            <th scope="col" class="govuk-table__header" aria-sort="none"
+            <th scope="col" class="govuk-table__header govuk-table__header--numeric" aria-sort="none"
                 th:text="#{submission.summary.claims.table.calculatedValue}"></th>
           </tr>
           </thead>
@@ -102,7 +102,7 @@
                 th:text="#{submission.summary.claims.table.ucn}"></th>
             <th scope="col" class="govuk-table__header" aria-sort="none"
                 th:text="#{submission.summary.claims.table.feeCode}"></th>
-            <th scope="col" class="govuk-table__header" aria-sort="none"
+            <th scope="col" class="govuk-table__header govuk-table__header--numeric" aria-sort="none"
                 th:text="#{submission.summary.claims.table.calculatedValue}"></th>
             <th scope="col" class="govuk-table__header" aria-sort="none"
                 th:text="#{submission.summary.claims.table.messages}"></th>
@@ -115,8 +115,9 @@
               th:each="claim, idx : ${claimDetails.submissionClaims}">
             <td class="govuk-table__cell">
               <a class="govuk-link"
-                 th:href="@{/submission/claim/{id}(id=${claim.id})}"
+                 th:href="@{/submission/claim/{id}(id=${claim.id}, page=${page})}"
                  th:text="#{submission.summary.claims.viewLink}"></a>
+
             </td>
             <td class="govuk-table__cell"
                 th:text="${claim.clientSurname ?: '-'}"></td>
@@ -128,21 +129,22 @@
                 th:text="${claim.feeCode ?: '-'}"></td>
             <td class="govuk-table__cell"
                 th:text="${claim.concludedOrClaimedDate != null ? #temporals.format(claim.concludedOrClaimedDate, 'dd MMM yyyy') : '-'}"></td>
-            <td class="govuk-table__cell"
+            <td class="govuk-table__cell govuk-table__cell--numeric"
+                th:attr="data-sort-value=${claim.costsDetails != null && claim.costsDetails.claimValue != null ? claim.costsDetails.claimValue : 0}"
                 th:text="${claim.costsDetails != null && claim.costsDetails.claimValue != null ? @currencyUtil.toString(claim.costsDetails.claimValue) : '-'}"></td>
             <td class="govuk-table__cell">
               <strong class="govuk-tag govuk-tag--pink"
                       th:if="${claim.escapeCase}"
                       th:text="#{submission.summary.claims.escapeCase.yes}"></strong>
               <span th:if="${claim.escapeCase == null}"
-                    th:text="'-'"></span>
+                    th:text="'NA'"></span>
               <span th:if="${claim.escapeCase != null and !claim.escapeCase}"
                     th:text="#{submission.summary.claims.escapeCase.no}"></span>
             </td>
             <td class="govuk-table__cell">
               <a class="govuk-link"
                  th:if="${claim.totalMessages > 0}"
-                 th:href="@{/submission/claim/{id}(id=${claim.id})}"
+                 th:href="@{/submission/claim/{id}(id=${claim.id}, page=${page})}"
                  th:text="#{submission.summary.claims.messages.count(${claim.totalMessages})}"></a>
             </td>
           </tr>
@@ -152,9 +154,9 @@
                  th:if="${isCivil and claimDetails != null and !claimDetails.submissionClaims.isEmpty()}">
           <tr class="govuk-table__row"
               th:each="claim, idx : ${claimDetails.submissionClaims}">
-            <td class="govuk-table__cell">
+            <td class="govuk-table__cell" th:with="claimDetailsUrl=@{/submission/claim/{id}(id=${claim.id})}">
               <a class="govuk-link"
-                 th:href="@{/submission/claim/{id}(id=${claim.id})}"
+                 th:href="${@thymeleafHrefUtils.build(claimDetailsUrl, 'page', page, 'navTab', 'CLAIM_DETAILS')}"
                  th:text="#{submission.summary.claims.viewLink}"></a>
             </td>
             <td class="govuk-table__cell"
@@ -167,7 +169,8 @@
                 th:text="${claim.ucn ?: '-'}"></td>
             <td class="govuk-table__cell"
                 th:text="${claim.feeCode ?: '-'}"></td>
-            <td class="govuk-table__cell"
+            <td class="govuk-table__cell govuk-table__cell--numeric"
+                th:attr="data-sort-value=${claim.costsDetails != null && claim.costsDetails.claimValue != null ? claim.costsDetails.claimValue : 0}"
                 th:text="${claim.costsDetails != null && claim.costsDetails.claimValue != null ? @currencyUtil.toString(claim.costsDetails.claimValue) : '-'}"></td>
             <td class="govuk-table__cell">
               <strong class="govuk-tag govuk-tag--pink"
@@ -178,10 +181,10 @@
               <span th:if="${claim.escapeCase != null and !claim.escapeCase}"
                     th:text="#{submission.summary.claims.escapeCase.no}"></span>
             </td>
-            <td class="govuk-table__cell">
+            <td class="govuk-table__cell" th:with="claimDetailsUrl=@{/submission/claim/{id}(id=${claim.id})}">
               <a class="govuk-link"
                  th:if="${claim.totalMessages > 0}"
-                 th:href="@{/submission/claim/{id}(id=${claim.id})}"
+                 th:href="${@thymeleafHrefUtils.build(claimDetailsUrl, 'page', page, 'navTab', 'CLAIM_DETAILS')}"
                  th:text="#{submission.summary.claims.messages.count(${claim.totalMessages})}"></a>
             </td>
           </tr>
@@ -193,7 +196,7 @@
               th:each="claim, idx : ${claimDetails.submissionClaims}">
             <td class="govuk-table__cell">
               <a class="govuk-link"
-                 th:href="@{/submission/claim/{id}(id=${claim.id})}"
+                 th:href="@{/submission/claim/{id}(id=${claim.id}, page=${page})}"
                  th:text="#{submission.summary.claims.viewLink}"></a>
             </td>
             <td class="govuk-table__cell"
@@ -210,7 +213,8 @@
                 th:text="${claim.client2Ucn ?: '-'}"></td>
             <td class="govuk-table__cell"
                 th:text="${claim.feeCode ?: '-'}"></td>
-            <td class="govuk-table__cell"
+            <td class="govuk-table__cell govuk-table__cell--numeric"
+                th:attr="data-sort-value=${claim.costsDetails != null && claim.costsDetails.claimValue != null ? claim.costsDetails.claimValue : 0}"
                 th:text="${claim.costsDetails != null && claim.costsDetails.claimValue != null ? @currencyUtil.toString(claim.costsDetails.claimValue) : '-'}"></td>
           </tr>
           </tbody>
@@ -221,7 +225,7 @@
               th:each="claim, idx : ${claimDetails.submissionClaims}">
             <td class="govuk-table__cell">
               <a class="govuk-link"
-                 th:href="@{/submission/claim/{id}(id=${claim.id})}"
+                 th:href="@{/submission/claim/{id}(id=${claim.id}, page=${page})}"
                  th:text="#{submission.summary.claims.viewLink}"></a>
             </td>
             <td class="govuk-table__cell"
@@ -232,12 +236,13 @@
                 th:text="${claim.ucn ?: '-'}"></td>
             <td class="govuk-table__cell"
                 th:text="${claim.feeCode ?: '-'}"></td>
-            <td class="govuk-table__cell"
+            <td class="govuk-table__cell govuk-table__cell--numeric"
+                th:attr="data-sort-value=${claim.costsDetails != null && claim.costsDetails.claimValue != null ? claim.costsDetails.claimValue : 0}"
                 th:text="${claim.costsDetails != null && claim.costsDetails.claimValue != null ? @currencyUtil.toString(claim.costsDetails.claimValue) : '-'}"></td>
             <td class="govuk-table__cell">
               <a class="govuk-link"
                  th:if="${claim.totalMessages > 0}"
-                 th:href="@{/submission/claim/{id}(id=${claim.id})}"
+                 th:href="@{/submission/claim/{id}(id=${claim.id}, page=${page})}"
                  th:text="#{submission.summary.claims.messages.count(${claim.totalMessages})}"></a>
             </td>
           </tr>
@@ -246,7 +251,7 @@
         </table>
       </div>
       <div
-          th:with="claimDetailsUrl='/view-submission-detail?navTab=CLAIM_DETAILS&submissionId' + ${submissionId}">
+          th:with="claimDetailsUrl=@{/view-submission-detail(navTab='CLAIM_DETAILS', submissionId=${submissionId})}">
         <th:block th:if="${claimDetails != null}"
                   th:insert="~{fragments/pagination :: pagination(currentUrl=${claimDetailsUrl},
            page=${claimDetails.pagination})}">

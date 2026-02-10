@@ -6,7 +6,6 @@ import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.oidcLogin;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -16,6 +15,7 @@ import java.time.LocalDate;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
@@ -91,7 +91,10 @@ class SubmissionDetailControllerTest {
                       .with(oidcLogin().oidcUser(ControllerTestHelper.getOidcUser()))
                       .session(session)))
           .hasStatus3xxRedirection()
-          .hasRedirectedUrl("/view-submission-detail?submissionId=" + submissionReference);
+          .hasRedirectedUrl(
+              "/view-submission-detail?submissionId="
+                  + submissionReference
+                  + "&page=0&messagesPage=0&navTab=CLAIM_DETAILS");
     }
 
     @Test
@@ -172,6 +175,8 @@ class SubmissionDetailControllerTest {
       when(submissionClaimDetailsBuilder.build(any(), anyInt(), anyInt()))
           .thenReturn(
               new SubmissionClaimsDetails(Collections.emptyList(), pagination, BigDecimal.ZERO));
+      when(submissionMatterStartsDetailsBuilder.build(any()))
+          .thenReturn(Arrays.asList(new SubmissionMatterStartsRow("Description", 34)));
       // When / Then
       assertThat(
               mockMvc.perform(
@@ -181,7 +186,9 @@ class SubmissionDetailControllerTest {
           .hasStatusOk()
           .hasViewName("pages/view-submission-detail-accepted");
       verify(submissionClaimDetailsBuilder, times(1)).build(any(), anyInt(), anyInt());
-      verifyNoInteractions(submissionMatterStartsDetailsBuilder);
+      verify(submissionMessagesBuilder, times(1))
+          .build(submissionReference, null, ValidationMessageType.WARNING, 0, 10);
+      verify(submissionMatterStartsDetailsBuilder, times(1)).build(any());
     }
 
     @Test
@@ -211,6 +218,8 @@ class SubmissionDetailControllerTest {
       when(submissionMessagesBuilder.buildErrors(any(), anyInt(), anyInt()))
           .thenReturn(
               new MessagesSummary(Collections.emptyList(), 0, 0, pagination, MessagesSource.CLAIM));
+      when(submissionMatterStartsDetailsBuilder.build(any()))
+          .thenReturn(Arrays.asList(new SubmissionMatterStartsRow("Description", 34)));
       // When / Then
       assertThat(
               mockMvc.perform(
@@ -223,7 +232,7 @@ class SubmissionDetailControllerTest {
 
       verify(submissionClaimDetailsBuilder, times(1)).build(any(), anyInt(), anyInt());
       verify(submissionMessagesBuilder, times(1)).buildErrors(submissionReference, 0, 10);
-      verifyNoInteractions(submissionMatterStartsDetailsBuilder);
+      verify(submissionMatterStartsDetailsBuilder, times(1)).build(any());
     }
 
     @Test

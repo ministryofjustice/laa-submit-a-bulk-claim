@@ -31,13 +31,14 @@ import uk.gov.justice.laa.bulkclaim.dto.submission.messages.MessagesSummary;
 import uk.gov.justice.laa.bulkclaim.helper.TestObjectCreator;
 import uk.gov.justice.laa.bulkclaim.mapper.ClaimFeeCalculationBreakdownMapper;
 import uk.gov.justice.laa.bulkclaim.mapper.ClaimSummaryMapper;
+import uk.gov.justice.laa.bulkclaim.util.ThymeleafHrefUtils;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.AreaOfLaw;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.ClaimResponse;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionResponse;
 
 @WebMvcTest(ClaimDetailController.class)
 @AutoConfigureMockMvc
-@Import(WebMvcTestConfig.class)
+@Import({WebMvcTestConfig.class, ThymeleafHrefUtils.class})
 @DisplayName("Claim detail controller test")
 class ClaimDetailControllerTest {
 
@@ -62,7 +63,7 @@ class ClaimDetailControllerTest {
                   get("/submission/claim/" + claimId)
                       .with(oidcLogin().oidcUser(ControllerTestHelper.getOidcUser()))))
           .hasStatus3xxRedirection()
-          .hasRedirectedUrl("/view-claim-detail");
+          .hasRedirectedUrl("/view-claim-detail?page=0&messagesPage=0&navTab=CLAIM_DETAILS");
     }
   }
 
