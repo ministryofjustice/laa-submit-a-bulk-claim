@@ -150,7 +150,6 @@ public class SubmissionDetailController {
               submissionSummary,
               submissionResponse,
               submissionId,
-              navigationTab,
               page,
               messagesPage);
       addCommonSubmissionAttributes(
@@ -169,7 +168,6 @@ public class SubmissionDetailController {
       SubmissionSummary submissionSummary,
       SubmissionResponse submissionResponse,
       UUID submissionId,
-      ViewSubmissionNavigationTab navigationTab,
       int page,
       int messagesPage) {
 
