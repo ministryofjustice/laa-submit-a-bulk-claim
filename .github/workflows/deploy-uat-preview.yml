@@ -90,8 +90,13 @@ jobs:
     permissions:
       id-token: write
       contents: read
+<<<<<<< Updated upstream
       pull-requests: write
 
+=======
+    outputs:
+      app_url: ${{ steps.preview-url.outputs.preview_url }}
+>>>>>>> Stashed changes
     steps:
       - name: Checkout
         uses: actions/checkout@v6
@@ -114,6 +119,7 @@ jobs:
           pact_broker_username: ${{ secrets.pact_broker_username }}
           pact_broker_password: ${{ secrets.pact_broker_password }}
           run-pact-can-i-deploy: false
+<<<<<<< Updated upstream
           
       - name: Comment on PR with UI ingress URL
         if: github.event_name == 'pull_request'
@@ -169,3 +175,23 @@ jobs:
               });
               console.log(`Posted new comment to PR #${prNumber}`);
             }
+=======
+
+      - name: Define preview URL
+        id: preview-url
+        shell: bash
+        env:
+          release_name: ${{ steps.deploy.outputs.release-name }}
+        run: |
+          set -euo pipefail
+          PREVIEW_URL="https://${release_name}-submit-a-bulk-claim-laa-submit-a-bulk-claim-uat.apps.live.cloud-platform.service.justice.gov.uk"
+          echo "preview_url=${PREVIEW_URL}" >> "$GITHUB_OUTPUT"
+          echo "Preview URL: ${PREVIEW_URL}"
+
+  zap-security-scan:
+   needs: [deploy-uat-preview]
+   uses: ./.github/workflows/zap-security-scan.yml
+   with:
+    url: ${{ needs.deploy-uat-preview.outputs.app_url }}
+
+>>>>>>> Stashed changes

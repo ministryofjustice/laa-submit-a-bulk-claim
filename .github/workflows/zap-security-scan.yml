@@ -1,0 +1,53 @@
+name: zap-security-scan.yml
+
+on:
+  workflow_call:
+    inputs:
+      url:
+        required: true
+        type: string
+        description: The URL to be scanned for DAST
+
+
+jobs:
+  zap_scan:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Run ZAP Full Scan
+      uses: zaproxy/action-full-scan@3c58388149901b9a03b7718852c5ba889646c27c
+      with:
+        target: ${{ inputs.url }}
+        fail_action: false
+        allow_issue_writing: false
+        cmd_options: '-J report_json.json'
+
+    - name: Check for High Severity Issues
+      run: |
+          high_count=$(jq '[.site[].alerts[]? | select(.riskdesc | startswith("High"))] | length' report_json.json)
+          critical_count=$(jq '[.site[].alerts[]? | select(.riskdesc | startswith("Critical"))] | length' report_json.json)
+          
+          echo "Critical issues found: $critical_count"
+          echo "High issues found: $high_count"
+          
+          if [ "$high_count" -gt 0 ] || [ "$critical_count" -gt 0 ]; then
+            echo "High or Critical severity issues, build failed"
+            exit 1
+          else
+            echo "No high or critical issues found"
+          fi
+
+    - name: Upload ZAP Json Report
+      uses: actions/upload-artifact@v6
+      if: always()
+      with:
+        name: ${{ github.event_name == 'pull_request' && format('zap-pr-{0}-json-report', github.event.pull_request.number) || format('zap-{0}-json-report', github.event_name) }}
+        path: report_json.json
+        if-no-files-found: warn
+
+    - name: Upload ZAP Report
+      uses: actions/upload-artifact@v6
+      if: always()
+      with:
+        name: ${{ github.event_name == 'pull_request' && format('zap-pr-{0}-report', github.event.pull_request.number) || format('zap-{0}-report', github.event_name) }}
+        path: report_html.html
+        if-no-files-found: warn
