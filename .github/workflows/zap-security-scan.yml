@@ -15,11 +15,12 @@ jobs:
     steps:
     - name: Wait for target to be reachable
       shell: bash
+      env:
+        url: ${{ inputs.url }}
       run: |
         set -euo pipefail
-        URL="${{ inputs.url }}"
         for i in {1..60}; do
-          if curl -fsS -I "$URL" >/dev/null; then
+          if curl -fsS -I ${url} >/dev/null; then
             echo "Target reachable: $URL"
             exit 0
           fi
