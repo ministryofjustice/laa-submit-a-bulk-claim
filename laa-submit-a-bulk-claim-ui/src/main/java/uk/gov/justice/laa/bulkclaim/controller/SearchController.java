@@ -4,10 +4,6 @@ import static uk.gov.justice.laa.bulkclaim.constants.SessionConstants.CLAIM_ID;
 import static uk.gov.justice.laa.bulkclaim.constants.SessionConstants.SUBMISSION_ID;
 
 import jakarta.servlet.http.HttpSession;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeParseException;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import lombok.RequiredArgsConstructor;
@@ -30,6 +26,7 @@ import org.springframework.web.bind.support.SessionStatus;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.util.UriComponentsBuilder;
 import uk.gov.justice.laa.bulkclaim.client.DataClaimsRestClient;
+import uk.gov.justice.laa.bulkclaim.dto.SubmissionOutcomeFilter;
 import uk.gov.justice.laa.bulkclaim.dto.SubmissionsSearchForm;
 import uk.gov.justice.laa.bulkclaim.util.OidcAttributeUtils;
 import uk.gov.justice.laa.bulkclaim.util.PaginationUtil;
@@ -71,10 +68,11 @@ public class SearchController {
       Model model, SessionStatus sessionStatus, @AuthenticationPrincipal OidcUser oidcUser) {
     List<String> userOffices = oidcAttributeUtils.getUserOffices(oidcUser);
     if (!model.containsAttribute(SUBMISSION_SEARCH_FORM)) {
-      // Only submissionStatus has to be set to "All" as default to select the default radio
+      // Only submissionStatuses has to be set to "All" as default to select the default radio
       // option on the frontend.
       model.addAttribute(
-          SUBMISSION_SEARCH_FORM, new SubmissionsSearchForm(null, null, userOffices, "All"));
+          SUBMISSION_SEARCH_FORM,
+          new SubmissionsSearchForm(null, null, userOffices, SubmissionOutcomeFilter.COMPLETED));
     }
     model.addAttribute("userOffices", userOffices);
     sessionStatus.setComplete();
@@ -125,12 +123,7 @@ public class SearchController {
       redirectUrl.queryParam("offices", offices);
     }
 
-    String submissionStatus = trimToNull(submissionsSearchForm.submissionStatus());
-    if (submissionStatus != null) {
-      redirectUrl.queryParam("submissionStatus", submissionStatus);
-    } else {
-      redirectUrl.queryParam("submissionStatus", "All");
-    }
+    redirectUrl.queryParam("submissionStatuses", submissionsSearchForm.submissionStatuses());
 
     return "redirect:" + redirectUrl.build().toUriString();
   }
@@ -152,7 +145,8 @@ public class SearchController {
       @RequestParam(value = "submissionPeriod", required = false) String submissionPeriod,
       @RequestParam(value = "areaOfLaw", required = false) String areaOfLaw,
       @RequestParam(value = "offices", required = false) List<String> offices,
-      @RequestParam(value = "submissionStatus", required = false) String submissionStatus,
+      @RequestParam(value = "submissionStatuses", required = false)
+          SubmissionOutcomeFilter submissionStatus,
       Model model,
       @AuthenticationPrincipal OidcUser oidcUser,
       SessionStatus sessionStatus,
@@ -215,25 +209,10 @@ public class SearchController {
 
   private static List<SubmissionStatus> getSubmissionStatus(
       SubmissionsSearchForm submissionsSearchForm) {
-    if (Objects.isNull(submissionsSearchForm.submissionStatus())) {
+    if (Objects.isNull(submissionsSearchForm.submissionStatuses())) {
       return null;
-    }
-    try {
-      return Arrays.asList(SubmissionStatus.fromValue(submissionsSearchForm.submissionStatus()));
-    } catch (IllegalArgumentException e) {
-      return null;
-    }
-  }
-
-  private LocalDate parseDate(String date) {
-    if (!StringUtils.hasText(date)) {
-      return null;
-    }
-    try {
-      return LocalDate.parse(date.trim(), DateTimeFormatter.ofPattern("d/M/yyyy"));
-    } catch (DateTimeParseException exception) {
-      log.warn("Unable to parse submitted date '{}': {}", date, exception.getMessage());
-      return null;
+    } else {
+      return submissionsSearchForm.submissionStatuses().getStatuses();
     }
   }
 

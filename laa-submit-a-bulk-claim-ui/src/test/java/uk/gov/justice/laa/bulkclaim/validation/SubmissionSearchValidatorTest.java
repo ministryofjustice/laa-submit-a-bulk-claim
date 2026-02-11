@@ -22,10 +22,10 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.validation.BeanPropertyBindingResult;
 import org.springframework.validation.BindingResult;
+import uk.gov.justice.laa.bulkclaim.dto.SubmissionOutcomeFilter;
 import uk.gov.justice.laa.bulkclaim.dto.SubmissionsSearchForm;
 import uk.gov.justice.laa.bulkclaim.util.SubmissionPeriodUtil;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.AreaOfLaw;
-import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionStatus;
 
 @ExtendWith(MockitoExtension.class)
 @DisplayName("Submission search validator test")
@@ -147,12 +147,12 @@ class SubmissionSearchValidatorTest {
   class ValidateSubmissionStatus {
 
     @ParameterizedTest
-    @EnumSource(SubmissionStatus.class)
+    @EnumSource(SubmissionOutcomeFilter.class)
     @DisplayName("Should have no errors when valid submission status")
-    void shouldHaveNoErrorsWhenValidSubmissionStatus(SubmissionStatus submissionStatus) {
+    void shouldHaveNoErrorsWhenValidSubmissionStatus(SubmissionOutcomeFilter submissionStatus) {
       // Given
       SubmissionsSearchForm form =
-          SubmissionsSearchForm.builder().submissionStatus(submissionStatus.getValue()).build();
+          SubmissionsSearchForm.builder().submissionStatuses(submissionStatus).build();
       final BindingResult errors = new BeanPropertyBindingResult(form, "submissionsSearchForm");
 
       // When
@@ -162,39 +162,10 @@ class SubmissionSearchValidatorTest {
     }
 
     @Test
-    @DisplayName("Should have no errors when submission status is 'All'")
-    void shouldHaveNoErrorsWhenSubmissionStatusIsAll() {
+    @DisplayName("Should have errors when submission status empty")
+    void shouldHaveErrorsWhenSubmissionStatusEmpty() {
       // Given
-      SubmissionsSearchForm form = SubmissionsSearchForm.builder().submissionStatus("All").build();
-      final BindingResult errors = new BeanPropertyBindingResult(form, "submissionsSearchForm");
-
-      // When
-      validator.validate(form, errors);
-      // Then
-      assertFalse(errors.hasFieldErrors(SUBMISSION_STATUS));
-    }
-
-    @ParameterizedTest
-    @NullAndEmptySource
-    @DisplayName("Should have no errors when submission status empty")
-    void shouldHaveNoErrorsWhenSubmissionStatusEmpty(String submissionStatus) {
-      // Given
-      SubmissionsSearchForm form =
-          SubmissionsSearchForm.builder().submissionStatus(submissionStatus).build();
-      final BindingResult errors = new BeanPropertyBindingResult(form, "submissionsSearchForm");
-
-      // When
-      validator.validate(form, errors);
-
-      // Then
-      assertFalse(errors.hasFieldErrors(SUBMISSION_STATUS));
-    }
-
-    @Test
-    @DisplayName("Should have error when invalid value")
-    void shouldHaveErrorWhenInvalidValue() {
-      // Given
-      SubmissionsSearchForm form = SubmissionsSearchForm.builder().submissionStatus("ABC").build();
+      SubmissionsSearchForm form = SubmissionsSearchForm.builder().build();
       final BindingResult errors = new BeanPropertyBindingResult(form, "submissionsSearchForm");
 
       // When
@@ -202,9 +173,6 @@ class SubmissionSearchValidatorTest {
 
       // Then
       assertTrue(errors.hasFieldErrors(SUBMISSION_STATUS));
-      assertEquals(
-          "search.error.submissionOutcome.invalid",
-          errors.getFieldError(SUBMISSION_STATUS).getCode());
     }
   }
 }

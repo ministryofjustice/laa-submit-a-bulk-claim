@@ -1,14 +1,16 @@
 package uk.gov.justice.laa.bulkclaim.validation;
 
+import java.util.Arrays;
 import java.util.Map;
+import java.util.Objects;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
+import uk.gov.justice.laa.bulkclaim.dto.SubmissionOutcomeFilter;
 import uk.gov.justice.laa.bulkclaim.dto.SubmissionsSearchForm;
 import uk.gov.justice.laa.bulkclaim.util.SubmissionPeriodUtil;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.AreaOfLaw;
-import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionStatus;
 
 /**
  * Validator implementation for the {@code SubmissionsSearchForm} class. Performs validation checks
@@ -36,7 +38,7 @@ public class SubmissionSearchValidator implements Validator {
   public static final String SUBMISSION_ID = "submissionId";
   public static final String SUBMISSION_PERIOD = "submissionPeriod";
   public static final String AREA_OF_LAW = "areaOfLaw";
-  public static final String SUBMISSION_STATUS = "submissionStatus";
+  public static final String SUBMISSION_STATUS = "submissionStatuses";
 
   private final SubmissionPeriodUtil submissionPeriodUtil;
 
@@ -79,21 +81,18 @@ public class SubmissionSearchValidator implements Validator {
         errors.rejectValue(
             AREA_OF_LAW,
             "search.error.areaOfLaw.invalid",
-            "Area of law must be one of the following: " + AreaOfLaw.values());
+            "Area of law must be one of the following: " + Arrays.toString(AreaOfLaw.values()));
       }
     }
   }
 
   private void validateSubmissionStatus(Errors errors, SubmissionsSearchForm form) {
-    if (!StringUtils.isEmpty(form.submissionStatus()) && !"All".equals(form.submissionStatus())) {
-      try {
-        SubmissionStatus.fromValue(form.submissionStatus());
-      } catch (IllegalArgumentException e) {
-        errors.rejectValue(
-            SUBMISSION_STATUS,
-            "search.error.submissionOutcome.invalid",
-            "Area of law must be one of the following: " + AreaOfLaw.values());
-      }
+    if (Objects.isNull(form.submissionStatuses())) {
+      errors.rejectValue(
+          SUBMISSION_STATUS,
+          "search.error.submissionOutcome.invalid",
+          "Submission status must be one of the following: "
+              + Arrays.toString(SubmissionOutcomeFilter.values()));
     }
   }
 }
