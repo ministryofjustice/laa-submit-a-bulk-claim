@@ -340,6 +340,26 @@ class DataClaimsRestClientIntegrationTest extends MockServerIntegrationTest {
     }
 
     @Test
+    @DisplayName("Should handle a 200 response with sort")
+    void shouldHandle200ResponseWithSort() throws Exception {
+      // Given
+      UUID claimId = UUID.fromString("3fa85f64-5717-4562-b3fc-2c963f66afa6");
+      String expectJson = readJsonFromFile("/GetClaims200.json");
+      mockServerClient
+          .when(HttpRequest.request().withMethod("GET").withPath("/api/v1/claims"))
+          .respond(
+              response()
+                  .withStatusCode(200)
+                  .withHeader("Content-Type", "application/json")
+                  .withBody(expectJson));
+      // Then
+      ClaimResultSet block =
+          dataClaimsRestClient.getClaims("0P322F", claimId, 0, 1, "lineNumber,asc").getBody();
+      String result = objectMapper.writeValueAsString(block);
+      assertThatJsonMatches(expectJson, result);
+    }
+
+    @Test
     @DisplayName("Should handle a 400 response")
     void shouldHandle400Response() {
       // Given
