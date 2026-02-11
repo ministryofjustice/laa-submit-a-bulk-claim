@@ -19,7 +19,8 @@ jobs:
         URL: ${{ inputs.url }}
       run: |
         set -euo pipefail
-        for i in {1..60}; do
+        echo "${URL}"
+        for i in {1..6}; do
           if curl -fsS -I "${URL}" >/dev/null; then
             echo "Target reachable: ${URL}"
             exit 0
