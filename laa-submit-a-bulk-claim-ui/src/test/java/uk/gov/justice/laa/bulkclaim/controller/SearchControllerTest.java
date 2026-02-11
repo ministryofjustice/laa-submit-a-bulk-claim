@@ -26,13 +26,13 @@ import org.springframework.web.bind.support.SessionStatus;
 import org.springframework.web.client.HttpClientErrorException.BadRequest;
 import reactor.core.publisher.Mono;
 import uk.gov.justice.laa.bulkclaim.client.DataClaimsRestClient;
+import uk.gov.justice.laa.bulkclaim.dto.SubmissionOutcomeFilter;
 import uk.gov.justice.laa.bulkclaim.dto.SubmissionsSearchForm;
 import uk.gov.justice.laa.bulkclaim.util.OidcAttributeUtils;
 import uk.gov.justice.laa.bulkclaim.util.PaginationUtil;
 import uk.gov.justice.laa.bulkclaim.validation.SubmissionSearchValidator;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.AreaOfLaw;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.Page;
-import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionStatus;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionsResultSet;
 
 @AutoConfigureMockMvc(addFilters = false)
@@ -89,7 +89,7 @@ class SearchControllerTest {
             .submissionPeriod("JAN-2024")
             .areaOfLaw(AreaOfLaw.CRIME_LOWER.getValue())
             .offices(List.of("12345"))
-            .submissionStatus(SubmissionStatus.CREATED.getValue())
+            .submissionStatuses(SubmissionOutcomeFilter.COMPLETED)
             .build();
     final Model localModel = new ExtendedModelMap();
 
@@ -97,7 +97,7 @@ class SearchControllerTest {
 
     assertEquals(
         "redirect:/submissions/search/results?page=0&submissionPeriod=JAN-2024&areaOfLaw=CRIME "
-            + "LOWER&offices=12345&submissionStatus=CREATED",
+            + "LOWER&offices=12345&submissionStatuses=COMPLETED",
         view);
   }
 
@@ -123,7 +123,7 @@ class SearchControllerTest {
             "JAN-2024",
             AreaOfLaw.CRIME_LOWER.name(),
             Collections.emptyList(),
-            SubmissionStatus.CREATED.name(),
+            SubmissionOutcomeFilter.COMPLETED,
             model,
             getOidcUser(),
             sessionStatus,

@@ -9,8 +9,11 @@ import lombok.Builder;
  * @param submissionPeriod the submission period
  * @param areaOfLaw the submission areaOfLaw
  * @param offices the submission offices
- * @param submissionStatus the submission status
+ * @param submissionStatuses the submission statuses
  */
 @Builder
 public record SubmissionsSearchForm(
-    String submissionPeriod, String areaOfLaw, List<String> offices, String submissionStatus) {}
+    String submissionPeriod,
+    String areaOfLaw,
+    List<String> offices,
+    SubmissionOutcomeFilter submissionStatuses) {}
