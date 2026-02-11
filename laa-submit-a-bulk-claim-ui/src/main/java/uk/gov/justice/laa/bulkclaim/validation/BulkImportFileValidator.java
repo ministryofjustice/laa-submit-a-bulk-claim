@@ -1,5 +1,6 @@
 package uk.gov.justice.laa.bulkclaim.validation;
 
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -15,6 +16,7 @@ import uk.gov.justice.laa.bulkclaim.dto.FileUploadForm;
  *
  * @author Jamie Briggs
  */
+@Slf4j
 @Component
 public class BulkImportFileValidator implements Validator {
 
@@ -88,6 +90,7 @@ public class BulkImportFileValidator implements Validator {
         || (lowercaseFileName.endsWith(".xml")
             && !("text/xml".equals(contentType) || "application/xml".equals(contentType)))
         || (lowercaseFileName.endsWith(".txt") && !("text/plain".equals(contentType)))) {
+      log.error("Invalid MIME type ({}) for file: {}", contentType, originalFilename);
       errors.rejectValue("file", "bulkImport.validation.mimeType");
       return;
     }
