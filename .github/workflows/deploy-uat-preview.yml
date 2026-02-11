@@ -179,7 +179,6 @@ jobs:
         run: |
           set -euo pipefail
           PREVIEW_URL="https://${release_name}-submit-a-bulk-claim-laa-submit-a-bulk-claim-uat.apps.live.cloud-platform.service.justice.gov.uk"
-          echo "preview_url=${PREVIEW_URL}" >> "$GITHUB_OUTPUT"
           echo "Preview URL: ${PREVIEW_URL}"
 
   zap-security-scan:
