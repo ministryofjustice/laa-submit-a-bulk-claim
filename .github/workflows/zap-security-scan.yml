@@ -16,17 +16,17 @@ jobs:
     - name: Wait for target to be reachable
       shell: bash
       env:
-        url: ${{ inputs.url }}
+        URL: ${{ inputs.url }}
       run: |
         set -euo pipefail
         for i in {1..60}; do
-          if curl -fsS -I ${url} >/dev/null; then
-            echo "Target reachable: $URL"
+          if curl -fsS -I "${URL}" >/dev/null; then
+            echo "Target reachable: "${URL}"
             exit 0
           fi
           sleep 10
         done
-        echo "Target not reachable in time: $URL"
+        echo "Target not reachable in time: "${URL}"
         exit 1
 
     - name: Run ZAP Full Scan
