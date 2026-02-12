@@ -174,25 +174,11 @@ jobs:
               console.log(`Posted new comment to PR #${prNumber}`);
             }
 
-      - name: Define preview URL
-        id: preview-url
-        shell: bash
-        run: |
-          set -euo pipefail
-          PREVIEW_URL='${{ steps.pr-url.outputs.preview_url }}'
-          echo "preview_url=${PREVIEW_URL}" >> "$GITHUB_OUTPUT"
-          echo "Preview URL: ${PREVIEW_URL}"
-
-      - name: Debug preview-url step output
-        shell: bash
-        run: |
-          set -euo pipefail
-          echo "Debug preview-url step output='${{ steps.preview-url.outputs.preview_url }}'"
+      - name: ZAP Security Scan
+        uses: ./.github/workflows/zap-security-scan.yml
+        with:
+          url: ${{ steps.pr-url.outputs.preview_url }}
 
 
-  zap-security-scan:
-   needs: [deploy-uat-preview]
-   uses: ./.github/workflows/zap-security-scan.yml
-   with:
-    url: ${{ needs.deploy-uat-preview.outputs.app_url }}
+
 
