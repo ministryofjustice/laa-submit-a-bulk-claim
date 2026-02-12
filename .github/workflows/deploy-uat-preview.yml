@@ -127,8 +127,8 @@ jobs:
           chart_name='submit-a-bulk-claim'
           hostname="${release_name}-${chart_name}-${namespace}.${cluster_domain}"
           url="https://${hostname}"
-          echo "preview_url=${url}" >> "$GITHUB_OUTPUT"
-          echo "Preview URL: ${url}"
+          echo "preview_url=$url" >> "$GITHUB_OUTPUT"
+          echo "Preview URL: $url"
           
 
       - name: Comment on PR with UI ingress URL
@@ -185,6 +185,7 @@ jobs:
               });
               console.log(`Posted new comment to PR #${prNumber}`);
             }
+
       - name: Debug preview-url step output
         shell: bash
         run: |
