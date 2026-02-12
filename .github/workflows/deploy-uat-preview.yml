@@ -188,12 +188,10 @@ jobs:
               console.log(`Posted new comment to PR #${prNumber}`);
             }
 
-     
+      - name:  zap-security-scan
+        uses:  ./.github/workflows/zap-security-scan.yml
+        with:
+         url: ${{ steps.preview-url.outputs.preview_url }}
        
 
-  zap-security-scan:
-   needs: [deploy-uat-preview]
-   uses: ./.github/workflows/zap-security-scan.yml
-   with:
-    url: ${{ needs.deploy-uat-preview.outputs.app_url }}
 
