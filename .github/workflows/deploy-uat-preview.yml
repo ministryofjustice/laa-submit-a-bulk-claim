@@ -131,8 +131,6 @@ jobs:
           echo "Preview URL: ${url}"
           
 
-
-
       - name: Comment on PR with UI ingress URL
         id: pr-url
         if: github.event_name == 'pull_request'
@@ -140,7 +138,7 @@ jobs:
         with:
           script: |
             const releaseName = '${{ steps.deploy.outputs.release-name }}';
-            const url = '${{ steps.preview_url.outputs.preview_url }}';
+            const url = '${{ steps.preview-url.outputs.preview_url }}';
             const hostname = url.replace(/^https:\/\//, '');
             
       
@@ -188,10 +186,9 @@ jobs:
               console.log(`Posted new comment to PR #${prNumber}`);
             }
 
-      - name:  zap-security-scan
-        uses:  ./.github/workflows/zap-security-scan.yml
-        with:
-         url: ${{ steps.preview-url.outputs.preview_url }}
-       
-
+  zap-security-scan:
+   needs: [deploy-uat-preview]
+   uses: ./.github/workflows/zap-security-scan.yml
+   with:
+    url: ${{ needs.deploy-uat-preview.outputs.app_url }}
 
