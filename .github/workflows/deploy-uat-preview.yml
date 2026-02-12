@@ -185,6 +185,11 @@ jobs:
               });
               console.log(`Posted new comment to PR #${prNumber}`);
             }
+      - name: Debug preview-url step output
+        shell: bash
+        run: |
+           echo "preview_url from step = '${{ steps.preview-url.outputs.preview_url }}'"
+
 
   zap-security-scan:
     needs: [deploy-uat-preview]
