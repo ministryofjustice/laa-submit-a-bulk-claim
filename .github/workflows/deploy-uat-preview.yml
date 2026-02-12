@@ -92,7 +92,7 @@ jobs:
       contents: read
       pull-requests: write
     outputs:
-      app_url: ${{ steps.preview-url.outputs.preview_url }}
+      app_url: ${{ steps.set-job-outputs.outputs.app_url }}
     steps:
       - name: Checkout
         uses: actions/checkout@v6
@@ -129,7 +129,14 @@ jobs:
           url="https://${hostname}"
           echo "preview_url=$url" >> "$GITHUB_OUTPUT"
           echo "Preview URL: $url"
-          
+
+      - name: Set job output app_url
+        id: set-job-outputs
+        shell: bash
+        run: |
+          echo "app_url=${{ steps.preview-url.outputs.preview_url }}" >> "$GITHUB_OUTPUT"
+          echo "Job output app_url='${{ steps.preview-url.outputs.preview_url }}'"
+
 
       - name: Comment on PR with UI ingress URL
         id: pr-url
