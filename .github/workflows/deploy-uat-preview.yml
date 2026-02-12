@@ -92,7 +92,7 @@ jobs:
       contents: read
       pull-requests: write
     outputs:
-      app_url: ${{ steps.preview-url.outputs.preview_url }}
+      app_url: ${{ steps.pr-url.outputs.preview_url }}
     steps:
       - name: Checkout
         uses: actions/checkout@v6
