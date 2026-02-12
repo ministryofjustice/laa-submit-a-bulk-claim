@@ -92,7 +92,7 @@ jobs:
       contents: read
       pull-requests: write
     outputs:
-      app_url: ${{ steps.pr-url.outputs.preview_url }}
+      app_url: ${{ steps.preview-url.outputs.preview_url }}
     steps:
       - name: Checkout
         uses: actions/checkout@v6
@@ -116,6 +116,23 @@ jobs:
           pact_broker_password: ${{ secrets.pact_broker_password }}
           run-pact-can-i-deploy: false
 
+      - name: Build preview URL
+        id: preview-url
+        shell: bash
+        run: |
+          set -euo pipefail
+          release_name='${{ steps.deploy.outputs.release-name }}'
+          namespace='${{ secrets.KUBE_NAMESPACE }}'
+          cluster_domain='apps.live.cloud-platform.service.justice.gov.uk'
+          chart_name='submit-a-bulk-claim'
+          hostname="${release_name}-${chart_name}-${namespace}.${cluster_domain}"
+          url="https://${hostname}"
+          echo "preview_url=${url}" >> "$GITHUB_OUTPUT"
+          echo "Preview URL: ${url}"
+          
+
+
+
       - name: Comment on PR with UI ingress URL
         id: pr-url
         if: github.event_name == 'pull_request'
@@ -123,13 +140,10 @@ jobs:
         with:
           script: |
             const releaseName = '${{ steps.deploy.outputs.release-name }}';
-            const namespace = '${{ secrets.KUBE_NAMESPACE }}';
-            const clusterDomain = 'apps.live.cloud-platform.service.justice.gov.uk';
-            const chartName = 'submit-a-bulk-claim';
-            const hostname = `${releaseName}-${chartName}-${namespace}.${clusterDomain}`;
-            const url = `https://${hostname}`;
+            const url = '${{ steps.preview_url.outputs.preview_url }}';
+            const hostname = url.replace(/^https:\/\//, '');
             
-            core.setOutput('preview_url', url);
+      
 
             const prNumber = context.issue.number;
             if (!prNumber) {
@@ -174,6 +188,8 @@ jobs:
               console.log(`Posted new comment to PR #${prNumber}`);
             }
 
+     
+       
 
   zap-security-scan:
    needs: [deploy-uat-preview]
