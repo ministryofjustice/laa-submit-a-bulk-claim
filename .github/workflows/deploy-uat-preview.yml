@@ -187,8 +187,16 @@ jobs:
             }
 
   zap-security-scan:
-   needs: [deploy-uat-preview]
-   uses: ./.github/workflows/zap-security-scan.yml
-   with:
-    url: ${{ needs.deploy-uat-preview.outputs.app_url }}
+    needs: [deploy-uat-preview]
+    uses: ./.github/workflows/zap-security-scan.yml
+    with:
+      url: ${{ needs.deploy-uat-preview.outputs.app_url }}
 
+  print-preview-url:
+    needs: [deploy-uat-preview]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Print app_url
+        shell: bash
+        run: |
+          echo "app_url='${{ needs.deploy-uat-preview.outputs.app_url }}'"
