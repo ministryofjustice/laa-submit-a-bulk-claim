@@ -2,18 +2,38 @@ name: zap-security-scan.yml
 
 on:
   workflow_call:
-
+    inputs:
+      url:
+        required: true
+        type: string
+        description: The URL to be scanned for DAST
 
 
 jobs:
   zap_scan:
     runs-on: ubuntu-latest
     steps:
+    - name: Wait for target to be reachable
+      shell: bash
+      env:
+        URL: ${{ inputs.url }}
+      run: |
+        set -euo pipefail
+        echo "${URL}"
+        for i in {1..6}; do
+          if curl -fsS -I "${URL}" >/dev/null; then
+            echo "Target reachable: ${URL}"
+            exit 0
+          fi
+          sleep 10
+        done
+        echo "Target not reachable in time: ${URL}"
+        exit 1
 
     - name: Run ZAP Full Scan
       uses: zaproxy/action-full-scan@3c58388149901b9a03b7718852c5ba889646c27c
       with:
-        target: 'https://uat-submit-a-bulk-claim-laa-submit-a-bulk-claim-uat.apps.live.cloud-platform.service.justice.gov.uk'
+        target: ${{ inputs.url }}
         fail_action: false
         allow_issue_writing: false
         cmd_options: '-J report_json.json'

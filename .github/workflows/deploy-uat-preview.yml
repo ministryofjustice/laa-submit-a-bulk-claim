@@ -91,6 +91,8 @@ jobs:
       id-token: write
       contents: read
       pull-requests: write
+    outputs:
+      app_url: ${{ steps.set-job-outputs.outputs.app_url}}
     steps:
       - name: Checkout
         uses: actions/checkout@v6
@@ -127,6 +129,14 @@ jobs:
           url="https://${hostname}"
           echo "preview_url=$url" >> "$GITHUB_OUTPUT"
           echo "Preview URL: $url"
+
+      - name: Set job output app_url
+        id: set-job-outputs
+        shell: bash
+        run: |
+          echo "app_url=${{ steps.preview-url.outputs.preview_url }}" >> "$GITHUB_OUTPUT"
+          echo "Job output app_url='${{ steps.preview-url.outputs.preview_url }}'"
+
 
       - name: Comment on PR with UI ingress URL
         id: pr-url
@@ -183,11 +193,23 @@ jobs:
               console.log(`Posted new comment to PR #${prNumber}`);
             }
 
+      - name: Debug preview-url step output
+        shell: bash
+        run: |
+           echo "preview_url from step = '${{ steps.preview-url.outputs.preview_url }}'"
 
 
   zap-security-scan:
     needs: [deploy-uat-preview]
     uses: ./.github/workflows/zap-security-scan.yml
+    with:
+      url: ${{ needs.deploy-uat-preview.outputs.app_url }}
 
-
-
+  print-preview-url:
+    needs: [deploy-uat-preview]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Print app_url
+        shell: bash
+        run: |
+          echo "app_url='${{ needs.deploy-uat-preview.outputs.app_url }}'"
