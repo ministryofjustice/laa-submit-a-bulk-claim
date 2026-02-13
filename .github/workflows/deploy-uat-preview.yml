@@ -91,8 +91,7 @@ jobs:
       id-token: write
       contents: read
       pull-requests: write
-    outputs:
-      app_url: ${{ steps.set-job-outputs.outputs.app_url}}
+
     steps:
       - name: Checkout
         uses: actions/checkout@v6
@@ -116,39 +115,17 @@ jobs:
           pact_broker_password: ${{ secrets.pact_broker_password }}
           run-pact-can-i-deploy: false
 
-      - name: Build preview URL
-        id: preview-url
-        shell: bash
-        run: |
-          set -euo pipefail
-          release_name='${{ steps.deploy.outputs.release-name }}'
-          namespace='${{ secrets.KUBE_NAMESPACE }}'
-          cluster_domain='apps.live.cloud-platform.service.justice.gov.uk'
-          chart_name='submit-a-bulk-claim'
-          hostname="${release_name}-${chart_name}-${namespace}.${cluster_domain}"
-          url="https://${hostname}"
-          echo "preview_url=$url" >> "$GITHUB_OUTPUT"
-          echo "Preview URL: $url"
-
-      - name: Set job output app_url
-        id: set-job-outputs
-        shell: bash
-        run: |
-          echo "app_url=${{ steps.preview-url.outputs.preview_url }}" >> "$GITHUB_OUTPUT"
-          echo "Job output app_url='${{ steps.preview-url.outputs.preview_url }}'"
-
-
       - name: Comment on PR with UI ingress URL
-        id: pr-url
         if: github.event_name == 'pull_request'
         uses: actions/github-script@v7
         with:
           script: |
             const releaseName = '${{ steps.deploy.outputs.release-name }}';
-            const url = '${{ steps.preview-url.outputs.preview_url }}';
-            const hostname = url.replace(/^https:\/\//, '');
-            
-      
+            const namespace = '${{ secrets.KUBE_NAMESPACE }}';
+            const clusterDomain = 'apps.live.cloud-platform.service.justice.gov.uk';
+            const chartName = 'submit-a-bulk-claim';
+            const hostname = `${releaseName}-${chartName}-${namespace}.${clusterDomain}`;
+            const url = `https://${hostname}`;
 
             const prNumber = context.issue.number;
             if (!prNumber) {
@@ -192,24 +169,3 @@ jobs:
               });
               console.log(`Posted new comment to PR #${prNumber}`);
             }
-
-      - name: Debug preview-url step output
-        shell: bash
-        run: |
-           echo "preview_url from step = '${{ steps.preview-url.outputs.preview_url }}'"
-
-
-  zap-security-scan:
-    needs: [deploy-uat-preview]
-    uses: ./.github/workflows/zap-security-scan.yml
-    with:
-      url: ${{ needs.deploy-uat-preview.outputs.app_url }}
-
-  print-preview-url:
-    needs: [deploy-uat-preview]
-    runs-on: ubuntu-latest
-    steps:
-      - name: Print app_url
-        shell: bash
-        run: |
-          echo "app_url='${{ needs.deploy-uat-preview.outputs.app_url }}'"
