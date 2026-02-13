@@ -2,7 +2,9 @@ package uk.gov.justice.laa.bulkclaim.util;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.ValueSource;
@@ -59,4 +61,9 @@ class ThymeleafHrefUtilsTest {
     assertThat(result)
         .isEqualTo(href + appendSymbol + "param=value1&paramTwo=value2&paramThree=value3");
   }
+
+  @Test
+  @Disabled("TODO")
+  @DisplayName("Should remove query params")
+  void shouldRemoveQueryParams() {}
 }

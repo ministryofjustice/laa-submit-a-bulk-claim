@@ -3,7 +3,10 @@ package uk.gov.justice.laa.bulkclaim.util;
 import java.time.YearMonth;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeFormatterBuilder;
+import java.util.LinkedHashMap;
 import java.util.Locale;
+import java.util.Map;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionBase;
 
@@ -15,6 +18,9 @@ import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionBase;
 @Component
 public class SubmissionPeriodUtil {
 
+  private final DateWrapperUtil dateWrapperUtil;
+  private final YearMonth earliestSubmissionPeriod;
+
   private static final DateTimeFormatter IN_FMT =
       new DateTimeFormatterBuilder()
           .parseCaseInsensitive()
@@ -23,6 +29,38 @@ public class SubmissionPeriodUtil {
 
   private static final DateTimeFormatter OUT_FMT =
       DateTimeFormatter.ofPattern("MMMM uuuu", Locale.ENGLISH);
+
+  public SubmissionPeriodUtil(
+      DateWrapperUtil dateWrapperUtil,
+      @Value("${app.submission.minimum-period}") String minimumSubmissionPeriod) {
+    this.dateWrapperUtil = dateWrapperUtil;
+    this.earliestSubmissionPeriod = YearMonth.parse(minimumSubmissionPeriod, IN_FMT);
+  }
+
+  /**
+   * Generates all possible submission periods starting from the earliest allowed submission period
+   * up to and including the month prior to the current date. Each period is represented as a
+   * key-value pair, where the key is formatted in uppercase "MMM-uuuu" (e.g., "JAN-2023"), and the
+   * value is formatted in "MMMM uuuu" (e.g., "January 2023").
+   *
+   * <p>The calculation is based on the current date provided by {@code dateWrapperUtil.now()} and
+   * the {@code earliestSubmissionPeriod} field. The method iterates backward month by month.
+   *
+   * @return a {@code Map<String, String>} containing all possible submission periods. The map uses
+   *     keys in uppercase "MMM-uuuu" format and values in "MMMM uuuu" format, ordered from the
+   *     latest available period to the earliest.
+   */
+  public Map<String, String> getAllPossibleSubmissionPeriods() {
+    Map<String, String> periods = new LinkedHashMap<>();
+    YearMonth previousMonth = YearMonth.from(dateWrapperUtil.now().minusMonths(1));
+
+    for (YearMonth month = previousMonth;
+        month.isAfter(earliestSubmissionPeriod) || month.equals(earliestSubmissionPeriod);
+        month = month.minusMonths(1)) {
+      periods.put(month.format(IN_FMT).toUpperCase(), month.format(OUT_FMT));
+    }
+    return periods;
+  }
 
   /**
    * Retrieves and formats the submission period from the provided {@code SubmissionBase} instance.
@@ -41,6 +79,21 @@ public class SubmissionPeriodUtil {
     }
     YearMonth ym = YearMonth.parse(submissionPeriod.trim(), IN_FMT);
     return ym.format(OUT_FMT);
+  }
+
+  /**
+   * Converts a submission period string from the format "MMM-uuuu" (e.g., "Jan-2023") to the format
+   * "MMMM uuuu" (e.g., "January 2023").
+   *
+   * @param submissionPeriod the submission period string to be converted.
+   * @return the formatted submission period string, or {@code null} if the input period is {@code
+   *     null} or blank.
+   */
+  public String toLongFormat(String submissionPeriod) {
+    if (submissionPeriod == null || submissionPeriod.isBlank()) {
+      return null;
+    }
+    return YearMonth.parse(submissionPeriod.trim(), IN_FMT).format(OUT_FMT);
   }
 
   /**

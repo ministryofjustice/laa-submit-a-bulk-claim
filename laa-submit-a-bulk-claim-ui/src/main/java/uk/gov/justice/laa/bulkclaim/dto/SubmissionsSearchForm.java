@@ -1,11 +1,16 @@
 package uk.gov.justice.laa.bulkclaim.dto;
 
+import java.util.List;
+import lombok.Builder;
+
 /**
  * DTO to hold claims search form values.
  *
- * @param submissionId submission and related claims reference
- * @param submittedDateFrom submitted date range from
- * @param submittedDateTo submitted date range to
+ * @param submissionPeriod the submission period
+ * @param areaOfLaw the submission areaOfLaw
+ * @param offices the submission offices
+ * @param submissionStatus the submission status
  */
+@Builder
 public record SubmissionsSearchForm(
-    String submissionId, String submittedDateFrom, String submittedDateTo) {}
+    String submissionPeriod, String areaOfLaw, List<String> offices, String submissionStatus) {}
