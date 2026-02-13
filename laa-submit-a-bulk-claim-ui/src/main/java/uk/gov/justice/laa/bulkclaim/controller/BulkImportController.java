@@ -19,12 +19,13 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import tools.jackson.databind.ObjectMapper;
 import uk.gov.justice.laa.bulkclaim.client.DataClaimsRestClient;
 import uk.gov.justice.laa.bulkclaim.dto.FileUploadForm;
-import uk.gov.justice.laa.bulkclaim.metrics.BulkClaimMetricService;
 import uk.gov.justice.laa.bulkclaim.util.OidcAttributeUtils;
 import uk.gov.justice.laa.bulkclaim.validation.BulkImportFileValidator;
 import uk.gov.justice.laa.bulkclaim.validation.BulkImportFileVirusValidator;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.CreateBulkSubmission201Response;
 import uk.gov.laa.springboot.exception.ApplicationException;
+import uk.gov.laa.springboot.metrics.aspect.annotations.HistogramMetric;
+import uk.gov.laa.springboot.metrics.aspect.annotations.ValueCaptureStrategy;
 
 /** Controller for handling the bulk upload requests. */
 @Slf4j
@@ -38,7 +39,6 @@ public class BulkImportController {
   private final BulkImportFileVirusValidator bulkImportFileVirusValidator;
   private final DataClaimsRestClient dataClaimsRestClient;
   private final OidcAttributeUtils oidcAttributeUtils;
-  private final BulkClaimMetricService bulkClaimMetricService;
   private final ObjectMapper objectMapper;
 
   /**
@@ -78,13 +78,11 @@ public class BulkImportController {
 
     bulkImportFileValidator.validate(fileUploadForm, bindingResult);
     if (bindingResult.hasErrors()) {
-      bulkClaimMetricService.recordFailedFileUploadSize(fileUploadForm.getFile(), bindingResult);
       return showErrorOnUpload(fileUploadForm, bindingResult, model);
     }
 
     bulkImportFileVirusValidator.validate(fileUploadForm, bindingResult);
     if (bindingResult.hasErrors()) {
-      bulkClaimMetricService.recordFailedFileUploadSize(fileUploadForm.getFile(), bindingResult);
       return showErrorOnUpload(fileUploadForm, bindingResult, model);
     }
 
@@ -103,7 +101,8 @@ public class BulkImportController {
       redirectAttributes.addFlashAttribute(
           SUBMISSION_ID, bulkSubmissionResponse.getSubmissionIds().getFirst());
 
-      bulkClaimMetricService.recordSuccessfulFileUploadSize(fileUploadForm.getFile());
+      double fileSize = uploadFile(fileUploadForm, oidcUser, redirectAttributes);
+      log.info("File uploaded successfully, size: {} bytes", fileSize);
       return "redirect:/upload-is-being-checked";
     } catch (WebClientResponseException e) {
       try {
@@ -111,8 +110,6 @@ public class BulkImportController {
             objectMapper.readValue(e.getResponseBodyAsString(), ApplicationException.class);
 
         log.error("API upload failed: {}", error.getErrorMessage());
-        bulkClaimMetricService.recordFailedFileUploadSize(
-            fileUploadForm.getFile().getSize(), error.getErrorMessage());
         bindingResult.rejectValue("file", "api.error", error.getErrorMessage());
       } catch (Exception parseEx) {
         log.error("Failed to upload file to Claims API with message: {}", e.getMessage());
@@ -140,5 +137,28 @@ public class BulkImportController {
     model.addAttribute(FILE_UPLOAD_FORM_MODEL_ATTR, fileUploadForm);
     model.addAttribute(BindingResult.MODEL_KEY_PREFIX + FILE_UPLOAD_FORM_MODEL_ATTR, bindingResult);
     return "pages/upload";
+  }
+
+  @HistogramMetric(
+      valueStrategy = ValueCaptureStrategy.RETURN_VALUE,
+      metricName = "file_size_bytes",
+      hintText = "Size of uploaded bulk claim file in bytes which was submitted by the user")
+  private double uploadFile(
+      FileUploadForm fileUploadForm, OidcUser oidcUser, RedirectAttributes redirectAttributes) {
+    ResponseEntity<CreateBulkSubmission201Response> responseEntity =
+        dataClaimsRestClient
+            .upload(
+                fileUploadForm.getFile(),
+                oidcUser.getPreferredUsername(),
+                oidcAttributeUtils.getUserOffices(oidcUser))
+            .block();
+    CreateBulkSubmission201Response bulkSubmissionResponse = responseEntity.getBody();
+    log.info(
+        "Claims API Upload response bulk submission UUID: {}",
+        bulkSubmissionResponse.getBulkSubmissionId());
+    redirectAttributes.addFlashAttribute(
+        SUBMISSION_ID, bulkSubmissionResponse.getSubmissionIds().getFirst());
+
+    return fileUploadForm.getFile().getSize();
   }
 }
