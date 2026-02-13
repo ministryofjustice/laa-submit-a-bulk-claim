@@ -16,7 +16,7 @@ jobs:
     - name: Wait for target to be reachable
       shell: bash
       env:
-        URL: ${{ inputs.url }}
+        URL: 'https://uat-submit-a-bulk-claim-laa-submit-a-bulk-claim-uat.apps.live.cloud-platform.service.justice.gov.uk/'
       run: |
         set -euo pipefail
         echo "${URL}"
@@ -33,7 +33,7 @@ jobs:
     - name: Run ZAP Full Scan
       uses: zaproxy/action-full-scan@3c58388149901b9a03b7718852c5ba889646c27c
       with:
-        target: ${{ inputs.url }}
+        target: 'https://uat-submit-a-bulk-claim-laa-submit-a-bulk-claim-uat.apps.live.cloud-platform.service.justice.gov.uk/'
         fail_action: false
         allow_issue_writing: false
         cmd_options: '-J report_json.json'
