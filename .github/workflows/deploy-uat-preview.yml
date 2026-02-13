@@ -174,5 +174,3 @@ jobs:
   zap-security-scan:
     needs: [deploy-uat-preview]
     uses: ./.github/workflows/zap-security-scan.yml
-    with:
-      url: ${{ needs.deploy-uat-preview.outputs.app_url }}
