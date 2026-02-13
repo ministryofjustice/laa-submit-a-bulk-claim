@@ -1,5 +1,8 @@
 package uk.gov.justice.laa.bulkclaim.validation;
 
+import java.util.Arrays;
+import java.util.List;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -15,11 +18,15 @@ import uk.gov.justice.laa.bulkclaim.dto.FileUploadForm;
  *
  * @author Jamie Briggs
  */
+@Slf4j
 @Component
 public class BulkImportFileValidator implements Validator {
 
   private final String maxFileSizeReadable;
   private final long maxFileSize;
+
+  private static final List<String> CSV_MIME_TYPES =
+      Arrays.asList("text/csv", "application/vnd.ms-excel", "text/plain");
 
   public BulkImportFileValidator(@Value("${app.upload-max-file-size:10MB}") String fileSizeLimit) {
     this.maxFileSizeReadable = fileSizeLimit;
@@ -84,10 +91,11 @@ public class BulkImportFileValidator implements Validator {
 
     // Step 3: Validate MIME Type
     String contentType = file.getContentType();
-    if ((lowercaseFileName.endsWith(".csv") && !"text/csv".equals(contentType))
+    if ((lowercaseFileName.endsWith(".csv") && !CSV_MIME_TYPES.contains(contentType))
         || (lowercaseFileName.endsWith(".xml")
             && !("text/xml".equals(contentType) || "application/xml".equals(contentType)))
         || (lowercaseFileName.endsWith(".txt") && !("text/plain".equals(contentType)))) {
+      log.error("Invalid MIME type ({}) for file: {}", contentType, originalFilename);
       errors.rejectValue("file", "bulkImport.validation.mimeType");
       return;
     }

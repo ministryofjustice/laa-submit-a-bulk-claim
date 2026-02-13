@@ -69,6 +69,41 @@ class BulkImportFileValidatorTest {
     assertThat(errors.hasFieldErrors("file")).isFalse();
   }
 
+  @ParameterizedTest
+  @ValueSource(strings = {"test.csv", "test.CSV"})
+  @DisplayName("Should pass validation for valid .csv files from excel")
+  void shouldPassValidationForValidCsvFileFromExcel(String fileName) {
+    // Given
+    MockMultipartFile file =
+        new MockMultipartFile(
+            "file", fileName, "application/vnd.ms-excel", new byte[10 * 1024 * 1024]);
+    FileUploadForm fileUploadForm = new FileUploadForm(file);
+    SimpleErrors errors = new SimpleErrors(fileUploadForm);
+
+    // When
+    bulkClaimFileValidator.validate(fileUploadForm, errors);
+
+    // Then
+    assertThat(errors.hasFieldErrors("file")).isFalse();
+  }
+
+  @ParameterizedTest
+  @ValueSource(strings = {"test.csv", "test.CSV"})
+  @DisplayName("Should pass validation for valid .csv files from text")
+  void shouldPassValidationForValidCsvFileFromText(String fileName) {
+    // Given
+    MockMultipartFile file =
+        new MockMultipartFile("file", fileName, "text/plain", new byte[10 * 1024 * 1024]);
+    FileUploadForm fileUploadForm = new FileUploadForm(file);
+    SimpleErrors errors = new SimpleErrors(fileUploadForm);
+
+    // When
+    bulkClaimFileValidator.validate(fileUploadForm, errors);
+
+    // Then
+    assertThat(errors.hasFieldErrors("file")).isFalse();
+  }
+
   @Test
   @DisplayName("Should have errors if file is empty")
   void shouldHaveErrorsIfFileIsEmpty() {
@@ -141,7 +176,7 @@ class BulkImportFileValidatorTest {
   }
 
   @ParameterizedTest
-  @ValueSource(strings = {"text/xml", "application/xml", "text/plain"})
+  @ValueSource(strings = {"text/xml", "application/xml"})
   @DisplayName("Should have error if MIME type does not match .csv extension")
   void shouldHaveErrorIfMimeDoesNotMatchCsv(String mimeType) {
     // Given
