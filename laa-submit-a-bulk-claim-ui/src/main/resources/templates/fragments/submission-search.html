@@ -132,10 +132,8 @@
               type="submit"
               class="govuk-button"
               data-module="govuk-button"
-              id="searchButton">
-            Search
-          </button>
-          <a class="govuk-link" th:href="@{/submissions/search}">Clear all</a>
+              id="searchButton" th:text="#{search.button.primary}"></button>
+          <a class="govuk-link" th:href="@{/submissions/search}" th:text="#{search.button.clearAll}"></a>
         </div>
       </div>
     </div>
