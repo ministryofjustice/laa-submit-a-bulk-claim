@@ -161,6 +161,12 @@ public class SearchController {
 
     List<String> userOffices = oidcAttributeUtils.getUserOffices(oidcUser);
     model.addAttribute("userOffices", userOffices);
+    // If both lists differ in size, user has changed what office to filter by and different by
+    // default so show this change to the user
+    model.addAttribute(
+        "shouldOpenOfficeDetails",
+        submissionsSearchForm.offices() == null
+            || submissionsSearchForm.offices().size() != userOffices.size());
 
     try {
       // Remove any offices which don't appear in request param (user has selected these offices)
