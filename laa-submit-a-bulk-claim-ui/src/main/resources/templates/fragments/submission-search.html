@@ -91,29 +91,34 @@
       </div>
 
       <div class="govuk-grid-column-full">
-        <details class="govuk-details">
-          <summary class="govuk-details__summary">
+        <details class="govuk-details" th:open="${#fields.hasErrors('offices') || shouldOpenOfficeDetails == true}">
+          <summary class="govuk-details__summary"
+                   id="choose-office-account-details-summary">
               <span class="govuk-details__summary-text"
                     th:text="#{search.result.header.chooseOffice}">
               </span>
           </summary>
           <div class="govuk-details__text">
-            <div class="govuk-form-group">
+            <div class="govuk-form-group" th:classappend="${#fields.hasErrors('offices')} ? 'govuk-form-group--error' : ''">
               <fieldset class="govuk-fieldset">
                 <legend class="govuk-fieldset__legend govuk-fieldset__legend--s"
+                        id="office-account-legend"
                         th:text="#{search.offices}">
                 </legend>
+                <th:block th:replace="fragments/error-components :: error-messages('offices')"/>
                 <div class="govuk-checkboxes govuk-radios--inline govuk-checkboxes--small"
-                     data-module="govuk-checkboxes">
+                     data-module="govuk-checkboxes" id="offices-input">
                   <th:block th:each="office,idx : ${userOffices}">
                     <div class="govuk-checkboxes__item">
-                      <input class="govuk-checkboxes__input" th:id="|${idx.index}-office-checkbox|"
+
+                      <input class="govuk-checkboxes__input"
+                             th:id="${idx.index > 0} ? |offices-input-${idx.index}| : |offices-input|"
                              type="checkbox"
                              name="offices"
-                             th:checked="${#arrays.contains(submissionsSearchForm.offices, office)}"
+                             th:checked="${submissionsSearchForm.offices != null and #arrays.contains(submissionsSearchForm.offices, office)}"
                              th:value="${office}">
                       <label class="govuk-label govuk-checkboxes__label"
-                             th:for="|${idx.index}-office-checkbox|"
+                             th:for="${idx.index > 0} ? |offices-input-${idx.index}| : |offices-input|"
                              th:text="${office}">
                       </label>
                     </div>

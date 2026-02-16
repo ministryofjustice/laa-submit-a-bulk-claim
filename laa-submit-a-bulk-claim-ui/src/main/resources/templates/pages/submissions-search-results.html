@@ -26,6 +26,7 @@
           No submissions were found.
         </p>
         <h2 class="govuk-heading-m govuk-!-margin-bottom-0"
+            id="results-heading"
             th:if="${!#lists.isEmpty(submissions.content)}"
             th:text="#{search.result.heading(${submissions.totalElements})}">
         </h2>

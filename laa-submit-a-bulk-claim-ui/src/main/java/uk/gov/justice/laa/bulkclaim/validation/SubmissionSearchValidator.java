@@ -39,6 +39,7 @@ public class SubmissionSearchValidator implements Validator {
   public static final String SUBMISSION_PERIOD = "submissionPeriod";
   public static final String AREA_OF_LAW = "areaOfLaw";
   public static final String SUBMISSION_STATUS = "submissionStatuses";
+  public static final String OFFICES = "offices";
 
   private final SubmissionPeriodUtil submissionPeriodUtil;
 
@@ -59,6 +60,7 @@ public class SubmissionSearchValidator implements Validator {
     validateSubmissionPeriod(errors, form);
     validateAreaOfLaw(errors, form);
     validateSubmissionStatus(errors, form);
+    validateOffices(errors, form);
   }
 
   private void validateSubmissionPeriod(Errors errors, SubmissionsSearchForm form) {
@@ -92,6 +94,16 @@ public class SubmissionSearchValidator implements Validator {
           SUBMISSION_STATUS,
           "search.error.submissionOutcome.invalid",
           "Submission status must be one of the following: "
+              + Arrays.toString(SubmissionOutcomeFilter.values()));
+    }
+  }
+
+  private void validateOffices(Errors errors, SubmissionsSearchForm form) {
+    if (Objects.isNull(form.offices()) || form.offices().isEmpty()) {
+      errors.rejectValue(
+          OFFICES,
+          "search.error.offices.empty",
+          "Office account must be one of the following: "
               + Arrays.toString(SubmissionOutcomeFilter.values()));
     }
   }

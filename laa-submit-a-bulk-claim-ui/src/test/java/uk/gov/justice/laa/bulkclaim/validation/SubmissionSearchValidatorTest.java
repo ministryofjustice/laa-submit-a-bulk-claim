@@ -5,10 +5,13 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.when;
 import static uk.gov.justice.laa.bulkclaim.validation.SubmissionSearchValidator.AREA_OF_LAW;
+import static uk.gov.justice.laa.bulkclaim.validation.SubmissionSearchValidator.OFFICES;
 import static uk.gov.justice.laa.bulkclaim.validation.SubmissionSearchValidator.SUBMISSION_PERIOD;
 import static uk.gov.justice.laa.bulkclaim.validation.SubmissionSearchValidator.SUBMISSION_STATUS;
 
+import java.util.Collections;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -173,6 +176,66 @@ class SubmissionSearchValidatorTest {
 
       // Then
       assertTrue(errors.hasFieldErrors(SUBMISSION_STATUS));
+    }
+  }
+
+  @Nested
+  @DisplayName("Validate office account")
+  class ValidateOfficeAccounts {
+
+    @Test
+    @DisplayName("Should have no errors when one office account")
+    void shouldHaveNoErrorsWhenOneOfficeAccount() {
+      // Given
+      final SubmissionsSearchForm form =
+          SubmissionsSearchForm.builder().offices(List.of("ABC")).build();
+      final BindingResult errors = new BeanPropertyBindingResult(form, "submissionsSearchForm");
+
+      when(submissionPeriodUtil.getAllPossibleSubmissionPeriods())
+          .thenReturn(new LinkedHashMap<>());
+
+      // When
+      validator.validate(form, errors);
+
+      // Then
+      assertFalse(errors.hasFieldErrors(OFFICES));
+    }
+
+    @Test
+    @DisplayName("Should have no errors when multiple office accounts")
+    void shouldHaveNoErrorsWhenMultipleOfficeAccounts() {
+      // Given
+      final SubmissionsSearchForm form =
+          SubmissionsSearchForm.builder().offices(List.of("ABC", "DEF", "GHI")).build();
+      final BindingResult errors = new BeanPropertyBindingResult(form, "submissionsSearchForm");
+
+      when(submissionPeriodUtil.getAllPossibleSubmissionPeriods())
+          .thenReturn(new LinkedHashMap<>());
+
+      // When
+      validator.validate(form, errors);
+
+      // Then
+      assertFalse(errors.hasFieldErrors(OFFICES));
+    }
+
+    @Test
+    @DisplayName("Should have errors when no office account added")
+    void shouldHaveErrorsWhenNoOfficeAccountAdded() {
+      // Given
+      final SubmissionsSearchForm form =
+          SubmissionsSearchForm.builder().offices(Collections.emptyList()).build();
+      final BindingResult errors = new BeanPropertyBindingResult(form, "submissionsSearchForm");
+
+      when(submissionPeriodUtil.getAllPossibleSubmissionPeriods())
+          .thenReturn(new LinkedHashMap<>());
+
+      // When
+      validator.validate(form, errors);
+
+      // Then
+      assertTrue(errors.hasFieldErrors(OFFICES));
+      assertEquals("search.error.offices.empty", errors.getFieldError(OFFICES).getCode());
     }
   }
 }
