@@ -38,9 +38,7 @@ import uk.gov.justice.laa.dstew.payments.claimsdata.model.Page;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionStatus;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionsResultSet;
 
-/**
- * Controller for handling search requests related to bulk uploads.
- */
+/** Controller for handling search requests related to bulk uploads. */
 @Slf4j
 @RequiredArgsConstructor
 @Controller
@@ -87,15 +85,15 @@ public class SearchController {
    * Handles the submissions search form submissions.
    *
    * @param submissionsSearchForm dto holding form values
-   * @param bindingResult         binding results for validation errors
-   * @param model                 view context model
+   * @param bindingResult binding results for validation errors
+   * @param model view context model
    * @return redirect to search results when successful or back to the form if validation fails
    */
   @PostMapping("/submissions/search")
   public String handleSearch(
       @AuthenticationPrincipal OidcUser oidcUser,
       @Validated @ModelAttribute(SUBMISSION_SEARCH_FORM)
-      SubmissionsSearchForm submissionsSearchForm,
+          SubmissionsSearchForm submissionsSearchForm,
       BindingResult bindingResult,
       Model model) {
 
@@ -112,7 +110,8 @@ public class SearchController {
         UriComponentsBuilder.fromPath("/submissions/search/results")
             .queryParam("page", DEFAULT_PAGE);
 
-    BiConsumer<String, Object> addParam = (name, value) -> Optional.ofNullable(value).ifPresent(v -> redirectUrl.queryParam(name, v));
+    BiConsumer<String, Object> addParam =
+        (name, value) -> Optional.ofNullable(value).ifPresent(v -> redirectUrl.queryParam(name, v));
     addParam.accept("submissionPeriod", trimToNull(submissionsSearchForm.submissionPeriod()));
     addParam.accept("areaOfLaw", trimToNull(submissionsSearchForm.areaOfLaw()));
     addQueryParamIfNotEmptyList(redirectUrl, "offices", submissionsSearchForm.offices());
@@ -124,12 +123,12 @@ public class SearchController {
   /**
    * Handles Submission page results.
    *
-   * @param page             requested page number
+   * @param page requested page number
    * @param submissionPeriod submission period filter
-   * @param model            view context model
-   * @param oidcUser         authenticated user
-   * @param sessionStatus    session status for clearing session attributes
-   * @param session          http session for storing results
+   * @param model view context model
+   * @param oidcUser authenticated user
+   * @param sessionStatus session status for clearing session attributes
+   * @param session http session for storing results
    * @return search results view
    */
   @GetMapping("/submissions/search/results")
@@ -139,7 +138,7 @@ public class SearchController {
       @RequestParam(value = "areaOfLaw", required = false) String areaOfLaw,
       @RequestParam(value = "offices", required = false) List<String> offices,
       @RequestParam(value = "submissionStatuses", required = false)
-      SubmissionOutcomeFilter submissionStatus,
+          SubmissionOutcomeFilter submissionStatus,
       Model model,
       @AuthenticationPrincipal OidcUser oidcUser,
       SessionStatus sessionStatus,
@@ -197,9 +196,9 @@ public class SearchController {
 
   private static AreaOfLaw getAreaOfLaw(SubmissionsSearchForm submissionsSearchForm) {
     try {
-      return Objects.isNull(submissionsSearchForm.areaOfLaw()) ? null
-          : AreaOfLaw.fromValue(submissionsSearchForm.areaOfLaw()
-              .replace("_", " ").toUpperCase());
+      return Objects.isNull(submissionsSearchForm.areaOfLaw())
+          ? null
+          : AreaOfLaw.fromValue(submissionsSearchForm.areaOfLaw().replace("_", " ").toUpperCase());
     } catch (IllegalArgumentException e) {
       return null;
     }
@@ -207,7 +206,8 @@ public class SearchController {
 
   private static List<SubmissionStatus> getSubmissionStatus(
       SubmissionsSearchForm submissionsSearchForm) {
-    return Objects.isNull(submissionsSearchForm.submissionStatuses()) ? null
+    return Objects.isNull(submissionsSearchForm.submissionStatuses())
+        ? null
         : submissionsSearchForm.submissionStatuses().getStatuses();
   }
 
