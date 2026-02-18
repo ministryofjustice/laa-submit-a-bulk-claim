@@ -6,6 +6,8 @@ import static uk.gov.justice.laa.bulkclaim.constants.SessionConstants.SUBMISSION
 import jakarta.servlet.http.HttpSession;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
+import java.util.function.BiConsumer;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -108,22 +110,12 @@ public class SearchController {
         UriComponentsBuilder.fromPath("/submissions/search/results")
             .queryParam("page", DEFAULT_PAGE);
 
-    String submissionPeriod = trimToNull(submissionsSearchForm.submissionPeriod());
-    if (submissionPeriod != null) {
-      redirectUrl.queryParam("submissionPeriod", submissionPeriod);
-    }
-
-    String areaOfLaw = trimToNull(submissionsSearchForm.areaOfLaw());
-    if (areaOfLaw != null) {
-      redirectUrl.queryParam("areaOfLaw", areaOfLaw);
-    }
-
-    List<String> offices = submissionsSearchForm.offices();
-    if (offices != null) {
-      redirectUrl.queryParam("offices", offices);
-    }
-
-    redirectUrl.queryParam("submissionStatuses", submissionsSearchForm.submissionStatuses());
+    BiConsumer<String, Object> addParam =
+        (name, value) -> Optional.ofNullable(value).ifPresent(v -> redirectUrl.queryParam(name, v));
+    addParam.accept("submissionPeriod", trimToNull(submissionsSearchForm.submissionPeriod()));
+    addParam.accept("areaOfLaw", trimToNull(submissionsSearchForm.areaOfLaw()));
+    addQueryParamIfNotEmptyList(redirectUrl, "offices", submissionsSearchForm.offices());
+    addParam.accept("submissionStatuses", submissionsSearchForm.submissionStatuses());
 
     return "redirect:" + redirectUrl.build().toUriString();
   }
@@ -203,11 +195,10 @@ public class SearchController {
   }
 
   private static AreaOfLaw getAreaOfLaw(SubmissionsSearchForm submissionsSearchForm) {
-    if (Objects.isNull(submissionsSearchForm.areaOfLaw())) {
-      return null;
-    }
     try {
-      return AreaOfLaw.fromValue(submissionsSearchForm.areaOfLaw().replace("_", " ").toUpperCase());
+      return Objects.isNull(submissionsSearchForm.areaOfLaw())
+          ? null
+          : AreaOfLaw.fromValue(submissionsSearchForm.areaOfLaw().replace("_", " ").toUpperCase());
     } catch (IllegalArgumentException e) {
       return null;
     }
@@ -215,14 +206,19 @@ public class SearchController {
 
   private static List<SubmissionStatus> getSubmissionStatus(
       SubmissionsSearchForm submissionsSearchForm) {
-    if (Objects.isNull(submissionsSearchForm.submissionStatuses())) {
-      return null;
-    } else {
-      return submissionsSearchForm.submissionStatuses().getStatuses();
-    }
+    return Objects.isNull(submissionsSearchForm.submissionStatuses())
+        ? null
+        : submissionsSearchForm.submissionStatuses().getStatuses();
   }
 
   private String trimToNull(String value) {
     return StringUtils.hasText(value) ? value.trim() : null;
+  }
+
+  private static void addQueryParamIfNotEmptyList(
+      UriComponentsBuilder redirectUrl, String name, List<?> values) {
+    if (values != null && !values.isEmpty()) {
+      redirectUrl.queryParam(name, values.toArray());
+    }
   }
 }
