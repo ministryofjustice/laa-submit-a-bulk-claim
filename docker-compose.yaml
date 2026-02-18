@@ -32,7 +32,6 @@ services:
       - "8082:8082"
       - "8181:8081"
     depends_on:
-      - laa-mock-oidc-service
       - redis
   claim-service:
     image: wiremock/wiremock:latest
