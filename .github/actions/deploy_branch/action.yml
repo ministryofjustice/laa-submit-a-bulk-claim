@@ -60,7 +60,7 @@ runs:
     # Add again once checking pipelines
     - name: Can I deploy?
       id: can-i-deploy
-      uses: ministryofjustice/laa-ccms-common-workflows/.github/actions/pact-can-i-deploy@story/pact-publish
+      uses: ministryofjustice/laa-ccms-common-workflows/.github/actions/pact-can-i-deploy@v1
       with:
         run_can_i_deploy: ${{ inputs.run-pact-can-i-deploy }}
         pacticipant: 'laa-submit-a-bulk-claim'
@@ -163,7 +163,7 @@ runs:
 
     - name: Record deployment to pact broker
       id: record-deployment-to-pact-broker
-      uses: ministryofjustice/laa-ccms-common-workflows/.github/actions/pact-record-deployment@story/pact-publish
+      uses: ministryofjustice/laa-ccms-common-workflows/.github/actions/pact-record-deployment@v1
       with:
         pacticipant: 'laa-submit-a-bulk-claim'
         environment: ${{ steps.extract_release_name.outputs.release-name }}
