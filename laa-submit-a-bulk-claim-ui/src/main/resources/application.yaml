@@ -88,3 +88,9 @@ management:
           - health
           - info
           - prometheus
+
+laa:
+  springboot:
+    starter:
+      metrics:
+        metric-name-prefix: submit_a_bulk_claim
