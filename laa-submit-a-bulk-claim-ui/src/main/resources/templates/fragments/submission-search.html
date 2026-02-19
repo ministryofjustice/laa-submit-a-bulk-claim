@@ -69,12 +69,20 @@
                 <div class="govuk-radios govuk-radios--inline govuk-radios--small"
                      data-module="govuk-radios">
                   <div class="govuk-radios__item">
-                    <input class="govuk-radios__input" id="completed-radio-option"
+                    <input class="govuk-radios__input" id="succeeded-radio-option"
                            th:field="*{submissionStatuses}"
                            type="radio"
-                           th:value="${T(uk.gov.justice.laa.bulkclaim.dto.SubmissionOutcomeFilter).COMPLETED}">
-                    <label class="govuk-label govuk-radios__label" for="completed-radio-option"
-                           th:text="#{search.outcome.completed}"/>
+                           th:value="${T(uk.gov.justice.laa.bulkclaim.dto.SubmissionOutcomeFilter).SUCCEEDED}">
+                    <label class="govuk-label govuk-radios__label" for="succeeded-radio-option"
+                           th:text="#{search.outcome.succeeded}"/>
+                  </div>
+                  <div class="govuk-radios__item">
+                    <input class="govuk-radios__input" id="failed-radio-option"
+                           th:field="*{submissionStatuses}"
+                           type="radio"
+                           th:value="${T(uk.gov.justice.laa.bulkclaim.dto.SubmissionOutcomeFilter).FAILED}">
+                    <label class="govuk-label govuk-radios__label" for="failed-radio-option"
+                           th:text="#{search.outcome.failed}"/>
                   </div>
                   <div class="govuk-radios__item">
                     <input class="govuk-radios__input" id="all-radio-option" type="radio"

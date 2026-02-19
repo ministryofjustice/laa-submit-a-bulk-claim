@@ -10,7 +10,8 @@ import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionStatus;
  * submissions based on their statuses.
  *
  * <ul>
- *   <li>COMPLETED: Includes submissions with statuses VALIDATION_SUCCEEDED and VALIDATION_FAILED.
+ *   <li>SUCCEEDED: Includes submissions with statuses VALIDATION_SUCCEEDED.
+ *   <li>FAILED: Includes submissions with statuses VALIDATION_FAILED.
  *   <li>ALL: Includes submissions with any status defined in SubmissionStatus.
  * </ul>
  *
@@ -18,8 +19,8 @@ import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionStatus;
  */
 @Getter
 public enum SubmissionOutcomeFilter {
-  COMPLETED(
-      Arrays.asList(SubmissionStatus.VALIDATION_SUCCEEDED, SubmissionStatus.VALIDATION_FAILED)),
+  SUCCEEDED(List.of(SubmissionStatus.VALIDATION_SUCCEEDED)),
+  FAILED(List.of(SubmissionStatus.VALIDATION_FAILED)),
   ALL(Arrays.asList(SubmissionStatus.values()));
 
   private final List<SubmissionStatus> statuses;
