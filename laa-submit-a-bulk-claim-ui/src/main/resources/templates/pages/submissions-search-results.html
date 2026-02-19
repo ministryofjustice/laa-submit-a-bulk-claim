@@ -26,6 +26,7 @@
           No submissions were found.
         </p>
         <h2 class="govuk-heading-m govuk-!-margin-bottom-0"
+            id="results-heading"
             th:if="${!#lists.isEmpty(submissions.content)}"
             th:text="#{search.result.heading(${submissions.totalElements})}">
         </h2>
@@ -72,9 +73,10 @@
             </tbody>
           </table>
           <nav th:replace="~{fragments/pagination :: pagination(currentUrl='/submissions/search/results', page=${pagination},
-                              submissionId=${submissionsSearchForm.submissionId()},
-                              submittedDateFrom=${submissionsSearchForm.submittedDateFrom()},
-                              submittedDateTo=${submissionsSearchForm.submittedDateTo()})}"></nav>
+                              submissionPeriod=${submissionsSearchForm.submissionPeriod()},
+                              areaOfLaw=${submissionsSearchForm.areaOfLaw()},
+                              offices=${submissionsSearchForm.offices()},
+                              submissionStatuses=${submissionsSearchForm.submissionStatuses()})}"></nav>
         </div>
 
       </div>

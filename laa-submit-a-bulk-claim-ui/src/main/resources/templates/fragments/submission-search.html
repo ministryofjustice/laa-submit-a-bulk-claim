@@ -1,97 +1,154 @@
 <th:block th:fragment="form(submissionsSearchForm)">
   <div class="search-panel govuk-!-margin-bottom-6">
-      <fieldset class="govuk-fieldset" th:with="maxDate=${#temporals.format(#temporals.createNow(), 'd/M/yyyy')}">
-      <legend class="govuk-fieldset__legend govuk-fieldset__legend--s">
-        <span th:text="#{search.legend}"></span>
-        <div class="govuk-body" th:text="#{search.dateHint}"></div>
-      </legend>
+    <div class="govuk-grid-row">
 
-      <div class="govuk-grid-row govuk-!-margin-bottom-0">
-        <div
-            id="from-date-form-group"
-            class="govuk-form-group govuk-grid-column-one-third"
-            th:classappend="${#fields.hasErrors('submittedDateFrom')} ? 'govuk-form-group--error'">
-          <div class="govuk-date-input__item">
-            <div
-                class="moj-datepicker"
-                data-module="moj-date-picker"
-                th:attr="data-max-date=${maxDate}">
+      <div class="govuk-grid-column-full">
+        <h2 class="govuk-heading-m" th:text="#{search.filter.subheading}"></h2>
+      </div>
 
-              <div class="govuk-form-group">
-                <label class="govuk-label" id="submittedDateFrom-label"
-                       for="submittedDateFrom-input"
-                       th:text="#{search.submittedDateFrom.label}"></label>
-                <p th:replace="~{ fragments/error-components :: error-messages('submittedDateFrom')}"></p>
-                <input
-                    class="govuk-input moj-js-datepicker-input"
-                    id="submittedDateFrom-input"
-                    th:classappend="${#fields.hasErrors('submittedDateFrom')} ? 'govuk-input--error'"
-                    th:field="*{submittedDateFrom}"
-                    type="text"
-                    aria-describedby="submittedDateFrom-label"
-                    autocomplete="off">
-              </div>
+      <div class="govuk-grid-column-one-third">
+        <fieldset class="govuk-fieldset">
+
+          <div class="govuk-body govuk-input--width-10">
+            <div class="autocomplete-wrapper ">
+              <label class="govuk-label govuk-label--s" for="submission-period"
+                     th:text="#{search.submissionPeriod}"></label>
+              <select class="govuk-select" id="submission-period"
+                      th:field="*{submissionPeriod}"
+                      data-module="make-autocomplete">
+
+                <option value="" selected></option>
+                <option
+                    th:each="period, idx : ${@submissionPeriodUtil.getAllPossibleSubmissionPeriods()}"
+                    th:value="${period.getKey()}"
+                    th:id="|submission-period-${idx.index}|"
+                    th:text="${period.getValue()}">Submission Period Option
+                </option>
+              </select>
             </div>
           </div>
-        </div>
+        </fieldset>
+      </div>
+      <div class="govuk-grid-column-one-third">
+        <fieldset class="govuk-fieldset">
 
-        <div
-            id="to-date-form-group"
-            class="govuk-form-group govuk-grid-column-one-third"
-            th:classappend="${#fields.hasErrors('submittedDateTo')} ? 'govuk-form-group--error'">
-          <div class="govuk-date-input__item">
-            <div
-                class="moj-datepicker"
-                data-module="moj-date-picker"
-                th:attr="data-max-date=${maxDate}">
-              <div class="govuk-form-group">
-                <label class="govuk-label"
-                       id="submittedDateTo-label"
-                       for="submittedDateTo-input"
-                       th:text="#{search.submittedDateTo.label}"></label>
-                <p th:replace="~{ fragments/error-components :: error-messages('submittedDateTo')}"></p>
-                <input
-                    class="govuk-input moj-js-datepicker-input"
-                    id="submittedDateTo-input"
-                    th:classappend="${#fields.hasErrors('submittedDateTo')} ? 'govuk-input--error'"
-                    th:field="*{submittedDateTo}"
-                    type="text"
-                    aria-describedby="submittedDateTo-label"
-                    autocomplete="off">
-              </div>
+          <div class="govuk-body govuk-input--width-10">
+            <label class="govuk-label govuk-label--s" for="area-of-law"
+                   th:text="#{search.areaOfLaw}"></label>
+            <select class="govuk-select" id="area-of-law"
+                    th:field="*{areaOfLaw}">
+
+              <option value="" th:text="#{search.error.areaOfLaw.all}" selected>All</option>
+              <option
+                  th:with="value=${T(uk.gov.justice.laa.dstew.payments.claimsdata.model.AreaOfLaw).LEGAL_HELP}"
+                  th:value="${value.name()}"
+                  th:text="${#strings.toUpperCase(#strings.substring(value, 0, 1)) + #strings.toLowerCase(#strings.substring(value, 1))}"></option>
+              <option
+                  th:with="value=${T(uk.gov.justice.laa.dstew.payments.claimsdata.model.AreaOfLaw).CRIME_LOWER}"
+                  th:value="${value.name()}"
+                  th:text="${#strings.toUpperCase(#strings.substring(value, 0, 1)) + #strings.toLowerCase(#strings.substring(value, 1))}"></option>
+              <option
+                  th:with="value=${T(uk.gov.justice.laa.dstew.payments.claimsdata.model.AreaOfLaw).MEDIATION}"
+                  th:value="${value.name()}"
+                  th:text="${#strings.toUpperCase(#strings.substring(value, 0, 1)) + #strings.toLowerCase(#strings.substring(value, 1))}"></option>
+
+            </select>
+          </div>
+        </fieldset>
+      </div>
+      <div class="govuk-grid-column-full">
+        <fieldset class="govuk-fieldset">
+
+          <div class="govuk-body">
+
+            <div class="govuk-form-group">
+              <fieldset class="govuk-fieldset">
+                <legend class="govuk-fieldset__legend govuk-fieldset__legend--s"
+                        th:text="#{search.outcome}">
+                </legend>
+                <div class="govuk-radios govuk-radios--inline govuk-radios--small"
+                     data-module="govuk-radios">
+                  <div class="govuk-radios__item">
+                    <input class="govuk-radios__input" id="succeeded-radio-option"
+                           th:field="*{submissionStatuses}"
+                           type="radio"
+                           th:value="${T(uk.gov.justice.laa.bulkclaim.dto.SubmissionOutcomeFilter).SUCCEEDED}">
+                    <label class="govuk-label govuk-radios__label" for="succeeded-radio-option"
+                           th:text="#{search.outcome.succeeded}"/>
+                  </div>
+                  <div class="govuk-radios__item">
+                    <input class="govuk-radios__input" id="failed-radio-option"
+                           th:field="*{submissionStatuses}"
+                           type="radio"
+                           th:value="${T(uk.gov.justice.laa.bulkclaim.dto.SubmissionOutcomeFilter).FAILED}">
+                    <label class="govuk-label govuk-radios__label" for="failed-radio-option"
+                           th:text="#{search.outcome.failed}"/>
+                  </div>
+                  <div class="govuk-radios__item">
+                    <input class="govuk-radios__input" id="all-radio-option" type="radio"
+                           th:field="*{submissionStatuses}"
+                           th:value="${T(uk.gov.justice.laa.bulkclaim.dto.SubmissionOutcomeFilter).ALL}">
+                    <label class="govuk-label govuk-radios__label" for="all-radio-option"
+                           th:text="#{search.outcome.all}"/>
+                  </div>
+                </div>
+              </fieldset>
             </div>
           </div>
+        </fieldset>
+      </div>
+
+      <div class="govuk-grid-column-full">
+        <details class="govuk-details" th:open="${#fields.hasErrors('offices') || shouldOpenOfficeDetails == true}">
+          <summary class="govuk-details__summary"
+                   id="choose-office-account-details-summary">
+              <span class="govuk-details__summary-text"
+                    th:text="#{search.result.header.chooseOffice}">
+              </span>
+          </summary>
+          <div class="govuk-details__text">
+            <div class="govuk-form-group" th:classappend="${#fields.hasErrors('offices')} ? 'govuk-form-group--error' : ''">
+              <fieldset class="govuk-fieldset">
+                <legend class="govuk-fieldset__legend govuk-fieldset__legend--s"
+                        id="office-account-legend"
+                        th:text="#{search.offices}">
+                </legend>
+                <th:block th:replace="~{fragments/error-components :: error-messages('offices')}"/>
+                <div class="govuk-checkboxes govuk-radios--inline govuk-checkboxes--small"
+                     data-module="govuk-checkboxes" id="offices-input">
+                  <th:block th:each="office,idx : ${userOffices}">
+                    <div class="govuk-checkboxes__item">
+
+                      <input class="govuk-checkboxes__input"
+                             th:id="${idx.index > 0} ? |offices-input-${idx.index}| : |offices-input|"
+                             type="checkbox"
+                             name="offices"
+                             th:checked="${submissionsSearchForm.offices != null and #arrays.contains(submissionsSearchForm.offices, office)}"
+                             th:value="${office}">
+                      <label class="govuk-label govuk-checkboxes__label"
+                             th:for="${idx.index > 0} ? |offices-input-${idx.index}| : |offices-input|"
+                             th:text="${office}">
+                      </label>
+                    </div>
+                  </th:block>
+
+                </div>
+              </fieldset>
+            </div>
+          </div>
+        </details>
+      </div>
+
+      <div class="govuk-grid-column-full">
+        <div class="govuk-button-group">
+          <button
+              type="submit"
+              class="govuk-button"
+              data-module="govuk-button"
+              id="searchButton" th:text="#{search.button.primary}"></button>
+          <a class="govuk-link" th:href="@{/submissions/search}" th:text="#{search.button.clearAll}"></a>
         </div>
       </div>
-    </fieldset>
-
-    <p class="govuk-label govuk-label--s" th:text="#{search.or}"></p>
-
-    <div
-        class="govuk-form-group govuk-!-width-two-thirds govuk-!-margin-top-4"
-        role="search"
-        th:classappend="${#fields.hasErrors('submissionId')} ? 'govuk-form-group--error'">
-      <label class="govuk-label govuk-label--s" for="submissionId-input"
-             th:text="#{search.submissionId.label}"></label>
-      <p th:replace="~{ fragments/error-components :: error-messages('submissionId')}"></p>
-      <input
-          class="govuk-input"
-          id="submissionId-input"
-          th:field="*{submissionId}"
-          type="search"
-          aria-description="submission id search criteria">
-    </div>
-
-    <div class="govuk-button-group">
-      <button
-          type="submit"
-          class="govuk-button"
-          data-module="govuk-button"
-          id="searchButton"
-          data-govuk-button-init="">
-        Search
-      </button>
-      <a class="govuk-link" th:href="@{/submissions/search}">Clear all</a>
     </div>
   </div>
 </th:block>

@@ -1,9 +1,7 @@
 package uk.gov.justice.laa.bulkclaim.client;
 
-import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
-import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -15,12 +13,14 @@ import org.springframework.web.service.annotation.GetExchange;
 import org.springframework.web.service.annotation.HttpExchange;
 import org.springframework.web.service.annotation.PostExchange;
 import reactor.core.publisher.Mono;
+import uk.gov.justice.laa.dstew.payments.claimsdata.model.AreaOfLaw;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.ClaimResponse;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.ClaimResultSet;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.CreateBulkSubmission201Response;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.MatterStartGet;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.MatterStartResultSet;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionResponse;
+import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionStatus;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionsResultSet;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.ValidationMessagesResponse;
 
@@ -50,21 +50,21 @@ public interface DataClaimsRestClient {
    * Searches submissions using JSON criteria sent in the GET request body.
    *
    * @param offices array of authenticated user silas provider offices.
-   * @param submissionId submission id
-   * @param dateFrom date range date from
-   * @param dateTo date range date to
+   * @param submissionPeriod date range date from
+   * @param areaOfLaw area of law
+   * @param submissionStatus array of submission statuses
+   * @param page page number
+   * @param size page size
+   * @param sort sort order
    * @return SubmissionSearchResponseDto
    */
   @GetExchange(url = "/submissions", accept = MediaType.APPLICATION_JSON_VALUE)
   Mono<SubmissionsResultSet> search(
       @RequestParam(value = "offices") List<String> offices,
-      @RequestParam(value = "submission_id", required = false) String submissionId,
-      @RequestParam(value = "submitted_date_from", required = false)
-          @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
-          LocalDate dateFrom,
-      @RequestParam(value = "submitted_date_to", required = false)
-          @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
-          LocalDate dateTo,
+      @RequestParam(value = "submission_period", required = false) String submissionPeriod,
+      @RequestParam(value = "area_of_law", required = false) AreaOfLaw areaOfLaw,
+      @RequestParam(value = "submission_statuses", required = false)
+          List<SubmissionStatus> submissionStatus,
       @RequestParam(value = "page", required = false, defaultValue = "0") Integer page,
       @RequestParam(value = "size", required = false, defaultValue = "10") Integer size,
       @RequestParam(value = "sort", required = false) String sort);
