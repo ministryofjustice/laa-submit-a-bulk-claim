@@ -113,7 +113,7 @@
                         id="office-account-legend"
                         th:text="#{search.offices}">
                 </legend>
-                <th:block th:replace="fragments/error-components :: error-messages('offices')"/>
+                <th:block th:replace="~{fragments/error-components :: error-messages('offices')}"/>
                 <div class="govuk-checkboxes govuk-radios--inline govuk-checkboxes--small"
                      data-module="govuk-checkboxes" id="offices-input">
                   <th:block th:each="office,idx : ${userOffices}">
