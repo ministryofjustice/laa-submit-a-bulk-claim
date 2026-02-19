@@ -89,7 +89,7 @@ class SearchControllerTest {
             .submissionPeriod("JAN-2024")
             .areaOfLaw(AreaOfLaw.CRIME_LOWER.getValue())
             .offices(List.of("12345"))
-            .submissionStatuses(SubmissionOutcomeFilter.COMPLETED)
+            .submissionStatuses(SubmissionOutcomeFilter.SUCCEEDED)
             .build();
     final Model localModel = new ExtendedModelMap();
 
@@ -97,7 +97,7 @@ class SearchControllerTest {
 
     assertEquals(
         "redirect:/submissions/search/results?page=0&submissionPeriod=JAN-2024&areaOfLaw=CRIME "
-            + "LOWER&offices=12345&submissionStatuses=COMPLETED",
+            + "LOWER&offices=12345&submissionStatuses=SUCCEEDED",
         view);
   }
 
@@ -123,7 +123,7 @@ class SearchControllerTest {
             "JAN-2024",
             AreaOfLaw.CRIME_LOWER.name(),
             Collections.emptyList(),
-            SubmissionOutcomeFilter.COMPLETED,
+            SubmissionOutcomeFilter.SUCCEEDED,
             model,
             getOidcUser(),
             sessionStatus,

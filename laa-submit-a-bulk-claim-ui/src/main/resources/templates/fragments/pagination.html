@@ -3,7 +3,7 @@
       submissionPeriod=${submissionPeriod?:null},
       areaOfLaw=${areaOfLaw?:null},
       offices=${offices?:null},
-      submissionStatus=${submissionStatus?:null},
+      submissionStatuses=${submissionStatuses?:null},
       pageVarName=${pageVarName?:'page'}"
      th:if="${page.totalPages > 1}" class="govuk-pagination"
      role="navigation" aria-label="results">
@@ -14,7 +14,7 @@
             'submissionPeriod', submissionPeriod,
             'areaOfLaw', areaOfLaw,
             'offices', offices,
-            'submissionStatus', submissionStatus
+            'submissionStatuses', submissionStatuses
             )}" rel="prev">
             <svg class="govuk-pagination__icon govuk-pagination__icon--prev"
                  xmlns="http://www.w3.org/2000/svg" height="13" width="15" aria-hidden="true"
@@ -40,7 +40,7 @@
                               'submissionPeriod', submissionPeriod,
                               'areaOfLaw', areaOfLaw,
                               'offices', offices,
-                              'submissionStatus', submissionStatus)}"
+                              'submissionStatuses', submissionStatuses)}"
                        aria-label="Page [[${pageNumber + 1}]]">
                         <span th:text="${pageNumber + 1}"></span>
                     </a>
@@ -60,7 +60,7 @@
             'submissionPeriod', submissionPeriod,
             'areaOfLaw', areaOfLaw,
             'offices', offices,
-            'submissionStatus', submissionStatus)}" rel="next">
+            'submissionStatuses', submissionStatuses)}" rel="next">
             <span class="govuk-pagination__link-title">Next</span>
             <svg class="govuk-pagination__icon govuk-pagination__icon--next"
                  xmlns="http://www.w3.org/2000/svg" height="13" width="15" aria-hidden="true"

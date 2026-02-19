@@ -74,7 +74,7 @@ public class SearchController {
       // option on the frontend.
       model.addAttribute(
           SUBMISSION_SEARCH_FORM,
-          new SubmissionsSearchForm(null, null, userOffices, SubmissionOutcomeFilter.COMPLETED));
+          new SubmissionsSearchForm(null, null, userOffices, SubmissionOutcomeFilter.SUCCEEDED));
     }
     model.addAttribute("userOffices", userOffices);
     sessionStatus.setComplete();
