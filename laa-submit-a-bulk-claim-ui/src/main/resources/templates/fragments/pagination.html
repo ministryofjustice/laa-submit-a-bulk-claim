@@ -1,5 +1,6 @@
 <nav th:fragment="pagination(currentUrl, page)"
      th:with="
+      submissionId=${submissionId?:null},
       submissionPeriod=${submissionPeriod?:null},
       areaOfLaw=${areaOfLaw?:null},
       offices=${offices?:null},
@@ -11,6 +12,7 @@
   <div th:if="${page.number > 0}" class="govuk-pagination__prev">
         <a class="govuk-link govuk-pagination__link"
            th:href="${@thymeleafHrefUtils.build(currentUrl, pageVarName, page.number - 1,
+            'submissionId', submissionId,
             'submissionPeriod', submissionPeriod,
             'areaOfLaw', areaOfLaw,
             'offices', offices,
@@ -37,6 +39,7 @@
                     </a>
                     <a th:unless="${pageNumber == page.number}" class="govuk-link govuk-pagination__link"
                        th:href="${@thymeleafHrefUtils.build(currentUrl, pageVarName, pageNumber,
+                              'submissionId', submissionId,
                               'submissionPeriod', submissionPeriod,
                               'areaOfLaw', areaOfLaw,
                               'offices', offices,
@@ -57,6 +60,8 @@
     <div th:if="${page.number < page.totalPages - 1}" class="govuk-pagination__next">
         <a class="govuk-link govuk-pagination__link"
            th:href="${@thymeleafHrefUtils.build(currentUrl, pageVarName, page.number + 1,
+            'submissionId', submissionId,
+
             'submissionPeriod', submissionPeriod,
             'areaOfLaw', areaOfLaw,
             'offices', offices,
