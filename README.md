@@ -1,7 +1,7 @@
 # Submit a Bulk Claim
 [![Ministry of Justice Repository Compliance Badge](https://github-community.service.justice.gov.uk/repository-standards/api/laa-submit-a-bulk-claim/badge)](https://github-community.service.justice.gov.uk/repository-standards/laa-cwa-bulk-upload)
 
-Submit a Bulk Claim is a Spring Boot web application that enables Legal Aid Agency providers to upload and track claims in bulk. 
+Submit a Bulk Claim is a Spring Boot web application that enables Legal Aid Agency providers to upload and track claims in bulk.
 The service authenticates users via Sign into LAA Services (SILAS), orchestrates validation and processing through the Data Stewardship `data-claims-api`, and surfaces submission feedback through a lightweight web UI.
 
 ## Table of Contents
