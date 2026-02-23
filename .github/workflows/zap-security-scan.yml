@@ -11,6 +11,28 @@ jobs:
   zap_scan:
     runs-on: ubuntu-latest
     steps:
+    - name: Install kubectl
+      uses: azure/setup-kubectl@v3
+      with:
+        version: v1.29.4
+
+    - name: Authenticate to the SaBC EKS cluster
+      uses: ./.github/actions/authenticate-to-eks-cluster
+      with:
+        kube_cluster: ${{ secrets.KUBE_CLUSTER }}
+        kube_namespace: ${{ secrets.KUBE_NAMESPACE }}
+        kube_token: ${{ secrets.KUBE_TOKEN }}
+        kube_cert: ${{ secrets.KUBE_CERT }}
+
+    - name: Port forward to SaBC pod
+      uses: ./.github/actions/port-forward
+      with:
+        kube_namespace: ${{ secrets.KUBE_NAMESPACE }}
+        pod_selector: app.kubernetes.io/name=uat-submit-a-bulk-claim
+        local_port: '8082'
+        pid_env_var: PORT_FORWARD_PID_SABC
+        wait_label: sabc
+
     - name: Run ZAP Full Scan
       uses: zaproxy/action-full-scan@3c58388149901b9a03b7718852c5ba889646c27c
       with:
