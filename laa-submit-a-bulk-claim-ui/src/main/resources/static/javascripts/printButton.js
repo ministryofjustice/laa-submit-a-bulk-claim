@@ -18,19 +18,32 @@ document.addEventListener('DOMContentLoaded', () => {
   const laaPrintButton = document.querySelector(
       '[data-module="laa-print-button"]')
   if (laaPrintButton) {
-    const printButtonSection = `
-        <div class="govuk-grid-column-one-quarter govuk-!-text-align-right">
-          <button type="button" class="govuk-button govuk-button--secondary"
+    const button = `<button type="button" class="govuk-button govuk-button--secondary"
                   data-module="govuk-button" id="print-button">
             Print this page
-          </button>
-        </div>
-    `
-    laaPrintButton.classList = 'govuk-grid-column-three-quarters';
-    laaPrintButton.insertAdjacentHTML('afterend', printButtonSection);
+          </button>`;
+
+    // If container section detailed
+    const secondaryContainer = laaPrintButton.getAttribute(
+        'data-print-action-container');
+    const actionContainer = document.getElementById(secondaryContainer);
+
+    if (actionContainer) {
+      // Put print button inside container at the end.
+      actionContainer.insertAdjacentHTML('beforeend', button);
+    } else {
+      const printButtonSection = `
+          <div class="govuk-grid-column-one-quarter govuk-!-text-align-right sabc-container__align_right">
+            ${button}
+          </div>
+      `
+      // Make column width 3/4s to fit new button section
+      laaPrintButton.classList = 'govuk-grid-column-three-quarters';
+      // Put new section after original section
+      laaPrintButton.insertAdjacentHTML('afterend', printButtonSection);
+    }
     document.getElementById('print-button').addEventListener('click',
         printPage);
   }
-  
-  
+
 });
