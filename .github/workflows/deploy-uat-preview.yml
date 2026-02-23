@@ -169,3 +169,6 @@ jobs:
               });
               console.log(`Posted new comment to PR #${prNumber}`);
             }
+  zap-security-scan:
+    needs: [ deploy-uat-preview ]
+    uses: ./.github/workflows/zap-security-scan.yml
