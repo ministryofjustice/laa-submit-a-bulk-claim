@@ -4,8 +4,10 @@ import java.time.LocalDate;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.jspecify.annotations.NonNull;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
+import org.springframework.http.ContentDisposition;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -49,14 +51,11 @@ public class ExportSubmissionDetailController {
         .flatMap(
             submission -> {
               // Setup response headers
-              String fileName =
+              String rawFileName =
                   "submission-%s-%s-%s"
                       .formatted(submission.getSubmissionPeriod(), submissionId, LocalDate.now());
-              HttpHeaders headers = new HttpHeaders();
-              headers.add(
-                  HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + fileName + ".csv");
-              headers.add("Content-Type", "text/csv");
-              headers.add("Cache-Control", "no-store");
+
+              HttpHeaders headers = getHttpHeaders(rawFileName);
 
               String areaOfLawPathVariable =
                   submission.getAreaOfLaw().getValue().toLowerCase().replace(" ", "_");
@@ -71,5 +70,19 @@ public class ExportSubmissionDetailController {
                           .headers(headers)
                           .body(new ByteArrayResource(file.getBody())));
             });
+  }
+
+  private static @NonNull HttpHeaders getHttpHeaders(String rawFileName) {
+    String safeFileNameBase =
+        rawFileName
+            .replaceAll("[\\r\\n]", "") // prevent header injection
+            .replaceAll("[^A-Za-z0-9._-]", "_"); // conservative filename chars
+
+    HttpHeaders headers = new HttpHeaders();
+    headers.setContentDisposition(
+        ContentDisposition.attachment().filename(safeFileNameBase + ".csv").build());
+    headers.add("Content-Type", "text/csv");
+    headers.add("Cache-Control", "no-store");
+    return headers;
   }
 }
