@@ -21,12 +21,12 @@ jobs:
         version: v1.29.4
 
     - name: Authenticate to the SaBC EKS cluster
-      uses: ministryofjustice/laa-reusable-github-actions/.github/actions/authenticate_to_cluster@main
+      uses: ministryofjustice/laa-reusable-github-actions/.github/actions/authenticate_to_cluster@7666443ea3f635ec52544311e0f0ea51830468c0
       with:
-        kube_cluster: ${{ secrets.KUBE_CLUSTER }}
-        kube_namespace: ${{ secrets.KUBE_NAMESPACE }}
-        kube_token: ${{ secrets.KUBE_TOKEN }}
-        kube_cert: ${{ secrets.KUBE_CERT }}
+        kube-cluster: ${{ secrets.KUBE_CLUSTER }}
+        kube-namespace: ${{ secrets.KUBE_NAMESPACE }}
+        kube-token: ${{ secrets.KUBE_TOKEN }}
+        kube-cert: ${{ secrets.KUBE_CERT }}
 
     - name: Port forward to SaBC pod
       uses: ./.github/actions/port-forward
