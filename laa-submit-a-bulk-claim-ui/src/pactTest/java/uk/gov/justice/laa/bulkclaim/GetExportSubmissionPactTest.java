@@ -1,9 +1,7 @@
 package uk.gov.justice.laa.bulkclaim;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 
-import au.com.dius.pact.consumer.dsl.LambdaDsl;
 import au.com.dius.pact.consumer.dsl.PactDslWithProvider;
 import au.com.dius.pact.consumer.junit.MockServerConfig;
 import au.com.dius.pact.consumer.junit5.PactConsumerTest;
@@ -11,7 +9,6 @@ import au.com.dius.pact.consumer.junit5.PactTestFor;
 import au.com.dius.pact.core.model.RequestResponsePact;
 import au.com.dius.pact.core.model.annotations.Pact;
 import java.util.Map;
-import java.util.UUID;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -19,11 +16,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.HttpHeaders;
-import org.springframework.web.reactive.function.client.WebClientResponseException.NotFound;
-import uk.gov.justice.laa.bulkclaim.client.DataClaimsRestClient;
 import uk.gov.justice.laa.bulkclaim.client.ExportDataClaimsRestClient;
 import uk.gov.justice.laa.bulkclaim.config.ClaimsApiPactTestConfig;
-import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionResponse;
 
 /**
  * For this PactTest, it spins up a MockWebServer which is used to act as the API we're testing
@@ -57,8 +51,7 @@ import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionResponse;
 @DisplayName("GET: /exports/submission_claims_{area-of-law}.csv PACT tests")
 public final class GetExportSubmissionPactTest extends AbstractPactTest {
 
-  @Autowired
-  ExportDataClaimsRestClient exportDataClaimsRestClient;
+  @Autowired ExportDataClaimsRestClient exportDataClaimsRestClient;
 
   @SneakyThrows
   @Pact(consumer = CONSUMER)
@@ -84,11 +77,11 @@ public final class GetExportSubmissionPactTest extends AbstractPactTest {
   @PactTestFor(pactMethod = "getSubmission200")
   void verify200Response() {
     byte[] csvData =
-        exportDataClaimsRestClient.getSubmissionExport("crime-lower", SUBMISSION_ID, "testOffice")
+        exportDataClaimsRestClient
+            .getSubmissionExport("crime-lower", SUBMISSION_ID, "testOffice")
             .map(response -> response.getBody())
             .block();
 
     assertThat(csvData).isNotNull();
   }
-
 }
