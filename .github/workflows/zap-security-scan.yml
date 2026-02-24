@@ -21,12 +21,14 @@ jobs:
         version: v1.29.4
 
     - name: Authenticate to the SaBC EKS cluster
-      uses: ./.github/actions/authenticate-to-eks-cluster
-      with:
-        kube_cluster: ${{ secrets.KUBE_CLUSTER }}
-        kube_namespace: ${{ secrets.KUBE_NAMESPACE }}
-        kube_token: ${{ secrets.KUBE_TOKEN }}
-        kube_cert: ${{ secrets.KUBE_CERT }}
+      run: |
+        set -euo pipefail
+        IFS=$'\n\t'
+        echo "${{ secrets.kube_cert }}" > ca.crt
+        kubectl config set-cluster "${{ secrets.KUBE_CLUSTER }}" --certificate-authority=./ca.crt --server=https://"${{ secrets.KUBE_CLUSTER }}"
+        kubectl config set-credentials deploy-user --token="${{ secrets.KUBE_TOKEN }}"
+        kubectl config set-context "${{ secrets.KUBE_CLUSTER }}" --cluster="${{ secrets.KUBE_CLUSTER }}" --user=deploy-user --namespace="${{ secrets.KUBE_NAMESPACE }}"
+        kubectl config use-context "${{ secrets.KUBE_CLUSTER }}"
 
     - name: Port forward to SaBC pod
       uses: ./.github/actions/port-forward
