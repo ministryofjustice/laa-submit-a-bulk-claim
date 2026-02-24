@@ -13,10 +13,9 @@ import org.springframework.security.oauth2.core.oidc.user.OidcUser;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestParam;
 import reactor.core.publisher.Mono;
+import uk.gov.justice.laa.bulkclaim.client.DataClaimsRestClient;
 import uk.gov.justice.laa.bulkclaim.client.ExportDataClaimsRestClient;
-import uk.gov.justice.laa.bulkclaim.util.SubmissionPeriodUtil;
 
 /**
  * Controller responsible for exporting submission details as a CSV file. This class provides an
@@ -29,40 +28,48 @@ import uk.gov.justice.laa.bulkclaim.util.SubmissionPeriodUtil;
 @RequiredArgsConstructor
 public class ExportSubmissionDetailController {
 
+  private final DataClaimsRestClient dataClaimsRestClient;
   private final ExportDataClaimsRestClient exportDataClaimsRestClient;
-  private final SubmissionPeriodUtil submissionPeriodUtil;
 
   /**
    * Exports the submission details as a CSV file for a specified submission ID, office, and area of
    * law. The generated file is sent as a downloadable resource in the response.
    *
    * @param submissionId the unique identifier of the submission to be exported
-   * @param officeCode the office code associated with the submission
-   * @param areaOfLaw the area of law corresponding to the submission being exported
-   * @param submissionPeriod the submission period corresponding to the submission being exported
    * @param oidcUser the authenticated OIDC user making the request
    * @return a {@code Mono} of {@code ResponseEntity} containing a downloadable {@code Resource} of
    *     the CSV export
    */
   @GetMapping("/submission/{submissionId}/export")
   public Mono<ResponseEntity<Resource>> exportSubmissionDetail(
-      @PathVariable UUID submissionId,
-      // TODO Temporary, use oidcUser once API switches to office array
-      @RequestParam("office") String officeCode,
-      @RequestParam("areaOfLaw") String areaOfLaw,
-      @RequestParam("submissionPeriod") String submissionPeriod,
-      @AuthenticationPrincipal OidcUser oidcUser) {
-    // Setup response headers
-    String fileName =
-        "submission-%s-%s-%s".formatted(submissionPeriod, submissionId, LocalDate.now());
-    HttpHeaders headers = new HttpHeaders();
-    headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + fileName + ".csv");
-    headers.add("Content-Type", "text/csv");
-    headers.add("Cache-Control", "no-store");
+      @PathVariable UUID submissionId, @AuthenticationPrincipal OidcUser oidcUser) {
 
-    String areaOfLawPathVariable = areaOfLaw.toLowerCase().replace(" ", "_");
-    return exportDataClaimsRestClient
-        .getSubmissionExport(areaOfLawPathVariable, submissionId, officeCode)
-        .map(bytes -> ResponseEntity.ok().headers(headers).body(new ByteArrayResource(bytes)));
+    return dataClaimsRestClient
+        .getSubmission(submissionId)
+        .flatMap(
+            submission -> {
+              // Setup response headers
+              String fileName =
+                  "submission-%s-%s-%s"
+                      .formatted(submission.getSubmissionPeriod(), submissionId, LocalDate.now());
+              HttpHeaders headers = new HttpHeaders();
+              headers.add(
+                  HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + fileName + ".csv");
+              headers.add("Content-Type", "text/csv");
+              headers.add("Cache-Control", "no-store");
+
+              String areaOfLawPathVariable =
+                  submission.getAreaOfLaw().getValue().toLowerCase().replace(" ", "_");
+
+              Mono<ResponseEntity<byte[]>> submissionExport =
+                  exportDataClaimsRestClient.getSubmissionExport(
+                      areaOfLawPathVariable, submissionId, submission.getOfficeAccountNumber());
+
+              return submissionExport.map(
+                  file ->
+                      ResponseEntity.ok()
+                          .headers(headers)
+                          .body(new ByteArrayResource(file.getBody())));
+            });
   }
 }

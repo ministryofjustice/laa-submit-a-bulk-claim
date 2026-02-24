@@ -1,6 +1,7 @@
 package uk.gov.justice.laa.bulkclaim.client;
 
 import java.util.UUID;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.service.annotation.GetExchange;
@@ -24,7 +25,7 @@ public interface ExportDataClaimsRestClient {
    * @return a {@code Mono<byte[]>} containing the CSV file data
    */
   @GetExchange(value = "/submission_claims_{area-of-law}.csv")
-  Mono<byte[]> getSubmissionExport(
+  Mono<ResponseEntity<byte[]>> getSubmissionExport(
       @PathVariable("area-of-law") String areaOfLaw,
       @RequestParam("submissionId") UUID submissionId,
       @RequestParam("office") String office);
