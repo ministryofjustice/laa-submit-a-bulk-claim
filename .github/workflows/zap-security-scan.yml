@@ -21,7 +21,7 @@ jobs:
         version: v1.29.4
 
     - name: Authenticate to the SaBC EKS cluster
-      uses: ./.github/actions/authenticate-to-eks-cluster
+      uses: ministryofjustice/laa-reusable-github-actions/.github/actions/authenticate_to_cluster@main
       with:
         kube_cluster: ${{ secrets.KUBE_CLUSTER }}
         kube_namespace: ${{ secrets.KUBE_NAMESPACE }}
