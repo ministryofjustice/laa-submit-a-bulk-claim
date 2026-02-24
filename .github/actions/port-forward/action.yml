@@ -1,43 +1,45 @@
 name: "Port forward to pod"
 
-inputs:
-  kube_namespace:
-    description: "Namespace that contains the target pod"
-    required: true
-    type: string
-  pod_selector:
-    description: "Label selector used to resolve the pod"
-    required: true
-    type: string
-  local_port:
-    description: "Local port to bind"
-    required: true
-    type: string
-  remote_port:
-    description: "Remote pod port to forward to (defaults to local_port)"
-    required: false
-    type: string
-    default: ""
-  pid_env_var:
-    description: "Environment variable name that will hold the port-forward PID"
-    required: false
-    type: string
-    default: "PORT_FORWARD_PID"
-  wait_for_port:
-    description: "Port number to probe with wait-for-port.sh (defaults to local_port)"
-    required: false
-    type: string
-    default: ""
-  wait_label:
-    description: "Friendly label passed to wait-for-port.sh"
-    required: false
-    type: string
-    default: ""
-  wait_script:
-    description: "Path to the wait-for-port script"
-    required: false
-    type: string
-    default: "./scripts/wait-for-port.sh"
+on:
+  workflow_call:
+    inputs:
+      kube_namespace:
+        description: "Namespace that contains the target pod"
+        required: true
+        type: string
+      pod_selector:
+        description: "Label selector used to resolve the pod"
+        required: true
+        type: string
+      local_port:
+        description: "Local port to bind"
+        required: true
+        type: string
+      remote_port:
+        description: "Remote pod port to forward to (defaults to local_port)"
+        required: false
+        type: string
+        default: ""
+      pid_env_var:
+        description: "Environment variable name that will hold the port-forward PID"
+        required: false
+        type: string
+        default: "PORT_FORWARD_PID"
+      wait_for_port:
+        description: "Port number to probe with wait-for-port.sh (defaults to local_port)"
+        required: false
+        type: string
+        default: ""
+      wait_label:
+        description: "Friendly label passed to wait-for-port.sh"
+        required: false
+        type: string
+        default: ""
+      wait_script:
+        description: "Path to the wait-for-port script"
+        required: false
+        type: string
+        default: "./scripts/wait-for-port.sh"
 
 runs:
   using: "composite"
