@@ -172,3 +172,4 @@ jobs:
   zap-security-scan:
     needs: [ deploy-uat-preview ]
     uses: ./.github/workflows/zap-security-scan.yml
+    secrets: inherit
