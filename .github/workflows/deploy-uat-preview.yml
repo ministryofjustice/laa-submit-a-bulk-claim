@@ -114,7 +114,7 @@ jobs:
           pact_broker_username: ${{ secrets.pact_broker_username }}
           pact_broker_password: ${{ secrets.pact_broker_password }}
           run-pact-can-i-deploy: false
-          
+
       - name: Comment on PR with UI ingress URL
         if: github.event_name == 'pull_request'
         uses: actions/github-script@v7
