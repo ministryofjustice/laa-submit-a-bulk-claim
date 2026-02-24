@@ -10,6 +10,7 @@ on:
 jobs:
   zap_scan:
     runs-on: ubuntu-latest
+    environment: uat
     steps:
     - name: Checkout repository
       uses: actions/checkout@v4
