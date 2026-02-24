@@ -11,6 +11,9 @@ jobs:
   zap_scan:
     runs-on: ubuntu-latest
     steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
     - name: Install kubectl
       uses: azure/setup-kubectl@v3
       with:

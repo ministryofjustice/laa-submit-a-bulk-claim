@@ -1,24 +1,22 @@
 name: "Authenticate to the EKS cluster"
 
-on:
-  workflow_call:
-    inputs:
-      kube_cluster:
-        description: 'The EKS cluster'
-        required: true
-        type: string
-      kube_namespace:
-        description: 'The EKS namespace'
-        required: true
-        type: string
-      kube_token:
-        description: 'The EKS authentication token'
-        required: true
-        type: string
-      kube_cert:
-        description: 'The EKS TLS certificate'
-        required: true
-        type: string
+inputs:
+  kube_cluster:
+    description: 'The EKS cluster'
+    required: true
+    type: string
+  kube_namespace:
+    description: 'The EKS namespace'
+    required: true
+    type: string
+  kube_token:
+    description: 'The EKS authentication token'
+    required: true
+    type: string
+  kube_cert:
+    description: 'The EKS TLS certificate'
+    required: true
+    type: string
 
 runs:
   using: "composite"
