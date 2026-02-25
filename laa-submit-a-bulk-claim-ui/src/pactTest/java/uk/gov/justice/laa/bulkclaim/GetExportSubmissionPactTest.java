@@ -8,7 +8,6 @@ import au.com.dius.pact.consumer.junit5.PactConsumerTest;
 import au.com.dius.pact.consumer.junit5.PactTestFor;
 import au.com.dius.pact.core.model.RequestResponsePact;
 import au.com.dius.pact.core.model.annotations.Pact;
-import lombok.SneakyThrows;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,8 +25,8 @@ import uk.gov.justice.laa.bulkclaim.config.ClaimsApiPactTestConfig;
  * then verify itself against the generated pact to ensure it remains compatible with it's
  * consumers.
  *
- * <p>For the various {@link Pact} annotations, a scenario is created. There are multiple parts of
- * a {@link RequestResponsePact}:
+ * <p>For the various {@link Pact} annotations, a scenario is created. There are multiple parts of a
+ * {@link RequestResponsePact}:
  *
  * <ul>
  *   <li>Given: This explains the state of what the Claims API should be in when expecting this
@@ -51,8 +50,7 @@ import uk.gov.justice.laa.bulkclaim.config.ClaimsApiPactTestConfig;
 @DisplayName("GET: /exports/submission-claims-{area-of-law} PACT tests")
 public final class GetExportSubmissionPactTest extends AbstractPactTest {
 
-  @Autowired
-  ExportDataClaimsRestClient exportDataClaimsRestClient;
+  @Autowired ExportDataClaimsRestClient exportDataClaimsRestClient;
 
   String legalHelpCsvHeaders =
       "Providers LAA Office Number,Submission Month,Area of Law,Legal Help Submission Reference,"
