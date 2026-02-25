@@ -24,7 +24,7 @@ public interface ExportDataClaimsRestClient {
    * @param office the office associated with the submission claims
    * @return a {@code Mono<byte[]>} containing the CSV file data
    */
-  @GetExchange(value = "/submission_claims_{area-of-law}.csv")
+  @GetExchange(value = "/submission-claims-{area-of-law}")
   Mono<ResponseEntity<byte[]>> getSubmissionExport(
       @PathVariable("area-of-law") String areaOfLaw,
       @RequestParam("submission-id") UUID submissionId,

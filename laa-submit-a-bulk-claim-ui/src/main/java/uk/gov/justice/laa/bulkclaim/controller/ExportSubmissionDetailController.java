@@ -58,7 +58,7 @@ public class ExportSubmissionDetailController {
               HttpHeaders headers = getHttpHeaders(rawFileName);
 
               String areaOfLawPathVariable =
-                  submission.getAreaOfLaw().getValue().toLowerCase().replace(" ", "_");
+                  submission.getAreaOfLaw().getValue().toLowerCase().replace(" ", "-");
 
               Mono<ResponseEntity<byte[]>> submissionExport =
                   exportDataClaimsRestClient.getSubmissionExport(
