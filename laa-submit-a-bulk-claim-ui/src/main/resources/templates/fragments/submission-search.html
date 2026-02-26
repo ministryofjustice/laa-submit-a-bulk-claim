@@ -115,7 +115,7 @@
                 </legend>
                 <th:block th:replace="~{fragments/error-components :: error-messages('offices')}"/>
                 <div class="govuk-checkboxes govuk-radios--inline govuk-checkboxes--small"
-                     data-module="govuk-checkboxes" id="offices-input">
+                     data-module="govuk-checkboxes" id="offices-input-container">
                   <th:block th:each="office,idx : ${userOffices}">
                     <div class="govuk-checkboxes__item">
 
