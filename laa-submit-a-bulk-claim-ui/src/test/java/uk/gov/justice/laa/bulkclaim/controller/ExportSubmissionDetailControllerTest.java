@@ -22,8 +22,6 @@ import reactor.core.publisher.Mono;
 import uk.gov.justice.laa.bulkclaim.client.DataClaimsRestClient;
 import uk.gov.justice.laa.bulkclaim.client.ExportDataClaimsRestClient;
 import uk.gov.justice.laa.bulkclaim.config.WebMvcTestConfig;
-import uk.gov.justice.laa.dstew.payments.claimsdata.model.AreaOfLaw;
-import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionResponse;
 
 @WebMvcTest(ExportSubmissionDetailController.class)
 @AutoConfigureMockMvc
@@ -48,24 +46,15 @@ class ExportSubmissionDetailControllerTest {
       byte[] file = fileContent.getBytes();
       String office = "12345";
       String areaOfLaw = "legal-help";
-      String submissionPeriod = "MAY-2020";
       UUID submissionReference = UUID.fromString("3fa85f64-5717-4562-b3fc-2c963f66afa6");
-      when(dataClaimsRestClient.getSubmission(submissionReference))
-          .thenReturn(
-              Mono.just(
-                  SubmissionResponse.builder()
-                      .officeAccountNumber(office)
-                      .areaOfLaw(AreaOfLaw.LEGAL_HELP)
-                      .submissionPeriod(submissionPeriod)
-                      .build()));
       when(exportDataClaimsRestClient.getSubmissionExport(any(), any(), any()))
           .thenReturn(Mono.just(ResponseEntity.ok(file)));
 
       // When (first request starts async processing due to controller method using "Mono")
       var initial =
           mockMvc.perform(
-              get("/submission/%s/export?office=%s&areaOfLaw=%s&submissionPeriod=%s"
-                      .formatted(submissionReference, office, areaOfLaw, submissionPeriod))
+              get("/submission/%s/export?office=%s&areaOfLaw=%s"
+                      .formatted(submissionReference, office, areaOfLaw))
                   .with(oidcLogin().oidcUser(ControllerTestHelper.getOidcUser())));
 
       // When / Then

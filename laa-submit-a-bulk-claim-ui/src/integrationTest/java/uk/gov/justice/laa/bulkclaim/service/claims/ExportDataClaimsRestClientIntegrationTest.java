@@ -48,7 +48,7 @@ class ExportDataClaimsRestClientIntegrationTest extends MockServerIntegrationTes
           .when(
               HttpRequest.request()
                   .withMethod("GET")
-                  .withPath("/exports/submission_claims_legal_help.csv"))
+                  .withPath("/exports/submission-claims-legal-help"))
           .respond(
               HttpResponse.response()
                   .withStatusCode(200)

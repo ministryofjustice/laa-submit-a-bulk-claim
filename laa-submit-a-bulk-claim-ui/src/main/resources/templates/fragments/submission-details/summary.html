@@ -7,7 +7,7 @@
     <!--/*@thymesVar id="submissionSummary" type="uk.gov.justice.laa.bulkclaim.dto.submission.SubmissionSummary"*/-->
     <a id="export-button" class="govuk-button govuk-button--secondary govuk-!-text-align-right"
        data-module="laa-hide-on-print-button"
-        th:href="@{/submission/{submissionId}/export(submissionId=${submissionSummary?.submissionReference})}">Export</a>
+        th:href="@{/submission/{submissionId}/export(submissionId=${submissionSummary?.submissionReference}, office=${submissionSummary.officeAccount}, areaOfLaw=${submissionSummary.areaOfLaw()})}">Export</a>
   </div>
 
   <div class="govuk-grid-column-full govuk-!-padding-bottom-8">

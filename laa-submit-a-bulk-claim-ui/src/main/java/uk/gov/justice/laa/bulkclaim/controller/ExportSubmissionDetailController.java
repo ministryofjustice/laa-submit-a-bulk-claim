@@ -1,17 +1,15 @@
 package uk.gov.justice.laa.bulkclaim.controller;
 
-import java.time.LocalDate;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.oauth2.core.oidc.user.OidcUser;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestParam;
 import reactor.core.publisher.Mono;
 import uk.gov.justice.laa.bulkclaim.client.DataClaimsRestClient;
 import uk.gov.justice.laa.bulkclaim.client.ExportDataClaimsRestClient;
@@ -27,7 +25,6 @@ import uk.gov.justice.laa.bulkclaim.client.ExportDataClaimsRestClient;
 @RequiredArgsConstructor
 public class ExportSubmissionDetailController {
 
-  private final DataClaimsRestClient dataClaimsRestClient;
   private final ExportDataClaimsRestClient exportDataClaimsRestClient;
 
   /**
@@ -35,29 +32,26 @@ public class ExportSubmissionDetailController {
    * law. The generated file is sent as a downloadable resource in the response.
    *
    * @param submissionId the unique identifier of the submission to be exported
+   * @param office the office account number for the submission
+   * @param areaOfLaw the area of law for the submission
    * @return a {@code Mono} of {@code ResponseEntity} containing a downloadable {@code Resource} of
-   *     the CSV export
+   * the CSV export
    */
   @GetMapping("/submission/{submissionId}/export")
   public Mono<ResponseEntity<Resource>> exportSubmissionDetail(
-      @PathVariable UUID submissionId) {
+      @PathVariable UUID submissionId, @RequestParam String office,
+      @RequestParam String areaOfLaw) {
+    String areaOfLawPathVariable =
+        areaOfLaw.toLowerCase().replace(" ", "-");
 
-    return dataClaimsRestClient
-        .getSubmission(submissionId)
-        .flatMap(
-            submission -> {
-              String areaOfLawPathVariable =
-                  submission.getAreaOfLaw().getValue().toLowerCase().replace(" ", "-");
+    Mono<ResponseEntity<byte[]>> submissionExport =
+        exportDataClaimsRestClient.getSubmissionExport(
+            areaOfLawPathVariable, submissionId, office);
 
-              Mono<ResponseEntity<byte[]>> submissionExport =
-                  exportDataClaimsRestClient.getSubmissionExport(
-                      areaOfLawPathVariable, submissionId, submission.getOfficeAccountNumber());
-
-              return submissionExport.map(
-                  file ->
-                      ResponseEntity.ok()
-                          .headers(file.getHeaders())
-                          .body(new ByteArrayResource(file.getBody())));
-            });
+    return submissionExport.map(
+        file ->
+            ResponseEntity.ok()
+                .headers(file.getHeaders())
+                .body(new ByteArrayResource(file.getBody())));
   }
 }
