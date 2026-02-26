@@ -1,20 +1,51 @@
 package uk.gov.justice.laa.bulkclaim.validation;
 
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import java.util.UUID;
+import java.util.Arrays;
+import java.util.Map;
+import java.util.Objects;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
+import uk.gov.justice.laa.bulkclaim.dto.SubmissionOutcomeFilter;
 import uk.gov.justice.laa.bulkclaim.dto.SubmissionsSearchForm;
+import uk.gov.justice.laa.bulkclaim.util.SubmissionPeriodUtil;
+import uk.gov.justice.laa.dstew.payments.claimsdata.model.AreaOfLaw;
 
-/** Validates the submission's search. */
+/**
+ * Validator implementation for the {@code SubmissionsSearchForm} class. Performs validation checks
+ * on the search form inputs to ensure they meet specific criteria.
+ *
+ * <p>This class handles the following validation scenarios:
+ *
+ * <ul>
+ *   <li>Validates the submission period to ensure it is one of the available submission periods.
+ *   <li>Validates the area of law input to ensure it matches one of the predefined options.
+ *   <li>Validates the submission status to ensure it matches one of the predefined options.
+ * </ul>
+ *
+ * <p>Does not handle office validation, as {@link
+ * uk.gov.justice.laa.bulkclaim.controller.SearchController} already filters out offices which the
+ * user is not part of.
+ *
+ * <p>Errors and validation failures are reported using the {@code Errors} interface.
+ *
+ * @author Jamie Briggs
+ */
 @Component
 public class SubmissionSearchValidator implements Validator {
 
-  public static final String SUBMITTED_DATE_FROM = "submittedDateFrom";
-  public static final String SUBMITTED_DATE_TO = "submittedDateTo";
+  public static final String SUBMISSION_ID = "submissionId";
+  public static final String SUBMISSION_PERIOD = "submissionPeriod";
+  public static final String AREA_OF_LAW = "areaOfLaw";
+  public static final String SUBMISSION_STATUS = "submissionStatuses";
+  public static final String OFFICES = "offices";
+
+  private final SubmissionPeriodUtil submissionPeriodUtil;
+
+  public SubmissionSearchValidator(SubmissionPeriodUtil submissionPeriodUtil) {
+    this.submissionPeriodUtil = submissionPeriodUtil;
+  }
 
   @Override
   public boolean supports(Class<?> clazz) {
@@ -26,94 +57,54 @@ public class SubmissionSearchValidator implements Validator {
   public void validate(Object target, Errors errors) {
     SubmissionsSearchForm form = (SubmissionsSearchForm) target;
 
-    String from = form.submittedDateFrom();
-    String to = form.submittedDateTo();
+    validateSubmissionPeriod(errors, form);
+    validateAreaOfLaw(errors, form);
+    validateSubmissionStatus(errors, form);
+    validateOffices(errors, form);
+  }
 
-    boolean fromProvided = StringUtils.isNotEmpty(from);
-    boolean toProvided = StringUtils.isNotEmpty(to);
-
-    // Both dates must be provided together if either is present
-    if (fromProvided ^ toProvided) {
-      if (!fromProvided) {
-        errors.rejectValue(
-            SUBMITTED_DATE_FROM,
-            "search.error.date.from.requiredWithTo",
-            "Enter the submission from date when you enter a submission to date.");
-      }
-      if (!toProvided) {
-        errors.rejectValue(
-            SUBMITTED_DATE_TO,
-            "search.error.date.to.requiredWithFrom",
-            "Enter the submission to date when you enter a submission from date.");
-      }
+  private void validateSubmissionPeriod(Errors errors, SubmissionsSearchForm form) {
+    Map<String, String> availableSubmissionPeriods =
+        submissionPeriodUtil.getAllPossibleSubmissionPeriods();
+    if (StringUtils.isNotBlank(form.submissionPeriod())
+        && !availableSubmissionPeriods.containsKey(form.submissionPeriod().toUpperCase())) {
+      errors.rejectValue(
+          SUBMISSION_PERIOD,
+          "search.error.submissionPeriod.invalid",
+          "Submission period must be one of the following: " + availableSubmissionPeriods.values());
     }
+  }
 
-    LocalDate dateFrom = null;
-    LocalDate dateTo = null;
-    DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("d/M/yyyy");
-
-    if (fromProvided) {
+  private void validateAreaOfLaw(Errors errors, SubmissionsSearchForm form) {
+    if (!StringUtils.isEmpty(form.areaOfLaw())) {
       try {
-        dateFrom = LocalDate.parse(from, dateTimeFormatter);
-      } catch (Exception e) {
+        AreaOfLaw.fromValue(form.areaOfLaw().replace("_", " "));
+      } catch (IllegalArgumentException e) {
         errors.rejectValue(
-            SUBMITTED_DATE_FROM, "search.error.date.from.invalid", "Invalid date format.");
+            AREA_OF_LAW,
+            "search.error.areaOfLaw.invalid",
+            "Area of law must be one of the following: " + Arrays.toString(AreaOfLaw.values()));
       }
     }
+  }
 
-    if (toProvided) {
-      try {
-        dateTo = LocalDate.parse(to, dateTimeFormatter);
-      } catch (Exception e) {
-        errors.rejectValue(
-            SUBMITTED_DATE_TO, "search.error.date.to.invalid", "Invalid date format.");
-      }
-    }
-
-    // Stop if parsing failed
-    if (errors.hasFieldErrors(SUBMITTED_DATE_FROM) || errors.hasFieldErrors(SUBMITTED_DATE_TO)) {
-      return;
-    }
-
-    // Ensure from <= to
-    if (dateFrom != null && dateTo != null && dateFrom.isAfter(dateTo)) {
+  private void validateSubmissionStatus(Errors errors, SubmissionsSearchForm form) {
+    if (Objects.isNull(form.submissionStatuses())) {
       errors.rejectValue(
-          SUBMITTED_DATE_FROM,
-          "date.range.invalid",
-          "Submission from date must be on or before submission to date.");
-      errors.rejectValue(
-          SUBMITTED_DATE_TO,
-          "date.range.invalid",
-          "Submission to date must be on or after submission from date.");
+          SUBMISSION_STATUS,
+          "search.error.submissionOutcome.invalid",
+          "Submission status must be one of the following: "
+              + Arrays.toString(SubmissionOutcomeFilter.values()));
     }
+  }
 
-    // Ensure both dates are not in the future
-    LocalDate today = LocalDate.now();
-
-    if (dateFrom != null && dateFrom.isAfter(today)) {
+  private void validateOffices(Errors errors, SubmissionsSearchForm form) {
+    if (Objects.isNull(form.offices()) || form.offices().isEmpty()) {
       errors.rejectValue(
-          SUBMITTED_DATE_FROM,
-          "date.range.invalid",
-          "Submission from date must be on or before today.");
-    }
-
-    if (dateTo != null && dateTo.isAfter(today)) {
-      errors.rejectValue(
-          SUBMITTED_DATE_TO,
-          "date.range.invalid",
-          "Submission to date must be on or before today.");
-    }
-
-    String submissionId = form.submissionId();
-
-    // Validate submission ID if present
-    if (StringUtils.isNotBlank(submissionId)) {
-      try {
-        UUID.fromString(submissionId.trim());
-      } catch (IllegalArgumentException ex) {
-        errors.rejectValue(
-            "submissionId", "search.submissionId.invalid", "Submission id must be a valid UUID.");
-      }
+          OFFICES,
+          "search.error.offices.empty",
+          "Office account must be one of the following: "
+              + Arrays.toString(SubmissionOutcomeFilter.values()));
     }
   }
 }

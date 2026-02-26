@@ -1,16 +1,33 @@
 package uk.gov.justice.laa.bulkclaim.util;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.mockito.Mockito.when;
 
+import java.time.LocalDate;
+import java.util.Map;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionBase;
 
+@ExtendWith(MockitoExtension.class)
 @DisplayName("Submission period util tests")
 class SubmissionPeriodUtilTest {
 
-  SubmissionPeriodUtil submissionPeriodUtil = new SubmissionPeriodUtil();
+  @Mock DateWrapperUtil dateWrapperUtil;
+
+  SubmissionPeriodUtil submissionPeriodUtil;
+
+  @BeforeEach
+  void beforeEach() {
+    submissionPeriodUtil = new SubmissionPeriodUtil(dateWrapperUtil, "JAN-2025");
+  }
 
   @ParameterizedTest
   @CsvSource({
@@ -60,5 +77,34 @@ class SubmissionPeriodUtilTest {
     Integer result = submissionPeriodUtil.getSortOrderFromSubmissionPeriod(submissionBase);
     // Then
     assertThat(result).isEqualTo(expected);
+  }
+
+  @Nested
+  @DisplayName("Get all possible submission periods")
+  class GetAllPossibleSubmissionPeriods {
+
+    @Test
+    @DisplayName(
+        "Should get all possible submission period values up but not including current " + "month")
+    void shouldGetAllSubmissionPeriods() {
+      // Given
+      when(dateWrapperUtil.now()).thenReturn(LocalDate.of(2025, 12, 1));
+      // When
+      Map<String, String> result = submissionPeriodUtil.getAllPossibleSubmissionPeriods();
+      // Then
+      assertThat(result.size()).isEqualTo(11);
+      assertThat(result.get("JAN-2025")).isEqualTo("January 2025");
+      assertThat(result.get("FEB-2025")).isEqualTo("February 2025");
+      assertThat(result.get("MAR-2025")).isEqualTo("March 2025");
+      assertThat(result.get("APR-2025")).isEqualTo("April 2025");
+      assertThat(result.get("MAY-2025")).isEqualTo("May 2025");
+      assertThat(result.get("JUN-2025")).isEqualTo("June 2025");
+      assertThat(result.get("JUL-2025")).isEqualTo("July 2025");
+      assertThat(result.get("AUG-2025")).isEqualTo("August 2025");
+      assertThat(result.get("SEP-2025")).isEqualTo("September 2025");
+      assertThat(result.get("OCT-2025")).isEqualTo("October 2025");
+      assertThat(result.get("NOV-2025")).isEqualTo("November 2025");
+      assertThat(result.containsKey("DEC-2025")).isFalse();
+    }
   }
 }
