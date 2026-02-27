@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 import reactor.core.publisher.Mono;
-import uk.gov.justice.laa.bulkclaim.client.DataClaimsRestClient;
 import uk.gov.justice.laa.bulkclaim.client.ExportDataClaimsRestClient;
 
 /**
@@ -35,18 +34,17 @@ public class ExportSubmissionDetailController {
    * @param office the office account number for the submission
    * @param areaOfLaw the area of law for the submission
    * @return a {@code Mono} of {@code ResponseEntity} containing a downloadable {@code Resource} of
-   * the CSV export
+   *     the CSV export
    */
   @GetMapping("/submission/{submissionId}/export")
   public Mono<ResponseEntity<Resource>> exportSubmissionDetail(
-      @PathVariable UUID submissionId, @RequestParam String office,
+      @PathVariable UUID submissionId,
+      @RequestParam String office,
       @RequestParam String areaOfLaw) {
-    String areaOfLawPathVariable =
-        areaOfLaw.toLowerCase().replace(" ", "-");
+    String areaOfLawPathVariable = areaOfLaw.toLowerCase().replace(" ", "-");
 
     Mono<ResponseEntity<byte[]>> submissionExport =
-        exportDataClaimsRestClient.getSubmissionExport(
-            areaOfLawPathVariable, submissionId, office);
+        exportDataClaimsRestClient.getSubmissionExport(areaOfLawPathVariable, submissionId, office);
 
     return submissionExport.map(
         file ->
