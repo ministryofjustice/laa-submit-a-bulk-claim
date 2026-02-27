@@ -106,8 +106,11 @@
     "is_amended" : null,
     "has_assessment" : null,
     "version" : null,
+    "area_of_law" : null,
+    "office_code" : "0P322F",
     "total_warnings" : 0,
-    "fee_calculation_response" : null
+    "fee_calculation_response" : null,
+    "date_submitted" : null
   }, {
     "id" : "019b13c8-0d40-7b6d-a43e-9c9958496268",
     "submission_id" : "019b13c7-d98a-745d-a313-4f7f2d374a72",
@@ -215,8 +218,11 @@
     "is_amended" : null,
     "has_assessment" : null,
     "version" : null,
+    "area_of_law" : null,
+    "office_code" : "0P322F",
     "total_warnings" : 0,
-    "fee_calculation_response" : null
+    "fee_calculation_response" : null,
+    "date_submitted" : null
   } ],
   "total_pages" : 500,
   "total_elements" : 1000,

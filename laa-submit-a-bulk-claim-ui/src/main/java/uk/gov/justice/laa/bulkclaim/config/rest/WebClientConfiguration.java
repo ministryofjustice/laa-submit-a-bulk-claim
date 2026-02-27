@@ -11,6 +11,7 @@ import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.support.WebClientAdapter;
 import org.springframework.web.service.invoker.HttpServiceProxyFactory;
 import uk.gov.justice.laa.bulkclaim.client.DataClaimsRestClient;
+import uk.gov.justice.laa.bulkclaim.client.DataClaimsRestClientV2;
 
 /**
  * Configuration class for creating and configuring WebClient instances.
@@ -33,11 +34,39 @@ public class WebClientConfiguration {
    */
   @Bean
   public DataClaimsRestClient claimsApiClient(final ClaimsApiProperties properties) {
-    final WebClient webClient = createWebClient(properties);
-    final WebClientAdapter webClientAdapter = WebClientAdapter.create(webClient);
-    HttpServiceProxyFactory factory = HttpServiceProxyFactory.builderFor(webClientAdapter).build();
+    HttpServiceProxyFactory factory = createServiceProxy(properties);
 
     return factory.createClient(DataClaimsRestClient.class);
+  }
+
+  /**
+   * Creates a {@code DataClaimsRestClientV2} bean to communicate with version 2 of the Claims API.
+   * This method initializes a REST client based on the provided configuration properties.
+   *
+   * @param properties The configuration properties required to initialize the REST client,
+   *     including the base URL and access token for the Claims API.
+   * @return An instance of {@code DataClaimsRestClientV2} for interacting with version 2 of the
+   *     Claims API.
+   */
+  @Bean
+  public DataClaimsRestClientV2 claimsApiClientV2(final ClaimsApiProperties properties) {
+    HttpServiceProxyFactory factory = createServiceProxy(properties);
+
+    return factory.createClient(DataClaimsRestClientV2.class);
+  }
+
+  /**
+   * Creates an instance of {@code HttpServiceProxyFactory} configured with a {@code
+   * WebClientAdapter} that is initialized from the provided {@code ClaimsApiProperties}.
+   *
+   * @param properties The configuration properties containing the base URL and access token
+   *     required to create and configure the WebClient.
+   * @return A configured {@code HttpServiceProxyFactory} instance.
+   */
+  private static HttpServiceProxyFactory createServiceProxy(final ClaimsApiProperties properties) {
+    final WebClient webClient = createWebClient(properties);
+    final WebClientAdapter webClientAdapter = WebClientAdapter.create(webClient);
+    return HttpServiceProxyFactory.builderFor(webClientAdapter).build();
   }
 
   /**
