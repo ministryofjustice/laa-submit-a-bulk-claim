@@ -28,7 +28,7 @@ dependencies {
     implementation 'ch.qos.logback:logback-core:1.5.25'
     implementation 'ch.qos.logback:logback-classic:1.5.25'
 
-    implementation 'uk.gov.justice.laa.datastewardship.payments:data-claims-api-models:aa614c4-SNAPSHOT'
+    implementation 'uk.gov.justice.laa.datastewardship.payments:data-claims-api-models:7d2295a'
 
     //Common exception handling
     implementation 'uk.gov.laa.springboot:laa-spring-boot-starter-application-exception'
