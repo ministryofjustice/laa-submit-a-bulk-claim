@@ -10,6 +10,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.core.oidc.user.OidcUser;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.util.StringUtils;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -114,7 +115,7 @@ public class BulkImportController {
         ProblemDetail problemDetail =
             objectMapper.readValue(e.getResponseBodyAsString(), ProblemDetail.class);
         String errorMessage = problemDetail.getDetail();
-        if (errorMessage == null || errorMessage.isBlank()) {
+        if (StringUtils.hasText(errorMessage)) {
           errorMessage = "An unknown error occurred during upload.";
         }
         log.error("API upload failed: {}", errorMessage);
