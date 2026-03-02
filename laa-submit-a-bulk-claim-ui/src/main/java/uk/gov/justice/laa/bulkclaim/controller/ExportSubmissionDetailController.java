@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.core.oidc.user.OidcUser;
@@ -60,10 +61,16 @@ public class ExportSubmissionDetailController {
         exportDataClaimsRestClient.getSubmissionExport(areaOfLawPathVariable, submissionId, office);
 
     return submissionExport.map(
-        file ->
-            ResponseEntity.ok()
-                .contentType(file.getHeaders().getContentType())
-                .headers(file.getHeaders())
-                .body(new ByteArrayResource(file.getBody())));
+        file -> {
+          // Only add headers we need (Spring automatically adds some headers so don't want
+          // to duplicate this)
+          HttpHeaders safeHeaders = new HttpHeaders();
+          safeHeaders.setContentType(file.getHeaders().getContentType());
+          safeHeaders.setContentDisposition(file.getHeaders().getContentDisposition());
+
+          return ResponseEntity.ok()
+              .headers(safeHeaders)
+              .body(new ByteArrayResource(file.getBody()));
+        });
   }
 }
