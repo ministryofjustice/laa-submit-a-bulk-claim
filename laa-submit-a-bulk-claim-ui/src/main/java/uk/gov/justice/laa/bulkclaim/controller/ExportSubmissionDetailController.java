@@ -63,7 +63,6 @@ public class ExportSubmissionDetailController {
         file ->
             ResponseEntity.ok()
                 .contentType(file.getHeaders().getContentType())
-                .contentLength(file.getBody().length)
                 .headers(file.getHeaders())
                 .body(new ByteArrayResource(file.getBody())));
   }
