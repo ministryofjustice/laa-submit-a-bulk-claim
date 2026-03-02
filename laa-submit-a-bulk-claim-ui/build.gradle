@@ -27,6 +27,9 @@ dependencies {
     // Upgrade to fix CVE-2026-1225 vulnerability in logback-core
     implementation 'ch.qos.logback:logback-core:1.5.25'
     implementation 'ch.qos.logback:logback-classic:1.5.25'
+    // Upgrade to fix vulnerability GHSA-72hv-8253-57qq
+    implementation 'com.fasterxml.jackson.core:jackson-core:2.21.1'
+    implementation 'tools.jackson.core:jackson-core:3.1.0'
 
     implementation 'uk.gov.justice.laa.datastewardship.payments:data-claims-api-models:7d2295a'
 
