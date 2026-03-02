@@ -1,6 +1,5 @@
 package uk.gov.justice.laa.bulkclaim.controller;
 
-import static org.springframework.beans.support.PagedListHolder.DEFAULT_PAGE_SIZE;
 import static uk.gov.justice.laa.bulkclaim.constants.SessionConstants.SUBMISSION_ID;
 
 import java.util.List;
@@ -54,6 +53,8 @@ public class SubmissionDetailController {
   private final SubmissionMessagesBuilder submissionMessagesBuilder;
   private final SubmissionMatterStartsDetailsBuilder submissionMatterStartsDetailsBuilder;
   private final DataClaimsRestClient dataClaimsRestClient;
+
+  private static final int DEFAULT_PAGE_SIZE = 10;
 
   /**
    * Gets the submission reference, stores it in the session and redirects to the view submission.

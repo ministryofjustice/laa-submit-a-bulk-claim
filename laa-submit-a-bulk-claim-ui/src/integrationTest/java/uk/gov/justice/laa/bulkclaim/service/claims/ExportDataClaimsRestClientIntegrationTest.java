@@ -40,8 +40,8 @@ class ExportDataClaimsRestClientIntegrationTest extends MockServerIntegrationTes
   class GetSubmissionExport {
 
     @Test
-    @DisplayName("Should handle a 200 response")
-    void shouldHandle200Response() {
+    @DisplayName("Should handle a 200 response legal help")
+    void shouldHandle200ResponseLegalHelp() {
       // Given
       byte[] csvContent = "one,two,three".getBytes(StandardCharsets.UTF_8);
       mockServerClient
@@ -57,7 +57,59 @@ class ExportDataClaimsRestClientIntegrationTest extends MockServerIntegrationTes
       UUID submissionId = UUID.fromString("3fa85f64-5717-4562-b3fc-2c963f66afa6");
       // When
       ResponseEntity<byte[]> result =
-          exportDataClaimsRestClient.getSubmissionExport("legal_help", submissionId, "123").block();
+          exportDataClaimsRestClient.getSubmissionExport("legal-help", submissionId, "123").block();
+      // Then
+      assertThat(result).isNotNull();
+      assertThat(result.getStatusCode().is2xxSuccessful()).isTrue();
+      assertThat(result.getBody()).isEqualTo(csvContent);
+    }
+
+    @Test
+    @DisplayName("Should handle a 200 response crime lower")
+    void shouldHandle200ResponseCrimeLower() {
+      // Given
+      byte[] csvContent = "one,two,three".getBytes(StandardCharsets.UTF_8);
+      mockServerClient
+          .when(
+              HttpRequest.request()
+                  .withMethod("GET")
+                  .withPath("/exports/submission-claims-crime-lower"))
+          .respond(
+              HttpResponse.response()
+                  .withStatusCode(200)
+                  .withHeader("Content-Type", "text/csv")
+                  .withBody(csvContent));
+      UUID submissionId = UUID.fromString("3fa85f64-5717-4562-b3fc-2c963f66afa6");
+      // When
+      ResponseEntity<byte[]> result =
+          exportDataClaimsRestClient
+              .getSubmissionExport("crime-lower", submissionId, "123")
+              .block();
+      // Then
+      assertThat(result).isNotNull();
+      assertThat(result.getStatusCode().is2xxSuccessful()).isTrue();
+      assertThat(result.getBody()).isEqualTo(csvContent);
+    }
+
+    @Test
+    @DisplayName("Should handle a 200 response mediation")
+    void shouldHandle200ResponseMediation() {
+      // Given
+      byte[] csvContent = "one,two,three".getBytes(StandardCharsets.UTF_8);
+      mockServerClient
+          .when(
+              HttpRequest.request()
+                  .withMethod("GET")
+                  .withPath("/exports/submission-claims-mediation"))
+          .respond(
+              HttpResponse.response()
+                  .withStatusCode(200)
+                  .withHeader("Content-Type", "text/csv")
+                  .withBody(csvContent));
+      UUID submissionId = UUID.fromString("3fa85f64-5717-4562-b3fc-2c963f66afa6");
+      // When
+      ResponseEntity<byte[]> result =
+          exportDataClaimsRestClient.getSubmissionExport("mediation", submissionId, "123").block();
       // Then
       assertThat(result).isNotNull();
       assertThat(result.getStatusCode().is2xxSuccessful()).isTrue();
