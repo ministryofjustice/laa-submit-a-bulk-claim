@@ -25,6 +25,8 @@ app:
     url: xx
     timeout: 1
   upload-max-file-size: 10MB
+  submission:
+    minimum-period: JAN-2024
 
 rest-client:
   connect-timeout: 5
