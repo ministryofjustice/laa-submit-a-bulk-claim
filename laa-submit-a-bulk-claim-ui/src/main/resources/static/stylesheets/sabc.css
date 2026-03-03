@@ -2,6 +2,13 @@
   border-bottom: 1.5px solid #000 !important;
 }
 
+.sabc-container__align_right {
+  display: flex;
+  justify-content: flex-end; /* push items to the right */
+  align-items: center;       /* optional: vertical alignment */
+  gap: 12px;                 /* spacing between the two elements */
+}
+
 .govuk-extension__background_white{
   background-color: white;
 }

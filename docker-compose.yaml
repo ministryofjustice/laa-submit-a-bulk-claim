@@ -12,7 +12,7 @@ services:
         - github_actor
         - github_token
     environment:
-      SERVER_MAX_FILE_SIZE: 10MB
+      SERVER_MAX_FILE_SIZE: 50MB
       UPLOAD_MAX_FILE_SIZE: 10MB
       SILAS_CLIENT_ID: ${SILAS_CLIENT_ID}
       SILAS_CLIENT_SECRET: ${SILAS_CLIENT_SECRET}
