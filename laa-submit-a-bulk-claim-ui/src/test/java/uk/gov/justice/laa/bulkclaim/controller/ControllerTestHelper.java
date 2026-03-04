@@ -16,6 +16,7 @@ public final class ControllerTestHelper {
     Map<String, Object> claims = new HashMap<>();
     claims.put("sub", "1234567890");
     claims.put("email", "test@example.com");
+    claims.put("preferred_username", "test@example.com");
 
     OidcIdToken oidcIdToken =
         new OidcIdToken("token123", Instant.now(), Instant.now().plusSeconds(60), claims);
