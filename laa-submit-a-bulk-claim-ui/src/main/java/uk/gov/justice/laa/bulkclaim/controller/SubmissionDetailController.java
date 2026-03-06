@@ -55,6 +55,8 @@ public class SubmissionDetailController {
   private final SubmissionMatterStartsDetailsBuilder submissionMatterStartsDetailsBuilder;
   private final DataClaimsRestClient dataClaimsRestClient;
 
+  private static final int DEFAULT_PAGE_SIZE = 10;
+
   /**
    * Gets the submission reference, stores it in the session and redirects to the view submission.
    *
@@ -125,11 +127,13 @@ public class SubmissionDetailController {
       @RequestParam(value = "messagesPage", defaultValue = "0") final int messagesPage,
       @RequestParam(value = SUBMISSION_ID) UUID submissionId,
       @RequestParam(value = "navTab", required = false, defaultValue = "CLAIM_DETAILS")
-          ViewSubmissionNavigationTab navigationTab) {
+          ViewSubmissionNavigationTab navigationTab,
+      @RequestParam(value = "sort", required = false) String sort) {
+
     // Adding page and messagesPage to model
     model.addAttribute("page", page);
     model.addAttribute("messagesPage", messagesPage);
-
+    model.addAttribute("ViewSubmissionNavigationTab", ViewSubmissionNavigationTab.class);
     final SubmissionResponse submissionResponse =
         dataClaimsRestClient
             .getSubmission(submissionId)
@@ -146,7 +150,7 @@ public class SubmissionDetailController {
     if (submissionAccepted) {
       submissionSummary =
           handleAcceptedSubmission(
-              model, submissionSummary, submissionResponse, submissionId, page, messagesPage);
+              model, submissionSummary, submissionResponse, submissionId, page, messagesPage, sort);
       addCommonSubmissionAttributes(
           model, submissionSummary, submissionResponse, navigationTab, submissionId);
       return "pages/view-submission-detail-accepted";
@@ -164,10 +168,11 @@ public class SubmissionDetailController {
       SubmissionResponse submissionResponse,
       UUID submissionId,
       int page,
-      int messagesPage) {
+      int messagesPage,
+      String sort) {
 
     SubmissionClaimsDetails claimDetails =
-        submissionClaimDetailsBuilder.build(submissionResponse, page, DEFAULT_PAGE_SIZE);
+        submissionClaimDetailsBuilder.build(submissionResponse, page, DEFAULT_PAGE_SIZE, sort);
     model.addAttribute("claimDetails", claimDetails);
 
     if (claimDetails.totalClaimValue() != null) {
