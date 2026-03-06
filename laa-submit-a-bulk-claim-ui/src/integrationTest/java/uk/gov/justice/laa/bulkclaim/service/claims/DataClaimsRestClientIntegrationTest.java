@@ -133,7 +133,6 @@ class DataClaimsRestClientIntegrationTest extends MockServerIntegrationTest {
       assertThat(locationHeader).isEqualTo("/api/v1/bulk-submissions/1234567890");
     }
 
-
     @Test
     @DisplayName("Should handle a 400 response")
     void shouldHandle400Response() {
