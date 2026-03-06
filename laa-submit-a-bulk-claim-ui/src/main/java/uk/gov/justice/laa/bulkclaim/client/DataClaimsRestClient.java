@@ -46,7 +46,7 @@ public interface DataClaimsRestClient {
       // Allows Claims API to read the file and tell the user what office they're missing. Users
       // shouldn't be in a position where they have no offices unless they've been set up wrong.
       @RequestParam(required = false) List<String> offices)
-  throws WebClientResponseException;
+      throws WebClientResponseException;
 
   /**
    * Searches submissions using JSON criteria sent in the GET request body.
