@@ -11,7 +11,8 @@
 
       <div class="moj-scrollable-pane"
            th:if="${claimDetails != null and !claimDetails.submissionClaims.isEmpty()}">
-        <table class="govuk-table" data-module="moj-sortable-table"
+        <div id="claims-table"></div>
+        <table class="govuk-table"
                th:with="area=${submissionSummary.areaOfLaw != null ? #strings.toLowerCase(submissionSummary.areaOfLaw) : ''},
                         isCrime=${area.contains('crime lower')},
                         isCivil=${area.contains('legal help')},
@@ -24,22 +25,31 @@
           <tr class="govuk-table__row">
             <th scope="col" class="govuk-table__header"
                 th:text="#{submission.summary.claims.table.claim}"></th>
-            <th scope="col" class="govuk-table__header" aria-sort="none"
-                th:text="#{submission.summary.claims.table.clientSurname}"></th>
-            <th scope="col" class="govuk-table__header" aria-sort="none"
-                th:text="#{submission.summary.claims.table.clientInitial}"></th>
-            <th scope="col" class="govuk-table__header" aria-sort="none"
-                th:text="#{submission.summary.claims.table.ufn}"></th>
-            <th scope="col" class="govuk-table__header" aria-sort="none"
-                th:text="#{submission.summary.claims.table.feeCode}"></th>
+
+            <th:block th:replace="~{fragments/sortable-header ::sortableHeader('client_surname',${ViewSubmissionNavigationTab.CLAIM_DETAILS.toString()},
+                                                                               'submission.summary.claims.table.clientSurname')}"></th:block>
+            <th:block th:replace="~{fragments/sortable-header ::sortableHeader('client_forename',${ViewSubmissionNavigationTab.CLAIM_DETAILS.toString()},
+                                                                               'submission.summary.claims.table.clientInitial')}"></th:block>
+
+            <th:block th:replace="~{fragments/sortable-header ::sortableHeader('unique_file_number',${ViewSubmissionNavigationTab.CLAIM_DETAILS.toString()},
+                                                                               'submission.summary.claims.table.ufn')}"></th:block>
+
+
+            <th:block th:replace="~{fragments/sortable-header ::sortableHeader('fee_code',${ViewSubmissionNavigationTab.CLAIM_DETAILS.toString()},
+                                                                               'submission.summary.claims.table.feeCode')}"></th:block>
+
+
             <th scope="col" class="govuk-table__header" aria-sort="none"
                 th:text="#{submission.summary.claims.table.dateWorkConcluded}"></th>
             <th scope="col" class="govuk-table__header govuk-table__header--numeric" aria-sort="none"
                 th:text="#{submission.summary.claims.table.calculatedValue}"></th>
-            <th scope="col" class="govuk-table__header" aria-sort="none"
-                th:text="#{submission.summary.claims.table.escapeCase}"></th>
-            <th scope="col" class="govuk-table__header" aria-sort="none"
-                th:text="#{submission.summary.claims.table.messages}"></th>
+
+            <th:block th:replace="~{fragments/sortable-header ::sortableHeader('escape_case_flag',${ViewSubmissionNavigationTab.CLAIM_DETAILS.toString()},
+                                                                               'submission.summary.claims.table.escapeCase')}"></th:block>
+
+            <th:block th:replace="~{fragments/sortable-header ::sortableHeader('total_warnings',${ViewSubmissionNavigationTab.CLAIM_DETAILS.toString()},
+                                                                               'submission.summary.claims.table.messages')}"></th:block>
+
           </tr>
           </thead>
 
@@ -47,43 +57,60 @@
           <tr class="govuk-table__row">
             <th scope="col" class="govuk-table__header"
                 th:text="#{submission.summary.claims.table.claim}"></th>
-            <th scope="col" class="govuk-table__header" aria-sort="none"
-                th:text="#{submission.summary.claims.table.clientSurname}"></th>
-            <th scope="col" class="govuk-table__header" aria-sort="none"
-                th:text="#{submission.summary.claims.table.clientForename}"></th>
-            <th scope="col" class="govuk-table__header" aria-sort="none"
-                th:text="#{submission.summary.claims.table.ufn}"></th>
-            <th scope="col" class="govuk-table__header" aria-sort="none"
-                th:text="#{submission.summary.claims.table.ucn}"></th>
-            <th scope="col" class="govuk-table__header" aria-sort="none"
-                th:text="#{submission.summary.claims.table.feeCode}"></th>
-            <th scope="col" class="govuk-table__header govuk-table__header--numeric" aria-sort="none"
-                th:text="#{submission.summary.claims.table.calculatedValue}"></th>
-            <th scope="col" class="govuk-table__header" aria-sort="none"
-                th:text="#{submission.summary.claims.table.escapeCase}"></th>
-            <th scope="col" class="govuk-table__header" aria-sort="none"
-                th:text="#{submission.summary.claims.table.messages}"></th>
-          </tr>
+
+
+            <th:block th:replace="~{fragments/sortable-header ::sortableHeader('client_surname',${ViewSubmissionNavigationTab.CLAIM_DETAILS.toString()},
+                                                                               'submission.summary.claims.table.clientSurname')}"></th:block>
+
+            <th:block th:replace="~{fragments/sortable-header ::sortableHeader('client_forename',${ViewSubmissionNavigationTab.CLAIM_DETAILS.toString()},
+                                                                               'submission.summary.claims.table.clientForename')}"></th:block>
+
+            <th:block th:replace="~{fragments/sortable-header ::sortableHeader('unique_file_number',${ViewSubmissionNavigationTab.CLAIM_DETAILS.toString()},
+                                                                               'submission.summary.claims.table.ufn')}"></th:block>
+
+            <th:block th:replace="~{fragments/sortable-header ::sortableHeader('unique_client_number',${ViewSubmissionNavigationTab.CLAIM_DETAILS.toString()},
+                                                                               'submission.summary.claims.table.ucn')}"></th:block>
+
+            <th:block th:replace="~{fragments/sortable-header ::sortableHeader('fee_code',${ViewSubmissionNavigationTab.CLAIM_DETAILS.toString()},
+                                                                               'submission.summary.claims.table.feeCode')}"></th:block>
+
+            <th:block th:replace="~{fragments/sortable-header ::sortableHeader('total_amount',${ViewSubmissionNavigationTab.CLAIM_DETAILS.toString()},
+                                                                               'submission.summary.claims.table.calculatedValue')}"></th:block>
+
+            <th:block th:replace="~{fragments/sortable-header ::sortableHeader('escape_case_flag',${ViewSubmissionNavigationTab.CLAIM_DETAILS.toString()},
+                                                                               'submission.summary.claims.table.escapeCase')}"></th:block>
+
+            <th:block th:replace="~{fragments/sortable-header ::sortableHeader('total_warnings',${ViewSubmissionNavigationTab.CLAIM_DETAILS.toString()},
+                                                                               'submission.summary.claims.table.messages')}"></th:block>
           </thead>
 
           <thead class="govuk-table__head" th:if="${isMediation}">
           <tr class="govuk-table__row">
             <th scope="col" class="govuk-table__header"
                 th:text="#{submission.summary.claims.table.claim}"></th>
-            <th scope="col" class="govuk-table__header" aria-sort="none"
-                th:text="#{submission.summary.claims.table.client1Surname}"></th>
-            <th scope="col" class="govuk-table__header" aria-sort="none"
-                th:text="#{submission.summary.claims.table.client1Forename}"></th>
-            <th scope="col" class="govuk-table__header" aria-sort="none"
-                th:text="#{submission.summary.claims.table.client1Ucn}"></th>
-            <th scope="col" class="govuk-table__header" aria-sort="none"
-                th:text="#{submission.summary.claims.table.client2Surname}"></th>
-            <th scope="col" class="govuk-table__header" aria-sort="none"
-                th:text="#{submission.summary.claims.table.client2Forename}"></th>
-            <th scope="col" class="govuk-table__header" aria-sort="none"
-                th:text="#{submission.summary.claims.table.client2Ucn}"></th>
-            <th scope="col" class="govuk-table__header" aria-sort="none"
-                th:text="#{submission.summary.claims.table.feeCode}"></th>
+
+
+            <th:block th:replace="~{fragments/sortable-header ::sortableHeader('client_surname',${ViewSubmissionNavigationTab.CLAIM_DETAILS.toString()},
+                                                                               'submission.summary.claims.table.client1Surname')}"></th:block>
+
+            <th:block th:replace="~{fragments/sortable-header ::sortableHeader('client_forename',${ViewSubmissionNavigationTab.CLAIM_DETAILS.toString()},
+                                                                               'submission.summary.claims.table.client1Forename')}"></th:block>
+
+            <th:block th:replace="~{fragments/sortable-header ::sortableHeader('unique_client_number',${ViewSubmissionNavigationTab.CLAIM_DETAILS.toString()},
+                                                                               'submission.summary.claims.table.client1Ucn')}"></th:block>
+
+            <th:block th:replace="~{fragments/sortable-header ::sortableHeader('client2Surname',${ViewSubmissionNavigationTab.CLAIM_DETAILS.toString()},
+                                                                               'submission.summary.claims.table.client2Surname')}"></th:block>
+
+            <th:block th:replace="~{fragments/sortable-header ::sortableHeader('client_2_forename',${ViewSubmissionNavigationTab.CLAIM_DETAILS.toString()},
+                                                                               'submission.summary.claims.table.client2Forename')}"></th:block>
+
+
+            <th:block th:replace="~{fragments/sortable-header ::sortableHeader('client_2_ucn',${ViewSubmissionNavigationTab.CLAIM_DETAILS.toString()},
+                                                                               'submission.summary.claims.table.client2Ucn')}"></th:block>
+
+            <th:block th:replace="~{fragments/sortable-header ::sortableHeader('fee_code',${ViewSubmissionNavigationTab.CLAIM_DETAILS.toString()},
+                                                                               'submission.summary.claims.table.feeCode')}"></th:block>
             <th scope="col" class="govuk-table__header govuk-table__header--numeric" aria-sort="none"
                 th:text="#{submission.summary.claims.table.calculatedValue}"></th>
           </tr>
@@ -96,16 +123,23 @@
                 th:text="#{submission.summary.claims.table.claim}"></th>
             <th scope="col" class="govuk-table__header" aria-sort="none"
                 th:text="#{submission.summary.claims.table.client}"></th>
-            <th scope="col" class="govuk-table__header" aria-sort="none"
-                th:text="#{submission.summary.claims.table.ufn}"></th>
-            <th scope="col" class="govuk-table__header" aria-sort="none"
-                th:text="#{submission.summary.claims.table.ucn}"></th>
-            <th scope="col" class="govuk-table__header" aria-sort="none"
-                th:text="#{submission.summary.claims.table.feeCode}"></th>
+
+            <th:block th:replace="~{fragments/sortable-header ::sortableHeader('unique_file_number',${ViewSubmissionNavigationTab.CLAIM_DETAILS.toString()},
+                                                                               'submission.summary.claims.table.ufn')}"></th:block>
+
+
+            <th:block th:replace="~{fragments/sortable-header ::sortableHeader('unique_client_number',${ViewSubmissionNavigationTab.CLAIM_DETAILS.toString()},
+                                                                               'submission.summary.claims.table.ucn')}"></th:block>
+
+            <th:block th:replace="~{fragments/sortable-header ::sortableHeader('fee_code',${ViewSubmissionNavigationTab.CLAIM_DETAILS.toString()},
+                                                                               'submission.summary.claims.table.feeCode')}"></th:block>
+
             <th scope="col" class="govuk-table__header govuk-table__header--numeric" aria-sort="none"
                 th:text="#{submission.summary.claims.table.calculatedValue}"></th>
-            <th scope="col" class="govuk-table__header" aria-sort="none"
-                th:text="#{submission.summary.claims.table.messages}"></th>
+
+            <th:block th:replace="~{fragments/sortable-header ::sortableHeader('total_warnings',${ViewSubmissionNavigationTab.CLAIM_DETAILS.toString()},
+                                                                               'submission.summary.claims.table.messages')}"></th:block>
+
           </tr>
           </thead>
 
@@ -251,9 +285,14 @@
         </table>
       </div>
       <div
-          th:with="claimDetailsUrl=@{/view-submission-detail(navTab='CLAIM_DETAILS', submissionId=${submissionId})}">
-        <th:block th:if="${claimDetails != null}"
-                  th:insert="~{fragments/pagination :: pagination(currentUrl=${claimDetailsUrl},
+              th:with="
+    baseUrl=@{/view-submission-detail(navTab='CLAIM_DETAILS', submissionId=${submissionId})},
+    currentSort=${param.sort != null ? param.sort[0] : null},
+    claimDetailsUrl=${currentSort != null ? @thymeleafHrefUtils.build(baseUrl, 'sort', currentSort) : baseUrl},
+    claimDetailsUrlWithAnchor=${claimDetailsUrl + '#claims-table'}
+  ">
+      <th:block th:if="${claimDetails != null}"
+                  th:insert="~{fragments/pagination :: pagination(currentUrl=${claimDetailsUrlWithAnchor},
            page=${claimDetails.pagination})}">
         </th:block>
       </div>

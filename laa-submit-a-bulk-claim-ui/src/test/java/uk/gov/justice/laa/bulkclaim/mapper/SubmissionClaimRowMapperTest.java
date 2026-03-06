@@ -11,14 +11,13 @@ import java.util.UUID;
 import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.justice.laa.bulkclaim.dto.submission.claim.SubmissionClaimRow;
 import uk.gov.justice.laa.bulkclaim.dto.submission.claim.SubmissionClaimRowCostsDetails;
-import uk.gov.justice.laa.dstew.payments.claimsdata.model.ClaimResponse;
-import uk.gov.justice.laa.dstew.payments.claimsdata.model.FeeCalculationPatch;
-import uk.gov.justice.laa.dstew.payments.claimsdata.model.FeeCalculationType;
+import uk.gov.justice.laa.dstew.payments.claimsdata.model.*;
 
 @DisplayName("Submission claim row mapper test")
 @ExtendWith(SpringExtension.class)
@@ -166,5 +165,138 @@ class SubmissionClaimRowMapperTest {
   @DisplayName("Should return null fee type when fee calculation type is null")
   void shouldReturnNullWhenFeeCalculationTypeIsNull() {
     assertThat(mapper.toFeeType(null)).isNull();
+  }
+
+  @Nested
+  @DisplayName("Should map ClaimResponseV2 to SubmissionClaimRow")
+  class ToSubmissionClaimRow {
+    @Test
+    @DisplayName("Should map ClaimResponseV2 to SubmissionClaimRow with null escape case flag")
+    void shouldMapClaimResponseV2ToSubmissionClaimRow() {
+      var claimResponseV2 =
+          ClaimResponseV2.builder()
+              .uniqueFileNumber("UFN123")
+              .uniqueClientNumber("UCN123")
+              .client2Ucn("UCN999")
+              .clientForename("John")
+              .clientSurname("Doe")
+              .client2Forename("John")
+              .client2Surname("Doe")
+              .standardFeeCategoryCode("Family")
+              .matterTypeCode("FAMD:FRES")
+              .caseConcludedDate(LocalDate.of(2025, 3, 18).toString())
+              .feeCode("FC123")
+              .netProfitCostsAmount(new BigDecimal("100.10"))
+              .netCounselCostsAmount(new BigDecimal("200.20"))
+              .netDisbursementAmount(new BigDecimal("300.30"))
+              .disbursementsVatAmount(new BigDecimal("17.50"))
+              .netWaitingCostsAmount(new BigDecimal("400.40"))
+              .travelWaitingCostsAmount(new BigDecimal("500.50"))
+              .feeCalculationResponse(
+                  FeeCalculationPatch.builder()
+                      .feeType(FeeCalculationType.DISB_ONLY)
+                      .feeCode("FC123")
+                      .build())
+              .totalWarnings(3)
+              .build();
+
+      var actualResponse = mapper.toSubmissionClaimRow(claimResponseV2);
+
+      SoftAssertions.assertSoftly(
+          softAssertion -> {
+            softAssertion.assertThat(actualResponse.ufn()).isEqualTo("UFN123");
+            softAssertion.assertThat(actualResponse.ucn()).isEqualTo("UCN123");
+            softAssertion.assertThat(actualResponse.client2Ucn()).isEqualTo("UCN999");
+            softAssertion.assertThat(actualResponse.clientForename()).isEqualTo("John");
+            softAssertion.assertThat(actualResponse.clientSurname()).isEqualTo("Doe");
+            softAssertion.assertThat(actualResponse.client2Forename()).isEqualTo("John");
+            softAssertion.assertThat(actualResponse.client2Surname()).isEqualTo("Doe");
+            softAssertion.assertThat(actualResponse.category()).isEqualTo("Family");
+            softAssertion.assertThat(actualResponse.matter()).isEqualTo("FAMD:FRES");
+            softAssertion
+                .assertThat(actualResponse.concludedOrClaimedDate())
+                .isEqualTo(LocalDate.of(2025, 3, 18));
+            softAssertion.assertThat(actualResponse.feeType()).isEqualTo("Disb only");
+            softAssertion.assertThat(actualResponse.feeCode()).isEqualTo("FC123");
+            softAssertion
+                .assertThat(actualResponse.costsDetails().netProfitCostsAmount())
+                .isEqualTo(new BigDecimal("100.10"));
+            softAssertion
+                .assertThat(actualResponse.costsDetails().netCounselCostsAmount())
+                .isEqualTo(new BigDecimal("200.20"));
+            softAssertion
+                .assertThat(actualResponse.costsDetails().netDisbursementAmount())
+                .isEqualTo(new BigDecimal("300.30"));
+            softAssertion
+                .assertThat(actualResponse.costsDetails().disbursementsVatAmount())
+                .isEqualTo(new BigDecimal("17.50"));
+            softAssertion
+                .assertThat(actualResponse.costsDetails().netWaitingCostsAmount())
+                .isEqualTo(new BigDecimal("400.40"));
+            softAssertion
+                .assertThat(actualResponse.costsDetails().travelWaitingCostsAmount())
+                .isEqualTo(new BigDecimal("500.50"));
+            softAssertion.assertThat(actualResponse.totalMessages()).isEqualTo(3);
+            softAssertion.assertThat(actualResponse.escapeCase()).isNull();
+          });
+    }
+
+    @Test
+    @DisplayName("Should map escape case flag when present")
+    void shouldMapEscapeCaseFlagWhenPresent() {
+
+      var claimResponseV2 =
+          ClaimResponseV2.builder()
+              .feeCalculationResponse(
+                  FeeCalculationPatch.builder()
+                      .boltOnDetails(BoltOnPatch.builder().escapeCaseFlag(Boolean.TRUE).build())
+                      .build())
+              .build();
+
+      var actualResponse = mapper.toSubmissionClaimRow(claimResponseV2);
+
+      assertThat(actualResponse.escapeCase()).isTrue();
+    }
+
+    @Test
+    @DisplayName("Should map claim costs details with ClaimResponseV2")
+    void toSubmissionClaimRowCostsDetails() {
+      ClaimResponseV2 claimResponse =
+          ClaimResponseV2.builder()
+              .netProfitCostsAmount(new BigDecimal("100.10"))
+              .netCounselCostsAmount(new BigDecimal("200.20"))
+              .netDisbursementAmount(new BigDecimal("300.30"))
+              .disbursementsVatAmount(new BigDecimal("17.50"))
+              .netWaitingCostsAmount(new BigDecimal("400.40"))
+              .travelWaitingCostsAmount(new BigDecimal("500.50"))
+              .feeCalculationResponse(
+                  FeeCalculationPatch.builder().totalAmount(new BigDecimal("1234.56")).build())
+              .build();
+
+      SubmissionClaimRowCostsDetails result =
+          mapper.toSubmissionClaimRowCostsDetails(claimResponse);
+      SoftAssertions.assertSoftly(
+          softAssertions -> {
+            softAssertions
+                .assertThat(result.netProfitCostsAmount())
+                .isEqualTo(new BigDecimal("100.10"));
+            softAssertions
+                .assertThat(result.netCounselCostsAmount())
+                .isEqualTo(new BigDecimal("200.20"));
+            softAssertions
+                .assertThat(result.netDisbursementAmount())
+                .isEqualTo(new BigDecimal("300.30"));
+            softAssertions
+                .assertThat(result.disbursementsVatAmount())
+                .isEqualTo(new BigDecimal("17.50"));
+            softAssertions
+                .assertThat(result.netWaitingCostsAmount())
+                .isEqualTo(new BigDecimal("400.40"));
+            softAssertions
+                .assertThat(result.travelWaitingCostsAmount())
+                .isEqualTo(new BigDecimal("500.50"));
+            softAssertions.assertThat(result.claimValue()).isEqualTo(new BigDecimal("1234.56"));
+          });
+    }
   }
 }
