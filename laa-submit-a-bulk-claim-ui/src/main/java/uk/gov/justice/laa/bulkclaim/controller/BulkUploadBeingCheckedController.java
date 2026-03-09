@@ -52,7 +52,7 @@ public class BulkUploadBeingCheckedController {
 
     try {
       submission = dataClaimsRestClient.getSubmission(submissionId).block();
-    }  catch (WebClientResponseException e) {
+    } catch (WebClientResponseException e) {
       if (e.getStatusCode().isSameCodeAs(HttpStatusCode.valueOf(404))) {
         log.debug("No submission found, will retry: %s".formatted(submissionId.toString()));
         model.addAttribute("shouldRefresh", true);
