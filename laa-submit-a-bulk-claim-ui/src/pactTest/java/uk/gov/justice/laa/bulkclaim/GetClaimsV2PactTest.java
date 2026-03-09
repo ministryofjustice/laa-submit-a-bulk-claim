@@ -77,7 +77,7 @@ public class GetClaimsV2PactTest extends AbstractPactTest {
   void verify200Response() {
     ClaimResultSetV2 claims =
         dataClaimsRestClient
-            .getClaims(USER_OFFICES.get(0), SUBMISSION_ID, 1, 10, "client_name,asc")
+            .getClaims(USER_OFFICES.get(0), SUBMISSION_ID, 1, 10, "client_surname,asc")
             .getBody();
 
     assertThat(claims.getContent().size()).isEqualTo(1);
