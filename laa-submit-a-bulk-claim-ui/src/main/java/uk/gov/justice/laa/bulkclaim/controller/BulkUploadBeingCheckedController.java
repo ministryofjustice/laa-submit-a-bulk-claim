@@ -6,6 +6,7 @@ import static uk.gov.justice.laa.bulkclaim.constants.SessionConstants.UPLOADED_F
 
 import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatusCode;
@@ -51,7 +52,11 @@ public class BulkUploadBeingCheckedController {
     SubmissionResponse submission;
 
     try {
+      TimeUnit.SECONDS.sleep(3);
       submission = dataClaimsRestClient.getSubmission(submissionId).block();
+    } catch (InterruptedException e) {
+      Thread.currentThread().interrupt();
+      throw new IllegalStateException("Interrupted while waiting before submission check", e);
     } catch (WebClientResponseException e) {
       if (e.getStatusCode().isSameCodeAs(HttpStatusCode.valueOf(404))) {
         log.debug("No submission found, will retry: %s".formatted(submissionId.toString()));
