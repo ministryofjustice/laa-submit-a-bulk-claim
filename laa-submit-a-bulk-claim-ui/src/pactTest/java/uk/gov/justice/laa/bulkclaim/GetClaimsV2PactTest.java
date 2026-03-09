@@ -40,7 +40,7 @@ public class GetClaimsV2PactTest extends AbstractPactTest {
         .matchQuery("office_code", OFFICE_CODE_REGEX)
         .matchQuery("page", ANY_NUMBER_REGEX)
         .matchQuery("size", ANY_NUMBER_REGEX)
-        .matchQuery("sort", SORT_REGEX_V2, "client_name,asc")
+        .matchQuery("sort", SORT_REGEX_V2, "client_surname,asc")
         .matchHeader(HttpHeaders.AUTHORIZATION, UUID_REGEX)
         .method("GET")
         .willRespondWith()
