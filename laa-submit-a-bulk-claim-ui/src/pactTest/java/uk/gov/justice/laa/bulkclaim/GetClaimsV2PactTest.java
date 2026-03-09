@@ -33,7 +33,7 @@ public class GetClaimsV2PactTest extends AbstractPactTest {
   @Pact(consumer = CONSUMER)
   public RequestResponsePact getClaims200(PactDslWithProvider builder) {
     return builder
-        .given("claims exist for the search criteria")
+        .given("claims exist for the search criteria v2")
         .uponReceiving("a request to search for claims")
         .path("/api/v2/claims")
         .matchQuery("submission_id", UUID_REGEX)
@@ -54,7 +54,7 @@ public class GetClaimsV2PactTest extends AbstractPactTest {
   public RequestResponsePact getClaimsEmpty200(PactDslWithProvider builder) {
     // Defines expected 200 response for empty search using matchers
     return builder
-        .given("no claims exist for the search criteria")
+        .given("no claims exist for the search criteria v2")
         .uponReceiving("a request to search for claims with no results")
         .path("/api/v2/claims")
         .matchQuery("office_code", OFFICE_CODE_REGEX)
