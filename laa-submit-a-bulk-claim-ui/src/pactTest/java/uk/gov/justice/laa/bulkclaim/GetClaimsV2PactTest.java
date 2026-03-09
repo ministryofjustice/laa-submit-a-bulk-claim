@@ -55,7 +55,7 @@ public class GetClaimsV2PactTest extends AbstractPactTest {
     // Defines expected 200 response for empty search using matchers
     return builder
         .given("no claims exist for the search criteria v2")
-        .uponReceiving("a request to search for claims with no results using v2 api" )
+        .uponReceiving("a request to search for claims with no results using v2 api")
         .path("/api/v2/claims")
         .matchQuery("office_code", OFFICE_CODE_REGEX)
         .matchQuery("submission_id", UUID_REGEX)
