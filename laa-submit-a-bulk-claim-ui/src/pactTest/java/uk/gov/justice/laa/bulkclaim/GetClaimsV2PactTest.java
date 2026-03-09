@@ -40,13 +40,13 @@ public class GetClaimsV2PactTest extends AbstractPactTest {
         .matchQuery("office_code", OFFICE_CODE_REGEX)
         .matchQuery("page", ANY_NUMBER_REGEX)
         .matchQuery("size", ANY_NUMBER_REGEX)
-        .matchQuery("sort", ANY_FORMAT_REGEX)
+        .matchQuery("sort", SORT_REGEX_V2, "client_name,asc")
         .matchHeader(HttpHeaders.AUTHORIZATION, UUID_REGEX)
         .method("GET")
         .willRespondWith()
         .status(200)
         .headers(Map.of("Content-Type", "application/json"))
-        .body(EXPECTED_BODY.build())
+        .body(EXPECTED_CLAIMS_SEARCH_RESULTS_V2.build())
         .toPact();
   }
 
@@ -57,11 +57,11 @@ public class GetClaimsV2PactTest extends AbstractPactTest {
         .given("no claims exist for the search criteria")
         .uponReceiving("a request to search for claims with no results")
         .path("/api/v2/claims")
-        .matchQuery("office_code", "([A-Z0-9]{6})")
+        .matchQuery("office_code", OFFICE_CODE_REGEX)
         .matchQuery("submission_id", UUID_REGEX)
         .matchQuery("page", ANY_NUMBER_REGEX)
         .matchQuery("size", ANY_NUMBER_REGEX)
-        .matchQuery("sort", ANY_FORMAT_REGEX)
+        .matchQuery("sort", SORT_REGEX_V2, "status,asc")
         .matchHeader(HttpHeaders.AUTHORIZATION, UUID_REGEX)
         .method("GET")
         .willRespondWith()
@@ -89,7 +89,7 @@ public class GetClaimsV2PactTest extends AbstractPactTest {
   void verify200ResponseEmpty() {
     ClaimResultSetV2 claims =
         dataClaimsRestClient
-            .getClaims(USER_OFFICES.get(0), SUBMISSION_ID, 1, 10, "client_name,asc")
+            .getClaims(USER_OFFICES.get(0), SUBMISSION_ID, 1, 10, "status,asc")
             .getBody();
 
     assertThat(claims.getContent().isEmpty()).isTrue();

@@ -382,5 +382,46 @@ class SubmissionDetailControllerTest {
       verify(submissionClaimDetailsBuilder)
           .build(eq(submissionResponse), eq(0), anyInt(), eq("desc"));
     }
+
+    @Test
+    @DisplayName("Should uses defaults sort parameter when sort parameter is absent")
+    void shouldUseDefaultSortParameter() {
+      var submissionId = UUID.fromString("bceac49c-d756-4e05-8e28-3334b84b6fe8");
+      var submissionResponse =
+          SubmissionResponse.builder().status(SubmissionStatus.VALIDATION_SUCCEEDED).build();
+
+      when(dataClaimsRestClient.getSubmission(submissionId))
+          .thenReturn(Mono.just(submissionResponse));
+
+      when(submissionSummaryBuilder.build(eq(submissionResponse)))
+          .thenReturn(
+              new SubmissionSummary(
+                  submissionId,
+                  "Submitted",
+                  LocalDate.of(2025, 5, 1),
+                  "AQ2B3C",
+                  new BigDecimal("100.50"),
+                  AreaOfLaw.LEGAL_HELP.getValue(),
+                  OffsetDateTime.of(2025, 1, 1, 10, 10, 10, 0, ZoneOffset.UTC)));
+
+      var pagination = Page.builder().totalPages(1).totalElements(0).number(0).size(10).build();
+      when(submissionClaimDetailsBuilder.build(any(), anyInt(), anyInt(), anyString()))
+          .thenReturn(
+              new SubmissionClaimsDetails(Collections.emptyList(), pagination, BigDecimal.ZERO));
+
+      when(submissionMessagesBuilder.build(any(), any(), any(), anyInt(), anyInt()))
+          .thenReturn(
+              new MessagesSummary(Collections.emptyList(), 0, 0, pagination, MessagesSource.CLAIM));
+
+      when(submissionMatterStartsDetailsBuilder.build(any()))
+          .thenReturn(List.of(new SubmissionMatterStartsRow("Description", 34)));
+      mockMvc.perform(
+          get("/view-submission-detail?page=0&submissionId=" + submissionId)
+              .with(oidcLogin().oidcUser(ControllerTestHelper.getOidcUser()))
+              .sessionAttr("submissionId", submissionId));
+
+      verify(submissionClaimDetailsBuilder)
+          .build(eq(submissionResponse), eq(0), anyInt(), eq("line_number,asc"));
+    }
   }
 }

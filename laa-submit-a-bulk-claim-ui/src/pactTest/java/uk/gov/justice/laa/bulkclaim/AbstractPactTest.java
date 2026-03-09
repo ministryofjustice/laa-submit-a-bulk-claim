@@ -25,6 +25,7 @@ public abstract class AbstractPactTest {
   // Any number, but not 0 alone. Maximum 8 digits
   protected static final String ANY_NUMBER_REGEX = "([1-9][0-9]{0,7})";
   protected static final String SORT_REGEX = "[a-zA-Z]+,(asc|desc)";
+  protected static final String SORT_REGEX_V2 = "[a-z]+(?:_[a-z]+)*,(asc|desc)";
 
   protected static final List<String> USER_OFFICES = List.of("ABC123", "XYZ789");
   protected static final UUID BULK_SUBMISSION_ID = UUID.randomUUID();
@@ -202,6 +203,86 @@ public abstract class AbstractPactTest {
             body.array("content", array -> {});
             body.numberType("total_pages", 0);
             body.numberType("total_elements", 0);
+            body.numberType("number", 0);
+            body.numberType("size", 10);
+          });
+
+  protected static final LambdaDslJsonBody EXPECTED_CLAIMS_SEARCH_RESULTS_V2 =
+      LambdaDsl.newJsonBody(
+          body -> {
+            body.minArrayLike(
+                "content",
+                1,
+                claim -> {
+                  claim.stringType("id", "string");
+                  claim.stringType("submission_id", "string");
+                  claim.numberType("line_number", 0);
+                  claim.stringType("unique_file_number", "string");
+                  claim.stringType("case_concluded_date", "string");
+                  claim.stringType("fee_code", "string");
+                  claim.stringType("maat_id", "string");
+                  claim.stringType("client_forename", "string");
+                  claim.stringType("client_surname", "string");
+                  claim.stringType("unique_client_number", "string");
+                  claim.stringType("client_2_forename", "string");
+                  claim.stringType("client_2_surname", "string");
+                  claim.stringType("client_2_ucn", "string");
+                  claim.numberType("net_profit_costs_amount", 0);
+                  claim.numberType("net_disbursement_amount", 0);
+                  claim.numberType("net_counsel_costs_amount", 0);
+                  claim.numberType("disbursements_vat_amount", 0);
+                  claim.stringType("submission_period", "string");
+                  claim.numberType("total_warnings", 0);
+                  claim.object(
+                      "fee_calculation_response",
+                      fee -> {
+                        fee.stringType("calculated_fee_detail_id", "string");
+                        fee.uuid(
+                            "claim_summary_fee_id",
+                            UUID.fromString("3fa85f64-5717-4562-b3fc-2c963f66afa6"));
+                        fee.uuid(
+                            "claim_id", UUID.fromString("3fa85f64-5717-4562-b3fc-2c963f66afa6"));
+                        fee.stringType("fee_code", "string");
+                        fee.stringType("fee_code_description", "string");
+                        fee.stringType("fee_type", "HOURLY");
+                        fee.stringType("category_of_law", "string");
+                        fee.numberType("total_amount", 0);
+                        fee.booleanType("vat_indicator", true);
+                        fee.numberType("vat_rate_applied", 0);
+                        fee.numberType("calculated_vat_amount", 0);
+                        fee.numberType("disbursement_amount", 0);
+                        fee.numberType("requested_net_disbursement_amount", 0);
+                        fee.numberType("disbursement_vat_amount", 0);
+                        fee.numberType("hourly_total_amount", 0);
+                        fee.numberType("fixed_fee_amount", 0);
+                        fee.numberType("net_profit_costs_amount", 0);
+                        fee.numberType("requested_net_profit_costs_amount", 0);
+                        fee.numberType("net_cost_of_counsel_amount", 0);
+                        fee.numberType("net_travel_costs_amount", 0);
+                        fee.numberType("net_waiting_costs_amount", 0);
+                        fee.numberType("detention_travel_and_waiting_costs_amount", 0);
+                        fee.numberType("jr_form_filling_amount", 0);
+                        fee.numberType("travel_and_waiting_costs_amount", 0);
+                        fee.object(
+                            "bolt_on_details",
+                            bolt -> {
+                              bolt.numberType("bolt_on_total_fee_amount", 0);
+                              bolt.numberType("bolt_on_adjourned_hearing_count", 0);
+                              bolt.numberType("bolt_on_adjourned_hearing_fee", 0);
+                              bolt.numberType("bolt_on_cmrh_telephone_count", 0);
+                              bolt.numberType("bolt_on_cmrh_telephone_fee", 0);
+                              bolt.numberType("bolt_on_cmrh_oral_count", 0);
+                              bolt.numberType("bolt_on_cmrh_oral_fee", 0);
+                              bolt.numberType("bolt_on_home_office_interview_count", 0);
+                              bolt.numberType("bolt_on_home_office_interview_fee", 0);
+                              bolt.numberType("bolt_on_substantive_hearing_fee", 0);
+                              bolt.booleanType("escape_case_flag", true);
+                              bolt.stringType("scheme_id", "string");
+                            });
+                      });
+                });
+            body.numberType("total_pages", 1);
+            body.numberType("total_elements", 1);
             body.numberType("number", 0);
             body.numberType("size", 10);
           });

@@ -128,7 +128,8 @@ public class SubmissionDetailController {
       @RequestParam(value = SUBMISSION_ID) UUID submissionId,
       @RequestParam(value = "navTab", required = false, defaultValue = "CLAIM_DETAILS")
           ViewSubmissionNavigationTab navigationTab,
-      @RequestParam(value = "sort", required = false) String sort) {
+      @RequestParam(value = "sort", defaultValue = "line_number,asc", required = false)
+          String sort) {
 
     // Adding page and messagesPage to model
     model.addAttribute("page", page);

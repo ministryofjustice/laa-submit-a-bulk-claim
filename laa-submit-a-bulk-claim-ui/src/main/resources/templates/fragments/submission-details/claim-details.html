@@ -39,10 +39,12 @@
                                                                                'submission.summary.claims.table.feeCode')}"></th:block>
 
 
-            <th scope="col" class="govuk-table__header" aria-sort="none"
-                th:text="#{submission.summary.claims.table.dateWorkConcluded}"></th>
-            <th scope="col" class="govuk-table__header govuk-table__header--numeric" aria-sort="none"
-                th:text="#{submission.summary.claims.table.calculatedValue}"></th>
+            <th:block th:replace="~{fragments/sortable-header ::sortableHeader('case_concluded_date',${ViewSubmissionNavigationTab.CLAIM_DETAILS.toString()},
+                                                                               'submission.summary.claims.table.dateWorkConcluded')}"></th:block>
+
+
+            <th:block th:replace="~{fragments/sortable-header ::sortableHeader('total_amount',${ViewSubmissionNavigationTab.CLAIM_DETAILS.toString()},
+                                                                               'submission.summary.claims.table.calculatedValue')}"></th:block>
 
             <th:block th:replace="~{fragments/sortable-header ::sortableHeader('escape_case_flag',${ViewSubmissionNavigationTab.CLAIM_DETAILS.toString()},
                                                                                'submission.summary.claims.table.escapeCase')}"></th:block>
@@ -111,8 +113,9 @@
 
             <th:block th:replace="~{fragments/sortable-header ::sortableHeader('fee_code',${ViewSubmissionNavigationTab.CLAIM_DETAILS.toString()},
                                                                                'submission.summary.claims.table.feeCode')}"></th:block>
-            <th scope="col" class="govuk-table__header govuk-table__header--numeric" aria-sort="none"
-                th:text="#{submission.summary.claims.table.calculatedValue}"></th>
+
+            <th:block th:replace="~{fragments/sortable-header ::sortableHeader('total_amount',${ViewSubmissionNavigationTab.CLAIM_DETAILS.toString()},
+                                                                               'submission.summary.claims.table.calculatedValue')}"></th:block>
           </tr>
           </thead>
 
