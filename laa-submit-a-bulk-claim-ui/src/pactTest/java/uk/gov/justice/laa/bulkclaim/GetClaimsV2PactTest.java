@@ -15,6 +15,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import uk.gov.justice.laa.bulkclaim.client.DataClaimsRestClientV2;
 import uk.gov.justice.laa.bulkclaim.config.ClaimsApiPactTestConfig;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.ClaimResultSetV2;
@@ -29,23 +32,24 @@ import uk.gov.justice.laa.dstew.payments.claimsdata.model.ClaimResultSetV2;
 @DisplayName("GET: /api/v2/claims PACT tests")
 public class GetClaimsV2PactTest extends AbstractPactTest {
   @Autowired DataClaimsRestClientV2 dataClaimsRestClient;
+  private static final String PATH = "/api/v2/claims";
 
   @Pact(consumer = CONSUMER)
   public RequestResponsePact getClaims200(PactDslWithProvider builder) {
     return builder
         .given("claims exist for the search criteria v2")
         .uponReceiving("a request to search for claims using v2 api")
-        .path("/api/v2/claims")
-        .matchQuery("submission_id", UUID_REGEX)
-        .matchQuery("office_code", OFFICE_CODE_REGEX)
-        .matchQuery("page", ANY_NUMBER_REGEX)
-        .matchQuery("size", ANY_NUMBER_REGEX)
-        .matchQuery("sort", SORT_REGEX_V2, "client_surname,asc")
+        .path(PATH)
+        .matchQuery(QUERY_PARAM_SUBMISSION_ID, UUID_REGEX)
+        .matchQuery(QUERY_PARAM_OFFICE_CODE, OFFICE_CODE_REGEX)
+        .matchQuery(QUERY_PARAM_PAGE, ANY_NUMBER_REGEX)
+        .matchQuery(QUERY_PARAM_SIZE, ANY_NUMBER_REGEX)
+        .matchQuery(QUERY_PARAM_SORT, SORT_REGEX_V2, "client_surname,asc")
         .matchHeader(HttpHeaders.AUTHORIZATION, UUID_REGEX)
-        .method("GET")
+        .method(HttpMethod.GET.toString())
         .willRespondWith()
-        .status(200)
-        .headers(Map.of("Content-Type", "application/json"))
+        .status(HttpStatus.OK.value())
+        .headers(Map.of(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE))
         .body(EXPECTED_CLAIMS_SEARCH_RESULTS_V2.build())
         .toPact();
   }
@@ -56,17 +60,17 @@ public class GetClaimsV2PactTest extends AbstractPactTest {
     return builder
         .given("no claims exist for the search criteria v2")
         .uponReceiving("a request to search for claims with no results using v2 api")
-        .path("/api/v2/claims")
-        .matchQuery("office_code", OFFICE_CODE_REGEX)
-        .matchQuery("submission_id", UUID_REGEX)
-        .matchQuery("page", ANY_NUMBER_REGEX)
-        .matchQuery("size", ANY_NUMBER_REGEX)
-        .matchQuery("sort", SORT_REGEX_V2, "status,asc")
+        .path(PATH)
+        .matchQuery(QUERY_PARAM_OFFICE_CODE, OFFICE_CODE_REGEX)
+        .matchQuery(QUERY_PARAM_SUBMISSION_ID, UUID_REGEX)
+        .matchQuery(QUERY_PARAM_PAGE, ANY_NUMBER_REGEX)
+        .matchQuery(QUERY_PARAM_SIZE, ANY_NUMBER_REGEX)
+        .matchQuery(QUERY_PARAM_SORT, SORT_REGEX_V2, "status,asc")
         .matchHeader(HttpHeaders.AUTHORIZATION, UUID_REGEX)
-        .method("GET")
+        .method(HttpMethod.GET.toString())
         .willRespondWith()
-        .status(200)
-        .headers(Map.of("Content-Type", "application/json"))
+        .status(HttpStatus.OK.value())
+        .headers(Map.of(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE))
         .body(EMPTY_BODY.build())
         .toPact();
   }
