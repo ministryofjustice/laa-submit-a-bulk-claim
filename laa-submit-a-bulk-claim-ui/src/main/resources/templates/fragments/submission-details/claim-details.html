@@ -119,33 +119,6 @@
           </tr>
           </thead>
 
-          <thead class="govuk-table__head"
-                 th:if="${!isCrime and !isCivil and !isMediation}">
-          <tr class="govuk-table__row">
-            <th scope="col" class="govuk-table__header"
-                th:text="#{submission.summary.claims.table.claim}"></th>
-            <th scope="col" class="govuk-table__header" aria-sort="none"
-                th:text="#{submission.summary.claims.table.client}"></th>
-
-            <th:block th:replace="~{fragments/sortable-header ::sortableHeader('unique_file_number',${ViewSubmissionNavigationTab.CLAIM_DETAILS.toString()},
-                                                                               'submission.summary.claims.table.ufn')}"></th:block>
-
-
-            <th:block th:replace="~{fragments/sortable-header ::sortableHeader('unique_client_number',${ViewSubmissionNavigationTab.CLAIM_DETAILS.toString()},
-                                                                               'submission.summary.claims.table.ucn')}"></th:block>
-
-            <th:block th:replace="~{fragments/sortable-header ::sortableHeader('fee_code',${ViewSubmissionNavigationTab.CLAIM_DETAILS.toString()},
-                                                                               'submission.summary.claims.table.feeCode')}"></th:block>
-
-            <th scope="col" class="govuk-table__header govuk-table__header--numeric" aria-sort="none"
-                th:text="#{submission.summary.claims.table.calculatedValue}"></th>
-
-            <th:block th:replace="~{fragments/sortable-header ::sortableHeader('total_warnings',${ViewSubmissionNavigationTab.CLAIM_DETAILS.toString()},
-                                                                               'submission.summary.claims.table.messages')}"></th:block>
-
-          </tr>
-          </thead>
-
           <tbody class="govuk-table__body"
                  th:if="${isCrime and claimDetails != null and !claimDetails.submissionClaims.isEmpty()}">
           <tr class="govuk-table__row"
@@ -255,35 +228,7 @@
                 th:text="${claim.costsDetails != null && claim.costsDetails.claimValue != null ? @currencyUtil.toString(claim.costsDetails.claimValue) : '-'}"></td>
           </tr>
           </tbody>
-
-          <tbody class="govuk-table__body"
-                 th:if="${!isCrime and !isCivil and !isMediation and claimDetails != null and !claimDetails.submissionClaims.isEmpty()}">
-          <tr class="govuk-table__row"
-              th:each="claim, idx : ${claimDetails.submissionClaims}">
-            <td class="govuk-table__cell">
-              <a class="govuk-link"
-                 th:href="@{/submission/claim/{id}(id=${claim.id}, page=${page})}"
-                 th:text="#{submission.summary.claims.viewLink}"></a>
-            </td>
-            <td class="govuk-table__cell"
-                th:text="${claim.client ?: '-'}"></td>
-            <td class="govuk-table__cell"
-                th:text="${claim.ufn ?: '-'}"></td>
-            <td class="govuk-table__cell"
-                th:text="${claim.ucn ?: '-'}"></td>
-            <td class="govuk-table__cell"
-                th:text="${claim.feeCode ?: '-'}"></td>
-            <td class="govuk-table__cell govuk-table__cell--numeric"
-                th:attr="data-sort-value=${claim.costsDetails != null && claim.costsDetails.claimValue != null ? claim.costsDetails.claimValue : 0}"
-                th:text="${claim.costsDetails != null && claim.costsDetails.claimValue != null ? @currencyUtil.toString(claim.costsDetails.claimValue) : '-'}"></td>
-            <td class="govuk-table__cell">
-              <a class="govuk-link"
-                 th:if="${claim.totalMessages > 0}"
-                 th:href="@{/submission/claim/{id}(id=${claim.id}, page=${page})}"
-                 th:text="#{submission.summary.claims.messages.count(${claim.totalMessages})}"></a>
-            </td>
-          </tr>
-          </tbody>
+          
 
         </table>
       </div>
