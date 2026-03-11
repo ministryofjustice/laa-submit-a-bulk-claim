@@ -1,6 +1,6 @@
 <th:block th:fragment="claim-details">
   <!--Claim details information-->
-  <th:block th:if="${navTab.toString() == 'CLAIM_DETAILS'}">
+  <th:block th:if="${navTab.toString() == ViewSubmissionNavigationTab.CLAIM_DETAILS.toString()}">
     <div class="govuk-grid-column-full">
       <h2 class="govuk-heading-m" id="messages"
           th:text="#{submission.summary.claims.caption}"></h2>
@@ -166,7 +166,7 @@
               th:each="claim, idx : ${claimDetails.submissionClaims}">
             <td class="govuk-table__cell" th:with="claimDetailsUrl=@{/submission/claim/{id}(id=${claim.id})}">
               <a class="govuk-link"
-                 th:href="${@thymeleafHrefUtils.build(claimDetailsUrl, 'page', page, 'navTab', 'CLAIM_DETAILS')}"
+                 th:href="${@thymeleafHrefUtils.build(claimDetailsUrl, 'page', page, 'navTab',ViewSubmissionNavigationTab.CLAIM_DETAILS.toString())}"
                  th:text="#{submission.summary.claims.viewLink}"></a>
             </td>
             <td class="govuk-table__cell"
@@ -194,7 +194,7 @@
             <td class="govuk-table__cell" th:with="claimDetailsUrl=@{/submission/claim/{id}(id=${claim.id})}">
               <a class="govuk-link"
                  th:if="${claim.totalMessages > 0}"
-                 th:href="${@thymeleafHrefUtils.build(claimDetailsUrl, 'page', page, 'navTab', 'CLAIM_DETAILS')}"
+                 th:href="${@thymeleafHrefUtils.build(claimDetailsUrl, 'page', page, 'navTab', ViewSubmissionNavigationTab.CLAIM_DETAILS.toString())}"
                  th:text="#{submission.summary.claims.messages.count(${claim.totalMessages})}"></a>
             </td>
           </tr>
@@ -234,7 +234,7 @@
       </div>
       <div
               th:with="
-    baseUrl=@{/view-submission-detail(navTab='CLAIM_DETAILS', submissionId=${submissionId})},
+    baseUrl=@{/view-submission-detail(navTab=${ViewSubmissionNavigationTab.CLAIM_DETAILS.toString()}, submissionId=${submissionId})},
     currentSort=${param.sort != null ? param.sort[0] : null},
     claimDetailsUrl=${currentSort != null ? @thymeleafHrefUtils.build(baseUrl, 'sort', currentSort) : baseUrl},
     claimDetailsUrlWithAnchor=${claimDetailsUrl + '#claims-table'}
