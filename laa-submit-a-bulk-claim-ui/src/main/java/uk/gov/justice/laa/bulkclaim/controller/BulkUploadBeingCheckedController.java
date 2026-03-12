@@ -1,12 +1,9 @@
 package uk.gov.justice.laa.bulkclaim.controller;
 
-import static uk.gov.justice.laa.bulkclaim.constants.SessionConstants.SUBMISSION_DATE_TIME;
-import static uk.gov.justice.laa.bulkclaim.constants.SessionConstants.SUBMISSION_ID;
-import static uk.gov.justice.laa.bulkclaim.constants.SessionConstants.UPLOADED_FILENAME;
+import static uk.gov.justice.laa.bulkclaim.constants.SessionConstants.*;
 
 import java.util.List;
 import java.util.UUID;
-import java.util.concurrent.TimeUnit;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatusCode;
@@ -18,8 +15,7 @@ import org.springframework.web.bind.annotation.SessionAttributes;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
 import uk.gov.justice.laa.bulkclaim.client.DataClaimsRestClient;
 import uk.gov.justice.laa.bulkclaim.exception.SubmitBulkClaimException;
-import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionResponse;
-import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionStatus;
+import uk.gov.justice.laa.dstew.payments.claimsdata.model.*;
 
 /**
  * Controller for handling the upload being checked page after a user has submitted a bulk claim.
@@ -29,7 +25,7 @@ import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionStatus;
 @Slf4j
 @Controller
 @RequiredArgsConstructor
-@SessionAttributes({SUBMISSION_ID, UPLOADED_FILENAME, SUBMISSION_DATE_TIME})
+@SessionAttributes({SUBMISSION_ID, BULK_SUBMISSION_ID, UPLOADED_FILENAME, SUBMISSION_DATE_TIME})
 public class BulkUploadBeingCheckedController {
 
   private final DataClaimsRestClient dataClaimsRestClient;
@@ -42,32 +38,31 @@ public class BulkUploadBeingCheckedController {
    * is ready.
    *
    * @param model the Spring model.
-   * @param submissionId the submission id session attribute.
+   * @param bulkSubmissionId the submission id session attribute.
    * @return the import in progress view or redirects to view submission.
    */
   @GetMapping("/upload-is-being-checked")
-  public String uploadBeingChecked(Model model, @ModelAttribute(SUBMISSION_ID) UUID submissionId) {
+  public String uploadBeingChecked(
+      Model model,
+      @ModelAttribute(SUBMISSION_ID) UUID submissionId,
+      @ModelAttribute(BULK_SUBMISSION_ID) UUID bulkSubmissionId) {
 
-    // Check submission exists otherwise they will be stuck in a loop on this page.
-    SubmissionResponse submission;
-
+    GetBulkSubmission200Response bulkSubmission;
     try {
-      TimeUnit.SECONDS.sleep(3);
-      submission = dataClaimsRestClient.getSubmission(submissionId).block();
-    } catch (InterruptedException e) {
-      Thread.currentThread().interrupt();
-      throw new IllegalStateException("Interrupted while waiting before submission check", e);
+      bulkSubmission = dataClaimsRestClient.getBulkSubmission(bulkSubmissionId).block();
     } catch (WebClientResponseException e) {
       if (e.getStatusCode().isSameCodeAs(HttpStatusCode.valueOf(404))) {
-        log.debug("No submission found, will retry: %s".formatted(submissionId.toString()));
+        log.debug(
+            "No bulk submission found, will retry: %s".formatted(bulkSubmissionId.toString()));
         model.addAttribute("shouldRefresh", true);
         return "pages/upload-being-checked";
       }
       throw new SubmitBulkClaimException("Claims API returned an error", e);
     }
 
-    // Redirect if submission is complete
-    if (completedStatuses.contains(submission.getStatus())) {
+    BulkSubmissionStatus status = bulkSubmission.getStatus();
+    if (status == BulkSubmissionStatus.VALIDATION_FAILED
+        || status == BulkSubmissionStatus.VALIDATION_SUCCEEDED) {
       return "redirect:/submission/%s".formatted(submissionId.toString());
     }
 

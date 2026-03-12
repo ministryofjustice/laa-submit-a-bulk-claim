@@ -13,16 +13,7 @@ import org.springframework.web.service.annotation.GetExchange;
 import org.springframework.web.service.annotation.HttpExchange;
 import org.springframework.web.service.annotation.PostExchange;
 import reactor.core.publisher.Mono;
-import uk.gov.justice.laa.dstew.payments.claimsdata.model.AreaOfLaw;
-import uk.gov.justice.laa.dstew.payments.claimsdata.model.ClaimResponse;
-import uk.gov.justice.laa.dstew.payments.claimsdata.model.ClaimResultSet;
-import uk.gov.justice.laa.dstew.payments.claimsdata.model.CreateBulkSubmission201Response;
-import uk.gov.justice.laa.dstew.payments.claimsdata.model.MatterStartGet;
-import uk.gov.justice.laa.dstew.payments.claimsdata.model.MatterStartResultSet;
-import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionResponse;
-import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionStatus;
-import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionsResultSet;
-import uk.gov.justice.laa.dstew.payments.claimsdata.model.ValidationMessagesResponse;
+import uk.gov.justice.laa.dstew.payments.claimsdata.model.*;
 
 /**
  * REST Service interface for interacting with the Claims API.
@@ -78,6 +69,17 @@ public interface DataClaimsRestClient {
    */
   @GetExchange(value = "/submissions/{submissionId}")
   Mono<SubmissionResponse> getSubmission(@PathVariable("submissionId") UUID submissionId)
+      throws WebClientResponseException;
+
+  /**
+   * * Gets a bulk submission by its ID.
+   *
+   * @param bulkSubmissionId the bulk submission ID
+   * @return a mono containing the response from the Claims API.
+   * @throws WebClientResponseException if status other than 2xx is returned
+   */
+  @GetExchange(value = "/bulk-submissions/{id}")
+  Mono<GetBulkSubmission200Response> getBulkSubmission(@PathVariable("id") UUID bulkSubmissionId)
       throws WebClientResponseException;
 
   /**
