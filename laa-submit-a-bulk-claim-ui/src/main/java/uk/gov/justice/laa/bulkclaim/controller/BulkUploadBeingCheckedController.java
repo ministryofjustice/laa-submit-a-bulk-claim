@@ -1,6 +1,9 @@
 package uk.gov.justice.laa.bulkclaim.controller;
 
-import static uk.gov.justice.laa.bulkclaim.constants.SessionConstants.*;
+import static uk.gov.justice.laa.bulkclaim.constants.SessionConstants.BULK_SUBMISSION_ID;
+import static uk.gov.justice.laa.bulkclaim.constants.SessionConstants.SUBMISSION_DATE_TIME;
+import static uk.gov.justice.laa.bulkclaim.constants.SessionConstants.SUBMISSION_ID;
+import static uk.gov.justice.laa.bulkclaim.constants.SessionConstants.UPLOADED_FILENAME;
 
 import java.util.List;
 import java.util.UUID;
@@ -15,7 +18,10 @@ import org.springframework.web.bind.annotation.SessionAttributes;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
 import uk.gov.justice.laa.bulkclaim.client.DataClaimsRestClient;
 import uk.gov.justice.laa.bulkclaim.exception.SubmitBulkClaimException;
-import uk.gov.justice.laa.dstew.payments.claimsdata.model.*;
+import uk.gov.justice.laa.dstew.payments.claimsdata.model.BulkSubmissionStatus;
+import uk.gov.justice.laa.dstew.payments.claimsdata.model.GetBulkSubmission200Response;
+import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionStatus;
+
 
 /**
  * Controller for handling the upload being checked page after a user has submitted a bulk claim.
