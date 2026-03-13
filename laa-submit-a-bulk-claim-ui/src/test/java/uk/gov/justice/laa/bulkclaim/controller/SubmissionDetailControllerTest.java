@@ -1,8 +1,7 @@
 package uk.gov.justice.laa.bulkclaim.controller;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -145,7 +144,7 @@ class SubmissionDetailControllerTest {
   }
 
   @Nested
-  @DisplayName("GET: /submission/{submissionId}/detail")
+  @DisplayName("GET: /view-submission-detail")
   class GetSubmissionDetail {
 
     @Test
@@ -172,7 +171,8 @@ class SubmissionDetailControllerTest {
       when(submissionMessagesBuilder.build(any(), any(), any(), anyInt(), anyInt()))
           .thenReturn(
               new MessagesSummary(Collections.emptyList(), 0, 0, pagination, MessagesSource.CLAIM));
-      when(submissionClaimDetailsBuilder.build(any(), anyInt(), anyInt()))
+      when(submissionClaimDetailsBuilder.build(
+              eq(submissionResponse), anyInt(), anyInt(), anyString()))
           .thenReturn(
               new SubmissionClaimsDetails(Collections.emptyList(), pagination, BigDecimal.ZERO));
       when(submissionMatterStartsDetailsBuilder.build(any()))
@@ -180,12 +180,12 @@ class SubmissionDetailControllerTest {
       // When / Then
       assertThat(
               mockMvc.perform(
-                  get("/view-submission-detail?submissionId=" + submissionReference)
+                  get("/view-submission-detail?sort=desc&submissionId=" + submissionReference)
                       .with(oidcLogin().oidcUser(ControllerTestHelper.getOidcUser()))
                       .sessionAttr("submissionId", submissionReference)))
           .hasStatusOk()
           .hasViewName("pages/view-submission-detail-accepted");
-      verify(submissionClaimDetailsBuilder, times(1)).build(any(), anyInt(), anyInt());
+      verify(submissionClaimDetailsBuilder, times(1)).build(any(), anyInt(), anyInt(), anyString());
       verify(submissionMessagesBuilder, times(1))
           .build(submissionReference, null, ValidationMessageType.WARNING, 0, 10);
       verify(submissionMatterStartsDetailsBuilder, times(1)).build(any());
@@ -212,7 +212,7 @@ class SubmissionDetailControllerTest {
                   new BigDecimal("100.50"),
                   "Legal aid",
                   OffsetDateTime.of(2025, 1, 1, 10, 10, 10, 0, ZoneOffset.UTC)));
-      when(submissionClaimDetailsBuilder.build(any(), anyInt(), anyInt()))
+      when(submissionClaimDetailsBuilder.build(any(), anyInt(), anyInt(), anyString()))
           .thenReturn(
               new SubmissionClaimsDetails(Collections.emptyList(), pagination, BigDecimal.ZERO));
       when(submissionMessagesBuilder.buildErrors(any(), anyInt(), anyInt()))
@@ -223,7 +223,7 @@ class SubmissionDetailControllerTest {
       // When / Then
       assertThat(
               mockMvc.perform(
-                  get("/view-submission-detail?navTab=CLAIM_DETAILS&submissionId="
+                  get("/view-submission-detail?sort=desc&navTab=CLAIM_DETAILS&submissionId="
                           + submissionReference)
                       .with(oidcLogin().oidcUser(ControllerTestHelper.getOidcUser()))
                       .sessionAttr("submissionId", submissionReference)))
@@ -260,7 +260,7 @@ class SubmissionDetailControllerTest {
                   OffsetDateTime.of(2025, 1, 1, 10, 10, 10, 0, ZoneOffset.UTC)));
       List<SubmissionMatterStartsRow> matterTypes = new ArrayList<>();
       matterTypes.add(new SubmissionMatterStartsRow("Description", 34));
-      when(submissionClaimDetailsBuilder.build(any(), anyInt(), anyInt()))
+      when(submissionClaimDetailsBuilder.build(any(), anyInt(), anyInt(), anyString()))
           .thenReturn(
               new SubmissionClaimsDetails(Collections.emptyList(), pagination, BigDecimal.ZERO));
       when(submissionMessagesBuilder.build(any(), any(), any(), anyInt(), anyInt()))
@@ -270,13 +270,13 @@ class SubmissionDetailControllerTest {
       // When / Then
       assertThat(
               mockMvc.perform(
-                  get("/view-submission-detail?navTab=MATTER_STARTS&submissionId="
+                  get("/view-submission-detail?sort=desc&navTab=MATTER_STARTS&submissionId="
                           + submissionReference)
                       .with(oidcLogin().oidcUser(ControllerTestHelper.getOidcUser()))
                       .sessionAttr("submissionId", submissionReference)))
           .hasStatusOk()
           .hasViewName("pages/view-submission-detail-accepted");
-      verify(submissionClaimDetailsBuilder).build(any(), anyInt(), anyInt());
+      verify(submissionClaimDetailsBuilder).build(any(), anyInt(), anyInt(), anyString());
       verify(submissionMatterStartsDetailsBuilder, times(1)).build(any());
     }
 
@@ -304,7 +304,7 @@ class SubmissionDetailControllerTest {
                   null,
                   AreaOfLaw.CRIME_LOWER.getValue(),
                   OffsetDateTime.of(2025, 1, 1, 10, 10, 10, 0, ZoneOffset.UTC)));
-      when(submissionClaimDetailsBuilder.build(any(), anyInt(), anyInt()))
+      when(submissionClaimDetailsBuilder.build(any(), anyInt(), anyInt(), anyString()))
           .thenReturn(
               new SubmissionClaimsDetails(Collections.emptyList(), pagination, BigDecimal.TEN));
       when(submissionMessagesBuilder.build(any(), any(), any(), anyInt(), anyInt()))
@@ -314,13 +314,13 @@ class SubmissionDetailControllerTest {
       // When
       MvcTestResult response =
           mockMvc.perform(
-              get("/view-submission-detail?submissionId=" + submissionReference)
+              get("/view-submission-detail?sort=desc&submissionId=" + submissionReference)
                   .with(oidcLogin().oidcUser(ControllerTestHelper.getOidcUser()))
                   .sessionAttr("submissionId", submissionReference));
 
       // Then
       assertThat(response).hasStatusOk().hasViewName("pages/view-submission-detail-accepted");
-      verify(submissionClaimDetailsBuilder).build(any(), anyInt(), anyInt());
+      verify(submissionClaimDetailsBuilder).build(any(), anyInt(), anyInt(), anyString());
       verify(submissionMessagesBuilder)
           .build(submissionReference, null, ValidationMessageType.WARNING, 0, 10);
     }
@@ -340,6 +340,88 @@ class SubmissionDetailControllerTest {
                       .sessionAttr("submissionId", submissionReference)))
           .failure()
           .hasMessageEndingWith("Submission bceac49c-d756-4e05-8e28-3334b84b6fe8 does not exist");
+    }
+
+    @Test
+    @DisplayName("Should call view-submission-detail with sort parameter")
+    void shouldCallWithSortParam() {
+      var submissionId = UUID.fromString("bceac49c-d756-4e05-8e28-3334b84b6fe8");
+      var submissionResponse =
+          SubmissionResponse.builder().status(SubmissionStatus.VALIDATION_SUCCEEDED).build();
+
+      when(dataClaimsRestClient.getSubmission(submissionId))
+          .thenReturn(Mono.just(submissionResponse));
+
+      when(submissionSummaryBuilder.build(eq(submissionResponse)))
+          .thenReturn(
+              new SubmissionSummary(
+                  submissionId,
+                  "Submitted",
+                  LocalDate.of(2025, 5, 1),
+                  "AQ2B3C",
+                  new BigDecimal("100.50"),
+                  AreaOfLaw.LEGAL_HELP.getValue(),
+                  OffsetDateTime.of(2025, 1, 1, 10, 10, 10, 0, ZoneOffset.UTC)));
+
+      var pagination = Page.builder().totalPages(1).totalElements(0).number(0).size(10).build();
+      when(submissionClaimDetailsBuilder.build(any(), anyInt(), anyInt(), anyString()))
+          .thenReturn(
+              new SubmissionClaimsDetails(Collections.emptyList(), pagination, BigDecimal.ZERO));
+
+      when(submissionMessagesBuilder.build(any(), any(), any(), anyInt(), anyInt()))
+          .thenReturn(
+              new MessagesSummary(Collections.emptyList(), 0, 0, pagination, MessagesSource.CLAIM));
+
+      when(submissionMatterStartsDetailsBuilder.build(any()))
+          .thenReturn(List.of(new SubmissionMatterStartsRow("Description", 34)));
+      mockMvc.perform(
+          get("/view-submission-detail?page=0&sort=desc&submissionId=" + submissionId)
+              .with(oidcLogin().oidcUser(ControllerTestHelper.getOidcUser()))
+              .sessionAttr("submissionId", submissionId));
+
+      verify(submissionClaimDetailsBuilder)
+          .build(eq(submissionResponse), eq(0), anyInt(), eq("desc"));
+    }
+
+    @Test
+    @DisplayName("Should uses defaults sort parameter when sort parameter is absent")
+    void shouldUseDefaultSortParameter() {
+      var submissionId = UUID.fromString("bceac49c-d756-4e05-8e28-3334b84b6fe8");
+      var submissionResponse =
+          SubmissionResponse.builder().status(SubmissionStatus.VALIDATION_SUCCEEDED).build();
+
+      when(dataClaimsRestClient.getSubmission(submissionId))
+          .thenReturn(Mono.just(submissionResponse));
+
+      when(submissionSummaryBuilder.build(eq(submissionResponse)))
+          .thenReturn(
+              new SubmissionSummary(
+                  submissionId,
+                  "Submitted",
+                  LocalDate.of(2025, 5, 1),
+                  "AQ2B3C",
+                  new BigDecimal("100.50"),
+                  AreaOfLaw.LEGAL_HELP.getValue(),
+                  OffsetDateTime.of(2025, 1, 1, 10, 10, 10, 0, ZoneOffset.UTC)));
+
+      var pagination = Page.builder().totalPages(1).totalElements(0).number(0).size(10).build();
+      when(submissionClaimDetailsBuilder.build(any(), anyInt(), anyInt(), anyString()))
+          .thenReturn(
+              new SubmissionClaimsDetails(Collections.emptyList(), pagination, BigDecimal.ZERO));
+
+      when(submissionMessagesBuilder.build(any(), any(), any(), anyInt(), anyInt()))
+          .thenReturn(
+              new MessagesSummary(Collections.emptyList(), 0, 0, pagination, MessagesSource.CLAIM));
+
+      when(submissionMatterStartsDetailsBuilder.build(any()))
+          .thenReturn(List.of(new SubmissionMatterStartsRow("Description", 34)));
+      mockMvc.perform(
+          get("/view-submission-detail?page=0&submissionId=" + submissionId)
+              .with(oidcLogin().oidcUser(ControllerTestHelper.getOidcUser()))
+              .sessionAttr("submissionId", submissionId));
+
+      verify(submissionClaimDetailsBuilder)
+          .build(eq(submissionResponse), eq(0), anyInt(), eq("line_number,asc"));
     }
   }
 }

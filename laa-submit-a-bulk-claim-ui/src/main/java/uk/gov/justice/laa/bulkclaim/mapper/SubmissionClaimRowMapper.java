@@ -7,6 +7,7 @@ import org.mapstruct.Named;
 import uk.gov.justice.laa.bulkclaim.dto.submission.claim.SubmissionClaimRow;
 import uk.gov.justice.laa.bulkclaim.dto.submission.claim.SubmissionClaimRowCostsDetails;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.ClaimResponse;
+import uk.gov.justice.laa.dstew.payments.claimsdata.model.ClaimResponseV2;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.FeeCalculationType;
 
 /**
@@ -41,6 +42,30 @@ public interface SubmissionClaimRowMapper {
   @Mapping(target = "escapeCase", expression = "java(resolveEscapeCase(claimFields))")
   SubmissionClaimRow toSubmissionClaimRow(ClaimResponse claimFields, int totalMessages);
 
+  @Mapping(target = "ufn", source = "claimFields.uniqueFileNumber")
+  @Mapping(target = "ucn", source = "claimFields.uniqueClientNumber")
+  @Mapping(
+      target = "client",
+      expression =
+          "java(claimFields.getClientForename() + \" \" + " + "claimFields.getClientSurname())")
+  @Mapping(target = "clientForename", source = "claimFields.clientForename")
+  @Mapping(target = "clientSurname", source = "claimFields.clientSurname")
+  @Mapping(target = "client2Forename", source = "claimFields.client2Forename")
+  @Mapping(target = "client2Surname", source = "claimFields.client2Surname")
+  @Mapping(target = "client2Ucn", source = "claimFields.client2Ucn")
+  @Mapping(target = "category", source = "claimFields.standardFeeCategoryCode")
+  @Mapping(target = "matter", source = "claimFields.matterTypeCode")
+  @Mapping(target = "concludedOrClaimedDate", source = "claimFields.caseConcludedDate")
+  @Mapping(
+      target = "feeType",
+      source = "claimFields.feeCalculationResponse.feeType",
+      qualifiedByName = "toFeeType")
+  @Mapping(target = "feeCode", source = "claimFields.feeCalculationResponse.feeCode")
+  @Mapping(target = "costsDetails", source = "claimFields")
+  @Mapping(target = "totalMessages", source = "claimFields.totalWarnings")
+  @Mapping(target = "escapeCase", expression = "java(resolveEscapeCase(claimFields))")
+  SubmissionClaimRow toSubmissionClaimRow(ClaimResponseV2 claimFields);
+
   /**
    * Maps the FeeCalculationType to a human readable string.
    *
@@ -60,6 +85,9 @@ public interface SubmissionClaimRowMapper {
   @Mapping(target = "claimValue", source = "claimFields.feeCalculationResponse.totalAmount")
   SubmissionClaimRowCostsDetails toSubmissionClaimRowCostsDetails(ClaimResponse claimFields);
 
+  @Mapping(target = "claimValue", source = "claimFields.feeCalculationResponse.totalAmount")
+  SubmissionClaimRowCostsDetails toSubmissionClaimRowCostsDetails(ClaimResponseV2 claimFields);
+
   /**
    * Retrieves the escape case flag from the nested fee calculation response if available.
    *
@@ -68,6 +96,25 @@ public interface SubmissionClaimRowMapper {
    *     {@code null} if the value is unavailable
    */
   default Boolean resolveEscapeCase(ClaimResponse claimFields) {
+    if (claimFields == null
+        || claimFields.getFeeCalculationResponse() == null
+        || claimFields.getFeeCalculationResponse().getBoltOnDetails() == null) {
+      return null;
+    }
+    return claimFields.getFeeCalculationResponse().getBoltOnDetails().getEscapeCaseFlag();
+  }
+
+  /**
+   * Resolves the escape case flag from the given ClaimResponseV2 object. This method navigates
+   * through the nested structure of the provided claimFields to determine if the claim has been
+   * marked as an escape case.
+   *
+   * @param claimFields the ClaimResponseV2 object containing the necessary data to resolve the
+   *     escape case flag
+   * @return {@code Boolean.TRUE} if the claim is marked as an escape case, {@code Boolean.FALSE} if
+   *     it is not, or {@code null} if the data needed to determine this value is unavailable
+   */
+  default Boolean resolveEscapeCase(ClaimResponseV2 claimFields) {
     if (claimFields == null
         || claimFields.getFeeCalculationResponse() == null
         || claimFields.getFeeCalculationResponse().getBoltOnDetails() == null) {
