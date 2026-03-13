@@ -117,7 +117,10 @@
               <a class="govuk-link"
                  th:href="@{/submission/claim/{id}(id=${claim.id}, page=${page})}"
                  th:text="#{submission.summary.claims.viewLink}"></a>
-
+              <div class="govuk-!-margin-top-1" th:if="${claim.status == 'VOID'}">
+                <span class="moj-badge moj-badge--red"
+                      th:text="#{submission.summary.claims.voided}"></span>
+              </div>
             </td>
             <td class="govuk-table__cell"
                 th:text="${claim.clientSurname ?: '-'}"></td>
@@ -158,6 +161,10 @@
               <a class="govuk-link"
                  th:href="${@thymeleafHrefUtils.build(claimDetailsUrl, 'page', page, 'navTab', 'CLAIM_DETAILS')}"
                  th:text="#{submission.summary.claims.viewLink}"></a>
+              <div class="govuk-!-margin-top-1" th:if="${claim.status == 'VOID'}">
+                <span class="moj-badge moj-badge--red"
+                      th:text="#{submission.summary.claims.voided}"></span>
+              </div>
             </td>
             <td class="govuk-table__cell"
                 th:text="${claim.clientSurname ?: '-'}"></td>
@@ -198,6 +205,10 @@
               <a class="govuk-link"
                  th:href="@{/submission/claim/{id}(id=${claim.id}, page=${page})}"
                  th:text="#{submission.summary.claims.viewLink}"></a>
+              <div class="govuk-!-margin-top-1" th:if="${claim.status == 'VOID'}">
+                <span class="moj-badge moj-badge--red"
+                      th:text="#{submission.summary.claims.voided}"></span>
+              </div>
             </td>
             <td class="govuk-table__cell"
                 th:text="${claim.clientSurname ?: '-'}"></td>
@@ -227,6 +238,10 @@
               <a class="govuk-link"
                  th:href="@{/submission/claim/{id}(id=${claim.id}, page=${page})}"
                  th:text="#{submission.summary.claims.viewLink}"></a>
+              <div class="govuk-!-margin-top-1" th:if="${claim.status == 'VOID'}">
+                <span class="moj-badge moj-badge--red"
+                      th:text="#{submission.summary.claims.voided}"></span>
+              </div>
             </td>
             <td class="govuk-table__cell"
                 th:text="${claim.client ?: '-'}"></td>
