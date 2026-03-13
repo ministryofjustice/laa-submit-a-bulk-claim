@@ -20,8 +20,6 @@ import uk.gov.justice.laa.bulkclaim.client.DataClaimsRestClient;
 import uk.gov.justice.laa.bulkclaim.exception.SubmitBulkClaimException;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.BulkSubmissionStatus;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.GetBulkSubmission200Response;
-import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionStatus;
-
 
 /**
  * Controller for handling the upload being checked page after a user has submitted a bulk claim.
@@ -36,8 +34,8 @@ public class BulkUploadBeingCheckedController {
 
   private final DataClaimsRestClient dataClaimsRestClient;
 
-  private final List<SubmissionStatus> completedStatuses =
-      List.of(SubmissionStatus.VALIDATION_SUCCEEDED, SubmissionStatus.VALIDATION_FAILED);
+  private final List<BulkSubmissionStatus> completedStatuses =
+      List.of(BulkSubmissionStatus.VALIDATION_SUCCEEDED, BulkSubmissionStatus.VALIDATION_FAILED);
 
   /**
    * Shows the import in progress page, and refreshes every 5 seconds. Redirects if the submission
@@ -56,22 +54,17 @@ public class BulkUploadBeingCheckedController {
     GetBulkSubmission200Response bulkSubmission;
     try {
       bulkSubmission = dataClaimsRestClient.getBulkSubmission(bulkSubmissionId).block();
+      if (bulkSubmission != null && completedStatuses.contains(bulkSubmission.getStatus())) {
+        return "redirect:/submission/%s".formatted(submissionId.toString());
+      }
     } catch (WebClientResponseException e) {
       if (e.getStatusCode().isSameCodeAs(HttpStatusCode.valueOf(404))) {
         log.debug(
             "No bulk submission found, will retry: %s".formatted(bulkSubmissionId.toString()));
-        model.addAttribute("shouldRefresh", true);
-        return "pages/upload-being-checked";
+      } else {
+        throw new SubmitBulkClaimException("Claims API returned an error", e);
       }
-      throw new SubmitBulkClaimException("Claims API returned an error", e);
     }
-
-    BulkSubmissionStatus status = bulkSubmission.getStatus();
-    if (status == BulkSubmissionStatus.VALIDATION_FAILED
-        || status == BulkSubmissionStatus.VALIDATION_SUCCEEDED) {
-      return "redirect:/submission/%s".formatted(submissionId.toString());
-    }
-
     model.addAttribute("shouldRefresh", true);
     return "pages/upload-being-checked";
   }
