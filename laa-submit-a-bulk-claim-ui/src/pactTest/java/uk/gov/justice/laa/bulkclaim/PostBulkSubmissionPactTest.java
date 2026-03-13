@@ -11,11 +11,11 @@ import au.com.dius.pact.consumer.junit5.PactConsumerTest;
 import au.com.dius.pact.consumer.junit5.PactTestFor;
 import au.com.dius.pact.core.model.RequestResponsePact;
 import au.com.dius.pact.core.model.annotations.Pact;
+import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
-import lombok.SneakyThrows;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -64,9 +64,9 @@ public final class PostBulkSubmissionPactTest extends AbstractPactTest {
 
   @Autowired DataClaimsRestClient dataClaimsRestClient;
 
-  @SneakyThrows
   @Pact(consumer = CONSUMER)
-  public RequestResponsePact postBulkSubmission201WithOffice(PactDslWithProvider builder) {
+  public RequestResponsePact postBulkSubmission201WithOffice(PactDslWithProvider builder)
+      throws IOException {
     // Defines expected 201 response for successfully submitting valid bulk submission
     return builder
         .given("the system is ready to process a valid bulk submission")
@@ -92,9 +92,8 @@ public final class PostBulkSubmissionPactTest extends AbstractPactTest {
         .toPact();
   }
 
-  @SneakyThrows
   @Pact(consumer = CONSUMER)
-  public RequestResponsePact postBulkSubmission400(PactDslWithProvider builder) {
+  public RequestResponsePact postBulkSubmission400(PactDslWithProvider builder) throws IOException {
     // Defines expected 400 response for uploading invalid bulk submission
     return builder
         .given("the submission file contains invalid data")
@@ -111,9 +110,9 @@ public final class PostBulkSubmissionPactTest extends AbstractPactTest {
         .toPact();
   }
 
-  @SneakyThrows
   @Pact(consumer = CONSUMER)
-  public RequestResponsePact postBulkSubmission400WithoutOffice(PactDslWithProvider builder) {
+  public RequestResponsePact postBulkSubmission400WithoutOffice(PactDslWithProvider builder)
+      throws IOException {
     // Defines expected 201 response for successfully submitting valid bulk submission
     return builder
         .given("the system is ready to process a valid bulk submission")
