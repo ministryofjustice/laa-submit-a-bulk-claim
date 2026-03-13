@@ -77,7 +77,8 @@ public final class GetBulkSubmissionPactTest extends AbstractPactTest {
   @DisplayName("Verify 200 response")
   @PactTestFor(pactMethod = "getBulkSubmission200")
   void verify200Response() {
-    GetBulkSubmission200Response submission = dataClaimsRestClient.getBulkSubmission(BULK_SUBMISSION_ID).block();
+    GetBulkSubmission200Response submission =
+        dataClaimsRestClient.getBulkSubmission(BULK_SUBMISSION_ID).block();
 
     assertThat(submission).isNotNull();
     assertThat(submission.getBulkSubmissionId()).isEqualTo(BULK_SUBMISSION_ID);
