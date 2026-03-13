@@ -3,7 +3,7 @@ name: Build OIDC mock image
 on:
   workflow_call:
     secrets:
-      ECR_ROLE_TO_ASSUME:
+      LAA_SUBMIT_A_BULK_CLAIM_ECR_ROLE_TO_ASSUME:
         required: true
     outputs:
       oidc_mock_tag:
