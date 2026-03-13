@@ -69,7 +69,7 @@ public class BulkUploadBeingCheckedControllerTest {
 
     @Test
     @DisplayName("Should return expected result when bulk submission not found")
-    void shouldReturnExpectedResultWhenSubmissionNotFound() {
+    void shouldReturnExpectedResultWhenBulkSubmissionNotFound() {
       // Given
       UUID submissionId = UUID.fromString("5933fc67-bac7-4f48-81ed-61c8c463f054");
       UUID bulkSubmissionId = UUID.fromString("5933fc67-bac7-4f48-81ed-61c8c463f056");
@@ -133,7 +133,7 @@ public class BulkUploadBeingCheckedControllerTest {
     }
 
     @Test
-    @DisplayName("Should throw error when bulk submission parsing fails")
+    @DisplayName("Should throw error when parsing fails")
     void shouldThrowErrorWhenExceptionWhenParsingFailed() {
       // Given
       UUID bulkSubmissionId = UUID.fromString("5933fc67-bac7-4f48-81ed-61c8c463f056");
@@ -156,7 +156,7 @@ public class BulkUploadBeingCheckedControllerTest {
     }
 
     @Test
-    @DisplayName("Should throw error when bulk submission status is unexpected")
+    @DisplayName("Should throw error when status is unexpected")
     void shouldThrowErrorWhenExceptionWhenUnexpectedBulkSubmissionStatus() {
       // Given
       UUID bulkSubmissionId = UUID.fromString("5933fc67-bac7-4f48-81ed-61c8c463f056");

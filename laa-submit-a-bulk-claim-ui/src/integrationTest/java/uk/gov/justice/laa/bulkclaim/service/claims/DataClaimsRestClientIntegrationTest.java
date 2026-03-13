@@ -316,7 +316,6 @@ class DataClaimsRestClientIntegrationTest extends MockServerIntegrationTest {
     }
   }
 
-  // ------
   @Nested
   @DisplayName("GET: /api/v1/bulk-submissions/{id}")
   class GetBulkSubmission {
@@ -406,8 +405,6 @@ class DataClaimsRestClientIntegrationTest extends MockServerIntegrationTest {
           InternalServerError.class, () -> dataClaimsRestClient.getBulkSubmission(id).block());
     }
   }
-
-  // ------
 
   @Nested
   @DisplayName("GET: /api/v1/claims")
