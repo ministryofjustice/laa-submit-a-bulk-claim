@@ -35,7 +35,10 @@ public class BulkUploadBeingCheckedController {
   private final DataClaimsRestClient dataClaimsRestClient;
 
   private final List<BulkSubmissionStatus> completedStatuses =
-      List.of(BulkSubmissionStatus.VALIDATION_SUCCEEDED, BulkSubmissionStatus.VALIDATION_FAILED);
+      List.of(
+          BulkSubmissionStatus.VALIDATION_SUCCEEDED,
+          BulkSubmissionStatus.VALIDATION_FAILED,
+          BulkSubmissionStatus.PARSING_COMPLETED);
 
   /**
    * Shows the import in progress page, and refreshes every 5 seconds. Redirects if the submission
@@ -51,21 +54,31 @@ public class BulkUploadBeingCheckedController {
       @ModelAttribute(SUBMISSION_ID) UUID submissionId,
       @ModelAttribute(BULK_SUBMISSION_ID) UUID bulkSubmissionId) {
 
-    GetBulkSubmission200Response bulkSubmission;
     try {
-      bulkSubmission = dataClaimsRestClient.getBulkSubmission(bulkSubmissionId).block();
-      if (bulkSubmission != null && completedStatuses.contains(bulkSubmission.getStatus())) {
+      GetBulkSubmission200Response bulkSubmission =
+          dataClaimsRestClient.getBulkSubmission(bulkSubmissionId).block();
+      BulkSubmissionStatus bulkSubmissionStatus = bulkSubmission.getStatus();
+      if (bulkSubmissionStatus == BulkSubmissionStatus.PARSING_FAILED) {
+        throw new SubmitBulkClaimException(
+            "Bulk submission parsing failed for: " + bulkSubmissionId);
+      }
+      if (bulkSubmissionStatus == BulkSubmissionStatus.READY_FOR_PARSING) {
+        model.addAttribute("shouldRefresh", true);
+        return "pages/upload-being-checked";
+      }
+      if (completedStatuses.contains(bulkSubmissionStatus)) {
         return "redirect:/submission/%s".formatted(submissionId.toString());
       }
+      throw new SubmitBulkClaimException(
+          "Unexpected bulk submission status returned for: " + bulkSubmissionId);
     } catch (WebClientResponseException e) {
       if (e.getStatusCode().isSameCodeAs(HttpStatusCode.valueOf(404))) {
         log.debug(
             "No bulk submission found, will retry: %s".formatted(bulkSubmissionId.toString()));
-      } else {
-        throw new SubmitBulkClaimException("Claims API returned an error", e);
+        model.addAttribute("shouldRefresh", true);
+        return "pages/upload-being-checked";
       }
+      throw new SubmitBulkClaimException("Claims API returned an error", e);
     }
-    model.addAttribute("shouldRefresh", true);
-    return "pages/upload-being-checked";
   }
 }
