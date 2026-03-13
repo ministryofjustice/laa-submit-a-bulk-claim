@@ -39,8 +39,8 @@ jobs:
       - name: Configure aws credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
-          role-to-assume: ${{ secrets.ECR_ROLE_TO_ASSUME }}
-          aws-region: ${{ vars.ECR_REGION }}
+          role-to-assume: ${{ secrets.LAA_SUBMIT_A_BULK_CLAIM_ECR_ROLE_TO_ASSUME }}
+          aws-region: ${{ vars.LAA_SUBMIT_A_BULK_CLAIM_ECR_REGION }}
 
       - name: Login ecr
         uses: aws-actions/amazon-ecr-login@v2
@@ -51,7 +51,7 @@ jobs:
         run: |
           set -euo pipefail
           image_tag="oidc-mock-${GITHUB_SHA}"
-          image="${{ steps.login-ecr.outputs.registry }}/${{ vars.ECR_REPOSITORY }}:${image_tag}"
+          image="${{ steps.login-ecr.outputs.registry }}/${{ vars.LAA_SUBMIT_A_BULK_CLAIM_ECR_REPOSITORY }}:${image_tag}"
           echo "Building image: $image"
           docker build -f Dockerfile -t "$image" .
           echo "Pushing image..."

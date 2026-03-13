@@ -51,7 +51,7 @@ jobs:
         uses: aws-actions/configure-aws-credentials@v5
         with:
           role-to-assume: "${{ secrets.ecr_role_to_assume }}"
-          aws-region: "${{ vars.ECR_REGION }}"
+          aws-region: "${{ vars.LAA_SUBMIT_A_BULK_CLAIM_ECR_REGION }}"
 
       - name: Login ecr
         uses: aws-actions/amazon-ecr-login@v2
@@ -85,7 +85,7 @@ jobs:
           DEPLOYMENT_NAME: "${{ inputs.deployment_name }}"
           ENVIRONMENT: "${{ inputs.environment }}"
           REGISTRY: "${{ steps.login-ecr.outputs.registry }}"
-          ECR_REPOSITORY: "${{ vars.ECR_REPOSITORY }}"
+          ECR_REPOSITORY: "${{ vars.LAA_SUBMIT_A_BULK_CLAIM_ECR_REPOSITORY }}"
         run: |
           set -euo pipefail
           IFS=$'\n\t'
@@ -109,8 +109,8 @@ jobs:
         with:
           images: ${{ steps.helm-install.outputs.images }}
           role_to_assume: ${{ secrets.ecr_role_to_assume }}
-          aws_region: ${{ vars.ECR_REGION }}
-          ecr_repository: ${{ vars.ECR_REPOSITORY }}
+          aws_region: ${{ vars.LAA_SUBMIT_A_BULK_CLAIM_ECR_REGION }}
+          ecr_repository: ${{ vars.LAA_SUBMIT_A_BULK_CLAIM_ECR_REPOSITORY }}
 
       - name: Record deployment to pact broker
         id: record-deployment-to-pact-broker
