@@ -50,7 +50,7 @@ jobs:
       - name: Configure aws credentials
         uses: aws-actions/configure-aws-credentials@v5
         with:
-          role-to-assume: "${{ secrets.ecr_role_to_assume }}"
+          role-to-assume: "${{ secrets.LAA_SUBMIT_A_BULK_CLAIM_ECR_ROLE_TO_ASSUME }}"
           aws-region: "${{ vars.LAA_SUBMIT_A_BULK_CLAIM_ECR_REGION }}"
 
       - name: Login ecr
@@ -108,7 +108,7 @@ jobs:
         uses: ./.github/actions/ecr-update-image-tags
         with:
           images: ${{ steps.helm-install.outputs.images }}
-          role_to_assume: ${{ secrets.ecr_role_to_assume }}
+          role_to_assume: ${{ secrets.LAA_SUBMIT_A_BULK_CLAIM_ECR_ROLE_TO_ASSUME }}
           aws_region: ${{ vars.LAA_SUBMIT_A_BULK_CLAIM_ECR_REGION }}
           ecr_repository: ${{ vars.LAA_SUBMIT_A_BULK_CLAIM_ECR_REPOSITORY }}
 
