@@ -1,0 +1,16 @@
+# Spring Profile meant to be used for running SaBC in a container alongside a mock OIDC service.
+# issuer-uri points to the mock OIDC service container for this reason, and not localhost.
+spring:
+  security:
+    oauth2:
+      client:
+        registration:
+          silas-identity:
+            client-id: bulk-claim-client
+            client-secret: secret
+            authorization-grant-type: authorization_code
+            redirect-uri: "http://127.0.0.1:8082/login/oauth2/code/{registrationId}"
+            scope: openid, profile
+        provider:
+          silas-identity:
+            issuer-uri: http://laa-mock-oidc-service:9000
