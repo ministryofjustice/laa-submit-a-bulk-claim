@@ -9,8 +9,8 @@ spring:
             client-id: bulk-claim-client
             client-secret: secret
             authorization-grant-type: authorization_code
-            redirect-uri: "http://127.0.0.1:8082/login/oauth2/code/{registrationId}"
+            redirect-uri: "http://127.0.0.1:8082/login/oauth2/code/silas-identity"
             scope: openid, profile
         provider:
           silas-identity:
-            issuer-uri: http://localhost:9000
+            issuer-uri: http://oidc:9000

@@ -52,6 +52,7 @@ services:
       - "8091:8080"
   # Follow guidance here to run this service via docker: https://github.com/ministryofjustice/laa-oidc-mock-server?tab=readme-ov-file#running-the-server-via-docker
   laa-mock-oidc-service:
+    container_name: oidc
     image: laa-oidc-mock-server:latest
     ports:
       - "9000:9000"
