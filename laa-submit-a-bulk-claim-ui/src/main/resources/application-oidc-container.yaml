@@ -13,4 +13,4 @@ spring:
             scope: openid, profile
         provider:
           silas-identity:
-            issuer-uri: http://laa-mock-oidc-service:9000
+            issuer-uri: http://localhost:9000
