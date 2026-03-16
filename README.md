@@ -107,11 +107,13 @@ a lightweight web UI.
 4. **Setup authentication**
 
 If you wish to have a mocked OAuth solution, you can run the local OIDC mock server. This is
-acheived by running the following:
+achieved by building the laa-mock-oidc-service by cloning the repo and following it's project
+[README.md](https://github.com/ministryofjustice/laa-oidc-mock-server/blob/main/README.md),
+then running the following:
 
-  ```shell
-  docker-compose up laa-mock-oidc-service
-  ```
+```shell
+docker-compose up laa-mock-oidc-service
+```
 
 Alternatively, you can use the SILAS sandbox. Ask another developer for details on how to
 create an account on SILAS for testing. This account can also be used in deployed environments.
@@ -136,6 +138,14 @@ The example access token aligns with the WireMock fixtures; supply a real token 
 non-mocked environments. Update `AUTH_*` and `SILAS_*` variables to match either SILAS sandbox
 credentials or the mock server claims.
 
+If you wish to use the OIDC mock server, and are running the SaBC UI also within a docker container,
+you will need to map the host within `/etc/hosts` via `sudo nano /etc/hosts` to ensure that the
+internal and external host names for the OIDC mock server are the same. Just add the following line:
+
+```text
+127.0.0.1 oidc
+```
+
 ### Configure External Dependencies using Wiremock and Mock OIDC
 
 1. **Clone the repository**
@@ -152,7 +162,7 @@ WireMock listens on `http://localhost:8091` using stubs from `wiremock/mappings/
 
 3. **Run the SILAS OIDC mock**
 
-Included in docker-compose as `laa-mock-oidc-service`. This is exposed on `http://localhost:9000`
+Included in docker-compose as `laa-mock-oidc-service`. This is exposed on `http://oidc:9000`
 and align issuer/client details with your local Spring profile.
 
 More details
@@ -223,6 +233,7 @@ prek run --all-files
 ## Testing
 
 ### Unit Tests
+
 ```sh
 ./gradlew test
 ```
@@ -247,8 +258,10 @@ prek run --all-files
   patterns, and debugging tips.
 
 ### E2E Tests
+
 E2E tests are designed to run in UAT environments. They can be found on GitHub
-within the [bulk-submission-and-fee-scheme-tests](https://github.com/ministryofjustice/bulk-submission-and-fee-scheme-tests-)
+within
+the [bulk-submission-and-fee-scheme-tests](https://github.com/ministryofjustice/bulk-submission-and-fee-scheme-tests-)
 repository.
 
 ## Deployment
@@ -256,7 +269,8 @@ repository.
 - GitHub Actions pipelines under `.github/workflows` build, scan, and publish Docker images.
     - `build-main.yml` tags merged changes on `main` and publishes artifacts.
     - `deploy-main.yml` produces release images, pushes to ECR, and triggers helm deployments.
-- Kubernetes manifests are defined in `.helm/submit-a-bulk-claim/` with environment-specific overrides under
+- Kubernetes manifests are defined in `.helm/submit-a-bulk-claim/` with environment-specific
+  overrides under
   `.helm/submit-a-bulk-claim/values/`.
 - Deployments run on the MoJ Cloud Platform with ModSec ingress and pod security settings defined in
   chart values.
