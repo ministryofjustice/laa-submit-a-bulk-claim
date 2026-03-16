@@ -18,17 +18,9 @@ public class WebClientConfigurationTest {
   }
 
   @Test
-  @DisplayName("should create claims api V2 proxy")
-  public void claimsApiClientV2() {
-
-    var actualResults = webClientConfiguration.claimsApiClientV2(claimsApiProperties);
-    assertFalse(Objects.isNull(actualResults));
-  }
-
-  @Test
-  @DisplayName("should create claims api proxy")
-  public void claimsApiClient() {
-    var actualResults = webClientConfiguration.claimsApiClient(claimsApiProperties);
+  @DisplayName("should return WebClientHttpServiceGroupConfigurer")
+  void groupConfigurer() {
+    var actualResults = webClientConfiguration.groupConfigurer(claimsApiProperties);
     assertFalse(Objects.isNull(actualResults));
   }
 }
