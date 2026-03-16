@@ -44,7 +44,7 @@ public class GetClaimsV2PactTest extends AbstractPactTest {
         .matchQuery(QUERY_PARAM_OFFICE_CODE, OFFICE_CODE_REGEX)
         .matchQuery(QUERY_PARAM_PAGE, ANY_NUMBER_REGEX)
         .matchQuery(QUERY_PARAM_SIZE, ANY_NUMBER_REGEX)
-        .matchQuery(QUERY_PARAM_SORT, SORT_REGEX_V2, "client_surname,asc")
+        .matchQuery(QUERY_PARAM_SORT, SORT_CLAIMS_REGEX_V2, "client_surname,asc")
         .matchHeader(HttpHeaders.AUTHORIZATION, UUID_REGEX)
         .method(HttpMethod.GET.toString())
         .willRespondWith()
@@ -65,7 +65,7 @@ public class GetClaimsV2PactTest extends AbstractPactTest {
         .matchQuery(QUERY_PARAM_SUBMISSION_ID, UUID_REGEX)
         .matchQuery(QUERY_PARAM_PAGE, ANY_NUMBER_REGEX)
         .matchQuery(QUERY_PARAM_SIZE, ANY_NUMBER_REGEX)
-        .matchQuery(QUERY_PARAM_SORT, SORT_REGEX_V2, "status,asc")
+        .matchQuery(QUERY_PARAM_SORT, SORT_CLAIMS_REGEX_V2, "client_forename,asc")
         .matchHeader(HttpHeaders.AUTHORIZATION, UUID_REGEX)
         .method(HttpMethod.GET.toString())
         .willRespondWith()
@@ -93,7 +93,7 @@ public class GetClaimsV2PactTest extends AbstractPactTest {
   void verify200ResponseEmpty() {
     ClaimResultSetV2 claims =
         dataClaimsRestClient
-            .getClaims(USER_OFFICES.get(0), SUBMISSION_ID, 1, 10, "status,asc")
+            .getClaims(USER_OFFICES.get(0), SUBMISSION_ID, 1, 10, "client_forename,asc")
             .getBody();
 
     assertThat(claims.getContent().isEmpty()).isTrue();

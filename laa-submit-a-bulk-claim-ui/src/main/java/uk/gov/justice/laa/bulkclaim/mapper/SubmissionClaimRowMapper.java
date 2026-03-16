@@ -20,10 +20,6 @@ public interface SubmissionClaimRowMapper {
 
   @Mapping(target = "ufn", source = "claimFields.uniqueFileNumber")
   @Mapping(target = "ucn", source = "claimFields.uniqueClientNumber")
-  @Mapping(
-      target = "client",
-      expression =
-          "java(claimFields.getClientForename() + \" \" + " + "claimFields.getClientSurname())")
   @Mapping(target = "clientForename", source = "claimFields.clientForename")
   @Mapping(target = "clientSurname", source = "claimFields.clientSurname")
   @Mapping(target = "client2Forename", source = "claimFields.client2Forename")
@@ -44,10 +40,6 @@ public interface SubmissionClaimRowMapper {
 
   @Mapping(target = "ufn", source = "claimFields.uniqueFileNumber")
   @Mapping(target = "ucn", source = "claimFields.uniqueClientNumber")
-  @Mapping(
-      target = "client",
-      expression =
-          "java(claimFields.getClientForename() + \" \" + " + "claimFields.getClientSurname())")
   @Mapping(target = "clientForename", source = "claimFields.clientForename")
   @Mapping(target = "clientSurname", source = "claimFields.clientSurname")
   @Mapping(target = "client2Forename", source = "claimFields.client2Forename")

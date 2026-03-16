@@ -30,7 +30,8 @@ public abstract class AbstractPactTest {
   // Any number, but not 0 alone. Maximum 8 digits
   protected static final String ANY_NUMBER_REGEX = "([1-9][0-9]{0,7})";
   protected static final String SORT_REGEX = "[a-zA-Z]+,(asc|desc)";
-  protected static final String SORT_REGEX_V2 = "[a-z]+(?:_[a-z]+)*,(asc|desc)";
+  protected static final String SORT_CLAIMS_REGEX_V2 =
+      "(client_surname|client_forename|client_2_surname|client_2_forename|unique_file_number|unique_client_number|fee_code|case_concluded_date|total_amount|escape_case_flag|total_warnings),(asc|desc)";
 
   protected static final List<String> USER_OFFICES = List.of("ABC123", "XYZ789");
   protected static final UUID BULK_SUBMISSION_ID = UUID.randomUUID();

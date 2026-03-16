@@ -73,7 +73,6 @@ class SubmissionClaimRowMapperTest {
           softAssertions.assertThat(result.lineNumber()).isEqualTo(1);
           softAssertions.assertThat(result.ufn()).isEqualTo("UFN123");
           softAssertions.assertThat(result.ucn()).isEqualTo("UCN123");
-          softAssertions.assertThat(result.client()).isEqualTo("Client name");
           softAssertions.assertThat(result.clientForename()).isEqualTo("Client");
           softAssertions.assertThat(result.clientSurname()).isEqualTo("name");
           softAssertions.assertThat(result.client2Forename()).isEqualTo("Second");
