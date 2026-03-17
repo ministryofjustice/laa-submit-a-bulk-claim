@@ -116,7 +116,7 @@ public final class PostBulkSubmissionPactTest extends AbstractPactTest {
     // Defines expected 201 response for successfully submitting valid bulk submission
     return builder
         .given("the system is ready to process a valid bulk submission")
-        .uponReceiving("a new bulk submission request")
+        .uponReceiving("a request to create a bulk submission with invalid data and no office")
         .path("/api/v1/bulk-submissions")
         .matchQuery("userId", ANY_FORMAT_REGEX)
         .matchHeader(HttpHeaders.AUTHORIZATION, UUID_REGEX)
