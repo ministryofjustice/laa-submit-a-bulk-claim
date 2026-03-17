@@ -20,6 +20,7 @@ import java.util.UUID;
  * @param matter the claim matter type
  * @param concludedOrClaimedDate the date the claim was concluded or claimed
  * @param totalMessages the calculatedTotal messages attached to the claim
+ * @param status the claim status value
  * @param feeType the fee type
  * @param feeCode the fee code
  * @param costsDetails the costs details
@@ -41,6 +42,7 @@ public record SubmissionClaimRow(
     String matter,
     LocalDate concludedOrClaimedDate,
     int totalMessages,
+    String status,
     String feeType,
     String feeCode,
     SubmissionClaimRowCostsDetails costsDetails,
