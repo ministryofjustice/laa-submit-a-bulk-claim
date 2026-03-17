@@ -16,6 +16,9 @@ ingress:
 grafana:
   enabled: true
 
+autoscaling:
+  enabled: false
+
 downtime:
   scheduler:
     enabled: false
