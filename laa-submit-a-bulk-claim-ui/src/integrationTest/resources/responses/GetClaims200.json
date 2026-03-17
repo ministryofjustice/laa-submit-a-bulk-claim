@@ -104,6 +104,9 @@
       "local_authority_number": null,
       "submission_period": "JUN-1600",
       "created_by_user_id": "Data-Claims-Event-Service",
+      "is_amended": null,
+      "has_assessment": null,
+      "version": null,
       "total_warnings": 0,
       "fee_calculation_response": null
     },
@@ -211,6 +214,9 @@
       "local_authority_number": null,
       "submission_period": "JUN-1600",
       "created_by_user_id": "Data-Claims-Event-Service",
+      "is_amended": null,
+      "has_assessment": null,
+      "version": null,
       "total_warnings": 0,
       "fee_calculation_response": null
     }

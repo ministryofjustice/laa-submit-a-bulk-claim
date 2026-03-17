@@ -1,6 +1,15 @@
 <th:block th:fragment="summary(tagModifier, statusText, showSubmissionValue, showWarnings)">
-  <div class="govuk-grid-column-full" data-module="laa-print-button">
-    <h1 class="govuk-heading-l govuk-!-padding-top-4" th:text="#{submission.summary.heading}"></h1>
+  <div class="govuk-grid-column-one-half-from-desktop" data-module="laa-print-button" data-print-action-container="secondary-action-container">
+    <h1 class="govuk-heading-l" th:text="#{submission.summary.heading}"></h1>
+  </div>
+
+  <div class="govuk-grid-column-one-half-from-desktop sabc-container__align_right" id="secondary-action-container">
+    <!--/*@thymesVar id="submissionSummary" type="uk.gov.justice.laa.bulkclaim.dto.submission.SubmissionSummary"*/-->
+    <a id="export-button" class="govuk-button govuk-button--secondary"
+       th:if="${showWarnings == true}"
+       data-module="laa-hide-on-print-button"
+        th:href="@{/submission/{submissionId}/export(submissionId=${submissionSummary?.submissionReference}, office=${submissionSummary.officeAccount}, areaOfLaw=${submissionSummary.areaOfLaw()})}"
+        th:text="#{submission.export}"></a>
   </div>
 
   <div class="govuk-grid-column-full govuk-!-padding-bottom-8">

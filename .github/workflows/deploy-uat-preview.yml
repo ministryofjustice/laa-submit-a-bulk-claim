@@ -31,10 +31,7 @@ jobs:
     with:
       publish_package: false
       override_version: ${{ needs.define-preview-version.outputs.preview_version }}
-      junit_results: 'false'
-      junit_report: 'false'
-      checkstyle_report: 'false'
-      jacoco_coverage_report: 'false'
+      integration_test_task: integrationTest
       semgrep_check: 'true'
     secrets:
       gh_token: ${{ secrets.GITHUB_TOKEN }}
@@ -76,9 +73,9 @@ jobs:
       image_version: ${{ format('{0}-{1}', vars.IMAGE_PREFIX, needs.build-and-test.outputs.published_artifact_version) }}
     secrets:
       gh_token: ${{ secrets.GITHUB_TOKEN }}
-      ecr_repository: ${{ vars.ECR_REPOSITORY }}
-      ecr_region: ${{ vars.ECR_REGION }}
-      ecr_role_to_assume: ${{ secrets.ECR_ROLE_TO_ASSUME }}
+      ecr_repository: ${{ vars.LAA_SUBMIT_A_BULK_CLAIM_ECR_REPOSITORY }}
+      ecr_region: ${{ vars.LAA_SUBMIT_A_BULK_CLAIM_ECR_REGION }}
+      ecr_role_to_assume: ${{ secrets.LAA_SUBMIT_A_BULK_CLAIM_ECR_ROLE_TO_ASSUME }}
 
   deploy-uat-preview:
     needs:
@@ -100,9 +97,9 @@ jobs:
         id: deploy
         uses: ./.github/actions/deploy_branch
         with:
-          ecr-region: ${{ vars.ECR_REGION }}
-          ecr-role-to-assume: ${{ secrets.ECR_ROLE_TO_ASSUME }}
-          ecr-repository: ${{ vars.ECR_REPOSITORY }}
+          ecr-region: ${{ vars.LAA_SUBMIT_A_BULK_CLAIM_ECR_REGION }}
+          ecr-role-to-assume: ${{ secrets.LAA_SUBMIT_A_BULK_CLAIM_ECR_ROLE_TO_ASSUME }}
+          ecr-repository: ${{ vars.LAA_SUBMIT_A_BULK_CLAIM_ECR_REPOSITORY }}
           kube-cert: ${{ secrets.KUBE_CERT }}
           kube-token: ${{ secrets.KUBE_TOKEN }}
           kube-cluster: ${{ secrets.KUBE_CLUSTER }}
