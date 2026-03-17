@@ -23,7 +23,6 @@ public class BulkClaimMetricService {
 
   private final Histogram fileUploadSizeHistogram;
 
-
   /**
    * Constructor.
    *
