@@ -115,7 +115,7 @@ public class BulkImportController {
         ProblemDetail problemDetail =
             objectMapper.readValue(e.getResponseBodyAsString(), ProblemDetail.class);
         String errorMessage = problemDetail.getDetail();
-        if (StringUtils.hasText(errorMessage)) {
+        if (!StringUtils.hasText(errorMessage)) {
           errorMessage = "An unknown error occurred during upload.";
         }
         log.error("API upload failed: {}", errorMessage);
