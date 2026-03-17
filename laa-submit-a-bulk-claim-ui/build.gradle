@@ -31,7 +31,7 @@ dependencies {
     implementation 'com.fasterxml.jackson.core:jackson-core:2.21.1'
     implementation 'tools.jackson.core:jackson-core:3.1.0'
 
-    implementation 'uk.gov.justice.laa.datastewardship.payments:data-claims-api-models:7d2295a'
+    implementation 'uk.gov.justice.laa.datastewardship.payments:data-claims-api-models:a03fbaa'
 
     //Common exception handling
     implementation 'uk.gov.laa.springboot:laa-spring-boot-starter-application-exception'

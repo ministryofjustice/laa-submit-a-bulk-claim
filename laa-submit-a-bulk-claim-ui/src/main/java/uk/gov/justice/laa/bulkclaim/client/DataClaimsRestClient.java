@@ -44,7 +44,9 @@ public interface DataClaimsRestClient {
   Mono<ResponseEntity<CreateBulkSubmission201Response>> upload(
       @RequestPart("file") MultipartFile file,
       @RequestParam String userId,
-      @RequestParam List<String> offices)
+      // Allows Claims API to read the file and tell the user what office they're missing. Users
+      // shouldn't be in a position where they have no offices unless they've been set up wrong.
+      @RequestParam(required = false) List<String> offices)
       throws WebClientResponseException;
 
   /**

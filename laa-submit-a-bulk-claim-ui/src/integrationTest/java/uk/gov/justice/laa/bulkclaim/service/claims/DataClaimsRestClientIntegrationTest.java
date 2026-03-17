@@ -6,6 +6,7 @@ import static org.mockserver.model.HttpResponse.response;
 
 import java.time.Duration;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
@@ -81,6 +82,45 @@ class DataClaimsRestClientIntegrationTest extends MockServerIntegrationTest {
       // When
       Mono<ResponseEntity<CreateBulkSubmission201Response>> upload =
           dataClaimsRestClient.upload(file, "test-user", List.of("ABC123"));
+      ResponseEntity<CreateBulkSubmission201Response> block = upload.block();
+      CreateBulkSubmission201Response result = block.getBody();
+      String locationHeader = block.getHeaders().getFirst(HttpHeaders.LOCATION);
+
+      // Then
+      assertThat(result.getBulkSubmissionId())
+          .isEqualTo(UUID.fromString("f7ed1cda-692e-417a-bb55-5a5135006774"));
+      assertThat(result.getSubmissionIds().get(0))
+          .isEqualTo(UUID.fromString("aca8d879-3dd4-4fd1-97ee-03f0d0cfd5db"));
+      assertThat(locationHeader).isEqualTo("/api/v1/bulk-submissions/1234567890");
+    }
+
+    @Test
+    @DisplayName("Should handle a 201 response with empty office array")
+    void shouldHandle201ResponseWithEmptyOfficeArray() {
+      // Given
+      MockMultipartFile file =
+          new MockMultipartFile("file", "test.txt", "text/plain", new byte[10 * 1024 * 1024]);
+      String expectedBody =
+          """
+              {
+                "bulk_submission_id": "f7ed1cda-692e-417a-bb55-5a5135006774",
+                "submission_ids": [
+                  "aca8d879-3dd4-4fd1-97ee-03f0d0cfd5db"
+                ]
+              }
+              """;
+      mockServerClient
+          .when(HttpRequest.request().withMethod("POST").withPath("/api/v1/bulk-submissions"))
+          .respond(
+              response()
+                  .withStatusCode(201)
+                  .withHeader("Content-Type", "application/json")
+                  .withHeader("Location", "/api/v1/bulk-submissions/1234567890")
+                  .withBody(expectedBody));
+
+      // When
+      Mono<ResponseEntity<CreateBulkSubmission201Response>> upload =
+          dataClaimsRestClient.upload(file, "test-user", Collections.emptyList());
       ResponseEntity<CreateBulkSubmission201Response> block = upload.block();
       CreateBulkSubmission201Response result = block.getBody();
       String locationHeader = block.getHeaders().getFirst(HttpHeaders.LOCATION);
