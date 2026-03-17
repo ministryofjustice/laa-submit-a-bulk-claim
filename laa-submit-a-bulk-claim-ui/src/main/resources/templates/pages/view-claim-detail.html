@@ -1,6 +1,7 @@
 <!DOCTYPE HTML>
 <html lang="en" class="govuk-template" xmlns:th="http://www.thymeleaf.org"
-      th:replace="~{ layout/main-layout :: layout(#{viewClaim.heading},~{::main},~{::#back-link},'search-submissions')}">
+      th:replace="~{ layout/main-layout :: layout(${ufn} ? #{viewClaim.heading(${ufn})} : #{viewClaim.heading.noUfn},~{::main},~{::#back-link},'search-submissions')}">
+
 
 <!--/*@thymesVar id="values" type="uk.gov.justice.laa.bulkclaim.dto.submission.claim.BulkClaimCostItem"*/-->
 <tr class="govuk-table__row" th:fragment="fee-detail-row(title, values, notes)"
@@ -62,7 +63,11 @@
 
       <div class="govuk-grid-column-full" data-module="laa-print-button">
         <h1 class="govuk-heading-l"
+            th:if="${ufn}"
             th:text="#{viewClaim.heading(${ufn})}"/>
+        <h1 class="govuk-heading-l"
+            th:unless="${ufn}"
+            th:text="#{viewClaim.heading.noUfn}"/>
       </div>
 
       <div class="govuk-grid-column-two-thirds">
