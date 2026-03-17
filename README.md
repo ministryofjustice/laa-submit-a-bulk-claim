@@ -187,6 +187,13 @@ Run scripts/setup-hooks.sh to install pre-commit hooks for Git. This will instal
 - Run Checkstyle validation
 - Scan for potential secrets in code
 
+To install prek
+```sh
+cd scripts
+chmod +x ./setup-hooks.sh
+./setup-hooks.sh 
+```
+Note: Setup scripts needs to be run twice
 Note: If Spotless detects formatting issues, the commit will fail. After Spotless applies the formatting, you can commit the changes again.
 
 To run pre-commit hooks manually:
