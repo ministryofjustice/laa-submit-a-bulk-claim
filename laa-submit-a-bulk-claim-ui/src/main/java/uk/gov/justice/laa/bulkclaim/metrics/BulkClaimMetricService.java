@@ -21,13 +21,7 @@ import org.springframework.web.multipart.MultipartFile;
 @Component
 public class BulkClaimMetricService {
 
-  private final Histogram
-          fileUploadSizeHistogram;
-
-
-
-
-
+  private final Histogram fileUploadSizeHistogram;
 
 
   /**
@@ -39,9 +33,7 @@ public class BulkClaimMetricService {
     this.fileUploadSizeHistogram =
         Histogram.builder()
             .name("submit_a_bulk_claim_file_size_bytes")
-            .help("Size of uploaded bulk claim file in bytes which was submitted by the user")
-            .labelNames("has_errors", "failed_reason")
-            .register(prometheusRegistry);
+            .help("Size of uploaded bulk claim file in bytes which was submitted by the user").labelNames("has_errors", "failed_reason").register(prometheusRegistry);
   }
 
   /**
