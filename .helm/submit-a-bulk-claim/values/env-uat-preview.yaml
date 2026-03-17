@@ -99,8 +99,7 @@ env:
     value: mock-oidc
             
 autoscaling:
-  minReplicas: 1
-  maxReplicas: 2
+  enabled: false
 
 volumes:
   - name: mock-oidc-config
@@ -115,13 +114,7 @@ volumeMounts:
     subPath: application-mock-oidc.yml
 
 downtime:
-  scheduler:
-    enabled: true
-    serviceAccountName: laa-submit-a-bulk-claim-uat-service-account
-    jobs:
-      - name: scale-down
-        schedule: "30 21 * * *"
-        action: down
-      - name: scale-up
-        schedule: "00 7 * * *"
-        action: up
+  scheduler:  
+    enabled: false
+  page:
+    enabled: false
