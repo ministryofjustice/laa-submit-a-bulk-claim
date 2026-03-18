@@ -100,6 +100,9 @@ public final class ClaimDetailController {
                         "Claim %s does not exist for submission %s"
                             .formatted(claimId.toString(), submissionId.toString())));
     model.addAttribute("ufn", claimResponse.getUniqueFileNumber());
+    model.addAttribute(
+        "claimStatus",
+        claimResponse.getStatus() == null ? null : claimResponse.getStatus().getValue());
 
     Assert.notNull(claimResponse.getFeeCalculationResponse(), "Fee calculation response is null");
     model.addAttribute(
