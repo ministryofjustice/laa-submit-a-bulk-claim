@@ -244,7 +244,9 @@ class SubmissionClaimRowMapperTest {
                 .isEqualTo(new BigDecimal("500.50"));
             softAssertion.assertThat(actualResponse.totalMessages()).isEqualTo(3);
             softAssertion.assertThat(actualResponse.escapeCase()).isNull();
-            softAssertion.assertThat(actualResponse.status()).isEqualTo(ClaimStatus.VOID.toString());
+            softAssertion
+                .assertThat(actualResponse.status())
+                .isEqualTo(ClaimStatus.VOID.toString());
           });
     }
 
