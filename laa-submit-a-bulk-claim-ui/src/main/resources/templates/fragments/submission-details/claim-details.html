@@ -124,10 +124,8 @@
           <tr class="govuk-table__row"
               th:each="claim, idx : ${claimDetails.submissionClaims}">
             <td class="govuk-table__cell">
-              <a class="govuk-link"
-                 th:href="@{/submission/claim/{id}(id=${claim.id}, page=${page})}"
-                 th:text="#{submission.summary.claims.viewLink}"></a>
-
+              <th:block
+                  th:replace="~{fragments/submission-details/claim-row-detail :: claim-row-detail(claimHref=@{/submission/claim/{id}(id=${claim.id}, page=${page})}, status=${claim.status})}"></th:block>
             </td>
             <td class="govuk-table__cell"
                 th:text="${claim.clientSurname ?: '-'}"></td>
@@ -165,9 +163,8 @@
           <tr class="govuk-table__row"
               th:each="claim, idx : ${claimDetails.submissionClaims}">
             <td class="govuk-table__cell" th:with="claimDetailsUrl=@{/submission/claim/{id}(id=${claim.id})}">
-              <a class="govuk-link"
-                 th:href="${@thymeleafHrefUtils.build(claimDetailsUrl, 'page', page, 'navTab',ViewSubmissionNavigationTab.CLAIM_DETAILS.toString())}"
-                 th:text="#{submission.summary.claims.viewLink}"></a>
+              <th:block
+                  th:replace="~{fragments/submission-details/claim-row-detail :: claim-row-detail(claimHref=${@thymeleafHrefUtils.build(claimDetailsUrl, 'page', page, 'navTab', 'CLAIM_DETAILS')}, status=${claim.status})}"></th:block>
             </td>
             <td class="govuk-table__cell"
                 th:text="${claim.clientSurname ?: '-'}"></td>
@@ -205,9 +202,8 @@
           <tr class="govuk-table__row"
               th:each="claim, idx : ${claimDetails.submissionClaims}">
             <td class="govuk-table__cell">
-              <a class="govuk-link"
-                 th:href="@{/submission/claim/{id}(id=${claim.id}, page=${page})}"
-                 th:text="#{submission.summary.claims.viewLink}"></a>
+              <th:block
+                  th:replace="~{fragments/submission-details/claim-row-detail :: claim-row-detail(claimHref=@{/submission/claim/{id}(id=${claim.id}, page=${page})}, status=${claim.status})}"></th:block>
             </td>
             <td class="govuk-table__cell"
                 th:text="${claim.clientSurname ?: '-'}"></td>
@@ -228,7 +224,7 @@
                 th:text="${claim.costsDetails != null && claim.costsDetails.claimValue != null ? @currencyUtil.toString(claim.costsDetails.claimValue) : '-'}"></td>
           </tr>
           </tbody>
-          
+
 
         </table>
       </div>

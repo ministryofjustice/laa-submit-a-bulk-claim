@@ -18,6 +18,10 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.justice.laa.bulkclaim.dto.submission.claim.SubmissionClaimRow;
 import uk.gov.justice.laa.bulkclaim.dto.submission.claim.SubmissionClaimRowCostsDetails;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.*;
+import uk.gov.justice.laa.dstew.payments.claimsdata.model.ClaimResponse;
+import uk.gov.justice.laa.dstew.payments.claimsdata.model.ClaimStatus;
+import uk.gov.justice.laa.dstew.payments.claimsdata.model.FeeCalculationPatch;
+import uk.gov.justice.laa.dstew.payments.claimsdata.model.FeeCalculationType;
 
 @DisplayName("Submission claim row mapper test")
 @ExtendWith(SpringExtension.class)
@@ -53,6 +57,7 @@ class SubmissionClaimRowMapperTest {
             .netCounselCostsAmount(new BigDecimal("100.10"))
             .netDisbursementAmount(new BigDecimal("100.10"))
             .netWaitingCostsAmount(new BigDecimal("100.10"))
+            .status(ClaimStatus.VALID)
             // TODO: Fee type is not available on OpenAPI spec.
             // .feeType("Fee type")
             .feeCode("Fee code")
@@ -83,6 +88,7 @@ class SubmissionClaimRowMapperTest {
           softAssertions
               .assertThat(result.concludedOrClaimedDate())
               .isEqualTo(LocalDate.of(2025, 3, 18));
+          softAssertions.assertThat(result.status()).isEqualTo("VALID");
           softAssertions.assertThat(result.feeType()).isEqualTo("Disb only");
           softAssertions.assertThat(result.feeCode()).isEqualTo("FC123");
           softAssertions.assertThat(result.costsDetails()).isNotNull();
@@ -191,6 +197,7 @@ class SubmissionClaimRowMapperTest {
               .disbursementsVatAmount(new BigDecimal("17.50"))
               .netWaitingCostsAmount(new BigDecimal("400.40"))
               .travelWaitingCostsAmount(new BigDecimal("500.50"))
+              .status(ClaimStatus.VOID)
               .feeCalculationResponse(
                   FeeCalculationPatch.builder()
                       .feeType(FeeCalculationType.DISB_ONLY)
@@ -237,6 +244,7 @@ class SubmissionClaimRowMapperTest {
                 .isEqualTo(new BigDecimal("500.50"));
             softAssertion.assertThat(actualResponse.totalMessages()).isEqualTo(3);
             softAssertion.assertThat(actualResponse.escapeCase()).isNull();
+            softAssertion.assertThat(actualResponse.status()).isEqualTo(ClaimStatus.VOID.toString());
           });
     }
 

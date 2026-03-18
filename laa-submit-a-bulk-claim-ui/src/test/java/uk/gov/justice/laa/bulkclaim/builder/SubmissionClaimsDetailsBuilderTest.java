@@ -148,6 +148,7 @@ class SubmissionClaimsDetailsBuilderTest {
         "matter",
         LocalDate.of(2025, 5, 1),
         1,
+        "status",
         "feeType",
         "feeCode",
         new SubmissionClaimRowCostsDetails(

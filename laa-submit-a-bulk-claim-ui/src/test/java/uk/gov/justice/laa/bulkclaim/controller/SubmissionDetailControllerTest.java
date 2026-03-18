@@ -38,6 +38,8 @@ import uk.gov.justice.laa.bulkclaim.client.DataClaimsRestClient;
 import uk.gov.justice.laa.bulkclaim.config.WebMvcTestConfig;
 import uk.gov.justice.laa.bulkclaim.dto.submission.SubmissionMatterStartsRow;
 import uk.gov.justice.laa.bulkclaim.dto.submission.SubmissionSummary;
+import uk.gov.justice.laa.bulkclaim.dto.submission.claim.SubmissionClaimRow;
+import uk.gov.justice.laa.bulkclaim.dto.submission.claim.SubmissionClaimRowCostsDetails;
 import uk.gov.justice.laa.bulkclaim.dto.submission.claim.SubmissionClaimsDetails;
 import uk.gov.justice.laa.bulkclaim.dto.submission.messages.MessagesSource;
 import uk.gov.justice.laa.bulkclaim.dto.submission.messages.MessagesSummary;
@@ -323,6 +325,77 @@ class SubmissionDetailControllerTest {
       verify(submissionClaimDetailsBuilder).build(any(), anyInt(), anyInt(), anyString());
       verify(submissionMessagesBuilder)
           .build(submissionReference, null, ValidationMessageType.WARNING, 0, 10);
+    }
+
+    @Test
+    @DisplayName("Should display voided tag for voided claim in claims table")
+    void shouldDisplayVoidedTagForVoidedClaimInClaimsTable() {
+      UUID submissionReference = UUID.fromString("bceac49c-d756-4e05-8e28-3334b84b6fe8");
+      Page pagination = Page.builder().totalPages(1).totalElements(1).number(0).size(10).build();
+      SubmissionResponse submissionResponse =
+          SubmissionResponse.builder()
+              .submissionId(submissionReference)
+              .status(SubmissionStatus.VALIDATION_SUCCEEDED)
+              .areaOfLaw(AreaOfLaw.CRIME_LOWER)
+              .build();
+      when(dataClaimsRestClient.getSubmission(submissionReference))
+          .thenReturn(Mono.just(submissionResponse));
+      when(submissionSummaryBuilder.build(any()))
+          .thenReturn(
+              new SubmissionSummary(
+                  submissionReference,
+                  "Submitted",
+                  LocalDate.of(2025, 5, 1),
+                  "AQ2B3C",
+                  BigDecimal.ONE,
+                  AreaOfLaw.CRIME_LOWER.getValue(),
+                  OffsetDateTime.of(2025, 1, 1, 10, 10, 10, 0, ZoneOffset.UTC)));
+      when(submissionClaimDetailsBuilder.build(any(), anyInt(), anyInt(), anyString()))
+          .thenReturn(
+              new SubmissionClaimsDetails(
+                  List.of(
+                      new SubmissionClaimRow(
+                          UUID.fromString("5146e93f-92c8-4c56-bd25-0cb6953f534d"),
+                          1,
+                          "UFN123",
+                          "UCN123",
+                          "Client Name",
+                          "Client",
+                          "Name",
+                          null,
+                          null,
+                          null,
+                          "cat",
+                          "matter",
+                          LocalDate.of(2025, 1, 1),
+                          0,
+                          "VOID",
+                          "feeType",
+                          "feeCode",
+                          new SubmissionClaimRowCostsDetails(
+                              BigDecimal.ZERO,
+                              BigDecimal.ZERO,
+                              BigDecimal.ZERO,
+                              BigDecimal.ZERO,
+                              BigDecimal.ZERO,
+                              BigDecimal.ZERO,
+                              BigDecimal.ZERO),
+                          Boolean.FALSE)),
+                  pagination,
+                  BigDecimal.ONE));
+      when(submissionMessagesBuilder.build(any(), any(), any(), anyInt(), anyInt()))
+          .thenReturn(
+              new MessagesSummary(Collections.emptyList(), 0, 0, pagination, MessagesSource.CLAIM));
+
+      assertThat(
+              mockMvc.perform(
+                  get("/view-submission-detail?submissionId=" + submissionReference)
+                      .with(oidcLogin().oidcUser(ControllerTestHelper.getOidcUser()))
+                      .sessionAttr("submissionId", submissionReference)))
+          .hasStatusOk()
+          .body()
+          .asString()
+          .contains("VOIDED");
     }
 
     @Test

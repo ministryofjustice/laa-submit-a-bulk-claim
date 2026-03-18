@@ -8,6 +8,7 @@ import uk.gov.justice.laa.bulkclaim.dto.submission.claim.SubmissionClaimRow;
 import uk.gov.justice.laa.bulkclaim.dto.submission.claim.SubmissionClaimRowCostsDetails;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.ClaimResponse;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.ClaimResponseV2;
+import uk.gov.justice.laa.dstew.payments.claimsdata.model.ClaimStatus;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.FeeCalculationType;
 
 /**
@@ -28,6 +29,7 @@ public interface SubmissionClaimRowMapper {
   @Mapping(target = "category", source = "claimFields.standardFeeCategoryCode")
   @Mapping(target = "matter", source = "claimFields.matterTypeCode")
   @Mapping(target = "concludedOrClaimedDate", source = "claimFields.caseConcludedDate")
+  @Mapping(target = "status", source = "claimFields.status", qualifiedByName = "toClaimStatus")
   @Mapping(
       target = "feeType",
       source = "claimFields.feeCalculationResponse.feeType",
@@ -48,6 +50,7 @@ public interface SubmissionClaimRowMapper {
   @Mapping(target = "category", source = "claimFields.standardFeeCategoryCode")
   @Mapping(target = "matter", source = "claimFields.matterTypeCode")
   @Mapping(target = "concludedOrClaimedDate", source = "claimFields.caseConcludedDate")
+  @Mapping(target = "status", source = "claimFields.status", qualifiedByName = "toClaimStatus")
   @Mapping(
       target = "feeType",
       source = "claimFields.feeCalculationResponse.feeType",
@@ -72,6 +75,11 @@ public interface SubmissionClaimRowMapper {
     // Convert to sentence case
     String value = feeCalculationType.getValue().replace("_", " ");
     return value.substring(0, 1).toUpperCase() + value.substring(1).toLowerCase();
+  }
+
+  @Named("toClaimStatus")
+  default String toClaimStatus(final ClaimStatus claimStatus) {
+    return claimStatus == null ? null : claimStatus.getValue();
   }
 
   @Mapping(target = "claimValue", source = "claimFields.feeCalculationResponse.totalAmount")
