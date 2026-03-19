@@ -45,21 +45,17 @@ public class BulkUploadBeingCheckedControllerTest {
   @DisplayName("GET: /upload-is-being-checked")
   class UploadIsBeingChecked {
 
-      @ParameterizedTest
-      @EnumSource(
-              value = BulkSubmissionStatus.class,
-              names = {"READY_FOR_PARSING", "PARSING_COMPLETED"})
+    @ParameterizedTest
+    @EnumSource(
+        value = BulkSubmissionStatus.class,
+        names = {"READY_FOR_PARSING", "PARSING_COMPLETED"})
     @DisplayName("Should return expected result bulk submission is not ready")
     void shouldReturnExpectedResult(BulkSubmissionStatus status) {
       // Given
       UUID submissionId = UUID.fromString("5933fc67-bac7-4f48-81ed-61c8c463f054");
       UUID bulkSubmissionId = UUID.fromString("5933fc67-bac7-4f48-81ed-61c8c463f056");
       when(dataClaimsRestClient.getBulkSubmission(bulkSubmissionId))
-          .thenReturn(
-              Mono.just(
-                  GetBulkSubmission200Response.builder()
-                      .status(status)
-                      .build()));
+          .thenReturn(Mono.just(GetBulkSubmission200Response.builder().status(status).build()));
       assertThat(
               mockMvc.perform(
                   get("/upload-is-being-checked")
