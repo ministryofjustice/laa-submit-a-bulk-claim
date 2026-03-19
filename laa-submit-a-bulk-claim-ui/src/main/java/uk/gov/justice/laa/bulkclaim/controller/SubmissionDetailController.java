@@ -97,7 +97,6 @@ public class SubmissionDetailController {
 
     // Redirect based on submission status
     if (submission != null && submission.getStatus() == SubmissionStatus.VALIDATION_IN_PROGRESS) {
-      System.out.println("hi");
       redirectAttributes.addFlashAttribute("submission", submission);
       redirectAttributes.addFlashAttribute(SUBMISSION_ID, submission.getSubmissionId());
       redirectAttributes.addFlashAttribute(BULK_SUBMISSION_ID, submission.getBulkSubmissionId());

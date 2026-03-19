@@ -63,7 +63,6 @@ public class BulkUploadBeingCheckedController {
             "Bulk submission parsing failed for: " + bulkSubmissionId);
       }
       if (pendingStatuses.contains(bulkSubmissionStatus)) {
-        System.out.println("refreshing");
         model.addAttribute("shouldRefresh", true);
         return "pages/upload-being-checked";
       }
