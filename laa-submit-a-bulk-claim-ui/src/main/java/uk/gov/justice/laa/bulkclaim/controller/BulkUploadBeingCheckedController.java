@@ -35,14 +35,10 @@ public class BulkUploadBeingCheckedController {
   private final DataClaimsRestClient dataClaimsRestClient;
 
   private final List<BulkSubmissionStatus> completedStatuses =
-      List.of(
-          BulkSubmissionStatus.VALIDATION_SUCCEEDED,
-          BulkSubmissionStatus.VALIDATION_FAILED);
+      List.of(BulkSubmissionStatus.VALIDATION_SUCCEEDED, BulkSubmissionStatus.VALIDATION_FAILED);
 
   private final List<BulkSubmissionStatus> pendingStatuses =
-          List.of(
-          BulkSubmissionStatus.READY_FOR_PARSING,
-          BulkSubmissionStatus.PARSING_COMPLETED);
+      List.of(BulkSubmissionStatus.READY_FOR_PARSING, BulkSubmissionStatus.PARSING_COMPLETED);
 
   /**
    * Shows the import in progress page, and refreshes every 5 seconds. Redirects if the submission
