@@ -1,5 +1,6 @@
 package uk.gov.justice.laa.bulkclaim.controller;
 
+import static uk.gov.justice.laa.bulkclaim.constants.SessionConstants.BULK_SUBMISSION_ID;
 import static uk.gov.justice.laa.bulkclaim.constants.SessionConstants.SUBMISSION_ID;
 
 import java.util.List;
@@ -96,7 +97,12 @@ public class SubmissionDetailController {
 
     // Redirect based on submission status
     if (submission != null && submission.getStatus() == SubmissionStatus.VALIDATION_IN_PROGRESS) {
+        System.out.println("hi");
       redirectAttributes.addFlashAttribute("submission", submission);
+        redirectAttributes.addFlashAttribute(
+                SUBMISSION_ID, submission.getSubmissionId());
+        redirectAttributes.addFlashAttribute(
+                BULK_SUBMISSION_ID, submission.getBulkSubmissionId());
       return "redirect:/upload-is-being-checked";
     }
 
