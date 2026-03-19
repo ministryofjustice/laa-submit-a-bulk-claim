@@ -8,6 +8,11 @@ plugins {
 def versions = [sentry : '8.31.0']
 apply plugin: 'uk.gov.laa.springboot.laa-spring-boot-gradle-plugin'
 
+
+checkstyle {
+    toolVersion = '13.0.0'
+    configFile = file("${rootDir}/config/checkstyle/checkstyle.xml")
+}
 repositories {
     // Use Maven Central for resolving dependencies.
     mavenCentral()
@@ -31,7 +36,7 @@ dependencies {
     implementation 'com.fasterxml.jackson.core:jackson-core:2.21.1'
     implementation 'tools.jackson.core:jackson-core:3.1.0'
 
-    implementation 'uk.gov.justice.laa.datastewardship.payments:data-claims-api-models:7d2295a'
+    implementation 'uk.gov.justice.laa.datastewardship.payments:data-claims-api-models:b4f5c09'
 
     implementation 'org.springframework.boot:spring-boot-starter-cache'
     implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
@@ -209,6 +214,16 @@ pact {
 
 
     }
+}
+
+tasks.register('checkstyleAll') {
+    group = 'verification'
+    description = 'Runs checkstyleMain'
+    dependsOn tasks.matching { it.name in ['checkstyleMain'] }
+}
+
+tasks.named('build') {
+    dependsOn tasks.named('checkstyleAll')
 }
 
 

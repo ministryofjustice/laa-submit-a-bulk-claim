@@ -1,0 +1,9 @@
+<th:block th:fragment="claim-row-detail(claimHref, status)">
+  <a class="govuk-link"
+     th:href="${claimHref}"
+     th:text="#{submission.summary.claims.viewLink}"></a>
+  <div class="govuk-!-margin-top-1" th:if="${status == 'VOID'}">
+    <span class="moj-badge moj-badge--red"
+          th:text="#{submission.summary.claims.voided}"></span>
+  </div>
+</th:block>
