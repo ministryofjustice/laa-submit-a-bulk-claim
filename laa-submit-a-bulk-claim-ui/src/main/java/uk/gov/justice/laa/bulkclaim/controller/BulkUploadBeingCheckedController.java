@@ -37,7 +37,11 @@ public class BulkUploadBeingCheckedController {
   private final List<BulkSubmissionStatus> completedStatuses =
       List.of(
           BulkSubmissionStatus.VALIDATION_SUCCEEDED,
-          BulkSubmissionStatus.VALIDATION_FAILED,
+          BulkSubmissionStatus.VALIDATION_FAILED);
+
+  private final List<BulkSubmissionStatus> pendingStatuses =
+          List.of(
+          BulkSubmissionStatus.READY_FOR_PARSING,
           BulkSubmissionStatus.PARSING_COMPLETED);
 
   /**
@@ -62,7 +66,7 @@ public class BulkUploadBeingCheckedController {
         throw new SubmitBulkClaimException(
             "Bulk submission parsing failed for: " + bulkSubmissionId);
       }
-      if (bulkSubmissionStatus == BulkSubmissionStatus.READY_FOR_PARSING) {
+      if (pendingStatuses.contains(bulkSubmissionStatus)) {
         model.addAttribute("shouldRefresh", true);
         return "pages/upload-being-checked";
       }
