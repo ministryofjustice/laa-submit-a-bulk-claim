@@ -180,6 +180,29 @@ non-mocked environments.
 Update `AUTH_*` and `SILAS_*` variables to match either SILAS sandbox credentials or the mock
 server claims.
 
+### Commit hooks
+Run scripts/setup-hooks.sh to install pre-commit hooks for Git. This will install prek pre commit hook into git, which helps to:
+
+- Run Spotless to automatically format Java files
+- Run Checkstyle validation
+- Scan for potential secrets in code
+
+To install prek
+```sh
+cd scripts
+chmod +x ./setup-hooks.sh
+./setup-hooks.sh 
+```
+Note: Setup scripts needs to be run twice
+Note: If Spotless detects formatting issues, the commit will fail. After Spotless applies the formatting, you can commit the changes again.
+
+To run pre-commit hooks manually:
+
+```sh
+git add .
+prek run --all-files
+```
+
 ### Run the Application
 
 ```sh
