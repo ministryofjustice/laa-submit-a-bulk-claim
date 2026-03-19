@@ -45,9 +45,12 @@ public class BulkUploadBeingCheckedControllerTest {
   @DisplayName("GET: /upload-is-being-checked")
   class UploadIsBeingChecked {
 
-    @Test
+      @ParameterizedTest
+      @EnumSource(
+              value = BulkSubmissionStatus.class,
+              names = {"READY_FOR_PARSING", "PARSING_COMPLETED"})
     @DisplayName("Should return expected result bulk submission is not ready")
-    void shouldReturnExpectedResult() {
+    void shouldReturnExpectedResult(BulkSubmissionStatus status) {
       // Given
       UUID submissionId = UUID.fromString("5933fc67-bac7-4f48-81ed-61c8c463f054");
       UUID bulkSubmissionId = UUID.fromString("5933fc67-bac7-4f48-81ed-61c8c463f056");
@@ -55,7 +58,7 @@ public class BulkUploadBeingCheckedControllerTest {
           .thenReturn(
               Mono.just(
                   GetBulkSubmission200Response.builder()
-                      .status(BulkSubmissionStatus.READY_FOR_PARSING)
+                      .status(status)
                       .build()));
       assertThat(
               mockMvc.perform(
@@ -92,7 +95,7 @@ public class BulkUploadBeingCheckedControllerTest {
     @ParameterizedTest
     @EnumSource(
         value = BulkSubmissionStatus.class,
-        names = {"VALIDATION_SUCCEEDED", "VALIDATION_FAILED", "PARSING_COMPLETED"})
+        names = {"VALIDATION_SUCCEEDED", "VALIDATION_FAILED"})
     @DisplayName("Should redirect when complete")
     void shouldRedirectWhenSubmissionHasBeenCreated(BulkSubmissionStatus status) {
       // Given
