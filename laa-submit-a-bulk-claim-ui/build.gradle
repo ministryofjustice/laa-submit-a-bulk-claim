@@ -8,6 +8,11 @@ plugins {
 def versions = [sentry : '8.31.0']
 apply plugin: 'uk.gov.laa.springboot.laa-spring-boot-gradle-plugin'
 
+
+checkstyle {
+    toolVersion = '13.0.0'
+    configFile = file("${rootDir}/config/checkstyle/checkstyle.xml")
+}
 repositories {
     // Use Maven Central for resolving dependencies.
     mavenCentral()
@@ -212,6 +217,16 @@ pact {
 
 
     }
+}
+
+tasks.register('checkstyleAll') {
+    group = 'verification'
+    description = 'Runs checkstyleMain'
+    dependsOn tasks.matching { it.name in ['checkstyleMain'] }
+}
+
+tasks.named('build') {
+    dependsOn tasks.named('checkstyleAll')
 }
 
 
