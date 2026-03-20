@@ -206,6 +206,7 @@ pact {
         // For older Brokers/compatibility
         tags = [branchName, projectVersion]
 
+
         // Add 'release' tag if branchName matches semantic version pattern (X.X.XXX)
         if (branchName ==~ /\d+\.\d+\.\d+/) {
             tags.add('release')
@@ -213,6 +214,11 @@ pact {
         // Optional: add a generic 'dev' tag for anything not on main
         else if (branchName != 'main' && branchName != 'master') {
             tags.add('dev')
+        }
+
+        def pactTag = providers.environmentVariable('PACT_TAG').getOrNull()
+        if (pactTag) {
+            tags.add(pactTag)
         }
 
 
