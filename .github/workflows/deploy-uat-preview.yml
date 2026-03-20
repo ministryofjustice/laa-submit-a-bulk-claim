@@ -38,7 +38,7 @@ jobs:
 
   pact-test:
     needs: [ build-and-test ]
-    uses: ministryofjustice/laa-ccms-common-workflows/.github/workflows/pact-and-publish.yml@v1
+    uses: ministryofjustice/laa-ccms-common-workflows/.github/workflows/pact-and-publish.yml@set-branch-name-pact-ignore-tag
     permissions:
       contents: write
       packages: write
@@ -48,6 +48,8 @@ jobs:
       publish_pact_results: true
       enable_can_i_merge: true
       provider_name: "laa-data-claims-api"
+      branch_name: "main"
+      pact_tags: "jamie,ignore,testing"
     secrets:
       gh_token: ${{ secrets.GITHUB_TOKEN }}
       pact_broker_url: 'https://laa-data-pact-broker.apps.live.cloud-platform.service.justice.gov.uk/'
