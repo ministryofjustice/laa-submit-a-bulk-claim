@@ -216,9 +216,11 @@ pact {
             tags.add('dev')
         }
 
-        def pactTag = providers.environmentVariable('PACT_TAG').getOrNull()
-        if (pactTag) {
-            tags.add(pactTag)
+        def pactTagsInput = providers.environmentVariable('PACT_TAGS').getOrNull()
+        if (pactTagsInput) {
+            pactTagsInput.split(',').each { tag ->
+                tags.add(tag.trim())
+            }
         }
 
 
