@@ -59,6 +59,8 @@ services:
       timeout: 5s
       retries: 5
       start_period: 10s
+    environment:
+      LAA_ACCOUNTS: 1,123,0P322F,2Q779P,2Q286D,2Q263D,2Q271M,0E525U,2Q286D,2N199K,1T102C,2P746R,2L847Q
 
   redis:
     image: redis:8-alpine
