@@ -5,16 +5,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;
-import org.springframework.validation.Validator;
 import org.springframework.web.multipart.MultipartFile;
-import uk.gov.justice.laa.bulkclaim.dto.FileUploadForm;
-import uk.gov.justice.laa.bulkclaim.exception.TokenProviderException;
-import uk.gov.justice.laa.bulkclaim.exception.VirusCheckException;
-import uk.gov.justice.laa.bulkclaim.service.VirusCheckService;
 
 /**
- * An implementation of {@link FileFirusValidator} that disables virus validation
- * for bulk import files. Primarily used in the "github-test-runner" profile.
+ * An implementation of {@link FileFirusValidator} that disables virus validation for bulk import
+ * files. Primarily used in the "github-test-runner" profile.
  *
  * @author Jamie
  */
@@ -23,7 +18,6 @@ import uk.gov.justice.laa.bulkclaim.service.VirusCheckService;
 @Slf4j
 @RequiredArgsConstructor
 public class DisabledBulkImportFileVirusValidator implements FileFirusValidator {
-
 
   /**
    * Checks the class type is supported by this validator.
