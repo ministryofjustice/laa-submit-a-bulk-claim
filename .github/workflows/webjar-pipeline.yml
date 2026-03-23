@@ -31,7 +31,7 @@ jobs:
       - name: Check if update needed
         id: compare
         run: |
-          if [ "${{ steps.webjar.version }}" != "${{ steps.current.outputs.version }}" ]; then
+          if [ "${{ steps.webjar.outputs.version }}" != "${{ steps.current.outputs.version }}" ]; then
             echo "update_needed=true" >> $GITHUB_OUTPUT
           else
           echo "update_needed=false" >> $GITHUB_OUTPUT
@@ -40,16 +40,16 @@ jobs:
       - name: Update version
         if: steps.compare.outputs.update_needed == 'true'
         run: |
-          sed -i "s/govuk-frontend:${{ steps.current.outputs.version }}/govuk-frontend:${{ steps.webjar.version }}/g" laa-submit-a-bulk-claim-ui/build.gradle
+          sed -i "s/govuk-frontend:${{ steps.current.outputs.version }}/govuk-frontend:${{ steps.webjar.outputs.version }}/g" laa-submit-a-bulk-claim-ui/build.gradle
 
       - name: Create pull request
         if: steps.compare.outputs.update_needed == 'true'
         uses: peter-evans/create-pull-request@v6
         with:
-          commit-message: "Update govuk-frontend to ${{ steps.webjar.version }}"
-          title: "Update govuk-frontend to ${{ steps.webjar.version }}"
+          commit-message: "Update govuk-frontend to ${{ steps.webjar.outputs.version }}"
+          title: "Update govuk-frontend to ${{ steps.webjar.outputs.version }}"
           body: "Automated update via pipeline"
-          branch: update-govuk-frontend-${{ steps.webjar.version }}
+          branch: update-govuk-frontend-${{ steps.webjar.outputs.version }}
           base: main
 
         
