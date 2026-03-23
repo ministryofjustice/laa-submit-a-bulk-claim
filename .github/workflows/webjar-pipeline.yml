@@ -15,9 +15,12 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Get npm version
-        id: npm
-        run: echo "version=$(npm view govuk-frontend version)" >> $GITHUB_OUTPUT
+      - name: Get latest WebJar version
+        id: webjar
+        run: |
+          VERSION=$(curl -s https://repo1.maven.org/maven2/org/webjars/npm/govuk-frontend/maven-metadata.xml \
+          | grep -oPm1 "(?<=<release>)[^<]+")
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
 
       - name: Get current version
         id: current
