@@ -1,0 +1,13 @@
+name: Frontend dependency pipeline
+on:
+  schedule:
+    - cron: "0 9 * * 1"
+  workflow_dispatch:
+jobs:
+  frontend-update:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check gov.uk version
+        run: npm view govuk-frontend version
+
