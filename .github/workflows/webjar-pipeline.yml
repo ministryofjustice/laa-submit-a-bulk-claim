@@ -8,6 +8,22 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Check gov.uk version
-        run: npm view govuk-frontend version
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Get npm version
+        id: npm
+        run: echo "version=$(npm view govuk-frontend version)" >> $GITHUB_OUTPUT
+
+      - name: Get current version
+        id: current
+        run: |
+          VERSION=$(grep -oP "govuk-frontend:\K[0-9.]+" laa-submit-a-bulk-claim-ui/build.gradle)
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+
+      - name: Compare versions
+        run: |
+          echo "NPM version: ${{ steps.npm.outputs.version }}"
+          echo "Current version: ${{ steps.current.outputs.version }}"
+        
 
