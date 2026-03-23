@@ -21,9 +21,13 @@ jobs:
           VERSION=$(grep -oP "govuk-frontend:\K[0-9.]+" laa-submit-a-bulk-claim-ui/build.gradle)
           echo "version=$VERSION" >> $GITHUB_OUTPUT
 
-      - name: Compare versions
+      - name: Check if update needed
+        id: compare
         run: |
-          echo "NPM version: ${{ steps.npm.outputs.version }}"
-          echo "Current version: ${{ steps.current.outputs.version }}"
+          if [ "${{ steps.npm.outputs.version }}" != "${{ steps.current.outputs.version }}" ]; then
+            echo "update_needed=true" >> $GITHUB_OUTPUT
+          else
+          echo "update_needed=false" >> $GITHUB_OUTPUT
+          fi
         
 
