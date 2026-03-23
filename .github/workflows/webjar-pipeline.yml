@@ -46,7 +46,8 @@ jobs:
           commit-message: "Update govuk-frontend to ${{ steps.npm.outputs.version }}"
           title: "Update govuk-frontend to ${{ steps.npm.outputs.version }}"
           body: "Automated update via pipeline"
-          branch: update-govuk-frontend
+          branch: update-govuk-frontend-${{ steps.npm.outputs.version }}
+          base: main
 
         
 
