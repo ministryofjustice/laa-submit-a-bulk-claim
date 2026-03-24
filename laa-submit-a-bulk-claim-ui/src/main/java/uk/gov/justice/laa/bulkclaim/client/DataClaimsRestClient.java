@@ -1,9 +1,7 @@
 package uk.gov.justice.laa.bulkclaim.client;
 
-import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
-import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -15,12 +13,15 @@ import org.springframework.web.service.annotation.GetExchange;
 import org.springframework.web.service.annotation.HttpExchange;
 import org.springframework.web.service.annotation.PostExchange;
 import reactor.core.publisher.Mono;
+import uk.gov.justice.laa.dstew.payments.claimsdata.model.AreaOfLaw;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.ClaimResponse;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.ClaimResultSet;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.CreateBulkSubmission201Response;
+import uk.gov.justice.laa.dstew.payments.claimsdata.model.GetBulkSubmission200Response;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.MatterStartGet;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.MatterStartResultSet;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionResponse;
+import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionStatus;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionsResultSet;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.ValidationMessagesResponse;
 
@@ -43,28 +44,30 @@ public interface DataClaimsRestClient {
   Mono<ResponseEntity<CreateBulkSubmission201Response>> upload(
       @RequestPart("file") MultipartFile file,
       @RequestParam String userId,
-      @RequestParam List<String> offices)
+      // Allows Claims API to read the file and tell the user what office they're missing. Users
+      // shouldn't be in a position where they have no offices unless they've been set up wrong.
+      @RequestParam(required = false) List<String> offices)
       throws WebClientResponseException;
 
   /**
    * Searches submissions using JSON criteria sent in the GET request body.
    *
    * @param offices array of authenticated user silas provider offices.
-   * @param submissionId submission id
-   * @param dateFrom date range date from
-   * @param dateTo date range date to
+   * @param submissionPeriod date range date from
+   * @param areaOfLaw area of law
+   * @param submissionStatus array of submission statuses
+   * @param page page number
+   * @param size page size
+   * @param sort sort order
    * @return SubmissionSearchResponseDto
    */
   @GetExchange(url = "/submissions", accept = MediaType.APPLICATION_JSON_VALUE)
   Mono<SubmissionsResultSet> search(
       @RequestParam(value = "offices") List<String> offices,
-      @RequestParam(value = "submission_id", required = false) String submissionId,
-      @RequestParam(value = "submitted_date_from", required = false)
-          @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
-          LocalDate dateFrom,
-      @RequestParam(value = "submitted_date_to", required = false)
-          @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
-          LocalDate dateTo,
+      @RequestParam(value = "submission_period", required = false) String submissionPeriod,
+      @RequestParam(value = "area_of_law", required = false) AreaOfLaw areaOfLaw,
+      @RequestParam(value = "submission_statuses", required = false)
+          List<SubmissionStatus> submissionStatus,
       @RequestParam(value = "page", required = false, defaultValue = "0") Integer page,
       @RequestParam(value = "size", required = false, defaultValue = "10") Integer size,
       @RequestParam(value = "sort", required = false) String sort);
@@ -81,6 +84,17 @@ public interface DataClaimsRestClient {
       throws WebClientResponseException;
 
   /**
+   * * Gets a bulk submission by its ID.
+   *
+   * @param bulkSubmissionId the bulk submission ID
+   * @return a mono containing the response from the Claims API.
+   * @throws WebClientResponseException if status other than 2xx is returned
+   */
+  @GetExchange(value = "/bulk-submissions/{id}")
+  Mono<GetBulkSubmission200Response> getBulkSubmission(@PathVariable("id") UUID bulkSubmissionId)
+      throws WebClientResponseException;
+
+  /**
    * Gets a submission claim by submission ID and claim ID.
    *
    * @param submissionId the submission ID
@@ -91,6 +105,24 @@ public interface DataClaimsRestClient {
   @GetExchange(value = "/submissions/{submission-id}/claims/{claim-id}")
   Mono<ClaimResponse> getSubmissionClaim(
       @PathVariable("submission-id") UUID submissionId, @PathVariable("claim-id") UUID claimId);
+
+  /**
+   * Get claims in a submission, filtering by office code, and using page number and size. Orders by
+   * line number by default
+   *
+   * @param officeCode the office code of the claims to be retrieved
+   * @param submissionId the submission id of the claims to be retrieved
+   * @param page the page number
+   * @param size the page size
+   * @return 200 OK with JSON body containing the list of matched claims
+   */
+  default ResponseEntity<ClaimResultSet> getClaims(
+      @RequestParam(value = "office_code") String officeCode,
+      @RequestParam(value = "submission_id") UUID submissionId,
+      @RequestParam(value = "page") Integer page,
+      @RequestParam(value = "size") Integer size) {
+    return getClaims(officeCode, submissionId, page, size, "lineNumber,asc");
+  }
 
   /**
    * Get claims in a submission, filtering by office code, and using page number and size.
@@ -106,7 +138,8 @@ public interface DataClaimsRestClient {
       @RequestParam(value = "office_code") String officeCode,
       @RequestParam(value = "submission_id") UUID submissionId,
       @RequestParam(value = "page") Integer page,
-      @RequestParam(value = "size") Integer size);
+      @RequestParam(value = "size") Integer size,
+      @RequestParam(value = "sort", required = false) String sort);
 
   @GetExchange(value = "/submissions/{submission-id}/matter-starts/{matter-starts-id}")
   Mono<MatterStartGet> getSubmissionMatterStart(

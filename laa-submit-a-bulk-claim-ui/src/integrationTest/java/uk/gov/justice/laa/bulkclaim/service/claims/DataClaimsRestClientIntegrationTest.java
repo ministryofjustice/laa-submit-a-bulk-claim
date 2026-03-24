@@ -5,7 +5,8 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockserver.model.HttpResponse.response;
 
 import java.time.Duration;
-import java.time.LocalDate;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
@@ -81,6 +82,45 @@ class DataClaimsRestClientIntegrationTest extends MockServerIntegrationTest {
       // When
       Mono<ResponseEntity<CreateBulkSubmission201Response>> upload =
           dataClaimsRestClient.upload(file, "test-user", List.of("ABC123"));
+      ResponseEntity<CreateBulkSubmission201Response> block = upload.block();
+      CreateBulkSubmission201Response result = block.getBody();
+      String locationHeader = block.getHeaders().getFirst(HttpHeaders.LOCATION);
+
+      // Then
+      assertThat(result.getBulkSubmissionId())
+          .isEqualTo(UUID.fromString("f7ed1cda-692e-417a-bb55-5a5135006774"));
+      assertThat(result.getSubmissionIds().get(0))
+          .isEqualTo(UUID.fromString("aca8d879-3dd4-4fd1-97ee-03f0d0cfd5db"));
+      assertThat(locationHeader).isEqualTo("/api/v1/bulk-submissions/1234567890");
+    }
+
+    @Test
+    @DisplayName("Should handle a 201 response with empty office array")
+    void shouldHandle201ResponseWithEmptyOfficeArray() {
+      // Given
+      MockMultipartFile file =
+          new MockMultipartFile("file", "test.txt", "text/plain", new byte[10 * 1024 * 1024]);
+      String expectedBody =
+          """
+              {
+                "bulk_submission_id": "f7ed1cda-692e-417a-bb55-5a5135006774",
+                "submission_ids": [
+                  "aca8d879-3dd4-4fd1-97ee-03f0d0cfd5db"
+                ]
+              }
+              """;
+      mockServerClient
+          .when(HttpRequest.request().withMethod("POST").withPath("/api/v1/bulk-submissions"))
+          .respond(
+              response()
+                  .withStatusCode(201)
+                  .withHeader("Content-Type", "application/json")
+                  .withHeader("Location", "/api/v1/bulk-submissions/1234567890")
+                  .withBody(expectedBody));
+
+      // When
+      Mono<ResponseEntity<CreateBulkSubmission201Response>> upload =
+          dataClaimsRestClient.upload(file, "test-user", Collections.emptyList());
       ResponseEntity<CreateBulkSubmission201Response> block = upload.block();
       CreateBulkSubmission201Response result = block.getBody();
       String locationHeader = block.getHeaders().getFirst(HttpHeaders.LOCATION);
@@ -191,13 +231,13 @@ class DataClaimsRestClientIntegrationTest extends MockServerIntegrationTest {
                   .withBody("{\"content\": [" + submissionsBody + "]}"));
 
       List<String> offices = List.of("1");
-      String submissionId = "1234";
-      LocalDate from = LocalDate.of(2025, 8, 1);
-      LocalDate to = LocalDate.of(2025, 8, 31);
+      String submissionPeriod = "JAN-2025";
+      AreaOfLaw areaOfLaw = AreaOfLaw.LEGAL_HELP;
+      SubmissionStatus status = SubmissionStatus.VALIDATION_SUCCEEDED;
 
       SubmissionsResultSet response =
           dataClaimsRestClient
-              .search(offices, submissionId, from, to, 0, 10, null)
+              .search(offices, submissionPeriod, areaOfLaw, Arrays.asList(status), 0, 10, null)
               .block(Duration.ofSeconds(2));
       assertThat(response.toString()).isNotEmpty();
       assertThat(response.getContent().getFirst().getSubmissionId().toString())
@@ -317,6 +357,96 @@ class DataClaimsRestClientIntegrationTest extends MockServerIntegrationTest {
   }
 
   @Nested
+  @DisplayName("GET: /api/v1/bulk-submissions/{id}")
+  class GetBulkSubmission {
+
+    @Test
+    @DisplayName("Should handle a 200 response")
+    void shouldHandle200Response() throws Exception {
+      // Given
+      UUID id = UUID.fromString("7059e4c7-b800-40a0-9074-6127288e548a");
+      String expectJson = readJsonFromFile("/GetBulkSubmission200.json");
+      mockServerClient
+          .when(HttpRequest.request().withMethod("GET").withPath("/api/v1/bulk-submissions/" + id))
+          .respond(
+              response()
+                  .withStatusCode(200)
+                  .withHeader("Content-Type", "application/json")
+                  .withBody(expectJson));
+      // Then
+      GetBulkSubmission200Response block = dataClaimsRestClient.getBulkSubmission(id).block();
+      String result = objectMapper.writeValueAsString(block);
+      assertThatJsonMatches(expectJson, result);
+    }
+
+    @Test
+    @DisplayName("Should handle a 400 response")
+    void shouldHandle400Response() {
+      // Given
+      UUID id = UUID.fromString("7059e4c7-b800-40a0-9074-6127288e548a");
+      mockServerClient
+          .when(HttpRequest.request().withMethod("GET").withPath("/api/v1/bulk-submissions/" + id))
+          .respond(response().withStatusCode(400).withHeader("Content-Type", "application/json"));
+
+      // When
+      assertThrows(BadRequest.class, () -> dataClaimsRestClient.getBulkSubmission(id).block());
+    }
+
+    @Test
+    @DisplayName("Should handle a 401 response")
+    void shouldHandle401Response() {
+      // Given
+      UUID id = UUID.fromString("7059e4c7-b800-40a0-9074-6127288e548a");
+      mockServerClient
+          .when(HttpRequest.request().withMethod("GET").withPath("/api/v1/bulk-submissions/" + id))
+          .respond(response().withStatusCode(401).withHeader("Content-Type", "application/json"));
+
+      // When
+      assertThrows(Unauthorized.class, () -> dataClaimsRestClient.getBulkSubmission(id).block());
+    }
+
+    @Test
+    @DisplayName("Should handle a 403 response")
+    void shouldHandle403Response() {
+      // Given
+      UUID id = UUID.fromString("7059e4c7-b800-40a0-9074-6127288e548a");
+      mockServerClient
+          .when(HttpRequest.request().withMethod("GET").withPath("/api/v1/bulk-submissions/" + id))
+          .respond(response().withStatusCode(403).withHeader("Content-Type", "application/json"));
+
+      // When
+      assertThrows(Forbidden.class, () -> dataClaimsRestClient.getBulkSubmission(id).block());
+    }
+
+    @Test
+    @DisplayName("Should handle a 404 response")
+    void shouldHandle404Response() {
+      // Given
+      UUID id = UUID.fromString("7059e4c7-b800-40a0-9074-6127288e548a");
+      mockServerClient
+          .when(HttpRequest.request().withMethod("GET").withPath("/api/v1/bulk-submissions/" + id))
+          .respond(response().withStatusCode(404).withHeader("Content-Type", "application/json"));
+
+      // When
+      assertThrows(NotFound.class, () -> dataClaimsRestClient.getBulkSubmission(id).block());
+    }
+
+    @Test
+    @DisplayName("Should handle a 500 response")
+    void shouldHandle500Response() {
+      // Given
+      UUID id = UUID.fromString("7059e4c7-b800-40a0-9074-6127288e548a");
+      mockServerClient
+          .when(HttpRequest.request().withMethod("GET").withPath("/api/v1/bulk-submissions/" + id))
+          .respond(response().withStatusCode(500).withHeader("Content-Type", "application/json"));
+
+      // When
+      assertThrows(
+          InternalServerError.class, () -> dataClaimsRestClient.getBulkSubmission(id).block());
+    }
+  }
+
+  @Nested
   @DisplayName("GET: /api/v1/claims")
   class GetClaims {
 
@@ -335,6 +465,26 @@ class DataClaimsRestClientIntegrationTest extends MockServerIntegrationTest {
                   .withBody(expectJson));
       // Then
       ClaimResultSet block = dataClaimsRestClient.getClaims("0P322F", claimId, 0, 1).getBody();
+      String result = objectMapper.writeValueAsString(block);
+      assertThatJsonMatches(expectJson, result);
+    }
+
+    @Test
+    @DisplayName("Should handle a 200 response with sort")
+    void shouldHandle200ResponseWithSort() throws Exception {
+      // Given
+      UUID claimId = UUID.fromString("3fa85f64-5717-4562-b3fc-2c963f66afa6");
+      String expectJson = readJsonFromFile("/GetClaims200.json");
+      mockServerClient
+          .when(HttpRequest.request().withMethod("GET").withPath("/api/v1/claims"))
+          .respond(
+              response()
+                  .withStatusCode(200)
+                  .withHeader("Content-Type", "application/json")
+                  .withBody(expectJson));
+      // Then
+      ClaimResultSet block =
+          dataClaimsRestClient.getClaims("0P322F", claimId, 0, 1, "lineNumber,asc").getBody();
       String result = objectMapper.writeValueAsString(block);
       assertThatJsonMatches(expectJson, result);
     }

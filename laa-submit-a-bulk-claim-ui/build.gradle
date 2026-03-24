@@ -8,6 +8,11 @@ plugins {
 def versions = [sentry : '8.31.0']
 apply plugin: 'uk.gov.laa.springboot.laa-spring-boot-gradle-plugin'
 
+
+checkstyle {
+    toolVersion = '13.0.0'
+    configFile = file("${rootDir}/config/checkstyle/checkstyle.xml")
+}
 repositories {
     // Use Maven Central for resolving dependencies.
     mavenCentral()
@@ -27,8 +32,11 @@ dependencies {
     // Upgrade to fix CVE-2026-1225 vulnerability in logback-core
     implementation 'ch.qos.logback:logback-core:1.5.25'
     implementation 'ch.qos.logback:logback-classic:1.5.25'
+    // Upgrade to fix vulnerability GHSA-72hv-8253-57qq
+    implementation 'com.fasterxml.jackson.core:jackson-core:2.21.1'
+    implementation 'tools.jackson.core:jackson-core:3.1.0'
 
-    implementation 'uk.gov.justice.laa.datastewardship.payments:data-claims-api-models:6ec4cb7'
+    implementation 'uk.gov.justice.laa.datastewardship.payments:data-claims-api-models:b4f5c09'
 
     //Common exception handling
     implementation 'uk.gov.laa.springboot:laa-spring-boot-starter-application-exception'
@@ -53,6 +61,7 @@ dependencies {
     // https://mvnrepository.com/artifact/org.webjars.npm/govuk-frontend
     implementation 'org.webjars.npm:govuk-frontend:5.13.0'
     implementation 'org.webjars.npm:ministryofjustice__frontend:5.1.5'
+    implementation 'org.webjars.npm:accessible-autocomplete:3.0.1'
     implementation 'org.springframework.boot:spring-boot-starter-actuator'
     implementation 'io.micrometer:micrometer-registry-prometheus'
     implementation 'io.prometheus:prometheus-metrics-tracer-initializer'
@@ -197,6 +206,7 @@ pact {
         // For older Brokers/compatibility
         tags = [branchName, projectVersion]
 
+
         // Add 'release' tag if branchName matches semantic version pattern (X.X.XXX)
         if (branchName ==~ /\d+\.\d+\.\d+/) {
             tags.add('release')
@@ -206,8 +216,25 @@ pact {
             tags.add('dev')
         }
 
+        def pactTagsInput = providers.environmentVariable('PACT_TAGS').getOrNull()
+        if (pactTagsInput) {
+            pactTagsInput.split(',').each { tag ->
+                tags.add(tag.trim())
+            }
+        }
+
 
     }
+}
+
+tasks.register('checkstyleAll') {
+    group = 'verification'
+    description = 'Runs checkstyleMain'
+    dependsOn tasks.matching { it.name in ['checkstyleMain'] }
+}
+
+tasks.named('build') {
+    dependsOn tasks.named('checkstyleAll')
 }
 
 

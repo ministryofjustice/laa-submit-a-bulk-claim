@@ -63,7 +63,7 @@ class ClaimDetailControllerTest {
                   get("/submission/claim/" + claimId)
                       .with(oidcLogin().oidcUser(ControllerTestHelper.getOidcUser()))))
           .hasStatus3xxRedirection()
-          .hasRedirectedUrl("/view-claim-detail?page=0&navTab=CLAIM_DETAILS");
+          .hasRedirectedUrl("/view-claim-detail?page=0&messagesPage=0&navTab=CLAIM_DETAILS");
     }
   }
 

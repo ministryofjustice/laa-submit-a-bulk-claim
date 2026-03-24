@@ -31,7 +31,7 @@ jobs:
 
       - name: Can I deploy?
         id: can-i-deploy
-        uses: ministryofjustice/laa-ccms-common-workflows/.github/actions/pact-can-i-deploy@story/pact-publish
+        uses: ministryofjustice/laa-ccms-common-workflows/.github/actions/pact-can-i-deploy@v1
         with:
           pacticipant: 'laa-submit-a-bulk-claim'
           environment: ${{ inputs.claim_api_environment_name }}
@@ -40,20 +40,18 @@ jobs:
           pact_broker_password: ${{ secrets.pact_broker_password }}
 
       - name: Authenticate to the cluster
-        run: |
-          set -euo pipefail
-          IFS=$'\n\t'
-          echo "${{ secrets.kube_cert }}" > ca.crt
-          kubectl config set-cluster "${{ secrets.KUBE_CLUSTER }}" --certificate-authority=./ca.crt --server=https://"${{ secrets.KUBE_CLUSTER }}"
-          kubectl config set-credentials deploy-user --token="${{ secrets.KUBE_TOKEN }}"
-          kubectl config set-context "${{ secrets.KUBE_CLUSTER }}" --cluster="${{ secrets.KUBE_CLUSTER }}" --user=deploy-user --namespace="${{ secrets.KUBE_NAMESPACE }}"
-          kubectl config use-context "${{ secrets.KUBE_CLUSTER }}"
+        uses: ministryofjustice/laa-reusable-github-actions/.github/actions/authenticate_to_cluster@7666443ea3f635ec52544311e0f0ea51830468c0
+        with:
+          kube-cluster: ${{ secrets.KUBE_CLUSTER }}
+          kube-namespace: ${{ secrets.KUBE_NAMESPACE }}
+          kube-token: ${{ secrets.KUBE_TOKEN }}
+          kube-cert: ${{ secrets.KUBE_CERT }}
 
       - name: Configure aws credentials
         uses: aws-actions/configure-aws-credentials@v5
         with:
-          role-to-assume: "${{ secrets.ecr_role_to_assume }}"
-          aws-region: "${{ vars.ECR_REGION }}"
+          role-to-assume: "${{ secrets.LAA_SUBMIT_A_BULK_CLAIM_ECR_ROLE_TO_ASSUME }}"
+          aws-region: "${{ vars.LAA_SUBMIT_A_BULK_CLAIM_ECR_REGION }}"
 
       - name: Login ecr
         uses: aws-actions/amazon-ecr-login@v2
@@ -87,7 +85,7 @@ jobs:
           DEPLOYMENT_NAME: "${{ inputs.deployment_name }}"
           ENVIRONMENT: "${{ inputs.environment }}"
           REGISTRY: "${{ steps.login-ecr.outputs.registry }}"
-          ECR_REPOSITORY: "${{ vars.ECR_REPOSITORY }}"
+          ECR_REPOSITORY: "${{ vars.LAA_SUBMIT_A_BULK_CLAIM_ECR_REPOSITORY }}"
         run: |
           set -euo pipefail
           IFS=$'\n\t'
@@ -110,13 +108,13 @@ jobs:
         uses: ./.github/actions/ecr-update-image-tags
         with:
           images: ${{ steps.helm-install.outputs.images }}
-          role_to_assume: ${{ secrets.ecr_role_to_assume }}
-          aws_region: ${{ vars.ECR_REGION }}
-          ecr_repository: ${{ vars.ECR_REPOSITORY }}
+          role_to_assume: ${{ secrets.LAA_SUBMIT_A_BULK_CLAIM_ECR_ROLE_TO_ASSUME }}
+          aws_region: ${{ vars.LAA_SUBMIT_A_BULK_CLAIM_ECR_REGION }}
+          ecr_repository: ${{ vars.LAA_SUBMIT_A_BULK_CLAIM_ECR_REPOSITORY }}
 
       - name: Record deployment to pact broker
         id: record-deployment-to-pact-broker
-        uses: ministryofjustice/laa-ccms-common-workflows/.github/actions/pact-record-deployment@story/pact-publish
+        uses: ministryofjustice/laa-ccms-common-workflows/.github/actions/pact-record-deployment@v1
         with:
           pacticipant: 'laa-submit-a-bulk-claim'
           environment: ${{ inputs.claim_api_environment_name }}

@@ -11,10 +11,11 @@ import au.com.dius.pact.consumer.junit5.PactConsumerTest;
 import au.com.dius.pact.consumer.junit5.PactTestFor;
 import au.com.dius.pact.core.model.RequestResponsePact;
 import au.com.dius.pact.core.model.annotations.Pact;
+import java.io.IOException;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
-import lombok.SneakyThrows;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -63,9 +64,9 @@ public final class PostBulkSubmissionPactTest extends AbstractPactTest {
 
   @Autowired DataClaimsRestClient dataClaimsRestClient;
 
-  @SneakyThrows
   @Pact(consumer = CONSUMER)
-  public RequestResponsePact postBulkSubmission201(PactDslWithProvider builder) {
+  public RequestResponsePact postBulkSubmission201WithOffice(PactDslWithProvider builder)
+      throws IOException {
     // Defines expected 201 response for successfully submitting valid bulk submission
     return builder
         .given("the system is ready to process a valid bulk submission")
@@ -91,9 +92,8 @@ public final class PostBulkSubmissionPactTest extends AbstractPactTest {
         .toPact();
   }
 
-  @SneakyThrows
   @Pact(consumer = CONSUMER)
-  public RequestResponsePact postBulkSubmission400(PactDslWithProvider builder) {
+  public RequestResponsePact postBulkSubmission400(PactDslWithProvider builder) throws IOException {
     // Defines expected 400 response for uploading invalid bulk submission
     return builder
         .given("the submission file contains invalid data")
@@ -106,13 +106,31 @@ public final class PostBulkSubmissionPactTest extends AbstractPactTest {
         .withFileUpload("file", "test.txt", "text/plain", new byte[10])
         .willRespondWith()
         .status(400)
-        .headers(Map.of("Content-Type", "application/json"))
+        .matchHeader("Content-Type", "application/(problem\\+)?json")
+        .toPact();
+  }
+
+  @Pact(consumer = CONSUMER)
+  public RequestResponsePact postBulkSubmission400WithoutOffice(PactDslWithProvider builder)
+      throws IOException {
+    // Defines expected 201 response for successfully submitting valid bulk submission
+    return builder
+        .given("the submission file contains invalid data")
+        .uponReceiving("a request to create a bulk submission with invalid data and no office")
+        .path("/api/v1/bulk-submissions")
+        .matchQuery("userId", ANY_FORMAT_REGEX)
+        .matchHeader(HttpHeaders.AUTHORIZATION, UUID_REGEX)
+        .method("POST")
+        .withFileUpload("file", "test.txt", "text/plain", new byte[10])
+        .willRespondWith()
+        .status(400)
+        .matchHeader("Content-Type", "application/(problem\\+)?json")
         .toPact();
   }
 
   @Test
   @DisplayName("Verify 201 response")
-  @PactTestFor(pactMethod = "postBulkSubmission201")
+  @PactTestFor(pactMethod = "postBulkSubmission201WithOffice")
   void verify201Response() {
     String userId = "test-user";
     List<String> offices = List.of("ABC123", "XYZ789");
@@ -131,6 +149,18 @@ public final class PostBulkSubmissionPactTest extends AbstractPactTest {
   void verify400Response() {
     String userId = "test-user";
     List<String> offices = List.of("ABC123", "XYZ789");
+    MockMultipartFile file = new MockMultipartFile("file", "test.txt", "text/plain", new byte[10]);
+
+    assertThrows(
+        BadRequest.class, () -> dataClaimsRestClient.upload(file, userId, offices).block());
+  }
+
+  @Test
+  @DisplayName("Verify 400 response without office")
+  @PactTestFor(pactMethod = "postBulkSubmission400WithoutOffice")
+  void verify400ResponseWithoutOffice() {
+    String userId = "test-user";
+    List<String> offices = Collections.emptyList();
     MockMultipartFile file = new MockMultipartFile("file", "test.txt", "text/plain", new byte[10]);
 
     assertThrows(

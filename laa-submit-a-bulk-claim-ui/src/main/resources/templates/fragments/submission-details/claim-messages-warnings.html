@@ -1,6 +1,6 @@
 <th:block th:fragment="claim-messages-warnings"
   th:with="pageVarName=${pageVarName?:'page'}">
-  <th:block th:if="${navTab.toString() == 'CLAIM_ERRORS' and messagesSummary != null}">
+  <th:block th:if="${navTab.toString() == 'CLAIM_MESSAGES' and messagesSummary != null}">
     <!--/*@thymesVar id="messagesSummary" type="uk.gov.justice.laa.bulkclaim.dto.submission.messages.MessagesSummary"*/-->
     <div class="govuk-grid-column-full">
       <h2 class="govuk-heading-m" id="messages"
@@ -24,6 +24,8 @@
 
           <thead class="govuk-table__head" th:if="${isCrime}">
           <tr class="govuk-table__row">
+            <th scope="col" class="govuk-table__header"
+                th:text="#{submission.summary.claims.table.claim}"></th>
             <th scope="col" class="govuk-table__header" aria-sort="none"
                 th:text="#{submission.claim.errors.table.clientSurname}"></th>
             <th scope="col" class="govuk-table__header" aria-sort="none"
@@ -37,6 +39,8 @@
 
           <thead class="govuk-table__head" th:if="${isCivil}">
           <tr class="govuk-table__row">
+            <th scope="col" class="govuk-table__header"
+                th:text="#{submission.summary.claims.table.claim}"></th>
             <th scope="col" class="govuk-table__header" aria-sort="none"
                 th:text="#{submission.claim.errors.table.clientSurname}"></th>
             <th scope="col" class="govuk-table__header" aria-sort="none"
@@ -52,6 +56,8 @@
 
           <thead class="govuk-table__head" th:if="${isMediation}">
           <tr class="govuk-table__row">
+            <th scope="col" class="govuk-table__header"
+                th:text="#{submission.summary.claims.table.claim}"></th>
             <th scope="col" class="govuk-table__header" aria-sort="none"
                 th:text="#{submission.claim.errors.table.client1Surname}"></th>
             <th scope="col" class="govuk-table__header" aria-sort="none"
@@ -86,6 +92,12 @@
           <tr class="govuk-table__row"
               th:each="message, idx : ${messagesSummary.messages}"
               th:id="|claim-message-warning-${idx.index}|">
+            <td class="govuk-table__cell">
+              <a class="govuk-link"
+                 th:href="@{/submission/claim/{id}(id=${message.claimReference().get()}, navTab=${navTab}, messagesPage=${messagesPage})}"
+                 th:text="#{submission.summary.claims.viewLink}"></a>
+
+            </td>
             <td class="govuk-table__cell"
                 th:data-sort-value="${message.clientSurname()}"
                 th:text="${message.clientSurname() ?: '-'}"></td>
@@ -105,6 +117,12 @@
           <tr class="govuk-table__row"
               th:each="message, idx : ${messagesSummary.messages}"
               th:id="|claim-message-warning-${idx.index}|">
+            <td class="govuk-table__cell">
+              <a class="govuk-link"
+                 th:href="@{/submission/claim/{id}(id=${message.claimReference().get()}, navTab=${navTab}, messagesPage=${messagesPage})}"
+                 th:text="#{submission.summary.claims.viewLink}"></a>
+
+            </td>
             <td class="govuk-table__cell"
                 th:data-sort-value="${message.clientSurname()}"
                 th:text="${message.clientSurname() ?: '-'}"></td>
@@ -127,6 +145,12 @@
           <tr class="govuk-table__row"
               th:each="message, idx : ${messagesSummary.messages}"
               th:id="|claim-message-warning-${idx.index}|">
+            <td class="govuk-table__cell">
+              <a class="govuk-link"
+                 th:href="@{/submission/claim/{id}(id=${message.claimReference().get()}, navTab=${navTab}, messagesPage=${messagesPage})}"
+                 th:text="#{submission.summary.claims.viewLink}"></a>
+
+            </td>
             <td class="govuk-table__cell"
                 th:data-sort-value="${message.clientSurname()}"
                 th:text="${message.clientSurname() ?: '-'}"></td>
@@ -173,7 +197,7 @@
       </div>
 
       <nav
-          th:replace="~{fragments/pagination :: pagination(currentUrl='/view-submission-detail?navTab=CLAIM_ERRORS', page=${messagesSummary.pagination}, pageVarName=${pageVarName})}"></nav>
+          th:replace="~{fragments/pagination :: pagination(currentUrl='/view-submission-detail?navTab=CLAIM_MESSAGES', page=${messagesSummary.pagination}, pageVarName=${pageVarName})}"></nav>
     </div>
   </th:block>
 </th:block>

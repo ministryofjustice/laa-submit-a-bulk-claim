@@ -1,5 +1,6 @@
 package uk.gov.justice.laa.bulkclaim.dto.submission.messages;
 
+import java.util.Optional;
 import java.util.UUID;
 import lombok.Builder;
 
@@ -7,6 +8,7 @@ import lombok.Builder;
  * A record representing a claim message in a bulk submission.
  *
  * @param submissionReference the submission reference
+ * @param claimReference the claim reference (empty when message is for Submission)
  * @param ufn the UFN of the claim
  * @param ucn the UCN of the claim
  * @param client the client of the claim
@@ -17,6 +19,7 @@ import lombok.Builder;
 @Builder
 public record MessageRow(
     UUID submissionReference,
+    Optional<UUID> claimReference,
     String ufn,
     String ucn,
     String client,

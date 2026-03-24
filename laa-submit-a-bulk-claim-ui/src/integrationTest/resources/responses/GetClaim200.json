@@ -102,6 +102,9 @@
   "local_authority_number": "string",
   "submission_period": "JUL-2025",
   "created_by_user_id": null,
+  "is_amended": null,
+  "has_assessment": null,
+  "version": null,
   "total_warnings":5,
   "fee_calculation_response": {
     "calculated_fee_detail_id": "string",

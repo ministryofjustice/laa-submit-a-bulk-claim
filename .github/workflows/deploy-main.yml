@@ -10,7 +10,7 @@ permissions:
 
 jobs:
   assemble:
-    uses: ministryofjustice/laa-ccms-common-workflows/.github/workflows/gradle-build-and-publish.yml@v1.0.10
+    uses: ministryofjustice/laa-ccms-common-workflows/.github/workflows/gradle-build-and-publish.yml@v1
     permissions:
       contents: write
       packages: write
@@ -29,7 +29,7 @@ jobs:
 
   pact-test:
     needs: [ assemble ]
-    uses: ministryofjustice/laa-ccms-common-workflows/.github/workflows/pact-and-publish.yml@story/pact-publish
+    uses: ministryofjustice/laa-ccms-common-workflows/.github/workflows/pact-and-publish.yml@v1
     permissions:
       contents: write
       packages: write
@@ -37,6 +37,8 @@ jobs:
       pacticipant_name: "laa-submit-a-bulk-claim"
       pact_test_task: "pactTest"
       publish_pact_results: true
+      git_branch: 'main'
+      pact_tags: '${{ needs.assemble.outputs.published_artifact_version }},candidate'
     secrets:
       gh_token: ${{ secrets.GITHUB_TOKEN }}
       pact_broker_url: 'https://laa-data-pact-broker.apps.live.cloud-platform.service.justice.gov.uk/'
@@ -54,9 +56,9 @@ jobs:
       image_version: ${{ format('{0}-{1}', vars.IMAGE_PREFIX, needs.assemble.outputs.published_artifact_version) }}
     secrets:
       gh_token: ${{ secrets.GITHUB_TOKEN }}
-      ecr_repository: ${{ vars.ECR_REPOSITORY }}
-      ecr_region: ${{ vars.ECR_REGION }}
-      ecr_role_to_assume: ${{ secrets.ECR_ROLE_TO_ASSUME }}
+      ecr_repository: ${{ vars.LAA_SUBMIT_A_BULK_CLAIM_ECR_REPOSITORY }}
+      ecr_region: ${{ vars.LAA_SUBMIT_A_BULK_CLAIM_ECR_REGION }}
+      ecr_role_to_assume: ${{ secrets.LAA_SUBMIT_A_BULK_CLAIM_ECR_ROLE_TO_ASSUME }}
 
   deploy-uat:
     needs:

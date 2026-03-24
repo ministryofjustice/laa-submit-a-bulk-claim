@@ -12,7 +12,7 @@ services:
         - github_actor
         - github_token
     environment:
-      SERVER_MAX_FILE_SIZE: 10MB
+      SERVER_MAX_FILE_SIZE: 50MB
       UPLOAD_MAX_FILE_SIZE: 10MB
       SILAS_CLIENT_ID: ${SILAS_CLIENT_ID}
       SILAS_CLIENT_SECRET: ${SILAS_CLIENT_SECRET}
@@ -32,7 +32,6 @@ services:
       - "8082:8082"
       - "8181:8081"
     depends_on:
-      - laa-mock-oidc-service
       - redis
   claim-service:
     image: wiremock/wiremock:latest
@@ -60,6 +59,8 @@ services:
       timeout: 5s
       retries: 5
       start_period: 10s
+    environment:
+      LAA_ACCOUNTS: 1,123,0P322F,2Q779P,2Q286D,2Q263D,2Q271M,0E525U,2Q286D,2N199K,1T102C,2P746R,2L847Q
 
   redis:
     image: redis:8-alpine

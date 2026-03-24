@@ -135,6 +135,12 @@ env:
         name: laa-submit-a-bulk-claim-secrets
         key: APP_LANDING_DEADLINE_OVERRIDE_MESSAGE
         optional: true
+  - name: SUBMISSION_MINIMUM_PERIOD
+    valueFrom:
+      secretKeyRef:
+        name: laa-submit-a-bulk-claim-secrets
+        key: SUBMISSION_MINIMUM_PERIOD
+        optional: true
 
 extraEnvVars:
   - name: ALLOWED_HOSTS
@@ -166,6 +172,25 @@ resources:
 
 autoscaling:
   enabled: true
-  minReplicas: 2
+  minReplicas: 4
   maxReplicas: 8
   targetCPUUtilizationPercentage: 60
+
+downtime:
+  scheduler:
+    enabled: true
+    serviceAccountName: laa-submit-a-bulk-claim-production-service-account
+    jobs:
+      - name: scale-down
+        schedule: "30 21 * * *"
+        action: down
+      - name: scale-up
+        schedule: "00 7 * * *"
+        action: up
+  page:
+    enabled: true
+    port: 8080
+    replicas: 1
+    system:
+      name: "Submit a bulk claim"
+      url: "https://submit-a-bulk-claim.laa.service.justice.gov.uk"

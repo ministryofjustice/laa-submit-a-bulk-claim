@@ -22,27 +22,23 @@ jobs:
           echo "preview_version=${version}-${commit_hash}" >> "$GITHUB_OUTPUT"
           echo "Preview version: submit-a-bulk-claim-${version}-${commit_hash}"
 
-  assemble:
+  build-and-test:
     needs: [ define-preview-version ]
     uses: ministryofjustice/laa-ccms-common-workflows/.github/workflows/gradle-build-and-publish.yml@v1
     permissions:
       contents: write
       packages: write
     with:
-      build_command: 'assemble'
       publish_package: false
       override_version: ${{ needs.define-preview-version.outputs.preview_version }}
-      junit_results: 'false'
-      junit_report: 'false'
-      checkstyle_report: 'false'
-      jacoco_coverage_report: 'false'
+      integration_test_task: integrationTest
       semgrep_check: 'true'
     secrets:
       gh_token: ${{ secrets.GITHUB_TOKEN }}
 
   pact-test:
-    needs: [ assemble ]
-    uses: ministryofjustice/laa-ccms-common-workflows/.github/workflows/pact-and-publish.yml@story/pact-publish
+    needs: [ build-and-test ]
+    uses: ministryofjustice/laa-ccms-common-workflows/.github/workflows/pact-and-publish.yml@v1
     permissions:
       contents: write
       packages: write
@@ -52,6 +48,7 @@ jobs:
       publish_pact_results: true
       enable_can_i_merge: true
       provider_name: "laa-data-claims-api"
+      pact_tags: "feature"
     secrets:
       gh_token: ${{ secrets.GITHUB_TOKEN }}
       pact_broker_url: 'https://laa-data-pact-broker.apps.live.cloud-platform.service.justice.gov.uk/'
@@ -67,19 +64,19 @@ jobs:
     secrets: inherit
 
   ecr-publish-image:
-    needs: [ assemble ]
+    needs: [ build-and-test ]
     uses: ministryofjustice/laa-ccms-common-workflows/.github/workflows/ecr-publish-image.yml@v1
     permissions:
       contents: read
       id-token: write
     with:
       jar_subproject: 'laa-submit-a-bulk-claim-ui'
-      image_version: ${{ format('{0}-{1}', vars.IMAGE_PREFIX, needs.assemble.outputs.published_artifact_version) }}
+      image_version: ${{ format('{0}-{1}', vars.IMAGE_PREFIX, needs.build-and-test.outputs.published_artifact_version) }}
     secrets:
       gh_token: ${{ secrets.GITHUB_TOKEN }}
-      ecr_repository: ${{ vars.ECR_REPOSITORY }}
-      ecr_region: ${{ vars.ECR_REGION }}
-      ecr_role_to_assume: ${{ secrets.ECR_ROLE_TO_ASSUME }}
+      ecr_repository: ${{ vars.LAA_SUBMIT_A_BULK_CLAIM_ECR_REPOSITORY }}
+      ecr_region: ${{ vars.LAA_SUBMIT_A_BULK_CLAIM_ECR_REGION }}
+      ecr_role_to_assume: ${{ secrets.LAA_SUBMIT_A_BULK_CLAIM_ECR_ROLE_TO_ASSUME }}
 
   deploy-uat-preview:
     needs:
@@ -91,16 +88,19 @@ jobs:
     permissions:
       id-token: write
       contents: read
+      pull-requests: write
+
     steps:
       - name: Checkout
         uses: actions/checkout@v6
 
       - name: Deploy UAT preview branch
+        id: deploy
         uses: ./.github/actions/deploy_branch
         with:
-          ecr-region: ${{ vars.ECR_REGION }}
-          ecr-role-to-assume: ${{ secrets.ECR_ROLE_TO_ASSUME }}
-          ecr-repository: ${{ vars.ECR_REPOSITORY }}
+          ecr-region: ${{ vars.LAA_SUBMIT_A_BULK_CLAIM_ECR_REGION }}
+          ecr-role-to-assume: ${{ secrets.LAA_SUBMIT_A_BULK_CLAIM_ECR_ROLE_TO_ASSUME }}
+          ecr-repository: ${{ vars.LAA_SUBMIT_A_BULK_CLAIM_ECR_REPOSITORY }}
           kube-cert: ${{ secrets.KUBE_CERT }}
           kube-token: ${{ secrets.KUBE_TOKEN }}
           kube-cluster: ${{ secrets.KUBE_CLUSTER }}
@@ -112,3 +112,58 @@ jobs:
           pact_broker_username: ${{ secrets.pact_broker_username }}
           pact_broker_password: ${{ secrets.pact_broker_password }}
           run-pact-can-i-deploy: false
+
+      - name: Comment on PR with UI ingress URL
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const releaseName = '${{ steps.deploy.outputs.release-name }}';
+            const namespace = '${{ secrets.KUBE_NAMESPACE }}';
+            const clusterDomain = 'apps.live.cloud-platform.service.justice.gov.uk';
+            const chartName = 'submit-a-bulk-claim';
+            const hostname = `${releaseName}-${chartName}-${namespace}.${clusterDomain}`;
+            const url = `https://${hostname}`;
+
+            const prNumber = context.issue.number;
+            if (!prNumber) {
+              console.log('No PR found, skipping comment');
+              return;
+            }
+
+            const { data: comments } = await github.rest.issues.listComments({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: prNumber
+            });
+
+            const commentBody = [
+              '## Ephemeral Environment Deployed',
+              '',
+              `**UI URL:** ${url}`,
+              '',
+              `**Release:** ${releaseName}`
+            ].join('\n');
+            const botComment = comments.find(comment =>
+              comment.user.type === 'Bot' &&
+              comment.body.includes('## Ephemeral Environment Deployed') &&
+              comment.body.includes(hostname)
+            );
+
+            if (botComment) {
+              await github.rest.issues.updateComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                comment_id: botComment.id,
+                body: commentBody
+              });
+              console.log(`Updated existing comment #${botComment.id} on PR #${prNumber}`);
+            } else {
+              await github.rest.issues.createComment({
+                issue_number: prNumber,
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                body: commentBody
+              });
+              console.log(`Posted new comment to PR #${prNumber}`);
+            }
