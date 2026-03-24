@@ -12,3 +12,7 @@
 .govuk-extension__background_white{
   background-color: white;
 }
+
+.govuk-notification-banner--success:focus {
+  outline: none;
+}
