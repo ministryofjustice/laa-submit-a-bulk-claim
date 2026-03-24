@@ -18,11 +18,9 @@ jobs:
       - name: Get latest WebJar version from Maven
         id: latest
         run: |
-          GOVUK=$(curl -s https://repo1.maven.org/maven2/org/webjars/npm/govuk-frontend/maven-metadata.xml \
-          | grep -oPm1 "(?<=<release>)[^<]+")
+          GOVUK=$(curl -s https://repo1.maven.org/maven2/org/webjars/npm/govuk-frontend/maven-metadata.xml | grep -oPm1 "(?<=<release>)[^<]+")
           
-          MOJ=$(curl -s https://repo1.maven.org/maven2/org/webjars/npm/ministryofjustice__frontend/maven-metadata.xml \
-          | grep -oPm1 "(?<=<release>)[^<]+")
+          MOJ=$(curl -s https://repo1.maven.org/maven2/org/webjars/npm/ministryofjustice__frontend/maven-metadata.xml | grep -oPm1 "(?<=<release>)[^<]+")
           
           echo "govuk=GOVUK" >> $GITHUB_OUTPUT
           echo "moj=MOJ" >> $GITHUB_OUTPUT
