@@ -15,42 +15,96 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Get latest WebJar version
-        id: webjar
+      - name: Get latest WebJar version from Maven
+        id: latest
         run: |
-          VERSION=$(curl -s https://repo1.maven.org/maven2/org/webjars/npm/govuk-frontend/maven-metadata.xml \
+          GOVUK=$(curl -s https://repo1.maven.org/maven2/org/webjars/npm/govuk-frontend/maven-metadata.xml \
           | grep -oPm1 "(?<=<release>)[^<]+")
-          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          
+          MOJ=$(curl -s https://repo1.maven.org/maven2/org/webjars/npm/ministryofjustice__frontend/maven-metadata.xml \
+          | grep -oPm1 "(?<=<release>)[^<]+")
+          
+          echo "govuk=GOVUK" >> $GITHUB_OUTPUT
+          echo "moj=MOJ" >> $GITHUB_OUTPUT
+          
+          echo "Latest GOV.UK: $GOVUK"
+          echo "Latest MOJ: MOJ"
 
       - name: Get current version
         id: current
         run: |
-          VERSION=$(grep -oP "govuk-frontend:\K[0-9.]+" laa-submit-a-bulk-claim-ui/build.gradle)
-          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          GOVUK=$(grep -oP "govuk-frontend:\K[0-9.]+" laa-submit-a-bulk-claim-ui/build.gradle)
+          MOJ=$(grep -oP "ministryofjustice__frontend:\K[0-9.]+" laa-submit-a-bulk-claim-ui/build.gradle)
+          
+          echo "govuk=GOVUK" >> $GITHUB_OUTPUT
+          echo "moj=MOJ" >> $GITHUB_OUTPUT
+          
+          echo "Latest GOV.UK: $GOVUK"
+          echo "Latest MOJ: MOJ"
 
-      - name: Check if update needed
+      - name: Compare versions
         id: compare
         run: |
-          if [ "${{ steps.webjar.outputs.version }}" != "${{ steps.current.outputs.version }}" ]; then
-            echo "update_needed=true" >> $GITHUB_OUTPUT
+          UPDATE=false
+          
+          if [ "${{ steps.latest.outputs.govuk }}" != "${{ steps.current.outputs.govuk }}" ]; then
+            echo "govuk_update=true" >> $GITHUB_OUTPUT
           else
-          echo "update_needed=false" >> $GITHUB_OUTPUT
+          echo "govuk_update=false" >> $GITHUB_OUTPUT
           fi
+          
+          if [ "${{ steps.latest.outputs.moj }}" != "${{ steps.current.outputs.moj }}" ]; then
+            echo "moj_update=true" >> $GITHUB_OUTPUT
+          else
+          echo "moj_update=false" >> $GITHUB_OUTPUT
+          fi
+          
+          echo "update_needed=$UPDATE" >> $GITHUB_OUTPUT
 
-      - name: Update version
+      - name: Trigger WebJar (GOV.UK)
+        if: steps.compare.outputs.govuk_update == 'true'
+        run: |
+          echo "Triggering GOV.UK WebJar."
+          curl -L "https://www.webjars.org/deploy?webJarType=npm&nameOrUrlish=govuk-frontend&version=${{ steps.latest.outputs.govuk }}"
+
+      - name: Trigger WebJar (MOJ)
+        if: steps.compare.outputs.moj_update == 'true'
+        run: |
+          echo "Triggering MOJ WebJar."
+          curl -L "https://www.webjars.org/deploy?webJarType=npm&nameOrUrlish=%40ministryofjustice/frontend&version=${{ steps.latest.outputs.moj }}"
+
+      - name: Update dependencies
         if: steps.compare.outputs.update_needed == 'true'
         run: |
-          sed -i "s/govuk-frontend:${{ steps.current.outputs.version }}/govuk-frontend:${{ steps.webjar.outputs.version }}/g" laa-submit-a-bulk-claim-ui/build.gradle
+          echo "Updating dependencies..."
+          
+          if [ "${{ steps.compare.outputs.govuk_update }}" = true ]; then
+            sed -i "s/govuk-frontend:${{ steps.current.outputs.govuk }}/govuk-frontend:${{ steps.latest.outputs.govuk }}/g" laa-submit-a-bulk-claim-ui/build.gradle
+          fi
+          
+          if [ "${{ steps.compare.outputs.moj_update }}" = true ]; then
+            sed -i "s/ministryofjustice__frontend:${{ steps.current.outputs.moj }}/ministryofjustice__frontend:${{ steps.latest.outputs.moj }}/g" laa-submit-a-bulk-claim-ui/build.gradle
+          fi          
+          
+          echo "Updated build.gradle:"
+          cat laa-submit-a-bulk-claim-ui/build.gradle
+
+      - name: No updates needed
+        if: steps.compare.outputs.update_needed == 'false'
+        run: echo "All frontend dependencies are up-to-date."
 
       - name: Create pull request
         if: steps.compare.outputs.update_needed == 'true'
         uses: peter-evans/create-pull-request@v6
         with:
-          commit-message: "Update govuk-frontend to ${{ steps.webjar.outputs.version }}"
-          title: "Update govuk-frontend to ${{ steps.webjar.outputs.version }}"
-          body: "Automated update via pipeline"
-          branch: update-govuk-frontend-${{ steps.webjar.outputs.version }}
+          commit-message: "Update frontend dependencies"
+          title: "Update frontend dependencies"
+          body: |
+            Automated updates:
+            
+            -GOV.UK: ${{ steps.current.outputs.govuk }} -> ${{ steps.latest.outputs.govuk }}
+            -MOJ: ${{ steps.current.outputs.moj }} -> ${{ steps.latest.outputs.moj }}
+          branch: update-frontend-deps
           base: main
-
         
 
