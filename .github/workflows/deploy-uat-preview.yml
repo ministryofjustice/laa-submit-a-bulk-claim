@@ -33,6 +33,7 @@ jobs:
       override_version: ${{ needs.define-preview-version.outputs.preview_version }}
       integration_test_task: integrationTest
       semgrep_check: 'true'
+      java_version: 25
     secrets:
       gh_token: ${{ secrets.GITHUB_TOKEN }}
 
@@ -49,6 +50,7 @@ jobs:
       enable_can_i_merge: true
       provider_name: "laa-data-claims-api"
       pact_tags: "feature"
+      java_version: 25
     secrets:
       gh_token: ${{ secrets.GITHUB_TOKEN }}
       pact_broker_url: 'https://laa-data-pact-broker.apps.live.cloud-platform.service.justice.gov.uk/'
@@ -72,6 +74,7 @@ jobs:
     with:
       jar_subproject: 'laa-submit-a-bulk-claim-ui'
       image_version: ${{ format('{0}-{1}', vars.IMAGE_PREFIX, needs.build-and-test.outputs.published_artifact_version) }}
+      java_version: 25
     secrets:
       gh_token: ${{ secrets.GITHUB_TOKEN }}
       ecr_repository: ${{ vars.LAA_SUBMIT_A_BULK_CLAIM_ECR_REPOSITORY }}
