@@ -28,7 +28,7 @@ jobs:
           echo "moj=MOJ" >> $GITHUB_OUTPUT
           
           echo "Latest GOV.UK: $GOVUK"
-          echo "Latest MOJ: MOJ"
+          echo "Latest MOJ: $MOJ"
 
       - name: Get current version
         id: current
@@ -36,11 +36,8 @@ jobs:
           GOVUK=$(grep -oP "govuk-frontend:\K[0-9.]+" laa-submit-a-bulk-claim-ui/build.gradle)
           MOJ=$(grep -oP "ministryofjustice__frontend:\K[0-9.]+" laa-submit-a-bulk-claim-ui/build.gradle)
           
-          echo "govuk=GOVUK" >> $GITHUB_OUTPUT
-          echo "moj=MOJ" >> $GITHUB_OUTPUT
-          
           echo "Latest GOV.UK: $GOVUK"
-          echo "Latest MOJ: MOJ"
+          echo "Latest MOJ: $MOJ"
 
       - name: Compare versions
         id: compare
