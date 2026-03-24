@@ -24,9 +24,6 @@ jobs:
           MOJ=$(curl -s https://repo1.maven.org/maven2/org/webjars/npm/ministryofjustice__frontend/maven-metadata.xml \
           | grep -oPm1 "(?<=<release>)[^<]+")
           
-          echo "govuk=GOVUK" >> $GITHUB_OUTPUT
-          echo "moj=MOJ" >> $GITHUB_OUTPUT
-          
           echo "Latest GOV.UK: $GOVUK"
           echo "Latest MOJ: $MOJ"
 
@@ -36,27 +33,31 @@ jobs:
           GOVUK=$(grep -oP "govuk-frontend:\K[0-9.]+" laa-submit-a-bulk-claim-ui/build.gradle)
           MOJ=$(grep -oP "ministryofjustice__frontend:\K[0-9.]+" laa-submit-a-bulk-claim-ui/build.gradle)
           
-          echo "Latest GOV.UK: $GOVUK"
-          echo "Latest MOJ: $MOJ"
+          echo "Current GOV.UK: $GOVUK"
+          echo "Current MOJ: $MOJ"
 
       - name: Compare versions
         id: compare
         run: |
-          UPDATE=false
           
           if [ "${{ steps.latest.outputs.govuk }}" != "${{ steps.current.outputs.govuk }}" ]; then
             echo "govuk_update=true" >> $GITHUB_OUTPUT
           else
-          echo "govuk_update=false" >> $GITHUB_OUTPUT
+            echo "govuk_update=false" >> $GITHUB_OUTPUT
           fi
           
           if [ "${{ steps.latest.outputs.moj }}" != "${{ steps.current.outputs.moj }}" ]; then
             echo "moj_update=true" >> $GITHUB_OUTPUT
           else
-          echo "moj_update=false" >> $GITHUB_OUTPUT
+            echo "moj_update=false" >> $GITHUB_OUTPUT
           fi
           
-          echo "update_needed=$UPDATE" >> $GITHUB_OUTPUT
+          if [ "${{ steps.latest.outputs.govuk }}" != "${{ steps.current.outputs.govuk }}" ] || \
+             [ "${{ steps.latest.outputs.moj }}" != "${{ steps.current.outputs.moj }}" ]; then
+            echo "update_needed=true" >> $GITHUB_OUTPUT 
+          else
+             echo "update_needed=false" >> $GITHUB_OUTPUT  
+          fi
 
       - name: Trigger WebJar (GOV.UK)
         if: steps.compare.outputs.govuk_update == 'true'
