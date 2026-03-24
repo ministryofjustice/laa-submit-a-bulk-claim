@@ -106,7 +106,7 @@ public final class PostBulkSubmissionPactTest extends AbstractPactTest {
         .withFileUpload("file", "test.txt", "text/plain", new byte[10])
         .willRespondWith()
         .status(400)
-        .headers(Map.of("Content-Type", "application/json"))
+        .matchHeader("Content-Type", "application/(problem\\+)?json")
         .toPact();
   }
 
@@ -124,7 +124,7 @@ public final class PostBulkSubmissionPactTest extends AbstractPactTest {
         .withFileUpload("file", "test.txt", "text/plain", new byte[10])
         .willRespondWith()
         .status(400)
-        .headers(Map.of("Content-Type", "application/json"))
+        .matchHeader("Content-Type", "application/(problem\\+)?json")
         .toPact();
   }
 
