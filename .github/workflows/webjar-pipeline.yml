@@ -24,6 +24,9 @@ jobs:
           MOJ=$(curl -s https://repo1.maven.org/maven2/org/webjars/npm/ministryofjustice__frontend/maven-metadata.xml \
           | grep -oPm1 "(?<=<release>)[^<]+")
           
+          echo "govuk=GOVUK" >> $GITHUB_OUTPUT
+          echo "moj=MOJ" >> $GITHUB_OUTPUT
+          
           echo "Latest GOV.UK: $GOVUK"
           echo "Latest MOJ: $MOJ"
 
@@ -32,6 +35,9 @@ jobs:
         run: |
           GOVUK=$(grep -oP "govuk-frontend:\K[0-9.]+" laa-submit-a-bulk-claim-ui/build.gradle)
           MOJ=$(grep -oP "ministryofjustice__frontend:\K[0-9.]+" laa-submit-a-bulk-claim-ui/build.gradle)
+          
+          echo "govuk=GOVUK" >> $GITHUB_OUTPUT
+          echo "moj=MOJ" >> $GITHUB_OUTPUT
           
           echo "Current GOV.UK: $GOVUK"
           echo "Current MOJ: $MOJ"
