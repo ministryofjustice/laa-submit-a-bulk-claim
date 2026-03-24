@@ -39,24 +39,28 @@ jobs:
       - name: Compare versions
         id: compare
         run: |
+          GOVUK_LATEST = ${{ steps.latest.outputs.govuk }}
+          GOVUK_CURRENT = ${{ steps.current.outputs.govuk }}
+          MOJ_LATEST = ${{ steps.latest.outputs.moj }}
+          MOJ_CURRENT = ${{ steps.current.outputs.moj }}"
           
-          if [ "${{ steps.latest.outputs.govuk }}" != "${{ steps.current.outputs.govuk }}" ]; then
+          if [ "$GOVUK_LATEST" != "$GOVUK_CURRENT" ]; then
             echo "govuk_update=true" >> $GITHUB_OUTPUT
           else
             echo "govuk_update=false" >> $GITHUB_OUTPUT
           fi
           
-          if [ "${{ steps.latest.outputs.moj }}" != "${{ steps.current.outputs.moj }}" ]; then
+          if [ "$MOJ_LATEST" != "$MOJ_CURRENT" ]; then
             echo "moj_update=true" >> $GITHUB_OUTPUT
           else
             echo "moj_update=false" >> $GITHUB_OUTPUT
           fi
           
-          if [ "${{ steps.latest.outputs.govuk }}" != "${{ steps.current.outputs.govuk }}" ] || \
-             [ "${{ steps.latest.outputs.moj }}" != "${{ steps.current.outputs.moj }}" ]; then
+          if [ "$GOVUK_LATEST" != "$GOVUK_CURRENT" ] || \
+             [ "$MOJ_LATEST" != "$MOJ_CURRENT" ]; then
             echo "update_needed=true" >> $GITHUB_OUTPUT 
           else
-             echo "update_needed=false" >> $GITHUB_OUTPUT  
+            echo "update_needed=false" >> $GITHUB_OUTPUT  
           fi
 
       - name: Trigger WebJar (GOV.UK)
