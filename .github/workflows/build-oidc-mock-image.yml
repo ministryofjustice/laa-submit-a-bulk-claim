@@ -20,10 +20,19 @@ jobs:
     outputs:
       oidc_mock_tag: ${{ steps.build.outputs.oidc_mock_tag }}
     steps:
+      - name: Get app token
+        id: get_workflow_token
+        uses: peter-murray/workflow-application-token-action@d17e3a9a36850ea89f35db16c1067dd2b68ee343 # v4.0.1
+        with:
+          application_id: ${{ vars.LAA_CCMS_CAAB_SERVICE_APP_ID }}
+          application_private_key: ${{ secrets.LAA_CCMS_CAAB_SERVICE_KEY }}
+          organization: 'ministryofjustice'
+
       - name: Checkout OIDC mock repo
         uses: actions/checkout@v6
         with:
           repository: ministryofjustice/laa-oidc-mock-server
+          token: ${{ steps.get_workflow_token.outputs.token || env.GITHUB_TOKEN }}
 
       - name: Log in to GHCR
         run: |
@@ -40,18 +49,9 @@ jobs:
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v4
 
-      - name: Get app token
-        id: get_workflow_token
-        uses: peter-murray/workflow-application-token-action@d17e3a9a36850ea89f35db16c1067dd2b68ee343 # v4.0.1
-        with:
-          application_id: ${{ vars.LAA_CCMS_CAAB_SERVICE_APP_ID }}
-          application_private_key: ${{ secrets.LAA_CCMS_CAAB_SERVICE_KEY }}
-          organization: 'ministryofjustice'
 
       - name: Gradle assemble
         run: ./gradlew assemble
-        env:
-          GITHUB_TOKEN: ${{ steps.get_workflow_token.outputs.token || env.GITHUB_TOKEN }}
 
       - name: Configure aws credentials
         uses: aws-actions/configure-aws-credentials@v4
