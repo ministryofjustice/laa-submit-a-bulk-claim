@@ -48,7 +48,7 @@ jobs:
           kube-cert: ${{ secrets.KUBE_CERT }}
 
       - name: Configure aws credentials
-        uses: aws-actions/configure-aws-credentials@v5
+        uses: aws-actions/configure-aws-credentials@v6
         with:
           role-to-assume: "${{ secrets.LAA_SUBMIT_A_BULK_CLAIM_ECR_ROLE_TO_ASSUME }}"
           aws-region: "${{ vars.LAA_SUBMIT_A_BULK_CLAIM_ECR_REGION }}"

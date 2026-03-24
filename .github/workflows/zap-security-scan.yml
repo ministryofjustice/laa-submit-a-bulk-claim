@@ -12,10 +12,10 @@ jobs:
     environment: uat
     steps:
     - name: Checkout repository
-      uses: actions/checkout@v4
+      uses: actions/checkout@v6
 
     - name: Install kubectl
-      uses: azure/setup-kubectl@v3
+      uses: azure/setup-kubectl@v4
       with:
         version: v1.29.4
 
@@ -60,7 +60,7 @@ jobs:
           fi
 
     - name: Upload ZAP Json Report
-      uses: actions/upload-artifact@v6
+      uses: actions/upload-artifact@v7
       if: always()
       with:
         name: ${{ github.event_name == 'pull_request' && format('zap-pr-{0}-json-report', github.event.pull_request.number) || format('zap-{0}-json-report', github.event_name) }}
@@ -68,7 +68,7 @@ jobs:
         if-no-files-found: warn
 
     - name: Upload ZAP Report
-      uses: actions/upload-artifact@v6
+      uses: actions/upload-artifact@v7
       if: always()
       with:
         name: ${{ github.event_name == 'pull_request' && format('zap-pr-{0}-report', github.event.pull_request.number) || format('zap-{0}-report', github.event_name) }}
