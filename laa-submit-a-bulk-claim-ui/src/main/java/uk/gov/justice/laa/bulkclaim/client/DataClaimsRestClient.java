@@ -17,6 +17,7 @@ import uk.gov.justice.laa.dstew.payments.claimsdata.model.AreaOfLaw;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.ClaimResponse;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.ClaimResultSet;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.CreateBulkSubmission201Response;
+import uk.gov.justice.laa.dstew.payments.claimsdata.model.GetBulkSubmission200Response;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.MatterStartGet;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.MatterStartResultSet;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionResponse;
@@ -80,6 +81,17 @@ public interface DataClaimsRestClient {
    */
   @GetExchange(value = "/submissions/{submissionId}")
   Mono<SubmissionResponse> getSubmission(@PathVariable("submissionId") UUID submissionId)
+      throws WebClientResponseException;
+
+  /**
+   * * Gets a bulk submission by its ID.
+   *
+   * @param bulkSubmissionId the bulk submission ID
+   * @return a mono containing the response from the Claims API.
+   * @throws WebClientResponseException if status other than 2xx is returned
+   */
+  @GetExchange(value = "/bulk-submissions/{id}")
+  Mono<GetBulkSubmission200Response> getBulkSubmission(@PathVariable("id") UUID bulkSubmissionId)
       throws WebClientResponseException;
 
   /**

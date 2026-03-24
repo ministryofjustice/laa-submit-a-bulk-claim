@@ -101,7 +101,13 @@
               th:utext="#{phase.banner.description}"/>
       </p>
     </div>
-
+    <nav class="moj-organisation-nav" aria-label="Organisation switcher">
+        <div class="moj-organisation-nav__title">
+        <span sec:authentication="principal.attributes['FIRM_NAME']"></span>
+        -
+        <span sec:authentication="principal.attributes['FIRM_CODE']"></span>
+        </div>
+    </nav>
   </div>
 </header>
 </body>
