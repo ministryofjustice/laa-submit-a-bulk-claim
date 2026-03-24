@@ -50,7 +50,8 @@ jobs:
 
       - name: Gradle assemble
         run: ./gradlew assemble
-        GITHUB_TOKEN: ${{ steps.get_workflow_token.outputs.token || env.GITHUB_TOKEN }}
+        env:
+          GITHUB_TOKEN: ${{ steps.get_workflow_token.outputs.token || env.GITHUB_TOKEN }}
 
       - name: Configure aws credentials
         uses: aws-actions/configure-aws-credentials@v4
