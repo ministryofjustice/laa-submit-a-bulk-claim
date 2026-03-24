@@ -39,10 +39,10 @@ jobs:
       - name: Compare versions
         id: compare
         run: |
-          GOVUK_LATEST = ${{ steps.latest.outputs.govuk }}
-          GOVUK_CURRENT = ${{ steps.current.outputs.govuk }}
-          MOJ_LATEST = ${{ steps.latest.outputs.moj }}
-          MOJ_CURRENT = ${{ steps.current.outputs.moj }}"
+          GOVUK_LATEST: ${{ steps.latest.outputs.govuk }}
+          GOVUK_CURRENT: ${{ steps.current.outputs.govuk }}
+          MOJ_LATEST: ${{ steps.latest.outputs.moj }}
+          MOJ_CURRENT: ${{ steps.current.outputs.moj }}"
           
           if [ "$GOVUK_LATEST" != "$GOVUK_CURRENT" ]; then
             echo "govuk_update=true" >> $GITHUB_OUTPUT
