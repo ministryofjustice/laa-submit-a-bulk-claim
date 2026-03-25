@@ -43,42 +43,47 @@ jobs:
       - name: Dispatch target workflow
         id: dispatch
         env:
-          # Change this for APP token
           GH_TOKEN: ${{ secrets.E2E_PAT_TOKEN }}
+          TARGET_REPO: ministryofjustice/bulk-submission-and-fee-scheme-tests-
+          TARGET_WORKFLOW_FILE: test-compose.yml
           TARGET_REF: feature/test-compose
-          TARGET_SHA: ${{ github.event.pull_request.head.sha }}
           SABC_IMAGE_TAG: ${{ needs.define-preview-version.outputs.preview_version }}
           TEST_ANNOTATION: '@accessibility'
         run: |
           set -euo pipefail
 
-          echo "Dispatching E2E in ministryofjustice/bulk-submission-and-fee-scheme-tests-"
-          gh api -X POST "repos/ministryofjustice/bulk-submission-and-fee-scheme-tests-/actions/workflows/test-compose.yml/dispatches" \
+          # Record time BEFORE dispatching. This will be used to find the workflow run
+          DISPATCH_TIME=$(date -u +%Y-%m-%dT%H:%M:%SZ)
+          echo "dispatch_time=${DISPATCH_TIME}" >> "$GITHUB_OUTPUT"
+
+          echo "Dispatching E2E in ${TARGET_REPO}"
+          gh api -X POST "repos/${TARGET_REPO}/actions/workflows/${TARGET_WORKFLOW_FILE}/dispatches" \
             -f ref="${TARGET_REF}" \
             -f inputs[test_annotation]="${TEST_ANNOTATION}" \
             -f inputs[sabc_image_tag]="${SABC_IMAGE_TAG}"
 
-          echo "Dispatched for ref ${TARGET_REF} at sha ${TARGET_SHA}"
+          echo "Dispatched at ${DISPATCH_TIME}"
 
       - name: Find the created workflow run
         id: find_run
         env:
-          # Change this for APP token
           GH_TOKEN: ${{ secrets.E2E_PAT_TOKEN }}
           TARGET_REPO: ministryofjustice/bulk-submission-and-fee-scheme-tests-
           TARGET_WORKFLOW_FILE: test-compose.yml
           TARGET_REF: feature/test-compose
-          TARGET_SHA: ${{ github.event.pull_request.head.sha }}
         run: |
           set -euo pipefail
 
           WORKFLOW_ID="$(gh api "repos/${TARGET_REPO}/actions/workflows/${TARGET_WORKFLOW_FILE}" --jq '.id')"
 
-          echo "Looking for run for sha ${TARGET_SHA}"
+          # Use the time recorded just before dispatch
+          DISPATCH_TIME="${{ steps.dispatch.outputs.dispatch_time }}"
+
+          echo "Looking for run created after ${DISPATCH_TIME}"
           for i in {1..30}; do
             RUN_ID="$(gh api \
-              "repos/${TARGET_REPO}/actions/workflows/${WORKFLOW_ID}/runs?branch=${TARGET_REF}&event=workflow_dispatch&per_page=20" \
-              --jq ".workflow_runs[] | select(.head_sha == \"${TARGET_SHA}\") | .id" | head -n 1)"
+              "repos/${TARGET_REPO}/actions/workflows/${WORKFLOW_ID}/runs?branch=${TARGET_REF}&event=workflow_dispatch&per_page=10&created=>=${DISPATCH_TIME}" \
+              --jq '[.workflow_runs[] | select(.status == "queued" or .status == "in_progress" or .status == "completed")] | sort_by(.created_at) | last | .id // empty')"
 
             if [ -n "${RUN_ID:-}" ]; then
               echo "run_id=${RUN_ID}" >> "$GITHUB_OUTPUT"
