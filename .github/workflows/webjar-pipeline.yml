@@ -18,7 +18,7 @@ jobs:
       - name: Get latest NPM versions
         id: npm
         run: |
-          GOVUK=$(npm view hmrc-frontend version)
+          GOVUK=$(npm view govuk-frontend version)
           MOJ=$(npm view @ministryofjustice/frontend version)
           
           echo "govuk=$GOVUK" >> $GITHUB_OUTPUT
@@ -30,7 +30,7 @@ jobs:
       - name: Get latest WebJar version from Maven
         id: webjar
         run: |
-          GOVUK=$(curl -s https://repo1.maven.org/maven2/org/webjars/npm/hmrc-frontend/maven-metadata.xml \
+          GOVUK=$(curl -s https://repo1.maven.org/maven2/org/webjars/npm/govuk-frontend/maven-metadata.xml \
             | sed -n 's:.*<release>\(.*\)</release>.*:\1:p')
           MOJ=$(curl -s https://repo1.maven.org/maven2/org/webjars/npm/ministryofjustice__frontend/maven-metadata.xml \
             | sed -n 's:.*<release>\(.*\)</release>.*:\1:p')
@@ -104,7 +104,7 @@ jobs:
         if: steps.compare.outputs.govuk_trigger == 'true'
         run: |
           echo "Triggering GOV.UK WebJar."
-          curl -L "https://www.webjars.org/deploy?webJarType=npm&nameOrUrlish=hmrc-frontend&version=${{ steps.npm.outputs.govuk }}"
+          curl -L "https://www.webjars.org/deploy?webJarType=npm&nameOrUrlish=govuk-frontend&version=${{ steps.npm.outputs.govuk }}"
 
       - name: Trigger WebJar (MOJ)
         if: steps.compare.outputs.moj_trigger == 'true'
@@ -115,22 +115,22 @@ jobs:
       - name: Wait for WebJar
         if: steps.compare.outputs.govuk_trigger == 'true' || steps.compare.outputs.moj_trigger == 'true'
         run: sleep 300
-#
-#      - name: Update dependencies
-#        if: steps.compare.outputs.update_needed == 'true'
-#        run: |
-#          sed -i "s|org.webjars.npm:govuk-frontend:[0-9.]*|org.webjars.npm:govuk-frontend:${{ steps.webjar.outputs.govuk }}|g" laa-submit-a-bulk-claim-ui/build.gradle
-#          sed -i "s|org.webjars.npm:ministryofjustice__frontend:[0-9.]*|org.webjars.npm:ministryofjustice__frontend:${{ steps.webjar.outputs.moj }}|g" laa-submit-a-bulk-claim-ui/build.gradle
 
-#      - name: Create pull request
-#        if: steps.compare.outputs.update_needed == 'true'
-#        uses: peter-evans/create-pull-request@v6
-#        with:
-#          commit-message: "Update frontend dependencies"
-#          title: "Update frontend dependencies"
-#          body: "Automated update via pipeline"
-#          branch: frontend-update-${{ steps.webjar.outputs.govuk }}-${{ steps.webjar.outputs.moj }}
-#          base: main
+      - name: Update dependencies
+        if: steps.compare.outputs.update_needed == 'true'
+        run: |
+          sed -i "s|org.webjars.npm:govuk-frontend:[0-9.]*|org.webjars.npm:govuk-frontend:${{ steps.webjar.outputs.govuk }}|g" laa-submit-a-bulk-claim-ui/build.gradle
+          sed -i "s|org.webjars.npm:ministryofjustice__frontend:[0-9.]*|org.webjars.npm:ministryofjustice__frontend:${{ steps.webjar.outputs.moj }}|g" laa-submit-a-bulk-claim-ui/build.gradle
+
+      - name: Create pull request
+        if: steps.compare.outputs.update_needed == 'true'
+        uses: peter-evans/create-pull-request@v6
+        with:
+          commit-message: "Update frontend dependencies"
+          title: "Update frontend dependencies"
+          body: "Automated update via pipeline"
+          branch: frontend-update-${{ steps.webjar.outputs.govuk }}-${{ steps.webjar.outputs.moj }}
+          base: main
 
 
       - name: No updates needed
