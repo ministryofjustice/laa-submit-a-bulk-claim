@@ -59,9 +59,14 @@ jobs:
     uses: ./.github/workflows/build-oidc-mock-image.yml
     permissions:
       id-token: write
-      contents: read
+      contents: write
       packages: read
-    secrets: inherit
+    secrets: 
+      gh_token: ${{ secrets.GITHUB_TOKEN }}
+      github_app_id: ${{ vars.LAA_CCMS_CAAB_SERVICE_APP_ID }}
+      github_app_private_key: ${{ secrets.LAA_CCMS_CAAB_SERVICE_KEY }}
+      github_app_organisation: 'ministryofjustice'
+      LAA_SUBMIT_A_BULK_CLAIM_ECR_ROLE_TO_ASSUME: ${{ secrets.LAA_SUBMIT_A_BULK_CLAIM_ECR_ROLE_TO_ASSUME }}
 
   ecr-publish-image:
     needs: [ build-and-test ]
