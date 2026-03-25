@@ -77,7 +77,3 @@ jobs:
         run: |
           echo "Triggering GOV.UK WebJar."
           curl -L "https://www.webjars.org/deploy?webJarType=npm&nameOrUrlish=@ministryofjustice/frontend&version=${{ steps.npm.outputs.moj }}"
-#
-#      - name: Wait for WebJar
-#        if: steps.compare.outputs.govuk_trigger == 'true' || steps.compare.outputs.moj_trigger == 'true'
-#        run: sleep 300
