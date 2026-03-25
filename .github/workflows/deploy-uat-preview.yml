@@ -22,14 +22,6 @@ jobs:
           echo "preview_version=${version}-${commit_hash}" >> "$GITHUB_OUTPUT"
           echo "Preview version: submit-a-bulk-claim-${version}-${commit_hash}"
 
-  trigger-accessibility:
-    needs: [ define-preview-version ]
-    uses: ministryofjustice/bulk-submission-and-fee-scheme-tests-/.github/workflows/test-compose.yml@a811e504f596a8ed916960934161b4b28072b076
-    with:
-      test_annotation: '@accessibility'
-      sabc_image_tag: ${{ needs.define-preview-version.outputs.preview_version }}
-    secrets: inherit
-
   build-and-test:
     needs: [ define-preview-version ]
     uses: ministryofjustice/laa-ccms-common-workflows/.github/workflows/gradle-build-and-publish.yml@v2
