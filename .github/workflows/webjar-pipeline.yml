@@ -61,8 +61,42 @@ jobs:
           MOJ_LATEST: ${{ steps.webjar.outputs.moj }}
           MOJ_CURRENT: ${{ steps.current.outputs.moj }}
         run: |
-          echo "GOVUK: NPM=$GOVUK_NPM WEBJAR=$GOVUK_WEBJAR CURRENT=$GOVUK_CURRENT"
-          echo "MOJ: NPM=$MOJ_NPM WEBJAR=$MOJ_WEBJAR CURRENT=$MOJ_CURRENT"
+          echo "GOVUK_NPM=$GOVUK_NPM"
+          echo "GOVUK_WEBJAR=$GOVUK_WEBJAR"
+          echo "GOVUK_CURRENT=$GOVUK_CURRENT"
+          echo "MOJ_NPM=$MOJ_NPM"
+          echo "MOJ_WEBJAR=$MOJ_WEBJAR"
+          echo "MOJ_CURRENT=$MOJ_CURRENT"
+          
+          if [ "$GOVUK_NPM" != "$GOVUK_WEBJAR" ]; then
+            echo "govuk_trigger=true" >> $GITHUB_OUTPUT
+          else
+            echo "govuk_trigger=false" >>$GITHUB_OUTPUT
+          fi
+          
+          if [ "$MOJ_NPM" != "$MOJ_WEBJAR" ]; then
+            echo "moj_trigger=true" >> $GITHUB_OUTPUT
+          else
+            echo "moj_trigger=false" >>$GITHUB_OUTPUT
+          fi  
+          
+          if [ "$GOVUK_WEBJAR" != "$GOVUK_CURRENT" ]; then
+            echo "govuk_update=true" >> $GITHUB_OUTPUT
+          else
+            echo "govuk_update=false" >>$GITHUB_OUTPUT
+          fi  
+          
+          if [ "$MOJ_WEBJAR" != "$MOJ_CURRENT" ]; then
+            echo "moj_update=true" >> $GITHUB_OUTPUT
+          else
+            echo "moj_update=false" >>$GITHUB_OUTPUT
+          fi  
+          
+          if [ "$GOVUK_WEBJAR" != "$GOVUK_CURRENT" ] || [ "$MOJ_WEBJAR" != "$MOJ_CURRENT" ]; then
+            echo "update_needed=true" >> $GITHUB_OUTPUT
+          else
+            echo "update_needed=false" >>$GITHUB_OUTPUT
+          fi  
           
           # trigger if npm > webjar
           [ "$GOVUK_NPM" != "$GOVUK_WEBJAR" ] && echo "govuk_trigger=true" >> $GITHUB_OUTPUT || echo "govuk_trigger=false" >> $GITHUB_OUTPUT
