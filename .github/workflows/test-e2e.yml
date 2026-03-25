@@ -1,7 +1,7 @@
 name: Test using E2E dispatch
 
 on:
-  pull_request:
+  #pull_request:
   workflow_call:
     inputs:
       sabc_image_tag:
