@@ -43,7 +43,8 @@ jobs:
       - name: Dispatch target workflow
         id: dispatch
         env:
-          GH_TOKEN: ${{ steps.get_workflow_token.outputs.token || env.GITHUB_TOKEN }}
+          # Change this for APP token
+          GH_TOKEN: ${{ secrets.E2E_PAT_TOKEN }}
           TARGET_REF: feature/test-compose
           TARGET_SHA: ${{ github.event.pull_request.head.sha }}
           SABC_IMAGE_TAG: ${{ needs.define-preview-version.outputs.preview_version }}
