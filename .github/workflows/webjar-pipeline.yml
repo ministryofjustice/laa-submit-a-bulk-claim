@@ -104,13 +104,13 @@ jobs:
         if: steps.compare.outputs.govuk_trigger == 'true'
         run: |
           echo "Triggering GOV.UK WebJar."
-          curl -L "https://www.webjars.org/deploy?webJarType=npm&nameOrUrlIsh=hmrc-frontend&version=${{ steps.npm.outputs.govuk }}"
+          curl -L "https://www.webjars.org/deploy?webJarType=npm&nameOrUrlish=hmrc-frontend&version=${{ steps.npm.outputs.govuk }}"
 
       - name: Trigger WebJar (MOJ)
         if: steps.compare.outputs.moj_trigger == 'true'
         run: |
           echo "Triggering GOV.UK WebJar."
-          curl -L "https://www.webjars.org/deploy?webJarType=npm&nameOrUrlIsh=@ministryofjustice/frontend&version=${{ steps.npm.outputs.moj }}"
+          curl -L "https://www.webjars.org/deploy?webJarType=npm&nameOrUrlish=@ministryofjustice/frontend&version=${{ steps.npm.outputs.moj }}"
 
       - name: Wait for WebJar
         if: steps.compare.outputs.govuk_trigger == 'true' || steps.compare.outputs.moj_trigger == 'true'
