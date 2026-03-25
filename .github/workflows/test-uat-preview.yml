@@ -9,6 +9,12 @@ permissions:
 jobs:
   define-preview-version:
     runs-on: ubuntu-latest
+
+    env:
+      GITHUB_TOKEN: ${{ secrets.gh_token }}
+      GITHUB_APP_ID: ${{ secrets.github_app_id }}
+      GITHUB_APP_PRIVATE_KEY: ${{ secrets.github_app_private_key }}
+
     outputs:
       preview_version: ${{ steps.get-preview-version.outputs.preview_version }}
     steps:
@@ -38,7 +44,7 @@ jobs:
       - name: Dispatch target workflow
         id: dispatch
         env:
-          GH_TOKEN: ${{ steps.get_workflow_token.outputs.token }}
+          GH_TOKEN: ${{ steps.get_workflow_token.outputs.token || env.GITHUB_TOKEN }}
           TARGET_REF: feature/test-compose
           TARGET_SHA: ${{ github.event.pull_request.head.sha }}
           SABC_IMAGE_TAG: ${{ needs.define-preview-version.outputs.preview_version }}
