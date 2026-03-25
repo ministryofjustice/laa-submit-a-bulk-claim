@@ -1,7 +1,7 @@
 name: Check and update WebJar
 on:
-  workflow_dispatch:
-  pull_request:
+  schedule:
+    - cron: '0 9 * * 1-5'
 
 permissions:
   contents: write
@@ -18,7 +18,7 @@ jobs:
       - name: Get latest NPM versions
         id: npm
         run: |
-          GOVUK=$(npm view govuk_frontend_toolkit version)
+          GOVUK=$(npm view govuk-frontend version)
           MOJ=$(npm view @ministryofjustice/frontend version)
           
           echo "govuk=$GOVUK" >> $GITHUB_OUTPUT
@@ -30,7 +30,7 @@ jobs:
       - name: Get latest WebJar versions
         id: webjar
         run: |
-          GOVUK=$(curl -s https://repo1.maven.org/maven2/org/webjars/npm/govuk_frontend_toolkit/maven-metadata.xml \
+          GOVUK=$(curl -s https://repo1.maven.org/maven2/org/webjars/npm/govuk-frontend/maven-metadata.xml \
             | sed -n 's:.*<release>\(.*\)</release>.*:\1:p')
           MOJ=$(curl -s https://repo1.maven.org/maven2/org/webjars/npm/ministryofjustice__frontend/maven-metadata.xml \
             | sed -n 's:.*<release>\(.*\)</release>.*:\1:p')
@@ -70,7 +70,7 @@ jobs:
         if: steps.compare.outputs.govuk_trigger == 'true'
         run: |
           echo "Triggering GOV.UK WebJar."
-          curl -L "https://www.webjars.org/deploy?webJarType=npm&nameOrUrlish=govuk_frontend_toolkit&version=${{ steps.npm.outputs.govuk }}"
+          curl -L "https://www.webjars.org/deploy?webJarType=npm&nameOrUrlish=govuk-frontend&version=${{ steps.npm.outputs.govuk }}"
 
       - name: Trigger WebJar (MOJ)
         if: steps.compare.outputs.moj_trigger == 'true'
