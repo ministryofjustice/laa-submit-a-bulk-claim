@@ -31,7 +31,7 @@ jobs:
         id: webjar
         run: |
           GOVUK=$(curl -s https://repo1.maven.org/maven2/org/webjars/npm/govuk-frontend/maven-metadata.xml | grep -oPm1 "(?<=<release>)[^<]+")
-          MOJ=$(curl -s https://repo1.maven.org/maven2/org/webjars/npm/ministryofjustice__frontend/maven-metadata.xml | grep -oPm1 "(?<=<release>)[^<]+")
+          MOJ=$(curl -s https://repo1.maven.org/maven2/org/webjars/npm/@ministryofjustice__frontend/maven-metadata.xml | grep -oPm1 "(?<=<release>)[^<]+")
           
           echo "govuk=$GOVUK" >> $GITHUB_OUTPUT
           echo "moj=$MOJ" >> $GITHUB_OUTPUT
@@ -97,20 +97,6 @@ jobs:
           else
             echo "update_needed=false" >>$GITHUB_OUTPUT
           fi  
-          
-          # trigger if npm > webjar
-          [ "$GOVUK_NPM" != "$GOVUK_WEBJAR" ] && echo "govuk_trigger=true" >> $GITHUB_OUTPUT || echo "govuk_trigger=false" >> $GITHUB_OUTPUT
-          [ "$MOJ_NPM" != "$MOJ_WEBJAR" ] && echo "moj_trigger=true" >> $GITHUB_OUTPUT || echo "moj_trigger=false" >> $GITHUB_OUTPUT     
-          
-          # update if webjar > current repo version
-          [ "$GOVUK_WEBJAR" != "$GOVUK_CURRENT" ] && echo "govuk_update=true" >> $GITHUB_OUTPUT || echo "govuk_update=false" >> $GITHUB_OUTPUT
-          [ "$MOJ_WEBJAR" != "$MOJ_CURRENT ] && echo "moj_update=true" >> $GITHUB_OUTPUT || echo "moj_update=false" >> $GITHUB_OUTPUT       
-          
-          if [ "$GOVUK_WEBJAR" != "$GOVUK_CURRENT" ] || [ "$MOJ_WEBJAR" != "$MOJ_CURRENT" ]; then
-            echo "update_needed=true" >> $GITHUB_OUTPUT
-          else
-            echo "update_needed=false" >> $GITHUB_OUTPUT
-          fi
 
       - name: Trigger WebJar (GOV.UK)
         if: steps.compare.outputs.govuk_trigger == 'true'
