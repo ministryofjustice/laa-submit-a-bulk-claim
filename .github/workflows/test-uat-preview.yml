@@ -9,12 +9,6 @@ permissions:
 jobs:
   define-preview-version:
     runs-on: ubuntu-latest
-
-    env:
-      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      GITHUB_APP_ID: ${{ secrets.github_app_id }}
-      GITHUB_APP_PRIVATE_KEY: ${{ secrets.github_app_private_key }}
-
     outputs:
       preview_version: ${{ steps.get-preview-version.outputs.preview_version }}
     steps:
@@ -31,7 +25,10 @@ jobs:
   dispatch-and-wait:
     needs: define-preview-version
     runs-on: ubuntu-latest
-    if: github.event.pull_request.draft == false
+    env:
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      GITHUB_APP_ID: ${{ secrets.github_app_id }}
+      GITHUB_APP_PRIVATE_KEY: ${{ secrets.github_app_private_key }}
     steps:
       - name: Get app token
         if: ${{ env.GITHUB_APP_ID != '' && env.GITHUB_APP_PRIVATE_KEY != '' }}
