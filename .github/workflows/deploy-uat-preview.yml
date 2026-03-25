@@ -75,6 +75,16 @@ jobs:
       ecr_role_to_assume: ${{ secrets.LAA_SUBMIT_A_BULK_CLAIM_ECR_ROLE_TO_ASSUME }}
       snyk_token: ${{ secrets.SNYK_TOKEN }}
 
+  test-accessibility:
+    needs: [ ecr-publish-image ]
+    uses: ./.github/workflows/test-e2e.yml
+    permissions:
+      contents: read
+      id-token: write
+    with:
+      sabc_image_tag: ${{ needs.ecr-publish-image.outputs.published_image_version }}
+      test_annotation: "@accessibility"
+
   deploy-uat-preview:
     needs:
       - pact-test

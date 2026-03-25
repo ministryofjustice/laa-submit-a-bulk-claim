@@ -1,29 +1,21 @@
 name: Test using E2E dispatch
 
 on:
-  pull_request:
+  workflow_call:
+    inputs:
+      sabc_image_tag:
+        required: true
+        type: string
+      test_annotation:
+        required: true
+        type: string
 
 permissions:
   contents: read
 
 jobs:
-  define-preview-version:
-    runs-on: ubuntu-latest
-    outputs:
-      preview_version: ${{ steps.get-preview-version.outputs.preview_version }}
-    steps:
-      - uses: actions/checkout@v6
-      - name: Get preview version
-        id: get-preview-version
-        run: |
-          set -euo pipefail
-          commit_hash=$(git rev-parse --short HEAD)
-          version=$(awk -F= '/^version=/{print $2}' gradle.properties)
-          echo "preview_version=${version}-${commit_hash}" >> "$GITHUB_OUTPUT"
-          echo "Preview version: submit-a-bulk-claim-${version}-${commit_hash}"
 
   dispatch-and-wait:
-    needs: define-preview-version
     runs-on: ubuntu-latest
     env:
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -47,8 +39,8 @@ jobs:
           TARGET_REPO: ministryofjustice/bulk-submission-and-fee-scheme-tests-
           TARGET_WORKFLOW_FILE: test-compose.yml
           TARGET_REF: feature/test-compose
-          SABC_IMAGE_TAG: ${{ needs.define-preview-version.outputs.preview_version }}
-          TEST_ANNOTATION: '@accessibility'
+          SABC_IMAGE_TAG: ${{ inputs.sabc_image_tag }}
+          TEST_ANNOTATION: ${{ inputs.test_annotation }}
         run: |
           set -euo pipefail
 
@@ -107,6 +99,7 @@ jobs:
         run: |
           set -euo pipefail
 
+          # Should't need 1 hour, however some tests can take a long time
           for i in {1..120}; do
             STATUS="$(gh api "repos/${TARGET_REPO}/actions/runs/${RUN_ID}" --jq '.status')"
             CONCLUSION="$(gh api "repos/${TARGET_REPO}/actions/runs/${RUN_ID}" --jq '.conclusion // empty')"
@@ -125,7 +118,7 @@ jobs:
               exit 1
             fi
 
-            sleep 10
+            sleep 20
           done
 
           echo "Timed out waiting for remote workflow to complete"
