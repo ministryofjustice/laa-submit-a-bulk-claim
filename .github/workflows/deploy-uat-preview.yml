@@ -74,7 +74,6 @@ jobs:
     needs:
       - pact-test
       - ecr-publish-image
-      - build-oidc-mock-image
     runs-on: ubuntu-latest
     environment: uat
     permissions:
