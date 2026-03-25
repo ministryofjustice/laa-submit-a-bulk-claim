@@ -10,6 +10,9 @@ inputs:
   ecr-role-to-assume:
     description: "ECR role to assume"
     required: true
+  oidc-ecr-repository:
+    description: "OIDC ECR repository"
+    required: true
   kube-cert:
     description: "Kubernetes cluster authentication certificate"
     required: true
@@ -104,6 +107,7 @@ runs:
         ECR_REPOSITORY: ${{ inputs.ecr-repository }}
         ECR_REGION: ${{ inputs.ecr-region }}
         ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+        OIDC_ECR_REPOSITORY: ${{ inputs.oidc-ecr-repository }}
         IMAGE_TAG: ${{ inputs.image-tag }}
         KUBE_NAMESPACE: ${{ inputs.kube-namespace }}
         VALUES_FILE: .helm/submit-a-bulk-claim/values/env-${{ inputs.app-environment }}.yaml
@@ -123,7 +127,7 @@ runs:
             --namespace "$KUBE_NAMESPACE" \
             --install --wait --timeout=10m
           oidc_values_args=(
-            --set image.repository="${ECR_REGISTRY}/${ECR_REPOSITORY}"
+            --set image.repository="${ECR_REGISTRY}/${OIDC_ECR_REPOSITORY}"
             --set sabc.releaseName="${RELEASE_NAME}"
           )
           if [ -n "$OIDC_IMAGE_TAG" ]; then

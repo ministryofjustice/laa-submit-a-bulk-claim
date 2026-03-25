@@ -55,19 +55,6 @@ jobs:
       pact_broker_username: ${{ secrets.PACT_BROKER_USERNAME }}
       pact_broker_password: ${{ secrets.PACT_BROKER_PASSWORD }}
 
-  build-oidc-mock-image:
-    uses: ./.github/workflows/build-oidc-mock-image.yml
-    permissions:
-      id-token: write
-      contents: write
-      packages: read
-    secrets: 
-      gh_token: ${{ secrets.GITHUB_TOKEN }}
-      github_app_id: ${{ vars.LAA_CCMS_CAAB_SERVICE_APP_ID }}
-      github_app_private_key: ${{ secrets.LAA_CCMS_CAAB_SERVICE_KEY }}
-      github_app_organisation: 'ministryofjustice'
-      LAA_SUBMIT_A_BULK_CLAIM_ECR_ROLE_TO_ASSUME: ${{ secrets.LAA_SUBMIT_A_BULK_CLAIM_ECR_ROLE_TO_ASSUME }}
-
   ecr-publish-image:
     needs: [ build-and-test ]
     uses: ministryofjustice/laa-ccms-common-workflows/.github/workflows/ecr-publish-image.yml@v1
@@ -106,13 +93,14 @@ jobs:
           ecr-region: ${{ vars.LAA_SUBMIT_A_BULK_CLAIM_ECR_REGION }}
           ecr-role-to-assume: ${{ secrets.LAA_SUBMIT_A_BULK_CLAIM_ECR_ROLE_TO_ASSUME }}
           ecr-repository: ${{ vars.LAA_SUBMIT_A_BULK_CLAIM_ECR_REPOSITORY }}
+          oidc-ecr-repository: ${{ vars.LAA_OIDC_MOCK_SERVER_ECR_REPOSITORY }}
           kube-cert: ${{ secrets.KUBE_CERT }}
           kube-token: ${{ secrets.KUBE_TOKEN }}
           kube-cluster: ${{ secrets.KUBE_CLUSTER }}
           kube-namespace: ${{ secrets.KUBE_NAMESPACE }}
           app-environment: uat
           image-tag: ${{ needs.ecr-publish-image.outputs.published_image_version }}
-          oidc-mock-image-tag: ${{ needs.build-oidc-mock-image.outputs.oidc_mock_tag }}
+          oidc-mock-image-tag: 'oidc-mock-latest'
           pact_broker_url: 'https://laa-data-pact-broker.apps.live.cloud-platform.service.justice.gov.uk/'
           pact_broker_username: ${{ secrets.pact_broker_username }}
           pact_broker_password: ${{ secrets.pact_broker_password }}
