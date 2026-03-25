@@ -28,7 +28,7 @@ jobs:
 
   trigger-accessibility:
     needs: [ define-preview-version ]
-    uses: ministryofjustice/bulk-submission-and-fee-scheme-tests-/.github/workflows/test-compose.yml@feature/test-compose
+    uses: ministryofjustice/bulk-submission-and-fee-scheme-tests-/.github/workflows/test-compose.yml@a811e504f596a8ed916960934161b4b28072b076
     with:
       test_annotation: '@accessibility'
       sabc_image_tag: ${{ needs.define-preview-version.outputs.preview_version }}
