@@ -1,4 +1,4 @@
-name: Deploy UAT preview (branch)
+name: Test using E2E dispatch
 
 on:
   pull_request:
@@ -43,7 +43,7 @@ jobs:
           echo "Dispatching ${TARGET_WORKFLOW_FILE} in ${TARGET_REPO}"
           gh api -X POST "repos/${TARGET_REPO}/actions/workflows/${TARGET_WORKFLOW_FILE}/dispatches" \
             -f ref="${TARGET_REF}" \
-            -f inputs[test_annotation]="${TEST_ANNOTATION}\
+            -f inputs[test_annotation]="${TEST_ANNOTATION}" \
             -f inputs[sabc_image_tag]="${SABC_IMAGE_TAG}"
 
           echo "Dispatched for ref ${TARGET_REF} at sha ${TARGET_SHA}"
