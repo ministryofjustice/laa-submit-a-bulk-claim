@@ -33,7 +33,7 @@ jobs:
           GH_TOKEN: ${{ secrets.REMOTE_WORKFLOW_TOKEN }}
           TARGET_REPO: ministryofjustice/bulk-submission-and-fee-scheme-tests-
           TARGET_WORKFLOW_FILE: test-compose.yml
-          TARGET_REF: ${{ github.event.pull_request.head.ref }}
+          TARGET_REF: feature/test-compose
           TARGET_SHA: ${{ github.event.pull_request.head.sha }}
           SABC_IMAGE_TAG: ${{ needs.define-preview-version.outputs.preview_version }}
           TEST_ANNOTATION: '@accessibility'
@@ -54,7 +54,7 @@ jobs:
           GH_TOKEN: ${{ secrets.REMOTE_WORKFLOW_TOKEN }}
           TARGET_REPO: ministryofjustice/bulk-submission-and-fee-scheme-tests-
           TARGET_WORKFLOW_FILE: test-compose.yml
-          TARGET_REF: ${{ github.event.pull_request.head.ref }}
+          TARGET_REF: feature/test-compose
           TARGET_SHA: ${{ github.event.pull_request.head.sha }}
         run: |
           set -euo pipefail
