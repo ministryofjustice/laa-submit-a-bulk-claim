@@ -18,7 +18,7 @@ jobs:
       - name: Get latest NPM versions
         id: npm
         run: |
-          GOVUK=$(npm view nhsuk-frontend version)
+          GOVUK=$(npm view eslint version)
           MOJ=$(npm view @ministryofjustice/frontend version)
           
           echo "govuk=$GOVUK" >> $GITHUB_OUTPUT
@@ -30,7 +30,7 @@ jobs:
       - name: Get latest WebJar versions
         id: webjar
         run: |
-          GOVUK=$(curl -s https://repo1.maven.org/maven2/org/webjars/npm/nhsuk-frontend/maven-metadata.xml \
+          GOVUK=$(curl -s https://repo1.maven.org/maven2/org/webjars/npm/eslint/maven-metadata.xml \
             | sed -n 's:.*<release>\(.*\)</release>.*:\1:p')
           MOJ=$(curl -s https://repo1.maven.org/maven2/org/webjars/npm/ministryofjustice__frontend/maven-metadata.xml \
             | sed -n 's:.*<release>\(.*\)</release>.*:\1:p')
@@ -70,7 +70,7 @@ jobs:
         if: steps.compare.outputs.govuk_trigger == 'true'
         run: |
           echo "Triggering GOV.UK WebJar."
-          curl -L "https://www.webjars.org/deploy?webJarType=npm&nameOrUrlish=nhsuk-frontend&version=${{ steps.npm.outputs.govuk }}"
+          curl -L "https://www.webjars.org/deploy?webJarType=npm&nameOrUrlish=eslint&version=${{ steps.npm.outputs.govuk }}"
 
       - name: Trigger WebJar (MOJ)
         if: steps.compare.outputs.moj_trigger == 'true'
