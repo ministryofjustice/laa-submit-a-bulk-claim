@@ -32,7 +32,7 @@ jobs:
         run: |
           GOVUK=$(curl -s https://repo1.maven.org/maven2/org/webjars/npm/govuk-frontend/maven-metadata.xml \
             | sed -n 's:.*<release>\(.*\)</release>.*:\1:p')
-          MOJ=$(curl -s https://repo1.maven.org/maven2/org/webjars/npm/ministryofjustice__frontend/maven-metadata.xml \
+          MOJ=$(curl -s https://repo1.maven.org/maven2/org/webjars/npm/%40ministryofjustice/frontend/maven-metadata.xml \
             | sed -n 's:.*<release>\(.*\)</release>.*:\1:p')
           
           echo "govuk=$GOVUK" >> $GITHUB_OUTPUT
