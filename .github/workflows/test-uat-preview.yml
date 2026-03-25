@@ -30,7 +30,7 @@ jobs:
       - name: Dispatch target workflow
         id: dispatch
         env:
-          GH_TOKEN: ${{ secrets.REMOTE_WORKFLOW_TOKEN }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           TARGET_REPO: ministryofjustice/bulk-submission-and-fee-scheme-tests-
           TARGET_WORKFLOW_FILE: test-compose.yml
           TARGET_REF: feature/test-compose
@@ -51,7 +51,7 @@ jobs:
       - name: Find the created workflow run
         id: find_run
         env:
-          GH_TOKEN: ${{ secrets.REMOTE_WORKFLOW_TOKEN }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           TARGET_REPO: ministryofjustice/bulk-submission-and-fee-scheme-tests-
           TARGET_WORKFLOW_FILE: test-compose.yml
           TARGET_REF: feature/test-compose
@@ -81,7 +81,7 @@ jobs:
 
       - name: Poll until completion
         env:
-          GH_TOKEN: ${{ secrets.REMOTE_WORKFLOW_TOKEN }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           TARGET_REPO: ministryofjustice/bulk-submission-and-fee-scheme-tests-
           RUN_ID: ${{ steps.find_run.outputs.run_id }}
         run: |
