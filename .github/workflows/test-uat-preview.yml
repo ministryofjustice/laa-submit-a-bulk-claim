@@ -27,10 +27,18 @@ jobs:
     runs-on: ubuntu-latest
     if: github.event.pull_request.draft == false
     steps:
+      - name: Get app token
+        if: ${{ env.GITHUB_APP_ID != '' && env.GITHUB_APP_PRIVATE_KEY != '' }}
+        id: get_workflow_token
+        uses: peter-murray/workflow-application-token-action@v4
+        with:
+          application_id: ${{ secrets.github_app_id }}
+          application_private_key: ${{ secrets.github_app_private_key }}
+          organization: ${{ secrets.github_app_organisation }}
       - name: Dispatch target workflow
         id: dispatch
         env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ steps.get_workflow_token.outputs.token }}
           TARGET_REF: feature/test-compose
           TARGET_SHA: ${{ github.event.pull_request.head.sha }}
           SABC_IMAGE_TAG: ${{ needs.define-preview-version.outputs.preview_version }}
