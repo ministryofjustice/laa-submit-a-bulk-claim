@@ -147,6 +147,8 @@ jobs:
     with:
       sabc_image_tag: ${{ needs.ecr-publish-image.outputs.published_image_version }}
       test_annotation: "@accessibility"
+    secrets:
+      gh_token: ${{ secrets.E2E_PAT_TOKEN }}
 
   deploy-uat-preview:
     needs:
