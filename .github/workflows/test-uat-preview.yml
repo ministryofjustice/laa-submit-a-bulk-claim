@@ -38,7 +38,7 @@ jobs:
         run: |
           set -euo pipefail
 
-          echo "Dispatching ${TARGET_WORKFLOW_FILE} in ${TARGET_REPO}"
+          echo "Dispatching E2E in ministryofjustice/bulk-submission-and-fee-scheme-tests-
           gh api -X POST "repos/ministryofjustice/bulk-submission-and-fee-scheme-tests-/actions/workflows/test-compose.yml/dispatches" \
             -f ref="${TARGET_REF}" \
             -f inputs[test_annotation]="${TEST_ANNOTATION}" \
