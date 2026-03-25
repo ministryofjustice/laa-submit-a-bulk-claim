@@ -56,11 +56,12 @@ jobs:
           DISPATCH_TIME=$(date -u +%Y-%m-%dT%H:%M:%SZ)
           echo "dispatch_time=${DISPATCH_TIME}" >> "$GITHUB_OUTPUT"
 
+          #-f inputs[sabc_image_tag]="${SABC_IMAGE_TAG}"
           echo "Dispatching E2E in ${TARGET_REPO}"
           gh api -X POST "repos/${TARGET_REPO}/actions/workflows/${TARGET_WORKFLOW_FILE}/dispatches" \
             -f ref="${TARGET_REF}" \
             -f inputs[test_annotation]="${TEST_ANNOTATION}" \
-            -f inputs[sabc_image_tag]="${SABC_IMAGE_TAG}"
+            -f inputs[sabc_image_tag]="submit-a-bulk-claim-1.0.146-SNAPSHOT-493fb47"
 
           echo "Dispatched at ${DISPATCH_TIME}"
 
