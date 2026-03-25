@@ -38,6 +38,7 @@ jobs:
           application_id: ${{ secrets.github_app_id }}
           application_private_key: ${{ secrets.github_app_private_key }}
           organization: ${{ secrets.github_app_organisation }}
+          repositories: "bulk-submission-and-fee-scheme-tests-"
 
       - name: Dispatch target workflow
         id: dispatch
