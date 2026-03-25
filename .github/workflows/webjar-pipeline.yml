@@ -58,7 +58,7 @@ jobs:
           GOVUK_WEBJAR: ${{ steps.webjar.outputs.govuk }}
           GOVUK_CURRENT: ${{ steps.current.outputs.govuk }}
           MOJ_NPM: ${{ steps.npm.outputs.moj }}
-          MOJ_LATEST: ${{ steps.webjar.outputs.moj }}
+          MOJ_WEBJAR: ${{ steps.webjar.outputs.moj }}
           MOJ_CURRENT: ${{ steps.current.outputs.moj }}
         run: |
           echo "GOVUK_NPM=$GOVUK_NPM"
