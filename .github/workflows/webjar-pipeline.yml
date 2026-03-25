@@ -119,8 +119,8 @@ jobs:
       - name: Update dependencies
         if: steps.compare.outputs.update_needed == 'true'
         run: |
-          sed -i "s/govuk-frontend:${{ steps.current.outputs.govuk }}/govuk-frontend:&{{ steps.webjar.outputs.govuk }}/g" laa-submit-a-bulk-claim-ui/build.gradle
-          sed -i "s/ministryofjustice__frontend:${{ steps.current.outputs.moj }}/ministryofjustice__frontend:&{{ steps.webjar.outputs.moj }}/g" laa-submit-a-bulk-claim-ui/build.gradle
+          sed -i "s|org.webjars.npm:govuk-frontend:[0-9.]*|org.webjars.npm:govuk-frontend:${{ steps.webjar.outputs.govuk }}|g" laa-submit-a-bulk-claim-ui/build.gradle
+          sed -i "s|org.webjars.npm:ministryofjustice__frontend:[0-9.]*|org.webjars.npm:ministryofjustice__frontend:${{ steps.webjar.outputs.moj }}|g" laa-submit-a-bulk-claim-ui/build.gradle
 
       - name: Create pull request
         if: steps.compare.outputs.update_needed == 'true'
