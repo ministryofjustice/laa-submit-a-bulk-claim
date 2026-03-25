@@ -22,23 +22,13 @@ jobs:
       GITHUB_APP_ID: ${{ secrets.github_app_id }}
       GITHUB_APP_PRIVATE_KEY: ${{ secrets.github_app_private_key }}
     steps:
-      - name: Get app token
-        if: ${{ env.GITHUB_APP_ID != '' && env.GITHUB_APP_PRIVATE_KEY != '' }}
-        id: get_workflow_token
-        uses: peter-murray/workflow-application-token-action@v4
-        with:
-          application_id: ${{ secrets.github_app_id }}
-          application_private_key: ${{ secrets.github_app_private_key }}
-          organization: ${{ secrets.github_app_organisation }}
-          repositories: "bulk-submission-and-fee-scheme-tests-"
-
       - name: Dispatch target workflow
         id: dispatch
         env:
           GH_TOKEN: ${{ secrets.E2E_PAT_TOKEN }}
           TARGET_REPO: ministryofjustice/bulk-submission-and-fee-scheme-tests-
           TARGET_WORKFLOW_FILE: test-compose.yml
-          TARGET_REF: feature/test-compose
+          TARGET_REF: feature/test-compose # Remove later
           SABC_IMAGE_TAG: ${{ inputs.sabc_image_tag }}
           TEST_ANNOTATION: ${{ inputs.test_annotation }}
         run: |
@@ -50,7 +40,7 @@ jobs:
 
           #-f inputs[sabc_image_tag]="${SABC_IMAGE_TAG}"
           echo "Dispatching E2E in ${TARGET_REPO}"
-          gh api -X POST "repos/${TARGET_REPO}/actions/workflows/${TARGET_WORKFLOW_FILE}/dispatches" \
+          gh api -X POST "repos/ministryofjustice/bulk-submission-and-fee-scheme-tests-/actions/workflows/test-compose.yml/dispatches" \
             -f ref="${TARGET_REF}" \
             -f inputs[test_annotation]="${TEST_ANNOTATION}" \
             -f inputs[sabc_image_tag]="submit-a-bulk-claim-1.0.146-SNAPSHOT-493fb47"
