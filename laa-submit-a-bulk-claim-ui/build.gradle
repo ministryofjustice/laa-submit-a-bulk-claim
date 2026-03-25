@@ -179,7 +179,7 @@ spotless {
         importOrder()
         removeUnusedImports()
         cleanthat()
-        googleJavaFormat()
+        googleJavaFormat('1.33.0')
     }
 }
 
