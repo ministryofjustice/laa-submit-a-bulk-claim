@@ -10,7 +10,7 @@ permissions:
 jobs:
   webjar-update:
     runs-on: ubuntu-latest
-s
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
