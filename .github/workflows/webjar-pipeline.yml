@@ -15,18 +15,29 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Get latest NPM versions
+        id: npm
+        run: |
+          GOVUK=$(npm view govuk-frontend version)
+          MOJ=$(npm view @ministryofjustice/frontend version)
+          
+          echo "govuk=GOVUK" >> $GITHUB_OUTPUT
+          echo "moj=MOJ" >> $GITHUB_OUTPUT
+          
+          echo "npm GOV.UK: $GOVUK"
+          echo "npm MOJ: $MOJ"
+
       - name: Get latest WebJar version from Maven
-        id: latest
+        id: webjar
         run: |
           GOVUK=$(curl -s https://repo1.maven.org/maven2/org/webjars/npm/govuk-frontend/maven-metadata.xml | grep -oPm1 "(?<=<release>)[^<]+")
-          
           MOJ=$(curl -s https://repo1.maven.org/maven2/org/webjars/npm/ministryofjustice__frontend/maven-metadata.xml | grep -oPm1 "(?<=<release>)[^<]+")
           
           echo "govuk=GOVUK" >> $GITHUB_OUTPUT
           echo "moj=MOJ" >> $GITHUB_OUTPUT
           
-          echo "Latest GOV.UK: $GOVUK"
-          echo "Latest MOJ: $MOJ"
+          echo "WebJar GOV.UK: $GOVUK"
+          echo "WebJar MOJ: $MOJ"
 
       - name: Get current version
         id: current
@@ -43,61 +54,51 @@ jobs:
       - name: Compare versions
         id: compare
         env:
-          GOVUK_LATEST: ${{ steps.latest.outputs.govuk }}
+          GOVUK_NPM: ${{ steps.npm.outputs.govuk }}
+          GOVUK_WEBJAR: ${{ steps.webjar.outputs.govuk }}
           GOVUK_CURRENT: ${{ steps.current.outputs.govuk }}
-          MOJ_LATEST: ${{ steps.latest.outputs.moj }}
+          MOJ_NPM: ${{ steps.npm.outputs.moj }}
+          MOJ_LATEST: ${{ steps.webjar.outputs.moj }}
           MOJ_CURRENT: ${{ steps.current.outputs.moj }}"
         run: |
-          if [ "$GOVUK_LATEST" != "$GOVUK_CURRENT" ]; then
-            echo "govuk_update=true" >> $GITHUB_OUTPUT
-          else
-            echo "govuk_update=false" >> $GITHUB_OUTPUT
-          fi
+          echo "GOVUK: NPM=$GOVUK_NPM WEBJAR=$GOVUK_WEBJAR CURRENT=$GOVUK_CURRENT"
+          echo "MOJ: NPM=$MOJ_NPM WEBJAR=$MOJ_WEBJAR CURRENT=$MOJ_CURRENT"
           
-          if [ "$MOJ_LATEST" != "$MOJ_CURRENT" ]; then
-            echo "moj_update=true" >> $GITHUB_OUTPUT
-          else
-            echo "moj_update=false" >> $GITHUB_OUTPUT
-          fi
+          # trigger if npm > webjar
+          [ "$GOVUK_NPM" != "$GOVUK_WEBJAR" ] && echo "govuk_trigger=true" >> $GITHUB_OUTPUT || echo "govuk_trigger=false" >> $GITHUB_OUTPUT
+          [ "$MOJ_NPM" != "$MOJ_WEBJAR" ] && echo "moj_trigger=true" >> $GITHUB_OUTPUT || echo "moj_trigger=false" >> $GITHUB_OUTPUT     
           
-          if [ "$GOVUK_LATEST" != "$GOVUK_CURRENT" ] || \
-             [ "$MOJ_LATEST" != "$MOJ_CURRENT" ]; then
-            echo "update_needed=true" >> $GITHUB_OUTPUT 
+          # update if webjar > current repo version
+          [ "$GOVUK_WEBJAR" != "$GOVUK_CURRENT" ] && echo "govuk_update=true" >> $GITHUB_OUTPUT || echo "govuk_update=false" >> $GITHUB_OUTPUT
+          [ "$MOJ_WEBJAR" != "$MOJ_CURRENT ] && echo "moj_update=true" >> $GITHUB_OUTPUT || echo "moj_update=false" >> $GITHUB_OUTPUT       
+          
+          if [ "$GOVUK_WEBJAR" != "$GOVUK_CURRENT" ] || [ "$MOJ_WEBJAR" != "$MOJ_CURRENT" ]; then
+            echo "update_needed=true" >> $GITHUB_OUTPUT
           else
-            echo "update_needed=false" >> $GITHUB_OUTPUT  
+            echo "update_needed=false" >> $GITHUB_OUTPUT
           fi
 
       - name: Trigger WebJar (GOV.UK)
-        if: steps.compare.outputs.govuk_update == 'true'
+        if: steps.compare.outputs.govuk_trigger == 'true'
         run: |
           echo "Triggering GOV.UK WebJar."
-          curl -L "https://www.webjars.org/deploy?webJarType=npm&nameOrUrlish=govuk-frontend&version=${{ steps.latest.outputs.govuk }}"
+          curl -L "https://www.webjars.org/deploy?webJarType=npm&nameOrUrlIsh=govuk-frontend&version=${{ steps.npm.outputs.govuk }}"
 
       - name: Trigger WebJar (MOJ)
-        if: steps.compare.outputs.moj_update == 'true'
+        if: steps.compare.outputs.moj_trigger == 'true'
         run: |
-          echo "Triggering MOJ WebJar."
-          curl -L "https://www.webjars.org/deploy?webJarType=npm&nameOrUrlish=%40ministryofjustice/frontend&version=${{ steps.latest.outputs.moj }}"
+          echo "Triggering GOV.UK WebJar."
+          curl -L "https://www.webjars.org/deploy?webJarType=npm&nameOrUrlIsh=@ministryofjustice/frontend&version=${{ steps.npm.outputs.moj }}"
+
+      - name: Wait for WebJar
+        if: steps.compare.outputs.govuk_trigger === 'true' || steps.compare.outputs.moj_trigger == 'true'
+        run: sleep 300
 
       - name: Update dependencies
         if: steps.compare.outputs.update_needed == 'true'
         run: |
-          echo "Updating dependencies..."
-          
-          if [ "${{ steps.compare.outputs.govuk_update }}" = true ]; then
-            sed -i "s/govuk-frontend:${{ steps.current.outputs.govuk }}/govuk-frontend:${{ steps.latest.outputs.govuk }}/g" laa-submit-a-bulk-claim-ui/build.gradle
-          fi
-          
-          if [ "${{ steps.compare.outputs.moj_update }}" = true ]; then
-            sed -i "s/ministryofjustice__frontend:${{ steps.current.outputs.moj }}/ministryofjustice__frontend:${{ steps.latest.outputs.moj }}/g" laa-submit-a-bulk-claim-ui/build.gradle
-          fi          
-          
-          echo "Updated build.gradle:"
-          cat laa-submit-a-bulk-claim-ui/build.gradle
-
-      - name: No updates needed
-        if: steps.compare.outputs.update_needed == 'false'
-        run: echo "All frontend dependencies are up-to-date."
+          sed -i "s/govuk-frontend:${{ steps.current.outputs.govuk }}/govuk-frontend:&{{ steps.webjar.outputs.govuk }}/g" laa-submit-a-bulk-claim-ui/build.gradle
+          sed -i "s/ministryofjustice__frontend:${{ steps.current.outputs.moj }}/ministryofjustice__frontend:&{{ steps.webjar.outputs.moj }}/g" laa-submit-a-bulk-claim-ui/build.gradle
 
       - name: Create pull request
         if: steps.compare.outputs.update_needed == 'true'
@@ -105,12 +106,12 @@ jobs:
         with:
           commit-message: "Update frontend dependencies"
           title: "Update frontend dependencies"
-          body: |
-            Automated updates:
-            
-            -GOV.UK: ${{ steps.current.outputs.govuk }} -> ${{ steps.latest.outputs.govuk }}
-            -MOJ: ${{ steps.current.outputs.moj }} -> ${{ steps.latest.outputs.moj }}
-          branch: update-frontend-deps
+          body: "Automated update via pipeline"
+          branch: frontend-update-${{ steps.webjar.outputs.govuk }}-${{ steps.webjar.outputs.moj }}
           base: main
-        
+
+
+      - name: No updates needed
+        if: steps.compare.outputs.update_needed == 'false'
+        run: echo "All frontend dependencies are up-to-date."
 
