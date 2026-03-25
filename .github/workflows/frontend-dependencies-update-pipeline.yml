@@ -80,4 +80,3 @@ jobs:
       - name: No updates needed
         if: steps.compare.outputs.update_needed == 'false'
         run: echo "All frontend dependencies are up-to-date."
-
