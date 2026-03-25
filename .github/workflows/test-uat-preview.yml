@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
 
     env:
-      GITHUB_TOKEN: ${{ secrets.gh_token }}
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       GITHUB_APP_ID: ${{ secrets.github_app_id }}
       GITHUB_APP_PRIVATE_KEY: ${{ secrets.github_app_private_key }}
 
@@ -41,6 +41,7 @@ jobs:
           application_id: ${{ secrets.github_app_id }}
           application_private_key: ${{ secrets.github_app_private_key }}
           organization: ${{ secrets.github_app_organisation }}
+
       - name: Dispatch target workflow
         id: dispatch
         env:
