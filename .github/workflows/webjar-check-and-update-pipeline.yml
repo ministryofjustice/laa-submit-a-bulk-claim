@@ -8,9 +8,9 @@ permissions:
   pull-requests: write
 
 jobs:
-  wenjar-update:
+  webjar-update:
     runs-on: ubuntu-latest
-
+s
     steps:
       - name: Checkout
         uses: actions/checkout@v4
