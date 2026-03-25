@@ -31,8 +31,6 @@ jobs:
         id: dispatch
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          TARGET_REPO: ministryofjustice/bulk-submission-and-fee-scheme-tests-
-          TARGET_WORKFLOW_FILE: test-compose.yml
           TARGET_REF: feature/test-compose
           TARGET_SHA: ${{ github.event.pull_request.head.sha }}
           SABC_IMAGE_TAG: ${{ needs.define-preview-version.outputs.preview_version }}
@@ -41,7 +39,7 @@ jobs:
           set -euo pipefail
 
           echo "Dispatching ${TARGET_WORKFLOW_FILE} in ${TARGET_REPO}"
-          gh api -X POST "repos/${TARGET_REPO}/actions/workflows/${TARGET_WORKFLOW_FILE}/dispatches" \
+          gh api -X POST "repos/ministryofjustice/bulk-submission-and-fee-scheme-tests-/actions/workflows/test-compose.yml/dispatches" \
             -f ref="${TARGET_REF}" \
             -f inputs[test_annotation]="${TEST_ANNOTATION}" \
             -f inputs[sabc_image_tag]="${SABC_IMAGE_TAG}"
