@@ -21,8 +21,8 @@ jobs:
           GOVUK=$(npm view govuk-frontend version)
           MOJ=$(npm view @ministryofjustice/frontend version)
           
-          echo "govuk=GOVUK" >> $GITHUB_OUTPUT
-          echo "moj=MOJ" >> $GITHUB_OUTPUT
+          echo "govuk=$GOVUK" >> $GITHUB_OUTPUT
+          echo "moj=$MOJ" >> $GITHUB_OUTPUT
           
           echo "npm GOV.UK: $GOVUK"
           echo "npm MOJ: $MOJ"
@@ -33,8 +33,8 @@ jobs:
           GOVUK=$(curl -s https://repo1.maven.org/maven2/org/webjars/npm/govuk-frontend/maven-metadata.xml | grep -oPm1 "(?<=<release>)[^<]+")
           MOJ=$(curl -s https://repo1.maven.org/maven2/org/webjars/npm/ministryofjustice__frontend/maven-metadata.xml | grep -oPm1 "(?<=<release>)[^<]+")
           
-          echo "govuk=GOVUK" >> $GITHUB_OUTPUT
-          echo "moj=MOJ" >> $GITHUB_OUTPUT
+          echo "govuk=$GOVUK" >> $GITHUB_OUTPUT
+          echo "moj=$MOJ" >> $GITHUB_OUTPUT
           
           echo "WebJar GOV.UK: $GOVUK"
           echo "WebJar MOJ: $MOJ"
@@ -45,8 +45,8 @@ jobs:
           GOVUK=$(grep -oP "govuk-frontend:\K[0-9.]+" laa-submit-a-bulk-claim-ui/build.gradle)
           MOJ=$(grep -oP "ministryofjustice__frontend:\K[0-9.]+" laa-submit-a-bulk-claim-ui/build.gradle)
           
-          echo "govuk=GOVUK" >> $GITHUB_OUTPUT
-          echo "moj=MOJ" >> $GITHUB_OUTPUT
+          echo "govuk=$GOVUK" >> $GITHUB_OUTPUT
+          echo "moj=$MOJ" >> $GITHUB_OUTPUT
           
           echo "Current GOV.UK: $GOVUK"
           echo "Current MOJ: $MOJ"
