@@ -139,7 +139,7 @@ jobs:
       snyk_token: ${{ secrets.SNYK_TOKEN }}
 
   test-accessibility:
-    #needs: [ ecr-publish-image ]
+    needs: [ ecr-publish-image ]
     uses: ./.github/workflows/test-e2e.yml
     permissions:
       contents: read
