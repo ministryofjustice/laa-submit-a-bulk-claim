@@ -77,6 +77,27 @@ jobs:
           echo "Timed out waiting for workflow run to appear"
           exit 1
 
+      - name: Debug - Check found run details
+        env:
+          GH_TOKEN: ${{ secrets.gh_token || secrets.E2E_PAT_TOKEN }}
+          TARGET_REPO: ministryofjustice/bulk-submission-and-fee-scheme-tests-
+          RUN_ID: ${{ steps.find_run.outputs.run_id }}
+          DISPATCH_TIME: ${{ steps.dispatch.outputs.dispatch_time }}
+        run: |
+          set -euo pipefail
+
+          echo "=== Run Details ==="
+          gh api "repos/${TARGET_REPO}/actions/runs/${RUN_ID}" \
+            --jq '{id, name, run_number, created_at, status, conclusion}'
+
+          echo ""
+          echo "Dispatch time was: ${DISPATCH_TIME}"
+          
+          echo ""
+          echo "=== All recent runs on this branch/workflow ==="
+          gh api "repos/${TARGET_REPO}/actions/workflows/test-compose.yml/runs?branch=feature/test-compose&event=workflow_dispatch&per_page=5" \
+            --jq '.workflow_runs[] | {id, run_number, created_at, status}'
+
       - name: Poll until completion
         env:
           # Change this for APP token
