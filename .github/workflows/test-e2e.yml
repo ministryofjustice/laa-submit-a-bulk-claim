@@ -67,6 +67,9 @@ jobs:
               "repos/${TARGET_REPO}/actions/workflows/${WORKFLOW_ID}/runs?branch=${TARGET_REF}&event=workflow_dispatch&per_page=10" \
               --jq "[.workflow_runs[] | select(.created_at >= \"${DISPATCH_TIME}\")]")"
 
+            echo "=== Attempt $i: Candidates found ==="
+            echo "${CANDIDATES}" | jq '[.[] | {id, created_at, status, inputs}]'
+
             # Among candidates, find one whose inputs match
             RUN_ID="$(echo "${CANDIDATES}" | jq -r --arg tag "${SABC_IMAGE_TAG}" --arg annotation "${TEST_ANNOTATION}" '
               [.[] | select(
