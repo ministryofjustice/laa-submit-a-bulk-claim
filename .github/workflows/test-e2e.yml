@@ -52,25 +52,35 @@ jobs:
           TARGET_WORKFLOW_FILE: test-compose.yml
           TARGET_REF: feature/test-compose
           DISPATCH_TIME: ${{ steps.dispatch.outputs.dispatch_time }}
+          SABC_IMAGE_TAG: ${{ inputs.sabc_image_tag }}
+          TEST_ANNOTATION: ${{ inputs.test_annotation }}
         run: |
           set -euo pipefail
 
           WORKFLOW_ID="$(gh api "repos/${TARGET_REPO}/actions/workflows/${TARGET_WORKFLOW_FILE}" --jq '.id')"
 
-          echo "Looking for run created after ${DISPATCH_TIME}"
-          
+          echo "Looking for run created after ${DISPATCH_TIME} with sabc_image_tag=${SABC_IMAGE_TAG}, test_annotation=${TEST_ANNOTATION}"
+
           for i in {1..30}; do
-            RUN_ID="$(gh api \
-              "repos/${TARGET_REPO}/actions/workflows/${WORKFLOW_ID}/runs?branch=${TARGET_REF}&event=workflow_dispatch&per_page=10&created>=${DISPATCH_TIME}" \
-              --jq '[.workflow_runs[]] | sort_by(.created_at) | last | .id // empty')"
+            # Fetch recent candidate runs after dispatch time
+            CANDIDATES="$(gh api \
+              "repos/${TARGET_REPO}/actions/workflows/${WORKFLOW_ID}/runs?branch=${TARGET_REF}&event=workflow_dispatch&per_page=10" \
+              --jq "[.workflow_runs[] | select(.created_at >= \"${DISPATCH_TIME}\")]")"
+
+            # Among candidates, find one whose inputs match
+            RUN_ID="$(echo "${CANDIDATES}" | jq -r --arg tag "${SABC_IMAGE_TAG}" --arg annotation "${TEST_ANNOTATION}" '
+              [.[] | select(
+                .inputs.sabc_image_tag == $tag and
+                .inputs.test_annotation == $annotation
+              )] | sort_by(.created_at) | last | .id // empty')"
 
             if [ -n "${RUN_ID}" ]; then
               echo "run_id=${RUN_ID}" >> "$GITHUB_OUTPUT"
-              echo "✓ Found run ${RUN_ID} (created after ${DISPATCH_TIME})"
+              echo "✓ Found run ${RUN_ID} matching inputs (created after ${DISPATCH_TIME})"
               exit 0
             fi
 
-            echo "Run not found yet, retrying..."
+            echo "Matching run not found yet (attempt $i/30), retrying..."
             sleep 5
           done
 
