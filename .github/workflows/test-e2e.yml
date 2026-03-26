@@ -46,19 +46,6 @@ jobs:
 
           echo "Dispatched at ${DISPATCH_TIME}"
 
-      - name: Debug - Full run structure
-        env:
-          GH_TOKEN: ${{ secrets.gh_token || secrets.E2E_PAT_TOKEN }}
-          TARGET_REPO: ministryofjustice/bulk-submission-and-fee-scheme-tests-
-        run: |
-          set -euo pipefail
-          
-          # Use the most recent run from your previous debug output
-          RUN_ID="23593153886"
-          
-          echo "=== Full run object ==="
-          gh api "repos/${TARGET_REPO}/actions/runs/${RUN_ID}" | jq '.' | head -100
-
       - name: Find the created workflow run
         id: find_run
         env:
@@ -66,43 +53,26 @@ jobs:
           TARGET_REPO: ministryofjustice/bulk-submission-and-fee-scheme-tests-
           TARGET_WORKFLOW_FILE: test-compose.yml
           TARGET_REF: feature/test-compose
-          SABC_IMAGE_TAG: ${{ inputs.sabc_image_tag }}
-          TEST_ANNOTATION: ${{ inputs.test_annotation }}
           DISPATCH_TIME: ${{ steps.dispatch.outputs.dispatch_time }}
         run: |
           set -euo pipefail
 
           WORKFLOW_ID="$(gh api "repos/${TARGET_REPO}/actions/workflows/${TARGET_WORKFLOW_FILE}" --jq '.id')"
- 
+
           echo "Looking for run created after ${DISPATCH_TIME}"
-          echo "Matching: test_annotation=${TEST_ANNOTATION}, sabc_image_tag=${SABC_IMAGE_TAG}"
           
           for i in {1..30}; do
-            # Get recent runs
-            RUN_IDS="$(gh api \
-              "repos/${TARGET_REPO}/actions/workflows/${WORKFLOW_ID}/runs?branch=${TARGET_REF}&event=workflow_dispatch&per_page=10&created>=${DISPATCH_TIME}" \
-              --jq '.workflow_runs[].id')"
+            RUN_ID="$(gh api \
+              "repos/${TARGET_REPO}/actions/workflows/${WORKFLOW_ID}/runs?branch=${TARGET_REF}&event=workflow_dispatch&per_page=5&created>=${DISPATCH_TIME}" \
+              --jq '[.workflow_runs[] | select(.status == "queued" or .status == "in_progress" or .status == "completed")] | sort_by(.created_at) | last | .id // empty')"
 
-            # Check each run's inputs individually
-            while IFS= read -r RUN_ID; do
-              [ -z "${RUN_ID}" ] && continue
-              
-              echo "Checking run ${RUN_ID}..."
-              RUN_DATA="$(gh api "repos/${TARGET_REPO}/actions/runs/${RUN_ID}")"
-              
-              FOUND_ANNOTATION="$(echo "${RUN_DATA}" | jq -r '.inputs.test_annotation // empty')"
-              FOUND_TAG="$(echo "${RUN_DATA}" | jq -r '.inputs.sabc_image_tag // empty')"
-              
-              echo "  test_annotation=${FOUND_ANNOTATION}, sabc_image_tag=${FOUND_TAG}"
-              
-              if [ "${FOUND_ANNOTATION}" = "${TEST_ANNOTATION}" ] && [ "${FOUND_TAG}" = "${SABC_IMAGE_TAG}" ]; then
-                echo "run_id=${RUN_ID}" >> "$GITHUB_OUTPUT"
-                echo "✓ Found matching run ${RUN_ID}"
-                exit 0
-              fi
-            done <<< "${RUN_IDS}"
+            if [ -n "${RUN_ID}" ]; then
+              echo "run_id=${RUN_ID}" >> "$GITHUB_OUTPUT"
+              echo "✓ Found run ${RUN_ID} (created after ${DISPATCH_TIME})"
+              exit 0
+            fi
 
-            echo "No match found yet, retrying in 5s..."
+            echo "Run not found yet, retrying..."
             sleep 5
           done
 
