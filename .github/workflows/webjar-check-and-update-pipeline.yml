@@ -1,7 +1,7 @@
 name: Check and update WebJar
 on:
   schedule:
-    - cron: '0 9 * * 1-5'
+    - cron: '0 9 * * 1'
   workflow_dispatch:
 
 permissions:
