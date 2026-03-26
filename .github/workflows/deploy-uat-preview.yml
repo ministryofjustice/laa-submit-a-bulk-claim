@@ -76,13 +76,14 @@ jobs:
       snyk_token: ${{ secrets.SNYK_TOKEN }}
 
   test-accessibility:
-    needs: [ ecr-publish-image ]
+    #needs: [ ecr-publish-image ]
     uses: ./.github/workflows/test-e2e.yml
     permissions:
       contents: read
       id-token: write
     with:
-      sabc_image_tag: ${{ needs.ecr-publish-image.outputs.published_image_version }}
+      sabc_image_tag: "submit-a-bulk-claim-1.0.146-SNAPSHOT-493fb47"
+      #sabc_image_tag: ${{ needs.ecr-publish-image.outputs.published_image_version }}
       test_annotation: "@accessibility"
     secrets:
       gh_token: ${{ secrets.E2E_PAT_TOKEN }}
