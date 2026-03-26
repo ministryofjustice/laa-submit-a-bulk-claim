@@ -64,9 +64,7 @@ jobs:
           for i in {1..30}; do
             RUN_ID="$(gh api \
               "repos/${TARGET_REPO}/actions/workflows/${WORKFLOW_ID}/runs?branch=${TARGET_REF}&event=workflow_dispatch&per_page=10" \
-              --jq --arg since "${DISPATCH_TIME}" --arg name "Run ${TEST_ANNOTATION} E2E tests by ${GITHUB_ACTOR}" '
-              [.workflow_runs[] | select(.created_at >= $since and .display_title == $name)]
-              | sort_by(.created_at) | last | .id // empty')"
+              --jq "[.workflow_runs[] | select(.created_at >= \"${DISPATCH_TIME}\" and .display_title == \"Run ${TEST_ANNOTATION} E2E tests\")] | sort_by(.created_at) | last | .id // empty")"
 
             if [ -n "${RUN_ID}" ]; then
               echo "run_id=${RUN_ID}" >> "$GITHUB_OUTPUT"
