@@ -33,17 +33,15 @@ jobs:
         run: |
           set -euo pipefail
 
-          # Record time BEFORE dispatching. This will be used to find the workflow run
-          DISPATCH_TIME=$(date -u +%Y-%m-%dT%H:%M:%SZ)
-          echo "dispatch_time=${DISPATCH_TIME}" >> "$GITHUB_OUTPUT"
-
-            #-f inputs[sabc_image_tag]="submit-a-bulk-claim-1.0.146-SNAPSHOT-493fb47"
           echo "Dispatching E2E in ${TARGET_REPO}"
           gh api -X POST "repos/ministryofjustice/bulk-submission-and-fee-scheme-tests-/actions/workflows/test-compose.yml/dispatches" \
             -f ref="${TARGET_REF}" \
             -f inputs[test_annotation]="${TEST_ANNOTATION}" \
             -f inputs[sabc_image_tag]="${SABC_IMAGE_TAG}"
 
+          # Record time AFTER dispatching
+          DISPATCH_TIME=$(date -u +%Y-%m-%dT%H:%M:%SZ)
+          echo "dispatch_time=${DISPATCH_TIME}" >> "$GITHUB_OUTPUT"
           echo "Dispatched at ${DISPATCH_TIME}"
 
       - name: Find the created workflow run
@@ -63,8 +61,8 @@ jobs:
           
           for i in {1..30}; do
             RUN_ID="$(gh api \
-              "repos/${TARGET_REPO}/actions/workflows/${WORKFLOW_ID}/runs?branch=${TARGET_REF}&event=workflow_dispatch&per_page=5&created>=${DISPATCH_TIME}" \
-              --jq '[.workflow_runs[] | select(.status == "queued" or .status == "in_progress" or .status == "completed")] | sort_by(.created_at) | last | .id // empty')"
+              "repos/${TARGET_REPO}/actions/workflows/${WORKFLOW_ID}/runs?branch=${TARGET_REF}&event=workflow_dispatch&per_page=10&created>=${DISPATCH_TIME}" \
+              --jq '[.workflow_runs[]] | sort_by(.created_at) | last | .id // empty')"
 
             if [ -n "${RUN_ID}" ]; then
               echo "run_id=${RUN_ID}" >> "$GITHUB_OUTPUT"
