@@ -76,6 +76,7 @@ jobs:
       snyk_token: ${{ secrets.SNYK_TOKEN }}
 
   test-accessibility:
+    name: Test @accessibility
     needs: [ ecr-publish-image ]
     uses: ./.github/workflows/test-e2e.yml
     permissions:
@@ -89,6 +90,7 @@ jobs:
       gh_token: ${{ secrets.E2E_PAT_TOKEN }}
 
   test-stable:
+    name: Test @stable
     needs: [ ecr-publish-image ]
     uses: ./.github/workflows/test-e2e.yml
     permissions:
