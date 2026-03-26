@@ -22,6 +22,32 @@ jobs:
           echo "preview_version=${version}-${commit_hash}" >> "$GITHUB_OUTPUT"
           echo "Preview version: submit-a-bulk-claim-${version}-${commit_hash}"
 
+  test-accessibility:
+    name: Test @accessibility
+    needs: [ define-preview-version ]
+    uses: ./.github/workflows/test-e2e.yml
+    permissions:
+      contents: read
+      id-token: write
+    with:
+      sabc_image_tag: ${{ needs.define-preview-version.outputs.preview_version }}
+      test_annotation: "@accessibility"
+    secrets:
+      gh_token: ${{ secrets.E2E_PAT_TOKEN }}
+
+  test-search:
+    name: Test @search
+    needs: [ define-preview-version ]
+    uses: ./.github/workflows/test-e2e.yml
+    permissions:
+      contents: read
+      id-token: write
+    with:
+      sabc_image_tag: ${{ needs.define-preview-version.outputs.preview_version }}
+      test_annotation: "@search"
+    secrets:
+      gh_token: ${{ secrets.E2E_PAT_TOKEN }}
+
   build-and-test:
     needs: [ define-preview-version ]
     uses: ministryofjustice/laa-ccms-common-workflows/.github/workflows/gradle-build-and-publish.yml@v2
@@ -75,31 +101,7 @@ jobs:
       ecr_role_to_assume: ${{ secrets.LAA_SUBMIT_A_BULK_CLAIM_ECR_ROLE_TO_ASSUME }}
       snyk_token: ${{ secrets.SNYK_TOKEN }}
 
-  test-accessibility:
-    name: Test @accessibility
-    needs: [ ecr-publish-image ]
-    uses: ./.github/workflows/test-e2e.yml
-    permissions:
-      contents: read
-      id-token: write
-    with:
-      sabc_image_tag: ${{ needs.ecr-publish-image.outputs.published_image_version }}
-      test_annotation: "@accessibility"
-    secrets:
-      gh_token: ${{ secrets.E2E_PAT_TOKEN }}
 
-  test-search:
-    name: Test @search
-    needs: [ ecr-publish-image ]
-    uses: ./.github/workflows/test-e2e.yml
-    permissions:
-      contents: read
-      id-token: write
-    with:
-      sabc_image_tag: ${{ needs.ecr-publish-image.outputs.published_image_version }}
-      test_annotation: "@stable"
-    secrets:
-      gh_token: ${{ secrets.E2E_PAT_TOKEN }}
 
   deploy-uat-preview:
     needs:

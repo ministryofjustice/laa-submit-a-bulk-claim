@@ -84,23 +84,41 @@ jobs:
           TARGET_REF: feature/test-compose
           SABC_IMAGE_TAG: ${{ inputs.sabc_image_tag }}
           TEST_ANNOTATION: ${{ inputs.test_annotation }}
+          DISPATCH_TIME: ${{ steps.dispatch.outputs.dispatch_time }}
         run: |
           set -euo pipefail
 
           WORKFLOW_ID="$(gh api "repos/${TARGET_REPO}/actions/workflows/${TARGET_WORKFLOW_FILE}" --jq '.id')"
 
-          echo "Looking for run with test_annotation=${TEST_ANNOTATION} and sabc_image_tag=${SABC_IMAGE_TAG}"
+          echo "Looking for run created after ${DISPATCH_TIME}"
+          echo "Matching: test_annotation=${TEST_ANNOTATION}, sabc_image_tag=${SABC_IMAGE_TAG}"
+          
           for i in {1..30}; do
-            RUN_ID="$(gh api \
-              "repos/${TARGET_REPO}/actions/workflows/${WORKFLOW_ID}/runs?branch=${TARGET_REF}&event=workflow_dispatch&per_page=20" \
-              --jq ".workflow_runs[] | select(.name == \"Test using E2E dispatch\") | .inputs | select(.test_annotation == \"${TEST_ANNOTATION}\" and .sabc_image_tag == \"${SABC_IMAGE_TAG}\") | .id // empty" 2>/dev/null || true)"
+            # Get recent runs
+            RUN_IDS="$(gh api \
+              "repos/${TARGET_REPO}/actions/workflows/${WORKFLOW_ID}/runs?branch=${TARGET_REF}&event=workflow_dispatch&per_page=10&created>=${DISPATCH_TIME}" \
+              --jq '.workflow_runs[].id')"
 
-            if [ -n "${RUN_ID:-}" ]; then
-              echo "run_id=${RUN_ID}" >> "$GITHUB_OUTPUT"
-              echo "Found run ${RUN_ID}"
-              exit 0
-            fi
+            # Check each run's inputs individually
+            while IFS= read -r RUN_ID; do
+              [ -z "${RUN_ID}" ] && continue
+              
+              echo "Checking run ${RUN_ID}..."
+              RUN_DATA="$(gh api "repos/${TARGET_REPO}/actions/runs/${RUN_ID}")"
+              
+              FOUND_ANNOTATION="$(echo "${RUN_DATA}" | jq -r '.inputs.test_annotation // empty')"
+              FOUND_TAG="$(echo "${RUN_DATA}" | jq -r '.inputs.sabc_image_tag // empty')"
+              
+              echo "  test_annotation=${FOUND_ANNOTATION}, sabc_image_tag=${FOUND_TAG}"
+              
+              if [ "${FOUND_ANNOTATION}" = "${TEST_ANNOTATION}" ] && [ "${FOUND_TAG}" = "${SABC_IMAGE_TAG}" ]; then
+                echo "run_id=${RUN_ID}" >> "$GITHUB_OUTPUT"
+                echo "✓ Found matching run ${RUN_ID}"
+                exit 0
+              fi
+            done <<< "${RUN_IDS}"
 
+            echo "No match found yet, retrying in 5s..."
             sleep 5
           done
 
