@@ -46,6 +46,35 @@ jobs:
 
           echo "Dispatched at ${DISPATCH_TIME}"
 
+      - name: Debug - Inspect workflow runs structure
+        id: debug_runs
+        env:
+          GH_TOKEN: ${{ secrets.gh_token || secrets.E2E_PAT_TOKEN }}
+          TARGET_REPO: ministryofjustice/bulk-submission-and-fee-scheme-tests-
+          TARGET_WORKFLOW_FILE: test-compose.yml
+          TARGET_REF: feature/test-compose
+          SABC_IMAGE_TAG: ${{ inputs.sabc_image_tag }}
+          TEST_ANNOTATION: ${{ inputs.test_annotation }}
+        run: |
+          set -euo pipefail
+
+          WORKFLOW_ID="$(gh api "repos/${TARGET_REPO}/actions/workflows/${TARGET_WORKFLOW_FILE}" --jq '.id')"
+          echo "Workflow ID: ${WORKFLOW_ID}"
+
+          # Get raw runs data
+          echo "=== Raw workflow runs (first 3) ==="
+          gh api "repos/${TARGET_REPO}/actions/workflows/${WORKFLOW_ID}/runs?branch=${TARGET_REF}&event=workflow_dispatch&per_page=3" \
+            --jq '.workflow_runs[0:3]'
+
+          # Check what inputs look like on a single run
+          echo ""
+          echo "=== First run's inputs structure ==="
+          gh api "repos/${TARGET_REPO}/actions/workflows/${WORKFLOW_ID}/runs?branch=${TARGET_REF}&event=workflow_dispatch&per_page=1" \
+            --jq '.workflow_runs[0] | {id, name, status, inputs}'
+
+          echo ""
+          echo "Looking for: test_annotation=${TEST_ANNOTATION}, sabc_image_tag=${SABC_IMAGE_TAG}"
+
       - name: Find the created workflow run
         id: find_run
         env:
