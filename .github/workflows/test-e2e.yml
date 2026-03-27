@@ -40,6 +40,10 @@ jobs:
 
           echo "Dispatching E2E in ${TARGET_REPO}"
           gh api -X POST "repos/ministryofjustice/bulk-submission-and-fee-scheme-tests-/actions/workflows/test-compose.yml/dispatches" \
+            -f ref="${TARGET_REF}" \
+            -f inputs[test_annotation]="${TEST_ANNOTATION}" \
+            -f inputs[sabc_image_tag]="${SABC_IMAGE_TAG}" \
+            -f inputs[run_id]="${SABC_IMAGE_TAG}"
 
       - name: Find the created workflow run
         id: find_run
