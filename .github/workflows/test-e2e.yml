@@ -9,6 +9,9 @@ on:
       test_annotation:
         required: true
         type: string
+      pr_number:
+        required: false
+        type: number
     secrets:
       gh_token:
         required: true
@@ -82,6 +85,18 @@ jobs:
             echo "Matching run not found yet (attempt $i/30), retrying..."
             sleep 5
           done
+      
+      
+      - name: Link to found workflow run
+        if: steps.find_run.outputs.run_id != ''
+        env:
+          TARGET_REPO: ministryofjustice/bulk-submission-and-fee-scheme-tests-
+          WORKFLOW_RUN_ID: ${{ steps.find_run.outputs.run_id }}
+        run: |
+          RUN_URL="https://github.com/${TARGET_REPO}/actions/runs/${WORKFLOW_RUN_ID}"
+          echo "### 🔗 E2E Workflow Run" >> "$GITHUB_STEP_SUMMARY"
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+          echo "[View dispatched workflow run](${RUN_URL})" >> "$GITHUB_STEP_SUMMARY"
 
       - name: Poll until completion
         env:
@@ -103,6 +118,7 @@ jobs:
             if [ "${STATUS}" = "completed" ]; then
               if [ "${CONCLUSION}" = "success" ]; then
                 echo "Remote workflow succeeded"
+                echo "workflow_url=${URL}" >> "$GITHUB_OUTPUT"
                 exit 0
               fi
 
@@ -115,3 +131,13 @@ jobs:
 
           echo "Timed out waiting for remote workflow to complete"
           exit 1
+
+      - name: Comment on PR
+        if: inputs.pr_number != ''
+        env:
+          GH_TOKEN: ${{ secrets.gh_token || secrets.E2E_PAT_TOKEN }}
+          PR_NUMBER: ${{ inputs.pr_number }}
+          RUN_URL: ${{ steps.poll.outputs.workflow_url }}
+        run: |
+          gh pr comment "${PR_NUMBER}" \
+            --body "✅ E2E `${{ inputs.test_annotation }} `tests passed! [View workflow run](${RUN_URL})"
