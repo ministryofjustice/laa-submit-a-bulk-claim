@@ -18,6 +18,7 @@ import uk.gov.justice.laa.dstew.payments.claimsdata.model.ClaimResponse;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.ClaimResultSet;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.CreateBulkSubmission201Response;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.GetBulkSubmission200Response;
+import uk.gov.justice.laa.dstew.payments.claimsdata.model.GetBulkSubmissionStatusById200Response;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.MatterStartGet;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.MatterStartResultSet;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionResponse;
@@ -48,6 +49,9 @@ public interface DataClaimsRestClient {
       // shouldn't be in a position where they have no offices unless they've been set up wrong.
       @RequestParam(required = false) List<String> offices)
       throws WebClientResponseException;
+
+  @GetExchange(value = "/bulk-submissions/{id}/summary")
+  Mono<GetBulkSubmissionStatusById200Response> getBulkSubmissionSummary(@PathVariable("id") UUID id);
 
   /**
    * Searches submissions using JSON criteria sent in the GET request body.
