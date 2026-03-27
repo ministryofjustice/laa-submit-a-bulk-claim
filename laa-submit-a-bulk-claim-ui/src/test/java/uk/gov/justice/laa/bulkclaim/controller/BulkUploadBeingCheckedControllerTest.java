@@ -28,7 +28,6 @@ import uk.gov.justice.laa.bulkclaim.config.WebMvcTestConfig;
 import uk.gov.justice.laa.bulkclaim.exception.SubmitBulkClaimException;
 import uk.gov.justice.laa.bulkclaim.metrics.BulkClaimMetricService;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.BulkSubmissionStatus;
-import uk.gov.justice.laa.dstew.payments.claimsdata.model.GetBulkSubmission200Response;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.GetBulkSubmissionStatusById200Response;
 
 @WebMvcTest(BulkUploadBeingCheckedController.class)
@@ -75,10 +74,15 @@ public class BulkUploadBeingCheckedControllerTest {
       UUID submissionId = UUID.fromString("5933fc67-bac7-4f48-81ed-61c8c463f054");
       UUID bulkSubmissionId = UUID.fromString("5933fc67-bac7-4f48-81ed-61c8c463f056");
 
-      when(dataClaimsRestClient.getBulkSubmission(bulkSubmissionId))
+      when(dataClaimsRestClient.getBulkSubmissionSummary(bulkSubmissionId))
           .thenThrow(
               new WebClientResponseException(
-                  HttpStatusCode.valueOf(404), "Submission not found", null, null, null, null));
+                  HttpStatusCode.valueOf(404),
+                  "Bulk Submission not found",
+                  null,
+                  null,
+                  null,
+                  null));
 
       assertThat(
               mockMvc.perform(
@@ -100,8 +104,9 @@ public class BulkUploadBeingCheckedControllerTest {
       UUID bulkSubmissionId = UUID.fromString("5933fc67-bac7-4f48-81ed-61c8c463f056");
       UUID submissionId = UUID.fromString("5933fc67-bac7-4f48-81ed-61c8c463f054");
 
-      when(dataClaimsRestClient.getBulkSubmission(bulkSubmissionId))
-          .thenReturn(Mono.just(GetBulkSubmission200Response.builder().status(status).build()));
+      when(dataClaimsRestClient.getBulkSubmissionSummary(bulkSubmissionId))
+          .thenReturn(
+              Mono.just(GetBulkSubmissionStatusById200Response.builder().status(status).build()));
       assertThat(
               mockMvc.perform(
                   get("/upload-is-being-checked")
@@ -119,7 +124,7 @@ public class BulkUploadBeingCheckedControllerTest {
       // Given
       UUID bulkSubmissionId = UUID.fromString("5933fc67-bac7-4f48-81ed-61c8c463f056");
       UUID submissionId = UUID.fromString("5933fc67-bac7-4f48-81ed-61c8c463f054");
-      when(dataClaimsRestClient.getBulkSubmission(bulkSubmissionId))
+      when(dataClaimsRestClient.getBulkSubmissionSummary(bulkSubmissionId))
           .thenThrow(new WebClientResponseException(statusCode, "Error", null, null, null, null));
 
       assertThat(
@@ -139,10 +144,10 @@ public class BulkUploadBeingCheckedControllerTest {
       // Given
       UUID bulkSubmissionId = UUID.fromString("5933fc67-bac7-4f48-81ed-61c8c463f056");
       UUID submissionId = UUID.fromString("5933fc67-bac7-4f48-81ed-61c8c463f054");
-      when(dataClaimsRestClient.getBulkSubmission(bulkSubmissionId))
+      when(dataClaimsRestClient.getBulkSubmissionSummary(bulkSubmissionId))
           .thenReturn(
               Mono.just(
-                  GetBulkSubmission200Response.builder()
+                  GetBulkSubmissionStatusById200Response.builder()
                       .status(BulkSubmissionStatus.PARSING_FAILED)
                       .build()));
       assertThat(
@@ -162,10 +167,10 @@ public class BulkUploadBeingCheckedControllerTest {
       // Given
       UUID bulkSubmissionId = UUID.fromString("5933fc67-bac7-4f48-81ed-61c8c463f056");
       UUID submissionId = UUID.fromString("5933fc67-bac7-4f48-81ed-61c8c463f054");
-      when(dataClaimsRestClient.getBulkSubmission(bulkSubmissionId))
+      when(dataClaimsRestClient.getBulkSubmissionSummary(bulkSubmissionId))
           .thenReturn(
               Mono.just(
-                  GetBulkSubmission200Response.builder()
+                  GetBulkSubmissionStatusById200Response.builder()
                       .status(BulkSubmissionStatus.UNAUTHORISED)
                       .build()));
       assertThat(
