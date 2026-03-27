@@ -61,7 +61,7 @@ public final class GetBulkSubmissionSummaryPactTest extends AbstractPactTest {
     return builder
         .given("a bulk submission summary is available")
         .uponReceiving("a request to get the summary of a bulk submission")
-        .path("/api/v1/bulk-submissions/(" + UUID_REGEX + ")/summary")
+        .matchPath("/api/v1/bulk-submissions/(" + UUID_REGEX + ")/summary")
         .matchHeader(HttpHeaders.AUTHORIZATION, UUID_REGEX)
         .method("GET")
         .willRespondWith()
