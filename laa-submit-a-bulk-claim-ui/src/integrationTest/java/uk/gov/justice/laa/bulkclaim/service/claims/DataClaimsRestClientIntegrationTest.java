@@ -225,8 +225,11 @@ class DataClaimsRestClientIntegrationTest extends MockServerIntegrationTest {
                   }
               """;
       mockServerClient
-          .when(HttpRequest.request().withMethod("GET")
-              .withPath("/api/v1/bulk-submissions/%s/summary".formatted(expectedBulkSubmissionId)))
+          .when(
+              HttpRequest.request()
+                  .withMethod("GET")
+                  .withPath(
+                      "/api/v1/bulk-submissions/%s/summary".formatted(expectedBulkSubmissionId)))
           .respond(
               response()
                   .withStatusCode(200)
@@ -235,7 +238,8 @@ class DataClaimsRestClientIntegrationTest extends MockServerIntegrationTest {
 
       GetBulkSubmissionStatusById200Response response =
           dataClaimsRestClient
-              .getBulkSubmissionSummary(UUID.fromString(expectedBulkSubmissionId)).block();
+              .getBulkSubmissionSummary(UUID.fromString(expectedBulkSubmissionId))
+              .block();
       assertThat(response.getStatus()).isEqualTo(BulkSubmissionStatus.READY_FOR_PARSING);
     }
 
@@ -244,15 +248,22 @@ class DataClaimsRestClientIntegrationTest extends MockServerIntegrationTest {
     void shouldHandle404Response() {
       String expectedBulkSubmissionId = "660e8400-e29b-41d4-a716-2c963f66afa6";
       mockServerClient
-          .when(HttpRequest.request().withMethod("GET")
-              .withPath("/api/v1/bulk-submissions/%s/summary".formatted(expectedBulkSubmissionId)))
+          .when(
+              HttpRequest.request()
+                  .withMethod("GET")
+                  .withPath(
+                      "/api/v1/bulk-submissions/%s/summary".formatted(expectedBulkSubmissionId)))
           .respond(
               response()
                   .withStatusCode(404)
                   .withHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE));
 
-      assertThrows(NotFound.class, () -> dataClaimsRestClient
-          .getBulkSubmissionSummary(UUID.fromString(expectedBulkSubmissionId)).block());
+      assertThrows(
+          NotFound.class,
+          () ->
+              dataClaimsRestClient
+                  .getBulkSubmissionSummary(UUID.fromString(expectedBulkSubmissionId))
+                  .block());
     }
   }
 

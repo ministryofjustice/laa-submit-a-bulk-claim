@@ -12,6 +12,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.util.Assert;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.SessionAttributes;
@@ -19,7 +20,7 @@ import org.springframework.web.reactive.function.client.WebClientResponseExcepti
 import uk.gov.justice.laa.bulkclaim.client.DataClaimsRestClient;
 import uk.gov.justice.laa.bulkclaim.exception.SubmitBulkClaimException;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.BulkSubmissionStatus;
-import uk.gov.justice.laa.dstew.payments.claimsdata.model.GetBulkSubmission200Response;
+import uk.gov.justice.laa.dstew.payments.claimsdata.model.GetBulkSubmissionStatusById200Response;
 
 /**
  * Controller for handling the upload being checked page after a user has submitted a bulk claim.
@@ -55,8 +56,10 @@ public class BulkUploadBeingCheckedController {
       @ModelAttribute(BULK_SUBMISSION_ID) UUID bulkSubmissionId) {
 
     try {
-      GetBulkSubmission200Response bulkSubmission =
-          dataClaimsRestClient.getBulkSubmission(bulkSubmissionId).block();
+      GetBulkSubmissionStatusById200Response bulkSubmission =
+          dataClaimsRestClient.getBulkSubmissionSummary(bulkSubmissionId).block();
+      Assert.notNull(bulkSubmission, "Bulk submission summary cannot be null");
+
       BulkSubmissionStatus bulkSubmissionStatus = bulkSubmission.getStatus();
       if (bulkSubmissionStatus == BulkSubmissionStatus.PARSING_FAILED) {
         throw new SubmitBulkClaimException(

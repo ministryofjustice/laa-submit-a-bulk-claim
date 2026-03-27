@@ -28,8 +28,7 @@ import uk.gov.justice.laa.dstew.payments.claimsdata.model.GetBulkSubmissionStatu
  * then verify itself against the generated pact to ensure it remains compatible with it's
  * consumers.
  *
- * <p>For the various {@link Pact} annotations, a scenario is created. There are multiple parts of
- * a
+ * <p>For the various {@link Pact} annotations, a scenario is created. There are multiple parts of a
  * {@link RequestResponsePact}:
  *
  * <ul>
@@ -54,8 +53,7 @@ import uk.gov.justice.laa.dstew.payments.claimsdata.model.GetBulkSubmissionStatu
 @DisplayName("GET: /api/v1/bulk-submissions/{id}/summary PACT tests")
 public final class GetBulkSubmissionSummaryPactTest extends AbstractPactTest {
 
-  @Autowired
-  DataClaimsRestClient dataClaimsRestClient;
+  @Autowired DataClaimsRestClient dataClaimsRestClient;
 
   @Pact(consumer = CONSUMER)
   public RequestResponsePact getBulkSubmissionSummary200(PactDslWithProvider builder) {
@@ -71,8 +69,9 @@ public final class GetBulkSubmissionSummaryPactTest extends AbstractPactTest {
         .headers(Map.of("Content-Type", "application/json"))
         .body(
             LambdaDsl.newJsonBody(
-                    body -> body.stringType("status",
-                        BulkSubmissionStatus.READY_FOR_PARSING.getValue()))
+                    body ->
+                        body.stringType(
+                            "status", BulkSubmissionStatus.READY_FOR_PARSING.getValue()))
                 .build())
         .toPact();
   }
@@ -82,12 +81,9 @@ public final class GetBulkSubmissionSummaryPactTest extends AbstractPactTest {
   @PactTestFor(pactMethod = "getBulkSubmissionSummary200")
   void verify200Response() {
     GetBulkSubmissionStatusById200Response claims =
-        dataClaimsRestClient
-            .getBulkSubmissionSummary(BULK_SUBMISSION_ID)
-            .block();
+        dataClaimsRestClient.getBulkSubmissionSummary(BULK_SUBMISSION_ID).block();
 
     assertThat(claims).isNotNull();
     assertThat(claims.getStatus()).isNotNull();
   }
-
 }

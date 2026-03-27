@@ -29,6 +29,7 @@ import uk.gov.justice.laa.bulkclaim.exception.SubmitBulkClaimException;
 import uk.gov.justice.laa.bulkclaim.metrics.BulkClaimMetricService;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.BulkSubmissionStatus;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.GetBulkSubmission200Response;
+import uk.gov.justice.laa.dstew.payments.claimsdata.model.GetBulkSubmissionStatusById200Response;
 
 @WebMvcTest(BulkUploadBeingCheckedController.class)
 @AutoConfigureMockMvc
@@ -54,8 +55,9 @@ public class BulkUploadBeingCheckedControllerTest {
       // Given
       UUID submissionId = UUID.fromString("5933fc67-bac7-4f48-81ed-61c8c463f054");
       UUID bulkSubmissionId = UUID.fromString("5933fc67-bac7-4f48-81ed-61c8c463f056");
-      when(dataClaimsRestClient.getBulkSubmission(bulkSubmissionId))
-          .thenReturn(Mono.just(GetBulkSubmission200Response.builder().status(status).build()));
+      when(dataClaimsRestClient.getBulkSubmissionSummary(bulkSubmissionId))
+          .thenReturn(
+              Mono.just(GetBulkSubmissionStatusById200Response.builder().status(status).build()));
       assertThat(
               mockMvc.perform(
                   get("/upload-is-being-checked")

@@ -51,7 +51,8 @@ public interface DataClaimsRestClient {
       throws WebClientResponseException;
 
   @GetExchange(value = "/bulk-submissions/{id}/summary")
-  Mono<GetBulkSubmissionStatusById200Response> getBulkSubmissionSummary(@PathVariable("id") UUID id);
+  Mono<GetBulkSubmissionStatusById200Response> getBulkSubmissionSummary(
+      @PathVariable("id") UUID id);
 
   /**
    * Searches submissions using JSON criteria sent in the GET request body.
