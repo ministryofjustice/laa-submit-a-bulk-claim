@@ -59,23 +59,23 @@ jobs:
         run: |
           set -euo pipefail
 
-          WORKFLOW_ID="$(gh api "repos/${TARGET_REPO}/actions/workflows/${TARGET_WORKFLOW_FILE}" --jq '.id')"
+          WORKFLOW_FILE_ID="$(gh api "repos/${TARGET_REPO}/actions/workflows/${TARGET_WORKFLOW_FILE}" --jq '.id')"
 
           echo "Looking for run created after ${DISPATCH_TIME} with sabc_image_tag=${SABC_IMAGE_TAG}, test_annotation=${TEST_ANNOTATION}"
 
           for i in {1..30}; do
             RESPONSE="$(gh api \
-              "repos/${TARGET_REPO}/actions/workflows/${WORKFLOW_ID}/runs?branch=${TARGET_REF}&event=workflow_dispatch&per_page=10")"
+              "repos/${TARGET_REPO}/actions/workflows/${WORKFLOW_FILE_ID}/runs?branch=${TARGET_REF}&event=workflow_dispatch&per_page=10")"
 
             echo "--- Attempt $i: Raw API response ---"
             echo "${RESPONSE}" | jq '[.workflow_runs[] | {id, created_at, display_title, status}]'
 
-            RUN_ID="$(echo "${RESPONSE}" \
-              --jq "[.workflow_runs[] | select(.created_at >= \"${DISPATCH_TIME}\" and .display_title == \"Run ${TEST_ANNOTATION} E2E tests - ${RUN_ID}\")] | sort_by(.created_at) | last | .id // empty")"
+            WORKFLOW_RUN_ID="$(echo "${RESPONSE}" | jq -r \
+              "[.workflow_runs[] | select(.created_at >= \"${DISPATCH_TIME}\" and .display_title == \"Run ${TEST_ANNOTATION} E2E tests - ${SABC_IMAGE_TAG}\")] | sort_by(.created_at) | last | .id // empty")"
 
-            if [ -n "${RUN_ID}" ]; then
-              echo "run_id=${RUN_ID}" >> "$GITHUB_OUTPUT"
-              echo "✓ Found run ${RUN_ID}"
+            if [ -n "${WORKFLOW_RUN_ID}" ]; then
+              echo "run_id=${WORKFLOW_RUN_ID}" >> "$GITHUB_OUTPUT"
+              echo "✓ Found run ${WORKFLOW_RUN_ID}"
               exit 0
             fi
 
@@ -94,9 +94,9 @@ jobs:
 
           # Should't need 1 hour, however some tests can take a long time
           for i in {1..120}; do
-            STATUS="$(gh api "repos/${TARGET_REPO}/actions/runs/${RUN_ID}" --jq '.status')"
-            CONCLUSION="$(gh api "repos/${TARGET_REPO}/actions/runs/${RUN_ID}" --jq '.conclusion // empty')"
-            URL="$(gh api "repos/${TARGET_REPO}/actions/runs/${RUN_ID}" --jq '.html_url')"
+            STATUS="$(gh api "repos/${TARGET_REPO}/actions/runs/${WORKFLOW_RUN_ID}" --jq '.status')"
+            CONCLUSION="$(gh api "repos/${TARGET_REPO}/actions/runs/${WORKFLOW_RUN_ID}" --jq '.conclusion // empty')"
+            URL="$(gh api "repos/${TARGET_REPO}/actions/runs/${WORKFLOW_RUN_ID}" --jq '.html_url')"
 
             echo "status=${STATUS}, conclusion=${CONCLUSION:-none}"
             echo "run_url=${URL}"
