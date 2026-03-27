@@ -36,12 +36,16 @@ inputs:
     required: false
   run-pact-can-i-deploy:
     required: false
+    description: "Run pact can i deploy"
     default: "true"
   pact_broker_url:
+    description: "Pact broker url"
     required: true
   pact_broker_username:
+    description: "Pact broker username"
     required: true
   pact_broker_password:
+    description: "Pact broker password"
     required: true
 
 outputs:
@@ -68,9 +72,9 @@ runs:
         run_can_i_deploy: ${{ inputs.run-pact-can-i-deploy }}
         pacticipant: 'laa-submit-a-bulk-claim'
         environment: ${{ steps.extract_release_name.outputs.release-name }}
-        pact_broker_url: 'https://laa-data-pact-broker.apps.live.cloud-platform.service.justice.gov.uk/'
-        pact_broker_username: ${{ secrets.pact_broker_username }}
-        pact_broker_password: ${{ secrets.pact_broker_password }}
+        pact_broker_url: ${{ inputs.pact_broker_url }}
+        pact_broker_username: ${{ inputs.pact_broker_username }}
+        pact_broker_password: ${{ inputs.pact_broker_password }}
 
     - name: Authenticate to the cluster
       uses: ministryofjustice/laa-reusable-github-actions/.github/actions/authenticate_to_cluster@2aa2676c3cd9876ec7037ee8b3d729d0306cb7c6

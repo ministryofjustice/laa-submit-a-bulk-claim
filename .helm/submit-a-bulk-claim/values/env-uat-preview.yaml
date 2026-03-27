@@ -97,7 +97,9 @@ env:
     value: /config/
   - name: SPRING_PROFILES_ACTIVE
     value: mock-oidc
-            
+  - name: LAA_ACCOUNTS
+    value: "0P322F,2Q779P,2Q286D,2Q263D,2Q271M,0E525U,2Q286D,2N199K,1T102C,2P746R,2L847Q"
+
 autoscaling:
   enabled: false
 
