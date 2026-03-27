@@ -32,6 +32,7 @@ jobs:
     with:
       sabc_image_tag: submit-a-bulk-claim-${{ needs.define-preview-version.outputs.preview_version }}
       test_annotation: "@accessibility"
+      pr_number: ${{ github.event.number }}
     secrets:
       gh_token: ${{ secrets.E2E_PAT_TOKEN }}
 

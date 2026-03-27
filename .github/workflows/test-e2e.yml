@@ -133,7 +133,6 @@ jobs:
           exit 1
 
       - name: Comment on PR
-        if: inputs.pr_number != ''
         env:
           GH_TOKEN: ${{ secrets.gh_token || secrets.E2E_PAT_TOKEN }}
           PR_NUMBER: ${{ inputs.pr_number }}
