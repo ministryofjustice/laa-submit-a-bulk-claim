@@ -152,6 +152,19 @@ jobs:
         env:
           PR_NUMBER: ${{ inputs.pr_number }}
           RUN_URL: ${{ steps.poll.outputs.workflow_url }}
+          TEST_ANNOTATION: ${{ inputs.test_annotation }}
         run: |
           gh pr comment "${PR_NUMBER}" \
-            --body "✅ E2E `${{ inputs.test_annotation }} `tests passed! [View workflow run](${RUN_URL})"
+            --body "✅ E2E ${TEST_ANNOTATION} tests passed! [View workflow run](${RUN_URL})"
+
+      - name: Comment on PR (failure)
+        if: failure()
+        env:
+          PR_NUMBER: ${{ inputs.pr_number }}
+          TEST_ANNOTATION: ${{ inputs.test_annotation }}
+          WORKFLOW_RUN_ID: ${{ steps.find_run.outputs.run_id }}
+          TARGET_REPO: ministryofjustice/bulk-submission-and-fee-scheme-tests-
+        run: |
+          RUN_URL="https://github.com/${TARGET_REPO}/actions/runs/${WORKFLOW_RUN_ID}"
+          gh pr comment "${PR_NUMBER}" \
+            --body "❌ E2E ${TEST_ANNOTATION} tests failed! [View workflow run](${RUN_URL})"
