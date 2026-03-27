@@ -33,17 +33,13 @@ jobs:
         run: |
           set -euo pipefail
 
-          echo "Dispatching E2E in ${TARGET_REPO}"
-          gh api -X POST "repos/ministryofjustice/bulk-submission-and-fee-scheme-tests-/actions/workflows/test-compose.yml/dispatches" \
-            -f ref="${TARGET_REF}" \
-            -f inputs[test_annotation]="${TEST_ANNOTATION}" \
-            -f inputs[sabc_image_tag]="${SABC_IMAGE_TAG}" \
-            -f inputs[run_id]="${SABC_IMAGE_TAG}"
-
-          # Record time AFTER dispatching
+          # Record time BEFORE dispatching
           DISPATCH_TIME=$(date -u +%Y-%m-%dT%H:%M:%SZ)
           echo "dispatch_time=${DISPATCH_TIME}" >> "$GITHUB_OUTPUT"
           echo "Dispatched at ${DISPATCH_TIME}"
+
+          echo "Dispatching E2E in ${TARGET_REPO}"
+          gh api -X POST "repos/ministryofjustice/bulk-submission-and-fee-scheme-tests-/actions/workflows/test-compose.yml/dispatches" \
 
       - name: Find the created workflow run
         id: find_run
