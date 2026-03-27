@@ -264,6 +264,75 @@ class DataClaimsRestClientIntegrationTest extends MockServerIntegrationTest {
                   .getBulkSubmissionSummary(UUID.fromString(expectedBulkSubmissionId))
                   .block());
     }
+
+    @Test
+    @DisplayName("Should handle 401 response")
+    void shouldHandle401Response() {
+      String expectedBulkSubmissionId = "660e8400-e29b-41d4-a716-2c963f66afa6";
+      mockServerClient
+          .when(
+              HttpRequest.request()
+                  .withMethod("GET")
+                  .withPath(
+                      "/api/v1/bulk-submissions/%s/summary".formatted(expectedBulkSubmissionId)))
+          .respond(
+              response()
+                  .withStatusCode(401)
+                  .withHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE));
+
+      assertThrows(
+          Unauthorized.class,
+          () ->
+              dataClaimsRestClient
+                  .getBulkSubmissionSummary(UUID.fromString(expectedBulkSubmissionId))
+                  .block());
+    }
+
+    @Test
+    @DisplayName("Should handle 403 response")
+    void shouldHandle403Response() {
+      String expectedBulkSubmissionId = "660e8400-e29b-41d4-a716-2c963f66afa6";
+      mockServerClient
+          .when(
+              HttpRequest.request()
+                  .withMethod("GET")
+                  .withPath(
+                      "/api/v1/bulk-submissions/%s/summary".formatted(expectedBulkSubmissionId)))
+          .respond(
+              response()
+                  .withStatusCode(403)
+                  .withHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE));
+
+      assertThrows(
+          Forbidden.class,
+          () ->
+              dataClaimsRestClient
+                  .getBulkSubmissionSummary(UUID.fromString(expectedBulkSubmissionId))
+                  .block());
+    }
+
+    @Test
+    @DisplayName("Should handle 500 response")
+    void shouldHandle500Response() {
+      String expectedBulkSubmissionId = "660e8400-e29b-41d4-a716-2c963f66afa6";
+      mockServerClient
+          .when(
+              HttpRequest.request()
+                  .withMethod("GET")
+                  .withPath(
+                      "/api/v1/bulk-submissions/%s/summary".formatted(expectedBulkSubmissionId)))
+          .respond(
+              response()
+                  .withStatusCode(500)
+                  .withHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE));
+
+      assertThrows(
+          InternalServerError.class,
+          () ->
+              dataClaimsRestClient
+                  .getBulkSubmissionSummary(UUID.fromString(expectedBulkSubmissionId))
+                  .block());
+    }
   }
 
   @Nested
@@ -276,21 +345,21 @@ class DataClaimsRestClientIntegrationTest extends MockServerIntegrationTest {
       String expectedSubmissionId = "660e8400-e29b-41d4-a716-2c963f66afa6";
       String submissionsBody =
           """
-              {
-                "submission_id": "660e8400-e29b-41d4-a716-2c963f66afa6",
-                "office_account_number": "9Z876X",
-                "status": "CREATED",
-                "area_of_law": "LEGAL HELP",
-                "submitted": "2019-08-24T14:15:22Z"
-              },
-              {
-                "submission_id": "770e8400-e29b-41d4-a716-2c963f66afa6",
-                "office_account_number": "9Z876X",
-                "status": "VALIDATION_SUCCEEDED",
-                "area_of_law": "LEGAL HELP",
-                "submitted": "2019-08-25T15:17:22Z"
-              }
-              """;
+          {
+            "submission_id": "660e8400-e29b-41d4-a716-2c963f66afa6",
+            "office_account_number": "9Z876X",
+            "status": "CREATED",
+            "area_of_law": "LEGAL HELP",
+            "submitted": "2019-08-24T14:15:22Z"
+          },
+          {
+            "submission_id": "770e8400-e29b-41d4-a716-2c963f66afa6",
+            "office_account_number": "9Z876X",
+            "status": "VALIDATION_SUCCEEDED",
+            "area_of_law": "LEGAL HELP",
+            "submitted": "2019-08-25T15:17:22Z"
+          }
+          """;
       mockServerClient
           .when(HttpRequest.request().withMethod("GET").withPath("/api/v1/submissions"))
           .respond(
