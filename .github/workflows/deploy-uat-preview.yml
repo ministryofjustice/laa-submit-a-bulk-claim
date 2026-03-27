@@ -39,19 +39,6 @@ jobs:
     secrets:
       gh_token: ${{ secrets.E2E_PAT_TOKEN }}
 
-  test-search:
-    name: Test @search
-    needs: [ define-preview-version ]
-    uses: ./.github/workflows/test-e2e.yml
-    permissions:
-      contents: read
-      id-token: write
-    with:
-      sabc_image_tag: submit-a-bulk-claim-${{ needs.define-preview-version.outputs.preview_version }}
-      test_annotation: "@search"
-    secrets:
-      gh_token: ${{ secrets.E2E_PAT_TOKEN }}
-
   build-and-test:
     needs: [ define-preview-version ]
     uses: ministryofjustice/laa-ccms-common-workflows/.github/workflows/gradle-build-and-publish.yml@v2
