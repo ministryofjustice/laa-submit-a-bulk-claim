@@ -36,12 +36,16 @@ inputs:
     required: false
   run-pact-can-i-deploy:
     required: false
+    description: "Run pact can i deploy"
     default: "true"
   pact_broker_url:
+    description: "Pact broker url"
     required: true
   pact_broker_username:
+    description: "Pact broker username"
     required: true
   pact_broker_password:
+    description: "Pact broker password"
     required: true
 
 outputs:
