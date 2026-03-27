@@ -85,10 +85,9 @@ jobs:
 
       - name: Poll until completion
         env:
-          # Change this for APP token
           GH_TOKEN: ${{ secrets.gh_token || secrets.E2E_PAT_TOKEN }}
           TARGET_REPO: ministryofjustice/bulk-submission-and-fee-scheme-tests-
-          RUN_ID: ${{ steps.find_run.outputs.run_id }}
+          WORKFLOW_RUN_ID: ${{ steps.find_run.outputs.run_id }}
         run: |
           set -euo pipefail
 
