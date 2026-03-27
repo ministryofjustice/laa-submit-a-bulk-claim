@@ -59,7 +59,7 @@ public final class GetBulkSubmissionSummaryPactTest extends AbstractPactTest {
   public RequestResponsePact getBulkSubmissionSummary200(PactDslWithProvider builder) {
     // Defines expected 200 response for validation messages response
     return builder
-        .given("a bulk submission summary is available")
+        .given("a bulk submission summary exists")
         .uponReceiving("a request to get the summary of a bulk submission")
         .matchPath("/api/v1/bulk-submissions/(" + UUID_REGEX + ")/summary")
         .matchHeader(HttpHeaders.AUTHORIZATION, UUID_REGEX)
