@@ -15,6 +15,12 @@ on:
     secrets:
       gh_token:
         required: true
+      github_app_id:
+        required: false
+      github_app_private_key:
+        required: false
+      github_app_organisation:
+        required: false
 
 permissions:
   contents: read
@@ -23,11 +29,23 @@ jobs:
 
   dispatch-and-wait:
     runs-on: ubuntu-latest
+    env:
+      GITHUB_TOKEN: ${{ secrets.gh_token }}
+      GITHUB_APP_ID: ${{ secrets.github_app_id }}
+      GITHUB_APP_PRIVATE_KEY: ${{ secrets.github_app_private_key }}
     steps:
+      - name: Get app token
+        if: ${{ env.GITHUB_APP_ID != '' && env.GITHUB_APP_PRIVATE_KEY != '' }}
+        id: get_workflow_token
+        uses: peter-murray/workflow-application-token-action@v4
+        with:
+          application_id: ${{ secrets.github_app_id }}
+          application_private_key: ${{ secrets.github_app_private_key }}
+          organization: ${{ secrets.github_app_organisation }}
+
       - name: Dispatch target workflow
         id: dispatch
         env:
-          GH_TOKEN: ${{ secrets.gh_token || secrets.E2E_PAT_TOKEN }}
           TARGET_REPO: ministryofjustice/bulk-submission-and-fee-scheme-tests-
           TARGET_WORKFLOW_FILE: test-compose.yml
           TARGET_REF: feature/test-compose # Remove later
@@ -51,7 +69,6 @@ jobs:
       - name: Find the created workflow run
         id: find_run
         env:
-          GH_TOKEN: ${{ secrets.gh_token || secrets.E2E_PAT_TOKEN }}
           TARGET_REPO: ministryofjustice/bulk-submission-and-fee-scheme-tests-
           TARGET_WORKFLOW_FILE: test-compose.yml
           TARGET_REF: feature/test-compose
@@ -100,7 +117,6 @@ jobs:
 
       - name: Poll until completion
         env:
-          GH_TOKEN: ${{ secrets.gh_token || secrets.E2E_PAT_TOKEN }}
           TARGET_REPO: ministryofjustice/bulk-submission-and-fee-scheme-tests-
           WORKFLOW_RUN_ID: ${{ steps.find_run.outputs.run_id }}
         run: |
@@ -134,7 +150,6 @@ jobs:
 
       - name: Comment on PR
         env:
-          GH_TOKEN: ${{ secrets.gh_token || secrets.E2E_PAT_TOKEN }}
           PR_NUMBER: ${{ inputs.pr_number }}
           RUN_URL: ${{ steps.poll.outputs.workflow_url }}
         run: |
