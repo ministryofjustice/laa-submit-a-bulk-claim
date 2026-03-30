@@ -1,0 +1,24 @@
+<th:block th:fragment="sortArrow(isThisFieldSorted,currentDir)">
+    <!-- Neutral (not currently sorted) -->
+    <svg th:if="${!isThisFieldSorted}" class="app-sort-link__icon" width="22" height="22"
+         focusable="false" aria-hidden="true" viewBox="0 0 22 22"
+         xmlns="http://www.w3.org/2000/svg">
+        <path d="M8.1875 9.5L10.9609 3.95703L13.7344 9.5H8.1875Z" fill="currentColor"></path>
+        <path d="M13.7344 12.0781L10.9609 17.6211L8.1875 12.0781H13.7344Z" fill="currentColor"></path>
+    </svg>
+
+    <!-- Currently ascending: show up arrow -->
+    <svg th:if="${isThisFieldSorted and currentDir == 'asc'}" class="app-sort-link__icon" width="22" height="22"
+         focusable="false" aria-hidden="true" viewBox="0 0 22 22"
+         xmlns="http://www.w3.org/2000/svg">
+        <path d="M8.1875 13.5L10.9609 7.95703L13.7344 13.5H8.1875Z" fill="currentColor"></path>
+    </svg>
+
+    <!-- Currently descending: show down arrow -->
+    <svg th:if="${isThisFieldSorted and currentDir == 'desc'}" class="app-sort-link__icon" width="22" height="22"
+         focusable="false" aria-hidden="true" viewBox="0 0 22 22"
+         xmlns="http://www.w3.org/2000/svg">
+        <path d="M13.7344 8.5L10.9609 14.043L8.1875 8.5H13.7344Z" fill="currentColor"></path>
+    </svg>
+
+</th:block>

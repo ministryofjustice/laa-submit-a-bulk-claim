@@ -1,0 +1,19 @@
+<th:block th:fragment="sortableHeader(sortField,navTab,headerName)">
+
+    <th scope="col" class="govuk-table__header" aria-sort="none"
+        th:with="
+                currentSort=${param.sort != null ? param.sort[0] : null},
+                isThisFieldSorted=${currentSort != null and #strings.startsWith(currentSort, sortField + ',')},
+                currentDir=${isThisFieldSorted ? #strings.substringAfter(currentSort, sortField + ',') : null},
+                nextDir=${!isThisFieldSorted or currentDir == 'desc' ? 'asc' : 'desc'},
+                sortValue=${sortField + ',' + nextDir},
+                claimDetailsUrl=@{/view-submission-detail(navTab=${navTab}, submissionId=${submissionId})},
+                sortUrl=${@thymeleafHrefUtils.build(claimDetailsUrl, 'page', 0, 'sort', sortValue)}
+                " >
+        <a class="govuk-link app-sort-link govuk-link--no-visited-state govuk-link--no-underline govuk-link--sort" th:href="${sortUrl}+'#claims-table'">
+            <span th:text="#{${headerName}}"> </span>
+            <th:block th:replace="~{fragments/sort-arrow :: sortArrow(${isThisFieldSorted},${currentDir})}"></th:block>
+        </a>
+    </th>
+
+    </th:block>

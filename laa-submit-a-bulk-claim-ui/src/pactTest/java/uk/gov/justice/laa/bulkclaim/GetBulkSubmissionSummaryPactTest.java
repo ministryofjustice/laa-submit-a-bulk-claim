@@ -2,6 +2,7 @@ package uk.gov.justice.laa.bulkclaim;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
+import au.com.dius.pact.consumer.dsl.LambdaDsl;
 import au.com.dius.pact.consumer.dsl.PactDslWithProvider;
 import au.com.dius.pact.consumer.junit.MockServerConfig;
 import au.com.dius.pact.consumer.junit5.PactConsumerTest;
@@ -9,7 +10,6 @@ import au.com.dius.pact.consumer.junit5.PactTestFor;
 import au.com.dius.pact.core.model.RequestResponsePact;
 import au.com.dius.pact.core.model.annotations.Pact;
 import java.util.Map;
-import lombok.SneakyThrows;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,7 +18,8 @@ import org.springframework.context.annotation.Import;
 import org.springframework.http.HttpHeaders;
 import uk.gov.justice.laa.bulkclaim.client.DataClaimsRestClient;
 import uk.gov.justice.laa.bulkclaim.config.ClaimsApiPactTestConfig;
-import uk.gov.justice.laa.dstew.payments.claimsdata.model.ClaimResultSet;
+import uk.gov.justice.laa.dstew.payments.claimsdata.model.BulkSubmissionStatus;
+import uk.gov.justice.laa.dstew.payments.claimsdata.model.GetBulkSubmissionStatusById200Response;
 
 /**
  * For this PactTest, it spins up a MockWebServer which is used to act as the API we're testing
@@ -49,72 +50,40 @@ import uk.gov.justice.laa.dstew.payments.claimsdata.model.ClaimResultSet;
 @PactTestFor(providerName = AbstractPactTest.PROVIDER)
 @MockServerConfig(port = "1231") // Same as Claims API URL port
 @Import(ClaimsApiPactTestConfig.class)
-@DisplayName("GET: /api/v1/claims PACT tests")
-public final class GetClaimsPactTest extends AbstractPactTest {
+@DisplayName("GET: /api/v1/bulk-submissions/{id}/summary PACT tests")
+public final class GetBulkSubmissionSummaryPactTest extends AbstractPactTest {
 
   @Autowired DataClaimsRestClient dataClaimsRestClient;
 
-  @SneakyThrows
   @Pact(consumer = CONSUMER)
-  public RequestResponsePact getClaims200(PactDslWithProvider builder) {
-    // Defines expected 200 response for claims response using matchers
+  public RequestResponsePact getBulkSubmissionSummary200(PactDslWithProvider builder) {
+    // Defines expected 200 response for validation messages response
     return builder
-        .given("claims exist for the search criteria")
-        .uponReceiving("a request to search for claims")
-        .path("/api/v1/claims")
-        .matchQuery(QUERY_PARAM_SUBMISSION_ID, UUID_REGEX)
-        .matchQuery(QUERY_PARAM_OFFICE_CODE, OFFICE_CODE_REGEX)
-        .matchQuery(QUERY_PARAM_PAGE, ANY_NUMBER_REGEX)
-        .matchQuery(QUERY_PARAM_SIZE, ANY_NUMBER_REGEX)
-        .matchQuery(QUERY_PARAM_SORT, SORT_REGEX)
+        .given("a bulk submission summary exists")
+        .uponReceiving("a request to get the summary of a bulk submission")
+        .matchPath("/api/v1/bulk-submissions/(" + UUID_REGEX + ")/summary")
         .matchHeader(HttpHeaders.AUTHORIZATION, UUID_REGEX)
         .method("GET")
         .willRespondWith()
         .status(200)
         .headers(Map.of("Content-Type", "application/json"))
-        .body(EXPECTED_BODY.build())
-        .toPact();
-  }
-
-  @SneakyThrows
-  @Pact(consumer = CONSUMER)
-  public RequestResponsePact getClaimsEmpty200(PactDslWithProvider builder) {
-    // Defines expected 200 response for empty search using matchers
-    return builder
-        .given("no claims exist for the search criteria")
-        .uponReceiving("a request to search for claims with no results")
-        .path("/api/v1/claims")
-        .matchQuery(QUERY_PARAM_OFFICE_CODE, "([A-Z0-9]{6})")
-        .matchQuery(QUERY_PARAM_SUBMISSION_ID, UUID_REGEX)
-        .matchQuery(QUERY_PARAM_PAGE, ANY_NUMBER_REGEX)
-        .matchQuery(QUERY_PARAM_SIZE, ANY_NUMBER_REGEX)
-        .matchQuery(QUERY_PARAM_SORT, SORT_REGEX)
-        .matchHeader(HttpHeaders.AUTHORIZATION, UUID_REGEX)
-        .method("GET")
-        .willRespondWith()
-        .status(200)
-        .headers(Map.of("Content-Type", "application/json"))
-        .body(EMPTY_BODY.build())
+        .body(
+            LambdaDsl.newJsonBody(
+                    body ->
+                        body.stringType(
+                            "status", BulkSubmissionStatus.READY_FOR_PARSING.getValue()))
+                .build())
         .toPact();
   }
 
   @Test
   @DisplayName("Verify 200 response")
-  @PactTestFor(pactMethod = "getClaims200")
+  @PactTestFor(pactMethod = "getBulkSubmissionSummary200")
   void verify200Response() {
-    ClaimResultSet claims =
-        dataClaimsRestClient.getClaims(USER_OFFICES.get(0), SUBMISSION_ID, 1, 10).getBody();
+    GetBulkSubmissionStatusById200Response claims =
+        dataClaimsRestClient.getBulkSubmissionSummary(BULK_SUBMISSION_ID).block();
 
-    assertThat(claims.getContent().size()).isEqualTo(1);
-  }
-
-  @Test
-  @DisplayName("Verify 200 response empty")
-  @PactTestFor(pactMethod = "getClaimsEmpty200")
-  void verify200ResponseEmpty() {
-    ClaimResultSet claims =
-        dataClaimsRestClient.getClaims(USER_OFFICES.get(0), SUBMISSION_ID, 1, 10).getBody();
-
-    assertThat(claims.getContent().isEmpty()).isTrue();
+    assertThat(claims).isNotNull();
+    assertThat(claims.getStatus()).isNotNull();
   }
 }
