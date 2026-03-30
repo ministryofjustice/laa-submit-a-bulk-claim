@@ -24,14 +24,14 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v6
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
 
       - name: Set branch name
         run: echo "GIT_BRANCH=${GITHUB_HEAD_REF:-${GITHUB_REF_NAME}}" >> $GITHUB_ENV
 
       - name: Can I deploy?
         id: can-i-deploy
-        uses: ministryofjustice/laa-ccms-common-workflows/.github/actions/pact-can-i-deploy@v1
+        uses: ministryofjustice/laa-ccms-common-workflows/.github/actions/pact-can-i-deploy@bb0edfbe7891e147b51b832714baa60048440f31 # v2
         with:
           pacticipant: 'laa-submit-a-bulk-claim'
           environment: ${{ inputs.claim_api_environment_name }}
@@ -48,13 +48,13 @@ jobs:
           kube-cert: ${{ secrets.KUBE_CERT }}
 
       - name: Configure aws credentials
-        uses: aws-actions/configure-aws-credentials@v5
+        uses: aws-actions/configure-aws-credentials@fb7eb401298e393da51cdcb2feb1ed0183619014 # v6
         with:
           role-to-assume: "${{ secrets.LAA_SUBMIT_A_BULK_CLAIM_ECR_ROLE_TO_ASSUME }}"
           aws-region: "${{ vars.LAA_SUBMIT_A_BULK_CLAIM_ECR_REGION }}"
 
       - name: Login ecr
-        uses: aws-actions/amazon-ecr-login@v2
+        uses: aws-actions/amazon-ecr-login@183a1442edf41672e66566b7fc560e297a290896 # v2.1.1
         id: login-ecr
 
       - name: Set helm chart app version
@@ -114,7 +114,7 @@ jobs:
 
       - name: Record deployment to pact broker
         id: record-deployment-to-pact-broker
-        uses: ministryofjustice/laa-ccms-common-workflows/.github/actions/pact-record-deployment@v1
+        uses: ministryofjustice/laa-ccms-common-workflows/.github/actions/pact-record-deployment@bb0edfbe7891e147b51b832714baa60048440f31 # v2
         with:
           pacticipant: 'laa-submit-a-bulk-claim'
           environment: ${{ inputs.claim_api_environment_name }}
