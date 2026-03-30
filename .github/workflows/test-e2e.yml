@@ -46,6 +46,7 @@ jobs:
       - name: Dispatch target workflow
         id: dispatch
         env:
+          GH_TOKEN: ${{ secrets.gh_token }}
           TARGET_REPO: ministryofjustice/bulk-submission-and-fee-scheme-tests-
           TARGET_WORKFLOW_FILE: test-compose.yml
           TARGET_REF: feature/test-compose # Remove later
@@ -69,6 +70,7 @@ jobs:
       - name: Find the created workflow run
         id: find_run
         env:
+          GH_TOKEN: ${{ secrets.gh_token }}
           TARGET_REPO: ministryofjustice/bulk-submission-and-fee-scheme-tests-
           TARGET_WORKFLOW_FILE: test-compose.yml
           TARGET_REF: feature/test-compose
@@ -117,6 +119,7 @@ jobs:
 
       - name: Poll until completion
         env:
+          GH_TOKEN: ${{ secrets.gh_token }}
           TARGET_REPO: ministryofjustice/bulk-submission-and-fee-scheme-tests-
           WORKFLOW_RUN_ID: ${{ steps.find_run.outputs.run_id }}
         run: |
@@ -150,6 +153,7 @@ jobs:
 
       - name: Comment on PR
         env:
+          GH_TOKEN: ${{ secrets.gh_token }}
           PR_NUMBER: ${{ inputs.pr_number }}
           RUN_URL: ${{ steps.poll.outputs.workflow_url }}
           TEST_ANNOTATION: ${{ inputs.test_annotation }}
@@ -160,6 +164,7 @@ jobs:
       - name: Comment on PR (failure)
         if: failure()
         env:
+          GH_TOKEN: ${{ secrets.gh_token }}
           PR_NUMBER: ${{ inputs.pr_number }}
           TEST_ANNOTATION: ${{ inputs.test_annotation }}
           WORKFLOW_RUN_ID: ${{ steps.find_run.outputs.run_id }}
