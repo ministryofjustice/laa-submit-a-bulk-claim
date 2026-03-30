@@ -33,6 +33,7 @@ jobs:
       override_version: ${{ needs.define-preview-version.outputs.preview_version }}
       integration_test_task: integrationTest
       semgrep_check: 'true'
+      java_version: 25
     secrets:
       gh_token: ${{ secrets.GITHUB_TOKEN }}
 
@@ -49,24 +50,12 @@ jobs:
       enable_can_i_merge: true
       provider_name: "laa-data-claims-api"
       pact_tags: "feature"
+      java_version: 25
     secrets:
       gh_token: ${{ secrets.GITHUB_TOKEN }}
       pact_broker_url: 'https://laa-data-pact-broker.apps.live.cloud-platform.service.justice.gov.uk/'
       pact_broker_username: ${{ secrets.PACT_BROKER_USERNAME }}
       pact_broker_password: ${{ secrets.PACT_BROKER_PASSWORD }}
-
-  build-oidc-mock-image:
-    uses: ./.github/workflows/build-oidc-mock-image.yml
-    permissions:
-      id-token: write
-      contents: write
-      packages: read
-    secrets: 
-      gh_token: ${{ secrets.GITHUB_TOKEN }}
-      github_app_id: ${{ vars.LAA_CCMS_CAAB_SERVICE_APP_ID }}
-      github_app_private_key: ${{ secrets.LAA_CCMS_CAAB_SERVICE_KEY }}
-      github_app_organisation: 'ministryofjustice'
-      LAA_SUBMIT_A_BULK_CLAIM_ECR_ROLE_TO_ASSUME: ${{ secrets.LAA_SUBMIT_A_BULK_CLAIM_ECR_ROLE_TO_ASSUME }}
 
   ecr-publish-image:
     needs: [ build-and-test ]
@@ -77,6 +66,7 @@ jobs:
     with:
       jar_subproject: 'laa-submit-a-bulk-claim-ui'
       image_version: ${{ format('{0}-{1}', vars.IMAGE_PREFIX, needs.build-and-test.outputs.published_artifact_version) }}
+      java_version: 25
     secrets:
       gh_token: ${{ secrets.GITHUB_TOKEN }}
       ecr_repository: ${{ vars.LAA_SUBMIT_A_BULK_CLAIM_ECR_REPOSITORY }}
@@ -87,7 +77,6 @@ jobs:
     needs:
       - pact-test
       - ecr-publish-image
-      - build-oidc-mock-image
     runs-on: ubuntu-latest
     environment: uat
     permissions:
@@ -106,13 +95,14 @@ jobs:
           ecr-region: ${{ vars.LAA_SUBMIT_A_BULK_CLAIM_ECR_REGION }}
           ecr-role-to-assume: ${{ secrets.LAA_SUBMIT_A_BULK_CLAIM_ECR_ROLE_TO_ASSUME }}
           ecr-repository: ${{ vars.LAA_SUBMIT_A_BULK_CLAIM_ECR_REPOSITORY }}
+          oidc-ecr-repository: ${{ vars.LAA_OIDC_MOCK_SERVER_ECR_REPOSITORY }}
           kube-cert: ${{ secrets.KUBE_CERT }}
           kube-token: ${{ secrets.KUBE_TOKEN }}
           kube-cluster: ${{ secrets.KUBE_CLUSTER }}
           kube-namespace: ${{ secrets.KUBE_NAMESPACE }}
           app-environment: uat
           image-tag: ${{ needs.ecr-publish-image.outputs.published_image_version }}
-          oidc-mock-image-tag: ${{ needs.build-oidc-mock-image.outputs.oidc_mock_tag }}
+          oidc-mock-image-tag: 'latest'
           pact_broker_url: 'https://laa-data-pact-broker.apps.live.cloud-platform.service.justice.gov.uk/'
           pact_broker_username: ${{ secrets.pact_broker_username }}
           pact_broker_password: ${{ secrets.pact_broker_password }}
