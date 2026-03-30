@@ -31,7 +31,7 @@ jobs:
 
       - name: Can I deploy?
         id: can-i-deploy
-        uses: ministryofjustice/laa-ccms-common-workflows/.github/actions/pact-can-i-deploy@v1
+        uses: ministryofjustice/laa-ccms-common-workflows/.github/actions/pact-can-i-deploy@v2
         with:
           pacticipant: 'laa-submit-a-bulk-claim'
           environment: ${{ inputs.claim_api_environment_name }}
@@ -48,7 +48,7 @@ jobs:
           kube-cert: ${{ secrets.KUBE_CERT }}
 
       - name: Configure aws credentials
-        uses: aws-actions/configure-aws-credentials@v5
+        uses: aws-actions/configure-aws-credentials@v6
         with:
           role-to-assume: "${{ secrets.LAA_SUBMIT_A_BULK_CLAIM_ECR_ROLE_TO_ASSUME }}"
           aws-region: "${{ vars.LAA_SUBMIT_A_BULK_CLAIM_ECR_REGION }}"
@@ -114,7 +114,7 @@ jobs:
 
       - name: Record deployment to pact broker
         id: record-deployment-to-pact-broker
-        uses: ministryofjustice/laa-ccms-common-workflows/.github/actions/pact-record-deployment@v1
+        uses: ministryofjustice/laa-ccms-common-workflows/.github/actions/pact-record-deployment@v2
         with:
           pacticipant: 'laa-submit-a-bulk-claim'
           environment: ${{ inputs.claim_api_environment_name }}
