@@ -15,6 +15,7 @@
   "calculated_total_amount": 70.10,
   "submitted": "2019-08-24T14:15:22Z",
   "created_by_user_id": "string",
+  "error_messages": "string",
   "claims": [
     {
       "claim_id": "6ed32748-64af-4d95-94ea-a78b6397033c",
