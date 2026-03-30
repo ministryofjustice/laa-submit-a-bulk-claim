@@ -21,6 +21,14 @@ repos:
         types: [ java ]
         pass_filenames: false
 
+      - id: github-actions-sha-pinning
+        name: GitHub Actions SHA Pinning
+        description: Require external actions to be pinned to full-length commit SHAs
+        entry: scripts/check-github-actions-sha-pinning.sh
+        language: system
+        pass_filenames: false
+        always_run: true
+
   - repo: https://github.com/ministryofjustice/devsecops-hooks
     rev: v1.4.0
     hooks:
