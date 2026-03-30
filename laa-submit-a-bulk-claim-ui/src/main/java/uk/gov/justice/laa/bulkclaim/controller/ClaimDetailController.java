@@ -111,7 +111,7 @@ public final class ClaimDetailController {
     SubmissionResponse submissionResponse =
         dataClaimsRestClient.getSubmission(submissionId).block();
     String areaOfLaw = submissionResponse.getAreaOfLaw().getValue();
-    model.addAttribute("claimSummary", claimSummaryMapper.toClaimSummary(claimResponse, areaOfLaw));
+    model.addAttribute("claimSummary", claimSummaryMapper.toClaimSummary(claimResponse, submissionResponse, areaOfLaw));
 
     final MessagesSummary messagesSummary =
         submissionMessagesBuilder.buildAllWarnings(submissionId, claimId);

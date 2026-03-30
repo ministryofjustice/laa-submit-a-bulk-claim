@@ -18,6 +18,10 @@ import lombok.Builder;
  * @param client2Surname the second client's surname
  * @param outcomeCode the outcome code
  * @param caseConcludedDate the case concluded date
+ * @param officeAccountNumber the office account
+ * @param standardFeeCategoryCode the category of law
+ * @param matterType1 the matter type 1
+ * @param matterType2 the matter type 2
  * @param isEscaped case escaped flag
  */
 @Builder
@@ -35,4 +39,10 @@ public record ClaimSummary(
     String uniqueFileNumber, /*CIVIL, CRIME*/
     String outcomeCode, /*CRIME*/
     LocalDate caseConcludedDate, /*CRIME*/
+    String officeAccountNumber,
+    String standardFeeCategoryCode,
+    String matterType1,
+    String matterType2,
+    Boolean isVatApplicable,
+    LocalDate caseStartDate,
     Boolean isEscaped /*CIVIL*/) {}
