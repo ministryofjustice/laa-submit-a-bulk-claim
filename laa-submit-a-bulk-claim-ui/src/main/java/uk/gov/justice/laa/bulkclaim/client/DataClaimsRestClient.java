@@ -17,7 +17,7 @@ import uk.gov.justice.laa.dstew.payments.claimsdata.model.AreaOfLaw;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.ClaimResponse;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.ClaimResultSet;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.CreateBulkSubmission201Response;
-import uk.gov.justice.laa.dstew.payments.claimsdata.model.GetBulkSubmission200Response;
+import uk.gov.justice.laa.dstew.payments.claimsdata.model.GetBulkSubmissionStatusById200Response;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.MatterStartGet;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.MatterStartResultSet;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionResponse;
@@ -48,6 +48,10 @@ public interface DataClaimsRestClient {
       // shouldn't be in a position where they have no offices unless they've been set up wrong.
       @RequestParam(required = false) List<String> offices)
       throws WebClientResponseException;
+
+  @GetExchange(value = "/bulk-submissions/{id}/summary")
+  Mono<GetBulkSubmissionStatusById200Response> getBulkSubmissionSummary(
+      @PathVariable("id") UUID id);
 
   /**
    * Searches submissions using JSON criteria sent in the GET request body.
@@ -81,17 +85,6 @@ public interface DataClaimsRestClient {
    */
   @GetExchange(value = "/submissions/{submissionId}")
   Mono<SubmissionResponse> getSubmission(@PathVariable("submissionId") UUID submissionId)
-      throws WebClientResponseException;
-
-  /**
-   * * Gets a bulk submission by its ID.
-   *
-   * @param bulkSubmissionId the bulk submission ID
-   * @return a mono containing the response from the Claims API.
-   * @throws WebClientResponseException if status other than 2xx is returned
-   */
-  @GetExchange(value = "/bulk-submissions/{id}")
-  Mono<GetBulkSubmission200Response> getBulkSubmission(@PathVariable("id") UUID bulkSubmissionId)
       throws WebClientResponseException;
 
   /**

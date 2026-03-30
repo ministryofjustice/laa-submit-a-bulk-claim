@@ -31,7 +31,17 @@ import reactor.core.publisher.Mono;
 import uk.gov.justice.laa.bulkclaim.client.DataClaimsRestClient;
 import uk.gov.justice.laa.bulkclaim.config.WebMvcTestConfig;
 import uk.gov.justice.laa.bulkclaim.helper.MockServerIntegrationTest;
-import uk.gov.justice.laa.dstew.payments.claimsdata.model.*;
+import uk.gov.justice.laa.dstew.payments.claimsdata.model.AreaOfLaw;
+import uk.gov.justice.laa.dstew.payments.claimsdata.model.BulkSubmissionStatus;
+import uk.gov.justice.laa.dstew.payments.claimsdata.model.ClaimResponse;
+import uk.gov.justice.laa.dstew.payments.claimsdata.model.ClaimResultSet;
+import uk.gov.justice.laa.dstew.payments.claimsdata.model.CreateBulkSubmission201Response;
+import uk.gov.justice.laa.dstew.payments.claimsdata.model.GetBulkSubmissionStatusById200Response;
+import uk.gov.justice.laa.dstew.payments.claimsdata.model.MatterStartGet;
+import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionResponse;
+import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionStatus;
+import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionsResultSet;
+import uk.gov.justice.laa.dstew.payments.claimsdata.model.ValidationMessagesResponse;
 
 /**
  * Integration tests for the {@link uk.gov.justice.laa.bulkclaim.client.DataClaimsRestClient}.
@@ -42,6 +52,7 @@ import uk.gov.justice.laa.dstew.payments.claimsdata.model.*;
 @AutoConfigureMockMvc(addFilters = false)
 @Import(WebMvcTestConfig.class)
 class DataClaimsRestClientIntegrationTest extends MockServerIntegrationTest {
+
   private static final String GET_ALL_MATTER_STARTS_URI = "/api/v1/submissions/%s/matter-starts";
 
   protected DataClaimsRestClient dataClaimsRestClient;
@@ -199,8 +210,135 @@ class DataClaimsRestClientIntegrationTest extends MockServerIntegrationTest {
   }
 
   @Nested
+  @DisplayName("GET: /api/v1/bulk-submissions/{id}/summary")
+  class GetBulkSubmissionSummary {
+
+    @Test
+    @DisplayName("Should return 200 response and Bulk Submission summary")
+    void shouldReturn200ResponseAndBulkSubmissionSummary() {
+      String expectedBulkSubmissionId = "660e8400-e29b-41d4-a716-2c963f66afa6";
+      String bulkSubmissionSummary =
+          """
+                  {
+                    "status": "READY_FOR_PARSING"
+                  }
+              """;
+      mockServerClient
+          .when(
+              HttpRequest.request()
+                  .withMethod("GET")
+                  .withPath(
+                      "/api/v1/bulk-submissions/%s/summary".formatted(expectedBulkSubmissionId)))
+          .respond(
+              response()
+                  .withStatusCode(200)
+                  .withHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE)
+                  .withBody(bulkSubmissionSummary));
+
+      GetBulkSubmissionStatusById200Response response =
+          dataClaimsRestClient
+              .getBulkSubmissionSummary(UUID.fromString(expectedBulkSubmissionId))
+              .block();
+      assertThat(response.getStatus()).isEqualTo(BulkSubmissionStatus.READY_FOR_PARSING);
+    }
+
+    @Test
+    @DisplayName("Should handle 404 response")
+    void shouldHandle404Response() {
+      String expectedBulkSubmissionId = "660e8400-e29b-41d4-a716-2c963f66afa6";
+      mockServerClient
+          .when(
+              HttpRequest.request()
+                  .withMethod("GET")
+                  .withPath(
+                      "/api/v1/bulk-submissions/%s/summary".formatted(expectedBulkSubmissionId)))
+          .respond(
+              response()
+                  .withStatusCode(404)
+                  .withHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE));
+
+      assertThrows(
+          NotFound.class,
+          () ->
+              dataClaimsRestClient
+                  .getBulkSubmissionSummary(UUID.fromString(expectedBulkSubmissionId))
+                  .block());
+    }
+
+    @Test
+    @DisplayName("Should handle 401 response")
+    void shouldHandle401Response() {
+      String expectedBulkSubmissionId = "660e8400-e29b-41d4-a716-2c963f66afa6";
+      mockServerClient
+          .when(
+              HttpRequest.request()
+                  .withMethod("GET")
+                  .withPath(
+                      "/api/v1/bulk-submissions/%s/summary".formatted(expectedBulkSubmissionId)))
+          .respond(
+              response()
+                  .withStatusCode(401)
+                  .withHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE));
+
+      assertThrows(
+          Unauthorized.class,
+          () ->
+              dataClaimsRestClient
+                  .getBulkSubmissionSummary(UUID.fromString(expectedBulkSubmissionId))
+                  .block());
+    }
+
+    @Test
+    @DisplayName("Should handle 403 response")
+    void shouldHandle403Response() {
+      String expectedBulkSubmissionId = "660e8400-e29b-41d4-a716-2c963f66afa6";
+      mockServerClient
+          .when(
+              HttpRequest.request()
+                  .withMethod("GET")
+                  .withPath(
+                      "/api/v1/bulk-submissions/%s/summary".formatted(expectedBulkSubmissionId)))
+          .respond(
+              response()
+                  .withStatusCode(403)
+                  .withHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE));
+
+      assertThrows(
+          Forbidden.class,
+          () ->
+              dataClaimsRestClient
+                  .getBulkSubmissionSummary(UUID.fromString(expectedBulkSubmissionId))
+                  .block());
+    }
+
+    @Test
+    @DisplayName("Should handle 500 response")
+    void shouldHandle500Response() {
+      String expectedBulkSubmissionId = "660e8400-e29b-41d4-a716-2c963f66afa6";
+      mockServerClient
+          .when(
+              HttpRequest.request()
+                  .withMethod("GET")
+                  .withPath(
+                      "/api/v1/bulk-submissions/%s/summary".formatted(expectedBulkSubmissionId)))
+          .respond(
+              response()
+                  .withStatusCode(500)
+                  .withHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE));
+
+      assertThrows(
+          InternalServerError.class,
+          () ->
+              dataClaimsRestClient
+                  .getBulkSubmissionSummary(UUID.fromString(expectedBulkSubmissionId))
+                  .block());
+    }
+  }
+
+  @Nested
   @DisplayName("GET: /api/v1/submissions")
   class GetSubmissionsSearch {
+
     @Test
     @DisplayName("Should return 200 and collection of submissions result")
     void shouldReturn200WithSubmissionCollectionResults() {
@@ -353,96 +491,6 @@ class DataClaimsRestClientIntegrationTest extends MockServerIntegrationTest {
       assertThrows(
           InternalServerError.class,
           () -> dataClaimsRestClient.getSubmission(submissionId).block());
-    }
-  }
-
-  @Nested
-  @DisplayName("GET: /api/v1/bulk-submissions/{id}")
-  class GetBulkSubmission {
-
-    @Test
-    @DisplayName("Should handle a 200 response")
-    void shouldHandle200Response() throws Exception {
-      // Given
-      UUID id = UUID.fromString("7059e4c7-b800-40a0-9074-6127288e548a");
-      String expectJson = readJsonFromFile("/GetBulkSubmission200.json");
-      mockServerClient
-          .when(HttpRequest.request().withMethod("GET").withPath("/api/v1/bulk-submissions/" + id))
-          .respond(
-              response()
-                  .withStatusCode(200)
-                  .withHeader("Content-Type", "application/json")
-                  .withBody(expectJson));
-      // Then
-      GetBulkSubmission200Response block = dataClaimsRestClient.getBulkSubmission(id).block();
-      String result = objectMapper.writeValueAsString(block);
-      assertThatJsonMatches(expectJson, result);
-    }
-
-    @Test
-    @DisplayName("Should handle a 400 response")
-    void shouldHandle400Response() {
-      // Given
-      UUID id = UUID.fromString("7059e4c7-b800-40a0-9074-6127288e548a");
-      mockServerClient
-          .when(HttpRequest.request().withMethod("GET").withPath("/api/v1/bulk-submissions/" + id))
-          .respond(response().withStatusCode(400).withHeader("Content-Type", "application/json"));
-
-      // When
-      assertThrows(BadRequest.class, () -> dataClaimsRestClient.getBulkSubmission(id).block());
-    }
-
-    @Test
-    @DisplayName("Should handle a 401 response")
-    void shouldHandle401Response() {
-      // Given
-      UUID id = UUID.fromString("7059e4c7-b800-40a0-9074-6127288e548a");
-      mockServerClient
-          .when(HttpRequest.request().withMethod("GET").withPath("/api/v1/bulk-submissions/" + id))
-          .respond(response().withStatusCode(401).withHeader("Content-Type", "application/json"));
-
-      // When
-      assertThrows(Unauthorized.class, () -> dataClaimsRestClient.getBulkSubmission(id).block());
-    }
-
-    @Test
-    @DisplayName("Should handle a 403 response")
-    void shouldHandle403Response() {
-      // Given
-      UUID id = UUID.fromString("7059e4c7-b800-40a0-9074-6127288e548a");
-      mockServerClient
-          .when(HttpRequest.request().withMethod("GET").withPath("/api/v1/bulk-submissions/" + id))
-          .respond(response().withStatusCode(403).withHeader("Content-Type", "application/json"));
-
-      // When
-      assertThrows(Forbidden.class, () -> dataClaimsRestClient.getBulkSubmission(id).block());
-    }
-
-    @Test
-    @DisplayName("Should handle a 404 response")
-    void shouldHandle404Response() {
-      // Given
-      UUID id = UUID.fromString("7059e4c7-b800-40a0-9074-6127288e548a");
-      mockServerClient
-          .when(HttpRequest.request().withMethod("GET").withPath("/api/v1/bulk-submissions/" + id))
-          .respond(response().withStatusCode(404).withHeader("Content-Type", "application/json"));
-
-      // When
-      assertThrows(NotFound.class, () -> dataClaimsRestClient.getBulkSubmission(id).block());
-    }
-
-    @Test
-    @DisplayName("Should handle a 500 response")
-    void shouldHandle500Response() {
-      // Given
-      UUID id = UUID.fromString("7059e4c7-b800-40a0-9074-6127288e548a");
-      mockServerClient
-          .when(HttpRequest.request().withMethod("GET").withPath("/api/v1/bulk-submissions/" + id))
-          .respond(response().withStatusCode(500).withHeader("Content-Type", "application/json"));
-
-      // When
-      assertThrows(
-          InternalServerError.class, () -> dataClaimsRestClient.getBulkSubmission(id).block());
     }
   }
 
