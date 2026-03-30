@@ -11,9 +11,12 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.http.HttpStatus;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.validation.SimpleErrors;
 import org.springframework.validation.Validator;
+import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.ResourceAccessException;
 import uk.gov.justice.laa.bulkclaim.dto.FileUploadForm;
 import uk.gov.justice.laa.bulkclaim.exception.TokenProviderException;
 import uk.gov.justice.laa.bulkclaim.exception.VirusCheckException;
@@ -86,5 +89,37 @@ class BulkImportFileVirusValidatorTest {
     assertThat(errors.hasErrors()).isTrue();
     assertThat(errors.getAllErrors().getFirst().getCode())
         .isEqualTo("bulkImport.validation.uploadFailed");
+  }
+
+  @DisplayName("Should have errors SDS provider throws http client exception")
+  @Test
+  void shouldHaveErrorsWhenTokenProviderExceptionIncorrectSDSConfig() {
+    MockMultipartFile file =
+        new MockMultipartFile("file", "test.txt", "text/plain", new byte[10 * 1024 * 1024]);
+    FileUploadForm fileUploadForm = new FileUploadForm(file);
+    SimpleErrors errors = new SimpleErrors(fileUploadForm);
+    doThrow(new HttpClientErrorException(HttpStatus.BAD_REQUEST, "Invalid SDS Token"))
+        .when(virusCheckService)
+        .checkVirus(file);
+    bulkClaimFileVirusValidator.validate(fileUploadForm, errors);
+    verify(virusCheckService, times(1)).checkVirus(file);
+    assertThat(errors.hasErrors()).isTrue();
+    assertThat(errors.getAllErrors().getFirst().getCode()).isEqualTo("error.heading");
+  }
+
+  @DisplayName("Should have errors SDS provider coonot be reached")
+  @Test
+  void shouldThrowExceptionWhenResourceNotFound() {
+    MockMultipartFile file =
+        new MockMultipartFile("file", "test.txt", "text/plain", new byte[10 * 1024 * 1024]);
+    FileUploadForm fileUploadForm = new FileUploadForm(file);
+    SimpleErrors errors = new SimpleErrors(fileUploadForm);
+    doThrow(new ResourceAccessException("Resource not found"))
+        .when(virusCheckService)
+        .checkVirus(file);
+    bulkClaimFileVirusValidator.validate(fileUploadForm, errors);
+    verify(virusCheckService, times(1)).checkVirus(file);
+    assertThat(errors.hasErrors()).isTrue();
+    assertThat(errors.getAllErrors().getFirst().getCode()).isEqualTo("error.heading");
   }
 }
