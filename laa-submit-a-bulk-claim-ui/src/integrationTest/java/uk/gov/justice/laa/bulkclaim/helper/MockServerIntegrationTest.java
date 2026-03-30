@@ -18,8 +18,11 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.TestInstance.Lifecycle;
 import org.mockserver.client.MockServerClient;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.codec.ClientCodecConfigurer;
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClientManager;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import org.springframework.web.reactive.function.client.ExchangeStrategies;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.support.WebClientAdapter;
 import org.springframework.web.service.invoker.HttpServiceProxyFactory;
@@ -28,7 +31,6 @@ import org.testcontainers.containers.MockServerContainer;
 import org.testcontainers.containers.wait.strategy.Wait;
 import org.testcontainers.utility.DockerImageName;
 import uk.gov.justice.laa.bulkclaim.config.rest.ApiProperties;
-import uk.gov.justice.laa.bulkclaim.config.rest.WebClientConfiguration;
 
 /**
  * Base class for integration tests that require a MockServer instance.
@@ -94,7 +96,7 @@ public abstract class MockServerIntegrationTest {
 
   protected @NotNull WebClient createWebClient() {
     ApiProperties apiProperties = new ApiProperties(mockServerContainer.getEndpoint(), "1234");
-    return WebClientConfiguration.createWebClient(apiProperties);
+    return createWebClient(apiProperties);
   }
 
   protected static String readJsonFromFile(final String fileName) throws Exception {
@@ -107,6 +109,16 @@ public abstract class MockServerIntegrationTest {
     String normalizedExpected = expectedJson.replaceAll("\\s+", "");
     String normalizedActual = actualJson.replaceAll("\\s+", "");
     assertThat(normalizedActual).isEqualTo(normalizedExpected);
+  }
+
+  private static WebClient createWebClient(final ApiProperties apiProperties) {
+    final ExchangeStrategies strategies =
+        ExchangeStrategies.builder().codecs(ClientCodecConfigurer::defaultCodecs).build();
+    return WebClient.builder()
+        .baseUrl(apiProperties.getUrl())
+        .defaultHeader(HttpHeaders.AUTHORIZATION, apiProperties.getAccessToken())
+        .exchangeStrategies(strategies)
+        .build();
   }
 
   @AfterEach
