@@ -1,14 +1,17 @@
 package uk.gov.justice.laa.bulkclaim.controller;
 
+import static uk.gov.justice.laa.bulkclaim.constants.SessionConstants.BULK_SUBMISSION_ID;
 import static uk.gov.justice.laa.bulkclaim.constants.SessionConstants.SUBMISSION_ID;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.ProblemDetail;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.core.oidc.user.OidcUser;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.util.StringUtils;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -24,7 +27,6 @@ import uk.gov.justice.laa.bulkclaim.util.OidcAttributeUtils;
 import uk.gov.justice.laa.bulkclaim.validation.BulkImportFileValidator;
 import uk.gov.justice.laa.bulkclaim.validation.BulkImportFileVirusValidator;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.CreateBulkSubmission201Response;
-import uk.gov.laa.springboot.exception.ApplicationException;
 
 /** Controller for handling the bulk upload requests. */
 @Slf4j
@@ -33,6 +35,8 @@ import uk.gov.laa.springboot.exception.ApplicationException;
 public class BulkImportController {
 
   public static final String FILE_UPLOAD_FORM_MODEL_ATTR = "fileUploadForm";
+
+  private static final String UPLOAD_FAILED_CODE = "bulkImport.validation.uploadFailed";
 
   private final BulkImportFileValidator bulkImportFileValidator;
   private final BulkImportFileVirusValidator bulkImportFileVirusValidator;
@@ -96,34 +100,40 @@ public class BulkImportController {
                   oidcUser.getPreferredUsername(),
                   oidcAttributeUtils.getUserOffices(oidcUser))
               .block();
+
       CreateBulkSubmission201Response bulkSubmissionResponse = responseEntity.getBody();
+
       log.info(
           "Claims API Upload response bulk submission UUID: {}",
           bulkSubmissionResponse.getBulkSubmissionId());
       redirectAttributes.addFlashAttribute(
           SUBMISSION_ID, bulkSubmissionResponse.getSubmissionIds().getFirst());
-
+      redirectAttributes.addFlashAttribute(
+          BULK_SUBMISSION_ID, bulkSubmissionResponse.getBulkSubmissionId());
       bulkClaimMetricService.recordSuccessfulFileUploadSize(fileUploadForm.getFile());
       return "redirect:/upload-is-being-checked";
     } catch (WebClientResponseException e) {
       try {
-        ApplicationException error =
-            objectMapper.readValue(e.getResponseBodyAsString(), ApplicationException.class);
-
-        log.error("API upload failed: {}", error.getErrorMessage());
+        ProblemDetail problemDetail =
+            objectMapper.readValue(e.getResponseBodyAsString(), ProblemDetail.class);
+        String errorMessage = problemDetail.getDetail();
+        if (!StringUtils.hasText(errorMessage)) {
+          errorMessage = "An unknown error occurred during upload.";
+        }
+        log.error("API upload failed: {}", errorMessage);
         bulkClaimMetricService.recordFailedFileUploadSize(
-            fileUploadForm.getFile().getSize(), error.getErrorMessage());
-        bindingResult.rejectValue("file", "api.error", error.getErrorMessage());
+            fileUploadForm.getFile().getSize(), errorMessage);
+        bindingResult.rejectValue("file", "api.error", errorMessage);
       } catch (Exception parseEx) {
         log.error("Failed to upload file to Claims API with message: {}", e.getMessage());
-        bindingResult.reject("bulkImport.validation.uploadFailed");
+        bindingResult.reject(UPLOAD_FAILED_CODE);
       }
 
       return showErrorOnUpload(fileUploadForm, bindingResult, model);
 
     } catch (Exception e) {
       log.error("Failed to upload file to Claims API with message: {}", e.getMessage());
-      bindingResult.reject("bulkImport.validation.uploadFailed");
+      bindingResult.reject(UPLOAD_FAILED_CODE);
       return showErrorOnUpload(fileUploadForm, bindingResult, model);
     }
   }

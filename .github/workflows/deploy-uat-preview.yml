@@ -12,7 +12,7 @@ jobs:
     outputs:
       preview_version: ${{ steps.get-preview-version.outputs.preview_version }}
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
       - name: Get preview version
         id: get-preview-version
         run: |
@@ -24,7 +24,7 @@ jobs:
 
   build-and-test:
     needs: [ define-preview-version ]
-    uses: ministryofjustice/laa-ccms-common-workflows/.github/workflows/gradle-build-and-publish.yml@v1
+    uses: ministryofjustice/laa-ccms-common-workflows/.github/workflows/gradle-build-and-publish.yml@v2
     permissions:
       contents: write
       packages: write
@@ -33,12 +33,13 @@ jobs:
       override_version: ${{ needs.define-preview-version.outputs.preview_version }}
       integration_test_task: integrationTest
       semgrep_check: 'true'
+      java_version: 25
     secrets:
       gh_token: ${{ secrets.GITHUB_TOKEN }}
 
   pact-test:
     needs: [ build-and-test ]
-    uses: ministryofjustice/laa-ccms-common-workflows/.github/workflows/pact-and-publish.yml@v1
+    uses: ministryofjustice/laa-ccms-common-workflows/.github/workflows/pact-and-publish.yml@v2
     permissions:
       contents: write
       packages: write
@@ -49,40 +50,35 @@ jobs:
       enable_can_i_merge: true
       provider_name: "laa-data-claims-api"
       pact_tags: "feature"
+      java_version: 25
     secrets:
       gh_token: ${{ secrets.GITHUB_TOKEN }}
       pact_broker_url: 'https://laa-data-pact-broker.apps.live.cloud-platform.service.justice.gov.uk/'
       pact_broker_username: ${{ secrets.PACT_BROKER_USERNAME }}
       pact_broker_password: ${{ secrets.PACT_BROKER_PASSWORD }}
 
-  build-oidc-mock-image:
-    uses: ./.github/workflows/build-oidc-mock-image.yml
-    permissions:
-      id-token: write
-      contents: read
-      packages: read
-    secrets: inherit
-
   ecr-publish-image:
     needs: [ build-and-test ]
-    uses: ministryofjustice/laa-ccms-common-workflows/.github/workflows/ecr-publish-image.yml@v1
+    uses: ministryofjustice/laa-ccms-common-workflows/.github/workflows/ecr-publish-image.yml@v2
     permissions:
       contents: read
       id-token: write
+      security-events: write
     with:
       jar_subproject: 'laa-submit-a-bulk-claim-ui'
       image_version: ${{ format('{0}-{1}', vars.IMAGE_PREFIX, needs.build-and-test.outputs.published_artifact_version) }}
+      java_version: 25
     secrets:
       gh_token: ${{ secrets.GITHUB_TOKEN }}
       ecr_repository: ${{ vars.LAA_SUBMIT_A_BULK_CLAIM_ECR_REPOSITORY }}
       ecr_region: ${{ vars.LAA_SUBMIT_A_BULK_CLAIM_ECR_REGION }}
       ecr_role_to_assume: ${{ secrets.LAA_SUBMIT_A_BULK_CLAIM_ECR_ROLE_TO_ASSUME }}
+      snyk_token: ${{ secrets.SNYK_TOKEN }}
 
   deploy-uat-preview:
     needs:
       - pact-test
       - ecr-publish-image
-      - build-oidc-mock-image
     runs-on: ubuntu-latest
     environment: uat
     permissions:
@@ -92,7 +88,7 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v6
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
 
       - name: Deploy UAT preview branch
         id: deploy
@@ -101,13 +97,14 @@ jobs:
           ecr-region: ${{ vars.LAA_SUBMIT_A_BULK_CLAIM_ECR_REGION }}
           ecr-role-to-assume: ${{ secrets.LAA_SUBMIT_A_BULK_CLAIM_ECR_ROLE_TO_ASSUME }}
           ecr-repository: ${{ vars.LAA_SUBMIT_A_BULK_CLAIM_ECR_REPOSITORY }}
+          oidc-ecr-repository: ${{ vars.LAA_OIDC_MOCK_SERVER_ECR_REPOSITORY }}
           kube-cert: ${{ secrets.KUBE_CERT }}
           kube-token: ${{ secrets.KUBE_TOKEN }}
           kube-cluster: ${{ secrets.KUBE_CLUSTER }}
           kube-namespace: ${{ secrets.KUBE_NAMESPACE }}
           app-environment: uat
           image-tag: ${{ needs.ecr-publish-image.outputs.published_image_version }}
-          oidc-mock-image-tag: ${{ needs.build-oidc-mock-image.outputs.oidc_mock_tag }}
+          oidc-mock-image-tag: 'latest'
           pact_broker_url: 'https://laa-data-pact-broker.apps.live.cloud-platform.service.justice.gov.uk/'
           pact_broker_username: ${{ secrets.pact_broker_username }}
           pact_broker_password: ${{ secrets.pact_broker_password }}
@@ -115,7 +112,7 @@ jobs:
 
       - name: Comment on PR with UI ingress URL
         if: github.event_name == 'pull_request'
-        uses: actions/github-script@v7
+        uses: actions/github-script@ed597411d8f924073f98dfc5c65a23a2325f34cd # v8.0.0
         with:
           script: |
             const releaseName = '${{ steps.deploy.outputs.release-name }}';

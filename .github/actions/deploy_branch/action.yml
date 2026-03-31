@@ -10,6 +10,9 @@ inputs:
   ecr-role-to-assume:
     description: "ECR role to assume"
     required: true
+  oidc-ecr-repository:
+    description: "OIDC ECR repository"
+    required: true
   kube-cert:
     description: "Kubernetes cluster authentication certificate"
     required: true
@@ -33,12 +36,16 @@ inputs:
     required: false
   run-pact-can-i-deploy:
     required: false
+    description: "Run pact can i deploy"
     default: "true"
   pact_broker_url:
+    description: "Pact broker url"
     required: true
   pact_broker_username:
+    description: "Pact broker username"
     required: true
   pact_broker_password:
+    description: "Pact broker password"
     required: true
 
 outputs:
@@ -60,14 +67,14 @@ runs:
     # Add again once checking pipelines
     - name: Can I deploy?
       id: can-i-deploy
-      uses: ministryofjustice/laa-ccms-common-workflows/.github/actions/pact-can-i-deploy@v1
+      uses: ministryofjustice/laa-ccms-common-workflows/.github/actions/pact-can-i-deploy@c72e41d077c60235eac25154328915850042ada3 # v1
       with:
         run_can_i_deploy: ${{ inputs.run-pact-can-i-deploy }}
         pacticipant: 'laa-submit-a-bulk-claim'
         environment: ${{ steps.extract_release_name.outputs.release-name }}
-        pact_broker_url: 'https://laa-data-pact-broker.apps.live.cloud-platform.service.justice.gov.uk/'
-        pact_broker_username: ${{ secrets.pact_broker_username }}
-        pact_broker_password: ${{ secrets.pact_broker_password }}
+        pact_broker_url: ${{ inputs.pact_broker_url }}
+        pact_broker_username: ${{ inputs.pact_broker_username }}
+        pact_broker_password: ${{ inputs.pact_broker_password }}
 
     - name: Authenticate to the cluster
       uses: ministryofjustice/laa-reusable-github-actions/.github/actions/authenticate_to_cluster@2aa2676c3cd9876ec7037ee8b3d729d0306cb7c6
@@ -78,14 +85,14 @@ runs:
         kube-namespace: ${{ inputs.kube-namespace }}
 
     - name: Assume role in Cloud Platform
-      uses: aws-actions/configure-aws-credentials@v4
+      uses: aws-actions/configure-aws-credentials@ff717079ee2060e4bcee96c4779b553acc87447c # v4
       with:
         role-to-assume: ${{ inputs.ecr-role-to-assume }}
         aws-region: ${{ inputs.ecr-region }}
 
     - name: Docker login to ECR
       id: login-ecr
-      uses: aws-actions/amazon-ecr-login@v2
+      uses: aws-actions/amazon-ecr-login@183a1442edf41672e66566b7fc560e297a290896 # v2.1.1
       with:
         mask-password: 'true'
 
@@ -104,6 +111,7 @@ runs:
         ECR_REPOSITORY: ${{ inputs.ecr-repository }}
         ECR_REGION: ${{ inputs.ecr-region }}
         ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+        OIDC_ECR_REPOSITORY: ${{ inputs.oidc-ecr-repository }}
         IMAGE_TAG: ${{ inputs.image-tag }}
         KUBE_NAMESPACE: ${{ inputs.kube-namespace }}
         VALUES_FILE: .helm/submit-a-bulk-claim/values/env-${{ inputs.app-environment }}.yaml
@@ -123,7 +131,7 @@ runs:
             --namespace "$KUBE_NAMESPACE" \
             --install --wait --timeout=10m
           oidc_values_args=(
-            --set image.repository="${ECR_REGISTRY}/${ECR_REPOSITORY}"
+            --set image.repository="${ECR_REGISTRY}/${OIDC_ECR_REPOSITORY}"
             --set sabc.releaseName="${RELEASE_NAME}"
           )
           if [ -n "$OIDC_IMAGE_TAG" ]; then
@@ -163,7 +171,7 @@ runs:
 
     - name: Record deployment to pact broker
       id: record-deployment-to-pact-broker
-      uses: ministryofjustice/laa-ccms-common-workflows/.github/actions/pact-record-deployment@v1
+      uses: ministryofjustice/laa-ccms-common-workflows/.github/actions/pact-record-deployment@c72e41d077c60235eac25154328915850042ada3 # v1
       with:
         pacticipant: 'laa-submit-a-bulk-claim'
         environment: ${{ steps.extract_release_name.outputs.release-name }}

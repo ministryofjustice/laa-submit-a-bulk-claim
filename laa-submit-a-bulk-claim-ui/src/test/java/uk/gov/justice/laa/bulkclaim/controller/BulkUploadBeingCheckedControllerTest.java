@@ -4,10 +4,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.oidcLogin;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static uk.gov.justice.laa.bulkclaim.constants.SessionConstants.BULK_SUBMISSION_ID;
 import static uk.gov.justice.laa.bulkclaim.constants.SessionConstants.SUBMISSION_ID;
 
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.UUID;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -28,10 +27,8 @@ import uk.gov.justice.laa.bulkclaim.client.DataClaimsRestClient;
 import uk.gov.justice.laa.bulkclaim.config.WebMvcTestConfig;
 import uk.gov.justice.laa.bulkclaim.exception.SubmitBulkClaimException;
 import uk.gov.justice.laa.bulkclaim.metrics.BulkClaimMetricService;
-import uk.gov.justice.laa.dstew.payments.claimsdata.model.ClaimStatus;
-import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionClaim;
-import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionResponse;
-import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionStatus;
+import uk.gov.justice.laa.dstew.payments.claimsdata.model.BulkSubmissionStatus;
+import uk.gov.justice.laa.dstew.payments.claimsdata.model.GetBulkSubmissionStatusById200Response;
 
 @WebMvcTest(BulkUploadBeingCheckedController.class)
 @AutoConfigureMockMvc
@@ -48,94 +45,74 @@ public class BulkUploadBeingCheckedControllerTest {
   @DisplayName("GET: /upload-is-being-checked")
   class UploadIsBeingChecked {
 
-    @Test
-    @DisplayName("Should return expected result submission is not ready")
-    void shouldReturnExpectedResult() {
+    @ParameterizedTest
+    @EnumSource(
+        value = BulkSubmissionStatus.class,
+        names = {"READY_FOR_PARSING", "PARSING_COMPLETED"})
+    @DisplayName("Should return expected result bulk submission is not ready")
+    void shouldReturnExpectedResult(BulkSubmissionStatus status) {
       // Given
       UUID submissionId = UUID.fromString("5933fc67-bac7-4f48-81ed-61c8c463f054");
-      when(dataClaimsRestClient.getSubmission(submissionId))
+      UUID bulkSubmissionId = UUID.fromString("5933fc67-bac7-4f48-81ed-61c8c463f056");
+      when(dataClaimsRestClient.getBulkSubmissionSummary(bulkSubmissionId))
           .thenReturn(
-              Mono.just(
-                  SubmissionResponse.builder()
-                      .status(SubmissionStatus.READY_FOR_VALIDATION)
-                      .claims(
-                          Collections.singletonList(
-                              SubmissionClaim.builder().status(ClaimStatus.VALID).build()))
-                      .build()));
-
+              Mono.just(GetBulkSubmissionStatusById200Response.builder().status(status).build()));
       assertThat(
               mockMvc.perform(
                   get("/upload-is-being-checked")
                       .with(oidcLogin().oidcUser(ControllerTestHelper.getOidcUser()))
-                      .sessionAttr(SUBMISSION_ID, submissionId)))
+                      .sessionAttr(SUBMISSION_ID, submissionId)
+                      .sessionAttr(BULK_SUBMISSION_ID, bulkSubmissionId)))
           .hasStatusOk()
           .hasViewName("pages/upload-being-checked");
     }
 
     @Test
-    @DisplayName("Should return expected result when submission not found")
-    void shouldReturnExpectedResultWhenSubmissionNotFound() {
+    @DisplayName("Should return expected result when bulk submission not found")
+    void shouldReturnExpectedResultWhenBulkSubmissionNotFound() {
       // Given
       UUID submissionId = UUID.fromString("5933fc67-bac7-4f48-81ed-61c8c463f054");
-      when(dataClaimsRestClient.getSubmission(submissionId))
+      UUID bulkSubmissionId = UUID.fromString("5933fc67-bac7-4f48-81ed-61c8c463f056");
+
+      when(dataClaimsRestClient.getBulkSubmissionSummary(bulkSubmissionId))
           .thenThrow(
               new WebClientResponseException(
-                  HttpStatusCode.valueOf(404), "Submission not found", null, null, null, null));
+                  HttpStatusCode.valueOf(404),
+                  "Bulk Submission not found",
+                  null,
+                  null,
+                  null,
+                  null));
 
       assertThat(
               mockMvc.perform(
                   get("/upload-is-being-checked")
                       .with(oidcLogin().oidcUser(ControllerTestHelper.getOidcUser()))
-                      .sessionAttr(SUBMISSION_ID, submissionId)))
+                      .sessionAttr(SUBMISSION_ID, submissionId)
+                      .sessionAttr(BULK_SUBMISSION_ID, bulkSubmissionId)))
           .hasStatusOk()
           .hasViewName("pages/upload-being-checked");
     }
 
     @ParameterizedTest
     @EnumSource(
-        value = SubmissionStatus.class,
+        value = BulkSubmissionStatus.class,
         names = {"VALIDATION_SUCCEEDED", "VALIDATION_FAILED"})
     @DisplayName("Should redirect when complete")
-    void shouldRedirectWhenMultipleClaimsHasImported(SubmissionStatus status) {
+    void shouldRedirectWhenSubmissionHasBeenCreated(BulkSubmissionStatus status) {
       // Given
+      UUID bulkSubmissionId = UUID.fromString("5933fc67-bac7-4f48-81ed-61c8c463f056");
       UUID submissionId = UUID.fromString("5933fc67-bac7-4f48-81ed-61c8c463f054");
-      when(dataClaimsRestClient.getSubmission(submissionId))
-          .thenReturn(
-              Mono.just(
-                  SubmissionResponse.builder()
-                      .status(status)
-                      .claims(
-                          Arrays.asList(
-                              SubmissionClaim.builder().status(ClaimStatus.VALID).build(),
-                              SubmissionClaim.builder().status(ClaimStatus.INVALID).build()))
-                      .build()));
 
+      when(dataClaimsRestClient.getBulkSubmissionSummary(bulkSubmissionId))
+          .thenReturn(
+              Mono.just(GetBulkSubmissionStatusById200Response.builder().status(status).build()));
       assertThat(
               mockMvc.perform(
                   get("/upload-is-being-checked")
                       .with(oidcLogin().oidcUser(ControllerTestHelper.getOidcUser()))
-                      .sessionAttr(SUBMISSION_ID, submissionId)))
-          .hasStatus3xxRedirection()
-          .hasRedirectedUrl("/submission/5933fc67-bac7-4f48-81ed-61c8c463f054");
-    }
-
-    @ParameterizedTest
-    @EnumSource(
-        value = SubmissionStatus.class,
-        names = {"VALIDATION_SUCCEEDED", "VALIDATION_FAILED"})
-    @DisplayName("Should redirect when nil submission")
-    void shouldRedirectWhenNilSubmission(SubmissionStatus status) {
-      // Given
-      UUID submissionId = UUID.fromString("5933fc67-bac7-4f48-81ed-61c8c463f054");
-      when(dataClaimsRestClient.getSubmission(submissionId))
-          .thenReturn(
-              Mono.just(SubmissionResponse.builder().isNilSubmission(true).status(status).build()));
-
-      assertThat(
-              mockMvc.perform(
-                  get("/upload-is-being-checked")
-                      .with(oidcLogin().oidcUser(ControllerTestHelper.getOidcUser()))
-                      .sessionAttr(SUBMISSION_ID, submissionId)))
+                      .sessionAttr(SUBMISSION_ID, submissionId)
+                      .sessionAttr(BULK_SUBMISSION_ID, bulkSubmissionId)))
           .hasStatus3xxRedirection()
           .hasRedirectedUrl("/submission/5933fc67-bac7-4f48-81ed-61c8c463f054");
     }
@@ -145,18 +122,67 @@ public class BulkUploadBeingCheckedControllerTest {
     @DisplayName("Should throw error when exception thrown by claims rest service")
     void shouldThrowErrorWhenExceptionThrownByClaimsRestService(int statusCode) {
       // Given
+      UUID bulkSubmissionId = UUID.fromString("5933fc67-bac7-4f48-81ed-61c8c463f056");
       UUID submissionId = UUID.fromString("5933fc67-bac7-4f48-81ed-61c8c463f054");
-      when(dataClaimsRestClient.getSubmission(submissionId))
+      when(dataClaimsRestClient.getBulkSubmissionSummary(bulkSubmissionId))
           .thenThrow(new WebClientResponseException(statusCode, "Error", null, null, null, null));
 
       assertThat(
               mockMvc.perform(
                   get("/upload-is-being-checked")
                       .with(oidcLogin().oidcUser(ControllerTestHelper.getOidcUser()))
-                      .sessionAttr(SUBMISSION_ID, submissionId)))
+                      .sessionAttr(SUBMISSION_ID, submissionId)
+                      .sessionAttr(BULK_SUBMISSION_ID, bulkSubmissionId)))
           .failure()
           .hasCauseInstanceOf(SubmitBulkClaimException.class)
           .hasMessageContaining("Claims API returned an error");
+    }
+
+    @Test
+    @DisplayName("Should throw error when parsing fails")
+    void shouldThrowErrorWhenExceptionWhenParsingFailed() {
+      // Given
+      UUID bulkSubmissionId = UUID.fromString("5933fc67-bac7-4f48-81ed-61c8c463f056");
+      UUID submissionId = UUID.fromString("5933fc67-bac7-4f48-81ed-61c8c463f054");
+      when(dataClaimsRestClient.getBulkSubmissionSummary(bulkSubmissionId))
+          .thenReturn(
+              Mono.just(
+                  GetBulkSubmissionStatusById200Response.builder()
+                      .status(BulkSubmissionStatus.PARSING_FAILED)
+                      .build()));
+      assertThat(
+              mockMvc.perform(
+                  get("/upload-is-being-checked")
+                      .with(oidcLogin().oidcUser(ControllerTestHelper.getOidcUser()))
+                      .sessionAttr(SUBMISSION_ID, submissionId)
+                      .sessionAttr(BULK_SUBMISSION_ID, bulkSubmissionId)))
+          .failure()
+          .hasCauseInstanceOf(SubmitBulkClaimException.class)
+          .hasMessageContaining("Bulk submission parsing failed for: " + bulkSubmissionId);
+    }
+
+    @Test
+    @DisplayName("Should throw error when status is unexpected")
+    void shouldThrowErrorWhenExceptionWhenUnexpectedBulkSubmissionStatus() {
+      // Given
+      UUID bulkSubmissionId = UUID.fromString("5933fc67-bac7-4f48-81ed-61c8c463f056");
+      UUID submissionId = UUID.fromString("5933fc67-bac7-4f48-81ed-61c8c463f054");
+      when(dataClaimsRestClient.getBulkSubmissionSummary(bulkSubmissionId))
+          .thenReturn(
+              Mono.just(
+                  GetBulkSubmissionStatusById200Response.builder()
+                      .status(BulkSubmissionStatus.UNAUTHORISED)
+                      .build()));
+      assertThat(
+              mockMvc.perform(
+                  get("/upload-is-being-checked")
+                      .with(oidcLogin().oidcUser(ControllerTestHelper.getOidcUser()))
+                      .sessionAttr(SUBMISSION_ID, submissionId)
+                      .sessionAttr(BULK_SUBMISSION_ID, bulkSubmissionId)))
+          .failure()
+          .hasCauseInstanceOf(SubmitBulkClaimException.class)
+          .hasMessageContaining(
+              "Unexpected bulk submission status returned for: " + bulkSubmissionId);
     }
   }
 }

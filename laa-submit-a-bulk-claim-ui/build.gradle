@@ -1,5 +1,5 @@
 plugins {
-    id 'io.freefair.lombok' version '8.14'
+    id 'io.freefair.lombok' version '9.2.0'
     id("com.diffplug.spotless") version "7.2.1"
     id 'au.com.dius.pact' version '4.6.19'
     id "io.sentry.jvm.gradle" version "5.12.2"
@@ -36,10 +36,9 @@ dependencies {
     implementation 'com.fasterxml.jackson.core:jackson-core:2.21.1'
     implementation 'tools.jackson.core:jackson-core:3.1.0'
 
-    implementation 'uk.gov.justice.laa.datastewardship.payments:data-claims-api-models:b4f5c09'
-
-    //Common exception handling
-    implementation 'uk.gov.laa.springboot:laa-spring-boot-starter-application-exception'
+    implementation 'uk.gov.justice.laa.datastewardship.payments:data-claims-api-models:1.0.17'
+    
+    compileOnly 'io.swagger.core.v3:swagger-annotations:2.2.30'
 
     implementation 'org.springframework.boot:spring-boot-starter-cache'
     implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
@@ -179,7 +178,7 @@ spotless {
         importOrder()
         removeUnusedImports()
         cleanthat()
-        googleJavaFormat()
+        googleJavaFormat('1.33.0')
     }
 }
 

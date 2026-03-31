@@ -12,3 +12,28 @@
 .govuk-extension__background_white{
   background-color: white;
 }
+
+.app-sort-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  text-decoration: none;
+
+}
+
+
+.app-sort-link__icon {
+  flex: 0 0 auto;
+  display: block;
+}
+
+.govuk-table__header .govuk-link.app-sort-link:hover,
+.govuk-table__header .govuk-link.app-sort-link:active {
+  color: inherit;
+}
+
+.govuk-notification-banner--success:focus {
+  outline: none;
+}
+
+

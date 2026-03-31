@@ -1,5 +1,7 @@
 package uk.gov.justice.laa.bulkclaim.controller;
 
+import static org.springframework.beans.support.PagedListHolder.DEFAULT_PAGE_SIZE;
+import static uk.gov.justice.laa.bulkclaim.constants.SessionConstants.BULK_SUBMISSION_ID;
 import static uk.gov.justice.laa.bulkclaim.constants.SessionConstants.SUBMISSION_ID;
 
 import java.util.List;
@@ -97,6 +99,8 @@ public class SubmissionDetailController {
     // Redirect based on submission status
     if (submission != null && submission.getStatus() == SubmissionStatus.VALIDATION_IN_PROGRESS) {
       redirectAttributes.addFlashAttribute("submission", submission);
+      redirectAttributes.addFlashAttribute(SUBMISSION_ID, submission.getSubmissionId());
+      redirectAttributes.addFlashAttribute(BULK_SUBMISSION_ID, submission.getBulkSubmissionId());
       return "redirect:/upload-is-being-checked";
     }
 
@@ -126,11 +130,14 @@ public class SubmissionDetailController {
       @RequestParam(value = "messagesPage", defaultValue = "0") final int messagesPage,
       @RequestParam(value = SUBMISSION_ID) UUID submissionId,
       @RequestParam(value = "navTab", required = false, defaultValue = "CLAIM_DETAILS")
-          ViewSubmissionNavigationTab navigationTab) {
+          ViewSubmissionNavigationTab navigationTab,
+      @RequestParam(value = "sort", defaultValue = "line_number,asc", required = false)
+          String sort) {
+
     // Adding page and messagesPage to model
     model.addAttribute("page", page);
     model.addAttribute("messagesPage", messagesPage);
-
+    model.addAttribute("ViewSubmissionNavigationTab", ViewSubmissionNavigationTab.class);
     final SubmissionResponse submissionResponse =
         dataClaimsRestClient
             .getSubmission(submissionId)
@@ -147,7 +154,7 @@ public class SubmissionDetailController {
     if (submissionAccepted) {
       submissionSummary =
           handleAcceptedSubmission(
-              model, submissionSummary, submissionResponse, submissionId, page, messagesPage);
+              model, submissionSummary, submissionResponse, submissionId, page, messagesPage, sort);
       addCommonSubmissionAttributes(
           model, submissionSummary, submissionResponse, navigationTab, submissionId);
       return "pages/view-submission-detail-accepted";
@@ -165,10 +172,11 @@ public class SubmissionDetailController {
       SubmissionResponse submissionResponse,
       UUID submissionId,
       int page,
-      int messagesPage) {
+      int messagesPage,
+      String sort) {
 
     SubmissionClaimsDetails claimDetails =
-        submissionClaimDetailsBuilder.build(submissionResponse, page, DEFAULT_PAGE_SIZE);
+        submissionClaimDetailsBuilder.build(submissionResponse, page, DEFAULT_PAGE_SIZE, sort);
     model.addAttribute("claimDetails", claimDetails);
 
     if (claimDetails.totalClaimValue() != null) {
