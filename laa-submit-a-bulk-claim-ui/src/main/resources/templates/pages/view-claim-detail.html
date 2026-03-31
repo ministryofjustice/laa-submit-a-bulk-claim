@@ -89,225 +89,214 @@
           </div>
         </div>
       </div>
-          <div class="govuk-grid-row">
-              <div class="govuk-grid-column-full">
-
-                  <div class="govuk-summary-card">
-                      <div class="govuk-summary-card__title-wrapper">
-                          <h2 class="govuk-summary-card__title" th:text="Summary"></h2>
-                      </div>
-                      <div class="govuk-summary-card__content">
-                  <dl class="govuk-summary-list">
-                      <th:block th:if="${claimSummary.areaOfLaw == 'CIVIL'}">
-                      <div class="govuk-summary-list__row">
-                          <dt class="govuk-summary-list__key">Client Name</dt>
-                          <dd class="govuk-summary-list__value"
-                              th:text="${claimSummary.clientForename + ' ' + claimSummary.clientSurname}"></dd>
-                      </div>
-                      <div class="govuk-summary-list__row">
-                          <dt class="govuk-summary-list__key">UFN</dt>
-                          <dd class="govuk-summary-list__value"
-                              th:text="${claimSummary.uniqueFileNumber}"></dd>
-                      </div>
-                      <div class="govuk-summary-list__row">
-                          <dt class="govuk-summary-list__key">UCN</dt>
-                          <dd class="govuk-summary-list__value"
-                              th:text="${claimSummary.uniqueClientNumber}"></dd>
-                      </div>
-                      <div class="govuk-summary-list__row">
-                          <dt class="govuk-summary-list__key">Office Account</dt>
-                          <dd class="govuk-summary-list__value"
-                              th:text="${claimSummary.officeAccountNumber}"></dd>
-                      </div>
+        <div class="govuk-grid-row">
+          <div class="govuk-grid-column-full">
+            <div class="govuk-summary-card">
+              <div class="govuk-summary-card__title-wrapper">
+                <h2 class="govuk-summary-card__title" th:text="Summary"></h2>
+              </div>
+              <div class="govuk-summary-card__content">
+                <dl class="govuk-summary-list">
+                  <th:block th:if="${claimSummary.areaOfLaw == 'LEGAL HELP'}">
+                    <div class="govuk-summary-list__row">
+                      <dt class="govuk-summary-list__key">Client Name</dt>
+                      <dd class="govuk-summary-list__value"
+                          th:text="${claimSummary.clientForename + ' ' + claimSummary.clientSurname}"></dd>
+                    </div>
+                    <div class="govuk-summary-list__row">
+                      <dt class="govuk-summary-list__key">UFN</dt>
+                      <dd class="govuk-summary-list__value"
+                          th:text="${claimSummary.uniqueFileNumber}"></dd>
+                    </div>
+                    <div class="govuk-summary-list__row">
+                      <dt class="govuk-summary-list__key">UCN</dt>
+                      <dd class="govuk-summary-list__value"
+                          th:text="${claimSummary.uniqueClientNumber}"></dd>
+                    </div>
+                    <div class="govuk-summary-list__row">
+                      <dt class="govuk-summary-list__key">Office Account</dt>
+                      <dd class="govuk-summary-list__value"
+                          th:text="${claimSummary.officeAccountNumber}"></dd>
+                    </div>
 <!--                      <div class="govuk-summary-list__row">-->
 <!--                          <dt class="govuk-summary-list__key">Date Submitted</dt>-->
 <!--                          <dd class="govuk-summary-list__value"-->
 <!--                              th:text="${#temporals.format(claimSummary.submissionDate, 'd MMMM yyyy ''at'' HH:mm:ss')}"></dd>-->
 <!--                      </div>-->
-                      <div class="govuk-summary-list__row">
-                          <dt class="govuk-summary-list__key">Area of Law</dt>
-                          <dd class="govuk-summary-list__value"
-                              th:text="${claimSummary.areaOfLaw}"></dd>
-                      </div>
-                      <div class="govuk-summary-list__row">
-                          <dt class="govuk-summary-list__key">Category of Law</dt>
-                          <dd class="govuk-summary-list__value"
-                              th:text="${claimSummary.standardFeeCategoryCode}"></dd>
-                      </div>
-                      <div class="govuk-summary-list__row">
-                          <dt class="govuk-summary-list__key">Fee code</dt>
-                          <dd class="govuk-summary-list__value"
-                              th:text="${claimSummary.feeCode}"></dd>
-                      </div>
-                      <div class="govuk-summary-list__row">
-                          <dt class="govuk-summary-list__key">Matter type 1</dt>
-                          <dd class="govuk-summary-list__value"
-                              th:text="${claimSummary.matterType1}"></dd>
-                      </div>
-                      <div class="govuk-summary-list__row">
-                          <dt class="govuk-summary-list__key">Matter type 2</dt>
-                          <dd class="govuk-summary-list__value"
-                              th:text="${claimSummary.matterType2}"></dd>
-                      </div>
-                      <div class="govuk-summary-list__row">
-                          <dt class="govuk-summary-list__key">Case start date</dt>
-                          <dd class="govuk-summary-list__value"
-                              th:text="${#temporals.format(claimSummary.caseStartDate, 'dd/MM/yyyy')}"></dd>
-                      </div>
-                      <div class="govuk-summary-list__row">
-                          <dt class="govuk-summary-list__key">Escape case</dt>
-                          <dd class="govuk-summary-list__value"
-                              th:text="${claimSummary.isEscaped ? 'Yes' : 'No'}"></dd>
-                      </div>
-                      <div class="govuk-summary-list__row">
-                          <dt class="govuk-summary-list__key">VAT requested</dt>
-                          <dd class="govuk-summary-list__value"
-                              th:text="${claimSummary.isVatApplicable ? 'Yes' : 'No'}"></dd>
-                      </div>
-                      </th:block>
+                    <div class="govuk-summary-list__row">
+                      <dt class="govuk-summary-list__key">Area of Law</dt>
+                      <dd class="govuk-summary-list__value"
+                          th:text="${claimSummary.areaOfLaw}"></dd>
+                    </div>
+                    <div class="govuk-summary-list__row">
+                      <dt class="govuk-summary-list__key">Category of Law</dt>
+                      <dd class="govuk-summary-list__value"
+                          th:text="${claimSummary.standardFeeCategoryCode}"></dd>
+                    </div>
+                    <div class="govuk-summary-list__row">
+                      <dt class="govuk-summary-list__key">Fee code</dt>
+                      <dd class="govuk-summary-list__value"
+                          th:text="${claimSummary.feeCode}"></dd>
+                    </div>
+                    <div class="govuk-summary-list__row">
+                      <dt class="govuk-summary-list__key">Matter type 1</dt>
+                      <dd class="govuk-summary-list__value"
+                          th:text="${claimSummary.matterType1}"></dd>
+                    </div>
+                    <div class="govuk-summary-list__row">
+                      <dt class="govuk-summary-list__key">Matter type 2</dt>
+                       <dd class="govuk-summary-list__value"
+                           th:text="${claimSummary.matterType2}"></dd>
+                    </div>
+                    <div class="govuk-summary-list__row">
+                      <dt class="govuk-summary-list__key">Case start date</dt>
+                      <dd class="govuk-summary-list__value"
+                           th:text="${#temporals.format(claimSummary.caseStartDate, 'dd/MM/yyyy')}"></dd>
+                    </div>
+                    <div class="govuk-summary-list__row">
+                      <dt class="govuk-summary-list__key">Escape case</dt>
+                      <dd class="govuk-summary-list__value"
+                           th:text="${claimSummary.isEscaped ? 'Yes' : 'No'}"></dd>
+                    </div>
+                    <div class="govuk-summary-list__row">
+                      <dt class="govuk-summary-list__key">VAT requested</dt>
+                      <dd class="govuk-summary-list__value"
+                           th:text="${claimSummary.isVatApplicable ? 'Yes' : 'No'}"></dd>
+                    </div>
+                  </th:block>
 
 
-                      <th:block th:if="${claimSummary.areaOfLaw == 'LEGAL HELP'}">
-                          <div class="govuk-summary-list__row">
-                              <dt class="govuk-summary-list__key">Client NAMI</dt>
-                              <dd class="govuk-summary-list__value"
-                                  th:text="${claimSummary.clientForename + ' ' + claimSummary.clientSurname}"></dd>
-                          </div>
-                          <div class="govuk-summary-list__row">
-                              <dt class="govuk-summary-list__key">UFN</dt>
-                              <dd class="govuk-summary-list__value"
-                                  th:text="${claimSummary.uniqueFileNumber}"></dd>
-                          </div>
-                          <div class="govuk-summary-list__row">
-                              <dt class="govuk-summary-list__key">UCN</dt>
-                              <dd class="govuk-summary-list__value"
-                                  th:text="${claimSummary.uniqueClientNumber}"></dd>
-                          </div>
-                          <div class="govuk-summary-list__row">
-                              <dt class="govuk-summary-list__key">Office Account</dt>
-                              <dd class="govuk-summary-list__value"
-                                  th:text="${claimSummary.officeAccountNumber}"></dd>
-                          </div>
-                          <!--                      <div class="govuk-summary-list__row">-->
-                          <!--                          <dt class="govuk-summary-list__key">Date Submitted</dt>-->
-                          <!--                          <dd class="govuk-summary-list__value"-->
-                          <!--                              th:text="${#temporals.format(claimSummary.submissionDate, 'd MMMM yyyy ''at'' HH:mm:ss')}"></dd>-->
-                          <!--                      </div>-->
-                          <div class="govuk-summary-list__row">
-                              <dt class="govuk-summary-list__key">Area of Law</dt>
-                              <dd class="govuk-summary-list__value"
-                                  th:text="${claimSummary.areaOfLaw}"></dd>
-                          </div>
-                          <div class="govuk-summary-list__row">
-                              <dt class="govuk-summary-list__key">Category of Law</dt>
-                              <dd class="govuk-summary-list__value"
-                                  th:text="${claimSummary.standardFeeCategoryCode}"></dd>
-                          </div>
-                          <div class="govuk-summary-list__row">
-                              <dt class="govuk-summary-list__key">Fee code</dt>
-                              <dd class="govuk-summary-list__value"
-                                  th:text="${claimSummary.feeCode}"></dd>
-                          </div>
-                          <div class="govuk-summary-list__row">
-                              <dt class="govuk-summary-list__key">Matter type 1</dt>
-                              <dd class="govuk-summary-list__value"
-                                  th:text="${claimSummary.matterType1}"></dd>
-                          </div>
-                          <div class="govuk-summary-list__row">
-                              <dt class="govuk-summary-list__key">Matter type 2</dt>
-                              <dd class="govuk-summary-list__value"
-                                  th:text="${claimSummary.matterType2}"></dd>
-                          </div>
-                          <div class="govuk-summary-list__row">
-                              <dt class="govuk-summary-list__key">Case start date</dt>
-                              <dd class="govuk-summary-list__value"
-                                  th:text="${#temporals.format(claimSummary.caseStartDate, 'dd/MM/yyyy')}"></dd>
-                          </div>
-                          <div class="govuk-summary-list__row">
-                              <dt class="govuk-summary-list__key">Escape case</dt>
-                              <dd class="govuk-summary-list__value"
-                                  th:text="${claimSummary.isEscaped ? 'Yes' : 'No'}"></dd>
-                          </div>
-                          <div class="govuk-summary-list__row">
-                              <dt class="govuk-summary-list__key">VAT requested</dt>
-                              <dd class="govuk-summary-list__value"
-                                  th:text="${claimSummary.isVatApplicable ? 'Yes' : 'No'}"></dd>
-                          </div>
-                      </th:block>
+                  <th:block th:if="${claimSummary.areaOfLaw == 'CRIME_LOWER'}">
+                    <div class="govuk-summary-list__row">
+                      <dt class="govuk-summary-list__key">Client NAMI</dt>
+                      <dd class="govuk-summary-list__value"
+                            th:text="${claimSummary.clientForename + ' ' + claimSummary.clientSurname}"></dd>
+                    </div>
+                    <div class="govuk-summary-list__row">
+                      <dt class="govuk-summary-list__key">UFN</dt>
+                      <dd class="govuk-summary-list__value"
+                            th:text="${claimSummary.uniqueFileNumber}"></dd>
+                    </div>
+                    <div class="govuk-summary-list__row">
+                      <dt class="govuk-summary-list__key">UCN</dt>
+                      <dd class="govuk-summary-list__value"
+                            th:text="${claimSummary.uniqueClientNumber}"></dd>
+                    </div>
+                    <div class="govuk-summary-list__row">
+                      <dt class="govuk-summary-list__key">Office Account</dt>
+                      <dd class="govuk-summary-list__value"
+                            th:text="${claimSummary.officeAccountNumber}"></dd>
+                    </div>
+                    <div class="govuk-summary-list__row">
+                      <dt class="govuk-summary-list__key">Area of Law</dt>
+                      <dd class="govuk-summary-list__value"
+                            th:text="${claimSummary.areaOfLaw}"></dd>
+                    </div>
+                    <div class="govuk-summary-list__row">
+                      <dt class="govuk-summary-list__key">Category of Law</dt>
+                      <dd class="govuk-summary-list__value"
+                            th:text="${claimSummary.standardFeeCategoryCode}"></dd>
+                    </div>
+                    <div class="govuk-summary-list__row">
+                      <dt class="govuk-summary-list__key">Fee code</dt>
+                      <dd class="govuk-summary-list__value"
+                            th:text="${claimSummary.feeCode}"></dd>
+                    </div>
+                    <div class="govuk-summary-list__row">
+                      <dt class="govuk-summary-list__key">Matter type 1</dt>
+                      <dd class="govuk-summary-list__value"
+                            th:text="${claimSummary.matterType1}"></dd>
+                    </div>
+                    <div class="govuk-summary-list__row">
+                      <dt class="govuk-summary-list__key">Matter type 2</dt>
+                      <dd class="govuk-summary-list__value"
+                            th:text="${claimSummary.matterType2}"></dd>
+                    </div>
+                    <div class="govuk-summary-list__row">
+                      <dt class="govuk-summary-list__key">Case start date</dt>
+                      <dd class="govuk-summary-list__value"
+                            th:text="${#temporals.format(claimSummary.caseStartDate, 'dd/MM/yyyy')}"></dd>
+                    </div>
+                    <div class="govuk-summary-list__row">
+                      <dt class="govuk-summary-list__key">Escape case</dt>
+                      <dd class="govuk-summary-list__value"
+                           th:text="${claimSummary.isEscaped ? 'Yes' : 'No'}"></dd>
+                    </div>
+                    <div class="govuk-summary-list__row">
+                      <dt class="govuk-summary-list__key">VAT requested</dt>
+                      <dd class="govuk-summary-list__value"
+                          th:text="${claimSummary.isVatApplicable ? 'Yes' : 'No'}"></dd>
+                    </div>
+                  </th:block>
 
 
-                      <th:block th:if="${claimSummary.areaOfLaw == 'MEDIATION'}">
-                          <div class="govuk-summary-list__row">
-                              <dt class="govuk-summary-list__key">Client NA</dt>
-                              <dd class="govuk-summary-list__value"
-                                  th:text="${claimSummary.clientForename + ' ' + claimSummary.clientSurname}"></dd>
-                          </div>
-                          <div class="govuk-summary-list__row">
-                              <dt class="govuk-summary-list__key">UFN</dt>
-                              <dd class="govuk-summary-list__value"
-                                  th:text="${claimSummary.uniqueFileNumber}"></dd>
-                          </div>
-                          <div class="govuk-summary-list__row">
-                              <dt class="govuk-summary-list__key">UCN</dt>
-                              <dd class="govuk-summary-list__value"
-                                  th:text="${claimSummary.uniqueClientNumber}"></dd>
-                          </div>
-                          <div class="govuk-summary-list__row">
-                              <dt class="govuk-summary-list__key">Office Account</dt>
-                              <dd class="govuk-summary-list__value"
-                                  th:text="${claimSummary.officeAccountNumber}"></dd>
-                          </div>
-                          <!--                      <div class="govuk-summary-list__row">-->
-                          <!--                          <dt class="govuk-summary-list__key">Date Submitted</dt>-->
-                          <!--                          <dd class="govuk-summary-list__value"-->
-                          <!--                              th:text="${#temporals.format(claimSummary.submissionDate, 'd MMMM yyyy ''at'' HH:mm:ss')}"></dd>-->
-                          <!--                      </div>-->
-                          <div class="govuk-summary-list__row">
-                              <dt class="govuk-summary-list__key">Area of Law</dt>
-                              <dd class="govuk-summary-list__value"
-                                  th:text="${claimSummary.areaOfLaw}"></dd>
-                          </div>
-                          <div class="govuk-summary-list__row">
-                              <dt class="govuk-summary-list__key">Category of Law</dt>
-                              <dd class="govuk-summary-list__value"
-                                  th:text="${claimSummary.standardFeeCategoryCode}"></dd>
-                          </div>
-                          <div class="govuk-summary-list__row">
-                              <dt class="govuk-summary-list__key">Fee code</dt>
-                              <dd class="govuk-summary-list__value"
-                                  th:text="${claimSummary.feeCode}"></dd>
-                          </div>
-                          <div class="govuk-summary-list__row">
-                              <dt class="govuk-summary-list__key">Matter type 1</dt>
-                              <dd class="govuk-summary-list__value"
-                                  th:text="${claimSummary.matterType1}"></dd>
-                          </div>
-                          <div class="govuk-summary-list__row">
-                              <dt class="govuk-summary-list__key">Matter type 2</dt>
-                              <dd class="govuk-summary-list__value"
-                                  th:text="${claimSummary.matterType2}"></dd>
-                          </div>
-                          <div class="govuk-summary-list__row">
-                              <dt class="govuk-summary-list__key">Case start date</dt>
-                              <dd class="govuk-summary-list__value"
-                                  th:text="${#temporals.format(claimSummary.caseStartDate, 'dd/MM/yyyy')}"></dd>
-                          </div>
-                          <div class="govuk-summary-list__row">
-                              <dt class="govuk-summary-list__key">Escape case</dt>
-                              <dd class="govuk-summary-list__value"
-                                  th:text="${claimSummary.isEscaped ? 'Yes' : 'No'}"></dd>
-                          </div>
-                          <div class="govuk-summary-list__row">
-                              <dt class="govuk-summary-list__key">VAT requested</dt>
-                              <dd class="govuk-summary-list__value"
-                                  th:text="${claimSummary.isVatApplicable ? 'Yes' : 'No'}"></dd>
-                          </div>
-                      </th:block>
-                  </dl>
-                      </div>
-                      </div>
+                  <th:block th:if="${claimSummary.areaOfLaw == 'MEDIATION'}">
+                    <div class="govuk-summary-list__row">
+                      <dt class="govuk-summary-list__key">Client NA</dt>
+                      <dd class="govuk-summary-list__value"
+                            th:text="${claimSummary.clientForename + ' ' + claimSummary.clientSurname}"></dd>
+                    </div>
+                    <div class="govuk-summary-list__row">
+                      <dt class="govuk-summary-list__key">UFN</dt>
+                      <dd class="govuk-summary-list__value"
+                            th:text="${claimSummary.uniqueFileNumber}"></dd>
+                    </div>
+                    <div class="govuk-summary-list__row">
+                      <dt class="govuk-summary-list__key">UCN</dt>
+                      <dd class="govuk-summary-list__value"
+                            th:text="${claimSummary.uniqueClientNumber}"></dd>
+                    </div>
+                    <div class="govuk-summary-list__row">
+                      <dt class="govuk-summary-list__key">Office Account</dt>
+                      <dd class="govuk-summary-list__value"
+                            th:text="${claimSummary.officeAccountNumber}"></dd>
+                    </div>
+                    <div class="govuk-summary-list__row">
+                      <dt class="govuk-summary-list__key">Area of Law</dt>
+                      <dd class="govuk-summary-list__value"
+                            th:text="${claimSummary.areaOfLaw}"></dd>
+                    </div>
+                    <div class="govuk-summary-list__row">
+                      <dt class="govuk-summary-list__key">Category of Law</dt>
+                      <dd class="govuk-summary-list__value"
+                            th:text="${claimSummary.standardFeeCategoryCode}"></dd>
+                    </div>
+                    <div class="govuk-summary-list__row">
+                      <dt class="govuk-summary-list__key">Fee code</dt>
+                      <dd class="govuk-summary-list__value"
+                            th:text="${claimSummary.feeCode}"></dd>
+                    </div>
+                    <div class="govuk-summary-list__row">
+                      <dt class="govuk-summary-list__key">Matter type 1</dt>
+                      <dd class="govuk-summary-list__value"
+                            th:text="${claimSummary.matterType1}"></dd>
+                    </div>
+                    <div class="govuk-summary-list__row">
+                      <dt class="govuk-summary-list__key">Matter type 2</dt>
+                      <dd class="govuk-summary-list__value"
+                            th:text="${claimSummary.matterType2}"></dd>
+                    </div>
+                    <div class="govuk-summary-list__row">
+                      <dt class="govuk-summary-list__key">Case start date</dt>
+                      <dd class="govuk-summary-list__value"
+                            th:text="${#temporals.format(claimSummary.caseStartDate, 'dd/MM/yyyy')}"></dd>
+                    </div>
+                    <div class="govuk-summary-list__row">
+                      <dt class="govuk-summary-list__key">Escape case</dt>
+                      <dd class="govuk-summary-list__value"
+                            th:text="${claimSummary.isEscaped ? 'Yes' : 'No'}"></dd>
+                    </div>
+                    <div class="govuk-summary-list__row">
+                      <dt class="govuk-summary-list__key">VAT requested</dt>
+                      <dd class="govuk-summary-list__value"
+                            th:text="${claimSummary.isVatApplicable ? 'Yes' : 'No'}"></dd>
+                    </div>
+                  </th:block>
+                </dl>
               </div>
+            </div>
           </div>
+        </div>
 
         <div class="govuk-grid-column-full">
             <table class="govuk-table">
