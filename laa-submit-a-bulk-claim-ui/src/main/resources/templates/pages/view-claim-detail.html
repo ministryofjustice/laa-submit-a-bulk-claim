@@ -168,19 +168,19 @@
 
                   <th:block th:if="${claimSummary.areaOfLaw == 'CRIME_LOWER'}">
                     <div class="govuk-summary-list__row">
-                      <dt class="govuk-summary-list__key">Client NAMI</dt>
+                      <dt class="govuk-summary-list__key">Client surname</dt>
                       <dd class="govuk-summary-list__value"
-                            th:text="${claimSummary.clientForename + ' ' + claimSummary.clientSurname}"></dd>
+                            th:text="${claimSummary.clientSurname}"></dd>
+                    </div>
+                    <div class="govuk-summary-list__row">
+                      <dt class="govuk-summary-list__key">Client initial</dt>
+                      <dd class="govuk-summary-list__value"
+                            th:text="${claimSummary.clientForename}"></dd>
                     </div>
                     <div class="govuk-summary-list__row">
                       <dt class="govuk-summary-list__key">UFN</dt>
                       <dd class="govuk-summary-list__value"
                             th:text="${claimSummary.uniqueFileNumber}"></dd>
-                    </div>
-                    <div class="govuk-summary-list__row">
-                      <dt class="govuk-summary-list__key">UCN</dt>
-                      <dd class="govuk-summary-list__value"
-                            th:text="${claimSummary.uniqueClientNumber}"></dd>
                     </div>
                     <div class="govuk-summary-list__row">
                       <dt class="govuk-summary-list__key">Office Account</dt>
@@ -203,19 +203,29 @@
                             th:text="${claimSummary.feeCode}"></dd>
                     </div>
                     <div class="govuk-summary-list__row">
-                      <dt class="govuk-summary-list__key">Matter type 1</dt>
+                      <dt class="govuk-summary-list__key">Matter type</dt>
                       <dd class="govuk-summary-list__value"
-                            th:text="${claimSummary.matterType1}"></dd>
+                            th:text="${claimSummary.matterTypeCode}"></dd>
                     </div>
                     <div class="govuk-summary-list__row">
-                      <dt class="govuk-summary-list__key">Matter type 2</dt>
+                      <dt class="govuk-summary-list__key">Stage Reached</dt>
                       <dd class="govuk-summary-list__value"
-                            th:text="${claimSummary.matterType2}"></dd>
+                            th:text="${claimSummary.stageReachedCode}"></dd>
+                    </div>
+                    <div class="govuk-summary-list__row">
+                      <dt class="govuk-summary-list__key">Outcome code</dt>
+                      <dd class="govuk-summary-list__value"
+                            th:text="${claimSummary.outcomeCode}"></dd>
                     </div>
                     <div class="govuk-summary-list__row">
                       <dt class="govuk-summary-list__key">Case start date</dt>
                       <dd class="govuk-summary-list__value"
                             th:text="${#temporals.format(claimSummary.caseStartDate, 'dd/MM/yyyy')}"></dd>
+                    </div>
+                    <div class="govuk-summary-list__row">
+                      <dt class="govuk-summary-list__key">Date of work concluded</dt>
+                      <dd class="govuk-summary-list__value"
+                            th:text="${#temporals.format(claimSummary.caseConcludedDate, 'dd/MM/yyyy')}"></dd>
                     </div>
                     <div class="govuk-summary-list__row">
                       <dt class="govuk-summary-list__key">Escape case</dt>
@@ -232,17 +242,22 @@
 
                   <th:block th:if="${claimSummary.areaOfLaw == 'MEDIATION'}">
                     <div class="govuk-summary-list__row">
-                      <dt class="govuk-summary-list__key">Client NA</dt>
+                      <dt class="govuk-summary-list__key">Client name</dt>
                       <dd class="govuk-summary-list__value"
                             th:text="${claimSummary.clientForename + ' ' + claimSummary.clientSurname}"></dd>
                     </div>
                     <div class="govuk-summary-list__row">
-                      <dt class="govuk-summary-list__key">UFN</dt>
+                      <dt class="govuk-summary-list__key">Client 1 UCN</dt>
                       <dd class="govuk-summary-list__value"
                             th:text="${claimSummary.uniqueFileNumber}"></dd>
                     </div>
                     <div class="govuk-summary-list__row">
-                      <dt class="govuk-summary-list__key">UCN</dt>
+                      <dt class="govuk-summary-list__key">Client 2 name</dt>
+                      <dd class="govuk-summary-list__value"
+                            th:text="${claimSummary.client2Forename + ' ' + claimSummary.client2Surname}"></dd>
+                    </div>
+                    <div class="govuk-summary-list__row">
+                      <dt class="govuk-summary-list__key">Client 2 UCN</dt>
                       <dd class="govuk-summary-list__value"
                             th:text="${claimSummary.uniqueClientNumber}"></dd>
                     </div>
