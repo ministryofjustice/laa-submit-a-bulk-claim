@@ -1,8 +1,8 @@
 package uk.gov.justice.laa.bulkclaim.controller;
 
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doAnswer;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.oidcLogin;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -11,6 +11,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
 import static uk.gov.justice.laa.bulkclaim.controller.ControllerTestHelper.getOidcUser;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -21,12 +22,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
 import org.springframework.context.annotation.Import;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ProblemDetail;
 import org.springframework.http.ResponseEntity;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.util.SerializationUtils;
 import org.springframework.validation.Errors;
+import org.springframework.web.reactive.function.client.WebClientResponseException;
 import reactor.core.publisher.Mono;
+import tools.jackson.databind.ObjectMapper;
 import uk.gov.justice.laa.bulkclaim.client.DataClaimsRestClient;
 import uk.gov.justice.laa.bulkclaim.config.WebMvcTestConfig;
 import uk.gov.justice.laa.bulkclaim.dto.FileUploadForm;
@@ -42,6 +48,7 @@ import uk.gov.justice.laa.dstew.payments.claimsdata.model.CreateBulkSubmission20
 class BulkImportControllerTest {
 
   @Autowired private MockMvc mockMvc;
+  @Autowired private ObjectMapper objectMapper;
 
   @MockitoBean private BulkImportFileValidator bulkImportFileValidator;
   @MockitoBean private BulkImportFileVirusValidator bulkImportFileVirusValidator;
@@ -161,6 +168,105 @@ class BulkImportControllerTest {
                   .with(oidcLogin().oidcUser(getOidcUser())))
           .andExpect(status().is3xxRedirection())
           .andExpect(view().name("redirect:/upload-is-being-checked"));
+    }
+
+    @DisplayName("Should throw web client exception with provided error details")
+    @Test
+    void webClientExceptionWithErrorDetails() throws Exception {
+      var input =
+          new FileUploadForm(
+              new MockMultipartFile("fileUpload", "test.csv", "text/csv", "text".getBytes()));
+      var errorDetails = "VAT Applicable must only include Y or N";
+      var problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, errorDetails);
+      when(dataClaimsRestClient.upload(any(), any(), any()))
+          .thenThrow(
+              new WebClientResponseException(
+                  HttpStatus.BAD_REQUEST.value(),
+                  "bad request",
+                  null,
+                  objectMapper.writeValueAsBytes(problemDetail),
+                  null));
+      var result =
+          mockMvc
+              .perform(
+                  post("/upload")
+                      .flashAttr("fileUploadForm", input)
+                      .with(csrf())
+                      .with(oidcLogin().oidcUser(getOidcUser())))
+              .andExpect(status().isOk())
+              .andExpect(view().name("pages/upload"))
+              .andReturn();
+
+      verify(dataClaimsRestClient)
+          .upload(eq(input.getFile()), eq(getOidcUser().getEmail()), eq(Collections.emptyList()));
+      verify(bulkClaimMetricService)
+          .recordFailedFileUploadSize(eq(input.getFile().getSize()), eq(errorDetails));
+      assertTrue(result.getResponse().getContentAsString().contains(errorDetails));
+    }
+
+    @DisplayName("Should throw web client exception with default error details")
+    @Test
+    void webClientExceptionWithDefaultErrorMessage() throws Exception {
+      var input =
+          new FileUploadForm(
+              new MockMultipartFile("fileUpload", "test.csv", "text/csv", "text".getBytes()));
+      var defaultErrorMessage = "An unknown error occurred during upload.";
+      var problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, "");
+      when(dataClaimsRestClient.upload(any(), any(), any()))
+          .thenThrow(
+              new WebClientResponseException(
+                  HttpStatus.BAD_REQUEST.value(),
+                  "bad request",
+                  null,
+                  objectMapper.writeValueAsBytes(problemDetail),
+                  null));
+      var result =
+          mockMvc
+              .perform(
+                  post("/upload")
+                      .flashAttr("fileUploadForm", input)
+                      .with(csrf())
+                      .with(oidcLogin().oidcUser(getOidcUser())))
+              .andExpect(status().isOk())
+              .andExpect(view().name("pages/upload"))
+              .andReturn();
+
+      verify(dataClaimsRestClient)
+          .upload(eq(input.getFile()), eq(getOidcUser().getEmail()), eq(Collections.emptyList()));
+      verify(bulkClaimMetricService)
+          .recordFailedFileUploadSize(eq(input.getFile().getSize()), eq(defaultErrorMessage));
+      assertTrue(result.getResponse().getContentAsString().contains(defaultErrorMessage));
+    }
+
+    @DisplayName(
+        "Should throw web client exception should throw exception when provider details is not in json format")
+    @Test
+    void webClientExceptionWithProviderDetailsNotInJsonFormat() throws Exception {
+      var input =
+          new FileUploadForm(
+              new MockMultipartFile("fileUpload", "test.csv", "text/csv", "text".getBytes()));
+      var defaultErrorMessage = "The selected file could not be uploaded - try again";
+      var problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, "");
+      when(dataClaimsRestClient.upload(any(), any(), any()))
+          .thenThrow(
+              new WebClientResponseException(
+                  HttpStatus.BAD_REQUEST.value(),
+                  "bad request",
+                  null,
+                  SerializationUtils.serialize(problemDetail),
+                  null));
+      var result =
+          mockMvc
+              .perform(
+                  post("/upload")
+                      .flashAttr("fileUploadForm", input)
+                      .with(csrf())
+                      .with(oidcLogin().oidcUser(getOidcUser())))
+              .andExpect(status().isOk())
+              .andExpect(view().name("pages/upload"))
+              .andReturn();
+      verifyNoInteractions(bulkClaimMetricService);
+      assertTrue(result.getResponse().getContentAsString().contains(defaultErrorMessage));
     }
   }
 }
