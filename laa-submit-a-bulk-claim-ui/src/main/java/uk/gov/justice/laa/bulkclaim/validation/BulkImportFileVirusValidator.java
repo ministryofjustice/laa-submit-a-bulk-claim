@@ -5,6 +5,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
+import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.multipart.MultipartFile;
 import uk.gov.justice.laa.bulkclaim.dto.FileUploadForm;
 import uk.gov.justice.laa.bulkclaim.exception.TokenProviderException;
@@ -46,6 +48,9 @@ public class BulkImportFileVirusValidator implements Validator {
     } catch (TokenProviderException tokenProviderException) {
       log.error("Failed to obtain SDS API access token: {}", tokenProviderException.getMessage());
       errors.reject("bulkImport.validation.uploadFailed");
+    } catch (HttpClientErrorException | ResourceAccessException e) {
+      log.error("Failed to perform virus check,SDS config may be incorrect");
+      errors.reject("error.heading");
     }
   }
 }

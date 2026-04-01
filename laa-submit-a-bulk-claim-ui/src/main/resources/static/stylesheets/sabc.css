@@ -32,4 +32,8 @@
   color: inherit;
 }
 
+.govuk-notification-banner--success:focus {
+  outline: none;
+}
+
 

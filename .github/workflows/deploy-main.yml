@@ -10,7 +10,7 @@ permissions:
 
 jobs:
   assemble:
-    uses: ministryofjustice/laa-ccms-common-workflows/.github/workflows/gradle-build-and-publish.yml@v1
+    uses: ministryofjustice/laa-ccms-common-workflows/.github/workflows/gradle-build-and-publish.yml@v2
     permissions:
       contents: write
       packages: write
@@ -22,12 +22,13 @@ jobs:
       checkstyle_report: 'false'
       jacoco_coverage_report: 'false'
       semgrep_check: 'true'
+      java_version: 25
     secrets:
       gh_token: ${{ secrets.GITHUB_TOKEN }}
 
   pact-test:
     needs: [ assemble ]
-    uses: ministryofjustice/laa-ccms-common-workflows/.github/workflows/pact-and-publish.yml@v1
+    uses: ministryofjustice/laa-ccms-common-workflows/.github/workflows/pact-and-publish.yml@v2
     permissions:
       contents: write
       packages: write
@@ -37,6 +38,7 @@ jobs:
       publish_pact_results: true
       git_branch: 'main'
       pact_tags: '${{ needs.assemble.outputs.published_artifact_version }},candidate'
+      java_version: 25
     secrets:
       gh_token: ${{ secrets.GITHUB_TOKEN }}
       pact_broker_url: 'https://laa-data-pact-broker.apps.live.cloud-platform.service.justice.gov.uk/'
@@ -45,18 +47,21 @@ jobs:
 
   ecr-publish-image:
     needs: [ assemble ]
-    uses: ministryofjustice/laa-ccms-common-workflows/.github/workflows/ecr-publish-image.yml@v1
+    uses: ministryofjustice/laa-ccms-common-workflows/.github/workflows/ecr-publish-image.yml@v2
     permissions:
       contents: read
       id-token: write
+      security-events: write
     with:
       jar_subproject: 'laa-submit-a-bulk-claim-ui'
       image_version: ${{ format('{0}-{1}', vars.IMAGE_PREFIX, needs.assemble.outputs.published_artifact_version) }}
+      java_version: 25
     secrets:
       gh_token: ${{ secrets.GITHUB_TOKEN }}
       ecr_repository: ${{ vars.LAA_SUBMIT_A_BULK_CLAIM_ECR_REPOSITORY }}
       ecr_region: ${{ vars.LAA_SUBMIT_A_BULK_CLAIM_ECR_REGION }}
       ecr_role_to_assume: ${{ secrets.LAA_SUBMIT_A_BULK_CLAIM_ECR_ROLE_TO_ASSUME }}
+      snyk_token: ${{ secrets.SNYK_TOKEN }}
 
   deploy-uat:
     needs:
