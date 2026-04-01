@@ -33,8 +33,11 @@ jobs:
       sabc_image_tag: submit-a-bulk-claim-${{ needs.define-preview-version.outputs.preview_version }}
       test_annotation: "@accessibility"
       pr_number: ${{ github.event.number }}
+      github_app_organisation: 'ministryofjustice'
     secrets:
-      gh_token: ${{ secrets.E2E_PAT_TOKEN }}
+      github_app_id: ${{ vars.LAA_CCMS_CAAB_SERVICE_APP_ID }}
+      github_app_private_key: ${{ secrets.LAA_CCMS_CAAB_SERVICE_KEY }}
+
 
   build-and-test:
     needs: [ define-preview-version ]

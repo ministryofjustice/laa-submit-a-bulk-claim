@@ -12,14 +12,13 @@ on:
       pr_number:
         required: false
         type: number
+      github_app_organisation:
+        required: false
+        type: string
     secrets:
-      gh_token:
-        required: true
       github_app_id:
         required: false
       github_app_private_key:
-        required: false
-      github_app_organisation:
         required: false
 
 permissions:
@@ -30,24 +29,22 @@ jobs:
   dispatch-and-wait:
     runs-on: ubuntu-latest
     env:
-      GH_TOKEN: ${{ secrets.gh_token }}
       GITHUB_APP_ID: ${{ secrets.github_app_id }}
       GITHUB_APP_PRIVATE_KEY: ${{ secrets.github_app_private_key }}
     steps:
 
       - name: Get app token
-        if: ${{ env.GITHUB_APP_ID != '' && env.GITHUB_APP_PRIVATE_KEY != '' }}
         id: get_workflow_token
         uses: peter-murray/workflow-application-token-action@v4
         with:
           application_id: ${{ secrets.github_app_id }}
           application_private_key: ${{ secrets.github_app_private_key }}
-          organization: ${{ secrets.github_app_organisation }}
+          organization: ${{ inputs.github_app_organisation }}
 
       - name: Dispatch target workflow
         id: dispatch
         env:
-          GH_TOKEN: ${{ secrets.gh_token }}
+          GH_TOKEN: ${{ steps.get_workflow_token.outputs.token }}
           TARGET_REPO: ministryofjustice/bulk-submission-and-fee-scheme-tests-
           TARGET_WORKFLOW_FILE: test-compose.yml
           TARGET_REF: feature/test-compose # Remove later
@@ -71,7 +68,7 @@ jobs:
       - name: Find the created workflow run
         id: find_run
         env:
-          GH_TOKEN: ${{ secrets.gh_token }}
+          GH_TOKEN: ${{ steps.get_workflow_token.outputs.token }}
           TARGET_REPO: ministryofjustice/bulk-submission-and-fee-scheme-tests-
           TARGET_WORKFLOW_FILE: test-compose.yml
           TARGET_REF: feature/test-compose
@@ -120,7 +117,7 @@ jobs:
 
       - name: Poll until completion
         env:
-          GH_TOKEN: ${{ secrets.gh_token }}
+          GH_TOKEN: ${{ steps.get_workflow_token.outputs.token }}
           TARGET_REPO: ministryofjustice/bulk-submission-and-fee-scheme-tests-
           WORKFLOW_RUN_ID: ${{ steps.find_run.outputs.run_id }}
         run: |
@@ -152,25 +149,3 @@ jobs:
           echo "Timed out waiting for remote workflow to complete"
           exit 1
 
-      - name: Comment on PR
-        env:
-          GH_TOKEN: ${{ secrets.gh_token }}
-          PR_NUMBER: ${{ inputs.pr_number }}
-          RUN_URL: ${{ steps.poll.outputs.workflow_url }}
-          TEST_ANNOTATION: ${{ inputs.test_annotation }}
-        run: |
-          gh pr comment "${PR_NUMBER}" \
-            --body "✅ E2E ${TEST_ANNOTATION} tests passed! [View workflow run](${RUN_URL})"
-
-      - name: Comment on PR (failure)
-        if: failure()
-        env:
-          GH_TOKEN: ${{ secrets.gh_token }}
-          PR_NUMBER: ${{ inputs.pr_number }}
-          TEST_ANNOTATION: ${{ inputs.test_annotation }}
-          WORKFLOW_RUN_ID: ${{ steps.find_run.outputs.run_id }}
-          TARGET_REPO: ministryofjustice/bulk-submission-and-fee-scheme-tests-
-        run: |
-          RUN_URL="https://github.com/${TARGET_REPO}/actions/runs/${WORKFLOW_RUN_ID}"
-          gh pr comment "${PR_NUMBER}" \
-            --body "❌ E2E ${TEST_ANNOTATION} tests failed! [View workflow run](${RUN_URL})"
