@@ -1,4 +1,4 @@
-# Submit a Bulk Claim
+# Submit a Bulk Claim - Update 
 
 [![Ministry of Justice Repository Compliance Badge](https://github-community.service.justice.gov.uk/repository-standards/api/laa-submit-a-bulk-claim/badge)](https://github-community.service.justice.gov.uk/repository-standards/laa-submit-a-bulk-claim)
 
