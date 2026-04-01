@@ -9,6 +9,8 @@ permissions:
 jobs:
   generate-app-token:
     runs-on: ubuntu-latest
+    outputs:
+      token: ${{ steps.generate-app-token.outputs.token }}
     steps:
       - name: Generate app token
         id: generate-app-token
