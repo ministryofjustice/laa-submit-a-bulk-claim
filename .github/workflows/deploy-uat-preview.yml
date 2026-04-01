@@ -51,7 +51,6 @@ jobs:
       sabc_image_tag: submit-a-bulk-claim-${{ needs.define-preview-version.outputs.preview_version }}
       test_annotation: "@smoke"
       pr_number: ${{ github.event.number }}
-      github_app_organisation: 'ministryofjustice'
     secrets:
       gh_token: ${{ needs.generate-app-token.outputs.gh_token }}
 
@@ -66,7 +65,6 @@ jobs:
       sabc_image_tag: submit-a-bulk-claim-${{ needs.define-preview-version.outputs.preview_version }}
       test_annotation: "@accessibility"
       pr_number: ${{ github.event.number }}
-      github_app_organisation: 'ministryofjustice'
     secrets:
       gh_token: ${{ needs.generate-app-token.outputs.gh_token }}
 
