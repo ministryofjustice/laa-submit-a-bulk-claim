@@ -50,7 +50,7 @@ jobs:
       test_annotation: "@smoke"
       pr_number: ${{ github.event.number }}
     secrets:
-      gh_token: ${{ needs.generate-app-token.outputs.gh_token }}
+      gh_token: ${{ needs.generate-app-token.outputs.token }}
 
   test-accessibility:
     name: Test @accessibility
@@ -64,7 +64,7 @@ jobs:
       test_annotation: "@accessibility"
       pr_number: ${{ github.event.number }}
     secrets:
-      gh_token: ${{ needs.generate-app-token.outputs.gh_token }}
+      gh_token: ${{ needs.generate-app-token.outputs.token }}
 
 
   build-and-test:
