@@ -30,10 +30,11 @@ jobs:
   dispatch-and-wait:
     runs-on: ubuntu-latest
     env:
-      GITHUB_TOKEN: ${{ secrets.gh_token }}
+      GH_TOKEN: ${{ secrets.gh_token }}
       GITHUB_APP_ID: ${{ secrets.github_app_id }}
       GITHUB_APP_PRIVATE_KEY: ${{ secrets.github_app_private_key }}
     steps:
+
       - name: Get app token
         if: ${{ env.GITHUB_APP_ID != '' && env.GITHUB_APP_PRIVATE_KEY != '' }}
         id: get_workflow_token
