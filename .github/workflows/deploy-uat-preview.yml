@@ -11,7 +11,18 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  generate-app-token:
+    runs-on: ubuntu-latest
+    uses: actions/create-github-app-token@f8d387b68d61c58ab83c6c016672934102569859 # v3.0.0
+    outputs:
+      gh_token: ${{ steps.generate-app-token.outputs.token }}
+    with:
+     app-id: ${{ secrets.github_app_id }}
+     private-key: ${{ secrets.github_app_private_key }}
+     owner: ${{ inputs.github_app_organisation }}
+
   define-preview-version:
+    needs: generate-app-token
     runs-on: ubuntu-latest
     outputs:
       preview_version: ${{ steps.get-preview-version.outputs.preview_version }}
@@ -28,7 +39,7 @@ jobs:
 
   test-smoke:
     name: Test @smoke
-    needs: [ define-preview-version ]
+    needs: [ define-preview-version, generate-app-token ]
     uses: ministryofjustice/bulk-submission-and-fee-scheme-tests-/.github/workflows/trigger-e2e-dispatch.yml@feature/test-compose
     permissions:
       contents: read
@@ -39,12 +50,13 @@ jobs:
       pr_number: ${{ github.event.number }}
       github_app_organisation: 'ministryofjustice'
     secrets:
+      gh_token: ${{ needs.generate-app-token.outputs.gh_token }}
       github_app_id: ${{ vars.LAA_CCMS_CAAB_SERVICE_APP_ID }}
       github_app_private_key: ${{ secrets.LAA_CCMS_CAAB_SERVICE_KEY }}
 
   test-accessibility:
     name: Test @accessibility
-    needs: [ define-preview-version ]
+    needs: [ define-preview-version, generate-app-token ]
     uses: ministryofjustice/bulk-submission-and-fee-scheme-tests-/.github/workflows/trigger-e2e-dispatch.yml@feature/test-compose
     permissions:
       contents: read
@@ -55,6 +67,7 @@ jobs:
       pr_number: ${{ github.event.number }}
       github_app_organisation: 'ministryofjustice'
     secrets:
+      gh_token: ${{ needs.generate-app-token.outputs.gh_token }}
       github_app_id: ${{ vars.LAA_CCMS_CAAB_SERVICE_APP_ID }}
       github_app_private_key: ${{ secrets.LAA_CCMS_CAAB_SERVICE_KEY }}
 
