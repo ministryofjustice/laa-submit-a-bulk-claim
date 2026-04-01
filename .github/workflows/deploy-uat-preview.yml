@@ -16,9 +16,9 @@ jobs:
         id: generate-app-token
         uses: actions/create-github-app-token@f8d387b68d61c58ab83c6c016672934102569859 # v3.0.0
         with:
-          app-id: ${{ secrets.github_app_id }}
-          private-key: ${{ secrets.github_app_private_key }}
-          owner: ${{ inputs.github_app_organisation }}
+          app-id: ${{ vars.LAA_CCMS_CAAB_SERVICE_APP_ID }}
+          private-key: ${{ secrets.LAA_CCMS_CAAB_SERVICE_KEY }}
+          owner: 'ministryofjustice'
 
   define-preview-version:
     needs: generate-app-token
@@ -50,8 +50,6 @@ jobs:
       github_app_organisation: 'ministryofjustice'
     secrets:
       gh_token: ${{ needs.generate-app-token.outputs.gh_token }}
-      github_app_id: ${{ vars.LAA_CCMS_CAAB_SERVICE_APP_ID }}
-      github_app_private_key: ${{ secrets.LAA_CCMS_CAAB_SERVICE_KEY }}
 
   test-accessibility:
     name: Test @accessibility
@@ -67,8 +65,6 @@ jobs:
       github_app_organisation: 'ministryofjustice'
     secrets:
       gh_token: ${{ needs.generate-app-token.outputs.gh_token }}
-      github_app_id: ${{ vars.LAA_CCMS_CAAB_SERVICE_APP_ID }}
-      github_app_private_key: ${{ secrets.LAA_CCMS_CAAB_SERVICE_KEY }}
 
 
   build-and-test:
