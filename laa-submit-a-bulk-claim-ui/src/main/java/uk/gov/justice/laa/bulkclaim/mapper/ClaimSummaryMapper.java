@@ -25,6 +25,9 @@ public interface ClaimSummaryMapper {
   @Mapping(target = "standardFeeCategoryCode", source = "claimResponse.standardFeeCategoryCode")
   @Mapping(target = "matterType1", source = "claimResponse.matterTypeCode", qualifiedByName = "matterType1")
   @Mapping(target = "matterType2", source = "claimResponse.matterTypeCode", qualifiedByName = "matterType2")
+  @Mapping(target = "categoryOfLaw", source = "claimResponse.feeCalculationResponse.categoryOfLaw")
+  @Mapping(target = "feeCodeDescription", source = "claimResponse.feeCalculationResponse.feeCodeDescription")
+  @Mapping(target = "submissionDate", source = "submissionResponse.submitted")
   ClaimSummary toClaimSummary(ClaimResponse claimResponse, SubmissionResponse submissionResponse, String areaOfLaw);
 
   @Named("matterType1")

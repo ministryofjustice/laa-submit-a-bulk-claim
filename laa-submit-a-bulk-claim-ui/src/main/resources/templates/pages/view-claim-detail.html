@@ -93,7 +93,7 @@
           <div class="govuk-grid-column-full">
             <div class="govuk-summary-card">
               <div class="govuk-summary-card__title-wrapper">
-                <h2 class="govuk-summary-card__title" th:text="Summary"></h2>
+                <h1 class="govuk-summary-card__title" th:text="Summary"></h1>
               </div>
               <div class="govuk-summary-card__content">
                 <dl class="govuk-summary-list">
@@ -118,25 +118,30 @@
                       <dd class="govuk-summary-list__value"
                           th:text="${claimSummary.officeAccountNumber}"></dd>
                     </div>
-<!--                      <div class="govuk-summary-list__row">-->
-<!--                          <dt class="govuk-summary-list__key">Date Submitted</dt>-->
-<!--                          <dd class="govuk-summary-list__value"-->
-<!--                              th:text="${#temporals.format(claimSummary.submissionDate, 'd MMMM yyyy ''at'' HH:mm:ss')}"></dd>-->
-<!--                      </div>-->
+                      <div class="govuk-summary-list__row">
+                          <dt class="govuk-summary-list__key">Date Submitted</dt>
+                          <dd class="govuk-summary-list__value"
+                              th:text="${#temporals.format(claimSummary.submissionDate, 'd MMMM yyyy ''at'' HH:mm:ss')}"></dd>
+                      </div>
                     <div class="govuk-summary-list__row">
                       <dt class="govuk-summary-list__key">Area of Law</dt>
                       <dd class="govuk-summary-list__value"
                           th:text="${claimSummary.areaOfLaw}"></dd>
                     </div>
                     <div class="govuk-summary-list__row">
-                      <dt class="govuk-summary-list__key">Category of Law</dt>
-                      <dd class="govuk-summary-list__value"
-                          th:text="${claimSummary.standardFeeCategoryCode}"></dd>
+                       <dt class="govuk-summary-list__key">Category of Law</dt>
+                       <dd class="govuk-summary-list__value"
+                           th:text="${claimSummary.categoryOfLaw}"></dd>
                     </div>
                     <div class="govuk-summary-list__row">
                       <dt class="govuk-summary-list__key">Fee code</dt>
                       <dd class="govuk-summary-list__value"
                           th:text="${claimSummary.feeCode}"></dd>
+                    </div>
+                    <div class="govuk-summary-list__row">
+                       <dt class="govuk-summary-list__key">Fee code description</dt>
+                       <dd class="govuk-summary-list__value"
+                           th:text="${claimSummary.feeCodeDescription}"></dd>
                     </div>
                     <div class="govuk-summary-list__row">
                       <dt class="govuk-summary-list__key">Matter type 1</dt>
@@ -152,6 +157,11 @@
                       <dt class="govuk-summary-list__key">Case start date</dt>
                       <dd class="govuk-summary-list__value"
                            th:text="${#temporals.format(claimSummary.caseStartDate, 'dd/MM/yyyy')}"></dd>
+                    </div>
+                    <div class="govuk-summary-list__row">
+                      <dt class="govuk-summary-list__key">Case end date</dt>
+                      <dd class="govuk-summary-list__value"
+                          th:text="${#temporals.format(claimSummary.caseConcludedDate, 'dd/MM/yyyy')}"></dd>
                     </div>
                     <div class="govuk-summary-list__row">
                       <dt class="govuk-summary-list__key">Escape case</dt>
@@ -187,6 +197,11 @@
                       <dd class="govuk-summary-list__value"
                             th:text="${claimSummary.officeAccountNumber}"></dd>
                     </div>
+                      <div class="govuk-summary-list__row">
+                          <dt class="govuk-summary-list__key">Date Submitted</dt>
+                          <dd class="govuk-summary-list__value"
+                              th:text="${#temporals.format(claimSummary.submissionDate, 'd MMMM yyyy ''at'' HH:mm:ss')}"></dd>
+                      </div>
                     <div class="govuk-summary-list__row">
                       <dt class="govuk-summary-list__key">Area of Law</dt>
                       <dd class="govuk-summary-list__value"
@@ -195,12 +210,17 @@
                     <div class="govuk-summary-list__row">
                       <dt class="govuk-summary-list__key">Category of Law</dt>
                       <dd class="govuk-summary-list__value"
-                            th:text="${claimSummary.standardFeeCategoryCode}"></dd>
+                            th:text="${claimSummary.categoryOfLaw}"></dd>
                     </div>
                     <div class="govuk-summary-list__row">
                       <dt class="govuk-summary-list__key">Fee code</dt>
                       <dd class="govuk-summary-list__value"
                             th:text="${claimSummary.feeCode}"></dd>
+                    </div>
+                    <div class="govuk-summary-list__row">
+                       <dt class="govuk-summary-list__key">Fee code description</dt>
+                       <dd class="govuk-summary-list__value"
+                           th:text="${claimSummary.feeCodeDescription}"></dd>
                     </div>
                     <div class="govuk-summary-list__row">
                       <dt class="govuk-summary-list__key">Matter type</dt>
@@ -266,6 +286,11 @@
                       <dd class="govuk-summary-list__value"
                             th:text="${claimSummary.officeAccountNumber}"></dd>
                     </div>
+                      <div class="govuk-summary-list__row">
+                          <dt class="govuk-summary-list__key">Date Submitted</dt>
+                          <dd class="govuk-summary-list__value"
+                              th:text="${#temporals.format(claimSummary.submissionDate, 'd MMMM yyyy ''at'' HH:mm:ss')}"></dd>
+                      </div>
                     <div class="govuk-summary-list__row">
                       <dt class="govuk-summary-list__key">Area of Law</dt>
                       <dd class="govuk-summary-list__value"
@@ -274,12 +299,17 @@
                     <div class="govuk-summary-list__row">
                       <dt class="govuk-summary-list__key">Category of Law</dt>
                       <dd class="govuk-summary-list__value"
-                            th:text="${claimSummary.standardFeeCategoryCode}"></dd>
+                            th:text="${claimSummary.categoryOfLaw}"></dd>
                     </div>
                     <div class="govuk-summary-list__row">
                       <dt class="govuk-summary-list__key">Fee code</dt>
                       <dd class="govuk-summary-list__value"
                             th:text="${claimSummary.feeCode}"></dd>
+                    </div>
+                    <div class="govuk-summary-list__row">
+                       <dt class="govuk-summary-list__key">Fee code description</dt>
+                       <dd class="govuk-summary-list__value"
+                           th:text="${claimSummary.feeCodeDescription}"></dd>
                     </div>
                     <div class="govuk-summary-list__row">
                       <dt class="govuk-summary-list__key">Matter type 1</dt>
@@ -297,6 +327,11 @@
                             th:text="${#temporals.format(claimSummary.caseStartDate, 'dd/MM/yyyy')}"></dd>
                     </div>
                     <div class="govuk-summary-list__row">
+                       <dt class="govuk-summary-list__key">Case end date</dt>
+                       <dd class="govuk-summary-list__value"
+                           th:text="${#temporals.format(claimSummary.caseConcludedDate, 'dd/MM/yyyy')}"></dd>
+                    </div>
+                    <div class="govuk-summary-list__row">
                       <dt class="govuk-summary-list__key">Escape case</dt>
                       <dd class="govuk-summary-list__value"
                             th:text="${claimSummary.isEscaped ? 'Yes' : 'No'}"></dd>
@@ -312,11 +347,15 @@
             </div>
           </div>
         </div>
-
-        <div class="govuk-grid-column-full">
+         <div class="govuk-grid-row">
+         <div class="govuk-grid-column-full">
+            <div class="govuk-summary-card">
+                <div class="govuk-summary-card__title-wrapper">
+                    <h1 class="govuk-summary-card__title"
+                             th:text="#{viewClaim.feeCalculation.subheading}"/>
+                </div>
+                <div class="govuk-summary-card__content">
             <table class="govuk-table">
-                <caption class="govuk-table__caption govuk-table__caption--m"
-                         th:text="#{viewClaim.feeCalculation.subheading}"/>
                 <thead class="govuk-table__head">
                 <tr class="govuk-table__row">
                     <th scope="col" class="govuk-table__header"
@@ -408,8 +447,55 @@
 
                 </tbody>
             </table>
+                </div>
+            </div>
         </div>
+             <div class="govuk-grid-row">
+                 <div class="govuk-grid-column-full">
+                     <div class="govuk-summary-card">
+                         <div class="govuk-summary-card__title-wrapper">
+                             <h1 class="govuk-summary-card__title"
+                                 th:text="#{viewClaim.feeCalculation.subheading}"/>
+                         </div>
+                         <div class="govuk-summary-card__content">
+                             <table class="govuk-table">
+                                 <thead class="govuk-table__head">
+                                 <tr class="govuk-table__row">
+                                     <th scope="col" class="govuk-table__header"
+                                         th:text="#{viewClaim.feeCalculation.columnTitle.bulkClaimItem}"/>
+                                     <th scope="col" class="govuk-table__header govuk-table__header--numeric"
+                                         th:text="#{viewClaim.feeCalculation.columnTitle.enteredValue}"/>
+                                     <th scope="col" class="govuk-table__header govuk-table__header--numeric"
+                                         th:text="#{viewClaim.feeCalculation.columnTitle.calculatedValue}"/>
+                                 </tr>
+                                 </thead>
+                                 <tbody class="govuk-table__body">
+                                 <th:block
+                                         th:replace="~{::fee-detail-row(#{viewClaim.feeCalculation.row.total},
+              |£${feeDetails.calculatedTotal}|"/>
+<!--                                 <th:block-->
+<!--                                         th:replace="~{::fee-detail-row(title=#{viewClaim.feeCalculation.row.vat},-->
+<!--              values=${feeDetails.vat},-->
+<!--              rowStyle='sabc-govuk-table\_\_cell\_\_bold-bottom')}"/>-->
+<!--                                 &lt;!&ndash;Total&ndash;&gt;-->
+<!--                                 <tr class="govuk-table__row">-->
+<!--                                     <th scope="row" class="govuk-table__header sabc-govuk-table__cell__bold-bottom"-->
+<!--                                         th:text="#{viewClaim.feeCalculation.row.total}"/>-->
+<!--                                     <td class="govuk-table__cell sabc-govuk-table__cell__bold-bottom govuk-table__cell&#45;&#45;numeric"-->
+<!--                                         th:aria-label="#{viewClaim.feeCalculation.na}"/>-->
+<!--                                     <td class="govuk-table__cell sabc-govuk-table__cell__bold-bottom govuk-table__cell&#45;&#45;numeric"-->
+<!--                                         th:text="|£${feeDetails.calculatedTotal}|"/>-->
+<!--                                     <td class="govuk-table__cell sabc-govuk-table__cell__bold-bottom"/>-->
+<!--                                 </tr>-->
+
+                                 </tbody>
+                             </table>
+                         </div>
+                     </div>
+                 </div>
+             </div>
     </div>
+  </div>
   </div>
 </main>
 </html>

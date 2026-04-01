@@ -1,6 +1,8 @@
 package uk.gov.justice.laa.bulkclaim.dto.submission.claim;
 
 import java.time.LocalDate;
+import java.time.OffsetDateTime;
+
 import lombok.Builder;
 
 /**
@@ -22,6 +24,9 @@ import lombok.Builder;
  * @param standardFeeCategoryCode the category of law
  * @param matterType1 the matter type 1
  * @param matterType2 the matter type 2
+ * @param categoryOfLaw the category of law
+ * @param feeCodeDescription the fee code description
+ * @param submissionDate the date submitted
  * @param isEscaped case escaped flag
  */
 @Builder
@@ -45,4 +50,7 @@ public record ClaimSummary(
     String matterType2,
     Boolean isVatApplicable,
     LocalDate caseStartDate,
+    String categoryOfLaw,
+    String feeCodeDescription,
+    OffsetDateTime submissionDate,
     Boolean isEscaped /*CIVIL*/) {}
