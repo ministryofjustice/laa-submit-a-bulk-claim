@@ -46,7 +46,7 @@ jobs:
       publish_package: false
       override_version: ${{ needs.define-preview-version.outputs.preview_version }}
       integration_test_task: integrationTest
-      semgrep_check: 'false'
+      semgrep_check: 'true'
       java_version: 25
     secrets:
       gh_token: ${{ secrets.GITHUB_TOKEN }}
