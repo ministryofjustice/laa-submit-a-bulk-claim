@@ -1,0 +1,79 @@
+name: Check and update WebJar
+on:
+  schedule:
+    - cron: '0 9 * * 1'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  webjar-update:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5
+
+      - name: Get latest NPM versions
+        id: npm
+        run: |
+          GOVUK=$(npm view govuk-frontend version)
+          MOJ=$(npm view @ministryofjustice/frontend version)
+          
+          echo "govuk=$GOVUK" >> $GITHUB_OUTPUT
+          echo "moj=$MOJ" >> $GITHUB_OUTPUT
+          
+          echo "npm GOV.UK: $GOVUK"
+          echo "npm MOJ: $MOJ"
+
+      - name: Get latest WebJar versions
+        id: webjar
+        run: |
+          GOVUK=$(curl -s https://repo1.maven.org/maven2/org/webjars/npm/govuk-frontend/maven-metadata.xml \
+            | sed -n 's:.*<release>\(.*\)</release>.*:\1:p')
+          MOJ=$(curl -s https://repo1.maven.org/maven2/org/webjars/npm/ministryofjustice__frontend/maven-metadata.xml \
+            | sed -n 's:.*<release>\(.*\)</release>.*:\1:p')
+          
+          echo "govuk=$GOVUK" >> $GITHUB_OUTPUT
+          echo "moj=$MOJ" >> $GITHUB_OUTPUT
+          
+          echo "WebJar GOV.UK: $GOVUK"
+          echo "WebJar MOJ: $MOJ"
+
+      - name: Compare versions
+        id: compare
+        env:
+          GOVUK_NPM: ${{ steps.npm.outputs.govuk }}
+          GOVUK_WEBJAR: ${{ steps.webjar.outputs.govuk }}
+          MOJ_NPM: ${{ steps.npm.outputs.moj }}
+          MOJ_WEBJAR: ${{ steps.webjar.outputs.moj }}
+        run: |
+          echo "GOVUK_NPM=$GOVUK_NPM"
+          echo "GOVUK_WEBJAR=$GOVUK_WEBJAR"
+          echo "MOJ_NPM=$MOJ_NPM"
+          echo "MOJ_WEBJAR=$MOJ_WEBJAR"
+          
+          if [ "$GOVUK_NPM" != "$GOVUK_WEBJAR" ]; then
+            echo "govuk_trigger=true" >> $GITHUB_OUTPUT
+          else
+            echo "govuk_trigger=false" >>$GITHUB_OUTPUT
+          fi
+          
+          if [ "$MOJ_NPM" != "$MOJ_WEBJAR" ]; then
+            echo "moj_trigger=true" >> $GITHUB_OUTPUT
+          else
+            echo "moj_trigger=false" >>$GITHUB_OUTPUT
+          fi  
+
+      - name: Trigger WebJar (GOV.UK)
+        if: steps.compare.outputs.govuk_trigger == 'true'
+        run: |
+          echo "Triggering GOV.UK WebJar."
+          curl -L "https://www.webjars.org/deploy?webJarType=npm&nameOrUrlish=govuk-frontend&version=${{ steps.npm.outputs.govuk }}"
+
+      - name: Trigger WebJar (MOJ)
+        if: steps.compare.outputs.moj_trigger == 'true'
+        run: |
+          echo "Triggering GOV.UK WebJar."
+          curl -L "https://www.webjars.org/deploy?webJarType=npm&nameOrUrlish=@ministryofjustice/frontend&version=${{ steps.npm.outputs.moj }}"
