@@ -109,103 +109,107 @@
                             <dl class="govuk-summary-list">
                                 <th:block th:if="${claimSummary.areaOfLaw == 'LEGAL HELP'}">
                                     <th:block
-                                            th:replace="~{::summary-row('Client Name', ${claimSummary.clientForename + ' ' + claimSummary.clientSurname})}"></th:block>
-
-                                    <div class="govuk-summary-list__row"
-                                         th:replace="~{::summary-row('UFN', ${claimSummary.uniqueFileNumber})}"></div>
-
-                                    <div class="govuk-summary-list__row"
-                                         th:replace="~{::summary-row('UCN', ${claimSummary.uniqueClientNumber})}"></div>
-
+                                            th:replace="~{::summary-row(#{submission.summary.claims.table.clientName}, ${claimSummary.clientForename + ' ' + claimSummary.clientSurname})}"></th:block>
                                     <th:block
-                                            th:replace="~{::summary-row('Office Account', ${claimSummary.officeAccountNumber})}"/>
+                                            th:replace="~{::summary-row(#{submission.summary.claims.table.ufn}, ${claimSummary.uniqueFileNumber})}"></th:block>
                                     <th:block
-                                            th:replace="~{::summary-row('Date Submitted', ${#temporals.format(claimSummary.submissionDate, 'd MMMM yyyy ''at'' HH:mm:ss')})}"/>
-                                    <th:block th:replace="~{::summary-row('Area of Law', ${claimSummary.areaOfLaw})}"/>
+                                            th:replace="~{::summary-row(#{submission.summary.claims.table.ucn}, ${claimSummary.uniqueClientNumber})}"></th:block>
                                     <th:block
-                                            th:replace="~{::summary-row('Category of Law', ${claimSummary.categoryOfLaw})}"/>
-                                    <th:block th:replace="~{::summary-row('Fee Code', ${claimSummary.feeCode})}"/>
+                                            th:replace="~{::summary-row(#{submission.summary.claims.table.officeAccount}, ${claimSummary.officeAccountNumber})}"/>
                                     <th:block
-                                            th:replace="~{::summary-row('Fee code description', ${claimSummary.feeCodeDescription})}"/>
+                                            th:replace="~{::summary-row(#{submission.summary.claims.table.dateSubmitted}, ${#temporals.format(claimSummary.submissionDate, 'd MMMM yyyy ''at'' HH:mm:ss')})}"/>
                                     <th:block
-                                            th:replace="~{::summary-row('Matter type 1', ${claimSummary.matterType1})}"/>
+                                            th:replace="~{::summary-row(#{submission.summary.claims.table.areaOfLaw}, ${claimSummary.areaOfLaw})}"/>
                                     <th:block
-                                            th:replace="~{::summary-row('Matter type 2', ${claimSummary.matterType2})}"/>
+                                            th:replace="~{::summary-row(#{submission.summary.claims.table.categoryOfLaw}, ${claimSummary.categoryOfLaw})}"/>
                                     <th:block
-                                            th:replace="~{::summary-row('Case start date', ${#temporals.format(claimSummary.caseStartDate, 'dd/MM/yyyy')})}"/>
+                                            th:replace="~{::summary-row(#{submission.summary.claims.table.feeCode}, ${claimSummary.feeCode})}"/>
                                     <th:block
-                                            th:replace="~{::summary-row('Case end date', ${#temporals.format(claimSummary.caseConcludedDate, 'dd/MM/yyyy')})}"/>
+                                            th:replace="~{::summary-row(#{submission.summary.claims.table.feeCodeDescription}, ${claimSummary.feeCodeDescription})}"/>
                                     <th:block
-                                            th:replace="~{::summary-row('Escape case', ${claimSummary.isEscaped ? 'Yes' : 'No'})}"/>
+                                            th:replace="~{::summary-row(#{submission.summary.claims.table.matterType1}, ${claimSummary.matterType1})}"/>
                                     <th:block
-                                            th:replace="~{::summary-row('VAT requested', ${claimSummary.isVatApplicable ? 'Yes' : 'No'})}"/>
+                                            th:replace="~{::summary-row(#{submission.summary.claims.table.matterType2}, ${claimSummary.matterType2})}"/>
+                                    <th:block
+                                            th:replace="~{::summary-row(#{submission.summary.claims.table.caseStartDate}, ${#temporals.format(claimSummary.caseStartDate, 'dd/MM/yyyy')})}"/>
+                                    <th:block
+                                            th:replace="~{::summary-row(#{submission.summary.claims.table.caseEndDate}, ${#temporals.format(claimSummary.caseConcludedDate, 'dd/MM/yyyy')})}"/>
+                                    <th:block
+                                            th:replace="~{::summary-row(#{submission.summary.claims.table.escapeCase}, ${claimSummary.isEscaped ? 'Yes' : 'No'})}"/>
+                                    <th:block
+                                            th:replace="~{::summary-row(#{submission.summary.claims.table.vatRequested}, ${claimSummary.isVatApplicable ? 'Yes' : 'No'})}"/>
                                 </th:block>
 
 
                                 <th:block th:if="${claimSummary.areaOfLaw == 'CRIME_LOWER'}">
                                     <th:block
-                                            th:replace="~{::summary-row('Client surname', ${claimSummary.clientSurname})}"/>
+                                            th:replace="~{::summary-row(#{submission.summary.claims.table.clientSurname}, ${claimSummary.clientSurname})}"/>
                                     <th:block
-                                            th:replace="~{::summary-row('Client initial', ${claimSummary.clientForename})}"/>
-                                    <th:block th:replace="~{::summary-row('UFN', ${claimSummary.uniqueFileNumber})}"/>
+                                            th:replace="~{::summary-row(#{submission.summary.claims.table.clientInitial}, ${claimSummary.clientForename})}"/>
                                     <th:block
-                                            th:replace="~{::summary-row('Office Account', ${claimSummary.officeAccountNumber})}"/>
+                                            th:replace="~{::summary-row(#{submission.summary.claims.table.ufn}, ${claimSummary.uniqueFileNumber})}"/>
                                     <th:block
-                                            th:replace="~{::summary-row('Date Submitted', ${#temporals.format(claimSummary.submissionDate, 'd MMMM yyyy ''at'' HH:mm:ss')})}"/>
-                                    <th:block th:replace="~{::summary-row('Area of Law', ${claimSummary.areaOfLaw})}"/>
+                                            th:replace="~{::summary-row(#{submission.summary.claims.table.officeAccount}, ${claimSummary.officeAccountNumber})}"/>
                                     <th:block
-                                            th:replace="~{::summary-row('Category of Law', ${claimSummary.categoryOfLaw})}"/>
-                                    <th:block th:replace="~{::summary-row('Fee code', ${claimSummary.feeCode})}"/>
+                                            th:replace="~{::summary-row(#{submission.summary.claims.table.dateSubmitted}, ${#temporals.format(claimSummary.submissionDate, 'd MMMM yyyy ''at'' HH:mm:ss')})}"/>
                                     <th:block
-                                            th:replace="~{::summary-row('Fee code description', ${claimSummary.feeCodeDescription})}"/>
+                                            th:replace="~{::summary-row(#{submission.summary.claims.table.areaOfLaw}, ${claimSummary.areaOfLaw})}"/>
                                     <th:block
-                                            th:replace="~{::summary-row('Matter type', ${claimSummary.matterTypeCode})}"/>
+                                            th:replace="~{::summary-row(#{submission.summary.claims.table.categoryOfLaw}, ${claimSummary.categoryOfLaw})}"/>
                                     <th:block
-                                            th:replace="~{::summary-row('Stage Reached', ${claimSummary.stageReachedCode})}"/>
+                                            th:replace="~{::summary-row(#{submission.summary.claims.table.feeCode}, ${claimSummary.feeCode})}"/>
                                     <th:block
-                                            th:replace="~{::summary-row('Outcome code', ${claimSummary.outcomeCode})}"/>
+                                            th:replace="~{::summary-row(#{submission.summary.claims.table.feeCodeDescription}, ${claimSummary.feeCodeDescription})}"/>
                                     <th:block
-                                            th:replace="~{::summary-row('Case start date', ${#temporals.format(claimSummary.caseStartDate, 'dd/MM/yyyy')})}"/>
+                                            th:replace="~{::summary-row(#{submission.summary.claims.table.matterType}, ${claimSummary.matterTypeCode})}"/>
                                     <th:block
-                                            th:replace="~{::summary-row('Date of work concluded', ${#temporals.format(claimSummary.caseConcludedDate, 'dd/MM/yyyy')})}"/>
+                                            th:replace="~{::summary-row(#{submission.summary.claims.table.stageReached}, ${claimSummary.stageReachedCode})}"/>
                                     <th:block
-                                            th:replace="~{::summary-row('Escape case', ${claimSummary.isEscaped ? 'Yes' : 'No'})}"/>
+                                            th:replace="~{::summary-row(#{submission.summary.claims.table.outcomeCode}, ${claimSummary.outcomeCode})}"/>
                                     <th:block
-                                            th:replace="~{::summary-row('VAT requested', ${claimSummary.isVatApplicable ? 'Yes' : 'No'})}"/>
+                                            th:replace="~{::summary-row(#{submission.summary.claims.table.caseStartDate}, ${#temporals.format(claimSummary.caseStartDate, 'dd/MM/yyyy')})}"/>
+                                    <th:block
+                                            th:replace="~{::summary-row(#{submission.summary.claims.table.dateOfWorkConcluded}, ${#temporals.format(claimSummary.caseConcludedDate, 'dd/MM/yyyy')})}"/>
+                                    <th:block
+                                            th:replace="~{::summary-row(#{submission.summary.claims.table.escapeCase}, ${claimSummary.isEscaped ? 'Yes' : 'No'})}"/>
+                                    <th:block
+                                            th:replace="~{::summary-row(#{submission.summary.claims.table.vatRequested}, ${claimSummary.isVatApplicable ? 'Yes' : 'No'})}"/>
                                 </th:block>
 
 
                                 <th:block th:if="${claimSummary.areaOfLaw == 'MEDIATION'}">
                                     <th:block
-                                            th:replace="~{::summary-row('Client name', ${claimSummary.clientForename + ' ' + claimSummary.clientSurname})}"/>
+                                            th:replace="~{::summary-row(#{submission.summary.claims.table.client1Name}, ${claimSummary.clientForename + ' ' + claimSummary.clientSurname})}"/>
                                     <th:block
-                                            th:replace="~{::summary-row('Client 1 UCN', ${claimSummary.uniqueFileNumber})}"/>
+                                            th:replace="~{::summary-row(#{submission.summary.claims.table.client1Ucn}, ${claimSummary.uniqueFileNumber})}"/>
                                     <th:block
-                                            th:replace="~{::summary-row('Client 2 name', ${claimSummary.client2Forename + ' ' + claimSummary.client2Surname})}"/>
+                                            th:replace="~{::summary-row(#{submission.summary.claims.table.client2Name}, ${claimSummary.client2Forename + ' ' + claimSummary.client2Surname})}"/>
                                     <th:block
-                                            th:replace="~{::summary-row('Client 2 UCN', ${claimSummary.uniqueClientNumber})}"/>
+                                            th:replace="~{::summary-row(#{submission.summary.claims.table.client2Ucn}, ${claimSummary.uniqueClientNumber})}"/>
                                     <th:block
-                                            th:replace="~{::summary-row('Office Account', ${claimSummary.officeAccountNumber})}"/>
+                                            th:replace="~{::summary-row(#{submission.summary.claims.table.officeAccount}, ${claimSummary.officeAccountNumber})}"/>
                                     <th:block
-                                            th:replace="~{::summary-row('Date Submitted', ${#temporals.format(claimSummary.submissionDate, 'd MMMM yyyy ''at'' HH:mm:ss')})}"/>
-                                    <th:block th:replace="~{::summary-row('Area of Law', ${claimSummary.areaOfLaw})}"/>
+                                            th:replace="~{::summary-row(#{submission.summary.claims.table.dateSubmitted}, ${#temporals.format(claimSummary.submissionDate, 'd MMMM yyyy ''at'' HH:mm:ss')})}"/>
                                     <th:block
-                                            th:replace="~{::summary-row('Category of Law', ${claimSummary.categoryOfLaw})}"/>
-                                    <th:block th:replace="~{::summary-row('Fee code', ${claimSummary.feeCode})}"/>
+                                            th:replace="~{::summary-row(#{submission.summary.claims.table.areaOfLaw}, ${claimSummary.areaOfLaw})}"/>
                                     <th:block
-                                            th:replace="~{::summary-row('Fee code description', ${claimSummary.feeCodeDescription})}"/>
+                                            th:replace="~{::summary-row(#{submission.summary.claims.table.categoryOfLaw}, ${claimSummary.categoryOfLaw})}"/>
                                     <th:block
-                                            th:replace="~{::summary-row('Matter type 1', ${claimSummary.matterType1})}"/>
+                                            th:replace="~{::summary-row(#{submission.summary.claims.table.feeCode}, ${claimSummary.feeCode})}"/>
                                     <th:block
-                                            th:replace="~{::summary-row('Matter type 2', ${claimSummary.matterType2})}"/>
+                                            th:replace="~{::summary-row(#{submission.summary.claims.table.feeCodeDescription}, ${claimSummary.feeCodeDescription})}"/>
                                     <th:block
-                                            th:replace="~{::summary-row('Case start date', ${#temporals.format(claimSummary.caseStartDate, 'dd/MM/yyyy')})}"/>
+                                            th:replace="~{::summary-row(#{submission.summary.claims.table.matterType1}, ${claimSummary.matterType1})}"/>
                                     <th:block
-                                            th:replace="~{::summary-row('Case end date', ${#temporals.format(claimSummary.caseConcludedDate, 'dd/MM/yyyy')})}"/>
+                                            th:replace="~{::summary-row(#{submission.summary.claims.table.matterType2}, ${claimSummary.matterType2})}"/>
                                     <th:block
-                                            th:replace="~{::summary-row('Escape case', ${claimSummary.isEscaped ? 'Yes' : 'No'})}"/>
+                                            th:replace="~{::summary-row(#{submission.summary.claims.table.caseStartDate}, ${#temporals.format(claimSummary.caseStartDate, 'dd/MM/yyyy')})}"/>
                                     <th:block
-                                            th:replace="~{::summary-row('VAT requested', ${claimSummary.isVatApplicable ? 'Yes' : 'No'})}"/>
+                                            th:replace="~{::summary-row(#{submission.summary.claims.table.caseEndDate}, ${#temporals.format(claimSummary.caseConcludedDate, 'dd/MM/yyyy')})}"/>
+                                    <th:block
+                                            th:replace="~{::summary-row(#{submission.summary.claims.table.escapeCase}, ${claimSummary.isEscaped ? 'Yes' : 'No'})}"/>
+                                    <th:block
+                                            th:replace="~{::summary-row(#{submission.summary.claims.table.vatRequested}, ${claimSummary.isVatApplicable ? 'Yes' : 'No'})}"/>
                                 </th:block>
 
                             </dl>
