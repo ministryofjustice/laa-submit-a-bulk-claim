@@ -21,6 +21,7 @@ import lombok.Builder;
  * @param homeOfficeInterview the home office interview costs.
  * @param substantiveHearing the substantive hearing costs.
  * @param vat the VAT.
+ * @param vatIndicator the VAT indicator.
  * @param calculatedTotal the final calculated calculatedTotal.
  */
 @Builder
@@ -41,4 +42,5 @@ public record ClaimFeeCalculationBreakdown(
     BulkClaimCostItem homeOfficeInterview,
     BulkClaimCostItem substantiveHearing,
     BulkClaimCostItem vat,
+    Boolean vatIndicator,
     BigDecimal calculatedTotal) {}

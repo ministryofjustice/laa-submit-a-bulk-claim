@@ -110,6 +110,7 @@ public interface ClaimFeeCalculationBreakdownMapper {
       target = "vat.calculatedValue",
       source = "claimResponse.feeCalculationResponse.calculatedVatAmount")
   @Mapping(target = "calculatedTotal", source = "claimResponse.feeCalculationResponse.totalAmount")
+  @Mapping(target = "vatIndicator", source = "claimResponse.feeCalculationResponse.vatIndicator")
   ClaimFeeCalculationBreakdown toClaimFeeCalculationBreakdown(ClaimResponse claimResponse);
 
   @Mapping(target = "enteredValue", source = "enteredValue")
