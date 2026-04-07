@@ -62,6 +62,9 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: read
+    env:
+      PLAYWRIGHT_BROWSERS_PATH: /home/runner/.cache/ms-playwright
+      PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: "1"
     steps:
       - name: Checkout
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
@@ -74,6 +77,9 @@ jobs:
   
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@ed408507eac070d1f99cc633dbcf757c94c7933a # v4
+
+      - name: Install Playwright Chromium dependencies
+        run: npx --yes playwright@1.56.0 install --with-deps chromium
   
       - name: Run accessibility test suite
         run: ./gradlew :laa-submit-a-bulk-claim-ui:accessibilityTest --no-daemon
