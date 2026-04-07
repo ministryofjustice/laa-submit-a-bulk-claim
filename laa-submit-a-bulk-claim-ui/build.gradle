@@ -52,6 +52,8 @@ dependencies {
     // Upgrade to fix vulnerability GHSA-72hv-8253-57qq
     implementation 'com.fasterxml.jackson.core:jackson-core:2.21.2'
     implementation 'tools.jackson.core:jackson-core:3.1.1'
+    // Fixes CWE-770
+    implementation 'tools.jackson.core:jackson-core:3.1.1'
 
     implementation 'uk.gov.justice.laa.datastewardship.payments:data-claims-api-models:1.0.32'
     compileOnly 'io.swagger.core.v3:swagger-annotations:2.2.30'
