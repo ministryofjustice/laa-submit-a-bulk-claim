@@ -42,7 +42,6 @@ jobs:
       github_app_id: ${{ vars.LAA_CCMS_CAAB_SERVICE_APP_ID }}
       github_app_private_key: ${{ secrets.LAA_CCMS_CAAB_SERVICE_KEY }}
 
-
   build-and-test:
     needs: [ define-preview-version ]
     uses: ministryofjustice/laa-ccms-common-workflows/.github/workflows/gradle-build-and-publish.yml@v2
