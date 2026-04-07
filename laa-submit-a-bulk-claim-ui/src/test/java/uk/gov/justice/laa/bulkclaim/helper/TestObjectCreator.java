@@ -120,6 +120,8 @@ public final class TestObjectCreator {
         .feeCalculationResponse(
             FeeCalculationPatch.builder()
                 .boltOnDetails(BoltOnPatch.builder().escapeCaseFlag(true).build())
+                .categoryOfLaw("category-of-law")
+                .feeCodeDescription("description")
                 .build())
         .build();
   }

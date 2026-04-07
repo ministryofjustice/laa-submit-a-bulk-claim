@@ -26,6 +26,7 @@ class ClaimSummaryMapperTest {
     ClaimResponse claimResponse = TestObjectCreator.buildClaimResponse();
     // When
     ClaimSummary result = mapper.toClaimSummary(claimResponse, areaOfLaw, officeAccountNumber, submissionDate);
+      System.out.println(result);
     // Then
     SoftAssertions.assertSoftly(
         softAssertions -> {
@@ -63,6 +64,16 @@ class ClaimSummaryMapperTest {
               .assertThat(result.caseConcludedDate())
               .isEqualTo(claimResponse.getCaseConcludedDate());
           softAssertions.assertThat(result.isEscaped()).isTrue();
+          softAssertions.assertThat(result.officeAccountNumber()).isEqualTo(officeAccountNumber);
+          softAssertions.assertThat(result.standardFeeCategoryCode()).isEqualTo(claimResponse.getStandardFeeCategoryCode());
+          softAssertions.assertThat(result.matterType1()).isEqualTo(mapper.getMatterType1(claimResponse.getMatterTypeCode()));
+          softAssertions.assertThat(result.matterType2()).isEqualTo(mapper.getMatterType2(claimResponse.getMatterTypeCode()));
+          softAssertions.assertThat(result.categoryOfLaw()).isEqualTo(claimResponse.getFeeCalculationResponse().getCategoryOfLaw());
+          softAssertions.assertThat(result.feeCodeDescription()).isEqualTo(claimResponse.getFeeCalculationResponse().getFeeCodeDescription());
+          softAssertions.assertThat(result.submissionDate()).isEqualTo(submissionDate);
+          softAssertions.assertThat(result.categoryOfLaw()).isEqualTo(claimResponse.getFeeCalculationResponse().getCategoryOfLaw());
+          softAssertions.assertThat(result.clientName()).isEqualTo(mapper.getClientName(claimResponse));
+          softAssertions.assertThat(result.client2Name()).isEqualTo(mapper.getClient2Name(claimResponse));
         });
   }
 }
