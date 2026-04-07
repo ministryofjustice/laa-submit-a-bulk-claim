@@ -3,6 +3,7 @@ package uk.gov.justice.laa.bulkclaim.controller;
 import static uk.gov.justice.laa.bulkclaim.constants.SessionConstants.CLAIM_ID;
 import static uk.gov.justice.laa.bulkclaim.constants.SessionConstants.SUBMISSION_ID;
 
+import java.time.OffsetDateTime;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -111,7 +112,9 @@ public final class ClaimDetailController {
     SubmissionResponse submissionResponse =
         dataClaimsRestClient.getSubmission(submissionId).block();
     String areaOfLaw = submissionResponse.getAreaOfLaw().getValue();
-    model.addAttribute("claimSummary", claimSummaryMapper.toClaimSummary(claimResponse, submissionResponse, areaOfLaw));
+    String officeAccountNumber = submissionResponse.getOfficeAccountNumber();
+    OffsetDateTime submissionDate = submissionResponse.getSubmitted();
+    model.addAttribute("claimSummary", claimSummaryMapper.toClaimSummary(claimResponse, areaOfLaw, officeAccountNumber, submissionDate));
 
     final MessagesSummary messagesSummary =
         submissionMessagesBuilder.buildAllWarnings(submissionId, claimId);

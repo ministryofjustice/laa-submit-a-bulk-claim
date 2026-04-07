@@ -10,6 +10,8 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static uk.gov.justice.laa.bulkclaim.constants.SessionConstants.CLAIM_ID;
 import static uk.gov.justice.laa.bulkclaim.constants.SessionConstants.SUBMISSION_ID;
 
+import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
 import java.util.UUID;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -85,7 +87,7 @@ class ClaimDetailControllerTest {
       when(dataClaimsRestClient.getSubmissionClaim(submissionId, claimId))
           .thenReturn(Mono.just(claimResponse));
 
-      when(claimSummaryMapper.toClaimSummary(claimResponse, AreaOfLaw.LEGAL_HELP.getValue()))
+      when(claimSummaryMapper.toClaimSummary(claimResponse, AreaOfLaw.LEGAL_HELP.getValue(), "0P322F", OffsetDateTime.of(2025, 5, 5, 6, 52, 27, 954000000, ZoneOffset.UTC)))
           .thenReturn(ClaimSummary.builder().build());
       when(claimFeeCalculationBreakdownMapper.toClaimFeeCalculationBreakdown(claimResponse))
           .thenReturn(ClaimFeeCalculationBreakdown.builder().build());
@@ -106,7 +108,7 @@ class ClaimDetailControllerTest {
           .hasViewName("pages/view-claim-detail");
 
       verify(claimSummaryMapper, times(1))
-          .toClaimSummary(claimResponse, AreaOfLaw.LEGAL_HELP.getValue());
+          .toClaimSummary(claimResponse, AreaOfLaw.LEGAL_HELP.getValue(), "0P322F", OffsetDateTime.of(2025, 5, 5, 6, 52, 27, 954000000, ZoneOffset.UTC));
     }
 
     @Test

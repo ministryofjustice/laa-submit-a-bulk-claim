@@ -7,6 +7,7 @@ import uk.gov.justice.laa.bulkclaim.dto.submission.claim.ClaimSummary;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.ClaimResponse;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionResponse;
 
+import java.time.OffsetDateTime;
 import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -25,16 +26,16 @@ public interface ClaimSummaryMapper {
       source = "claimResponse.feeCalculationResponse.boltOnDetails.escapeCaseFlag")
   @Mapping(target = "uniqueClientNumber2", source = "claimResponse.client2Ucn")
   @Mapping(target = "areaOfLaw", source = "areaOfLaw")
-  @Mapping(target = "officeAccountNumber", source = "submissionResponse.officeAccountNumber")
+  @Mapping(target = "officeAccountNumber", source = "officeAccountNumber")
   @Mapping(target = "standardFeeCategoryCode", source = "claimResponse.standardFeeCategoryCode")
   @Mapping(target = "matterType1", source = "claimResponse.matterTypeCode", qualifiedByName = "matterType1")
   @Mapping(target = "matterType2", source = "claimResponse.matterTypeCode", qualifiedByName = "matterType2")
   @Mapping(target = "categoryOfLaw", source = "claimResponse.feeCalculationResponse.categoryOfLaw")
   @Mapping(target = "feeCodeDescription", source = "claimResponse.feeCalculationResponse.feeCodeDescription")
-  @Mapping(target = "submissionDate", source = "submissionResponse.submitted")
+  @Mapping(target = "submissionDate", source = "submissionDate")
   @Mapping(target = "clientName", source = "claimResponse", qualifiedByName = "mapClientName")
   @Mapping(target = "client2Name", source = "claimResponse", qualifiedByName = "mapClient2Name")
-  ClaimSummary toClaimSummary(ClaimResponse claimResponse, SubmissionResponse submissionResponse, String areaOfLaw);
+  ClaimSummary toClaimSummary(ClaimResponse claimResponse, String areaOfLaw, String officeAccountNumber, OffsetDateTime submissionDate);
 
 
     @Named("matterType1")

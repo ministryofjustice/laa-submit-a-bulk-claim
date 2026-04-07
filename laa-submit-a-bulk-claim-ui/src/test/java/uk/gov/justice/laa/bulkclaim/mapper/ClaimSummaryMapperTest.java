@@ -6,6 +6,10 @@ import org.junit.jupiter.api.Test;
 import uk.gov.justice.laa.bulkclaim.dto.submission.claim.ClaimSummary;
 import uk.gov.justice.laa.bulkclaim.helper.TestObjectCreator;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.ClaimResponse;
+import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionResponse;
+
+import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
 
 @DisplayName("Claim summary mapper test")
 class ClaimSummaryMapperTest {
@@ -17,9 +21,11 @@ class ClaimSummaryMapperTest {
   void shouldMapAllDetails() {
     // Given
     String areaOfLaw = "CIVIL";
+    String officeAccountNumber = "0P322F";
+    OffsetDateTime submissionDate= OffsetDateTime.of(2025, 5, 5, 6, 52, 27, 954000000, ZoneOffset.UTC);
     ClaimResponse claimResponse = TestObjectCreator.buildClaimResponse();
     // When
-    ClaimSummary result = mapper.toClaimSummary(claimResponse, areaOfLaw);
+    ClaimSummary result = mapper.toClaimSummary(claimResponse, areaOfLaw, officeAccountNumber, submissionDate);
     // Then
     SoftAssertions.assertSoftly(
         softAssertions -> {
