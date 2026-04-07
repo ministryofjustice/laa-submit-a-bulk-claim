@@ -231,6 +231,21 @@ prek run --all-files
 - WireMock supports integration-style tests against Data Stewardship flows.
 - Add new tests alongside changes to maintain coverage.
 
+### Accessibility Tests
+```sh
+./gradlew :laa-submit-a-bulk-claim-ui:accessibilityTest
+```
+
+- Accessibility coverage now runs in this repository as a first-class Java Playwright + axe suite.
+- Tests live under `laa-submit-a-bulk-claim-ui/src/accessibilityTest`.
+- WireMock fixtures for the suite live under
+  `laa-submit-a-bulk-claim-ui/src/accessibilityTest/resources/wiremock`.
+- JUnit XML and HTML reports are generated under
+  `laa-submit-a-bulk-claim-ui/build/test-results/accessibilityTest` and
+  `laa-submit-a-bulk-claim-ui/build/reports/tests/accessibilityTest`.
+- See `laa-submit-a-bulk-claim-ui/src/accessibilityTest/README.md` for test structure, stub
+  patterns, and debugging tips.
+
 ### E2E Tests
 E2E tests are designed to run in UAT environments. They can be found on GitHub
 within the [bulk-submission-and-fee-scheme-tests](https://github.com/ministryofjustice/bulk-submission-and-fee-scheme-tests-)

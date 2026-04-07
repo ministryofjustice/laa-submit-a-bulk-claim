@@ -1,0 +1,8 @@
+{
+  "detail": "The selected file contains office account . You do not have access to this office",
+  "instance": "/api/v1/bulk-submissions",
+  "status": 403,
+  "title": "Forbidden",
+  "type": "https://claimsdata.payments.laa.justice.gov.uk/errors/bulk-submission-office-authorisation",
+  "message": "The selected file contains office account . You do not have access to this office"
+}

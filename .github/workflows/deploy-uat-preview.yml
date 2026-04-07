@@ -57,6 +57,38 @@ jobs:
       pact_broker_username: ${{ secrets.PACT_BROKER_USERNAME }}
       pact_broker_password: ${{ secrets.PACT_BROKER_PASSWORD }}
 
+  accessibility-test:
+    needs: [ build-and-test ]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+  
+      - name: Set up Java
+        uses: actions/setup-java@e8f6d1f4f8f16c3d4f6f5ec8c15fcb85583b8f04 # v5.0.0
+        with:
+          distribution: temurin
+          java-version: '25'
+  
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@ed408507eac070d1f99cc633dbcf757c94c7933a # v4
+  
+      - name: Run accessibility test suite
+        run: ./gradlew :laa-submit-a-bulk-claim-ui:accessibilityTest --no-daemon
+  
+      - name: Upload accessibility test artifacts
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: accessibility-test-results-uat-preview
+          path: |
+            laa-submit-a-bulk-claim-ui/build/test-results/accessibilityTest
+            laa-submit-a-bulk-claim-ui/build/reports/tests/accessibilityTest
+            laa-submit-a-bulk-claim-ui/build/reports/accessibility
+          if-no-files-found: warn
+
   ecr-publish-image:
     needs: [ build-and-test ]
     uses: ministryofjustice/laa-ccms-common-workflows/.github/workflows/ecr-publish-image.yml@v2
@@ -79,6 +111,7 @@ jobs:
     needs:
       - pact-test
       - ecr-publish-image
+      - accessibility-test
     runs-on: ubuntu-latest
     environment: uat
     permissions:

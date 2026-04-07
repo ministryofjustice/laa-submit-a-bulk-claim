@@ -28,7 +28,25 @@ dependencyManagement {
         }
     }
 }
+
+// To keep pact/accessibility stuff seperate
+sourceSets {
+    pactTest {
+        java.srcDir file('src/pactTest/java')
+        resources.srcDir file('src/pactTest/resources')
+        compileClasspath += sourceSets.main.output + configurations.testRuntimeClasspath
+        runtimeClasspath += sourceSets.main.output + configurations.testRuntimeClasspath
+    }
+    accessibilityTest {
+        java.srcDir file('src/accessibilityTest/java')
+        resources.srcDir file('src/accessibilityTest/resources')
+        compileClasspath += sourceSets.main.output + configurations.testRuntimeClasspath
+        runtimeClasspath += sourceSets.main.output + configurations.testRuntimeClasspath
+    }
+}
+
 dependencies {
+
     // Upgrade to fix CVE-2026-1225 vulnerability in logback-core
     implementation 'ch.qos.logback:logback-core:1.5.25'
     implementation 'ch.qos.logback:logback-classic:1.5.25'
@@ -90,21 +108,19 @@ dependencies {
     testImplementation 'org.mock-server:mockserver-client-java:5.15.0'
 
     testImplementation 'au.com.dius.pact.consumer:junit5:4.6.19'
+
+    accessibilityTestImplementation 'com.microsoft.playwright:playwright:1.56.0'
+    accessibilityTestImplementation 'com.deque.html.axe-core:playwright:4.10.2'
+    accessibilityTestImplementation 'org.springframework.boot:spring-boot-starter-test'
+    accessibilityTestImplementation 'org.wiremock:wiremock-standalone:3.13.1'
 }
 
-// To keep pact stuff seperate
-sourceSets {
-    pactTest {
-        java.srcDir file('src/pactTest/java')
-        resources.srcDir file('src/pactTest/resources')
-        compileClasspath += sourceSets.main.output + configurations.testRuntimeClasspath
-        runtimeClasspath += sourceSets.main.output + configurations.testRuntimeClasspath
-    }
-}
 
 configurations {
     pactTestImplementation.extendsFrom testImplementation
     pactTestRuntimeOnly.extendsFrom testRuntimeOnly
+    accessibilityTestImplementation.extendsFrom testImplementation
+    accessibilityTestRuntimeOnly.extendsFrom testRuntimeOnly
 }
 
 tasks.register('pactTest', Test) {
@@ -128,7 +144,41 @@ tasks.register('pactTest', Test) {
     systemProperty 'pact.rootDir', layout.buildDirectory.dir("pacts").get().asFile.path
 }
 
+tasks.register('accessibilityTest', Test) {
+
+    description = 'Runs the accessibility tests.'
+    group = 'verification'
+
+    testClassesDirs = sourceSets.accessibilityTest.output.classesDirs
+    classpath = sourceSets.accessibilityTest.runtimeClasspath
+    useJUnitPlatform()
+
+    systemProperty(
+            'accessibility.headless',
+            System.getProperty(
+                    'accessibility.headless',
+                    System.getenv('ACCESSIBILITY_HEADLESS') ?: 'true'
+            )
+    )
+
+    def configuredParallelForks =
+            System.getProperty('accessibility.maxParallelForks')
+                    ?: System.getenv('ACCESSIBILITY_MAX_PARALLEL_FORKS')
+    maxParallelForks = configuredParallelForks
+            ? Integer.parseInt(configuredParallelForks)
+            : Math.max(1, (Runtime.runtime.availableProcessors() / 2) as int)
+
+    reports {
+        junitXml.required = true
+        html.required = true
+    }
+}
+
 tasks.named('processPactTestResources') {
+    duplicatesStrategy = DuplicatesStrategy.INCLUDE
+}
+
+tasks.named('processAccessibilityTestResources') {
     duplicatesStrategy = DuplicatesStrategy.INCLUDE
 }
 
