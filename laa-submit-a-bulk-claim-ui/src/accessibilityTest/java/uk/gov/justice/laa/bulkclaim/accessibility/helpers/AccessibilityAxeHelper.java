@@ -23,6 +23,10 @@ public final class AccessibilityAxeHelper {
 
   private AccessibilityAxeHelper() {}
 
+  public static void assertAccessible(Page page, String scenarioName) throws IOException {
+    assertAccessible(page, scenarioName, List.of());
+  }
+
   public static void assertAccessible(Page page, String scenarioName, List<String> disabledRules)
       throws IOException {
     page.waitForLoadState(LoadState.NETWORKIDLE);

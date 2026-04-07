@@ -1,12 +1,5 @@
 package uk.gov.justice.laa.bulkclaim.accessibility.helpers;
 
-import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
-import static com.github.tomakehurst.wiremock.client.WireMock.containing;
-import static com.github.tomakehurst.wiremock.client.WireMock.equalTo;
-import static com.github.tomakehurst.wiremock.client.WireMock.get;
-import static com.github.tomakehurst.wiremock.client.WireMock.okJson;
-import static com.github.tomakehurst.wiremock.client.WireMock.post;
-import static com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doNothing;
 
@@ -17,8 +10,6 @@ import com.microsoft.playwright.BrowserType;
 import com.microsoft.playwright.Page;
 import com.microsoft.playwright.Playwright;
 import java.io.IOException;
-import java.io.InputStream;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.stream.Stream;
@@ -28,6 +19,7 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.TestInstance.Lifecycle;
+import org.junit.jupiter.params.provider.Arguments;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.context.annotation.Import;
@@ -79,12 +71,9 @@ public abstract class AbstractAccessibilityTest {
           "MEDIATION",
           true);
 
-  private static final WireMockServer WIREMOCK = new WireMockServer(0);
-
-  static {
-    WIREMOCK.start();
-    registerWiremockStubs();
-  }
+  private static final WireMockServer WIREMOCK =
+      AccessibilityWiremockSupport.createStartedServer(
+          BULK_SUBMISSION_ID, LEGAL_HELP, CRIME_LOWER, MEDIATION);
 
   @MockitoBean protected VirusCheckService virusCheckService;
   @MockitoBean protected BulkImportFileValidator bulkImportFileValidator;
@@ -172,6 +161,14 @@ public abstract class AbstractAccessibilityTest {
     page.navigate(appUrl("/view-submission-detail?submissionId=" + scenario.invalidSubmissionId()));
   }
 
+  protected static String areaScenarioName(
+      String pageName, String areaOfLawAbbr, String scenarioSuffix) {
+    if (scenarioSuffix == null || scenarioSuffix.isBlank()) {
+      return pageName + "-" + areaOfLawAbbr;
+    }
+    return pageName + "-" + areaOfLawAbbr + "-" + scenarioSuffix;
+  }
+
   protected Path writeFile(String fileName, String content) throws IOException {
     Path file = Path.of("build", "tmp", "accessibility", fileName);
     Files.createDirectories(file.getParent());
@@ -191,209 +188,24 @@ public abstract class AbstractAccessibilityTest {
     return Stream.of(LEGAL_HELP, MEDIATION);
   }
 
-  private static void registerWiremockStubs() {
-    String wiremockBase = WIREMOCK.baseUrl();
-
-    WIREMOCK.stubFor(
-        get(urlPathEqualTo("/oidc/silas/.well-known/openid-configuration"))
-            .willReturn(
-                okJson(
-                    template("wiremock/oidc/silas-openid-configuration.json")
-                        .formatted(
-                            wiremockBase,
-                            wiremockBase,
-                            wiremockBase,
-                            wiremockBase,
-                            wiremockBase))));
-
-    WIREMOCK.stubFor(
-        get(urlPathEqualTo("/oidc/moj/.well-known/openid-configuration"))
-            .willReturn(
-                okJson(
-                    template("wiremock/oidc/moj-openid-configuration.json")
-                        .formatted(wiremockBase, wiremockBase, wiremockBase, wiremockBase))));
-
-    WIREMOCK.stubFor(
-        get(urlPathEqualTo("/oidc/silas/jwks"))
-            .willReturn(okJson(template("wiremock/oidc/jwks-empty.json"))));
-    WIREMOCK.stubFor(
-        get(urlPathEqualTo("/oidc/moj/jwks"))
-            .willReturn(okJson(template("wiremock/oidc/jwks-empty.json"))));
-
-    WIREMOCK.stubFor(
-        post(urlPathEqualTo("/api/v1/bulk-submissions"))
-            .atPriority(1)
-            .withRequestBody(containing("forbidden-office.csv"))
-            .willReturn(
-                aResponse()
-                    .withStatus(403)
-                    .withHeader("Content-Type", "application/problem+json")
-                    .withBody(
-                        template("wiremock/claim-api/post-bulk-submissions-forbidden.json"))));
-
-    WIREMOCK.stubFor(
-        post(urlPathEqualTo("/api/v1/bulk-submissions"))
-            .atPriority(5)
-            .willReturn(
-                okJson(
-                    template("wiremock/claim-api/post-bulk-submissions.json")
-                        .formatted(LEGAL_HELP.validSubmissionId(), BULK_SUBMISSION_ID))));
-
-    WIREMOCK.stubFor(
-        get(urlPathEqualTo("/api/v1/bulk-submissions/" + BULK_SUBMISSION_ID + "/summary"))
-            .willReturn(okJson(template("wiremock/claim-api/get-bulk-submission-summary.json"))));
-
-    WIREMOCK.stubFor(
-        get(urlPathEqualTo("/api/v1/submissions"))
-            .willReturn(
-                okJson(
-                    template("wiremock/claim-api/get-submissions.json")
-                        .formatted(
-                            LEGAL_HELP.validSubmissionId(),
-                            LEGAL_HELP.invalidSubmissionId(),
-                            CRIME_LOWER.validSubmissionId(),
-                            CRIME_LOWER.invalidSubmissionId(),
-                            MEDIATION.validSubmissionId(),
-                            MEDIATION.invalidSubmissionId()))));
-
-    for (AreaScenario scenario : allAreas().toList()) {
-      registerAreaStubs(scenario);
-    }
+  protected static Stream<Arguments> allAreaArguments() {
+    return toArguments(allAreas());
   }
 
-  private static void registerAreaStubs(AreaScenario scenario) {
-    WIREMOCK.stubFor(
-        get(urlPathEqualTo("/api/v1/submissions/" + scenario.validSubmissionId()))
-            .willReturn(
-                okJson(
-                    template("wiremock/claim-api/get-submission-valid.json")
-                        .formatted(
-                            scenario.validSubmissionId(),
-                            scenario.apiAreaOfLaw(),
-                            scenario.validClaimId()))));
-
-    WIREMOCK.stubFor(
-        get(urlPathEqualTo("/api/v1/submissions/" + scenario.invalidSubmissionId()))
-            .willReturn(
-                okJson(
-                    template("wiremock/claim-api/get-submission-invalid.json")
-                        .formatted(
-                            scenario.invalidSubmissionId(),
-                            scenario.apiAreaOfLaw(),
-                            scenario.validClaimId()))));
-
-    WIREMOCK.stubFor(
-        get(urlPathEqualTo("/api/v1/claims"))
-            .withQueryParam("submission_id", equalTo(scenario.validSubmissionId()))
-            .willReturn(
-                okJson(
-                    template("wiremock/claim-api/get-claims-v1.json")
-                        .formatted(
-                            scenario.validClaimId(),
-                            scenario.validSubmissionId(),
-                            scenario.validClaimId()))));
-
-    WIREMOCK.stubFor(
-        get(urlPathEqualTo("/api/v1/claims"))
-            .withQueryParam("submission_id", equalTo(scenario.invalidSubmissionId()))
-            .willReturn(
-                okJson(
-                    template("wiremock/claim-api/get-claims-v1.json")
-                        .formatted(
-                            scenario.validClaimId(),
-                            scenario.invalidSubmissionId(),
-                            scenario.validClaimId()))));
-
-    WIREMOCK.stubFor(
-        get(urlPathEqualTo("/api/v2/claims"))
-            .withQueryParam("submission_id", equalTo(scenario.validSubmissionId()))
-            .willReturn(
-                okJson(
-                    template("wiremock/claim-api/get-claims-v2.json")
-                        .formatted(
-                            scenario.validClaimId(),
-                            scenario.validSubmissionId(),
-                            scenario.validClaimId()))));
-
-    WIREMOCK.stubFor(
-        get(urlPathEqualTo("/api/v2/claims"))
-            .withQueryParam("submission_id", equalTo(scenario.invalidSubmissionId()))
-            .willReturn(
-                okJson(
-                    template("wiremock/claim-api/get-claims-v2.json")
-                        .formatted(
-                            scenario.validClaimId(),
-                            scenario.invalidSubmissionId(),
-                            scenario.validClaimId()))));
-
-    WIREMOCK.stubFor(
-        get(urlPathEqualTo(
-                "/api/v1/submissions/"
-                    + scenario.validSubmissionId()
-                    + "/claims/"
-                    + scenario.validClaimId()))
-            .willReturn(
-                okJson(
-                    template("wiremock/claim-api/get-claim-detail.json")
-                        .formatted(
-                            scenario.validClaimId(),
-                            scenario.validSubmissionId(),
-                            scenario.validClaimId()))));
-
-    WIREMOCK.stubFor(
-        get(urlPathEqualTo("/api/v1/validation-messages"))
-            .withQueryParam("submission-id", equalTo(scenario.validSubmissionId()))
-            .willReturn(
-                okJson(
-                    template("wiremock/claim-api/get-validation-messages.json")
-                        .formatted(scenario.validSubmissionId(), scenario.validClaimId()))));
-
-    WIREMOCK.stubFor(
-        get(urlPathEqualTo("/api/v1/validation-messages"))
-            .withQueryParam("submission-id", equalTo(scenario.invalidSubmissionId()))
-            .willReturn(
-                okJson(
-                    template("wiremock/claim-api/get-validation-messages.json")
-                        .formatted(scenario.invalidSubmissionId(), scenario.validClaimId()))));
-
-    if (scenario.hasMatterStarts()) {
-      WIREMOCK.stubFor(
-          get(urlPathEqualTo(
-                  "/api/v1/submissions/" + scenario.validSubmissionId() + "/matter-starts"))
-              .willReturn(
-                  okJson(
-                      template("wiremock/claim-api/get-matter-starts.json")
-                          .formatted(scenario.validSubmissionId()))));
-    } else {
-      WIREMOCK.stubFor(
-          get(urlPathEqualTo(
-                  "/api/v1/submissions/" + scenario.validSubmissionId() + "/matter-starts"))
-              .willReturn(
-                  okJson(
-                      template("wiremock/claim-api/get-matter-starts-empty.json")
-                          .formatted(scenario.validSubmissionId()))));
-    }
-
-    WIREMOCK.stubFor(
-        get(urlPathEqualTo(
-                "/api/v1/submissions/" + scenario.invalidSubmissionId() + "/matter-starts"))
-            .willReturn(
-                okJson(
-                    template("wiremock/claim-api/get-matter-starts-empty.json")
-                        .formatted(scenario.invalidSubmissionId()))));
+  protected static Stream<Arguments> costWarningAreaArguments() {
+    return toArguments(costWarningAreas());
   }
 
-  private static String template(String resourcePath) {
-    try (InputStream stream =
-        AbstractAccessibilityTest.class.getClassLoader().getResourceAsStream(resourcePath)) {
-      if (stream == null) {
-        throw new IllegalStateException("Resource not found: " + resourcePath);
-      }
-      return new String(stream.readAllBytes(), StandardCharsets.UTF_8);
-    } catch (IOException e) {
-      throw new IllegalStateException(
-          "Failed to load accessibility test resource: " + resourcePath, e);
-    }
+  protected static Stream<Arguments> matterStartAreaArguments() {
+    return toArguments(matterStartAreas());
+  }
+
+  protected static Stream<Arguments> legalHelpArguments() {
+    return toArguments(Stream.of(LEGAL_HELP));
+  }
+
+  private static Stream<Arguments> toArguments(Stream<AreaScenario> scenarios) {
+    return scenarios.map(scenario -> Arguments.of(scenario.areaOfLawAbbr(), scenario));
   }
 
   protected record AreaScenario(
