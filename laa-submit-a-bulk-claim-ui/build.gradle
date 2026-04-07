@@ -24,7 +24,7 @@ dependencyManagement {
     dependencies {
         dependencySet(group: 'io.sentry', version: versions.sentry) {
             entry 'sentry-spring-boot-starter'
-            entry 'sentry-logback'
+            entry 'sentry-log4j2'
         }
     }
 }
@@ -46,13 +46,9 @@ sourceSets {
 }
 
 dependencies {
-
-    // Upgrade to fix CVE-2026-1225 vulnerability in logback-core
-    implementation 'ch.qos.logback:logback-core:1.5.25'
-    implementation 'ch.qos.logback:logback-classic:1.5.25'
     // Upgrade to fix vulnerability GHSA-72hv-8253-57qq
-    implementation 'com.fasterxml.jackson.core:jackson-core:2.21.1'
-    implementation 'tools.jackson.core:jackson-core:3.1.0'
+    implementation 'com.fasterxml.jackson.core:jackson-core:2.21.2'
+    implementation 'tools.jackson.core:jackson-core:3.1.1'
 
     implementation 'uk.gov.justice.laa.datastewardship.payments:data-claims-api-models:1.0.17'
     
@@ -65,6 +61,7 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
     implementation 'org.springframework.boot:spring-boot-starter-webmvc'
     implementation 'org.springframework.boot:spring-boot-starter-webflux'
+    implementation 'org.springframework.boot:spring-boot-starter-log4j2'
     implementation 'org.reactivestreams:reactive-streams:1.0.4'
     implementation 'org.thymeleaf.extras:thymeleaf-extras-springsecurity6'
 
@@ -91,7 +88,7 @@ dependencies {
     implementation 'org.springframework.session:spring-session-data-redis'
     // Sentry
     implementation platform("io.sentry:sentry-bom:$versions.sentry")
-    implementation "io.sentry:sentry-logback:$versions.sentry"
+    implementation "io.sentry:sentry-log4j2:$versions.sentry"
     implementation "io.sentry:sentry-spring-boot-4:$versions.sentry"
 
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
@@ -117,6 +114,10 @@ dependencies {
 
 
 configurations {
+    all {
+        exclude group: 'org.springframework.boot', module: 'spring-boot-starter-logging'
+    }
+
     pactTestImplementation.extendsFrom testImplementation
     pactTestRuntimeOnly.extendsFrom testRuntimeOnly
     accessibilityTestImplementation.extendsFrom testImplementation
