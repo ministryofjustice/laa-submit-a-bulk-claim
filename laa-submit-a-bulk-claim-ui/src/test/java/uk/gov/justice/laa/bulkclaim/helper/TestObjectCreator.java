@@ -122,6 +122,7 @@ public final class TestObjectCreator {
                 .boltOnDetails(BoltOnPatch.builder().escapeCaseFlag(true).build())
                 .categoryOfLaw("category-of-law")
                 .feeCodeDescription("description")
+                .vatIndicator(true)
                 .build())
         .build();
   }

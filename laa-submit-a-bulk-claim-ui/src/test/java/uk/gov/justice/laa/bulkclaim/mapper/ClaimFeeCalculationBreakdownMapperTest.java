@@ -42,6 +42,7 @@ class ClaimFeeCalculationBreakdownMapperTest {
             .jrFormFillingAmount(BigDecimal.valueOf(1800.80))
             .detentionTravelAndWaitingCostsAmount(BigDecimal.valueOf(1700.70))
             .calculatedVatAmount(BigDecimal.valueOf(20.50))
+            .vatIndicator(true)
             .boltOnDetails(
                 BoltOnPatch.builder()
                     .boltOnCmrhTelephoneFee(BigDecimal.valueOf(1800.80))
@@ -118,19 +119,19 @@ class ClaimFeeCalculationBreakdownMapperTest {
               .isEqualTo(monetaryValue(1700.70));
           softAssertions
               .assertThat(result.cmrhTelephone().enteredValue())
-              .isNull(); // Not entered by the user
+              .isEqualTo(monetaryValue(2.00));
           softAssertions
               .assertThat(result.cmrhTelephone().calculatedValue())
               .isEqualTo(monetaryValue(1800.80));
           softAssertions
               .assertThat(result.cmrhOral().enteredValue())
-              .isNull(); // Not entered by the user
+                  .isEqualTo(monetaryValue(1.00));
           softAssertions
               .assertThat(result.cmrhOral().calculatedValue())
               .isEqualTo(monetaryValue(1900.90));
           softAssertions
               .assertThat(result.homeOfficeInterview().enteredValue())
-              .isNull(); // Not entered by the user
+              .isEqualTo(monetaryValue(3.00));
           softAssertions
               .assertThat(result.homeOfficeInterview().calculatedValue())
               .isEqualTo(monetaryValue(2020.20));
@@ -140,7 +141,7 @@ class ClaimFeeCalculationBreakdownMapperTest {
           softAssertions
               .assertThat(result.substantiveHearing().calculatedValue())
               .isEqualTo(monetaryValue(2030.30));
-          softAssertions.assertThat(result.adjournedHearingFee().enteredValue()).isNull();
+          softAssertions.assertThat(result.adjournedHearingFee().enteredValue()).isEqualTo(monetaryValue(9.00));;
           softAssertions
               .assertThat(result.adjournedHearingFee().calculatedValue())
               .isEqualTo(monetaryValue(2010.10));
@@ -149,6 +150,7 @@ class ClaimFeeCalculationBreakdownMapperTest {
               .isNull(); // Not entered by the user
           softAssertions.assertThat(result.vat().calculatedValue()).isEqualTo(monetaryValue(20.50));
           softAssertions.assertThat(result.calculatedTotal()).isEqualTo(monetaryValue(51234.12));
+          softAssertions.assertThat(result.vatIndicator()).isTrue();
         });
   }
 
