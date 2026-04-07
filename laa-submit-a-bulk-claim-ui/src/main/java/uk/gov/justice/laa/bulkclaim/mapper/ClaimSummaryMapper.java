@@ -7,6 +7,10 @@ import uk.gov.justice.laa.bulkclaim.dto.submission.claim.ClaimSummary;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.ClaimResponse;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionResponse;
 
+import java.util.Objects;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
 /**
  * Maps between {@link ClaimResponse} and {@link ClaimSummary}.
  *
@@ -28,16 +32,29 @@ public interface ClaimSummaryMapper {
   @Mapping(target = "categoryOfLaw", source = "claimResponse.feeCalculationResponse.categoryOfLaw")
   @Mapping(target = "feeCodeDescription", source = "claimResponse.feeCalculationResponse.feeCodeDescription")
   @Mapping(target = "submissionDate", source = "submissionResponse.submitted")
+  @Mapping(target = "clientName", source = "claimResponse", qualifiedByName = "mapClientName")
+  @Mapping(target = "client2Name", source = "claimResponse", qualifiedByName = "mapClient2Name")
   ClaimSummary toClaimSummary(ClaimResponse claimResponse, SubmissionResponse submissionResponse, String areaOfLaw);
 
-  @Named("matterType1")
-  default String getMatterType1(String matterTypeCode) {
-      if (matterTypeCode == null) return null;
-      return matterTypeCode.split(":")[0];
-  }
+
+    @Named("matterType1")
+    default String getMatterType1(String matterTypeCode) {
+        if (matterTypeCode == null) return null;
+        return matterTypeCode.split(":")[0];
+    }
     @Named("matterType2")
     default String getMatterType2(String matterTypeCode) {
         if (matterTypeCode == null || !matterTypeCode.contains(":")) return null;
         return matterTypeCode.split(":")[1];
+    }
+
+  @Named("mapClient2Name")
+  default String getClient2Name(ClaimResponse claimResponse) {
+      return Stream.of(claimResponse.getClient2Forename(), claimResponse.getClient2Surname()).filter(Objects::nonNull).collect(Collectors.joining(" "));
+  }
+
+    @Named("mapClientName")
+    default String getClientName(ClaimResponse claimResponse) {
+        return Stream.of(claimResponse.getClientForename(), claimResponse.getClientSurname()).filter(Objects::nonNull).collect(Collectors.joining(" "));
     }
 }

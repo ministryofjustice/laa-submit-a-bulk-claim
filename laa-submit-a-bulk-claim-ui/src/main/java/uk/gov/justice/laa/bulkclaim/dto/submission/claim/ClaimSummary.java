@@ -27,6 +27,8 @@ import lombok.Builder;
  * @param categoryOfLaw the category of law
  * @param feeCodeDescription the fee code description
  * @param submissionDate the date submitted
+ * @param client2Name the client 2 name
+ * @param clientName the client name
  * @param isEscaped case escaped flag
  */
 @Builder
@@ -53,4 +55,6 @@ public record ClaimSummary(
     String categoryOfLaw,
     String feeCodeDescription,
     OffsetDateTime submissionDate,
+    String clientName,
+    String client2Name,
     Boolean isEscaped /*CIVIL*/) {}

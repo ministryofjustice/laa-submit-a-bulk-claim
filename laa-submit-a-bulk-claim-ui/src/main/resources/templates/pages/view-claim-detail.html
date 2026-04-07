@@ -105,7 +105,7 @@
                             <dl class="govuk-summary-list">
                                 <th:block th:if="${claimSummary.areaOfLaw == 'LEGAL HELP'}">
                                     <th:block
-                                            th:replace="~{::summary-row(#{submission.summary.claims.table.clientName}, ${claimSummary.clientForename + ' ' + claimSummary.clientSurname})}"></th:block>
+                                            th:replace="~{::summary-row(#{submission.summary.claims.table.clientName}, ${claimSummary.clientName})}"></th:block>
                                     <th:block
                                             th:replace="~{::summary-row(#{submission.summary.claims.table.ufn}, ${claimSummary.uniqueFileNumber})}"></th:block>
                                     <th:block
@@ -175,11 +175,11 @@
 
                                 <th:block th:if="${claimSummary.areaOfLaw == 'MEDIATION'}">
                                     <th:block
-                                            th:replace="~{::summary-row(#{submission.summary.claims.table.client1Name}, ${claimSummary.clientForename + ' ' + claimSummary.clientSurname})}"/>
+                                            th:replace="~{::summary-row(#{submission.summary.claims.table.client1Name}, ${claimSummary.clientName})}"/>
                                     <th:block
                                             th:replace="~{::summary-row(#{submission.summary.claims.table.client1Ucn}, ${claimSummary.uniqueClientNumber})}"/>
                                     <th:block
-                                            th:replace="~{::summary-row(#{submission.summary.claims.table.client2Name}, ${claimSummary.client2Forename + ' ' + claimSummary.client2Surname})}"/>
+                                            th:replace="~{::summary-row(#{submission.summary.claims.table.client2Name}, ${claimSummary.client2Name})}"/>
                                     <th:block
                                             th:replace="~{::summary-row(#{submission.summary.claims.table.client2Ucn}, ${claimSummary.uniqueClientNumber2})}"/>
                                     <th:block
