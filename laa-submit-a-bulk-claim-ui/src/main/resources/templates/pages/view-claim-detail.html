@@ -131,9 +131,9 @@
                                     <th:block
                                             th:replace="~{::summary-row(#{submission.summary.claims.table.caseEndDate}, ${#temporals.format(claimSummary.caseConcludedDate, 'dd/MM/yyyy')})}"/>
                                     <th:block
-                                            th:replace="~{::summary-row(#{submission.summary.claims.table.escapeCase}, ${claimSummary.isEscaped ? 'Yes' : 'No'})}"/>
+                                            th:replace="~{::summary-row(#{submission.summary.claims.table.escapeCase}, ${claimSummary.isEscaped()} ? 'Yes' : 'No')}"/>
                                     <th:block
-                                            th:replace="~{::summary-row(#{submission.summary.claims.table.vatRequested}, ${claimSummary.isVatApplicable ? 'Yes' : 'No'})}"/>
+                                            th:replace="~{::summary-row(#{submission.summary.claims.table.vatRequested}, ${claimSummary.isVatApplicable()} ? 'Yes' : 'No')}"/>
                                 </th:block>
 
 
@@ -167,9 +167,9 @@
                                     <th:block
                                             th:replace="~{::summary-row(#{submission.summary.claims.table.dateOfWorkConcluded}, ${#temporals.format(claimSummary.caseConcludedDate, 'dd/MM/yyyy')})}"/>
                                     <th:block
-                                            th:replace="~{::summary-row(#{submission.summary.claims.table.escapeCase}, ${claimSummary.isEscaped ? 'Yes' : 'No'})}"/>
+                                            th:replace="~{::summary-row(#{submission.summary.claims.table.escapeCase}, ${claimSummary.isEscaped()} ? 'Yes' : 'No')}"/>
                                     <th:block
-                                            th:replace="~{::summary-row(#{submission.summary.claims.table.vatRequested}, ${claimSummary.isVatApplicable ? 'Yes' : 'No'})}"/>
+                                            th:replace="~{::summary-row(#{submission.summary.claims.table.vatRequested}, ${claimSummary.isVatApplicable()} ? 'Yes' : 'No')}"/>
                                 </th:block>
 
 
@@ -177,11 +177,11 @@
                                     <th:block
                                             th:replace="~{::summary-row(#{submission.summary.claims.table.client1Name}, ${claimSummary.clientForename + ' ' + claimSummary.clientSurname})}"/>
                                     <th:block
-                                            th:replace="~{::summary-row(#{submission.summary.claims.table.client1Ucn}, ${claimSummary.uniqueFileNumber})}"/>
+                                            th:replace="~{::summary-row(#{submission.summary.claims.table.client1Ucn}, ${claimSummary.uniqueClientNumber})}"/>
                                     <th:block
                                             th:replace="~{::summary-row(#{submission.summary.claims.table.client2Name}, ${claimSummary.client2Forename + ' ' + claimSummary.client2Surname})}"/>
                                     <th:block
-                                            th:replace="~{::summary-row(#{submission.summary.claims.table.client2Ucn}, ${claimSummary.uniqueClientNumber})}"/>
+                                            th:replace="~{::summary-row(#{submission.summary.claims.table.client2Ucn}, ${claimSummary.uniqueClientNumber2})}"/>
                                     <th:block
                                             th:replace="~{::summary-row(#{submission.summary.claims.table.officeAccount}, ${claimSummary.officeAccountNumber})}"/>
                                     <th:block
@@ -203,9 +203,9 @@
                                     <th:block
                                             th:replace="~{::summary-row(#{submission.summary.claims.table.caseEndDate}, ${#temporals.format(claimSummary.caseConcludedDate, 'dd/MM/yyyy')})}"/>
                                     <th:block
-                                            th:replace="~{::summary-row(#{submission.summary.claims.table.escapeCase}, ${claimSummary.isEscaped ? 'Yes' : 'No'})}"/>
+                                            th:replace="~{::summary-row(#{submission.summary.claims.table.escapeCase}, ${claimSummary.isEscaped()} ? 'Yes' : 'No')}"/>
                                     <th:block
-                                            th:replace="~{::summary-row(#{submission.summary.claims.table.vatRequested}, ${claimSummary.isVatApplicable ? 'Yes' : 'No'})}"/>
+                                            th:replace="~{::summary-row(#{submission.summary.claims.table.vatRequested}, ${claimSummary.isVatApplicable()} ? 'Yes' : 'No')}"/>
                                 </th:block>
 
                             </dl>
