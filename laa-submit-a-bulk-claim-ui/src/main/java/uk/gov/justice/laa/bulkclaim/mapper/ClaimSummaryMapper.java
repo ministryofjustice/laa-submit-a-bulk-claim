@@ -47,32 +47,56 @@ public interface ClaimSummaryMapper {
       String officeAccountNumber,
       OffsetDateTime submissionDate);
 
+  /**
+   * Extracts the first part of the matter type code (matterType1).
+   *
+   * @param matterTypeCode the matterTpeCode string
+   * @return the first part of the matterTypeCode, or null if input is null
+   */
   @Named("matterType1")
   default String getMatterType1(String matterTypeCode) {
     if (matterTypeCode == null) {
-        return null;
+      return null;
     }
     return matterTypeCode.split(":")[0];
   }
 
+  /**
+   * Extracts the second part of the matter type code (matterType2) if it exists.
+   *
+   * @param matterTypeCode the matterTpeCode string
+   * @return the second part of the matterTypeCode, or null if input is null
+   */
   @Named("matterType2")
   default String getMatterType2(String matterTypeCode) {
     if (matterTypeCode == null || !matterTypeCode.contains(":")) {
-        return null;
+      return null;
     }
     return matterTypeCode.split(":")[1];
   }
 
-  @Named("mapClient2Name")
-  default String getClient2Name(ClaimResponse claimResponse) {
-    return Stream.of(claimResponse.getClient2Forename(), claimResponse.getClient2Surname())
-        .filter(Objects::nonNull)
-        .collect(Collectors.joining(" "));
-  }
-
+  /**
+    * Builds the client's full name from forename and surname.
+    *
+    * @param claimResponse the claimResponse containing client details
+    * @return the combined client name, or an empty string if both values are null
+    */
   @Named("mapClientName")
   default String getClientName(ClaimResponse claimResponse) {
     return Stream.of(claimResponse.getClientForename(), claimResponse.getClientSurname())
+      .filter(Objects::nonNull)
+      .collect(Collectors.joining(" "));
+  }
+
+  /**
+   * Builds the second client's full name from forename and surname.
+   *
+   * @param claimResponse the claimResponse containing client details
+   * @return the combined client2 name, or an empty string if both values are null
+   */
+  @Named("mapClient2Name")
+  default String getClient2Name(ClaimResponse claimResponse) {
+    return Stream.of(claimResponse.getClient2Forename(), claimResponse.getClient2Surname())
         .filter(Objects::nonNull)
         .collect(Collectors.joining(" "));
   }
