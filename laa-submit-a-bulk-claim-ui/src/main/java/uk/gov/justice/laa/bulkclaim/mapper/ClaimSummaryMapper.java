@@ -76,16 +76,16 @@ public interface ClaimSummaryMapper {
   }
 
   /**
-    * Builds the client's full name from forename and surname.
-    *
-    * @param claimResponse the claimResponse containing client details
-    * @return the combined client name, or an empty string if both values are null
-    */
+   * Builds the client's full name from forename and surname.
+   *
+   * @param claimResponse the claimResponse containing client details
+   * @return the combined client name, or an empty string if both values are null
+   */
   @Named("mapClientName")
   default String getClientName(ClaimResponse claimResponse) {
     return Stream.of(claimResponse.getClientForename(), claimResponse.getClientSurname())
-      .filter(Objects::nonNull)
-      .collect(Collectors.joining(" "));
+        .filter(Objects::nonNull)
+        .collect(Collectors.joining(" "));
   }
 
   /**
