@@ -49,13 +49,17 @@ public interface ClaimSummaryMapper {
 
   @Named("matterType1")
   default String getMatterType1(String matterTypeCode) {
-    if (matterTypeCode == null) return null;
+    if (matterTypeCode == null) {
+        return null;
+    }
     return matterTypeCode.split(":")[0];
   }
 
   @Named("matterType2")
   default String getMatterType2(String matterTypeCode) {
-    if (matterTypeCode == null || !matterTypeCode.contains(":")) return null;
+    if (matterTypeCode == null || !matterTypeCode.contains(":")) {
+        return null;
+    }
     return matterTypeCode.split(":")[1];
   }
 
