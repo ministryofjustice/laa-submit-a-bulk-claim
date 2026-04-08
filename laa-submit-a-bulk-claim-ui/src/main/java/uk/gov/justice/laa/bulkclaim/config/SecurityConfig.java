@@ -2,9 +2,6 @@ package uk.gov.justice.laa.bulkclaim.config;
 
 import static org.springframework.security.config.Customizer.withDefaults;
 
-import jakarta.servlet.Filter;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -81,5 +78,4 @@ public class SecurityConfig {
     successHandler.setPostLogoutRedirectUri(postLogoutRedirectUri);
     return successHandler;
   }
-
 }
