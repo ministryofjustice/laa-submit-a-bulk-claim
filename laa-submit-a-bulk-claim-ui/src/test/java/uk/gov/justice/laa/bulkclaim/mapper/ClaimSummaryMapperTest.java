@@ -66,9 +66,6 @@ class ClaimSummaryMapperTest {
           softAssertions.assertThat(result.isEscaped()).isTrue();
           softAssertions.assertThat(result.officeAccountNumber()).isEqualTo(officeAccountNumber);
           softAssertions
-              .assertThat(result.standardFeeCategoryCode())
-              .isEqualTo(claimResponse.getStandardFeeCategoryCode());
-          softAssertions
               .assertThat(result.matterType1())
               .isEqualTo(mapper.getMatterType1(claimResponse.getMatterTypeCode()));
           softAssertions

@@ -299,9 +299,9 @@
                                     <th scope="row" class="govuk-table__header "
                                         th:text="#{viewClaim.feeCalculation.row.vat}"/>
                                     <td class="govuk-table__cell govuk-table__cell--numeric"
-                                        th:text="${feeDetails.vatIndicator ? 'Yes' : 'No'}"/>
+                                        th:text="${feeDetails.vatIndicator()} ? 'Yes' : 'No'"/>
                                     <td class="govuk-table__cell govuk-table__cell--numeric"
-                                        th:text="${claimSummary.isVatApplicable ? 'Yes' : 'No'}"/>
+                                        th:text="${claimSummary.isVatApplicable()} ? 'Yes' : 'No'"/>
                                     <td class="govuk-table__cell"></td>
                                 </tr>
                                 </tbody>

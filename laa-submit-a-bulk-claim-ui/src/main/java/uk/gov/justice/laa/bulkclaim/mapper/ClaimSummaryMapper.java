@@ -25,7 +25,6 @@ public interface ClaimSummaryMapper {
   @Mapping(target = "uniqueClientNumber2", source = "claimResponse.client2Ucn")
   @Mapping(target = "areaOfLaw", source = "areaOfLaw")
   @Mapping(target = "officeAccountNumber", source = "officeAccountNumber")
-  @Mapping(target = "standardFeeCategoryCode", source = "claimResponse.standardFeeCategoryCode")
   @Mapping(
       target = "matterType1",
       source = "claimResponse.matterTypeCode",

@@ -80,11 +80,14 @@ class ClaimDetailControllerTest {
     void shouldReturnExpectedResultWithDefaultTab() {
       UUID claimId = UUID.fromString("244fcb9f-50ab-4af8-b635-76bd30e0e97d");
       UUID submissionId = UUID.fromString("244fcb9f-50ab-4af8-b635-76bd30e0e97d");
+      String officeAccountNumber = "0P322F";
+      OffsetDateTime submitted =
+          OffsetDateTime.of(2025, 5, 5, 6, 52, 27, 954000000, ZoneOffset.UTC);
       SubmissionResponse submissionResponse =
           SubmissionResponse.builder()
               .areaOfLaw(AreaOfLaw.LEGAL_HELP)
-              .officeAccountNumber("0P322F")
-              .submitted(OffsetDateTime.of(2025, 5, 5, 6, 52, 27, 954000000, ZoneOffset.UTC))
+              .officeAccountNumber(officeAccountNumber)
+              .submitted(submitted)
               .build();
       when(dataClaimsRestClient.getSubmission(submissionId))
           .thenReturn(Mono.just(submissionResponse));
@@ -94,15 +97,11 @@ class ClaimDetailControllerTest {
           .thenReturn(Mono.just(claimResponse));
 
       when(claimSummaryMapper.toClaimSummary(
-              claimResponse,
-              AreaOfLaw.LEGAL_HELP.getValue(),
-              "0P322F",
-              OffsetDateTime.of(2025, 5, 5, 6, 52, 27, 954000000, ZoneOffset.UTC)))
-          .thenReturn(ClaimSummary.builder().isVatApplicable(true).build());
+              claimResponse, AreaOfLaw.LEGAL_HELP.getValue(), officeAccountNumber, submitted))
+          .thenReturn(ClaimSummary.builder().build());
       when(claimFeeCalculationBreakdownMapper.toClaimFeeCalculationBreakdown(claimResponse))
           .thenReturn(
               ClaimFeeCalculationBreakdown.builder()
-                  .vatIndicator(true)
                   .vat(new BulkClaimCostItem(BigDecimal.valueOf(10), BigDecimal.valueOf(20)))
                   .build());
 
@@ -123,10 +122,7 @@ class ClaimDetailControllerTest {
 
       verify(claimSummaryMapper, times(1))
           .toClaimSummary(
-              claimResponse,
-              AreaOfLaw.LEGAL_HELP.getValue(),
-              "0P322F",
-              OffsetDateTime.of(2025, 5, 5, 6, 52, 27, 954000000, ZoneOffset.UTC));
+              claimResponse, AreaOfLaw.LEGAL_HELP.getValue(), officeAccountNumber, submitted);
     }
 
     @Test
