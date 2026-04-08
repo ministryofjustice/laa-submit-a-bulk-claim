@@ -15,6 +15,7 @@ import java.util.UUID;
  * @param submissionValue numberOfMatterStarts value of the submission
  * @param areaOfLaw type of submission
  * @param submitted date and time the submission was submitted
+ * @param assessedSubmissionValue numberOfMatterStarts assessed value of the submission
  * @author Jamie Briggs
  */
 public record SubmissionSummary(
@@ -24,4 +25,5 @@ public record SubmissionSummary(
     String officeAccount,
     BigDecimal submissionValue,
     String areaOfLaw,
-    OffsetDateTime submitted) {}
+    OffsetDateTime submitted,
+    BigDecimal assessedSubmissionValue) {}

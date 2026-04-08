@@ -75,6 +75,9 @@ class SubmissionSummaryMapperTest {
           softAssertions
               .assertThat(result.submitted())
               .isEqualTo(OffsetDateTime.of(2025, 1, 1, 0, 0, 0, 0, ZoneOffset.UTC));
+          softAssertions
+              .assertThat(result.assessedSubmissionValue())
+              .isEqualTo(new BigDecimal("50.54"));
         });
   }
 }

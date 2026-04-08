@@ -35,7 +35,7 @@ class SubmissionSummaryBuilderTest {
     SubmissionResponse submissionResponse =
         SubmissionResponse.builder().submissionId(submissionReference).build();
     SubmissionSummary expected =
-        new SubmissionSummary(submissionReference, null, null, null, null, null, null);
+        new SubmissionSummary(submissionReference, null, null, null, null, null, null, null);
     when(submissionSummaryMapper.toSubmissionSummary(submissionResponse)).thenReturn(expected);
     // When
     SubmissionSummary result = builder.build(submissionResponse);

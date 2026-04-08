@@ -202,7 +202,8 @@ public class SubmissionDetailController {
               submissionSummary.officeAccount(),
               claimDetails.totalClaimValue(),
               submissionSummary.areaOfLaw(),
-              submissionSummary.submitted());
+              submissionSummary.submitted(),
+              claimDetails.totalClaimValue());
     }
 
     MessagesSummary messagesSummary =
