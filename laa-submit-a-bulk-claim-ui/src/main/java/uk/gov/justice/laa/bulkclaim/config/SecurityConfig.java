@@ -82,26 +82,4 @@ public class SecurityConfig {
     return successHandler;
   }
 
-  /**
-   * Debugging filter to print session details.
-   *
-   * @return the filter
-   */
-  @Bean
-  public Filter debugSessionFilter() {
-    return (request, response, chain) -> {
-      HttpServletRequest req = (HttpServletRequest) request;
-      HttpSession session = req.getSession(false);
-
-      if (session != null) {
-        System.out.println("SESSION ID: " + session.getId());
-        System.out.println(
-            "SPRING_SECURITY_CONTEXT: " + session.getAttribute("SPRING_SECURITY_CONTEXT"));
-      } else {
-        System.out.println("No session");
-      }
-
-      chain.doFilter(request, response);
-    };
-  }
 }
