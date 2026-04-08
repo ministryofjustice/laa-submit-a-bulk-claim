@@ -43,40 +43,6 @@ jobs:
       github_app_id: ${{ vars.LAA_CCMS_CAAB_SERVICE_APP_ID }}
       github_app_private_key: ${{ secrets.LAA_CCMS_CAAB_SERVICE_KEY }}
 
-  test-event-service:
-    name: Test event service
-    needs: [ define-preview-version ]
-    uses: ministryofjustice/bulk-submission-and-fee-scheme-tests-/.github/workflows/trigger-e2e-dispatch.yml@feature/run-e2e-in-docker
-    permissions:
-      contents: read
-      id-token: write
-    with:
-      claims_event_service_image_tag: data-claims-event-service-0.0.152
-      test_annotation: "@smoke"
-      pr_number: ${{ github.event.number }}
-      github_app_organisation: 'ministryofjustice'
-      target_ref: 'feature/run-e2e-in-docker'
-    secrets:
-      github_app_id: ${{ vars.LAA_CCMS_CAAB_SERVICE_APP_ID }}
-      github_app_private_key: ${{ secrets.LAA_CCMS_CAAB_SERVICE_KEY }}
-
-  test-claims-api:
-    name: Test event service
-    needs: [ define-preview-version ]
-    uses: ministryofjustice/bulk-submission-and-fee-scheme-tests-/.github/workflows/trigger-e2e-dispatch.yml@feature/run-e2e-in-docker
-    permissions:
-      contents: read
-      id-token: write
-    with:
-      claims_api_image_tag: data-claims-api-1.0.20
-      test_annotation: "@smoke"
-      pr_number: ${{ github.event.number }}
-      github_app_organisation: 'ministryofjustice'
-      target_ref: 'feature/run-e2e-in-docker'
-    secrets:
-      github_app_id: ${{ vars.LAA_CCMS_CAAB_SERVICE_APP_ID }}
-      github_app_private_key: ${{ secrets.LAA_CCMS_CAAB_SERVICE_KEY }}
-
   build-and-test:
     needs: [ define-preview-version ]
     uses: ministryofjustice/laa-ccms-common-workflows/.github/workflows/gradle-build-and-publish.yml@v2
