@@ -28,7 +28,7 @@ services:
       REST_CLIENT_CONNECT_TIMEOUT: ${REST_CLIENT_CONNECT_TIMEOUT:-5000}
       REST_CLIENT_READ_TIMEOUT: ${REST_CLIENT_READ_TIMEOUT:-40000}
       REDIS_HOST: redis://redis:6379
-      #SPRING_PROFILES_ACTIVE: oidc-container
+      #SPRING_PROFILES_ACTIVE: github-test-runner
     ports:
       - "8082:8082"
       - "8181:8081"

@@ -29,7 +29,7 @@ jobs:
   test-smoke:
     name: Test @smoke
     needs: [ define-preview-version ]
-    uses: ministryofjustice/bulk-submission-and-fee-scheme-tests-/.github/workflows/trigger-e2e-dispatch.yml@feature/test-compose
+    uses: ministryofjustice/bulk-submission-and-fee-scheme-tests-/.github/workflows/trigger-e2e-dispatch.yml@feature/run-e2e-in-docker
     permissions:
       contents: read
       id-token: write
@@ -38,6 +38,7 @@ jobs:
       test_annotation: "@smoke"
       pr_number: ${{ github.event.number }}
       github_app_organisation: 'ministryofjustice'
+      target_ref: 'feature/run-e2e-in-docker'
     secrets:
       github_app_id: ${{ vars.LAA_CCMS_CAAB_SERVICE_APP_ID }}
       github_app_private_key: ${{ secrets.LAA_CCMS_CAAB_SERVICE_KEY }}
