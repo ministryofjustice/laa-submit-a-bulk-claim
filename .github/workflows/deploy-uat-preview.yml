@@ -25,7 +25,7 @@ jobs:
   test-smoke:
     name: Test @smoke
     needs: [ define-preview-version ]
-    uses: ministryofjustice/bulk-submission-and-fee-scheme-tests-/.github/workflows/trigger-e2e-dispatch.yml@chore/fix-session
+    uses: ministryofjustice/bulk-submission-and-fee-scheme-tests-/.github/workflows/trigger-e2e-dispatch.yml@test/previous-e2e-check
     permissions:
       contents: read
       id-token: write
