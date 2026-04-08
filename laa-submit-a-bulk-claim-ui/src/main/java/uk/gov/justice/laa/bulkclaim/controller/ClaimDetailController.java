@@ -114,7 +114,10 @@ public final class ClaimDetailController {
     String areaOfLaw = submissionResponse.getAreaOfLaw().getValue();
     String officeAccountNumber = submissionResponse.getOfficeAccountNumber();
     OffsetDateTime submissionDate = submissionResponse.getSubmitted();
-    model.addAttribute("claimSummary", claimSummaryMapper.toClaimSummary(claimResponse, areaOfLaw, officeAccountNumber, submissionDate));
+    model.addAttribute(
+        "claimSummary",
+        claimSummaryMapper.toClaimSummary(
+            claimResponse, areaOfLaw, officeAccountNumber, submissionDate));
 
     final MessagesSummary messagesSummary =
         submissionMessagesBuilder.buildAllWarnings(submissionId, claimId);

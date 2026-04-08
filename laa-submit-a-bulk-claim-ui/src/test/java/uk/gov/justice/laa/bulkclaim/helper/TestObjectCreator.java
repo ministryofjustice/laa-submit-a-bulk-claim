@@ -117,7 +117,6 @@ public final class TestObjectCreator {
         .isSubstantiveHearing(true)
         .hoInterview(3)
         .localAuthorityNumber("local-authority-number")
-            .isVatApplicable(true)
         .feeCalculationResponse(
             FeeCalculationPatch.builder()
                 .boltOnDetails(BoltOnPatch.builder().escapeCaseFlag(true).build())

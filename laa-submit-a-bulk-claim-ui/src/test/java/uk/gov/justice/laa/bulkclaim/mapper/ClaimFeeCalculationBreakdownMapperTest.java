@@ -125,7 +125,7 @@ class ClaimFeeCalculationBreakdownMapperTest {
               .isEqualTo(monetaryValue(1800.80));
           softAssertions
               .assertThat(result.cmrhOral().enteredValue())
-                  .isEqualTo(monetaryValue(1.00));
+              .isEqualTo(monetaryValue(1.00));
           softAssertions
               .assertThat(result.cmrhOral().calculatedValue())
               .isEqualTo(monetaryValue(1900.90));
@@ -141,7 +141,10 @@ class ClaimFeeCalculationBreakdownMapperTest {
           softAssertions
               .assertThat(result.substantiveHearing().calculatedValue())
               .isEqualTo(monetaryValue(2030.30));
-          softAssertions.assertThat(result.adjournedHearingFee().enteredValue()).isEqualTo(monetaryValue(9.00));;
+          softAssertions
+              .assertThat(result.adjournedHearingFee().enteredValue())
+              .isEqualTo(monetaryValue(9.00));
+          ;
           softAssertions
               .assertThat(result.adjournedHearingFee().calculatedValue())
               .isEqualTo(monetaryValue(2010.10));

@@ -81,7 +81,11 @@ class ClaimDetailControllerTest {
       UUID claimId = UUID.fromString("244fcb9f-50ab-4af8-b635-76bd30e0e97d");
       UUID submissionId = UUID.fromString("244fcb9f-50ab-4af8-b635-76bd30e0e97d");
       SubmissionResponse submissionResponse =
-          SubmissionResponse.builder().areaOfLaw(AreaOfLaw.LEGAL_HELP).officeAccountNumber("0P322F").submitted(OffsetDateTime.of(2025, 5, 5, 6, 52, 27, 954000000, ZoneOffset.UTC)).build();
+          SubmissionResponse.builder()
+              .areaOfLaw(AreaOfLaw.LEGAL_HELP)
+              .officeAccountNumber("0P322F")
+              .submitted(OffsetDateTime.of(2025, 5, 5, 6, 52, 27, 954000000, ZoneOffset.UTC))
+              .build();
       when(dataClaimsRestClient.getSubmission(submissionId))
           .thenReturn(Mono.just(submissionResponse));
 
@@ -89,10 +93,18 @@ class ClaimDetailControllerTest {
       when(dataClaimsRestClient.getSubmissionClaim(submissionId, claimId))
           .thenReturn(Mono.just(claimResponse));
 
-      when(claimSummaryMapper.toClaimSummary(claimResponse, AreaOfLaw.LEGAL_HELP.getValue(), "0P322F", OffsetDateTime.of(2025, 5, 5, 6, 52, 27, 954000000, ZoneOffset.UTC)))
+      when(claimSummaryMapper.toClaimSummary(
+              claimResponse,
+              AreaOfLaw.LEGAL_HELP.getValue(),
+              "0P322F",
+              OffsetDateTime.of(2025, 5, 5, 6, 52, 27, 954000000, ZoneOffset.UTC)))
           .thenReturn(ClaimSummary.builder().isVatApplicable(true).build());
       when(claimFeeCalculationBreakdownMapper.toClaimFeeCalculationBreakdown(claimResponse))
-          .thenReturn(ClaimFeeCalculationBreakdown.builder().vatIndicator(true).vat(new BulkClaimCostItem(BigDecimal.valueOf(10), BigDecimal.valueOf(20))).build());
+          .thenReturn(
+              ClaimFeeCalculationBreakdown.builder()
+                  .vatIndicator(true)
+                  .vat(new BulkClaimCostItem(BigDecimal.valueOf(10), BigDecimal.valueOf(20)))
+                  .build());
 
       when(submissionMessagesBuilder.buildAllWarnings(submissionId, claimId))
           .thenReturn(
@@ -110,7 +122,11 @@ class ClaimDetailControllerTest {
           .hasViewName("pages/view-claim-detail");
 
       verify(claimSummaryMapper, times(1))
-          .toClaimSummary(claimResponse, AreaOfLaw.LEGAL_HELP.getValue(), "0P322F", OffsetDateTime.of(2025, 5, 5, 6, 52, 27, 954000000, ZoneOffset.UTC));
+          .toClaimSummary(
+              claimResponse,
+              AreaOfLaw.LEGAL_HELP.getValue(),
+              "0P322F",
+              OffsetDateTime.of(2025, 5, 5, 6, 52, 27, 954000000, ZoneOffset.UTC));
     }
 
     @Test

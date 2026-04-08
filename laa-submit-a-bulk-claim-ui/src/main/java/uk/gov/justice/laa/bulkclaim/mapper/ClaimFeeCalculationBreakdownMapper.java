@@ -76,35 +76,33 @@ public interface ClaimFeeCalculationBreakdownMapper {
               claimResponse.getFeeCalculationResponse()
                             .getDetentionTravelAndWaitingCostsAmount()))""")
   @Mapping(
-          target = "cmrhTelephone",
-          expression =
-                  """
+      target = "cmrhTelephone",
+      expression =
+          """
                       java(toBulkClaimCostItem(toBigDecimal(claimResponse.getCmrhTelephoneCount()),
                       claimResponse.getFeeCalculationResponse().getBoltOnDetails().getBoltOnCmrhTelephoneFee()))""")
   @Mapping(
-          target = "cmrhOral",
-          expression =
-                  """
+      target = "cmrhOral",
+      expression =
+          """
                       java(toBulkClaimCostItem(toBigDecimal(claimResponse.getCmrhOralCount()),
                       claimResponse.getFeeCalculationResponse().getBoltOnDetails().getBoltOnCmrhOralFee()))""")
   @Mapping(
-          target = "homeOfficeInterview",
-          expression =
-                  """
+      target = "homeOfficeInterview",
+      expression =
+          """
                       java(toBulkClaimCostItem(toBigDecimal(claimResponse.getHoInterview()),
                       claimResponse.getFeeCalculationResponse().getBoltOnDetails().getBoltOnHomeOfficeInterviewFee()))""")
   @Mapping(target = "substantiveHearing.enteredValue", ignore = true)
   @Mapping(
       target = "substantiveHearing.calculatedValue",
       source = "claimResponse.feeCalculationResponse.boltOnDetails.boltOnSubstantiveHearingFee")
-
   @Mapping(
-          target = "adjournedHearingFee",
-          expression =
-                  """
+      target = "adjournedHearingFee",
+      expression =
+          """
                       java(toBulkClaimCostItem(toBigDecimal(claimResponse.getAdjournedHearingFeeAmount()),
                       claimResponse.getFeeCalculationResponse().getBoltOnDetails().getBoltOnAdjournedHearingFee()))""")
-
   @Mapping(target = "vat.enteredValue", ignore = true)
   @Mapping(
       target = "vat.calculatedValue",
