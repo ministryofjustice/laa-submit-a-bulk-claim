@@ -23,14 +23,14 @@ class SubmissionSearchAccessibilityTest extends AbstractAccessibilityTest {
   @Test
   @DisplayName("Scenario: SS1 accessibility checks")
   void searchPageAccessibilityChecks() throws IOException {
-    submissionSearchPage.openSearch(appUrl(""));
+    submissionSearchPage.open(appLandingUrl());
     AccessibilityAxeHelper.assertAccessible(page, "submission-search-page", SEARCH_RULE_IGNORES);
   }
 
   @Test
   @DisplayName("Scenario: SS2 accessibility checks")
   void searchResultsAccessibilityChecks() throws IOException {
-    submissionSearchPage.openSearchResults(appUrl(""));
+    submissionSearchPage.openResults(appLandingUrl());
     AccessibilityAxeHelper.assertAccessible(page, "submission-search-results", SEARCH_RULE_IGNORES);
   }
 }

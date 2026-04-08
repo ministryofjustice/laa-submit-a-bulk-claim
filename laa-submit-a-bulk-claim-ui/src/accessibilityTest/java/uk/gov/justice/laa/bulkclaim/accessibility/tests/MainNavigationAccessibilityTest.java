@@ -21,7 +21,7 @@ class MainNavigationAccessibilityTest extends AbstractAccessibilityTest {
   @Test
   @DisplayName("Scenario: Landing page accessibility checks")
   void landingPageAccessibilityChecks() throws IOException {
-    landingPage.open(appUrl(""));
+    landingPage.open(appLandingUrl());
     AccessibilityAxeHelper.assertAccessible(page, "landing-page");
   }
 }

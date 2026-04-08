@@ -25,14 +25,14 @@ class UploadProcessAccessibilityTest extends AbstractAccessibilityTest {
   @Test
   @DisplayName("Scenario: UP1 accessibility checks")
   void uploadPageAccessibilityChecks() throws IOException {
-    uploadPage.open(appUrl(""));
+    uploadPage.open(appLandingUrl());
     AccessibilityAxeHelper.assertAccessible(page, "upload-page");
   }
 
   @Test
   @DisplayName("Scenario: UP1-ERR accessibility checks")
   void uploadValidationErrorAccessibilityChecks() throws IOException {
-    uploadPage.open(appUrl(""));
+    uploadPage.open(appLandingUrl());
 
     Path forbiddenOfficeFile =
         writeFile("forbidden-office.csv", "header-1,header-2\nvalue-1,value-2\n");
@@ -46,7 +46,7 @@ class UploadProcessAccessibilityTest extends AbstractAccessibilityTest {
   @Test
   @DisplayName("Scenario: UP2 accessibility checks")
   void uploadInProgressAccessibilityChecks() throws IOException {
-    uploadPage.open(appUrl(""));
+    uploadPage.open(appLandingUrl());
     Path validFile = writeFile("validFile.csv", "header-1,header-2\nvalue-1,value-2\n");
     uploadPage.uploadFileAndSubmit(validFile);
     uploadPage.waitForUploadBeingCheckedPage();

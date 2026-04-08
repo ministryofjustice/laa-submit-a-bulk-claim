@@ -23,7 +23,7 @@ class ViewClaimAccessibilityTest extends AbstractAccessibilityTest {
   @MethodSource("allAreaArguments")
   void viewClaimAccessibilityChecks(String areaOfLawAbbr, AreaScenario scenario)
       throws IOException {
-    claimDetailPage.open(appUrl(""), scenario.validSubmissionId(), scenario.validClaimId());
+    claimDetailPage.open(appLandingUrl(), scenario.validSubmissionId(), scenario.validClaimId());
     AccessibilityAxeHelper.assertAccessible(
         page, areaScenarioName("claim-detail", areaOfLawAbbr, null));
   }
@@ -32,7 +32,7 @@ class ViewClaimAccessibilityTest extends AbstractAccessibilityTest {
   @MethodSource("costWarningAreaArguments")
   void viewClaimCostWarningAccessibilityChecks(String areaOfLawAbbr, AreaScenario scenario)
       throws IOException {
-    claimDetailPage.open(appUrl(""), scenario.validSubmissionId(), scenario.validClaimId());
+    claimDetailPage.open(appLandingUrl(), scenario.validSubmissionId(), scenario.validClaimId());
     AccessibilityAxeHelper.assertAccessible(
         page, areaScenarioName("claim-detail", areaOfLawAbbr, "cw"));
   }

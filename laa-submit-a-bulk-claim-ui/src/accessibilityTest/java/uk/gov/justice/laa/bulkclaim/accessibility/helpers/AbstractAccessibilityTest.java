@@ -153,6 +153,10 @@ public abstract class AbstractAccessibilityTest {
     return "http://localhost:" + port + path;
   }
 
+  protected String appLandingUrl() {
+    return appUrl("");
+  }
+
   protected void openSubmissionDetail(AreaScenario scenario) {
     page.navigate(appUrl("/view-submission-detail?submissionId=" + scenario.validSubmissionId()));
   }

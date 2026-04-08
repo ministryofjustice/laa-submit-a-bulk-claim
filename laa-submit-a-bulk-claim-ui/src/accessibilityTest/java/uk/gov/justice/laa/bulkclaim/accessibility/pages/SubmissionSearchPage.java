@@ -14,11 +14,11 @@ public final class SubmissionSearchPage {
     this.page = page;
   }
 
-  public void openSearch(String appBaseUrl) {
+  public void open(String appBaseUrl) {
     page.navigate(appBaseUrl + "/submissions/search");
   }
 
-  public void openSearchResults(String appBaseUrl) {
+  public void openResults(String appBaseUrl) {
     page.navigate(appBaseUrl + SEARCH_RESULTS_QUERY);
   }
 }
