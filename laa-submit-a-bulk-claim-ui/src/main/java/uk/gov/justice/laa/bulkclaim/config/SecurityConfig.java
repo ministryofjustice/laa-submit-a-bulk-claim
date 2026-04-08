@@ -2,6 +2,9 @@ package uk.gov.justice.laa.bulkclaim.config;
 
 import static org.springframework.security.config.Customizer.withDefaults;
 
+import jakarta.servlet.Filter;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -90,5 +93,28 @@ public class SecurityConfig {
     String postLogoutRedirectUri = urlService.buildAbsoluteUrl("/logged-out");
     successHandler.setPostLogoutRedirectUri(postLogoutRedirectUri);
     return successHandler;
+  }
+
+  /**
+   * Debugging filter to print session details
+   *
+   * @return the filter
+   */
+  @Bean
+  public Filter debugSessionFilter() {
+    return (request, response, chain) -> {
+      HttpServletRequest req = (HttpServletRequest) request;
+      HttpSession session = req.getSession(false);
+
+      if (session != null) {
+        System.out.println("SESSION ID: " + session.getId());
+        System.out.println(
+            "SPRING_SECURITY_CONTEXT: " + session.getAttribute("SPRING_SECURITY_CONTEXT"));
+      } else {
+        System.out.println("No session");
+      }
+
+      chain.doFilter(request, response);
+    };
   }
 }
