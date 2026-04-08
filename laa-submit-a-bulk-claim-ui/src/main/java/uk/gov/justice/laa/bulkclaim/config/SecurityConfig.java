@@ -96,7 +96,7 @@ public class SecurityConfig {
   }
 
   /**
-   * Debugging filter to print session details
+   * Debugging filter to print session details.
    *
    * @return the filter
    */
