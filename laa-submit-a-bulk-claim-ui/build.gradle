@@ -8,6 +8,14 @@ plugins {
 def versions = [sentry : '8.31.0']
 apply plugin: 'uk.gov.laa.springboot.laa-spring-boot-gradle-plugin'
 
+// Replaces application.yml @version@  with version from gradle.properties
+processResources {
+    filesMatching('application.yml') {
+        filter {
+            expand(version: project.version)
+        }
+    }
+}
 
 checkstyle {
     toolVersion = '13.0.0'
@@ -17,7 +25,6 @@ repositories {
     // Use Maven Central for resolving dependencies.
     mavenCentral()
 }
-
 
 
 dependencyManagement {
@@ -76,6 +83,10 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-actuator'
     implementation 'io.prometheus:prometheus-metrics-tracer-initializer'
     implementation 'io.micrometer:micrometer-registry-prometheus'
+
+    // Required for tracing information
+    implementation 'org.springframework.boot:spring-boot-micrometer-tracing-brave'
+    implementation 'io.micrometer:micrometer-tracing-bridge-brave'
 
     implementation 'org.mapstruct:mapstruct:1.6.3'
     annotationProcessor 'org.mapstruct:mapstruct-processor:1.6.3'
