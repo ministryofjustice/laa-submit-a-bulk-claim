@@ -8,15 +8,6 @@ plugins {
 def versions = [sentry : '8.31.0']
 apply plugin: 'uk.gov.laa.springboot.laa-spring-boot-gradle-plugin'
 
-// Replaces application.yml @version@  with version from gradle.properties
-processResources {
-    filesMatching('application.yml') {
-        filter {
-            expand(version: project.version)
-        }
-    }
-}
-
 checkstyle {
     toolVersion = '13.0.0'
     configFile = file("${rootDir}/config/checkstyle/checkstyle.xml")
@@ -26,6 +17,14 @@ repositories {
     mavenCentral()
 }
 
+// Replaces application.yml @version@  with version from gradle.properties
+processResources {
+    filesMatching('application.yaml') {
+        filter {
+            it.replace('@version@', version)
+        }
+    }
+}
 
 dependencyManagement {
     dependencies {
