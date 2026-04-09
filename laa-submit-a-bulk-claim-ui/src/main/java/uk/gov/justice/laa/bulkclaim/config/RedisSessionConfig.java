@@ -1,5 +1,6 @@
 package uk.gov.justice.laa.bulkclaim.config;
 
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.session.data.redis.config.annotation.web.http.EnableRedisHttpSession;
 
@@ -14,6 +15,10 @@ import org.springframework.session.data.redis.config.annotation.web.http.EnableR
  * and persistent, allowing scalability and fault tolerance for the application.
  */
 @Configuration
+@ConditionalOnProperty(
+    name = "spring.session.store-type",
+    havingValue = "redis",
+    matchIfMissing = true)
 @EnableRedisHttpSession(
     redisNamespace = "submit-a-bulk-claim:session",
     maxInactiveIntervalInSeconds = 60 * 60)

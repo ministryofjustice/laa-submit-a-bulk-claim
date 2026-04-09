@@ -1,0 +1,60 @@
+{
+  "content": [
+    {
+      "id": "%s",
+      "submission_id": "%s",
+      "status": "VALID",
+      "line_number": 1,
+      "unique_file_number": "010100/128",
+      "fee_code": "PROL1",
+      "client_forename": "A",
+      "client_surname": "Abe",
+      "submission_period": "MAY-2025",
+      "total_warnings": 1,
+      "fee_calculation_response": {
+        "calculated_fee_detail_id": "string",
+        "claim_summary_fee_id": "fef5a1ef-1876-47fa-b9cd-0f334c3c3030",
+        "claim_id": "%s",
+        "fee_code": "PROL1",
+        "fee_code_description": "string",
+        "fee_type": "HOURLY",
+        "category_of_law": "string",
+        "total_amount": 123.45,
+        "vat_indicator": true,
+        "vat_rate_applied": 0,
+        "calculated_vat_amount": 0,
+        "disbursement_amount": 0,
+        "requested_net_disbursement_amount": 0,
+        "disbursement_vat_amount": 0,
+        "hourly_total_amount": 0,
+        "fixed_fee_amount": 0,
+        "net_profit_costs_amount": 0,
+        "requested_net_profit_costs_amount": 0,
+        "net_cost_of_counsel_amount": 0,
+        "net_travel_costs_amount": 0,
+        "net_waiting_costs_amount": 0,
+        "detention_travel_and_waiting_costs_amount": 0,
+        "jr_form_filling_amount": 0,
+        "travel_and_waiting_costs_amount": 0,
+        "bolt_on_details": {
+          "bolt_on_total_fee_amount": 0,
+          "bolt_on_adjourned_hearing_count": 0,
+          "bolt_on_adjourned_hearing_fee": 0,
+          "bolt_on_cmrh_telephone_count": 0,
+          "bolt_on_cmrh_telephone_fee": 0,
+          "bolt_on_cmrh_oral_count": 0,
+          "bolt_on_cmrh_oral_fee": 0,
+          "bolt_on_home_office_interview_count": 0,
+          "bolt_on_home_office_interview_fee": 0,
+          "bolt_on_substantive_hearing_fee": 0,
+          "escape_case_flag": false,
+          "scheme_id": "string"
+        }
+      }
+    }
+  ],
+  "total_pages": 1,
+  "total_elements": 1,
+  "number": 0,
+  "size": 10
+}

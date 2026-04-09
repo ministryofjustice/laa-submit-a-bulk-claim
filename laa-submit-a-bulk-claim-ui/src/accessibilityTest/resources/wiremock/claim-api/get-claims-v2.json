@@ -1,0 +1,29 @@
+{
+  "content": [
+    {
+      "id": "%s",
+      "submission_id": "%s",
+      "status": "VALID",
+      "line_number": 1,
+      "unique_file_number": "010100/128",
+      "fee_code": "PROL1",
+      "client_forename": "A",
+      "client_surname": "Abe",
+      "submission_period": "MAY-2025",
+      "total_warnings": 1,
+      "fee_calculation_response": {
+        "claim_id": "%s",
+        "fee_code": "PROL1",
+        "fee_type": "HOURLY",
+        "total_amount": 123.45,
+        "bolt_on_details": {
+          "escape_case_flag": false
+        }
+      }
+    }
+  ],
+  "total_pages": 1,
+  "total_elements": 1,
+  "number": 0,
+  "size": 10
+}

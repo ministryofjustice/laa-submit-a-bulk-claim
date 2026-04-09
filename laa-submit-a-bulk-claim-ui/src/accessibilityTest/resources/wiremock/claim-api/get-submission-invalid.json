@@ -1,0 +1,26 @@
+{
+  "submission_id": "%s",
+  "bulk_submission_id": "7059e4c7-b800-40a0-9074-6127288e548a",
+  "office_account_number": "0P322F",
+  "submission_period": "MAY-2025",
+  "area_of_law": "%s",
+  "provider_user_id": "accessibility-user@justice.gov.uk",
+  "status": "VALIDATION_FAILED",
+  "crime_lower_schedule_number": null,
+  "legal_help_submission_reference": "LH-REF",
+  "mediation_submission_reference": null,
+  "previous_submission_id": null,
+  "is_nil_submission": false,
+  "number_of_claims": 1,
+  "calculated_total_amount": 70.10,
+  "submitted": "2025-05-01T12:32:00Z",
+  "created_by_user_id": "string",
+  "error_messages": "Validation failed",
+  "claims": [
+    {
+      "claim_id": "%s",
+      "status": "INVALID"
+    }
+  ],
+  "matter_starts": []
+}
