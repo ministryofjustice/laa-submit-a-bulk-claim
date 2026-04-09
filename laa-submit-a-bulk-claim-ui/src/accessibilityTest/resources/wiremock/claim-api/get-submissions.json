@@ -1,0 +1,74 @@
+{
+  "total_pages": 1,
+  "total_elements": 6,
+  "number": 0,
+  "size": 10,
+  "content": [
+    {
+      "submission_id": "%s",
+      "office_account_number": "0P322F",
+      "submission_period": "MAY-2025",
+      "previous_submission_id": null,
+      "is_nil_submission": false,
+      "number_of_claims": 1,
+      "area_of_law": "LEGAL HELP",
+      "status": "VALIDATION_SUCCEEDED",
+      "submitted": "2025-05-01T12:32:00Z"
+    },
+    {
+      "submission_id": "%s",
+      "office_account_number": "0P322F",
+      "submission_period": "MAY-2025",
+      "previous_submission_id": null,
+      "is_nil_submission": false,
+      "number_of_claims": 1,
+      "area_of_law": "LEGAL HELP",
+      "status": "VALIDATION_FAILED",
+      "submitted": "2025-05-01T12:32:00Z"
+    },
+    {
+      "submission_id": "%s",
+      "office_account_number": "0P322F",
+      "submission_period": "MAY-2025",
+      "previous_submission_id": null,
+      "is_nil_submission": false,
+      "number_of_claims": 1,
+      "area_of_law": "CRIME LOWER",
+      "status": "VALIDATION_SUCCEEDED",
+      "submitted": "2025-05-01T12:32:00Z"
+    },
+    {
+      "submission_id": "%s",
+      "office_account_number": "0P322F",
+      "submission_period": "MAY-2025",
+      "previous_submission_id": null,
+      "is_nil_submission": false,
+      "number_of_claims": 1,
+      "area_of_law": "CRIME LOWER",
+      "status": "VALIDATION_FAILED",
+      "submitted": "2025-05-01T12:32:00Z"
+    },
+    {
+      "submission_id": "%s",
+      "office_account_number": "0P322F",
+      "submission_period": "MAY-2025",
+      "previous_submission_id": null,
+      "is_nil_submission": false,
+      "number_of_claims": 1,
+      "area_of_law": "MEDIATION",
+      "status": "VALIDATION_SUCCEEDED",
+      "submitted": "2025-05-01T12:32:00Z"
+    },
+    {
+      "submission_id": "%s",
+      "office_account_number": "0P322F",
+      "submission_period": "MAY-2025",
+      "previous_submission_id": null,
+      "is_nil_submission": false,
+      "number_of_claims": 1,
+      "area_of_law": "MEDIATION",
+      "status": "VALIDATION_FAILED",
+      "submitted": "2025-05-01T12:32:00Z"
+    }
+  ]
+}
