@@ -1,7 +1,7 @@
 name: Frontend update dependency pipeline
 on:
   schedule:
-    - cron: '0 9 * * 1'
+    - cron: '0 15 * * 1'
   workflow_dispatch:
 
 permissions:
