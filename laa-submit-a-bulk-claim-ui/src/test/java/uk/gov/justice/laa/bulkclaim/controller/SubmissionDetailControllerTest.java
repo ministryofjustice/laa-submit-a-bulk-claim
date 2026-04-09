@@ -359,7 +359,6 @@ class SubmissionDetailControllerTest {
                           1,
                           "UFN123",
                           "UCN123",
-                          "Client Name",
                           "Client",
                           "Name",
                           null,
