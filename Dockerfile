@@ -25,8 +25,8 @@ RUN find /build -name "*.jar"
 FROM amazoncorretto:25-alpine AS base
 
 # Set up working directory in the container
-RUN mkdir -p /opt/data-claims-event-service/
-WORKDIR /opt/data-claims-event-service/
+RUN mkdir -p /opt/submit-a-bulk-claim/
+WORKDIR /opt/submit-a-bulk-claim/
 
 # --- Stage for copying from the internal builder stage ---
 FROM base AS build-internal
@@ -35,7 +35,7 @@ COPY --from=builder /build/laa-submit-a-bulk-claim-ui/build/libs/laa-submit-a-bu
 
 # --- Stage for copying from the local filesystem (CI/Manual) ---
 FROM base AS build-external
-COPY laa-submit-a-bulk-claim-ui/build/libs/laa-submit-a-bulk-claim-service-1.0.0-SNAPSHOT.jar app.jar
+COPY laa-submit-a-bulk-claim-ui/build/libs/laa-submit-a-bulk-claim-ui-*-SNAPSHOT.jar app.jar
 
 # --- Final Stage ---
 ARG BUILD_SOURCE
@@ -52,5 +52,5 @@ EXPOSE 8080
 # Local port
 EXPOSE 8082
 
-# Run the JAR file
-CMD ["java", "-jar", "app.jar"]
+# Allow Netty and other unnamed-module native libraries on Java 25+ without warning.
+CMD ["java", "--enable-native-access=ALL-UNNAMED", "-jar", "app.jar"]
