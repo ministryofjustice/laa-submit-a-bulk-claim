@@ -138,7 +138,6 @@ class SubmissionClaimsDetailsBuilderTest {
         1,
         "ufn",
         "ucn",
-        "client",
         "client-forename",
         "client-surname",
         "client2-forename",

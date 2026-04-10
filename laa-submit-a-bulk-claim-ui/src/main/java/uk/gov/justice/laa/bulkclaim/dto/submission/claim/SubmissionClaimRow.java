@@ -10,7 +10,6 @@ import java.util.UUID;
  * @param lineNumber the line number for the claim
  * @param ufn the unique file number
  * @param ucn the unique client number
- * @param client the client name
  * @param clientForename the primary client's forename
  * @param clientSurname the primary client's surname
  * @param client2Forename the secondary client's forename (mediation only)
@@ -32,7 +31,6 @@ public record SubmissionClaimRow(
     int lineNumber,
     String ufn,
     String ucn,
-    String client,
     String clientForename,
     String clientSurname,
     String client2Forename,
