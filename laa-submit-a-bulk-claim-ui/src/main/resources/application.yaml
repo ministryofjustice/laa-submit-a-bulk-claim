@@ -9,7 +9,7 @@ spring:
       on-profile: "!local"
   application:
     name: laa-submit-a-bulk-claim
-    version: "@version@"
+    version: ${application.version}
   servlet:
     multipart:
       max-file-size: ${SERVER_MAX_FILE_SIZE}

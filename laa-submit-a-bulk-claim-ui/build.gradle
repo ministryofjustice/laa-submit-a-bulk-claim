@@ -17,15 +17,6 @@ repositories {
     mavenCentral()
 }
 
-// Replaces application.yml @version@  with version from gradle.properties
-processResources {
-    filesMatching('application.yaml') {
-        filter {
-            it.replace('@version@', version)
-        }
-    }
-}
-
 dependencyManagement {
     dependencies {
         dependencySet(group: 'io.sentry', version: versions.sentry) {
