@@ -295,6 +295,17 @@ repository.
 
 This application uses ECS (Elastic Common Schema) structured logging for production environments and console logging for local development.
 For local development logging use: ```./gradlew bootRun --args='--spring.profiles.active=local'```
+and add the following to your application-local.yaml
+
+```
+logging:
+    level:
+        root: ${ROOT_LOGGING_LEVEL:info}
+        org.springframework: ${SPRING_LOGGING_LEVEL:info}
+        uk.gov.justice.laa.bulkclaim: ${APP_LOGGING_LEVEL:info}
+    pattern:
+        console: "%style{%d{yyyy-MM-dd'T'HH:mm:ss.SSSXXX}}{faint} %highlight{%-5level} %style{%pid}{magenta} %style{---}{faint} %style{[%15.15t]}{faint} %style{[%X{traceId},%X{spanId}]}{yellow} %style{%-40.40logger{39}}{cyan} %style{:}{faint} %msg%n"
+```
 
 ###  Structured Logging (Default/Production)
 By default, the application outputs logs in ECS JSON format with distributed tracing support:
