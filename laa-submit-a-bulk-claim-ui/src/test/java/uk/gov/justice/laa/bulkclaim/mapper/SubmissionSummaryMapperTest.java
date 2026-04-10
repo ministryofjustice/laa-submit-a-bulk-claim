@@ -58,6 +58,8 @@ class SubmissionSummaryMapperTest {
             .status(inputStatus)
             .areaOfLaw(AreaOfLaw.LEGAL_HELP)
             .submitted(OffsetDateTime.of(2025, 1, 1, 0, 0, 0, 0, ZoneOffset.UTC))
+            .assessedTotalAmount(new BigDecimal("50.54"))
+            .calculatedTotalAmount(new BigDecimal("50.52"))
             .build();
 
     // When

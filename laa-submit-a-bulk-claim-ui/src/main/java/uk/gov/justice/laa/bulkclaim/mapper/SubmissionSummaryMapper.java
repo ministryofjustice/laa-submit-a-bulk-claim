@@ -36,8 +36,8 @@ public interface SubmissionSummaryMapper {
       qualifiedByName = "toSubmissionPeriod")
   @Mapping(target = "status", source = "status", qualifiedByName = "mapStatus")
   @Mapping(target = "submitted", source = "submitted")
-  @Mapping(target = "submissionValue", constant = "50.52")
-  @Mapping(target = "assessedSubmissionValue", constant = "50.54")
+  @Mapping(target = "submissionValue", source = "calculatedTotalAmount")
+  @Mapping(target = "assessedSubmissionValue", source = "assessedTotalAmount")
   SubmissionSummary toSubmissionSummary(SubmissionResponse submissionResponse);
 
   @Named("fromAreaOfLaw")

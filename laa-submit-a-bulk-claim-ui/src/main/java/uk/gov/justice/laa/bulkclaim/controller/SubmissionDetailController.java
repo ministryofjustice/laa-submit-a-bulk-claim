@@ -193,19 +193,6 @@ public class SubmissionDetailController {
             "sort",
             sort));
 
-    if (claimDetails.totalClaimValue() != null) {
-      submissionSummary =
-          new SubmissionSummary(
-              submissionSummary.submissionReference(),
-              submissionSummary.status(),
-              submissionSummary.submissionPeriod(),
-              submissionSummary.officeAccount(),
-              claimDetails.totalClaimValue(),
-              submissionSummary.areaOfLaw(),
-              submissionSummary.submitted(),
-              claimDetails.totalClaimValue());
-    }
-
     MessagesSummary messagesSummary =
         submissionMessagesBuilder.build(
             submissionId, null, ValidationMessageType.WARNING, messagesPage, DEFAULT_PAGE_SIZE);
