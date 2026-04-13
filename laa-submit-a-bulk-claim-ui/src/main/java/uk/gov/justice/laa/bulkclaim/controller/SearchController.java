@@ -121,7 +121,8 @@ public class SearchController {
   }
 
   /**
-   * Handles Submission page results.
+   * Handles Submission page results. Also handles global search when user clicks on column name on
+   * the search results screen.
    *
    * @param page requested page number
    * @param submissionPeriod submission period filter
