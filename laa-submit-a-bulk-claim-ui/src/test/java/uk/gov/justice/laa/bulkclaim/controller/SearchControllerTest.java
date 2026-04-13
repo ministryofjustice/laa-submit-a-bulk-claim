@@ -148,8 +148,16 @@ class SearchControllerTest {
 
     String view =
         searchController.submissionsSearchResults(
-            0, null, null, null, null, DEFAULT_SEARCH_PAGE_SORT,
-            model, getOidcUser(), sessionStatus, session);
+            0,
+            null,
+            null,
+            null,
+            null,
+            DEFAULT_SEARCH_PAGE_SORT,
+            model,
+            getOidcUser(),
+            sessionStatus,
+            session);
 
     assertEquals("error", view);
   }
@@ -163,7 +171,16 @@ class SearchControllerTest {
 
     String view =
         searchController.submissionsSearchResults(
-            0, "1234", null, null, null, DEFAULT_SEARCH_PAGE_SORT, model, getOidcUser(), sessionStatus, session);
+            0,
+            "1234",
+            null,
+            null,
+            null,
+            DEFAULT_SEARCH_PAGE_SORT,
+            model,
+            getOidcUser(),
+            sessionStatus,
+            session);
 
     assertEquals("error", view);
   }

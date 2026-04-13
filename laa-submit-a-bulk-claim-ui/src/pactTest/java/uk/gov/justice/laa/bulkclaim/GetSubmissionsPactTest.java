@@ -76,7 +76,8 @@ public final class GetSubmissionsPactTest extends AbstractPactTest {
                 + "|VALIDATION_FAILED|REPLACED)")
         .matchQuery("page", ANY_NUMBER_REGEX)
         .matchQuery("size", ANY_NUMBER_REGEX)
-        .matchQuery("sort", "(createdOn|officeAccountNumber|areaOfLaw|submissionPeriod|status),(asc|desc)")
+        .matchQuery(
+            "sort", "(createdOn|officeAccountNumber|areaOfLaw|submissionPeriod|status),(asc|desc)")
         .matchHeader(HttpHeaders.AUTHORIZATION, UUID_REGEX)
         .method("GET")
         .willRespondWith()
@@ -137,7 +138,8 @@ public final class GetSubmissionsPactTest extends AbstractPactTest {
                 + "|VALIDATION_FAILED|REPLACED)")
         .matchQuery("page", ANY_NUMBER_REGEX)
         .matchQuery("size", ANY_NUMBER_REGEX)
-        .matchQuery("sort", "(createdOn|officeAccountNumber|areaOfLaw|submissionPeriod|status),(asc|desc)")
+        .matchQuery(
+            "sort", "(createdOn|officeAccountNumber|areaOfLaw|submissionPeriod|status),(asc|desc)")
         .matchHeader(HttpHeaders.AUTHORIZATION, UUID_REGEX)
         .method("GET")
         .willRespondWith()
