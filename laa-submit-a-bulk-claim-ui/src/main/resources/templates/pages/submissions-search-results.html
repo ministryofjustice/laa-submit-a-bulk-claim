@@ -32,19 +32,39 @@
         </h2>
         <br>
         <div class="upload-table" th:if="${!#lists.isEmpty(submissions.content)}">
-          <table class="govuk-table" data-module="moj-sortable-table">
+          <table class="govuk-table">
             <thead class="govuk-table__head">
             <tr class="govuk-table__row">
-              <th scope="col" class="govuk-table__header" aria-sort="descending"
-                  th:text="#{search.result.header.submission}">
-              <th scope="col" class="govuk-table__header" aria-sort="none"
-                  th:text="#{search.result.header.office}">
-              <th scope="col" class="govuk-table__header" aria-sort="none"
-                  th:text="#{search.result.header.area}">
-              <th scope="col" class="govuk-table__header" aria-sort="none"
-                  th:text="#{search.result.header.submissionPeriod}">
-              <th scope="col" class="govuk-table__header" aria-sort="none"
-                  th:text="#{common.status}">
+              <th:block th:replace="~{fragments/sortable-header ::submissionSearchSortableHeader('submitted',
+                 'search.result.header.submission',
+                 ${submissionsSearchForm.submissionPeriod()},
+                 ${submissionsSearchForm.areaOfLaw()},
+                 ${submissionsSearchForm.offices()},
+                 ${submissionsSearchForm.submissionStatuses()})}"></th:block>
+              <th:block th:replace="~{fragments/sortable-header ::submissionSearchSortableHeader('office',
+                 'search.result.header.office',
+                 ${submissionsSearchForm.submissionPeriod()},
+                 ${submissionsSearchForm.areaOfLaw()},
+                 ${submissionsSearchForm.offices()},
+                 ${submissionsSearchForm.submissionStatuses()})}"></th:block>
+              <th:block th:replace="~{fragments/sortable-header ::submissionSearchSortableHeader('area_of_law',
+                 'search.result.header.area',
+                 ${submissionsSearchForm.submissionPeriod()},
+                 ${submissionsSearchForm.areaOfLaw()},
+                 ${submissionsSearchForm.offices()},
+                 ${submissionsSearchForm.submissionStatuses()})}"></th:block>
+              <th:block th:replace="~{fragments/sortable-header ::submissionSearchSortableHeader('submission_period',
+                 'search.result.header.submissionPeriod',
+                 ${submissionsSearchForm.submissionPeriod()},
+                 ${submissionsSearchForm.areaOfLaw()},
+                 ${submissionsSearchForm.offices()},
+                 ${submissionsSearchForm.submissionStatuses()})}"></th:block>
+              <th:block th:replace="~{fragments/sortable-header ::submissionSearchSortableHeader('status',
+                 'common.status',
+                 ${submissionsSearchForm.submissionPeriod()},
+                 ${submissionsSearchForm.areaOfLaw()},
+                 ${submissionsSearchForm.offices()},
+                 ${submissionsSearchForm.submissionStatuses()})}"></th:block>
             </tr>
             </thead>
             <tbody class="govuk-table__body">
