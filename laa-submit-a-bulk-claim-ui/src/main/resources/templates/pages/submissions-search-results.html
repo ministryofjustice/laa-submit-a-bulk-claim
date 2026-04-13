@@ -35,25 +35,25 @@
           <table class="govuk-table">
             <thead class="govuk-table__head">
             <tr class="govuk-table__row">
-              <th:block th:replace="~{fragments/sortable-header ::submissionSearchSortableHeader('submitted',
+              <th:block th:replace="~{fragments/sortable-header ::submissionSearchSortableHeader('createdOn',
                  'search.result.header.submission',
                  ${submissionsSearchForm.submissionPeriod()},
                  ${submissionsSearchForm.areaOfLaw()},
                  ${submissionsSearchForm.offices()},
                  ${submissionsSearchForm.submissionStatuses()})}"></th:block>
-              <th:block th:replace="~{fragments/sortable-header ::submissionSearchSortableHeader('office',
+              <th:block th:replace="~{fragments/sortable-header ::submissionSearchSortableHeader('officeAccountNumber',
                  'search.result.header.office',
                  ${submissionsSearchForm.submissionPeriod()},
                  ${submissionsSearchForm.areaOfLaw()},
                  ${submissionsSearchForm.offices()},
                  ${submissionsSearchForm.submissionStatuses()})}"></th:block>
-              <th:block th:replace="~{fragments/sortable-header ::submissionSearchSortableHeader('area_of_law',
+              <th:block th:replace="~{fragments/sortable-header ::submissionSearchSortableHeader('areaOfLaw',
                  'search.result.header.area',
                  ${submissionsSearchForm.submissionPeriod()},
                  ${submissionsSearchForm.areaOfLaw()},
                  ${submissionsSearchForm.offices()},
                  ${submissionsSearchForm.submissionStatuses()})}"></th:block>
-              <th:block th:replace="~{fragments/sortable-header ::submissionSearchSortableHeader('submission_period',
+              <th:block th:replace="~{fragments/sortable-header ::submissionSearchSortableHeader('submissionPeriod',
                  'search.result.header.submissionPeriod',
                  ${submissionsSearchForm.submissionPeriod()},
                  ${submissionsSearchForm.areaOfLaw()},

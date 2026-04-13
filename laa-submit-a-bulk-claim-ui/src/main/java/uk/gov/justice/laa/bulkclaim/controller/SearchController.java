@@ -140,6 +140,8 @@ public class SearchController {
       @RequestParam(value = "offices", required = false) List<String> offices,
       @RequestParam(value = "submissionStatuses", required = false)
           SubmissionOutcomeFilter submissionStatus,
+      @RequestParam(value = "sort", required = false, defaultValue = DEFAULT_SEARCH_PAGE_SORT)
+          String sort,
       Model model,
       @AuthenticationPrincipal OidcUser oidcUser,
       SessionStatus sessionStatus,
@@ -176,7 +178,7 @@ public class SearchController {
                   getSubmissionStatus(submissionsSearchForm),
                   page,
                   DEFAULT_PAGE_SIZE,
-                  DEFAULT_SEARCH_PAGE_SORT)
+                  sort)
               .block();
 
       Page pagination =
