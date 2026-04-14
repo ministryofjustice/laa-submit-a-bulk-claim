@@ -45,7 +45,7 @@ public abstract class AbstractPactTest {
                 "content",
                 1,
                 claim -> {
-                  claim.stringType("id", "string");
+                  claim.stringType("ids", "string");
                   claim.stringType("submission_id", "string");
                   claim.stringType("status", "READY_TO_PROCESS");
                   claim.stringType("schedule_reference", "string");
