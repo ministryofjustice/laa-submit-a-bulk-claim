@@ -66,6 +66,7 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: read
+      packages: read
     env:
       PLAYWRIGHT_BROWSERS_PATH: /home/runner/.cache/ms-playwright
     steps:
@@ -105,6 +106,7 @@ jobs:
       - name: Run accessibility test suite
         env:
           PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: "1"
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: ./gradlew :laa-submit-a-bulk-claim-ui:accessibilityTest --no-daemon
   
       - name: Upload accessibility test artifacts
