@@ -4,9 +4,6 @@ server:
   port: 8082
 
 spring:
-  config:
-    activate:
-      on-profile: "!local"
   application:
     name: laa-submit-a-bulk-claim
     version: ${application.version}
