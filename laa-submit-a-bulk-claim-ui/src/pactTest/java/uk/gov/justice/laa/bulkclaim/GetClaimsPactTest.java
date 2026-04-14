@@ -61,7 +61,7 @@ public final class GetClaimsPactTest extends AbstractPactTest {
     return builder
         .given("claims exist for the search criteria")
         .uponReceiving("a request to search for claims")
-        .path("/api/v1/claims")
+        .path("/api/v1/claim")
         .matchQuery(QUERY_PARAM_SUBMISSION_ID, UUID_REGEX)
         .matchQuery(QUERY_PARAM_OFFICE_CODE, OFFICE_CODE_REGEX)
         .matchQuery(QUERY_PARAM_PAGE, ANY_NUMBER_REGEX)
