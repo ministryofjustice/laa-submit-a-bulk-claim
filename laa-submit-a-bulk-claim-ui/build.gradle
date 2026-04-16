@@ -90,6 +90,10 @@ dependencies {
     implementation "io.sentry:sentry-log4j2:$versions.sentry"
     implementation "io.sentry:sentry-spring-boot-4:$versions.sentry"
 
+    // Required for tracing information
+    implementation 'org.springframework.boot:spring-boot-micrometer-tracing-brave'
+    implementation 'io.micrometer:micrometer-tracing-bridge-brave'
+
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
 
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
