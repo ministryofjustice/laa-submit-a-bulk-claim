@@ -13,6 +13,7 @@
   "is_nil_submission": true,
   "number_of_claims": 0,
   "calculated_total_amount": 70.10,
+  "assessed_total_amount": 70.00,
   "submitted": "2019-08-24T14:15:22Z",
   "created_by_user_id": "string",
   "error_messages": "string",
