@@ -13,17 +13,7 @@ import org.springframework.web.service.annotation.GetExchange;
 import org.springframework.web.service.annotation.HttpExchange;
 import org.springframework.web.service.annotation.PostExchange;
 import reactor.core.publisher.Mono;
-import uk.gov.justice.laa.dstew.payments.claimsdata.model.AreaOfLaw;
-import uk.gov.justice.laa.dstew.payments.claimsdata.model.ClaimResponse;
-import uk.gov.justice.laa.dstew.payments.claimsdata.model.ClaimResultSet;
-import uk.gov.justice.laa.dstew.payments.claimsdata.model.CreateBulkSubmission201Response;
-import uk.gov.justice.laa.dstew.payments.claimsdata.model.GetBulkSubmissionStatusById200Response;
-import uk.gov.justice.laa.dstew.payments.claimsdata.model.MatterStartGet;
-import uk.gov.justice.laa.dstew.payments.claimsdata.model.MatterStartResultSet;
-import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionResponse;
-import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionStatus;
-import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionsResultSet;
-import uk.gov.justice.laa.dstew.payments.claimsdata.model.ValidationMessagesResponse;
+import uk.gov.justice.laa.dstew.payments.claimsdata.model.*;
 
 /**
  * REST Service interface for interacting with the Claims API.
@@ -134,6 +124,8 @@ public interface DataClaimsRestClient {
       @RequestParam(value = "size") Integer size,
       @RequestParam(value = "sort", required = false) String sort);
 
+
+
   @GetExchange(value = "/submissions/{submission-id}/matter-starts/{matter-starts-id}")
   Mono<MatterStartGet> getSubmissionMatterStart(
       @PathVariable("submission-id") UUID submissionId,
@@ -156,4 +148,11 @@ public interface DataClaimsRestClient {
 
   @GetExchange(value = "/submissions/{id}/matter-starts")
   Mono<MatterStartResultSet> getAllMatterStartsForSubmission(@PathVariable("id") UUID submissionId);
+
+  @GetExchange(value = "/claims/{claimId}/assessments")
+  Mono<AssessmentResultSet> getClaimAssessment(
+            @PathVariable("claimId") UUID claimId,
+            @RequestParam(value = "page", required = false, defaultValue = "0") Integer page,
+            @RequestParam(value = "size", required = false) Integer size,
+            @RequestParam(value = "sort", required = false) String sort);
 }

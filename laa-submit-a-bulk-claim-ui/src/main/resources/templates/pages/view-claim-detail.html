@@ -10,12 +10,6 @@
         th:text="${title}"/>
     <td class="govuk-table__cell govuk-table__cell--numeric"
         th:classappend="${rowStyle} ? ${rowStyle} : ''">
-        <th:block th:if="${values != null and values.calculatedValue != null}"
-                  th:text="|£${values.calculatedValue}|"/>
-        <th:block th:unless="${values != null and values.calculatedValue != null}">£0.00</th:block>
-    </td>
-    <td class="govuk-table__cell govuk-table__cell--numeric"
-        th:classappend="${rowStyle} ? ${rowStyle} : ''">
         <th:block th:if="${values != null and values.enteredValue != null}"
                   th:text="${isMoney} ? |£${values.enteredValue}| : ${values.enteredValue.intValue()}"/>
 
@@ -24,7 +18,13 @@
                   th:aria-label="#{viewClaim.feeCalculation.na}"
                   th:text="#{viewClaim.feeCalculation.na}"/>
     </td>
-    <td class="govuk-table__cell" th:classappend="${rowStyle} ? ${rowStyle} : ''"
+    <td class="govuk-table__cell govuk-table__cell--numeric"
+        th:classappend="${rowStyle} ? ${rowStyle} : ''">
+        <th:block th:if="${values != null and values.calculatedValue != null}"
+                  th:text="|£${values.calculatedValue}|"/>
+        <th:block th:unless="${values != null and values.calculatedValue != null}">£0.00</th:block>
+    </td>
+    <td class="govuk-table__cell govuk-table__cell--numeric" th:classappend="${rowStyle} ? ${rowStyle} : ''"
         th:text="${notes}"/>
 </tr>
 
@@ -227,74 +227,74 @@
                                     <th scope="col" class="govuk-table__header"
                                         th:text="#{viewClaim.feeCalculation.columnTitle.item}"/>
                                     <th scope="col" class="govuk-table__header govuk-table__header--numeric"
+                                        th:text="#{viewClaim.feeCalculation.columnTitle.requested}"/>
+                                    <th scope="col" class="govuk-table__header govuk-table__header--numeric"
                                         th:text="#{viewClaim.feeCalculation.columnTitle.calculated}"/>
                                     <th scope="col" class="govuk-table__header govuk-table__header--numeric"
-                                        th:text="#{viewClaim.feeCalculation.columnTitle.entered}"/>
-                                    <th scope="col" class="govuk-table__header"
                                         th:text="#{viewClaim.feeCalculation.columnTitle.notes}"/>
                                 </tr>
                                 </thead>
                                 <tbody class="govuk-table__body">
                                 <th:block
                                         th:replace="~{::fee-detail-row(#{viewClaim.feeCalculation.row.fixedFee},
-              ${feeDetails.fixedFee}, null, true)}"/>
+              ${feeDetails.fixedFee}, |£${assessedValues.fixedFee}|, true)}"/>
                                 <th:block
                                         th:replace="~{::fee-detail-row(#{viewClaim.feeCalculation.row.profitCost},
-              ${feeDetails.netProfitCost}, null, true)}"/>
+              ${feeDetails.netProfitCost}, |£${assessedValues.netProfitCost}|, true)}"/>
                                 <th:block
                                         th:replace="~{::fee-detail-row(#{viewClaim.feeCalculation.row.disbursements},
-              ${feeDetails.netDisbursments}, null, true)}"/>
+              ${feeDetails.netDisbursments}, |£${assessedValues.netDisbursments}|, true)}"/>
                                 <th:block
                                         th:replace="~{::fee-detail-row(#{viewClaim.feeCalculation.row.disbursementVat},
-              ${feeDetails.disbursementVat}, null, true)}"/>
+              ${feeDetails.disbursementVat}, |£${assessedValues.disbursementVat}|, true)}"/>
                                 <th:block
                                         th:replace="~{::fee-detail-row(#{viewClaim.feeCalculation.row.counselCost},
               ${feeDetails.netCostOfCounsel},
-              #{viewClaim.feeCalculation.notes.immigrationAsylumDiscriminationOnly}, true)}"/>
+              |£${assessedValues.netCostOfCounsel}|, true)}"/>
                                 <th:block th:if="${claimSummary.areaOfLaw == 'LEGAL HELP'}">
                                     <th:block
                                             th:replace="~{::fee-detail-row(#{viewClaim.feeCalculation.row.travelAndWaitingCosts},
                 ${feeDetails.travelAndWaitingCosts},
-                #{viewClaim.feeCalculation.notes.legalHelpOnly}, true)}"/>
+                |£${assessedValues.travelCosts}|, true)}"/>
                                 </th:block>
                                 <th:block th:if="${claimSummary.areaOfLaw == 'CRIME LOWER'}">
                                     <th:block
                                             th:replace="~{::fee-detail-row(#{viewClaim.feeCalculation.row.travelCosts},
               ${feeDetails.travelCosts},
-              #{viewClaim.feeCalculation.notes.crimeOnly}, true)}"/>
+              |£${assessedValues.travelCosts}|, true)}"/>
                                     <th:block
                                             th:replace="~{::fee-detail-row(#{viewClaim.feeCalculation.row.waitingCosts},
               ${feeDetails.waitingCosts},
-              #{viewClaim.feeCalculation.notes.crimeOnly}, true)}"/>
+              |£${assessedValues.waitingCosts}|, true)}"/>
                                 </th:block>
                                 <th:block
                                         th:replace="~{::fee-detail-row(#{viewClaim.feeCalculation.row.detentionTravelWaitingCosts},
               ${feeDetails.detentionTravelAndWaitingCosts},
-              #{viewClaim.feeCalculation.notes.immigrationAsylumOnly}, true)}"/>
+              |£${assessedValues.detentionTravelAndWaitingCosts}|, true)}"/>
                                 <th:block
                                         th:replace="~{::fee-detail-row(#{viewClaim.feeCalculation.row.jrFormFilling},
               ${feeDetails.jrFormFilling},
-              #{viewClaim.feeCalculation.notes.immigrationAsylumOnly}, true)}"/>
+              |£${assessedValues.jrFormFilling}|, true)}"/>
                                 <th:block
                                         th:replace="~{::fee-detail-row(#{viewClaim.feeCalculation.row.adjournedHearingFee},
               ${feeDetails.adjournedHearingFee},
-              #{viewClaim.feeCalculation.notes.immigrationAsylumMentalHealthOnly}, false)}"/>
+              |£${assessedValues.adjournedHearingFee}|, false)}"/>
                                 <th:block
                                         th:replace="~{::fee-detail-row(#{viewClaim.feeCalculation.row.cmrhTelephone},
               ${feeDetails.cmrhTelephone},
-              #{viewClaim.feeCalculation.notes.immigrationAsylumOnly}, false)}"/>
+              |£${assessedValues.cmrhTelephone}|, false)}"/>
                                 <th:block
                                         th:replace="~{::fee-detail-row(#{viewClaim.feeCalculation.row.cmrhOral},
               ${feeDetails.cmrhOral},
-              #{viewClaim.feeCalculation.notes.immigrationAsylumOnly}, false)}"/>
+              |£${assessedValues.cmrhOral}|, false)}"/>
                                 <th:block
                                         th:replace="~{::fee-detail-row(#{viewClaim.feeCalculation.row.homeOfficeInterview},
               ${feeDetails.homeOfficeInterview},
-              #{viewClaim.feeCalculation.notes.immigrationAsylumOnly}, false)}"/>
+              |£${assessedValues.homeOfficeInterview}|, false)}"/>
                                 <th:block
                                         th:replace="~{::fee-detail-row(#{viewClaim.feeCalculation.row.substantiveHearing},
               ${feeDetails.substantiveHearing},
-              #{viewClaim.feeCalculation.notes.immigrationAsylumOnly}, true)}"/>
+              |£${assessedValues.substantiveHearing}|, true)}"/>
                                 <tr class="govuk-table__row">
                                     <th scope="row" class="govuk-table__header "
                                         th:text="#{viewClaim.feeCalculation.row.vat}"/>
@@ -302,7 +302,8 @@
                                         th:text="${feeDetails.vatIndicator()} ? 'Yes' : 'No'"/>
                                     <td class="govuk-table__cell govuk-table__cell--numeric"
                                         th:text="${claimSummary.isVatApplicable()} ? 'Yes' : 'No'"/>
-                                    <td class="govuk-table__cell"></td>
+                                    <td class="govuk-table__cell govuk-table__cell--numeric"
+                                        th:text="${claimSummary.isVatApplicable()} ? 'Yes' : 'No'"/>
                                 </tr>
                                 </tbody>
                             </table>
@@ -346,7 +347,7 @@
                                     <th scope="row" class="govuk-table__header"
                                         th:text="#{viewClaim.feeCalculation.row.assessedTotalInclVat}"></th>
                                     <td class="govuk-table__cell govuk-table__cell--numeric"
-                                        th:text="|£${feeDetails.calculatedTotal}|"></td>
+                                        th:text="|£${assessedValues.fixedFee}|"></td>
                                     <td class="govuk-table__cell govuk-table__cell--numeric"
                                         th:aria-label="#{viewClaim.feeCalculation.na}"
                                         th:text="#{viewClaim.feeCalculation.na}"></td>
