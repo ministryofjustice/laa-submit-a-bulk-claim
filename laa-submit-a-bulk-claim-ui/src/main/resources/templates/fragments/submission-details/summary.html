@@ -59,7 +59,7 @@
             th:text="${@currencyUtil.toString(submissionSummary.submissionValue())}"></dd>
       </div>
       <div class="govuk-summary-list__row"
-           th:if="${showSubmissionValue and submissionSummary.submissionValue() != null}">
+           th:if="${showSubmissionValue and submissionSummary.assessedSubmissionValue() != null}">
         <dt class="govuk-summary-list__key"
             th:text="#{submission.summary.properties.assessedSubmissionValue}"></dt>
         <dd class="govuk-summary-list__value"
