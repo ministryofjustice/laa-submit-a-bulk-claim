@@ -53,7 +53,7 @@ public class SearchController {
   public static final String SUBMISSION_SEARCH_FORM = "submissionsSearchForm";
   private static final int DEFAULT_PAGE = 0;
   private static final int DEFAULT_PAGE_SIZE = 10;
-  private static final String DEFAULT_SEARCH_PAGE_SORT = "createdOn,desc";
+  protected static final String DEFAULT_SEARCH_PAGE_SORT = "createdOn,desc";
 
   @InitBinder(SUBMISSION_SEARCH_FORM)
   void initSubmissionSearchValidator(WebDataBinder binder) {
@@ -121,7 +121,8 @@ public class SearchController {
   }
 
   /**
-   * Handles Submission page results.
+   * Handles Submission page results. Also handles global search when user clicks on column name on
+   * the search results screen.
    *
    * @param page requested page number
    * @param submissionPeriod submission period filter
@@ -139,6 +140,8 @@ public class SearchController {
       @RequestParam(value = "offices", required = false) List<String> offices,
       @RequestParam(value = "submissionStatuses", required = false)
           SubmissionOutcomeFilter submissionStatus,
+      @RequestParam(value = "sort", required = false, defaultValue = DEFAULT_SEARCH_PAGE_SORT)
+          String sort,
       Model model,
       @AuthenticationPrincipal OidcUser oidcUser,
       SessionStatus sessionStatus,
@@ -175,7 +178,7 @@ public class SearchController {
                   getSubmissionStatus(submissionsSearchForm),
                   page,
                   DEFAULT_PAGE_SIZE,
-                  DEFAULT_SEARCH_PAGE_SORT)
+                  sort)
               .block();
 
       Page pagination =

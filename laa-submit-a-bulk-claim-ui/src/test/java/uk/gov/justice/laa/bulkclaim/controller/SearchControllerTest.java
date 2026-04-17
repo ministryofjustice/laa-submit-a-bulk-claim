@@ -8,6 +8,7 @@ import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.justice.laa.bulkclaim.controller.ControllerTestHelper.getOidcUser;
+import static uk.gov.justice.laa.bulkclaim.controller.SearchController.DEFAULT_SEARCH_PAGE_SORT;
 
 import jakarta.servlet.http.HttpSession;
 import java.util.Collections;
@@ -124,6 +125,7 @@ class SearchControllerTest {
             AreaOfLaw.CRIME_LOWER.name(),
             Collections.emptyList(),
             SubmissionOutcomeFilter.SUCCEEDED,
+            DEFAULT_SEARCH_PAGE_SORT,
             model,
             getOidcUser(),
             sessionStatus,
@@ -146,7 +148,16 @@ class SearchControllerTest {
 
     String view =
         searchController.submissionsSearchResults(
-            0, null, null, null, null, model, getOidcUser(), sessionStatus, session);
+            0,
+            null,
+            null,
+            null,
+            null,
+            DEFAULT_SEARCH_PAGE_SORT,
+            model,
+            getOidcUser(),
+            sessionStatus,
+            session);
 
     assertEquals("error", view);
   }
@@ -160,7 +171,16 @@ class SearchControllerTest {
 
     String view =
         searchController.submissionsSearchResults(
-            0, "1234", null, null, null, model, getOidcUser(), sessionStatus, session);
+            0,
+            "1234",
+            null,
+            null,
+            null,
+            DEFAULT_SEARCH_PAGE_SORT,
+            model,
+            getOidcUser(),
+            sessionStatus,
+            session);
 
     assertEquals("error", view);
   }
