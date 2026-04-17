@@ -29,7 +29,7 @@ jobs:
   test-smoke:
     name: Test @smoke
     needs: [ define-preview-version ]
-    uses: ministryofjustice/bulk-submission-and-fee-scheme-tests-/.github/workflows/trigger-e2e-dispatch.yml@feature/run-e2e-in-docker
+    uses: ministryofjustice/bulk-submission-and-fee-scheme-tests-/.github/workflows/trigger-e2e-dispatch.yml@bb8c62731903909f477ced8396ec5b8e41c8c62b # 17/04/2026
     permissions:
       contents: read
       id-token: write
