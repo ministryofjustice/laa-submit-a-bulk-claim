@@ -94,6 +94,12 @@ management:
           - info
           - prometheus
 
+---
+spring:
+  config:
+    activate:
+      on-profile: "!local"
+
 # ECS structured logging
 logging:
   level:
