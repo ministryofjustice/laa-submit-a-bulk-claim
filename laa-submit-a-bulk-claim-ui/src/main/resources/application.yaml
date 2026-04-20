@@ -4,9 +4,6 @@ server:
   port: 8082
 
 spring:
-  config:
-    activate:
-      on-profile: "!local"
   application:
     name: laa-submit-a-bulk-claim
   servlet:
@@ -96,6 +93,11 @@ management:
           - info
           - prometheus
 
+---
+spring:
+  config:
+    activate:
+      on-profile: "!local"
 # ECS structured logging
 logging:
   level:
