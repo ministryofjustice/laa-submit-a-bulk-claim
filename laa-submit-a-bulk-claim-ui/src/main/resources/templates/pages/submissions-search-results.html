@@ -32,19 +32,24 @@
         </h2>
         <br>
         <div class="upload-table" th:if="${!#lists.isEmpty(submissions.content)}">
-          <table class="govuk-table" data-module="moj-sortable-table">
+          <table class="govuk-table">
             <thead class="govuk-table__head">
             <tr class="govuk-table__row">
-              <th scope="col" class="govuk-table__header" aria-sort="descending"
-                  th:text="#{search.result.header.submission}">
-              <th scope="col" class="govuk-table__header" aria-sort="none"
-                  th:text="#{search.result.header.office}">
-              <th scope="col" class="govuk-table__header" aria-sort="none"
-                  th:text="#{search.result.header.area}">
-              <th scope="col" class="govuk-table__header" aria-sort="none"
-                  th:text="#{search.result.header.submissionPeriod}">
-              <th scope="col" class="govuk-table__header" aria-sort="none"
-                  th:text="#{common.status}">
+              <th:block th:replace="~{fragments/sortable-header ::submissionSearchSortableHeader('createdOn',
+                 'search.result.header.submission',
+                 ${submissionsSearchForm})}"></th:block>
+              <th:block th:replace="~{fragments/sortable-header ::submissionSearchSortableHeader('officeAccountNumber',
+                 'search.result.header.office',
+                 ${submissionsSearchForm})}"></th:block>
+              <th:block th:replace="~{fragments/sortable-header ::submissionSearchSortableHeader('areaOfLaw',
+                 'search.result.header.area',
+                 ${submissionsSearchForm})}"></th:block>
+              <th:block th:replace="~{fragments/sortable-header ::submissionSearchSortableHeader('submissionPeriod',
+                 'search.result.header.submissionPeriod',
+                 ${submissionsSearchForm})}"></th:block>
+              <th:block th:replace="~{fragments/sortable-header ::submissionSearchSortableHeader('status',
+                 'common.status',
+                 ${submissionsSearchForm})}"></th:block>
             </tr>
             </thead>
             <tbody class="govuk-table__body">

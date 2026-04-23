@@ -1,0 +1,17 @@
+{
+  "content": [
+    {
+      "id": "497f6eca-6276-4993-bfeb-53cbbbba6f08",
+      "submission_id": "%s",
+      "claim_id": "%s",
+      "type": "WARNING",
+      "source": "SYSTEM",
+      "display_message": "Sample warning"
+    }
+  ],
+  "total_claims": 1,
+  "total_pages": 1,
+  "total_elements": 1,
+  "number": 0,
+  "size": 10
+}

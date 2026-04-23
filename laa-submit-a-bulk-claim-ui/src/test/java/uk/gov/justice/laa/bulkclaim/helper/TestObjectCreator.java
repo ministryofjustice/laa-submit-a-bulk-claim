@@ -1,8 +1,6 @@
 package uk.gov.justice.laa.bulkclaim.helper;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
-import uk.gov.justice.laa.bulkclaim.dto.submission.claim.ClaimSummary;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.BoltOnPatch;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.ClaimResponse;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.ClaimStatus;
@@ -121,25 +119,6 @@ public final class TestObjectCreator {
             FeeCalculationPatch.builder()
                 .boltOnDetails(BoltOnPatch.builder().escapeCaseFlag(true).build())
                 .build())
-        .build();
-  }
-
-  public static ClaimSummary buildClaimDetails() {
-
-    return ClaimSummary.builder()
-        .areaOfLaw("CIVIL")
-        .uniqueFileNumber("unique-file-number")
-        .caseConcludedDate(LocalDate.parse("2026-10-20"))
-        .matterTypeCode("matter-type-code")
-        .feeCode("fee-code")
-        .clientForename("client-forename")
-        .clientSurname("client-surname")
-        .uniqueClientNumber("unique-client-number")
-        .client2Forename("client-2-forename")
-        .client2Surname("client-2-surname")
-        .uniqueClientNumber2("unique-client-number-2")
-        .stageReachedCode("stage-reached-code")
-        .outcomeCode("outcome-code")
         .build();
   }
 }

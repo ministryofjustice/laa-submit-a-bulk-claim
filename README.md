@@ -231,6 +231,21 @@ prek run --all-files
 - WireMock supports integration-style tests against Data Stewardship flows.
 - Add new tests alongside changes to maintain coverage.
 
+### Accessibility Tests
+```sh
+./gradlew :laa-submit-a-bulk-claim-ui:accessibilityTest
+```
+
+- Accessibility coverage now runs in this repository as a first-class Java Playwright + axe suite.
+- Tests live under `laa-submit-a-bulk-claim-ui/src/accessibilityTest`.
+- WireMock fixtures for the suite live under
+  `laa-submit-a-bulk-claim-ui/src/accessibilityTest/resources/wiremock`.
+- JUnit XML and HTML reports are generated under
+  `laa-submit-a-bulk-claim-ui/build/test-results/accessibilityTest` and
+  `laa-submit-a-bulk-claim-ui/build/reports/tests/accessibilityTest`.
+- See `laa-submit-a-bulk-claim-ui/src/accessibilityTest/README.md` for test structure, stub
+  patterns, and debugging tips.
+
 ### E2E Tests
 E2E tests are designed to run in UAT environments. They can be found on GitHub
 within the [bulk-submission-and-fee-scheme-tests](https://github.com/ministryofjustice/bulk-submission-and-fee-scheme-tests-)
@@ -275,6 +290,51 @@ repository.
 - `laa-submit-a-bulk-claim-ui/src/main/resources/templates` – Thymeleaf views.
 - `wiremock/mappings` – Local stubs for dependent APIs.
 - `.helm/submit-a-bulk-claim/` – Helm chart used by GitHub Actions deploy workflows.
+
+## Logging Configuration
+
+This application uses ECS (Elastic Common Schema) structured logging for production environments and console logging for local development.
+For local development logging use: ```./gradlew bootRun --args='--spring.profiles.active=local'```
+and add the following to your application-local.yaml
+
+```
+logging:
+    level:
+        root: ${ROOT_LOGGING_LEVEL:info}
+        org.springframework: ${SPRING_LOGGING_LEVEL:info}
+        uk.gov.justice.laa.bulkclaim: ${APP_LOGGING_LEVEL:info}
+    pattern:
+        console: "%style{%d{yyyy-MM-dd'T'HH:mm:ss.SSSXXX}}{faint} %highlight{%-5level} %style{%pid}{magenta} %style{---}{faint} %style{[%15.15t]}{faint} %style{[%X{traceId},%X{spanId}]}{yellow} %style{%-40.40logger{39}}{cyan} %style{:}{faint} %msg%n"
+```
+
+###  Structured Logging (Default/Production)
+By default, the application outputs logs in ECS JSON format with distributed tracing support:
+```
+{
+    "@timestamp":"2026-04-10T08:55:16.405456044Z",
+    "log":
+        {
+            "level":"INFO",
+            "logger":"uk.gov.justice.laa.bulkclaim.controller.BulkImportController"
+        },
+    "process":
+        {
+            "pid":1,
+            "thread":{"name":"tomcat-handler-28"}
+        },
+    "service":
+        {
+            "name":"laa-submit-a-bulk-claim",
+            "version":"1.0.156-SNAPSHOT",
+            "environment":"default",
+            "node":{"name":"bdc4c8732f19"}
+        },
+    "message":"Claims API Upload response bulk submission UUID: 019d769a-48f0-7edd-ac31-123c23b2651d",
+    "spanId":"b627176af184a77a",
+    "traceId":"69d8baf2e639b7e6a9c4c9fff1f02bbd",
+    "ecs":{"version":"8.11"}
+}
+```
 
 ## Contributing
 

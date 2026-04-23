@@ -6,6 +6,10 @@ on:
 permissions:
   contents: read
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
 jobs:
   define-preview-version:
     runs-on: ubuntu-latest
@@ -38,7 +42,7 @@ jobs:
       gh_token: ${{ secrets.GITHUB_TOKEN }}
 
   pact-test:
-    needs: [ build-and-test ]
+    needs: [ define-preview-version ]
     uses: ministryofjustice/laa-ccms-common-workflows/.github/workflows/pact-and-publish.yml@v2
     permissions:
       contents: write
@@ -56,6 +60,65 @@ jobs:
       pact_broker_url: 'https://laa-data-pact-broker.apps.live.cloud-platform.service.justice.gov.uk/'
       pact_broker_username: ${{ secrets.PACT_BROKER_USERNAME }}
       pact_broker_password: ${{ secrets.PACT_BROKER_PASSWORD }}
+
+  accessibility-test:
+    needs: [ define-preview-version ]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: read
+    env:
+      PLAYWRIGHT_BROWSERS_PATH: /home/runner/.cache/ms-playwright
+    steps:
+      - name: Checkout
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+  
+      - name: Set up Java
+        uses: actions/setup-java@be666c2fcd27ec809703dec50e508c2fdc7f6654 # v5
+        with:
+          distribution: temurin
+          java-version: '25'
+
+      - name: Set up Node.js
+        uses: actions/setup-node@53b83947a5a98c8d113130e565377fae1a50d02f # v6.3.0
+        with:
+          node-version: '22'
+  
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@50e97c2cd7a37755bbfafc9c5b7cafaece252f6e # v6.1.0
+
+      - name: Cache Playwright browsers
+        id: playwright-cache
+        uses: actions/cache@668228422ae6a00e4ad889ee87cd7109ec5666a7 # v5.0.4
+        with:
+          path: /home/runner/.cache/ms-playwright
+          key: ${{ runner.os }}-playwright-1.56.0
+          restore-keys: |
+            ${{ runner.os }}-playwright-
+
+      - name: Install Playwright Chromium dependencies
+        run: npx --yes playwright@1.56.0 install-deps chromium
+
+      - name: Install Playwright Chromium browser
+        if: steps.playwright-cache.outputs.cache-hit != 'true'
+        run: npx --yes playwright@1.56.0 install chromium
+  
+      - name: Run accessibility test suite
+        env:
+          PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: "1"
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: ./gradlew :laa-submit-a-bulk-claim-ui:accessibilityTest --no-daemon
+  
+      - name: Upload accessibility test artifacts
+        if: always()
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
+        with:
+          name: accessibility-test-results-uat-preview
+          path: |
+            laa-submit-a-bulk-claim-ui/build/test-results/accessibilityTest
+            laa-submit-a-bulk-claim-ui/build/reports/tests/accessibilityTest
+            laa-submit-a-bulk-claim-ui/build/reports/accessibility
+          if-no-files-found: warn
 
   ecr-publish-image:
     needs: [ build-and-test ]
@@ -79,6 +142,7 @@ jobs:
     needs:
       - pact-test
       - ecr-publish-image
+      - accessibility-test
     runs-on: ubuntu-latest
     environment: uat
     permissions:
@@ -112,7 +176,7 @@ jobs:
 
       - name: Comment on PR with UI ingress URL
         if: github.event_name == 'pull_request'
-        uses: actions/github-script@ed597411d8f924073f98dfc5c65a23a2325f34cd # v8.0.0
+        uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
         with:
           script: |
             const releaseName = '${{ steps.deploy.outputs.release-name }}';

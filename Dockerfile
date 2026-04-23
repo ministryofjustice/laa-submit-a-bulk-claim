@@ -1,45 +1,12 @@
-# Build stage
-# Default to external building
-ARG BUILD_SOURCE=external
-
-FROM gradle:9.4.0-jdk25 AS builder
-
-# Set up working directory for build
-WORKDIR /build
-
-# Copy gradle files and source code
-COPY . .
-
-# Run gradle build
-RUN --mount=type=cache,target=/root/.gradle \
-    --mount=type=secret,id=github_actor \
-    --mount=type=secret,id=github_token \
-    export GITHUB_ACTOR="$(cat /run/secrets/github_actor)" && \
-    export GITHUB_TOKEN="$(cat /run/secrets/github_token)" && \
-    gradle assemble
-
-# Debug step: List all JAR files to find the correct path
-RUN find /build -name "*.jar"
-
 # Runtime stage
 FROM amazoncorretto:25-alpine AS base
 
 # Set up working directory in the container
-RUN mkdir -p /opt/data-claims-event-service/
-WORKDIR /opt/data-claims-event-service/
-
-# --- Stage for copying from the internal builder stage ---
-FROM base AS build-internal
-# Copy the JAR file from builder stage
-COPY --from=builder /build/laa-submit-a-bulk-claim-ui/build/libs/laa-submit-a-bulk-claim-ui-*-SNAPSHOT.jar app.jar
+RUN mkdir -p /opt/submit-a-bulk-claim/
+WORKDIR /opt/submit-a-bulk-claim/
 
 # --- Stage for copying from the local filesystem (CI/Manual) ---
-FROM base AS build-external
-COPY laa-submit-a-bulk-claim-ui/build/libs/laa-submit-a-bulk-claim-service-1.0.0-SNAPSHOT.jar app.jar
-
-# --- Final Stage ---
-ARG BUILD_SOURCE
-FROM build-${BUILD_SOURCE}
+COPY laa-submit-a-bulk-claim-ui/build/libs/laa-submit-a-bulk-claim-ui-*-SNAPSHOT.jar app.jar
 
 # Create a group and non-root user
 RUN addgroup -S appgroup && adduser -u 1001 -S appuser -G appgroup
@@ -52,5 +19,5 @@ EXPOSE 8080
 # Local port
 EXPOSE 8082
 
-# Run the JAR file
-CMD ["java", "-jar", "app.jar"]
+# Allow Netty and other unnamed-module native libraries on Java 25+ without warning.
+CMD ["java", "--enable-native-access=ALL-UNNAMED", "-jar", "app.jar"]

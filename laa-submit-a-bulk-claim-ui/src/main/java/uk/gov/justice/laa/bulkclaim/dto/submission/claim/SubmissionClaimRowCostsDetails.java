@@ -21,15 +21,4 @@ public record SubmissionClaimRowCostsDetails(
     BigDecimal netCounselCostsAmount,
     BigDecimal travelWaitingCostsAmount,
     BigDecimal netWaitingCostsAmount,
-    BigDecimal claimValue) {
-
-  /**
-   * Returns a sum of the counsel costs, travel waiting costs and waiting costs. This excludes the
-   * net profit and disbursement costs.
-   *
-   * @return the sum of the counsel costs, travel waiting costs and waiting costs
-   */
-  public BigDecimal additionalCosts() {
-    return netCounselCostsAmount.add(travelWaitingCostsAmount).add(netWaitingCostsAmount);
-  }
-}
+    BigDecimal claimValue) {}

@@ -10,7 +10,6 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.oauth2.client.oidc.web.logout.OidcClientInitiatedLogoutSuccessHandler;
 import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
 import org.springframework.security.web.SecurityFilterChain;
@@ -30,26 +29,6 @@ public class SecurityConfig {
   private final UrlService urlService;
 
   /**
-   * Configures web security to ignore requests for static resources. This allows assets like
-   * webjars, stylesheets, and JavaScripts to be served without authentication.
-   *
-   * @return a WebSecurityCustomizer that ignores specified static resource paths
-   */
-  @Bean
-  public WebSecurityCustomizer webSecurityCustomizer() {
-    return web ->
-        web.ignoring()
-            .requestMatchers(
-                "/webjars/**",
-                "/assets/**",
-                "/javascripts/**",
-                "/stylesheets/**",
-                "/actuator/prometheus",
-                "/actuator/health",
-                "/actuator/info");
-  }
-
-  /**
    * UserDetailsService bean for in-memory user management. This method creates fake users for
    * testing purposes.
    *
@@ -63,7 +42,15 @@ public class SecurityConfig {
     http.authorizeHttpRequests(
             authz -> //
             authz
-                    .requestMatchers("/logged-out")
+                    .requestMatchers(
+                        "/webjars/**",
+                        "/assets/**",
+                        "/javascripts/**",
+                        "/stylesheets/**",
+                        "/actuator/prometheus",
+                        "/actuator/health",
+                        "/actuator/info",
+                        "/logged-out")
                     .permitAll()
                     .anyRequest() //
                     .authenticated())

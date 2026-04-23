@@ -4,6 +4,8 @@ server:
   port: 8082
 
 spring:
+  application:
+    name: laa-submit-a-bulk-claim
   servlet:
     multipart:
       max-file-size: ${SERVER_MAX_FILE_SIZE}
@@ -45,9 +47,9 @@ spring:
       url: ${REDIS_HOST}
 
 security:
-  allowed-hosts: ${ALLOWED_HOSTS:"localhost,localhost:8080,127.0.0.1,127.0.0.1:8080"}
+  allowed-hosts: ${ALLOWED_HOSTS:localhost,localhost:8082,127.0.0.1,127.0.0.1:8082}
 app:
-  canonical-base-url: ${CANONICAL_BASE_URL:"http://localhost:8080"}
+  canonical-base-url: ${CANONICAL_BASE_URL:http://localhost:8082}
   landing:
     deadline-override-message: ${APP_LANDING_DEADLINE_OVERRIDE_MESSAGE:}
   sds-api:
@@ -91,3 +93,24 @@ management:
           - info
           - prometheus
 
+---
+spring:
+  config:
+    activate:
+      on-profile: "!local"
+
+# ECS structured logging
+logging:
+  level:
+    root: ${ROOT_LOGGING_LEVEL:info}
+    org.springframework: ${SPRING_LOGGING_LEVEL:info}
+    uk.gov.justice.laa.bulkclaim: ${APP_LOGGING_LEVEL:info}
+  structured:
+    format:
+      console: ecs
+    ecs:
+      service:
+        name: ${spring.application.name:default}
+        version: ${spring.application.version:default}
+        environment: ${spring.profiles.active:default}
+        node_name: ${HOSTNAME:unknown}

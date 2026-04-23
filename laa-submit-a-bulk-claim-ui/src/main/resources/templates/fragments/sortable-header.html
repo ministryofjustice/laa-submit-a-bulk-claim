@@ -16,4 +16,29 @@
         </a>
     </th>
 
-    </th:block>
+</th:block>
+
+<th:block th:fragment="submissionSearchSortableHeader(sortField,headerName,submissionSearchForm)">
+
+    <th scope="col" class="govuk-table__header" aria-sort="none"
+        th:with="
+                currentSort=${param.sort != null ? param.sort[0] : null},
+                isThisFieldSorted=${currentSort != null and #strings.startsWith(currentSort, sortField + ',')},
+                currentDir=${isThisFieldSorted ? #strings.substringAfter(currentSort, sortField + ',') : null},
+                nextDir=${!isThisFieldSorted or currentDir == 'desc' ? 'asc' : 'desc'},
+                sortValue=${sortField + ',' + nextDir},
+                claimDetailsUrl=@{/submissions/search/results}
+                " >
+        <a class="govuk-link app-sort-link govuk-link--no-visited-state govuk-link--no-underline govuk-link--sort"
+           th:href="${@thymeleafHrefUtils.build('/submissions/search/results', 'page', 0,
+            'sort', sortValue,
+            'submissionPeriod', submissionSearchForm.submissionPeriod,
+            'areaOfLaw', submissionSearchForm.areaOfLaw,
+            'offices', submissionSearchForm.offices,
+            'submissionStatuses', submissionSearchForm.submissionStatuses)}">
+            <span th:text="#{${headerName}}"> </span>
+            <th:block th:replace="~{fragments/sort-arrow :: sortArrow(${isThisFieldSorted},${currentDir})}"></th:block>
+        </a>
+    </th>
+
+</th:block>
