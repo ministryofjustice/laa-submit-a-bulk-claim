@@ -95,7 +95,7 @@ public final class GetExportSubmissionPactTest extends AbstractPactTest {
           + " Cost Of Counsel Amount,Assessment - Net Travel Costs Amount,Assessment - Net Waiting "
           + "Costs Amount,Assessment - Detention Travel And Waiting Costs Amount,Assessment - JR "
           + "Form Filling Amount,Assessment - VAT Indicator,Assessment - Total VAT,Assessment - "
-          + "Total Inc VAT,Assessment - Final Claim Value VAT,Assessment - Final Claim Value\n";
+          + "Total Inc VAT,Final Claim Value VAT,Final Claim Value\n";
 
   String crimeLowerCsvHeaders =
       "Providers LAA Office Number,Submission Month,Area of Law,Crime Lower Schedule Number,Stage"
@@ -121,8 +121,7 @@ public final class GetExportSubmissionPactTest extends AbstractPactTest {
           + "Assessment - Disbursement Amount,Assessment - Disbursement VAT Amount,"
           + "Assessment - Net Cost Of Counsel Amount,Assessment - Net Travel Costs Amount,"
           + "Assessment - Net Waiting Costs Amount,Assessment - VAT Indicator,Assessment - Total "
-          + "VAT,Assessment - Total Inc VAT,Assessment - Final Claim Value VAT,"
-          + "Assessment - Final Claim Value\n";
+          + "VAT,Assessment - Total Inc VAT,Final Claim Value VAT,Final Claim Value\n";
 
   String mediationCsvHeaders =
       "Providers LAA Office Number,Submission Month,Area of Law,Mediation Submission Reference,"
@@ -149,7 +148,7 @@ public final class GetExportSubmissionPactTest extends AbstractPactTest {
           + "Disbursement Amount,Assessment - Disbursement VAT Amount,Assessment - "
           + "Net Cost Of Counsel Amount,Assessment - Net Travel Costs Amount,Assessment - Net "
           + "Waiting Costs Amount,Assessment - VAT Indicator,Assessment - Total VAT,Assessment - "
-          + "Total Inc VAT,Assessment - Final Claim Value VAT,Assessment - Final Claim Value\n";
+          + "Total Inc VAT,Final Claim Value VAT,Final Claim Value\n";
 
   @Pact(consumer = CONSUMER)
   public RequestResponsePact getLegalHelpSubmission200(PactDslWithProvider builder) {
