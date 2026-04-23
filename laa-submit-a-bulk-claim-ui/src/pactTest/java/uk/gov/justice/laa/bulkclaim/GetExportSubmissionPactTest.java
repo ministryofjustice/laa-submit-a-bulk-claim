@@ -116,7 +116,7 @@ public final class GetExportSubmissionPactTest extends AbstractPactTest {
           + "Amount,Calculated Fee Detail - Requested Net Profit Costs Amount,Calculated Fee "
           + "Detail - Net Travel Costs Amount,Calculated Fee Detail - Net Waiting Costs Amount,"
           + "Calculated Fee Detail - Travel And Waiting Costs Amount,Calculated Fee Detail - "
-          + "Escape Case FlagAssessment - Outcome,Assessment - Type,Assessment - Reason,"
+          + "Escape Case Flag,Assessment - Outcome,Assessment - Type,Assessment - Reason,"
           + "Assessment - Date,Assessment - Fixed Fee Amount,Assessment - Net Profit Costs Amount,"
           + "Assessment - Disbursement Amount,Assessment - Disbursement VAT Amount,"
           + "Assessment - Net Cost Of Counsel Amount,Assessment - Net Travel Costs Amount,"
