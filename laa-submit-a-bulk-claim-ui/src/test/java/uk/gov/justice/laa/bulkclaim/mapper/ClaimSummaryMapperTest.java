@@ -1,5 +1,7 @@
 package uk.gov.justice.laa.bulkclaim.mapper;
 
+import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
 import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -17,9 +19,14 @@ class ClaimSummaryMapperTest {
   void shouldMapAllDetails() {
     // Given
     String areaOfLaw = "CIVIL";
+    String officeAccountNumber = "0P322F";
+    OffsetDateTime submissionDate =
+        OffsetDateTime.of(2025, 5, 5, 6, 52, 27, 954000000, ZoneOffset.UTC);
     ClaimResponse claimResponse = TestObjectCreator.buildClaimResponse();
     // When
-    ClaimSummary result = mapper.toClaimSummary(claimResponse, areaOfLaw);
+    ClaimSummary result =
+        mapper.toClaimSummary(claimResponse, areaOfLaw, officeAccountNumber, submissionDate);
+    System.out.println(result);
     // Then
     SoftAssertions.assertSoftly(
         softAssertions -> {
@@ -57,6 +64,29 @@ class ClaimSummaryMapperTest {
               .assertThat(result.caseConcludedDate())
               .isEqualTo(claimResponse.getCaseConcludedDate());
           softAssertions.assertThat(result.isEscaped()).isTrue();
+          softAssertions.assertThat(result.officeAccountNumber()).isEqualTo(officeAccountNumber);
+          softAssertions
+              .assertThat(result.matterType1())
+              .isEqualTo(mapper.getMatterType1(claimResponse.getMatterTypeCode()));
+          softAssertions
+              .assertThat(result.matterType2())
+              .isEqualTo(mapper.getMatterType2(claimResponse.getMatterTypeCode()));
+          softAssertions
+              .assertThat(result.categoryOfLaw())
+              .isEqualTo(claimResponse.getFeeCalculationResponse().getCategoryOfLaw());
+          softAssertions
+              .assertThat(result.feeCodeDescription())
+              .isEqualTo(claimResponse.getFeeCalculationResponse().getFeeCodeDescription());
+          softAssertions.assertThat(result.submissionDate()).isEqualTo(submissionDate);
+          softAssertions
+              .assertThat(result.categoryOfLaw())
+              .isEqualTo(claimResponse.getFeeCalculationResponse().getCategoryOfLaw());
+          softAssertions
+              .assertThat(result.clientName())
+              .isEqualTo(mapper.getClientName(claimResponse));
+          softAssertions
+              .assertThat(result.client2Name())
+              .isEqualTo(mapper.getClient2Name(claimResponse));
         });
   }
 }

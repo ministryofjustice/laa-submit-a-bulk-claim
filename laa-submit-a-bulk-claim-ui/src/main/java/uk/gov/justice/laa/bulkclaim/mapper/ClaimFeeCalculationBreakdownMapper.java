@@ -75,31 +75,44 @@ public interface ClaimFeeCalculationBreakdownMapper {
               java(toBulkClaimCostItem(claimResponse.getDetentionTravelWaitingCostsAmount(),
               claimResponse.getFeeCalculationResponse()
                             .getDetentionTravelAndWaitingCostsAmount()))""")
-  @Mapping(target = "cmrhTelephone.enteredValue", ignore = true)
   @Mapping(
-      target = "cmrhTelephone.calculatedValue",
-      source = "claimResponse.feeCalculationResponse.boltOnDetails.boltOnCmrhTelephoneFee")
-  @Mapping(target = "cmrhOral.enteredValue", ignore = true)
+      target = "cmrhTelephone",
+      expression =
+          """
+              java(toBulkClaimCostItem(toBigDecimal(claimResponse.getCmrhTelephoneCount()),
+              claimResponse.getFeeCalculationResponse().getBoltOnDetails()
+                            .getBoltOnCmrhTelephoneFee()))""")
   @Mapping(
-      target = "cmrhOral.calculatedValue",
-      source = "claimResponse.feeCalculationResponse.boltOnDetails.boltOnCmrhOralFee")
-  @Mapping(target = "homeOfficeInterview.enteredValue", ignore = true)
+      target = "cmrhOral",
+      expression =
+          """
+              java(toBulkClaimCostItem(toBigDecimal(claimResponse.getCmrhOralCount()),
+              claimResponse.getFeeCalculationResponse().getBoltOnDetails()
+                            .getBoltOnCmrhOralFee()))""")
   @Mapping(
-      target = "homeOfficeInterview.calculatedValue",
-      source = "claimResponse.feeCalculationResponse.boltOnDetails.boltOnHomeOfficeInterviewFee")
+      target = "homeOfficeInterview",
+      expression =
+          """
+             java(toBulkClaimCostItem(toBigDecimal(claimResponse.getHoInterview()),
+             claimResponse.getFeeCalculationResponse().getBoltOnDetails()
+                            .getBoltOnHomeOfficeInterviewFee()))""")
   @Mapping(target = "substantiveHearing.enteredValue", ignore = true)
   @Mapping(
       target = "substantiveHearing.calculatedValue",
       source = "claimResponse.feeCalculationResponse.boltOnDetails.boltOnSubstantiveHearingFee")
-  @Mapping(target = "adjournedHearingFee.enteredValue", ignore = true)
   @Mapping(
-      target = "adjournedHearingFee.calculatedValue",
-      source = "claimResponse.feeCalculationResponse.boltOnDetails.boltOnAdjournedHearingFee")
+      target = "adjournedHearingFee",
+      expression =
+          """
+              java(toBulkClaimCostItem(toBigDecimal(claimResponse.getAdjournedHearingFeeAmount()),
+              claimResponse.getFeeCalculationResponse().getBoltOnDetails()
+                            .getBoltOnAdjournedHearingFee()))""")
   @Mapping(target = "vat.enteredValue", ignore = true)
   @Mapping(
       target = "vat.calculatedValue",
       source = "claimResponse.feeCalculationResponse.calculatedVatAmount")
   @Mapping(target = "calculatedTotal", source = "claimResponse.feeCalculationResponse.totalAmount")
+  @Mapping(target = "vatIndicator", source = "claimResponse.feeCalculationResponse.vatIndicator")
   ClaimFeeCalculationBreakdown toClaimFeeCalculationBreakdown(ClaimResponse claimResponse);
 
   @Mapping(target = "enteredValue", source = "enteredValue")

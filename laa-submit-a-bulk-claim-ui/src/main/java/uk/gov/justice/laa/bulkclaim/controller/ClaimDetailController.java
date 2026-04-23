@@ -3,6 +3,9 @@ package uk.gov.justice.laa.bulkclaim.controller;
 import static uk.gov.justice.laa.bulkclaim.constants.SessionConstants.CLAIM_ID;
 import static uk.gov.justice.laa.bulkclaim.constants.SessionConstants.SUBMISSION_ID;
 
+import java.time.OffsetDateTime;
+import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -20,10 +23,10 @@ import uk.gov.justice.laa.bulkclaim.client.DataClaimsRestClient;
 import uk.gov.justice.laa.bulkclaim.constants.ViewSubmissionNavigationTab;
 import uk.gov.justice.laa.bulkclaim.dto.submission.messages.MessagesSummary;
 import uk.gov.justice.laa.bulkclaim.exception.SubmitBulkClaimException;
+import uk.gov.justice.laa.bulkclaim.mapper.ClaimAssessmentSummaryMapper;
 import uk.gov.justice.laa.bulkclaim.mapper.ClaimFeeCalculationBreakdownMapper;
 import uk.gov.justice.laa.bulkclaim.mapper.ClaimSummaryMapper;
-import uk.gov.justice.laa.dstew.payments.claimsdata.model.ClaimResponse;
-import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionResponse;
+import uk.gov.justice.laa.dstew.payments.claimsdata.model.*;
 
 /**
  * Controller for handling viewing a claim from a submission.
@@ -39,6 +42,7 @@ public final class ClaimDetailController {
   private final DataClaimsRestClient dataClaimsRestClient;
   private final ClaimSummaryMapper claimSummaryMapper;
   private final ClaimFeeCalculationBreakdownMapper claimFeeCalculationBreakdownMapper;
+  private final ClaimAssessmentSummaryMapper claimAssessmentSummaryMapper;
   private final SubmissionMessagesBuilder submissionMessagesBuilder;
 
   /**
@@ -110,8 +114,26 @@ public final class ClaimDetailController {
         claimFeeCalculationBreakdownMapper.toClaimFeeCalculationBreakdown(claimResponse));
     SubmissionResponse submissionResponse =
         dataClaimsRestClient.getSubmission(submissionId).block();
+
+
+      AssessmentResultSet assessmentResultSet = dataClaimsRestClient.getClaimAssessment(claimId, 0 ,5, "createdOn,desc").block();
+      List<AssessmentGet> assessments = assessmentResultSet.getAssessments().stream()
+              .filter(Objects::nonNull)
+              .filter(a -> a.getAssessmentType().equals(AssessmentType.ESCAPE_CASE_ASSESSMENT))
+              .toList();
+
+      AssessmentGet firstAssessment = assessments.getFirst();
+      model.addAttribute(
+              "assessedValues",
+              claimAssessmentSummaryMapper.toClaimAssessmentSummary(firstAssessment));
+
     String areaOfLaw = submissionResponse.getAreaOfLaw().getValue();
-    model.addAttribute("claimSummary", claimSummaryMapper.toClaimSummary(claimResponse, areaOfLaw));
+    String officeAccountNumber = submissionResponse.getOfficeAccountNumber();
+    OffsetDateTime submissionDate = submissionResponse.getSubmitted();
+    model.addAttribute(
+        "claimSummary",
+        claimSummaryMapper.toClaimSummary(
+            claimResponse, areaOfLaw, officeAccountNumber, submissionDate));
 
     final MessagesSummary messagesSummary =
         submissionMessagesBuilder.buildAllWarnings(submissionId, claimId);

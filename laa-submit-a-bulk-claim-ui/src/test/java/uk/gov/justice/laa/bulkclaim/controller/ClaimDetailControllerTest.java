@@ -10,6 +10,9 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static uk.gov.justice.laa.bulkclaim.constants.SessionConstants.CLAIM_ID;
 import static uk.gov.justice.laa.bulkclaim.constants.SessionConstants.SUBMISSION_ID;
 
+import java.math.BigDecimal;
+import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
 import java.util.UUID;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -24,6 +27,7 @@ import reactor.core.publisher.Mono;
 import uk.gov.justice.laa.bulkclaim.builder.SubmissionMessagesBuilder;
 import uk.gov.justice.laa.bulkclaim.client.DataClaimsRestClient;
 import uk.gov.justice.laa.bulkclaim.config.WebMvcTestConfig;
+import uk.gov.justice.laa.bulkclaim.dto.submission.claim.BulkClaimCostItem;
 import uk.gov.justice.laa.bulkclaim.dto.submission.claim.ClaimFeeCalculationBreakdown;
 import uk.gov.justice.laa.bulkclaim.dto.submission.claim.ClaimSummary;
 import uk.gov.justice.laa.bulkclaim.dto.submission.messages.MessageRow;
@@ -76,8 +80,15 @@ class ClaimDetailControllerTest {
     void shouldReturnExpectedResultWithDefaultTab() {
       UUID claimId = UUID.fromString("244fcb9f-50ab-4af8-b635-76bd30e0e97d");
       UUID submissionId = UUID.fromString("244fcb9f-50ab-4af8-b635-76bd30e0e97d");
+      String officeAccountNumber = "0P322F";
+      OffsetDateTime submitted =
+          OffsetDateTime.of(2025, 5, 5, 6, 52, 27, 954000000, ZoneOffset.UTC);
       SubmissionResponse submissionResponse =
-          SubmissionResponse.builder().areaOfLaw(AreaOfLaw.LEGAL_HELP).build();
+          SubmissionResponse.builder()
+              .areaOfLaw(AreaOfLaw.LEGAL_HELP)
+              .officeAccountNumber(officeAccountNumber)
+              .submitted(submitted)
+              .build();
       when(dataClaimsRestClient.getSubmission(submissionId))
           .thenReturn(Mono.just(submissionResponse));
 
@@ -85,10 +96,14 @@ class ClaimDetailControllerTest {
       when(dataClaimsRestClient.getSubmissionClaim(submissionId, claimId))
           .thenReturn(Mono.just(claimResponse));
 
-      when(claimSummaryMapper.toClaimSummary(claimResponse, AreaOfLaw.LEGAL_HELP.getValue()))
+      when(claimSummaryMapper.toClaimSummary(
+              claimResponse, AreaOfLaw.LEGAL_HELP.getValue(), officeAccountNumber, submitted))
           .thenReturn(ClaimSummary.builder().build());
       when(claimFeeCalculationBreakdownMapper.toClaimFeeCalculationBreakdown(claimResponse))
-          .thenReturn(ClaimFeeCalculationBreakdown.builder().build());
+          .thenReturn(
+              ClaimFeeCalculationBreakdown.builder()
+                  .vat(new BulkClaimCostItem(BigDecimal.valueOf(10), BigDecimal.valueOf(20)))
+                  .build());
 
       when(submissionMessagesBuilder.buildAllWarnings(submissionId, claimId))
           .thenReturn(
@@ -106,7 +121,8 @@ class ClaimDetailControllerTest {
           .hasViewName("pages/view-claim-detail");
 
       verify(claimSummaryMapper, times(1))
-          .toClaimSummary(claimResponse, AreaOfLaw.LEGAL_HELP.getValue());
+          .toClaimSummary(
+              claimResponse, AreaOfLaw.LEGAL_HELP.getValue(), officeAccountNumber, submitted);
     }
 
     @Test
