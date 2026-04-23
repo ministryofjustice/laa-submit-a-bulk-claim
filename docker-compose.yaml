@@ -29,9 +29,11 @@ services:
       REST_CLIENT_READ_TIMEOUT: ${REST_CLIENT_READ_TIMEOUT:-40000}
       REDIS_HOST: redis://redis:6379
       #SPRING_PROFILES_ACTIVE: github-test-runner
+      JAVA_TOOL_OPTIONS: -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005
     ports:
       - "8082:8082"
       - "8181:8081"
+      - "5005:5005"
     depends_on:
       - redis
 
