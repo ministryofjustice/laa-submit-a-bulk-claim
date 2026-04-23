@@ -2,6 +2,7 @@ package uk.gov.justice.laa.bulkclaim.validation;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
@@ -19,10 +20,11 @@ import uk.gov.justice.laa.bulkclaim.service.VirusCheckService;
  *
  * @author Jamie Briggs
  */
+@Profile("!github-test-runner")
 @Component
 @Slf4j
 @RequiredArgsConstructor
-public class BulkImportFileVirusValidator implements Validator {
+public class BulkImportFileVirusValidator implements FileFirusValidator {
 
   private final VirusCheckService virusCheckService;
 

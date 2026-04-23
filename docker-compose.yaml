@@ -28,11 +28,13 @@ services:
       REST_CLIENT_CONNECT_TIMEOUT: ${REST_CLIENT_CONNECT_TIMEOUT:-5000}
       REST_CLIENT_READ_TIMEOUT: ${REST_CLIENT_READ_TIMEOUT:-40000}
       REDIS_HOST: redis://redis:6379
+      #SPRING_PROFILES_ACTIVE: github-test-runner
     ports:
       - "8082:8082"
       - "8181:8081"
     depends_on:
       - redis
+
   claim-service:
     image: wiremock/wiremock:latest
     container_name: claim-service
@@ -50,6 +52,7 @@ services:
       - "8091:8080"
   # Follow guidance here to run this service via docker: https://github.com/ministryofjustice/laa-oidc-mock-server?tab=readme-ov-file#running-the-server-via-docker
   laa-mock-oidc-service:
+    container_name: oidc
     image: laa-oidc-mock-server:latest
     ports:
       - "9000:9000"

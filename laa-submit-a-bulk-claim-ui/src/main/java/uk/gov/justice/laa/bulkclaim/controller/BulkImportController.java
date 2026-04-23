@@ -25,7 +25,7 @@ import uk.gov.justice.laa.bulkclaim.dto.FileUploadForm;
 import uk.gov.justice.laa.bulkclaim.metrics.BulkClaimMetricService;
 import uk.gov.justice.laa.bulkclaim.util.OidcAttributeUtils;
 import uk.gov.justice.laa.bulkclaim.validation.BulkImportFileValidator;
-import uk.gov.justice.laa.bulkclaim.validation.BulkImportFileVirusValidator;
+import uk.gov.justice.laa.bulkclaim.validation.FileFirusValidator;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.CreateBulkSubmission201Response;
 
 /** Controller for handling the bulk upload requests. */
@@ -39,7 +39,7 @@ public class BulkImportController {
   private static final String UPLOAD_FAILED_CODE = "bulkImport.validation.uploadFailed";
 
   private final BulkImportFileValidator bulkImportFileValidator;
-  private final BulkImportFileVirusValidator bulkImportFileVirusValidator;
+  private final FileFirusValidator bulkImportFileVirusValidator;
   private final DataClaimsRestClient dataClaimsRestClient;
   private final OidcAttributeUtils oidcAttributeUtils;
   private final BulkClaimMetricService bulkClaimMetricService;
