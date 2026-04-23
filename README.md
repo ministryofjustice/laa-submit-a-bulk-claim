@@ -18,9 +18,11 @@ a lightweight web UI.
 - [Tech Stack](#tech-stack)
 - [Local Development](#local-development)
     - [Prerequisites](#prerequisites)
-    - [Set Local variables](#set-local-variables)
-    - [Configure External Dependencies locally](#configure-external-dependencies-locally)
-    - [Run the Application](#run-the-application)
+    - [Set Local Variables](#set-local-variables)
+    - [Authentication](#authentication)
+        - [SILAS](#silas)
+        - [OIDC Mock Server](#oidc-mock-server)
+    - [Running the Application](#running-the-application)
     - [Configuration](#configuration)
 - [Testing](#testing)
     - [Unit Tests](#unit-tests)
@@ -119,8 +121,7 @@ prek run --all-files
 - GitHub Packages credentials configured for the [
   `laa-ccms-spring-boot-gradle-plugin`](https://github.com/ministryofjustice/laa-ccms-spring-boot-common?tab=readme-ov-file#provide-your-repository-credentials)
 
-
-### Set Local variables
+### Set Local Variables
 
 The easiest method to set the local variables is the ask another developer for a copy of
 their `application-local.yaml` file, then you can set the Spring Profile to `local`.
@@ -140,7 +141,12 @@ The example access token aligns with the WireMock fixtures; supply a real token 
 non-mocked environments. Update `AUTH_*` and `SILAS_*` variables to match either SILAS sandbox
 credentials or the mock server claims.
 
-### Configure External Dependencies locally
+### Running the Application
+
+In all cases of running the application locally:
+
+- The UI is served on `http://localhost:8082`.
+- Management endpoints are exposed on `http://localhost:8083`.
 
 #### LAA Data Claims Parent
 
@@ -160,15 +166,29 @@ breakpoints and debug the application whilst it's running in docker:
     1. Host: `localhost`
     2. Port: `5005`
     3. Use module classpath: Select `laa-submit-a-bulk-claim`
+   
+![DebugJVMConfiguration.png](docs/images/DebugJVMConfiguration.png)
 
-##### Running SaBC via IntelliJ
+#### Running SaBC via IntelliJ
 
 Following the steps of running everything via the parent repository, you can run the SaBC UI via
-IntelliJ by stopping the SaBC docker container and running in IntelliJ instead. Properties required
+IntelliJ by stopping the SaBC docker container and running in IntelliJ instead by creating a Spring
+Boot Run Configuration. Properties required
 for local development can be found by requesting a copy of the `application-local.yaml` file from
 another developer.
 
-#### Authentication
+![IntelliJRunConfiguration.png](docs/images/IntelliJRunConfiguration.png)
+
+#### Running SaBc via CLI
+
+```sh
+./gradlew clean bootRun
+```
+
+- Use `SPRING_PROFILES_ACTIVE=local` if you maintain separate local overrides.
+
+### Authentication
+
 Two solutions exist for logging into the UI. The main method is via SILAS DEV, however you can also
 use the OIDC mock server. Both solutions require setting the following variables which can be gained
 from another developer:
@@ -187,13 +207,15 @@ spring:
           scope: ${SILAS_SCOPE}
 ```
 
-##### SILAS
+#### SILAS
+
 The main authentication method is to use SILAS DEV. To create an account on SILAS,
 go to the slack channel `#staff-identity-exteranl-authentication-service`. You can request the
 tenant ID and client ID from another developer. Once access has been provided, you should be able
 to login to the UI with the newly created account.
 
-##### OIDC Mock Server
+#### OIDC Mock Server
+
 Included in docker-compose as `laa-mock-oidc-service`. This is exposed on `http://oidc:9000`
 and align issuer/client details with your local Spring profile. This app is a Spring Authentication
 Server which is acting as a quick replacement for SILAS. It's mainly used by the E2E tests, but can
@@ -223,17 +245,6 @@ docker-compose up laa-mock-oidc-service
 
 Alternatively, you can use the SILAS sandbox. Ask another developer for details on how to
 create an account on SILAS for testing. This account can also be used in deployed environments.
-
-
-### Run the Application
-
-```sh
-./gradlew clean bootRun
-```
-
-- The UI is served on `http://localhost:8082`.
-- Management endpoints are exposed on `http://localhost:8083`.
-- Use `SPRING_PROFILES_ACTIVE=local` if you maintain separate local overrides.
 
 ### Configuration
 
