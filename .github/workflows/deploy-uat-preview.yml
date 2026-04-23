@@ -26,6 +26,23 @@ jobs:
           echo "preview_version=${version}-${commit_hash}" >> "$GITHUB_OUTPUT"
           echo "Preview version: submit-a-bulk-claim-${version}-${commit_hash}"
 
+  test-smoke:
+    name: Test @smoke
+    needs: [ define-preview-version ]
+    uses: ministryofjustice/bulk-submission-and-fee-scheme-tests-/.github/workflows/trigger-e2e-dispatch.yml@bb8c62731903909f477ced8396ec5b8e41c8c62b # 17/04/2026
+    permissions:
+      contents: read
+      id-token: write
+    with:
+      sabc_image_tag: submit-a-bulk-claim-${{ needs.define-preview-version.outputs.preview_version }}
+      test_annotation: "@smoke"
+      pr_number: ${{ github.event.number }}
+      github_app_organisation: 'ministryofjustice'
+      target_ref: 'feature/run-e2e-in-docker'
+    secrets:
+      github_app_id: ${{ vars.LAA_CCMS_CAAB_SERVICE_APP_ID }}
+      github_app_private_key: ${{ secrets.LAA_CCMS_CAAB_SERVICE_KEY }}
+
   build-and-test:
     needs: [ define-preview-version ]
     uses: ministryofjustice/laa-ccms-common-workflows/.github/workflows/gradle-build-and-publish.yml@v2
@@ -137,6 +154,8 @@ jobs:
       ecr_region: ${{ vars.LAA_SUBMIT_A_BULK_CLAIM_ECR_REGION }}
       ecr_role_to_assume: ${{ secrets.LAA_SUBMIT_A_BULK_CLAIM_ECR_ROLE_TO_ASSUME }}
       snyk_token: ${{ secrets.SNYK_TOKEN }}
+
+
 
   deploy-uat-preview:
     needs:

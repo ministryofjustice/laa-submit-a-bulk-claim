@@ -87,6 +87,18 @@ a lightweight web UI.
 
 ### Configure External Dependencies by running locally
 
+#### LAA Data Claims Parent
+
+The easiest way to run all of the applications locally is to run via
+the [laa-data-claims-parent](https://github.com/ministryofjustice/laa-data-claims-parent/blob/main/README.md)
+repository. This will run all of the services via Docker Compose. To do any development on this
+project,
+you can just run this Spring Boot application via IntelliJ and not run it via Docker Compose
+following
+the guidance on the `laa-data-claims-parent` README.
+
+#### Running everything via IDE
+
 1. **Clone the repository**
    ```sh
    git clone git@github.com:ministryofjustice/submit-a-bulk-claim.git
@@ -105,13 +117,29 @@ a lightweight web UI.
     - [Fee Scheme API README.md](https://github.com/ministryofjustice/laa-fee-scheme-api/blob/main/README.md)
 
 4. **Setup authentication**
+Included in docker-compose as `laa-mock-oidc-service`. This is exposed on `http://oidc:9000`
+and align issuer/client details with your local Spring profile.
 
-If you wish to have a mocked OAuth solution, you can run the local OIDC mock server. This is
-acheived by running the following:
+This is achieved by building the laa-mock-oidc-service by cloning the repo and following it's
+project
+[README.md](https://github.com/ministryofjustice/laa-oidc-mock-server/blob/main/README.md).
 
-  ```shell
-  docker-compose up laa-mock-oidc-service
-  ```
+If you wish to use the OIDC mock server, and are running the SaBC UI also within a docker container,
+you will need to map the host within `/etc/hosts` via `sudo nano /etc/hosts` to ensure that the
+internal and external host names for the OIDC mock server are the same. Just add the following line
+to create a host alias:
+
+```text
+127.0.0.1 oidc
+```
+
+This allows both docker and your local machine to use `http://oidc:9000` as the OIDC issuer, rather
+than having a mismatch between the two.
+
+To run the OIDC mock server, run the following command:
+```sh
+docker-compose up laa-mock-oidc-service
+```
 
 Alternatively, you can use the SILAS sandbox. Ask another developer for details on how to
 create an account on SILAS for testing. This account can also be used in deployed environments.
@@ -135,50 +163,6 @@ Set the following environment variables, and application.yaml will pick them up:
 The example access token aligns with the WireMock fixtures; supply a real token when targeting
 non-mocked environments. Update `AUTH_*` and `SILAS_*` variables to match either SILAS sandbox
 credentials or the mock server claims.
-
-### Configure External Dependencies using Wiremock and Mock OIDC
-
-1. **Clone the repository**
-   ```sh
-   git clone git@github.com:ministryofjustice/submit-a-bulk-claim.git
-   cd submit-a-bulk-claim
-   ```
-2. **Start Data Stewardship WireMocks**
-   ```sh
-    docker-compose up claim-service
-   ```
-
-WireMock listens on `http://localhost:8091` using stubs from `wiremock/mappings/claim-service`.
-
-3. **Run the SILAS OIDC mock**
-
-Included in docker-compose as `laa-mock-oidc-service`. This is exposed on `http://localhost:9000`
-and align issuer/client details with your local Spring profile.
-
-More details
-here: [laa-oidc-mock-server](https://github.com/ministryofjustice/laa-oidc-mock-server#running-the-server-via-docker).
-
-4. **Set Local variables**
-
-The easiest method to set the local variables is the ask another developer for a copy of
-their `application-local.yaml` file, then you can set the Spring Profile to `local`.
-
-Alternatively set the following environment variables, and application.yaml will pick them up:
-
-  ```sh
-  export CLAIM_API_URL=http://localhost:8091
-  export CLAIMS_API_ACCESS_TOKEN=dummy-token
-  export REST_CLIENT_CONNECT_TIMEOUT=5000
-  export REST_CLIENT_READ_TIMEOUT=40000
-  export UPLOAD_MAX_FILE_SIZE=10MB
-  export SERVER_MAX_FILE_SIZE=10MB
-  ```
-
-The example access token aligns with the WireMock fixtures; supply a real token when targeting
-non-mocked environments.
-
-Update `AUTH_*` and `SILAS_*` variables to match either SILAS sandbox credentials or the mock
-server claims.
 
 ### Commit hooks
 Run scripts/setup-hooks.sh to install pre-commit hooks for Git. This will install prek pre commit hook into git, which helps to:
@@ -223,6 +207,7 @@ prek run --all-files
 ## Testing
 
 ### Unit Tests
+
 ```sh
 ./gradlew test
 ```
@@ -247,8 +232,10 @@ prek run --all-files
   patterns, and debugging tips.
 
 ### E2E Tests
+
 E2E tests are designed to run in UAT environments. They can be found on GitHub
-within the [bulk-submission-and-fee-scheme-tests](https://github.com/ministryofjustice/bulk-submission-and-fee-scheme-tests-)
+within
+the [bulk-submission-and-fee-scheme-tests](https://github.com/ministryofjustice/bulk-submission-and-fee-scheme-tests-)
 repository.
 
 ## Deployment
@@ -256,7 +243,8 @@ repository.
 - GitHub Actions pipelines under `.github/workflows` build, scan, and publish Docker images.
     - `build-main.yml` tags merged changes on `main` and publishes artifacts.
     - `deploy-main.yml` produces release images, pushes to ECR, and triggers helm deployments.
-- Kubernetes manifests are defined in `.helm/submit-a-bulk-claim/` with environment-specific overrides under
+- Kubernetes manifests are defined in `.helm/submit-a-bulk-claim/` with environment-specific
+  overrides under
   `.helm/submit-a-bulk-claim/values/`.
 - Deployments run on the MoJ Cloud Platform with ModSec ingress and pod security settings defined in
   chart values.
