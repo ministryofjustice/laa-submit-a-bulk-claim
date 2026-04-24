@@ -22,3 +22,8 @@ app:
     access-token: e37da3d4-b8bc-4204-9528-deb6fa3bb39d
   submission:
     minimum-period: JAN-2024
+
+links:
+  laa-homepage: https://www.gov.uk/government/organisations/legal-aid-agency
+  bulk-upload-guidance: https://www.gov.uk/guidance/submit-a-bulk-claim-sabc
+  bulk-upload-amendments: https://www.gov.uk/guidance/submit-a-contracted-work-and-administration-cwa-claim-online#amendments-to-submitted-claims
