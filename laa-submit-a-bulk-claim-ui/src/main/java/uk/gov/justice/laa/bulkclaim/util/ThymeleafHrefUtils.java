@@ -19,7 +19,7 @@ public class ThymeleafHrefUtils {
    * @param params The key-value pairs of query parameters.
    * @return The built URL.
    */
-  public String build(String baseUrl, String... params) {
+  public String build(String baseUrl, Object... params) {
     if (baseUrl == null || baseUrl.isEmpty()) {
       throw new IllegalArgumentException("Base URL cannot be null or empty");
     }
@@ -30,14 +30,28 @@ public class ThymeleafHrefUtils {
     UriComponentsBuilder uriComponentsBuilder = UriComponentsBuilder.fromUriString(baseUrl);
 
     for (int i = 0; i < params.length; i += 2) {
-      String key = params[i];
-      String value = params[i + 1];
+      String key = params[i].toString();
+      Object value = params[i + 1];
 
-      if (value != null && !value.isEmpty()) {
-        uriComponentsBuilder.replaceQueryParam(key, value);
+      if (value instanceof Iterable<?> values) {
+        uriComponentsBuilder.replaceQueryParam(key);
+        values.forEach(item -> addQueryParamValue(uriComponentsBuilder, key, item, true));
+      } else {
+        addQueryParamValue(uriComponentsBuilder, key, value, false);
       }
     }
 
     return uriComponentsBuilder.build().toUriString();
+  }
+
+  private void addQueryParamValue(
+      UriComponentsBuilder uriComponentsBuilder, String key, Object value, boolean append) {
+    if (value != null && !value.toString().isEmpty()) {
+      if (append) {
+        uriComponentsBuilder.queryParam(key, value);
+      } else {
+        uriComponentsBuilder.replaceQueryParam(key, value);
+      }
+    }
   }
 }

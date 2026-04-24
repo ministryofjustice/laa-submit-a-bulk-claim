@@ -31,3 +31,8 @@ app:
 rest-client:
   connect-timeout: 5
   read-timeout: 1
+
+links:
+  laa-homepage: https://www.gov.uk/government/organisations/legal-aid-agency
+  bulk-upload-guidance: https://www.gov.uk/guidance/submit-a-bulk-claim-sabc
+  bulk-upload-amendments: https://www.gov.uk/guidance/submit-a-contracted-work-and-administration-cwa-claim-online#amendments-to-submitted-claims

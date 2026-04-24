@@ -30,7 +30,7 @@ import uk.gov.justice.laa.bulkclaim.dto.submission.SubmissionSummary;
 import uk.gov.justice.laa.bulkclaim.dto.submission.claim.SubmissionClaimsDetails;
 import uk.gov.justice.laa.bulkclaim.dto.submission.messages.MessagesSummary;
 import uk.gov.justice.laa.bulkclaim.exception.SubmitBulkClaimException;
-import uk.gov.justice.laa.bulkclaim.util.ThymeleafHrefUtils;
+import uk.gov.justice.laa.bulkclaim.util.PaginationLinksBuilder;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.AreaOfLaw;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.Page;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionBase;
@@ -55,6 +55,7 @@ public class SubmissionDetailController {
   private final SubmissionMessagesBuilder submissionMessagesBuilder;
   private final SubmissionMatterStartsDetailsBuilder submissionMatterStartsDetailsBuilder;
   private final DataClaimsRestClient dataClaimsRestClient;
+  private final PaginationLinksBuilder paginationLinksBuilder;
 
   private static final int DEFAULT_PAGE_SIZE = 10;
 
@@ -137,7 +138,8 @@ public class SubmissionDetailController {
     // Adding page and messagesPage to model
     model.addAttribute("page", page);
     model.addAttribute("messagesPage", messagesPage);
-    model.addAttribute("ViewSubmissionNavigationTab", ViewSubmissionNavigationTab.class);
+    model.addAttribute("claimDetailsTab", ViewSubmissionNavigationTab.CLAIM_DETAILS.toString());
+    model.addAttribute("currentSort", sort);
     final SubmissionResponse submissionResponse =
         dataClaimsRestClient
             .getSubmission(submissionId)
@@ -178,6 +180,18 @@ public class SubmissionDetailController {
     SubmissionClaimsDetails claimDetails =
         submissionClaimDetailsBuilder.build(submissionResponse, page, DEFAULT_PAGE_SIZE, sort);
     model.addAttribute("claimDetails", claimDetails);
+    model.addAttribute(
+        "claimDetailsPaginationLinks",
+        paginationLinksBuilder.build(
+            "/view-submission-detail#claims-table",
+            claimDetails.pagination(),
+            "page",
+            SUBMISSION_ID,
+            submissionId,
+            "navTab",
+            ViewSubmissionNavigationTab.CLAIM_DETAILS,
+            "sort",
+            sort));
 
     if (claimDetails.totalClaimValue() != null) {
       submissionSummary =
@@ -195,6 +209,16 @@ public class SubmissionDetailController {
         submissionMessagesBuilder.build(
             submissionId, null, ValidationMessageType.WARNING, messagesPage, DEFAULT_PAGE_SIZE);
     model.addAttribute("messagesSummary", messagesSummary);
+    model.addAttribute(
+        "messagesPaginationLinks",
+        paginationLinksBuilder.build(
+            "/view-submission-detail",
+            messagesSummary.pagination(),
+            "messagesPage",
+            SUBMISSION_ID,
+            submissionId,
+            "navTab",
+            ViewSubmissionNavigationTab.CLAIM_MESSAGES));
 
     List<SubmissionMatterStartsRow> matterStartsDetails =
         submissionMatterStartsDetailsBuilder.build(submissionResponse);
@@ -224,6 +248,14 @@ public class SubmissionDetailController {
     MessagesSummary messagesSummary =
         submissionMessagesBuilder.buildErrors(submissionId, page, DEFAULT_PAGE_SIZE);
     model.addAttribute("messagesSummary", messagesSummary);
+    model.addAttribute(
+        "messagesPaginationLinks",
+        paginationLinksBuilder.build(
+            "/view-submission-detail",
+            messagesSummary.pagination(),
+            "page",
+            SUBMISSION_ID,
+            submissionId));
 
     List<SubmissionMatterStartsRow> matterStartsDetails =
         submissionMatterStartsDetailsBuilder.build(submissionResponse);
@@ -241,7 +273,7 @@ public class SubmissionDetailController {
 
     model.addAttribute("submissionSummary", submissionSummary);
     model.addAttribute("submissionStatus", submissionResponse.getStatus());
-    model.addAttribute("navTab", navigationTab);
+    model.addAttribute("navTab", navigationTab.toString());
     model.addAttribute(SUBMISSION_ID, submissionId);
   }
 

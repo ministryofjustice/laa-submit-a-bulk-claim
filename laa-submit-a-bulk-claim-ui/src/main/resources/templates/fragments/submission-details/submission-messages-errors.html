@@ -33,7 +33,7 @@
       </div>
 
       <nav
-          th:replace="~{fragments/pagination :: pagination(currentUrl='/view-submission-detail', page=${messagesSummary.pagination})}"></nav>
+          th:replace="~{fragments/pagination :: pagination(page=${messagesSummary.pagination}, links=${messagesPaginationLinks})}"></nav>
     </div>
   </th:block>
 </th:block>

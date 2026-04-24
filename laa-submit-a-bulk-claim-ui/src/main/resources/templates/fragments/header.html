@@ -74,8 +74,7 @@
       <div class="moj-header__content" sec:authorize="isAuthenticated()">
         <nav class="moj-header__navigation" aria-label="Account navigation">
           <ul class="moj-header__navigation-list">
-            <li class="moj-header__navigation-item" id="logged-in-user"
-                sec:authentication="principal.attributes['preferred_username']">
+            <li class="moj-header__navigation-item" id="logged-in-user" th:text="${authenticatedUser.preferredUsername}"></li>
             <li class="moj-header__navigation-item header-navigation-link">
               <form th:action="@{/logout}" method="post">
                 <button type="submit" class="sign-in-button govuk-!-font-weight-bold"
@@ -103,9 +102,9 @@
     </div>
     <nav class="moj-organisation-nav" aria-label="Organisation switcher" sec:authorize="isAuthenticated()">
         <div class="moj-organisation-nav__title">
-        <span sec:authentication="principal.attributes['FIRM_NAME']"></span>
+        <span th:text="${authenticatedUser.firmName}"></span>
         -
-        <span sec:authentication="principal.attributes['FIRM_CODE']"></span>
+        <span th:text="${authenticatedUser.firmCode}"></span>
         </div>
     </nav>
   </div>

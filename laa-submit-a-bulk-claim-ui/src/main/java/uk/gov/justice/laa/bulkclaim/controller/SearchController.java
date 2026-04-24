@@ -29,12 +29,16 @@ import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.util.UriComponentsBuilder;
 import uk.gov.justice.laa.bulkclaim.client.DataClaimsRestClient;
 import uk.gov.justice.laa.bulkclaim.dto.SubmissionOutcomeFilter;
+import uk.gov.justice.laa.bulkclaim.dto.SubmissionSearchResultRow;
 import uk.gov.justice.laa.bulkclaim.dto.SubmissionsSearchForm;
 import uk.gov.justice.laa.bulkclaim.util.OidcAttributeUtils;
+import uk.gov.justice.laa.bulkclaim.util.PaginationLinksBuilder;
 import uk.gov.justice.laa.bulkclaim.util.PaginationUtil;
+import uk.gov.justice.laa.bulkclaim.util.SubmissionPeriodUtil;
 import uk.gov.justice.laa.bulkclaim.validation.SubmissionSearchValidator;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.AreaOfLaw;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.Page;
+import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionBase;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionStatus;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionsResultSet;
 
@@ -49,6 +53,8 @@ public class SearchController {
   private final SubmissionSearchValidator submissionSearchValidator;
   private final PaginationUtil paginationUtil;
   private final OidcAttributeUtils oidcAttributeUtils;
+  private final SubmissionPeriodUtil submissionPeriodUtil;
+  private final PaginationLinksBuilder paginationLinksBuilder;
 
   public static final String SUBMISSION_SEARCH_FORM = "submissionsSearchForm";
   private static final int DEFAULT_PAGE = 0;
@@ -153,6 +159,7 @@ public class SearchController {
         new SubmissionsSearchForm(
             trimToNull(submissionPeriod), areaOfLaw, offices, submissionStatus);
     model.addAttribute(SUBMISSION_SEARCH_FORM, submissionsSearchForm);
+    model.addAttribute("currentSort", sort);
 
     List<String> userOffices = oidcAttributeUtils.getUserOffices(oidcUser);
     model.addAttribute("userOffices", userOffices);
@@ -185,6 +192,21 @@ public class SearchController {
           paginationUtil.fromSubmissionsResultSet(submissionsResults, page, DEFAULT_PAGE_SIZE);
       model.addAttribute("pagination", pagination);
       model.addAttribute("submissions", submissionsResults);
+      model.addAttribute("submissionRows", toSubmissionRows(submissionsResults));
+      model.addAttribute(
+          "searchPaginationLinks",
+          paginationLinksBuilder.build(
+              "/submissions/search/results",
+              pagination,
+              "page",
+              "submissionPeriod",
+              submissionsSearchForm.submissionPeriod(),
+              "areaOfLaw",
+              submissionsSearchForm.areaOfLaw(),
+              "offices",
+              submissionsSearchForm.offices(),
+              "submissionStatuses",
+              submissionsSearchForm.submissionStatuses()));
       session.setAttribute("submissions", submissionsResults);
 
       return "pages/submissions-search-results";
@@ -216,6 +238,22 @@ public class SearchController {
 
   private String trimToNull(String value) {
     return StringUtils.hasText(value) ? value.trim() : null;
+  }
+
+  private List<SubmissionSearchResultRow> toSubmissionRows(
+      SubmissionsResultSet submissionsResults) {
+    if (submissionsResults == null || submissionsResults.getContent() == null) {
+      return List.of();
+    }
+
+    return submissionsResults.getContent().stream().map(this::toSubmissionRow).toList();
+  }
+
+  private SubmissionSearchResultRow toSubmissionRow(SubmissionBase submission) {
+    return new SubmissionSearchResultRow(
+        submission,
+        submissionPeriodUtil.getSubmissionPeriod(submission),
+        submissionPeriodUtil.getSortOrderFromSubmissionPeriod(submission));
   }
 
   private static void addQueryParamIfNotEmptyList(
