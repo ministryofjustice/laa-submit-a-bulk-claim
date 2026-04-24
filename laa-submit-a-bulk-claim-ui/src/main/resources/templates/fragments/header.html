@@ -68,7 +68,7 @@
 
         </svg>
         <a class="moj-header__link moj-header__link--organisation-name"
-           th:href="${@environment.getProperty('links.laa-homepage')}"
+           th:href="${laaHomepageLink}"
            th:text="#{service.provider}"/>
       </div>
       <div class="moj-header__content" sec:authorize="isAuthenticated()">
@@ -78,7 +78,6 @@
                 sec:authentication="principal.attributes['preferred_username']">
             <li class="moj-header__navigation-item header-navigation-link">
               <form th:action="@{/logout}" method="post">
-                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
                 <button type="submit" class="sign-in-button govuk-!-font-weight-bold"
                         th:text="#{header.signOut}">Sign out
                 </button>
