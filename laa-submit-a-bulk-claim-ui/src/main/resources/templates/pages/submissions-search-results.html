@@ -31,7 +31,7 @@
             th:text="#{search.result.heading(${submissions.totalElements})}">
         </h2>
         <br>
-        <div class="upload-table" th:if="${!#lists.isEmpty(submissions.content)}">
+        <div class="upload-table" th:if="${!#lists.isEmpty(submissionRows)}">
           <table class="govuk-table">
             <thead class="govuk-table__head">
             <tr class="govuk-table__row">
@@ -54,7 +54,8 @@
             </thead>
             <tbody class="govuk-table__body">
 
-            <tr class="govuk-table__row" th:each="submission : ${submissions.getContent}">
+            <tr class="govuk-table__row" th:each="submissionRow : ${submissionRows}"
+                th:with="submission=${submissionRow.submission}">
               <td class="govuk-table__cell">
                 <a class="govuk-link--no-visited-state"
                    th:href="@{/submission/{submission_ref}(submission_ref=${submission.getSubmissionId})}"
@@ -70,18 +71,14 @@
                   th:text="${submission.getAreaOfLaw != null ? #strings.capitalize(#strings.toLowerCase(submission.getAreaOfLaw)) : '-' }"></td>
 
               <td class="govuk-table__cell"
-                  th:data-sort-value="${@submissionPeriodUtil.getSortOrderFromSubmissionPeriod(submission)}"
-                  th:text="${@submissionPeriodUtil.getSubmissionPeriod(submission)}"></td>
+                  th:data-sort-value="${submissionRow.submissionPeriodSortValue}"
+                  th:text="${submissionRow.submissionPeriod}"></td>
               <td class="govuk-table__cell" th:text="${submission.getStatus != null ?
                              #strings.replace(#strings.capitalize(#strings.toLowerCase(submission.getStatus)), '_', ' ') : '-' }"></td>
             </tr>
             </tbody>
           </table>
-          <nav th:replace="~{fragments/pagination :: pagination(currentUrl='/submissions/search/results', page=${pagination},
-                              submissionPeriod=${submissionsSearchForm.submissionPeriod()},
-                              areaOfLaw=${submissionsSearchForm.areaOfLaw()},
-                              offices=${submissionsSearchForm.offices()},
-                              submissionStatuses=${submissionsSearchForm.submissionStatuses()})}"></nav>
+          <nav th:replace="~{fragments/pagination :: pagination(page=${pagination}, links=${searchPaginationLinks})}"></nav>
         </div>
 
       </div>

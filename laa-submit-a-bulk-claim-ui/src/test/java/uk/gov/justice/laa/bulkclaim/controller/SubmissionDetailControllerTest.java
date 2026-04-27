@@ -43,7 +43,9 @@ import uk.gov.justice.laa.bulkclaim.dto.submission.claim.SubmissionClaimRowCosts
 import uk.gov.justice.laa.bulkclaim.dto.submission.claim.SubmissionClaimsDetails;
 import uk.gov.justice.laa.bulkclaim.dto.submission.messages.MessagesSource;
 import uk.gov.justice.laa.bulkclaim.dto.submission.messages.MessagesSummary;
+import uk.gov.justice.laa.bulkclaim.util.PaginationLinksBuilder;
 import uk.gov.justice.laa.bulkclaim.util.PaginationUtil;
+import uk.gov.justice.laa.bulkclaim.util.ThymeleafHrefUtils;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.AreaOfLaw;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.Page;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionBase;
@@ -54,7 +56,7 @@ import uk.gov.justice.laa.dstew.payments.claimsdata.model.ValidationMessageType;
 
 @WebMvcTest(SubmissionDetailController.class)
 @AutoConfigureMockMvc
-@Import(WebMvcTestConfig.class)
+@Import({WebMvcTestConfig.class, PaginationLinksBuilder.class, ThymeleafHrefUtils.class})
 @DisplayName("Submission detail controller test")
 class SubmissionDetailControllerTest {
 
@@ -331,7 +333,7 @@ class SubmissionDetailControllerTest {
     @DisplayName("Should display voided tag for voided claim in claims table")
     void shouldDisplayVoidedTagForVoidedClaimInClaimsTable() {
       UUID submissionReference = UUID.fromString("bceac49c-d756-4e05-8e28-3334b84b6fe8");
-      Page pagination = Page.builder().totalPages(1).totalElements(1).number(0).size(10).build();
+      Page pagination = Page.builder().totalPages(3).totalElements(21).number(0).size(10).build();
       SubmissionResponse submissionResponse =
           SubmissionResponse.builder()
               .submissionId(submissionReference)

@@ -1,5 +1,5 @@
 <th:block th:fragment="submission-messages-errors"
-          th:if="${messagesSummary.messagesSource == T(uk.gov.justice.laa.bulkclaim.dto.submission.messages.MessagesSource).SUBMISSION}">
+          th:if="${messagesSummary.messagesSource.toString() == 'SUBMISSION'}">
   <th:block th:if="${messagesSummary != null}">
     <div class="govuk-grid-column-full">
       <h2 class="govuk-heading-m" id="messages-errors-heading"
@@ -33,7 +33,7 @@
       </div>
 
       <nav
-          th:replace="~{fragments/pagination :: pagination(currentUrl='/view-submission-detail', page=${messagesSummary.pagination})}"></nav>
+          th:replace="~{fragments/pagination :: pagination(page=${messagesSummary.pagination}, links=${messagesPaginationLinks})}"></nav>
     </div>
   </th:block>
 </th:block>

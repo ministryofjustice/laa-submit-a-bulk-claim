@@ -1,6 +1,6 @@
 <th:block th:fragment="claim-messages-warnings"
   th:with="pageVarName=${pageVarName?:'page'}">
-  <th:block th:if="${navTab.toString() == 'CLAIM_MESSAGES' and messagesSummary != null}">
+  <th:block th:if="${navTab == 'CLAIM_MESSAGES' and messagesSummary != null}">
     <!--/*@thymesVar id="messagesSummary" type="uk.gov.justice.laa.bulkclaim.dto.submission.messages.MessagesSummary"*/-->
     <div class="govuk-grid-column-full">
       <h2 class="govuk-heading-m" id="messages"
@@ -197,7 +197,7 @@
       </div>
 
       <nav
-          th:replace="~{fragments/pagination :: pagination(currentUrl='/view-submission-detail?navTab=CLAIM_MESSAGES', page=${messagesSummary.pagination}, pageVarName=${pageVarName})}"></nav>
+          th:replace="~{fragments/pagination :: pagination(page=${messagesSummary.pagination}, links=${messagesPaginationLinks})}"></nav>
     </div>
   </th:block>
 </th:block>

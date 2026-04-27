@@ -1,5 +1,5 @@
 <th:block th:fragment="claim-messages-errors"
-          th:if="${messagesSummary.messagesSource == T(uk.gov.justice.laa.bulkclaim.dto.submission.messages.MessagesSource).CLAIM}">
+          th:if="${messagesSummary.messagesSource.toString() == 'CLAIM'}">
   <!--/*@thymesVar id="messagesSummary" type="uk.gov.justice.laa.bulkclaim.dto.submission.messages.MessagesSummary"*/-->
   <th:block th:if="${messagesSummary != null}">
     <div class="govuk-grid-column-full">
@@ -168,7 +168,7 @@
       </div>
 
       <nav
-          th:replace="~{fragments/pagination :: pagination(currentUrl='/view-submission-detail', page=${messagesSummary.pagination})}"></nav>
+          th:replace="~{fragments/pagination :: pagination(page=${messagesSummary.pagination}, links=${messagesPaginationLinks})}"></nav>
     </div>
   </th:block>
 </th:block>

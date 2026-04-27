@@ -89,6 +89,14 @@ public final class ClaimDetailController {
     model.addAttribute("page", page);
     model.addAttribute("messagesPage", messagesPage);
     model.addAttribute("navigationTab", navigationTab.toString());
+    model.addAttribute(
+        "viewSubmissionBackLink",
+        UriComponentsBuilder.fromPath("/submission/{submissionId}")
+            .queryParam("page", page)
+            .queryParam("navTab", navigationTab.toString())
+            .queryParam("messagesPage", messagesPage)
+            .buildAndExpand(submissionId)
+            .toUriString());
 
     ClaimResponse claimResponse =
         dataClaimsRestClient
