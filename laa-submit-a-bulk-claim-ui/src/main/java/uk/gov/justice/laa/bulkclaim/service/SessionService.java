@@ -5,6 +5,7 @@ import org.springframework.data.redis.core.ScanOptions;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 
+/** Service class for counting number of active sessions. */
 @Service
 public class SessionService {
   private final StringRedisTemplate redisTemplate;
