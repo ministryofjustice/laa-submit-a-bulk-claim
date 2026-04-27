@@ -21,11 +21,11 @@
     </div>
     <div class="moj-alert__content">
       <h2 class="moj-alert__heading"
-          th:if="${messagesSummary.messagesSource == CLAIM}"
+          th:if="${messagesSummary.messagesSource.toString() == 'CLAIM'}"
           th:text="#{submission.claim.errors.banner.title(${messagesSummary.totalClaimsWithErrors()})}">
       </h2>
       <h2 class="moj-alert__heading"
-          th:if="${messagesSummary.messagesSource == SUBMISSION}"
+          th:if="${messagesSummary.messagesSource.toString() == 'SUBMISSION'}"
           th:text="#{submission.errors.banner.title(${messagesSummary.totalMessageCount()})}">
       </h2>
       <p class="govuk-body"
