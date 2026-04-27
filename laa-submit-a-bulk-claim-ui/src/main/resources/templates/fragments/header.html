@@ -68,15 +68,17 @@
 
         </svg>
         <a class="moj-header__link moj-header__link--organisation-name"
-           th:href="${laaHomepageLink}"
+          th:href="${laaHomepageLink}"
            th:text="#{service.provider}"/>
       </div>
       <div class="moj-header__content" sec:authorize="isAuthenticated()">
         <nav class="moj-header__navigation" aria-label="Account navigation">
           <ul class="moj-header__navigation-list">
-            <li class="moj-header__navigation-item" id="logged-in-user" th:text="${authenticatedUser.preferredUsername}"></li>
+            <li class="moj-header__navigation-item" id="logged-in-user"
+                sec:authentication="principal.attributes['preferred_username']">
             <li class="moj-header__navigation-item header-navigation-link">
               <form th:action="@{/logout}" method="post">
+                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
                 <button type="submit" class="sign-in-button govuk-!-font-weight-bold"
                         th:text="#{header.signOut}">Sign out
                 </button>
@@ -102,9 +104,9 @@
     </div>
     <nav class="moj-organisation-nav" aria-label="Organisation switcher" sec:authorize="isAuthenticated()">
         <div class="moj-organisation-nav__title">
-        <span th:text="${authenticatedUser.firmName}"></span>
+        <span sec:authentication="principal.attributes['FIRM_NAME']"></span>
         -
-        <span th:text="${authenticatedUser.firmCode}"></span>
+        <span sec:authentication="principal.attributes['FIRM_CODE']"></span>
         </div>
     </nav>
   </div>
