@@ -9,11 +9,11 @@ import uk.gov.justice.laa.bulkclaim.service.SessionService;
 @Configuration
 public class MetricsConfig {
 
-    @Bean
-    public Gauge activeSessionsGauge(MeterRegistry registry, SessionService sessionService) {
-        return Gauge.builder(
-                        "active.sessions.count", sessionService, SessionService::getActiveSessionCount)
-                .description("Number of active sessions")
-                .register(registry);
-    }
+  @Bean
+  public Gauge activeSessionsGauge(MeterRegistry registry, SessionService sessionService) {
+    return Gauge.builder(
+            "active.sessions.count", sessionService, SessionService::getActiveSessionCount)
+        .description("Number of active sessions")
+        .register(registry);
+  }
 }

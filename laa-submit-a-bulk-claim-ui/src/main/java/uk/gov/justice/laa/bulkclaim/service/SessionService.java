@@ -7,30 +7,32 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class SessionService {
-    private final StringRedisTemplate redisTemplate;
+  private final StringRedisTemplate redisTemplate;
 
-    public SessionService(StringRedisTemplate redisTemplate) {
-        this.redisTemplate = redisTemplate;
+  public SessionService(StringRedisTemplate redisTemplate) {
+    this.redisTemplate = redisTemplate;
+  }
+
+  public int getActiveSessionCount() {
+    return countSessions();
+  }
+
+  private int countSessions() {
+    ScanOptions options =
+        ScanOptions.scanOptions()
+            .match("submit-a-bulk-claim:session:sessions:*")
+            .count(1000)
+            .build();
+
+    int count = 0;
+
+    try (Cursor<byte[]> cursor =
+        redisTemplate.getConnectionFactory().getConnection().keyCommands().scan(options)) {
+      while (cursor.hasNext()) {
+        cursor.next();
+        count++;
+      }
     }
-
-    public int getActiveSessionCount() {
-        System.out.println("HEEE " + countSessions());
-        return countSessions();
-    }
-
-    private int countSessions() {
-        ScanOptions options =
-                ScanOptions.scanOptions().match("submit-a-bulk-claim:session:sessions:*").count(1000).build();
-
-        int count = 0;
-
-        try (Cursor<byte[]> cursor =
-                     redisTemplate.getConnectionFactory().getConnection().keyCommands().scan(options)) {
-            while (cursor.hasNext()) {
-                cursor.next();
-                count++;
-            }
-        }
-        return count;
-    }
+    return count;
+  }
 }
