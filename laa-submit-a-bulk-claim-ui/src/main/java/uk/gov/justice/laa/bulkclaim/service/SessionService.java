@@ -24,7 +24,6 @@ public class SessionService {
             .match("submit-a-bulk-claim:session:sessions:*")
             .count(1000)
             .build();
-
     int count = 0;
 
     try (Cursor<byte[]> cursor =
