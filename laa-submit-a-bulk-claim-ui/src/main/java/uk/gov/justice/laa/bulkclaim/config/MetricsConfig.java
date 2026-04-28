@@ -6,9 +6,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import uk.gov.justice.laa.bulkclaim.service.SessionService;
 
-/**
- * Config class for metrics.
- * */
+/** Config class for metrics. */
 @Configuration
 public class MetricsConfig {
 
