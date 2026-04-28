@@ -10,12 +10,11 @@ import uk.gov.justice.laa.bulkclaim.service.SessionService;
 @Configuration
 public class MetricsConfig {
 
-    /**
-     *
-      * @param registry for the meter registry used to register the gauge
-     * @param sessionService the service providing session count
-     * @return a gauge representing active sessions
-     */
+  /**
+   * @param registry for the meter registry used to register the gauge
+   * @param sessionService the service providing session count
+   * @return a gauge representing active sessions
+   */
   @Bean
   public Gauge activeSessionsGauge(MeterRegistry registry, SessionService sessionService) {
     return Gauge.builder(
