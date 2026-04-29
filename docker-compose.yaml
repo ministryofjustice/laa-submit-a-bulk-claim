@@ -29,9 +29,12 @@ services:
       REST_CLIENT_READ_TIMEOUT: ${REST_CLIENT_READ_TIMEOUT:-40000}
       REDIS_HOST: redis://redis:6379
       #SPRING_PROFILES_ACTIVE: github-test-runner
+      JAVA_TOOL_OPTIONS: -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005
+    # Information on why these ports here: https://github.com/ministryofjustice/laa-data-claims-parent#exposed-ports
     ports:
       - "8082:8082"
-      - "8181:8081"
+      - "8182:8081"
+      - "5082:5005"
     depends_on:
       - redis
 
@@ -70,7 +73,7 @@ services:
     container_name: redis
     restart: always
     ports:
-      - "6379:6379"
+      - "6382:6379"
     command: redis-server --appendonly yes
     volumes:
       - redis_data:/data

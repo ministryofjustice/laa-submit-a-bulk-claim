@@ -7,7 +7,7 @@
           th:text="#{submission.claim.errors.heading(${messagesSummary.totalMessageCount()})}"></h2>
 
       <div class="moj-scrollable-pane">
-        <table class="govuk-table"
+        <table class="govuk-table sabc-sortable-table"
                data-module="moj-sortable-table"
                th:with="
                   area=${submissionSummary.areaOfLaw != null ? #strings.toLowerCase(submissionSummary.areaOfLaw) : ''},

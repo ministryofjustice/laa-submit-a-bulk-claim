@@ -10,6 +10,7 @@ a lightweight web UI.
 
 ## Table of Contents
 
+- [Commit hooks](#commit-hooks)
 - [Overview](#overview)
 - [Key Capabilities](#key-capabilities)
 - [Integrations](#integrations)
@@ -17,16 +18,51 @@ a lightweight web UI.
 - [Tech Stack](#tech-stack)
 - [Local Development](#local-development)
     - [Prerequisites](#prerequisites)
-    - [Configure External Dependencies](#configure-external-dependencies)
-    - [Run the Application](#run-the-application)
+    - [Set Local Variables](#set-local-variables)
+    - [Authentication](#authentication)
+        - [SILAS](#silas)
+        - [OIDC Mock Server](#oidc-mock-server)
+    - [Running the Application](#running-the-application)
     - [Configuration](#configuration)
 - [Testing](#testing)
+    - [Unit Tests](#unit-tests)
+    - [Accessibility Tests](#accessibility-tests)
+    - [E2E Tests](#e2e-tests)
 - [Deployment](#deployment)
 - [Tooling & Conventions](#tooling--conventions)
 - [Documentation](#documentation)
 - [Project Structure](#project-structure)
+- [Logging Configuration](#logging-configuration)
 - [Contributing](#contributing)
 - [License](#license)
+
+## Commit hooks
+
+Run scripts/setup-hooks.sh to install pre-commit hooks for Git. This will install prek pre commit
+hook into git, which helps to:
+
+- Run Spotless to automatically format Java files
+- Run Checkstyle validation
+- Scan for potential secrets in code
+
+To install prek
+
+```sh
+cd scripts
+chmod +x ./setup-hooks.sh
+./setup-hooks.sh 
+```
+
+Note: Setup scripts needs to be run twice
+Note: If Spotless detects formatting issues, the commit will fail. After Spotless applies the
+formatting, you can commit the changes again.
+
+To run pre-commit hooks manually:
+
+```sh
+git add .
+prek run --all-files
+```
 
 ## Overview
 
@@ -85,66 +121,7 @@ a lightweight web UI.
 - GitHub Packages credentials configured for the [
   `laa-ccms-spring-boot-gradle-plugin`](https://github.com/ministryofjustice/laa-ccms-spring-boot-common?tab=readme-ov-file#provide-your-repository-credentials)
 
-### Configure External Dependencies by running locally
-
-#### LAA Data Claims Parent
-
-The easiest way to run all of the applications locally is to run via
-the [laa-data-claims-parent](https://github.com/ministryofjustice/laa-data-claims-parent/blob/main/README.md)
-repository. This will run all of the services via Docker Compose. To do any development on this
-project,
-you can just run this Spring Boot application via IntelliJ and not run it via Docker Compose
-following
-the guidance on the `laa-data-claims-parent` README.
-
-#### Running everything via IDE
-
-1. **Clone the repository**
-   ```sh
-   git clone git@github.com:ministryofjustice/submit-a-bulk-claim.git
-   ```
-2. **Clone other dependencies**
-   ```sh
-   git clone git@github.com:ministryofjustice/laa-data-claims-api.git
-   git clone git@github.com:ministryofjustice/laa-data-claims-event-service.git # Claims API Dependency
-   git clone git@github.com:ministryofjustice/laa-fee-scheme-api.git # Claims API Dependency
-   ```
-
-3. **Build and run the Data Stewardship APIs locally by following the per-project README.md**
-
-- [Claims API README.md](https://github.com/ministryofjustice/laa-data-claims-api/blob/main/README.md)
-    - [Claims Event Service README.md](https://github.com/ministryofjustice/laa-data-claims-event-service/blob/main/README.md)
-    - [Fee Scheme API README.md](https://github.com/ministryofjustice/laa-fee-scheme-api/blob/main/README.md)
-
-4. **Setup authentication**
-Included in docker-compose as `laa-mock-oidc-service`. This is exposed on `http://oidc:9000`
-and align issuer/client details with your local Spring profile.
-
-This is achieved by building the laa-mock-oidc-service by cloning the repo and following it's
-project
-[README.md](https://github.com/ministryofjustice/laa-oidc-mock-server/blob/main/README.md).
-
-If you wish to use the OIDC mock server, and are running the SaBC UI also within a docker container,
-you will need to map the host within `/etc/hosts` via `sudo nano /etc/hosts` to ensure that the
-internal and external host names for the OIDC mock server are the same. Just add the following line
-to create a host alias:
-
-```text
-127.0.0.1 oidc
-```
-
-This allows both docker and your local machine to use `http://oidc:9000` as the OIDC issuer, rather
-than having a mismatch between the two.
-
-To run the OIDC mock server, run the following command:
-```sh
-docker-compose up laa-mock-oidc-service
-```
-
-Alternatively, you can use the SILAS sandbox. Ask another developer for details on how to
-create an account on SILAS for testing. This account can also be used in deployed environments.
-
-5. **Set Local variables**
+### Set Local Variables
 
 The easiest method to set the local variables is the ask another developer for a copy of
 their `application-local.yaml` file, then you can set the Spring Profile to `local`.
@@ -164,38 +141,110 @@ The example access token aligns with the WireMock fixtures; supply a real token 
 non-mocked environments. Update `AUTH_*` and `SILAS_*` variables to match either SILAS sandbox
 credentials or the mock server claims.
 
-### Commit hooks
-Run scripts/setup-hooks.sh to install pre-commit hooks for Git. This will install prek pre commit hook into git, which helps to:
+### Running the Application
 
-- Run Spotless to automatically format Java files
-- Run Checkstyle validation
-- Scan for potential secrets in code
+In all cases of running the application locally:
 
-To install prek
-```sh
-cd scripts
-chmod +x ./setup-hooks.sh
-./setup-hooks.sh 
-```
-Note: Setup scripts needs to be run twice
-Note: If Spotless detects formatting issues, the commit will fail. After Spotless applies the formatting, you can commit the changes again.
+- The UI is served on `http://localhost:8082`.
+- Management endpoints are exposed on `http://localhost:8083`.
 
-To run pre-commit hooks manually:
+#### LAA Data Claims Parent
 
-```sh
-git add .
-prek run --all-files
-```
+The easiest way to run all of the applications locally is to run via
+the [laa-data-claims-parent](https://github.com/ministryofjustice/laa-data-claims-parent/blob/main/README.md)
+repository. This will run all of the services via Docker Compose.
 
-### Run the Application
+##### Attach to remote JVM running in docker
+
+You can debug the application by attaching to the JVM running in docker. This way you can still hit
+breakpoints and debug the application whilst it's running in docker:
+
+1. Go to Run > Edit Configurations
+2. Click + (Add New Configuration)
+3. Select Remote JVM Debug
+4. Enter the following configuration:
+    1. Host: `localhost`
+    2. Port: `5005`
+    3. Use module classpath: Select `laa-submit-a-bulk-claim`
+   
+![DebugJVMConfiguration.png](docs/images/DebugJVMConfiguration.png)
+
+#### Running SaBC via IntelliJ
+
+Following the steps of running everything via the parent repository, you can run the SaBC UI via
+IntelliJ by stopping the SaBC docker container and running in IntelliJ instead by creating a Spring
+Boot Run Configuration. Properties required
+for local development can be found by requesting a copy of the `application-local.yaml` file from
+another developer.
+
+![IntelliJRunConfiguration.png](docs/images/IntelliJRunConfiguration.png)
+
+#### Running SaBc via CLI
 
 ```sh
 ./gradlew clean bootRun
 ```
 
-- The UI is served on `http://localhost:8082`.
-- Management endpoints are exposed on `http://localhost:8083`.
 - Use `SPRING_PROFILES_ACTIVE=local` if you maintain separate local overrides.
+
+### Authentication
+
+Two solutions exist for logging into the UI. The main method is via SILAS DEV, however you can also
+use the OIDC mock server. Both solutions require setting the following variables which can be gained
+from another developer:
+
+```yaml
+spring:
+  security:
+  oauth2:
+    client:
+      registration:
+        silas-identity:
+          client-id: ${SILAS_CLIENT_ID}
+          client-secret: ${SILAS_CLIENT_SECRET}
+          authorization-grant-type: authorization_code
+          redirect-uri: "{baseUrl}/login/oauth2/code/{registrationId}"
+          scope: ${SILAS_SCOPE}
+```
+
+#### SILAS
+
+The main authentication method is to use SILAS DEV. To create an account on SILAS,
+go to the slack channel `#staff-identity-exteranl-authentication-service`. You can request the
+tenant ID and client ID from another developer. Once access has been provided, you should be able
+to login to the UI with the newly created account.
+
+#### OIDC Mock Server
+
+Included in docker-compose as `laa-mock-oidc-service`. This is exposed on `http://oidc:9000`
+and align issuer/client details with your local Spring profile. This app is a Spring Authentication
+Server which is acting as a quick replacement for SILAS. It's mainly used by the E2E tests, but can
+be useful to run locally sometimes if you have no access to SILAS.
+
+This is achieved by building the laa-mock-oidc-service by cloning the repo and following it's
+project
+[README.md](https://github.com/ministryofjustice/laa-oidc-mock-server/blob/main/README.md).
+
+If you wish to use the OIDC mock server, and are running the SaBC UI also within a docker container,
+you will need to map the host within `/etc/hosts` via `sudo nano /etc/hosts` to ensure that the
+internal and external host names for the OIDC mock server are the same. Just add the following line
+to create a host alias:
+
+```text
+127.0.0.1 oidc
+```
+
+This allows both docker and your local machine to use `http://oidc:9000` as the OIDC issuer, rather
+than having a mismatch between the two.
+
+To run the OIDC mock server, run the following command:
+
+```sh
+docker-compose up laa-mock-oidc-service
+```
+
+Alternatively, you can use the SILAS sandbox. Ask another developer for details on how to
+create an account on SILAS for testing. This account can also be used in deployed environments.
 
 ### Configuration
 
@@ -217,6 +266,7 @@ prek run --all-files
 - Add new tests alongside changes to maintain coverage.
 
 ### Accessibility Tests
+
 ```sh
 ./gradlew :laa-submit-a-bulk-claim-ui:accessibilityTest
 ```
@@ -281,7 +331,8 @@ repository.
 
 ## Logging Configuration
 
-This application uses ECS (Elastic Common Schema) structured logging for production environments and console logging for local development.
+This application uses ECS (Elastic Common Schema) structured logging for production environments and
+console logging for local development.
 For local development logging use: ```./gradlew bootRun --args='--spring.profiles.active=local'```
 and add the following to your application-local.yaml
 
@@ -295,8 +346,10 @@ logging:
         console: "%style{%d{yyyy-MM-dd'T'HH:mm:ss.SSSXXX}}{faint} %highlight{%-5level} %style{%pid}{magenta} %style{---}{faint} %style{[%15.15t]}{faint} %style{[%X{traceId},%X{spanId}]}{yellow} %style{%-40.40logger{39}}{cyan} %style{:}{faint} %msg%n"
 ```
 
-###  Structured Logging (Default/Production)
+### Structured Logging (Default/Production)
+
 By default, the application outputs logs in ECS JSON format with distributed tracing support:
+
 ```
 {
     "@timestamp":"2026-04-10T08:55:16.405456044Z",
