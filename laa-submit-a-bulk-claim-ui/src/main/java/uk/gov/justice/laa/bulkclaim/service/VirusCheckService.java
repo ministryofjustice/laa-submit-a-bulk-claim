@@ -46,7 +46,7 @@ public class VirusCheckService {
             .retrieve()
             .body(SdsVirusCheckResponseDto.class);
     if (sdsVirusCheckResponseDto == null
-        || !StringUtils.hasText(sdsVirusCheckResponseDto.getSuccess())) {
+        || !StringUtils.hasText(sdsVirusCheckResponseDto.success())) {
       throw new VirusCheckException("Virus check failed");
     }
   }
