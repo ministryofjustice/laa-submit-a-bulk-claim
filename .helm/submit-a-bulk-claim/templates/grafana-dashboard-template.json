@@ -59,7 +59,7 @@
       },
       "gridPos": {
         "h": 8,
-        "w": 12,
+        "w": 4,
         "x": 0,
         "y": 0
       },
@@ -89,7 +89,7 @@
             "uid": "prometheus"
           },
           "editorMode": "code",
-          "expr": "max(active_sessions_count{namespace=\"{{ .Release.Namespace }}\"})",
+          "expr": "max(active_sessions_count{namespace=\"{{ .Release.Namespace }}\"},container='$container')",
           "legendFormat": "__auto",
           "range": true,
           "refId": "A"
@@ -160,7 +160,7 @@
           {
             "matcher": {
               "id": "byName",
-              "options": "max(active_sessions_count{namespace=\"{{ .Release.Namespace }}\"})"
+              "options": "max(active_sessions_count{namespace=\"{{ .Release.Namespace }}\"},container='$container')"
             },
             "properties": [
               {
@@ -176,8 +176,8 @@
       },
       "gridPos": {
         "h": 8,
-        "w": 12,
-        "x": 12,
+        "w": 20,
+        "x": 4,
         "y": 0
       },
       "id": 47,
@@ -202,7 +202,7 @@
             "uid": "prometheus"
           },
           "editorMode": "code",
-          "expr": "max(active_sessions_count{namespace=\"{{ .Release.Namespace }}\"})",
+          "expr": "max(active_sessions_count{namespace=\"{{ .Release.Namespace }}\"},container='$container')",
           "legendFormat": "Active Sessions Count",
           "range": true,
           "refId": "A"
@@ -214,8 +214,8 @@
     {
       "collapsed": false,
       "gridPos": {
-        "h": 1,
-        "w": 24,
+        "h": 8,
+        "w": 4,
         "x": 0,
         "y": 8
       },
