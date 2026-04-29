@@ -12,7 +12,7 @@
 
       <div class="moj-scrollable-pane"
            th:if="${messagesSummary.messages != null and !messagesSummary.messages.isEmpty()}">
-        <table class="govuk-table"
+        <table class="govuk-table sabc-sortable-table"
                data-module="moj-sortable-table"
                th:with="
                   area=${submissionSummary.areaOfLaw != null ? #strings.toLowerCase(submissionSummary.areaOfLaw) : ''},
