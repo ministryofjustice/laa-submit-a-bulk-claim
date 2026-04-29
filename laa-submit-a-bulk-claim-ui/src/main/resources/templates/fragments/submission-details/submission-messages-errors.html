@@ -1,12 +1,12 @@
 <th:block th:fragment="submission-messages-errors"
-          th:if="${messagesSummary.messagesSource == T(uk.gov.justice.laa.bulkclaim.dto.submission.messages.MessagesSource).SUBMISSION}">
+          th:if="${messagesSummary.messagesSource.toString() == 'SUBMISSION'}">
   <th:block th:if="${messagesSummary != null}">
     <div class="govuk-grid-column-full">
       <h2 class="govuk-heading-m" id="messages-errors-heading"
           th:text="#{submission.errors.heading(${messagesSummary.totalMessageCount()})}"></h2>
 
       <div class="moj-scrollable-pane">
-        <table class="govuk-table"
+        <table class="govuk-table sabc-sortable-table"
                data-module="moj-sortable-table">
           <caption class="govuk-table__caption govuk-visually-hidden"
                    th:text="#{submission.claim.errors.heading(${messagesSummary.totalMessageCount()})}"></caption>
@@ -33,7 +33,7 @@
       </div>
 
       <nav
-          th:replace="~{fragments/pagination :: pagination(currentUrl='/view-submission-detail', page=${messagesSummary.pagination})}"></nav>
+          th:replace="~{fragments/pagination :: pagination(page=${messagesSummary.pagination}, links=${messagesPaginationLinks})}"></nav>
     </div>
   </th:block>
 </th:block>

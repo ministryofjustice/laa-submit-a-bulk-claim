@@ -30,6 +30,7 @@ import uk.gov.justice.laa.bulkclaim.client.DataClaimsRestClient;
 import uk.gov.justice.laa.bulkclaim.dto.SubmissionOutcomeFilter;
 import uk.gov.justice.laa.bulkclaim.dto.SubmissionsSearchForm;
 import uk.gov.justice.laa.bulkclaim.util.OidcAttributeUtils;
+import uk.gov.justice.laa.bulkclaim.util.PaginationLinksBuilder;
 import uk.gov.justice.laa.bulkclaim.util.PaginationUtil;
 import uk.gov.justice.laa.bulkclaim.validation.SubmissionSearchValidator;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.AreaOfLaw;
@@ -45,6 +46,7 @@ class SearchControllerTest {
   @Mock private SubmissionSearchValidator submissionSearchValidator;
   @Mock private DataClaimsRestClient claimsRestService;
   @Mock private PaginationUtil paginationUtil;
+  @Mock private PaginationLinksBuilder paginationLinksBuilder;
   @Mock private OidcAttributeUtils oidcAttributeUtils;
   @Mock private SessionStatus sessionStatus;
 

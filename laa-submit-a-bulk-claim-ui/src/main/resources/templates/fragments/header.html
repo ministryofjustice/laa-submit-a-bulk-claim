@@ -68,7 +68,7 @@
 
         </svg>
         <a class="moj-header__link moj-header__link--organisation-name"
-           th:href="${@environment.getProperty('links.laa-homepage')}"
+          th:href="${laaHomepageLink}"
            th:text="#{service.provider}"/>
       </div>
       <div class="moj-header__content" sec:authorize="isAuthenticated()">
