@@ -89,7 +89,7 @@
             "uid": "prometheus"
           },
           "editorMode": "code",
-          "expr": "max(active_sessions_count{namespace='{{ .Release.Namespace }}',container='$container'})",
+          "expr": "max(active_sessions_count{namespace='{{ .Release.Namespace }}', container='$container'})",
           "legendFormat": "__auto",
           "range": true,
           "refId": "A"
