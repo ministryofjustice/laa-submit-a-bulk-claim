@@ -89,7 +89,7 @@
             "uid": "prometheus"
           },
           "editorMode": "code",
-          "expr": "max(active_sessions_count{namespace='{{ .Release.Namespace }}', container='$container'})",
+          "expr": "max(active_sessions_count{namespace=\"{{ .Release.Namespace }}\"},container='$container')",
           "legendFormat": "__auto",
           "range": true,
           "refId": "A"
@@ -160,8 +160,8 @@
           {
             "matcher": {
               "id": "byName",
-              "options": "max(active_sessions_count{namespace='{{ .Release.Namespace }}', container='$container'})"
-            },
+              "options": "max(active_sessions_count{namespace=\"{{ .Release.Namespace }}\"},container='$container')"
+},
             "properties": [
               {
                 "id": "color",
@@ -202,7 +202,7 @@
             "uid": "prometheus"
           },
           "editorMode": "code",
-          "expr": "max(active_sessions_count{namespace='{{ .Release.Namespace }}', container='$container'})",
+          "expr": "max(active_sessions_count{namespace=\"{{ .Release.Namespace }}\"},container='$container')",,
           "legendFormat": "Active Sessions Count",
           "range": true,
           "refId": "A"
