@@ -2,11 +2,6 @@ package uk.gov.justice.laa.bulkclaim.config.rest;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
-/**
- * Configuration properties specific to the Provider Details API.
- *
- * @author Jamie Briggs
- */
 @ConfigurationProperties(prefix = "app.claims-api")
 public class ClaimsApiProperties extends ApiProperties {
 

@@ -39,11 +39,6 @@ import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionStatus;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionsResultSet;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.ValidationMessageType;
 
-/**
- * Controller for handling viewing a submission.
- *
- * @author Jamie Briggs
- */
 @Slf4j
 @Controller
 @RequiredArgsConstructor
@@ -59,12 +54,6 @@ public class SubmissionDetailController {
 
   private static final int DEFAULT_PAGE_SIZE = 10;
 
-  /**
-   * Gets the submission reference, stores it in the session and redirects to the view submission.
-   *
-   * @param submissionReference the submission reference
-   * @return the redirect to view a submission detail
-   */
   @GetMapping("/submission/{submissionReference}")
   public String getSubmissionReference(
       @PathVariable("submissionReference") UUID submissionReference,
@@ -117,13 +106,6 @@ public class SubmissionDetailController {
     return "redirect:" + uri;
   }
 
-  /**
-   * Views the submission detail page.
-   *
-   * @param model the spring model
-   * @param submissionId the submission id in the session
-   * @return the view submission detail page
-   */
   @GetMapping("/view-submission-detail")
   public String getSubmissionDetail(
       Model model,

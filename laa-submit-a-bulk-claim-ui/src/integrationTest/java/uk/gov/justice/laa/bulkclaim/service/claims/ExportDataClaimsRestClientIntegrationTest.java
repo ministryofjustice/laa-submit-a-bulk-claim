@@ -18,11 +18,6 @@ import uk.gov.justice.laa.bulkclaim.client.ExportDataClaimsRestClient;
 import uk.gov.justice.laa.bulkclaim.config.WebMvcTestConfig;
 import uk.gov.justice.laa.bulkclaim.helper.MockServerIntegrationTest;
 
-/**
- * Integration tests for the {@link ExportDataClaimsRestClient}.
- *
- * @author Jamie Briggs
- */
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureMockMvc(addFilters = false)
 @Import(WebMvcTestConfig.class)

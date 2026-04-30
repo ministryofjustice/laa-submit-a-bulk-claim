@@ -31,8 +31,6 @@ public class SecurityConfig {
   /**
    * UserDetailsService bean for in-memory user management. This method creates fake users for
    * testing purposes.
-   *
-   * @return the UserDetailsService instance
    */
   @Bean
   public SecurityFilterChain securityFilterChain(

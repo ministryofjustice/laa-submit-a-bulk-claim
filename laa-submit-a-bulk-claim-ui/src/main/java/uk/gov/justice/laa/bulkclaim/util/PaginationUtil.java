@@ -13,14 +13,6 @@ public class PaginationUtil {
   private static final int DEFAULT_PAGE = 0;
   private static final int DEFAULT_PAGE_SIZE = 10;
 
-  /**
-   * Builds a {@link Page} instance using pagination details from a {@link SubmissionsResultSet}.
-   *
-   * @param resultSet the result set returned from the Claims API (may be {@code null}).
-   * @param requestedPage the requested page number.
-   * @param requestedSize the requested page size.
-   * @return a populated {@link Page} instance.
-   */
   public Page fromSubmissionsResultSet(
       SubmissionsResultSet resultSet, Integer requestedPage, Integer requestedSize) {
     if (resultSet == null) {
@@ -37,15 +29,6 @@ public class PaginationUtil {
     return buildPage(number, size, totalPages, totalElements);
   }
 
-  /**
-   * Builds a {@link Page} instance using pagination details from a {@link
-   * ValidationMessagesResponse}.
-   *
-   * @param response the response returned from the Claims API (may be {@code null}).
-   * @param requestedPage the requested page number.
-   * @param requestedSize the requested page size.
-   * @return a populated {@link Page} instance.
-   */
   public Page fromValidationMessages(
       ValidationMessagesResponse response, Integer requestedPage, Integer requestedSize) {
     if (response == null) {
@@ -62,14 +45,6 @@ public class PaginationUtil {
     return buildPage(number, size, totalPages, totalElements);
   }
 
-  /**
-   * Builds a {@link Page} instance from the supplied pagination parameters.
-   *
-   * @param pageNumber the zero-based page number requested.
-   * @param pageSize the page size requested.
-   * @param totalElements the calculatedTotal number of elements available.
-   * @return a populated {@link Page} instance.
-   */
   public Page from(int pageNumber, int pageSize, int totalElements) {
     int safePageSize = pageSize > 0 ? pageSize : DEFAULT_PAGE_SIZE;
     int safePageNumber = Math.max(pageNumber, DEFAULT_PAGE);

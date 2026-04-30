@@ -10,11 +10,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionBase;
 
-/**
- * Utility class for processing and formatting submission periods.
- *
- * @author Jamie Briggs
- */
 @Component
 public class SubmissionPeriodUtil {
 

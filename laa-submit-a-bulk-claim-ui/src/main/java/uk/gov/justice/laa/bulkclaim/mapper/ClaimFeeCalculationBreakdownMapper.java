@@ -8,11 +8,6 @@ import uk.gov.justice.laa.bulkclaim.dto.submission.claim.BulkClaimCostItem;
 import uk.gov.justice.laa.bulkclaim.dto.submission.claim.ClaimFeeCalculationBreakdown;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.ClaimResponse;
 
-/**
- * Maps between {@link ClaimResponse} and {@link ClaimFeeCalculationBreakdown}.
- *
- * @author Jamie Briggs
- */
 @Mapper(componentModel = "spring")
 public interface ClaimFeeCalculationBreakdownMapper {
 
@@ -106,24 +101,7 @@ public interface ClaimFeeCalculationBreakdownMapper {
   @Mapping(target = "calculatedValue", source = "calculatedValue")
   BulkClaimCostItem toBulkClaimCostItem(BigDecimal enteredValue, BigDecimal calculatedValue);
 
-  /**
-   * Converts an Integer to a BigDecimal with 2 decimal places.
-   *
-   * @param value The Integer to convert.
-   * @return The converted BigDecimal with 2 decimal places.
-   */
-  default BigDecimal toBigDecimal(Integer value) {
-    return value == null
-        ? null
-        : scaleBigDecimal(BigDecimal.valueOf(value)); // Ensures precision to 2 decimal points
-  }
-
-  /**
-   * Scales a BigDecimal to 2 decimal places - a monetary value.
-   *
-   * @param value The BigDecimal to scale.
-   * @return The scaled BigDecimal with 2 decimal places.
-   */
+  /** Scales a BigDecimal to 2 decimal places - a monetary value. */
   default BigDecimal scaleBigDecimal(BigDecimal value) {
     return value == null
         ? null

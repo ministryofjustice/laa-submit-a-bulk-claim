@@ -14,11 +14,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
-/**
- * Filter to validate the Host header against allowed hosts.
- *
- * @author Jamie Briggs
- */
 @Component
 @Slf4j
 @RequiredArgsConstructor

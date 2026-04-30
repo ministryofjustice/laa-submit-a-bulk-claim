@@ -13,11 +13,6 @@ import uk.gov.justice.laa.bulkclaim.client.DataClaimsRestClient;
 import uk.gov.justice.laa.bulkclaim.client.DataClaimsRestClientV2;
 import uk.gov.justice.laa.bulkclaim.client.ExportDataClaimsRestClient;
 
-/**
- * Configuration class for creating and configuring WebClient instances.
- *
- * @author Jamie Briggs
- */
 @Configuration
 @EnableConfigurationProperties({ClaimsApiProperties.class})
 @ImportHttpServices(

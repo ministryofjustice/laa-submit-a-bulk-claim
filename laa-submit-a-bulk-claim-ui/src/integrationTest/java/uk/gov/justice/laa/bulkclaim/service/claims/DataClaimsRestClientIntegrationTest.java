@@ -43,11 +43,6 @@ import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionStatus;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionsResultSet;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.ValidationMessagesResponse;
 
-/**
- * Integration tests for the {@link uk.gov.justice.laa.bulkclaim.client.DataClaimsRestClient}.
- *
- * @author Jamie Briggs
- */
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureMockMvc(addFilters = false)
 @Import(WebMvcTestConfig.class)

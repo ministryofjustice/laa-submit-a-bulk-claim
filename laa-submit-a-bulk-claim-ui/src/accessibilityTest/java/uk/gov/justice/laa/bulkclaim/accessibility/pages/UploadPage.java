@@ -3,7 +3,6 @@ package uk.gov.justice.laa.bulkclaim.accessibility.pages;
 import com.microsoft.playwright.Page;
 import java.nio.file.Path;
 
-/** Page object for bulk upload journeys. */
 public final class UploadPage {
 
   private final Page page;

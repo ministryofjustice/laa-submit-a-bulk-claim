@@ -11,11 +11,6 @@ import uk.gov.justice.laa.dstew.payments.claimsdata.model.ClaimResponseV2;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.ClaimStatus;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.FeeCalculationType;
 
-/**
- * Maps between {@link ClaimResponse} and {@link SubmissionClaimRow}.
- *
- * @author Jamie Briggs
- */
 @Mapper(componentModel = "spring")
 public interface SubmissionClaimRowMapper {
 
@@ -61,12 +56,6 @@ public interface SubmissionClaimRowMapper {
   @Mapping(target = "escapeCase", expression = "java(resolveEscapeCase(claimFields))")
   SubmissionClaimRow toSubmissionClaimRow(ClaimResponseV2 claimFields);
 
-  /**
-   * Maps the FeeCalculationType to a human readable string.
-   *
-   * @param feeCalculationType The FeeCalculationType to map.
-   * @return The mapped FeeCalculationType string.
-   */
   @Named("toFeeType")
   default String toFeeType(final FeeCalculationType feeCalculationType) {
     if (feeCalculationType == null) {
@@ -88,13 +77,7 @@ public interface SubmissionClaimRowMapper {
   @Mapping(target = "claimValue", source = "claimFields.feeCalculationResponse.totalAmount")
   SubmissionClaimRowCostsDetails toSubmissionClaimRowCostsDetails(ClaimResponseV2 claimFields);
 
-  /**
-   * Retrieves the escape case flag from the nested fee calculation response if available.
-   *
-   * @param claimFields the claim response to inspect
-   * @return {@code Boolean.TRUE} if the claim is an escape case, {@code Boolean.FALSE} if not, or
-   *     {@code null} if the value is unavailable
-   */
+  /** Retrieves the escape case flag from the nested fee calculation response if available. */
   default Boolean resolveEscapeCase(ClaimResponse claimFields) {
     if (claimFields == null
         || claimFields.getFeeCalculationResponse() == null
@@ -108,11 +91,6 @@ public interface SubmissionClaimRowMapper {
    * Resolves the escape case flag from the given ClaimResponseV2 object. This method navigates
    * through the nested structure of the provided claimFields to determine if the claim has been
    * marked as an escape case.
-   *
-   * @param claimFields the ClaimResponseV2 object containing the necessary data to resolve the
-   *     escape case flag
-   * @return {@code Boolean.TRUE} if the claim is marked as an escape case, {@code Boolean.FALSE} if
-   *     it is not, or {@code null} if the data needed to determine this value is unavailable
    */
   default Boolean resolveEscapeCase(ClaimResponseV2 claimFields) {
     if (claimFields == null
@@ -123,12 +101,7 @@ public interface SubmissionClaimRowMapper {
     return claimFields.getFeeCalculationResponse().getBoltOnDetails().getEscapeCaseFlag();
   }
 
-  /**
-   * Ensures that a BigDecimal is not null and instead changes to be zero if it is null.
-   *
-   * @param value the BigDecimal to tidy
-   * @return the tidied BigDecimal
-   */
+  /** Ensures that a BigDecimal is not null and instead changes to be zero if it is null. */
   static BigDecimal tidy(BigDecimal value) {
     return value == null ? BigDecimal.ZERO : value;
   }

@@ -14,7 +14,6 @@ import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 
-/** Encapsulates WireMock setup for accessibility tests. */
 final class AccessibilityWiremockSupport {
 
   private AccessibilityWiremockSupport() {}
