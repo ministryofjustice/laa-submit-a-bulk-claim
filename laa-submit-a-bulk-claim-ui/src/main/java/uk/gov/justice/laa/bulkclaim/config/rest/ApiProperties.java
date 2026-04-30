@@ -4,11 +4,6 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 
-/**
- * The base class for API properties.
- *
- * @author Jamie Briggs
- */
 @Getter
 @Setter
 @AllArgsConstructor

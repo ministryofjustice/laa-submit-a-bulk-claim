@@ -10,8 +10,6 @@ import org.springframework.web.multipart.MultipartFile;
 /**
  * An implementation of {@link FileFirusValidator} that disables virus validation for bulk import
  * files. Primarily used in the "github-test-runner" profile.
- *
- * @author Jamie
  */
 @Profile("github-test-runner")
 @Component
@@ -19,11 +17,6 @@ import org.springframework.web.multipart.MultipartFile;
 @RequiredArgsConstructor
 public class DisabledBulkImportFileVirusValidator implements FileFirusValidator {
 
-  /**
-   * Checks the class type is supported by this validator.
-   *
-   * @return true if class is a {@link MultipartFile}.
-   */
   @Override
   public boolean supports(Class<?> clazz) {
     return MultipartFile.class.isAssignableFrom(clazz);
