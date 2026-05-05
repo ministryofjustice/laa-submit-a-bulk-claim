@@ -12,12 +12,6 @@ import org.springframework.validation.Validator;
 import org.springframework.web.multipart.MultipartFile;
 import uk.gov.justice.laa.bulkclaim.dto.FileUploadForm;
 
-/**
- * A validator for validating files intended for bulk submissions. This class implements the {@link
- * Validator} and checks the general properties of the file.
- *
- * @author Jamie Briggs
- */
 @Slf4j
 @Component
 public class BulkImportFileValidator implements Validator {
@@ -33,11 +27,6 @@ public class BulkImportFileValidator implements Validator {
     this.maxFileSize = DataSize.parse(fileSizeLimit).toBytes();
   }
 
-  /**
-   * Checks the class type is supported by this validator.
-   *
-   * @return true if class is a {@link FileUploadForm}.
-   */
   @Override
   public boolean supports(Class<?> clazz) {
     return FileUploadForm.class.isAssignableFrom(clazz);

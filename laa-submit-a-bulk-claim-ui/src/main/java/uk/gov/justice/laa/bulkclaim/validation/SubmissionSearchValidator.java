@@ -29,8 +29,6 @@ import uk.gov.justice.laa.dstew.payments.claimsdata.model.AreaOfLaw;
  * user is not part of.
  *
  * <p>Errors and validation failures are reported using the {@code Errors} interface.
- *
- * @author Jamie Briggs
  */
 @Component
 public class SubmissionSearchValidator implements Validator {
@@ -52,7 +50,6 @@ public class SubmissionSearchValidator implements Validator {
     return SubmissionsSearchForm.class.isAssignableFrom(clazz);
   }
 
-  /** Validates the submission's search form inputs. */
   @Override
   public void validate(Object target, Errors errors) {
     SubmissionsSearchForm form = (SubmissionsSearchForm) target;

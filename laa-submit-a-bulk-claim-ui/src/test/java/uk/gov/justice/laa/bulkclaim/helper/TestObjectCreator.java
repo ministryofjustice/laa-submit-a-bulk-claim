@@ -6,11 +6,6 @@ import uk.gov.justice.laa.dstew.payments.claimsdata.model.ClaimResponse;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.ClaimStatus;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.FeeCalculationPatch;
 
-/**
- * Helper class to create test objects.
- *
- * @author Jamie Briggs
- */
 public final class TestObjectCreator {
   public static ClaimResponse buildClaimResponse() {
 

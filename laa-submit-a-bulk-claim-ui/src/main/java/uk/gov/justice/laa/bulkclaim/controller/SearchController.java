@@ -42,7 +42,6 @@ import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionBase;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionStatus;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionsResultSet;
 
-/** Controller for handling search requests related to bulk uploads. */
 @Slf4j
 @RequiredArgsConstructor
 @Controller
@@ -66,11 +65,6 @@ public class SearchController {
     binder.addValidators(submissionSearchValidator);
   }
 
-  /**
-   * Handles rendering the search form for submissions.
-   *
-   * @return the search form page template
-   */
   @GetMapping("/submissions/search")
   public String search(
       Model model, SessionStatus sessionStatus, @AuthenticationPrincipal OidcUser oidcUser) {
@@ -87,14 +81,6 @@ public class SearchController {
     return "pages/submissions-search";
   }
 
-  /**
-   * Handles the submissions search form submissions.
-   *
-   * @param submissionsSearchForm dto holding form values
-   * @param bindingResult binding results for validation errors
-   * @param model view context model
-   * @return redirect to search results when successful or back to the form if validation fails
-   */
   @PostMapping("/submissions/search")
   public String handleSearch(
       @AuthenticationPrincipal OidcUser oidcUser,
@@ -129,14 +115,6 @@ public class SearchController {
   /**
    * Handles Submission page results. Also handles global search when user clicks on column name on
    * the search results screen.
-   *
-   * @param page requested page number
-   * @param submissionPeriod submission period filter
-   * @param model view context model
-   * @param oidcUser authenticated user
-   * @param sessionStatus session status for clearing session attributes
-   * @param session http session for storing results
-   * @return search results view
    */
   @GetMapping("/submissions/search/results")
   public String submissionsSearchResults(

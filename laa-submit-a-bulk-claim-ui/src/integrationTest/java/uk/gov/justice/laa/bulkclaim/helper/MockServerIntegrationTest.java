@@ -32,11 +32,6 @@ import org.testcontainers.containers.wait.strategy.Wait;
 import org.testcontainers.utility.DockerImageName;
 import uk.gov.justice.laa.bulkclaim.config.rest.ApiProperties;
 
-/**
- * Base class for integration tests that require a MockServer instance.
- *
- * @author Jamie Briggs
- */
 @Slf4j
 @TestInstance(Lifecycle.PER_CLASS)
 public abstract class MockServerIntegrationTest {

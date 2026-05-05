@@ -13,20 +13,9 @@ import uk.gov.justice.laa.dstew.payments.claimsdata.model.AreaOfLaw;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionResponse;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionStatus;
 
-/**
- * Maps between {@link SubmissionResponse} and {@link SubmissionSummary}.
- *
- * @author Jamie Briggs
- */
 @Mapper(componentModel = "spring")
 public interface SubmissionSummaryMapper {
 
-  /**
-   * Maps a {@link SubmissionResponse} to a {@link SubmissionSummary}.
-   *
-   * @param submissionResponse The response to map.
-   * @return The mapped {@link SubmissionSummary}.
-   */
   @Mapping(target = "submissionReference", source = "submissionId")
   @Mapping(target = "areaOfLaw", source = "areaOfLaw", qualifiedByName = "fromAreaOfLaw")
   @Mapping(target = "officeAccount", source = "officeAccountNumber")
@@ -44,38 +33,18 @@ public interface SubmissionSummaryMapper {
     return areaOfLaw.getValue().replace("_", " ");
   }
 
-  /**
-   * Maps the {@link SubmissionStatus} to string.
-   *
-   * @param status The status to map.
-   * @return The mapped status string.
-   */
   @Named("mapStatus")
   default String mapStatus(SubmissionStatus status) {
     if (status == null) {
       return null;
     }
-    switch (status) {
-      case VALIDATION_SUCCEEDED:
-        return "Submitted";
-      case VALIDATION_FAILED:
-      case REPLACED:
-        return "Invalid";
-      case CREATED:
-      case READY_FOR_VALIDATION:
-      case VALIDATION_IN_PROGRESS:
-        return "In progress";
-      default:
-        throw new IllegalArgumentException("Unexpected status: " + status);
-    }
+    return switch (status) {
+      case VALIDATION_SUCCEEDED -> "Submitted";
+      case VALIDATION_FAILED, REPLACED -> "Invalid";
+      case CREATED, READY_FOR_VALIDATION, VALIDATION_IN_PROGRESS -> "In progress";
+    };
   }
 
-  /**
-   * Returns a {@link LocalDate} from a submission period string.
-   *
-   * @param submissionPeriod The submission period string (Should be in YYYY-MM format).
-   * @return The {@link LocalDate} representation of the submission period.
-   */
   @Named("toSubmissionPeriod")
   default LocalDate toSubmissionPeriod(final String submissionPeriod) {
     // Assumes that API returns MMM-yyyy format.

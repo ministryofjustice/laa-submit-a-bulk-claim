@@ -7,11 +7,6 @@ import org.springframework.web.service.annotation.GetExchange;
 import org.springframework.web.service.annotation.HttpExchange;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.ClaimResultSetV2;
 
-/**
- * REST Service interface for interacting with version 2 of the Claims API. Provides functionality
- * to manage claims, submissions, and related resources. This interface includes updated API
- * endpoints aligned with version 2 specifications.
- */
 @HttpExchange("/api/v2")
 public interface DataClaimsRestClientV2 {
 

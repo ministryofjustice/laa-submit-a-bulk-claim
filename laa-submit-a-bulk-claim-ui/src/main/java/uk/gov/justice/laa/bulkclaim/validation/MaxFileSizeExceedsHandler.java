@@ -14,19 +14,12 @@ import uk.gov.justice.laa.bulkclaim.controller.BulkImportController;
 import uk.gov.justice.laa.bulkclaim.dto.FileUploadForm;
 import uk.gov.justice.laa.bulkclaim.metrics.BulkClaimMetricService;
 
-/** Handles MaxUploadSizeExceededException thrown when a file exceeds the maximum upload size. */
 @ControllerAdvice
 public class MaxFileSizeExceedsHandler {
 
   private final BulkClaimMetricService bulkClaimMetricService;
   private final String maxFileSizeReadable;
 
-  /**
-   * Creates a handler for mapping file size exceptions to a user-facing error.
-   *
-   * @param bulkClaimMetricService metrics service for recording failed uploads
-   * @param maxFileSizeReadable maximum upload size configured for messaging
-   */
   public MaxFileSizeExceedsHandler(
       BulkClaimMetricService bulkClaimMetricService,
       @Value("${app.upload-max-file-size:10MB}") String maxFileSizeReadable) {
@@ -35,25 +28,13 @@ public class MaxFileSizeExceedsHandler {
         StringUtils.hasText(maxFileSizeReadable) ? maxFileSizeReadable : "10MB";
   }
 
-  /**
-   * Handles MaxUploadSizeExceededException and returns the upload page with an error message.
-   *
-   * @param ex the exception
-   * @param model the model to be populated with data
-   * @return the upload page
-   */
+  /** Handles MaxUploadSizeExceededException and returns the upload page with an error message. */
   @ExceptionHandler(MaxUploadSizeExceededException.class)
   public String handleMaxSizeException(MaxUploadSizeExceededException ex, Model model) {
     return buildErrorResponse(ex, model);
   }
 
-  /**
-   * Handles Tomcat multipart size exceptions and returns the upload page with an error message.
-   *
-   * @param ex the exception
-   * @param model the model to be populated with data
-   * @return the upload page
-   */
+  /** Handles Tomcat multipart size exceptions and returns the upload page with an error message. */
   @ExceptionHandler(InvalidParameterException.class)
   public String handleTomcatMaxSizeException(InvalidParameterException ex, Model model) {
     Throwable cause = ex.getCause();
@@ -63,13 +44,7 @@ public class MaxFileSizeExceedsHandler {
     return buildErrorResponse(ex, model);
   }
 
-  /**
-   * Builds the upload view response with a file size validation error.
-   *
-   * @param ex the exception
-   * @param model the model to be populated with data
-   * @return the upload page
-   */
+  /** Builds the upload view response with a file size validation error. */
   private String buildErrorResponse(Exception ex, Model model) {
     FileUploadForm fileUploadForm = new FileUploadForm(null);
     BindingResult bindingResult =
@@ -93,11 +68,7 @@ public class MaxFileSizeExceedsHandler {
     return "pages/upload";
   }
 
-  /**
-   * Records the size of the failed upload when it can be parsed from the exception.
-   *
-   * @param ex the exception
-   */
+  /** Records the size of the failed upload when it can be parsed from the exception. */
   private void recordFailedFileUploadSize(Exception ex) {
     if (ex instanceof MaxUploadSizeExceededException maxUploadSizeExceededException) {
       bulkClaimMetricService.recordFailedFileUploadSize(maxUploadSizeExceededException);

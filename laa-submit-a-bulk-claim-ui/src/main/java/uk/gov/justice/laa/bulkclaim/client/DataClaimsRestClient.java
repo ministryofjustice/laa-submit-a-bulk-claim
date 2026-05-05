@@ -25,21 +25,9 @@ import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionStatus;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionsResultSet;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.ValidationMessagesResponse;
 
-/**
- * REST Service interface for interacting with the Claims API.
- *
- * @author Jamie Briggs
- */
 @HttpExchange("/api/v1")
 public interface DataClaimsRestClient {
 
-  /**
-   * Uploads a bulk claim submission file to the Claims API.
-   *
-   * @param file a bulk claim submission file.
-   * @return a mono containing the response from the Claims API.
-   * @throws WebClientResponseException if status other than 2xx is returned
-   */
   @PostExchange(value = "/bulk-submissions", contentType = MediaType.MULTIPART_FORM_DATA_VALUE)
   Mono<ResponseEntity<CreateBulkSubmission201Response>> upload(
       @RequestPart("file") MultipartFile file,
@@ -50,21 +38,8 @@ public interface DataClaimsRestClient {
       throws WebClientResponseException;
 
   @GetExchange(value = "/bulk-submissions/{id}/summary")
-  Mono<GetBulkSubmissionStatusById200Response> getBulkSubmissionSummary(
-      @PathVariable("id") UUID id);
+  Mono<GetBulkSubmissionStatusById200Response> getBulkSubmissionSummary(@PathVariable UUID id);
 
-  /**
-   * Searches submissions using JSON criteria sent in the GET request body.
-   *
-   * @param offices array of authenticated user silas provider offices.
-   * @param submissionPeriod date range date from
-   * @param areaOfLaw area of law
-   * @param submissionStatus array of submission statuses
-   * @param page page number
-   * @param size page size
-   * @param sort sort order
-   * @return SubmissionSearchResponseDto
-   */
   @GetExchange(url = "/submissions", accept = MediaType.APPLICATION_JSON_VALUE)
   Mono<SubmissionsResultSet> search(
       @RequestParam(value = "offices") List<String> offices,
@@ -76,39 +51,14 @@ public interface DataClaimsRestClient {
       @RequestParam(value = "size", required = false, defaultValue = "10") Integer size,
       @RequestParam(value = "sort", required = false) String sort);
 
-  /**
-   * Gets a submission by its ID.
-   *
-   * @param submissionId the submission ID
-   * @return a mono containing the response from the Claims API.
-   * @throws WebClientResponseException if status other than 2xx is returned
-   */
   @GetExchange(value = "/submissions/{submissionId}")
-  Mono<SubmissionResponse> getSubmission(@PathVariable("submissionId") UUID submissionId)
+  Mono<SubmissionResponse> getSubmission(@PathVariable UUID submissionId)
       throws WebClientResponseException;
 
-  /**
-   * Gets a submission claim by submission ID and claim ID.
-   *
-   * @param submissionId the submission ID
-   * @param claimId the claim ID
-   * @return a mono containing the response from the Claims API.
-   * @throws WebClientResponseException if status other than 2xx is returned
-   */
   @GetExchange(value = "/submissions/{submission-id}/claims/{claim-id}")
   Mono<ClaimResponse> getSubmissionClaim(
       @PathVariable("submission-id") UUID submissionId, @PathVariable("claim-id") UUID claimId);
 
-  /**
-   * Get claims in a submission, filtering by office code, and using page number and size. Orders by
-   * line number by default
-   *
-   * @param officeCode the office code of the claims to be retrieved
-   * @param submissionId the submission id of the claims to be retrieved
-   * @param page the page number
-   * @param size the page size
-   * @return 200 OK with JSON body containing the list of matched claims
-   */
   default ResponseEntity<ClaimResultSet> getClaims(
       @RequestParam(value = "office_code") String officeCode,
       @RequestParam(value = "submission_id") UUID submissionId,
@@ -117,15 +67,6 @@ public interface DataClaimsRestClient {
     return getClaims(officeCode, submissionId, page, size, "lineNumber,asc");
   }
 
-  /**
-   * Get claims in a submission, filtering by office code, and using page number and size.
-   *
-   * @param officeCode the office code of the claims to be retrieved
-   * @param submissionId the submission id of the claims to be retrieved
-   * @param page the page number
-   * @param size the page size
-   * @return 200 OK with JSON body containing the list of matched claims
-   */
   @GetExchange("/claims")
   ResponseEntity<ClaimResultSet> getClaims(
       @RequestParam(value = "office_code") String officeCode,
@@ -139,12 +80,6 @@ public interface DataClaimsRestClient {
       @PathVariable("submission-id") UUID submissionId,
       @PathVariable("matter-starts-id") UUID claimId);
 
-  /**
-   * Gets validation errors for a submission.
-   *
-   * @param submissionId the submission ID
-   * @return a Mono containing a list of validation errors for a submission.
-   */
   @GetExchange(value = "/validation-messages")
   Mono<ValidationMessagesResponse> getValidationMessages(
       @RequestParam("submission-id") UUID submissionId,

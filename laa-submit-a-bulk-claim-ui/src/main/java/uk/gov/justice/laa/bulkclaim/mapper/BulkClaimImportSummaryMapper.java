@@ -18,21 +18,9 @@ import uk.gov.justice.laa.dstew.payments.claimsdata.model.ClaimResponse;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionResponse;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.ValidationMessageBase;
 
-/**
- * Maps between {@link SubmissionResponse} and {@link SubmissionSummaryRow}, and {@link
- * ClaimResponse} and {@link MessageRow}.
- *
- * @author Jamie Briggs
- */
 @Mapper(componentModel = "spring")
 public interface BulkClaimImportSummaryMapper {
 
-  /**
-   * Maps a {@link SubmissionResponse} to a {@link SubmissionSummaryRow}.
-   *
-   * @param submissionResponse The response to map.
-   * @return The mapped {@link SubmissionSummaryRow}.
-   */
   @Mapping(target = "submitted", source = "submitted")
   @Mapping(target = "submissionReference", source = "submissionId")
   @Mapping(target = "officeAccount", source = "officeAccountNumber")
@@ -51,12 +39,6 @@ public interface BulkClaimImportSummaryMapper {
     return areaOfLaw.getValue().replace("_", " ");
   }
 
-  /**
-   * Returns a {@link LocalDate} from a submission period string.
-   *
-   * @param submissionPeriod The submission period string (Should be in YYYY-MM format).
-   * @return The {@link LocalDate} representation of the submission period.
-   */
   @Named("toSubmissionPeriod")
   default LocalDate toSubmissionPeriod(final String submissionPeriod) {
     DateTimeFormatter formatter =
@@ -69,13 +51,6 @@ public interface BulkClaimImportSummaryMapper {
     return yearMonth.atDay(1);
   }
 
-  /**
-   * Maps claim response and validation error fields to a submission summary claim error row.
-   *
-   * @param message the validation message base
-   * @param claimResponse the claim response containing client and claim details
-   * @return a mapped MessageRow
-   */
   @Mapping(target = "ufn", source = "claimResponse.uniqueFileNumber")
   @Mapping(target = "ucn", source = "claimResponse.uniqueClientNumber")
   @Mapping(target = "client", expression = "java(buildClientName(claimResponse))")
@@ -95,12 +70,6 @@ public interface BulkClaimImportSummaryMapper {
   MessageRow toSubmissionSummaryClaimMessage(
       ValidationMessageBase message, ClaimResponse claimResponse);
 
-  /**
-   * Builds a client name from the claim response, preferring the primary client if available.
-   *
-   * @param claimResponse the claim response containing client name fields
-   * @return the full client name or null if none is available
-   */
   default String buildClientName(ClaimResponse claimResponse) {
     if (claimResponse == null) {
       return null;
