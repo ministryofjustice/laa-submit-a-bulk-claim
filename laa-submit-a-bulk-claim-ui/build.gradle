@@ -22,8 +22,6 @@ repositories {
 ext['tomcat.version'] = '11.0.21'
 // Upgrade to fix SNYK-JAVA-ORGAPACHELOGGINGLOG4J-15967727 and related vulnerabilities
 ext['log4j2.version'] = '2.25.4'
-// Upgrade to fix HTTP Request Smuggling (SNYK-JAVA-IONETTY-16425695)
-ext['netty.version'] = '4.2.13.Final'
 
 dependencyManagement {
     dependencies {
@@ -51,9 +49,8 @@ sourceSets {
 }
 
 dependencies {
-    // Upgrade to fix vulnerability GHSA-72hv-8253-57qq
-    implementation 'com.fasterxml.jackson.core:jackson-core:2.21.2'
-    implementation 'tools.jackson.core:jackson-core:3.1.1'
+    // upgrade to fix vulnerability CVE-2026-4437
+    implementation 'io.netty:netty-codec-http:4.2.13.Final'
     // Fixes CWE-770
     implementation 'tools.jackson.core:jackson-core:3.1.1'
 
