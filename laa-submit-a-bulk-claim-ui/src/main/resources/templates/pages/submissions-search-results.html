@@ -8,7 +8,6 @@
       <form id="claims-search-form" th:action="@{/submissions/search}"
             th:object="${submissionsSearchForm}" method="POST">
         <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
-
         <div class="govuk-grid-column-full">
           <div th:replace="~{fragments/error-components :: error-summary}"/>
         </div>
@@ -60,7 +59,7 @@
                 <a class="govuk-link--no-visited-state"
                    th:href="@{/submission/{submission_ref}(submission_ref=${submission.getSubmissionId})}"
                    th:text="${submission.getSubmitted != null ?
-                     #temporals.format(submission.getSubmitted, 'dd MMM yyyy ''at'' HH:mm:ss') :
+                     #temporals.format(submission.getSubmitted, 'dd MMM yyyy ''at'' h:mma') :
                      #strings.substring(submission.getSubmissionId, 24, 36)}">
                 </a>
               </td>
