@@ -44,6 +44,7 @@ public interface BulkClaimImportSummaryMapper {
   @Mapping(target = "totalClaims", source = "numberOfClaims")
   SubmissionSummaryRow toSubmissionSummaryRow(SubmissionResponse submissionResponse);
 
+
   List<SubmissionSummaryRow> toSubmissionSummaryRows(List<SubmissionResponse> submissionResponses);
 
   @Named("fromAreaOfLaw")
