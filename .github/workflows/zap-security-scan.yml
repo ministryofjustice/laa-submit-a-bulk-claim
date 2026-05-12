@@ -15,7 +15,7 @@ jobs:
       uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
 
     - name: Install kubectl
-      uses: azure/setup-kubectl@15650b3ad78fff148532a140b8a4c821796b2d7b # v5
+      uses: azure/setup-kubectl@829323503d1be3d00ca8346e5391ca0b07a9ab0d # v5
       with:
         version: v1.29.4
 
@@ -60,7 +60,7 @@ jobs:
           fi
 
     - name: Upload ZAP Json Report
-      uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
+      uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
       if: always()
       with:
         name: ${{ github.event_name == 'pull_request' && format('zap-pr-{0}-json-report', github.event.pull_request.number) || format('zap-{0}-json-report', github.event_name) }}
@@ -68,7 +68,7 @@ jobs:
         if-no-files-found: warn
 
     - name: Upload ZAP Report
-      uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
+      uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
       if: always()
       with:
         name: ${{ github.event_name == 'pull_request' && format('zap-pr-{0}-report', github.event.pull_request.number) || format('zap-{0}-report', github.event_name) }}
