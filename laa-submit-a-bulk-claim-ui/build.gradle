@@ -18,8 +18,8 @@ repositories {
     mavenCentral()
 }
 
-// Upgrade to fix remaining Apache Tomcat vulnerabilities reported against 11.0.18/11.0.20
-ext['tomcat.version'] = '11.0.21'
+// Upgrade to fix remaining Apache Tomcat vulnerabilities reported against 11.0.21
+ext['tomcat.version'] = '11.0.22'
 // Upgrade to fix SNYK-JAVA-ORGAPACHELOGGINGLOG4J-15967727 and related vulnerabilities
 ext['log4j2.version'] = '2.25.4'
 // Upgrade to fix HTTP Request Smuggling (SNYK-JAVA-IONETTY-16425695)
