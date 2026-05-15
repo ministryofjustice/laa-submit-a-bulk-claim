@@ -47,9 +47,6 @@ public class SubmissionSearchValidator implements Validator {
 
   @Override
   public boolean supports(Class<?> clazz) {
-
-    System.out.println("Validator supports check for: " + clazz);
-
     return SubmissionSearchForm.class.isAssignableFrom(clazz);
   }
 

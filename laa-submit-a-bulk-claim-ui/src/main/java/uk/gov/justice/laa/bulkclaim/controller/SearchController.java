@@ -160,7 +160,9 @@ public class SearchController {
               "offices",
               submissionSearchForm.getOffices(),
               "submissionStatuses",
-              submissionSearchForm.getSubmissionStatuses()));
+              submissionSearchForm.getSubmissionStatuses(),
+              "sort",
+              submissionSearchForm.getSort().toString()));
       session.setAttribute("submissions", submissionsResults);
 
       return "pages/submissions-search-results";

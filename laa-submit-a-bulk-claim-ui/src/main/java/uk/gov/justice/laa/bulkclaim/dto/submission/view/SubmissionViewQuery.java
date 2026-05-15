@@ -2,6 +2,7 @@ package uk.gov.justice.laa.bulkclaim.dto.submission.view;
 
 import static uk.gov.justice.laa.bulkclaim.constants.ViewSubmissionNavigationTab.CLAIM_DETAILS;
 
+import jakarta.validation.constraints.NotNull;
 import java.util.Objects;
 import java.util.UUID;
 import lombok.Builder;
@@ -23,7 +24,7 @@ public class SubmissionViewQuery implements PageQuery<SubmissionViewSortField, S
 
   private SubmissionViewSort sort;
 
-  private UUID submissionId;
+  @NotNull UUID submissionId;
   private ViewSubmissionNavigationTab navTab;
 
   public SubmissionViewQuery(

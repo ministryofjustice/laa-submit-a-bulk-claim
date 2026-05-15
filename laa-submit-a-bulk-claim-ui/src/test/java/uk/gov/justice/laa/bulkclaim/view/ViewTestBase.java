@@ -122,7 +122,7 @@ public abstract class ViewTestBase {
   protected Element selectFirst(Element element, String cssQuery) {
     Element result = element.selectFirst(cssQuery);
     Assertions.assertNotNull(
-        element, String.format("Expected page to have element with CSS query '%s'", cssQuery));
+        result, String.format("Expected page to have element with CSS query '%s'", cssQuery));
     return result;
   }
 }

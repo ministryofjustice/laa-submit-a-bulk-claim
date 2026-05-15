@@ -7,6 +7,7 @@ import static org.mockito.Mockito.when;
 
 import java.util.List;
 import java.util.Map;
+import org.jsoup.select.Elements;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
@@ -60,5 +61,33 @@ class SearchResultsViewTest extends ViewTestBase {
     var doc =
         renderDocumentWithParams(
             Map.of("offices", "12345", "submissionStatuses", SubmissionOutcomeFilter.ALL.name()));
+
+    Elements headers = getTableHeaders(doc);
+
+    assertTableHeaderIsSortable(
+        headers.get(0),
+        "descending",
+        "Date submitted",
+        "/submissions/search/results?page=0&submissionPeriod&areaOfLaw&offices=12345&submissionStatuses=ALL&sort=createdOn,asc");
+    assertTableHeaderIsSortable(
+        headers.get(1),
+        "none",
+        "Office account",
+        "/submissions/search/results?page=0&submissionPeriod&areaOfLaw&offices=12345&submissionStatuses=ALL&sort=officeAccountNumber,asc");
+    assertTableHeaderIsSortable(
+        headers.get(2),
+        "none",
+        "Area of law",
+        "/submissions/search/results?page=0&submissionPeriod&areaOfLaw&offices=12345&submissionStatuses=ALL&sort=areaOfLaw,asc");
+    assertTableHeaderIsSortable(
+        headers.get(3),
+        "none",
+        "Submission period",
+        "/submissions/search/results?page=0&submissionPeriod&areaOfLaw&offices=12345&submissionStatuses=ALL&sort=submissionPeriod,asc");
+    assertTableHeaderIsSortable(
+        headers.get(4),
+        "none",
+        "Status",
+        "/submissions/search/results?page=0&submissionPeriod&areaOfLaw&offices=12345&submissionStatuses=ALL&sort=status,asc");
   }
 }

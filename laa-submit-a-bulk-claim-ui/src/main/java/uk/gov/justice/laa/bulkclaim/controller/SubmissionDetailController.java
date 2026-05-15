@@ -3,6 +3,7 @@ package uk.gov.justice.laa.bulkclaim.controller;
 import static uk.gov.justice.laa.bulkclaim.constants.SessionConstants.BULK_SUBMISSION_ID;
 import static uk.gov.justice.laa.bulkclaim.constants.SessionConstants.SUBMISSION_ID;
 
+import jakarta.validation.Valid;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -111,7 +112,7 @@ public class SubmissionDetailController {
   @GetMapping("/view-submission-detail")
   public String getSubmissionDetail(
       Model model,
-      SubmissionViewQuery submissionViewQuery,
+      @Valid SubmissionViewQuery submissionViewQuery,
       @RequestParam(value = "messagesPage", defaultValue = "0") final int messagesPage) {
 
     model.addAttribute("submissionViewQuery", submissionViewQuery);
