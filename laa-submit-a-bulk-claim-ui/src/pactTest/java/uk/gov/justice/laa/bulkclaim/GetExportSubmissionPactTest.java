@@ -38,8 +38,6 @@ import uk.gov.justice.laa.bulkclaim.config.ClaimsApiPactTestConfig;
  *   <li>Match Header: The header we wish to match against (authorization key).
  *   <li>Method: The HTTP method.
  * </ul>
- *
- * @author Jamie Briggs
  */
 @Disabled("Temporarily disabled")
 @SpringBootTest(

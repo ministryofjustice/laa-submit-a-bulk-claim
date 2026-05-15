@@ -10,27 +10,16 @@ import uk.gov.justice.laa.bulkclaim.metrics.BulkClaimMetricService;
 import uk.gov.justice.laa.bulkclaim.util.CurrencyUtil;
 import uk.gov.justice.laa.bulkclaim.util.ThymeleafHrefUtils;
 
-/**
- * Test configuration for Spring MVC tests. Handles creating beans which otherwise would not be
- * automatically created.
- */
 @TestConfiguration
 public class WebMvcTestConfig {
 
-  /**
-   * Creates a RestClient.Builder bean.
-   *
-   * @return a RestClient.Builder bean.
-   */
   @Bean
   RestClient.Builder restClientBuilder() {
     return RestClient.builder();
   }
 
   /**
-   * Creates a CurrencyUtil bean. Ensuring bean is called correct due to it's usage in thymeleaf.
-   *
-   * @return a CurrencyUtil bean.
+   * Creates a CurrencyUtil bean. Ensuring bean is named correctly due to its usage in thymeleaf.
    */
   @Bean(name = "currencyUtil")
   CurrencyUtil currencyUtil() {
@@ -57,11 +46,7 @@ public class WebMvcTestConfig {
     return new ThymeleafHrefUtils();
   }
 
-  /**
-   * This disabled the host header handling filter for tests
-   *
-   * @return
-   */
+  /** This disables the host header handling filter for tests. */
   @Bean
   public HostValidationFilter hostValidationFilter() {
     return new HostValidationFilter(null) {

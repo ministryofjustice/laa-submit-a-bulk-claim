@@ -13,11 +13,6 @@ public class TokenService {
 
   private final TokenProvider tokenProvider;
 
-  /**
-   * Get the SDS API access token.
-   *
-   * @return the access token
-   */
   public String getSdsAccessToken() {
     OAuth2AccessToken accessToken = tokenProvider.getTokenFromProvider();
 

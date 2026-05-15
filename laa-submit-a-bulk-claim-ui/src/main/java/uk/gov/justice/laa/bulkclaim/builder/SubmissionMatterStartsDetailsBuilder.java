@@ -14,11 +14,6 @@ import uk.gov.justice.laa.dstew.payments.claimsdata.model.MatterStartGet;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.MatterStartResultSet;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionResponse;
 
-/**
- * Builder class responsible for creating a {@link List} of {@link SubmissionMatterStartsRow}.
- *
- * @author Jamie Briggs
- */
 @Slf4j
 @Service
 public class SubmissionMatterStartsDetailsBuilder {
@@ -33,12 +28,6 @@ public class SubmissionMatterStartsDetailsBuilder {
     this.mapper = mapper;
   }
 
-  /**
-   * Builds a list of SubmissionMatterStartsRow objects.
-   *
-   * @param response The source submission response.
-   * @return The built list of {@link SubmissionMatterStartsRow} objects.
-   */
   public List<SubmissionMatterStartsRow> build(final SubmissionResponse response) {
     List<SubmissionMatterStartsRow> result = new ArrayList<>();
 

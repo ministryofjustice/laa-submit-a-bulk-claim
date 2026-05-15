@@ -39,8 +39,6 @@ import uk.gov.justice.laa.dstew.payments.claimsdata.model.ClaimResultSet;
  *   <li>Match Header: The header we wish to match against (authorization key).
  *   <li>Method: The HTTP method.
  * </ul>
- *
- * @author Jamie Briggs
  */
 @SpringBootTest(
     webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
