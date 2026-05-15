@@ -110,6 +110,8 @@ dependencies {
 
     testImplementation 'au.com.dius.pact.consumer:junit5:4.6.19'
 
+    testImplementation 'org.jsoup:jsoup:1.22.1'
+
     accessibilityTestImplementation 'com.microsoft.playwright:playwright:1.56.0'
     accessibilityTestImplementation 'com.deque.html.axe-core:playwright:4.10.2'
     accessibilityTestImplementation 'org.springframework.boot:spring-boot-starter-test'

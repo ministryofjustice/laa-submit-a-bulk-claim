@@ -6,8 +6,6 @@ import static uk.gov.justice.laa.bulkclaim.constants.SessionConstants.SUBMISSION
 import jakarta.servlet.http.HttpSession;
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
-import java.util.function.BiConsumer;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -22,15 +20,15 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.SessionAttributes;
 import org.springframework.web.bind.support.SessionStatus;
 import org.springframework.web.client.HttpClientErrorException;
-import org.springframework.web.util.UriComponentsBuilder;
 import uk.gov.justice.laa.bulkclaim.client.DataClaimsRestClient;
 import uk.gov.justice.laa.bulkclaim.dto.SubmissionOutcomeFilter;
 import uk.gov.justice.laa.bulkclaim.dto.SubmissionSearchResultRow;
 import uk.gov.justice.laa.bulkclaim.dto.SubmissionsSearchForm;
+import uk.gov.justice.laa.bulkclaim.dto.submission.search.SubmissionSearchQuery;
+import uk.gov.justice.laa.bulkclaim.dto.submission.search.SubmissionSearchSortField;
 import uk.gov.justice.laa.bulkclaim.util.OidcAttributeUtils;
 import uk.gov.justice.laa.bulkclaim.util.PaginationLinksBuilder;
 import uk.gov.justice.laa.bulkclaim.util.PaginationUtil;
@@ -56,9 +54,6 @@ public class SearchController {
   private final PaginationLinksBuilder paginationLinksBuilder;
 
   public static final String SUBMISSION_SEARCH_FORM = "submissionsSearchForm";
-  private static final int DEFAULT_PAGE = 0;
-  private static final int DEFAULT_PAGE_SIZE = 10;
-  protected static final String DEFAULT_SEARCH_PAGE_SORT = "createdOn,desc";
 
   @InitBinder(SUBMISSION_SEARCH_FORM)
   void initSubmissionSearchValidator(WebDataBinder binder) {
@@ -84,13 +79,12 @@ public class SearchController {
   @PostMapping("/submissions/search")
   public String handleSearch(
       @AuthenticationPrincipal OidcUser oidcUser,
-      @Validated @ModelAttribute(SUBMISSION_SEARCH_FORM)
-          SubmissionsSearchForm submissionsSearchForm,
+      @Validated @ModelAttribute(SUBMISSION_SEARCH_FORM) SubmissionsSearchForm form,
       BindingResult bindingResult,
       Model model) {
 
     if (bindingResult.hasErrors()) {
-      model.addAttribute(SUBMISSION_SEARCH_FORM, submissionsSearchForm);
+      model.addAttribute(SUBMISSION_SEARCH_FORM, form);
       model.addAttribute(BindingResult.MODEL_KEY_PREFIX + SUBMISSION_SEARCH_FORM, bindingResult);
       List<String> userOffices = oidcAttributeUtils.getUserOffices(oidcUser);
       model.addAttribute("userOffices", userOffices);
@@ -98,18 +92,7 @@ public class SearchController {
       return "pages/submissions-search";
     }
 
-    UriComponentsBuilder redirectUrl =
-        UriComponentsBuilder.fromPath("/submissions/search/results")
-            .queryParam("page", DEFAULT_PAGE);
-
-    BiConsumer<String, Object> addParam =
-        (name, value) -> Optional.ofNullable(value).ifPresent(v -> redirectUrl.queryParam(name, v));
-    addParam.accept("submissionPeriod", trimToNull(submissionsSearchForm.submissionPeriod()));
-    addParam.accept("areaOfLaw", trimToNull(submissionsSearchForm.areaOfLaw()));
-    addQueryParamIfNotEmptyList(redirectUrl, "offices", submissionsSearchForm.offices());
-    addParam.accept("submissionStatuses", submissionsSearchForm.submissionStatuses());
-
-    return "redirect:" + redirectUrl.build().toUriString();
+    return "redirect:" + SubmissionSearchQuery.from(form).getRedirectUrl();
   }
 
   /**
@@ -118,14 +101,7 @@ public class SearchController {
    */
   @GetMapping("/submissions/search/results")
   public String submissionsSearchResults(
-      @RequestParam(value = "page", defaultValue = "0") final int page,
-      @RequestParam(value = "submissionPeriod", required = false) String submissionPeriod,
-      @RequestParam(value = "areaOfLaw", required = false) String areaOfLaw,
-      @RequestParam(value = "offices", required = false) List<String> offices,
-      @RequestParam(value = "submissionStatuses", required = false)
-          SubmissionOutcomeFilter submissionStatus,
-      @RequestParam(value = "sort", required = false, defaultValue = DEFAULT_SEARCH_PAGE_SORT)
-          String sort,
+      SubmissionSearchQuery query,
       Model model,
       @AuthenticationPrincipal OidcUser oidcUser,
       SessionStatus sessionStatus,
@@ -135,9 +111,13 @@ public class SearchController {
 
     SubmissionsSearchForm submissionsSearchForm =
         new SubmissionsSearchForm(
-            trimToNull(submissionPeriod), areaOfLaw, offices, submissionStatus);
+            trimToNull(query.getSubmissionPeriod()),
+            query.getAreaOfLaw(),
+            query.getOffices(),
+            query.getSubmissionStatuses());
     model.addAttribute(SUBMISSION_SEARCH_FORM, submissionsSearchForm);
-    model.addAttribute("currentSort", sort);
+    model.addAttribute("submissionSearchQuery", query);
+    model.addAttribute("SubmissionSearchSortField", SubmissionSearchSortField.class);
 
     List<String> userOffices = oidcAttributeUtils.getUserOffices(oidcUser);
     model.addAttribute("userOffices", userOffices);
@@ -161,13 +141,14 @@ public class SearchController {
                   submissionsSearchForm.submissionPeriod(),
                   getAreaOfLaw(submissionsSearchForm),
                   getSubmissionStatus(submissionsSearchForm),
-                  page,
-                  DEFAULT_PAGE_SIZE,
-                  sort)
+                  query.getPage(),
+                  query.getSize(),
+                  Objects.toString(query.getSort(), null))
               .block();
 
       Page pagination =
-          paginationUtil.fromSubmissionsResultSet(submissionsResults, page, DEFAULT_PAGE_SIZE);
+          paginationUtil.fromSubmissionsResultSet(
+              submissionsResults, query.getPage(), query.getSize());
       model.addAttribute("pagination", pagination);
       model.addAttribute("submissions", submissionsResults);
       model.addAttribute("submissionRows", toSubmissionRows(submissionsResults));
@@ -232,12 +213,5 @@ public class SearchController {
         submission,
         submissionPeriodUtil.getSubmissionPeriod(submission),
         submissionPeriodUtil.getSortOrderFromSubmissionPeriod(submission));
-  }
-
-  private static void addQueryParamIfNotEmptyList(
-      UriComponentsBuilder redirectUrl, String name, List<?> values) {
-    if (values != null && !values.isEmpty()) {
-      redirectUrl.queryParam(name, values.toArray());
-    }
   }
 }

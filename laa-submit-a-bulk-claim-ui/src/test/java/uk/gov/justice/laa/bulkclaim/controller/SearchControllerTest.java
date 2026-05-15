@@ -8,7 +8,6 @@ import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.justice.laa.bulkclaim.controller.ControllerTestHelper.getOidcUser;
-import static uk.gov.justice.laa.bulkclaim.controller.SearchController.DEFAULT_SEARCH_PAGE_SORT;
 
 import jakarta.servlet.http.HttpSession;
 import java.util.Collections;
@@ -29,6 +28,7 @@ import reactor.core.publisher.Mono;
 import uk.gov.justice.laa.bulkclaim.client.DataClaimsRestClient;
 import uk.gov.justice.laa.bulkclaim.dto.SubmissionOutcomeFilter;
 import uk.gov.justice.laa.bulkclaim.dto.SubmissionsSearchForm;
+import uk.gov.justice.laa.bulkclaim.dto.submission.search.SubmissionSearchQuery;
 import uk.gov.justice.laa.bulkclaim.util.OidcAttributeUtils;
 import uk.gov.justice.laa.bulkclaim.util.PaginationLinksBuilder;
 import uk.gov.justice.laa.bulkclaim.util.PaginationUtil;
@@ -100,7 +100,7 @@ class SearchControllerTest {
 
     assertEquals(
         "redirect:/submissions/search/results?page=0&submissionPeriod=JAN-2024&areaOfLaw=CRIME "
-            + "LOWER&offices=12345&submissionStatuses=SUCCEEDED",
+            + "LOWER&offices=12345&submissionStatuses=SUCCEEDED&sort=createdOn,desc",
         view);
   }
 
@@ -120,18 +120,18 @@ class SearchControllerTest {
     when(paginationUtil.fromSubmissionsResultSet(response, 0, 10))
         .thenReturn(new Page().totalElements(1));
 
-    String view =
-        searchController.submissionsSearchResults(
-            0,
+    var query =
+        new SubmissionSearchQuery(
+            null,
+            null,
             "JAN-2024",
             AreaOfLaw.CRIME_LOWER.name(),
-            Collections.emptyList(),
-            SubmissionOutcomeFilter.SUCCEEDED,
-            DEFAULT_SEARCH_PAGE_SORT,
-            model,
-            getOidcUser(),
-            sessionStatus,
-            session);
+            List.of(),
+            SubmissionOutcomeFilter.SUCCEEDED);
+
+    String view =
+        searchController.submissionsSearchResults(
+            query, model, getOidcUser(), sessionStatus, session);
 
     verify(sessionStatus).setComplete();
     verify(model).addAttribute(eq("pagination"), any(Page.class));
@@ -148,18 +148,11 @@ class SearchControllerTest {
     when(claimsRestService.search(anyList(), any(), any(), any(), anyInt(), anyInt(), any()))
         .thenThrow(BadRequest.class);
 
+    var query = SubmissionSearchQuery.builder().build();
+
     String view =
         searchController.submissionsSearchResults(
-            0,
-            null,
-            null,
-            null,
-            null,
-            DEFAULT_SEARCH_PAGE_SORT,
-            model,
-            getOidcUser(),
-            sessionStatus,
-            session);
+            query, model, getOidcUser(), sessionStatus, session);
 
     assertEquals("error", view);
   }
@@ -171,18 +164,11 @@ class SearchControllerTest {
     when(claimsRestService.search(anyList(), any(), any(), any(), anyInt(), anyInt(), any()))
         .thenThrow(new RuntimeException("Boom"));
 
+    var query = SubmissionSearchQuery.builder().build();
+
     String view =
         searchController.submissionsSearchResults(
-            0,
-            "1234",
-            null,
-            null,
-            null,
-            DEFAULT_SEARCH_PAGE_SORT,
-            model,
-            getOidcUser(),
-            sessionStatus,
-            session);
+            query, model, getOidcUser(), sessionStatus, session);
 
     assertEquals("error", view);
   }

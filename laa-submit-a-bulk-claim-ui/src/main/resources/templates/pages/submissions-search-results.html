@@ -34,21 +34,16 @@
           <table class="govuk-table">
             <thead class="govuk-table__head">
             <tr class="govuk-table__row">
-              <th:block th:replace="~{fragments/sortable-header ::submissionSearchSortableHeader('createdOn',
-                 'search.result.header.submission',
-                 ${submissionsSearchForm})}"></th:block>
-              <th:block th:replace="~{fragments/sortable-header ::submissionSearchSortableHeader('officeAccountNumber',
-                 'search.result.header.office',
-                 ${submissionsSearchForm})}"></th:block>
-              <th:block th:replace="~{fragments/sortable-header ::submissionSearchSortableHeader('areaOfLaw',
-                 'search.result.header.area',
-                 ${submissionsSearchForm})}"></th:block>
-              <th:block th:replace="~{fragments/sortable-header ::submissionSearchSortableHeader('submissionPeriod',
-                 'search.result.header.submissionPeriod',
-                 ${submissionsSearchForm})}"></th:block>
-              <th:block th:replace="~{fragments/sortable-header ::submissionSearchSortableHeader('status',
-                 'common.status',
-                 ${submissionsSearchForm})}"></th:block>
+              <th:block th:replace="~{fragments/sortable-header :: sortableHeader(
+                ${submissionSearchQuery}, ${SubmissionSearchSortField.CREATED_ON}, 'search.result.header.submission')}"></th:block>
+              <th:block th:replace="~{fragments/sortable-header :: sortableHeader(
+                ${submissionSearchQuery}, ${SubmissionSearchSortField.OFFICE_ACCOUNT_NUMBER}, 'search.result.header.office')}"></th:block>
+              <th:block th:replace="~{fragments/sortable-header :: sortableHeader(
+                ${submissionSearchQuery}, ${SubmissionSearchSortField.AREA_OF_LAW}, 'search.result.header.area')}"></th:block>
+              <th:block th:replace="~{fragments/sortable-header :: sortableHeader(
+                ${submissionSearchQuery}, ${SubmissionSearchSortField.SUBMISSION_PERIOD}, 'search.result.header.submissionPeriod')}"></th:block>
+              <th:block th:replace="~{fragments/sortable-header :: sortableHeader(
+                ${submissionSearchQuery}, ${SubmissionSearchSortField.STATUS}, 'common.status')}"></th:block>
             </tr>
             </thead>
             <tbody class="govuk-table__body">
