@@ -2,6 +2,7 @@ package uk.gov.justice.laa.bulkclaim.controller;
 
 import static uk.gov.justice.laa.bulkclaim.constants.SessionConstants.CLAIM_ID;
 import static uk.gov.justice.laa.bulkclaim.constants.SessionConstants.SUBMISSION_ID;
+import static uk.gov.justice.laa.bulkclaim.dto.SubmissionOutcomeFilter.SUCCEEDED;
 
 import jakarta.servlet.http.HttpSession;
 import java.util.List;
@@ -24,10 +25,8 @@ import org.springframework.web.bind.annotation.SessionAttributes;
 import org.springframework.web.bind.support.SessionStatus;
 import org.springframework.web.client.HttpClientErrorException;
 import uk.gov.justice.laa.bulkclaim.client.DataClaimsRestClient;
-import uk.gov.justice.laa.bulkclaim.dto.SubmissionOutcomeFilter;
 import uk.gov.justice.laa.bulkclaim.dto.SubmissionSearchResultRow;
-import uk.gov.justice.laa.bulkclaim.dto.SubmissionsSearchForm;
-import uk.gov.justice.laa.bulkclaim.dto.submission.search.SubmissionSearchQuery;
+import uk.gov.justice.laa.bulkclaim.dto.submission.search.SubmissionSearchForm;
 import uk.gov.justice.laa.bulkclaim.dto.submission.search.SubmissionSearchSortField;
 import uk.gov.justice.laa.bulkclaim.util.OidcAttributeUtils;
 import uk.gov.justice.laa.bulkclaim.util.PaginationLinksBuilder;
@@ -53,7 +52,7 @@ public class SearchController {
   private final SubmissionPeriodUtil submissionPeriodUtil;
   private final PaginationLinksBuilder paginationLinksBuilder;
 
-  public static final String SUBMISSION_SEARCH_FORM = "submissionsSearchForm";
+  public static final String SUBMISSION_SEARCH_FORM = "submissionSearchForm";
 
   @InitBinder(SUBMISSION_SEARCH_FORM)
   void initSubmissionSearchValidator(WebDataBinder binder) {
@@ -69,7 +68,10 @@ public class SearchController {
       // option on the frontend.
       model.addAttribute(
           SUBMISSION_SEARCH_FORM,
-          new SubmissionsSearchForm(null, null, userOffices, SubmissionOutcomeFilter.SUCCEEDED));
+          SubmissionSearchForm.builder()
+              .offices(userOffices)
+              .submissionStatuses(SUCCEEDED)
+              .build());
     }
     model.addAttribute("userOffices", userOffices);
     sessionStatus.setComplete();
@@ -79,12 +81,12 @@ public class SearchController {
   @PostMapping("/submissions/search")
   public String handleSearch(
       @AuthenticationPrincipal OidcUser oidcUser,
-      @Validated @ModelAttribute(SUBMISSION_SEARCH_FORM) SubmissionsSearchForm form,
+      @Validated @ModelAttribute(SUBMISSION_SEARCH_FORM) SubmissionSearchForm submissionSearchForm,
       BindingResult bindingResult,
       Model model) {
 
     if (bindingResult.hasErrors()) {
-      model.addAttribute(SUBMISSION_SEARCH_FORM, form);
+      model.addAttribute(SUBMISSION_SEARCH_FORM, submissionSearchForm);
       model.addAttribute(BindingResult.MODEL_KEY_PREFIX + SUBMISSION_SEARCH_FORM, bindingResult);
       List<String> userOffices = oidcAttributeUtils.getUserOffices(oidcUser);
       model.addAttribute("userOffices", userOffices);
@@ -92,7 +94,7 @@ public class SearchController {
       return "pages/submissions-search";
     }
 
-    return "redirect:" + SubmissionSearchQuery.from(form).getRedirectUrl();
+    return "redirect:" + SubmissionSearchForm.from(submissionSearchForm).getRedirectUrl();
   }
 
   /**
@@ -101,7 +103,7 @@ public class SearchController {
    */
   @GetMapping("/submissions/search/results")
   public String submissionsSearchResults(
-      SubmissionSearchQuery query,
+      @Validated @ModelAttribute(SUBMISSION_SEARCH_FORM) SubmissionSearchForm submissionSearchForm,
       Model model,
       @AuthenticationPrincipal OidcUser oidcUser,
       SessionStatus sessionStatus,
@@ -109,14 +111,7 @@ public class SearchController {
 
     sessionStatus.setComplete();
 
-    SubmissionsSearchForm submissionsSearchForm =
-        new SubmissionsSearchForm(
-            trimToNull(query.getSubmissionPeriod()),
-            query.getAreaOfLaw(),
-            query.getOffices(),
-            query.getSubmissionStatuses());
-    model.addAttribute(SUBMISSION_SEARCH_FORM, submissionsSearchForm);
-    model.addAttribute("submissionSearchQuery", query);
+    model.addAttribute(SUBMISSION_SEARCH_FORM, submissionSearchForm);
     model.addAttribute("SubmissionSearchSortField", SubmissionSearchSortField.class);
 
     List<String> userOffices = oidcAttributeUtils.getUserOffices(oidcUser);
@@ -125,30 +120,30 @@ public class SearchController {
     // default so show this change to the user
     model.addAttribute(
         "shouldOpenOfficeDetails",
-        submissionsSearchForm.offices() == null
-            || submissionsSearchForm.offices().size() != userOffices.size());
+        submissionSearchForm.getOffices() == null
+            || submissionSearchForm.getOffices().size() != userOffices.size());
 
     try {
       // Remove any offices which don't appear in request param (user has selected these offices)
       // By doing it this way, if someone were to manipulate an office as a request param, the
       // manipulated value would not be used in the search against the API.
       List<String> officesToSearchFor =
-          userOffices.stream().filter(submissionsSearchForm.offices()::contains).toList();
+          userOffices.stream().filter(submissionSearchForm.getOffices()::contains).toList();
       SubmissionsResultSet submissionsResults =
           claimsRestService
               .search(
                   officesToSearchFor,
-                  submissionsSearchForm.submissionPeriod(),
-                  getAreaOfLaw(submissionsSearchForm),
-                  getSubmissionStatus(submissionsSearchForm),
-                  query.getPage(),
-                  query.getSize(),
-                  Objects.toString(query.getSort(), null))
+                  trimToNull(submissionSearchForm.getSubmissionPeriod()),
+                  getAreaOfLaw(submissionSearchForm),
+                  getSubmissionStatus(submissionSearchForm),
+                  submissionSearchForm.getPage(),
+                  submissionSearchForm.getSize(),
+                  Objects.toString(submissionSearchForm.getSort(), null))
               .block();
 
       Page pagination =
           paginationUtil.fromSubmissionsResultSet(
-              submissionsResults, query.getPage(), query.getSize());
+              submissionsResults, submissionSearchForm.getPage(), submissionSearchForm.getSize());
       model.addAttribute("pagination", pagination);
       model.addAttribute("submissions", submissionsResults);
       model.addAttribute("submissionRows", toSubmissionRows(submissionsResults));
@@ -159,13 +154,13 @@ public class SearchController {
               pagination,
               "page",
               "submissionPeriod",
-              submissionsSearchForm.submissionPeriod(),
+              submissionSearchForm.getSubmissionPeriod(),
               "areaOfLaw",
-              submissionsSearchForm.areaOfLaw(),
+              submissionSearchForm.getAreaOfLaw(),
               "offices",
-              submissionsSearchForm.offices(),
+              submissionSearchForm.getOffices(),
               "submissionStatuses",
-              submissionsSearchForm.submissionStatuses()));
+              submissionSearchForm.getSubmissionStatuses()));
       session.setAttribute("submissions", submissionsResults);
 
       return "pages/submissions-search-results";
@@ -178,21 +173,22 @@ public class SearchController {
     }
   }
 
-  private static AreaOfLaw getAreaOfLaw(SubmissionsSearchForm submissionsSearchForm) {
+  private static AreaOfLaw getAreaOfLaw(SubmissionSearchForm submissionSearchForm) {
     try {
-      return Objects.isNull(submissionsSearchForm.areaOfLaw())
+      return Objects.isNull(submissionSearchForm.getAreaOfLaw())
           ? null
-          : AreaOfLaw.fromValue(submissionsSearchForm.areaOfLaw().replace("_", " ").toUpperCase());
+          : AreaOfLaw.fromValue(
+              submissionSearchForm.getAreaOfLaw().replace("_", " ").toUpperCase());
     } catch (IllegalArgumentException e) {
       return null;
     }
   }
 
   private static List<SubmissionStatus> getSubmissionStatus(
-      SubmissionsSearchForm submissionsSearchForm) {
-    return Objects.isNull(submissionsSearchForm.submissionStatuses())
+      SubmissionSearchForm submissionSearchForm) {
+    return Objects.isNull(submissionSearchForm.getSubmissionStatuses())
         ? null
-        : submissionsSearchForm.submissionStatuses().getStatuses();
+        : submissionSearchForm.getSubmissionStatuses().getStatuses();
   }
 
   private String trimToNull(String value) {

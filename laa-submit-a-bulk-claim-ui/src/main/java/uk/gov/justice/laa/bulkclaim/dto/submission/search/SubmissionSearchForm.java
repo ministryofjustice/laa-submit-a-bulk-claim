@@ -1,7 +1,5 @@
 package uk.gov.justice.laa.bulkclaim.dto.submission.search;
 
-import static org.apache.commons.lang3.StringUtils.trimToNull;
-
 import java.util.List;
 import java.util.Objects;
 import lombok.Builder;
@@ -10,12 +8,11 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.util.UriComponentsBuilder;
 import uk.gov.justice.laa.bulkclaim.dto.PageQuery;
 import uk.gov.justice.laa.bulkclaim.dto.SubmissionOutcomeFilter;
-import uk.gov.justice.laa.bulkclaim.dto.SubmissionsSearchForm;
 import uk.gov.justice.laa.bulkclaim.dto.sorting.SortDirection;
 
 @Builder
 @Getter
-public class SubmissionSearchQuery
+public class SubmissionSearchForm
     implements PageQuery<SubmissionSearchSortField, SubmissionSearchSort> {
 
   private static final int DEFAULT_PAGE = 0;
@@ -30,7 +27,7 @@ public class SubmissionSearchQuery
   private List<String> offices;
   private SubmissionOutcomeFilter submissionStatuses;
 
-  public SubmissionSearchQuery(
+  public SubmissionSearchForm(
       Integer page,
       SubmissionSearchSort sort,
       String submissionPeriod,
@@ -45,12 +42,12 @@ public class SubmissionSearchQuery
     this.submissionStatuses = submissionStatuses;
   }
 
-  public static SubmissionSearchQuery from(SubmissionsSearchForm form) {
-    return SubmissionSearchQuery.builder()
-        .submissionPeriod(form.submissionPeriod())
-        .areaOfLaw(form.areaOfLaw())
-        .offices(form.offices())
-        .submissionStatuses(form.submissionStatuses())
+  public static SubmissionSearchForm from(SubmissionSearchForm form) {
+    return SubmissionSearchForm.builder()
+        .submissionPeriod(form.getSubmissionPeriod())
+        .areaOfLaw(form.getAreaOfLaw())
+        .offices(form.getOffices())
+        .submissionStatuses(form.getSubmissionStatuses())
         .build();
   }
 

@@ -26,7 +26,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.validation.BeanPropertyBindingResult;
 import org.springframework.validation.BindingResult;
 import uk.gov.justice.laa.bulkclaim.dto.SubmissionOutcomeFilter;
-import uk.gov.justice.laa.bulkclaim.dto.SubmissionsSearchForm;
+import uk.gov.justice.laa.bulkclaim.dto.submission.search.SubmissionSearchForm;
 import uk.gov.justice.laa.bulkclaim.util.SubmissionPeriodUtil;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.AreaOfLaw;
 
@@ -50,9 +50,9 @@ class SubmissionSearchValidatorTest {
     @Test
     @DisplayName("Should reject submissionPeriod when not available")
     void validateShouldNotAcceptSubmissionPeriodNotAvailable() {
-      final SubmissionsSearchForm form =
-          SubmissionsSearchForm.builder().submissionPeriod("APR-2025").build();
-      final BindingResult errors = new BeanPropertyBindingResult(form, "submissionsSearchForm");
+      final SubmissionSearchForm form =
+          SubmissionSearchForm.builder().submissionPeriod("APR-2025").build();
+      final BindingResult errors = new BeanPropertyBindingResult(form, "submissionSearchForm");
 
       when(submissionPeriodUtil.getAllPossibleSubmissionPeriods())
           .thenReturn(new LinkedHashMap<>());
@@ -68,8 +68,8 @@ class SubmissionSearchValidatorTest {
     @Test
     @DisplayName("Should accept submissionPeriod when empty")
     void shouldAcceptSubmissionPeriodWhenEmpty() {
-      final SubmissionsSearchForm form = SubmissionsSearchForm.builder().build();
-      final BindingResult errors = new BeanPropertyBindingResult(form, "submissionsSearchForm");
+      final SubmissionSearchForm form = SubmissionSearchForm.builder().build();
+      final BindingResult errors = new BeanPropertyBindingResult(form, "submissionSearchForm");
 
       when(submissionPeriodUtil.getAllPossibleSubmissionPeriods())
           .thenReturn(new LinkedHashMap<>());
@@ -82,9 +82,9 @@ class SubmissionSearchValidatorTest {
     @Test
     @DisplayName("Should accept submissionPeriod when available")
     void shouldAcceptSubmissionPeriodWhenAvailable() {
-      final SubmissionsSearchForm form =
-          SubmissionsSearchForm.builder().submissionPeriod("APR-2025").build();
-      final BindingResult errors = new BeanPropertyBindingResult(form, "submissionsSearchForm");
+      final SubmissionSearchForm form =
+          SubmissionSearchForm.builder().submissionPeriod("APR-2025").build();
+      final BindingResult errors = new BeanPropertyBindingResult(form, "submissionSearchForm");
 
       when(submissionPeriodUtil.getAllPossibleSubmissionPeriods())
           .thenReturn(Map.of("APR-2025", "April 2025"));
@@ -104,9 +104,9 @@ class SubmissionSearchValidatorTest {
     @DisplayName("Should have no errors when valid areaOfLaw")
     void shouldHaveNoErrorsWhenValidAreaOfLaw(AreaOfLaw areaOfLaw) {
       // Given
-      SubmissionsSearchForm form =
-          SubmissionsSearchForm.builder().areaOfLaw(areaOfLaw.getValue()).build();
-      final BindingResult errors = new BeanPropertyBindingResult(form, "submissionsSearchForm");
+      SubmissionSearchForm form =
+          SubmissionSearchForm.builder().areaOfLaw(areaOfLaw.getValue()).build();
+      final BindingResult errors = new BeanPropertyBindingResult(form, "submissionSearchForm");
 
       // When
       validator.validate(form, errors);
@@ -119,8 +119,8 @@ class SubmissionSearchValidatorTest {
     @DisplayName("Should have no errors when areaOfLaw empty")
     void shouldHaveNoErrorsWhenAreaOfLawEmpty(String areaOfLaw) {
       // Given
-      SubmissionsSearchForm form = SubmissionsSearchForm.builder().areaOfLaw(areaOfLaw).build();
-      final BindingResult errors = new BeanPropertyBindingResult(form, "submissionsSearchForm");
+      SubmissionSearchForm form = SubmissionSearchForm.builder().areaOfLaw(areaOfLaw).build();
+      final BindingResult errors = new BeanPropertyBindingResult(form, "submissionSearchForm");
 
       // When
       validator.validate(form, errors);
@@ -133,8 +133,8 @@ class SubmissionSearchValidatorTest {
     @DisplayName("Should have error when invalid value")
     void shouldHaveErrorWhenInvalidValue() {
       // Given
-      SubmissionsSearchForm form = SubmissionsSearchForm.builder().areaOfLaw("ABC").build();
-      final BindingResult errors = new BeanPropertyBindingResult(form, "submissionsSearchForm");
+      SubmissionSearchForm form = SubmissionSearchForm.builder().areaOfLaw("ABC").build();
+      final BindingResult errors = new BeanPropertyBindingResult(form, "submissionSearchForm");
 
       // When
       validator.validate(form, errors);
@@ -154,9 +154,9 @@ class SubmissionSearchValidatorTest {
     @DisplayName("Should have no errors when valid submission status")
     void shouldHaveNoErrorsWhenValidSubmissionStatus(SubmissionOutcomeFilter submissionStatus) {
       // Given
-      SubmissionsSearchForm form =
-          SubmissionsSearchForm.builder().submissionStatuses(submissionStatus).build();
-      final BindingResult errors = new BeanPropertyBindingResult(form, "submissionsSearchForm");
+      SubmissionSearchForm form =
+          SubmissionSearchForm.builder().submissionStatuses(submissionStatus).build();
+      final BindingResult errors = new BeanPropertyBindingResult(form, "submissionSearchForm");
 
       // When
       validator.validate(form, errors);
@@ -168,8 +168,8 @@ class SubmissionSearchValidatorTest {
     @DisplayName("Should have errors when submission status empty")
     void shouldHaveErrorsWhenSubmissionStatusEmpty() {
       // Given
-      SubmissionsSearchForm form = SubmissionsSearchForm.builder().build();
-      final BindingResult errors = new BeanPropertyBindingResult(form, "submissionsSearchForm");
+      SubmissionSearchForm form = SubmissionSearchForm.builder().build();
+      final BindingResult errors = new BeanPropertyBindingResult(form, "submissionSearchForm");
 
       // When
       validator.validate(form, errors);
@@ -187,9 +187,9 @@ class SubmissionSearchValidatorTest {
     @DisplayName("Should have no errors when one office account")
     void shouldHaveNoErrorsWhenOneOfficeAccount() {
       // Given
-      final SubmissionsSearchForm form =
-          SubmissionsSearchForm.builder().offices(List.of("ABC")).build();
-      final BindingResult errors = new BeanPropertyBindingResult(form, "submissionsSearchForm");
+      final SubmissionSearchForm form =
+          SubmissionSearchForm.builder().offices(List.of("ABC")).build();
+      final BindingResult errors = new BeanPropertyBindingResult(form, "submissionSearchForm");
 
       when(submissionPeriodUtil.getAllPossibleSubmissionPeriods())
           .thenReturn(new LinkedHashMap<>());
@@ -205,9 +205,9 @@ class SubmissionSearchValidatorTest {
     @DisplayName("Should have no errors when multiple office accounts")
     void shouldHaveNoErrorsWhenMultipleOfficeAccounts() {
       // Given
-      final SubmissionsSearchForm form =
-          SubmissionsSearchForm.builder().offices(List.of("ABC", "DEF", "GHI")).build();
-      final BindingResult errors = new BeanPropertyBindingResult(form, "submissionsSearchForm");
+      final SubmissionSearchForm form =
+          SubmissionSearchForm.builder().offices(List.of("ABC", "DEF", "GHI")).build();
+      final BindingResult errors = new BeanPropertyBindingResult(form, "submissionSearchForm");
 
       when(submissionPeriodUtil.getAllPossibleSubmissionPeriods())
           .thenReturn(new LinkedHashMap<>());
@@ -223,9 +223,9 @@ class SubmissionSearchValidatorTest {
     @DisplayName("Should have errors when no office account added")
     void shouldHaveErrorsWhenNoOfficeAccountAdded() {
       // Given
-      final SubmissionsSearchForm form =
-          SubmissionsSearchForm.builder().offices(Collections.emptyList()).build();
-      final BindingResult errors = new BeanPropertyBindingResult(form, "submissionsSearchForm");
+      final SubmissionSearchForm form =
+          SubmissionSearchForm.builder().offices(Collections.emptyList()).build();
+      final BindingResult errors = new BeanPropertyBindingResult(form, "submissionSearchForm");
 
       when(submissionPeriodUtil.getAllPossibleSubmissionPeriods())
           .thenReturn(new LinkedHashMap<>());

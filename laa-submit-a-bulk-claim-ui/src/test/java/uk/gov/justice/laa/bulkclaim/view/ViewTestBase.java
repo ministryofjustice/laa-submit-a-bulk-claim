@@ -11,6 +11,9 @@ import java.util.Map;
 import java.util.UUID;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Import;
@@ -45,12 +48,24 @@ public abstract class ViewTestBase {
   }
 
   protected Document renderDocument() {
-    return renderDocument(Map.of());
+    return renderDocument(Map.of(), Map.of());
   }
 
-  protected Document renderDocument(Map<String, Object> variables) {
+  protected Document renderDocumentWithParams(Map<String, String> params) {
+    return renderDocument(params, Map.of());
+  }
+
+  protected Document renderDocumentWithFlashAttributes(Map<String, Object> flashAttributes) {
+    return renderDocument(Map.of(), flashAttributes);
+  }
+
+  private Document renderDocument(
+      Map<String, String> queryParams, Map<String, Object> flashAttributes) {
     MockHttpServletRequestBuilder requestBuilder = get(mapping);
-    for (Map.Entry<String, Object> entry : variables.entrySet()) {
+    for (var entry : queryParams.entrySet()) {
+      requestBuilder = requestBuilder.param(entry.getKey(), entry.getValue());
+    }
+    for (var entry : flashAttributes.entrySet()) {
       requestBuilder = requestBuilder.flashAttr(entry.getKey(), entry.getValue());
     }
     return renderDocument(requestBuilder, 200);
@@ -85,5 +100,29 @@ public abstract class ViewTestBase {
   protected Document renderDocumentWithErrors(MultiValueMap<String, String> params) {
     MockHttpServletRequestBuilder requestBuilder = post(mapping).with(csrf()).params(params);
     return renderDocument(requestBuilder, 400);
+  }
+
+  protected Elements getTableHeaders(Document doc) {
+    return doc.getElementsByClass("govuk-table__header");
+  }
+
+  protected void assertTableHeaderIsSortable(
+      Element header, String ariaSort, String expectedText, String expectedLink) {
+    Assertions.assertEquals(ariaSort, header.attr("aria-sort"));
+    Element link = selectFirst(header, "a");
+    Element span = selectFirst(link, "span");
+    Assertions.assertEquals(expectedText, span.text());
+    Assertions.assertEquals(expectedLink, link.attr("href"));
+  }
+
+  protected void assertTableHeaderIsNotSortable(Element header, String expectedText) {
+    Assertions.assertEquals(expectedText, header.text());
+  }
+
+  protected Element selectFirst(Element element, String cssQuery) {
+    Element result = element.selectFirst(cssQuery);
+    Assertions.assertNotNull(
+        element, String.format("Expected page to have element with CSS query '%s'", cssQuery));
+    return result;
   }
 }

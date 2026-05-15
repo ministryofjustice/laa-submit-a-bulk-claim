@@ -7,14 +7,14 @@
       <div class="govuk-grid-column-full">
 
         <form id="claims-search-form" th:action="@{/submissions/search}"
-              th:object="${submissionsSearchForm}" method="POST">
+              th:object="${submissionSearchForm}" method="POST">
           <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
 
           <div th:replace="~{fragments/error-components :: error-summary}"/>
 
           <h1 class="govuk-heading-l" th:text="#{search.title}"></h1>
 
-          <th:block th:insert="~{fragments/submission-search :: form(${submissionsSearchForm})}"/>
+          <th:block th:insert="~{fragments/submission-search :: form(${submissionSearchForm})}"/>
 
         </form>
 
