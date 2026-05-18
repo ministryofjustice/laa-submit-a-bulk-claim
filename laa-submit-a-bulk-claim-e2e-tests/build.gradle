@@ -129,6 +129,12 @@ tasks.register('cucumberTest', Test) {
     configureE2eEnv(it)
 }
 
+// The generic `test` task is invoked by `./gradlew build` in CI. This module runs E2E
+// via explicit tasks (e.g. cucumberTest), so we allow zero discovered tests here.
+tasks.named('test', Test) {
+    failOnNoDiscoveredTests = false
+}
+
 tasks.register('e2eCleanup', JavaExec) {
     description = 'Clean up test submissions from the database (past 30 days)'
     group = 'verification'
