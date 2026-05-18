@@ -85,9 +85,11 @@ jobs:
           kube-sa: deploy-user
 
       - name: Port-forward FSP API service
+        env:
+          KUBE_NAMESPACE_FSP: ${{ secrets.KUBE_NAMESPACE_LAA_FEE_SCHEME_API_UAT }}
         run: |
           set -euo pipefail
-          kubectl port-forward -n "${{ secrets.KUBE_NAMESPACE_LAA_FEE_SCHEME_API_UAT }}" service/laa-fee-scheme-api-service 8095:8085 > pf-fsp.log 2>&1 &
+          kubectl port-forward -n "$KUBE_NAMESPACE_FSP" service/laa-fee-scheme-api-service 8095:8085 > pf-fsp.log 2>&1 &
           echo "PORT_FORWARD_FSP_PID=$!" >> "$GITHUB_ENV"
           for i in {1..30}; do
             if nc -z 127.0.0.1 8095; then
@@ -109,9 +111,11 @@ jobs:
           kube-sa: deploy-user
 
       - name: Port-forward PDA proxy service
+        env:
+          KUBE_NAMESPACE_SABC: ${{ secrets.KUBE_NAMESPACE_LAA_SUBMIT_A_BULK_CLAIM_UAT }}
         run: |
           set -euo pipefail
-          kubectl port-forward -n "${{ secrets.KUBE_NAMESPACE_LAA_SUBMIT_A_BULK_CLAIM_UAT }}" service/uat-e2e-testing-pda-proxy 8186:8080 > pf-pda.log 2>&1 &
+          kubectl port-forward -n "$KUBE_NAMESPACE_SABC" service/uat-e2e-testing-pda-proxy 8186:8080 > pf-pda.log 2>&1 &
           echo "PORT_FORWARD_PDA_PID=$!" >> "$GITHUB_ENV"
           for i in {1..30}; do
             if nc -z 127.0.0.1 8186; then
@@ -140,35 +144,58 @@ jobs:
         run: npx --yes playwright@1.56.0 install chromium
 
       - name: Prepare compose env file
+        env:
+          INPUT_SABC_IMAGE_TAG: ${{ inputs.sabc_image_tag }}
+          INPUT_CLAIMS_API_IMAGE_TAG: ${{ inputs.claims_api_image_tag }}
+          INPUT_CLAIMS_EVENTS_IMAGE_TAG: ${{ inputs.claims_events_image_tag }}
+          DEFAULT_SABC_IMAGE_TAG: ${{ vars.UAT_SABC_IMAGE_TAG }}
+          DEFAULT_CLAIMS_API_IMAGE_TAG: ${{ vars.UAT_CLAIMS_API_IMAGE_TAG }}
+          DEFAULT_CLAIMS_EVENTS_IMAGE_TAG: ${{ vars.UAT_CLAIMS_EVENTS_IMAGE_TAG }}
+          ECR_ACCOUNT: ${{ secrets.ECR_ACCOUNT }}
+          LAA_SUBMIT_A_BULK_CLAIM_ECR_REGION: ${{ vars.LAA_SUBMIT_A_BULK_CLAIM_ECR_REGION }}
+          LAA_SUBMIT_A_BULK_CLAIM_ECR_REPOSITORY: ${{ vars.LAA_SUBMIT_A_BULK_CLAIM_ECR_REPOSITORY }}
+          LAA_DATA_CLAIMS_EVENT_SERVICE_ECR_REGION: ${{ vars.LAA_DATA_CLAIMS_EVENT_SERVICE_ECR_REGION }}
+          LAA_DATA_CLAIMS_EVENT_SERVICE_ECR_REPOSITORY: ${{ vars.LAA_DATA_CLAIMS_EVENT_SERVICE_ECR_REPOSITORY }}
+          LAA_DATA_CLAIMS_API_ECR_REGION: ${{ vars.LAA_DATA_CLAIMS_API_ECR_REGION }}
+          LAA_DATA_CLAIMS_API_ECR_REPOSITORY: ${{ vars.LAA_DATA_CLAIMS_API_ECR_REPOSITORY }}
+          LAA_OIDC_MOCK_SERVER_ECR_REGION: ${{ vars.LAA_OIDC_MOCK_SERVER_ECR_REGION }}
+          LAA_OIDC_MOCK_SERVER_ECR_REPOSITORY: ${{ vars.LAA_OIDC_MOCK_SERVER_ECR_REPOSITORY }}
+          AUTH_CLIENT_ID: ${{ secrets.AUTH_CLIENT_ID }}
+          AUTH_CLIENT_SECRET: ${{ secrets.AUTH_CLIENT_SECRET }}
+          AUTH_SCOPE: ${{ secrets.AUTH_SCOPE }}
+          AUTH_TENANT_ID: ${{ secrets.AUTH_TENANT_ID }}
+          SDS_API_URL: ${{ vars.SDS_API_URL }}
+          FSP_API_TOKEN: ${{ secrets.FSP_API_TOKEN }}
+          PROVIDER_API_KEY: ${{ secrets.PDA_API_TOKEN }}
         run: |
           set -euo pipefail
-          SABC_TAG="${{ inputs.sabc_image_tag }}"
-          if [ -z "$SABC_TAG" ]; then SABC_TAG="${{ vars.UAT_SABC_IMAGE_TAG }}"; fi
-          CLAIMS_API_TAG="${{ inputs.claims_api_image_tag }}"
-          if [ -z "$CLAIMS_API_TAG" ]; then CLAIMS_API_TAG="${{ vars.UAT_CLAIMS_API_IMAGE_TAG }}"; fi
-          CLAIMS_EVENTS_TAG="${{ inputs.claims_events_image_tag }}"
-          if [ -z "$CLAIMS_EVENTS_TAG" ]; then CLAIMS_EVENTS_TAG="${{ vars.UAT_CLAIMS_EVENTS_IMAGE_TAG }}"; fi
+          SABC_TAG="$INPUT_SABC_IMAGE_TAG"
+          if [ -z "$SABC_TAG" ]; then SABC_TAG="$DEFAULT_SABC_IMAGE_TAG"; fi
+          CLAIMS_API_TAG="$INPUT_CLAIMS_API_IMAGE_TAG"
+          if [ -z "$CLAIMS_API_TAG" ]; then CLAIMS_API_TAG="$DEFAULT_CLAIMS_API_IMAGE_TAG"; fi
+          CLAIMS_EVENTS_TAG="$INPUT_CLAIMS_EVENTS_IMAGE_TAG"
+          if [ -z "$CLAIMS_EVENTS_TAG" ]; then CLAIMS_EVENTS_TAG="$DEFAULT_CLAIMS_EVENTS_IMAGE_TAG"; fi
           cat > bulk-submission-and-fee-scheme-tests-/.env <<EOF
-          ECR_ACCOUNT=${{ secrets.ECR_ACCOUNT }}
-          LAA_SUBMIT_A_BULK_CLAIM_ECR_REGION=${{ vars.LAA_SUBMIT_A_BULK_CLAIM_ECR_REGION }}
-          LAA_SUBMIT_A_BULK_CLAIM_ECR_REPOSITORY=${{ vars.LAA_SUBMIT_A_BULK_CLAIM_ECR_REPOSITORY }}
-          LAA_DATA_CLAIMS_EVENT_SERVICE_ECR_REGION=${{ vars.LAA_DATA_CLAIMS_EVENT_SERVICE_ECR_REGION }}
-          LAA_DATA_CLAIMS_EVENT_SERVICE_ECR_REPOSITORY=${{ vars.LAA_DATA_CLAIMS_EVENT_SERVICE_ECR_REPOSITORY }}
-          LAA_DATA_CLAIMS_API_ECR_REGION=${{ vars.LAA_DATA_CLAIMS_API_ECR_REGION }}
-          LAA_DATA_CLAIMS_API_ECR_REPOSITORY=${{ vars.LAA_DATA_CLAIMS_API_ECR_REPOSITORY }}
-          LAA_OIDC_MOCK_SERVER_ECR_REGION=${{ vars.LAA_OIDC_MOCK_SERVER_ECR_REGION }}
-          LAA_OIDC_MOCK_SERVER_ECR_REPOSITORY=${{ vars.LAA_OIDC_MOCK_SERVER_ECR_REPOSITORY }}
-          AUTH_CLIENT_ID=${{ secrets.AUTH_CLIENT_ID }}
-          AUTH_CLIENT_SECRET=${{ secrets.AUTH_CLIENT_SECRET }}
-          AUTH_SCOPE=${{ secrets.AUTH_SCOPE }}
-          AUTH_TENANT_ID=${{ secrets.AUTH_TENANT_ID }}
-          SDS_API_URL=${{ vars.SDS_API_URL }}
+          ECR_ACCOUNT=$ECR_ACCOUNT
+          LAA_SUBMIT_A_BULK_CLAIM_ECR_REGION=$LAA_SUBMIT_A_BULK_CLAIM_ECR_REGION
+          LAA_SUBMIT_A_BULK_CLAIM_ECR_REPOSITORY=$LAA_SUBMIT_A_BULK_CLAIM_ECR_REPOSITORY
+          LAA_DATA_CLAIMS_EVENT_SERVICE_ECR_REGION=$LAA_DATA_CLAIMS_EVENT_SERVICE_ECR_REGION
+          LAA_DATA_CLAIMS_EVENT_SERVICE_ECR_REPOSITORY=$LAA_DATA_CLAIMS_EVENT_SERVICE_ECR_REPOSITORY
+          LAA_DATA_CLAIMS_API_ECR_REGION=$LAA_DATA_CLAIMS_API_ECR_REGION
+          LAA_DATA_CLAIMS_API_ECR_REPOSITORY=$LAA_DATA_CLAIMS_API_ECR_REPOSITORY
+          LAA_OIDC_MOCK_SERVER_ECR_REGION=$LAA_OIDC_MOCK_SERVER_ECR_REGION
+          LAA_OIDC_MOCK_SERVER_ECR_REPOSITORY=$LAA_OIDC_MOCK_SERVER_ECR_REPOSITORY
+          AUTH_CLIENT_ID=$AUTH_CLIENT_ID
+          AUTH_CLIENT_SECRET=$AUTH_CLIENT_SECRET
+          AUTH_SCOPE=$AUTH_SCOPE
+          AUTH_TENANT_ID=$AUTH_TENANT_ID
+          SDS_API_URL=$SDS_API_URL
           SABC_TAG=${SABC_TAG}
           CLAIMS_API_TAG=${CLAIMS_API_TAG}
           EVENT_SERVICE_TAG=${CLAIMS_EVENTS_TAG}
           OIDC_TAG=oidc-mock-latest
-          FSP_API_TOKEN=${{ secrets.FSP_API_TOKEN }}
-          PROVIDER_API_KEY=${{ secrets.PDA_API_TOKEN }}
+          FSP_API_TOKEN=$FSP_API_TOKEN
+          PROVIDER_API_KEY=$PROVIDER_API_KEY
           EOF
 
       - name: Configure AWS credentials
