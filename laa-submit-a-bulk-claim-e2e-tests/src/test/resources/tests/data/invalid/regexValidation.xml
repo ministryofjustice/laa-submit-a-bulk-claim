@@ -1,0 +1,40 @@
+<?xml version="1.0"?>
+<submission xmlns="http://www.legalservices.gov.uk/sms/ActivityManagement/XMLSchema/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.legalservices.gov.uk/sms/ActivityManagement/XMLSchema/LSCSMSBulkLoadSchemaV3.xsd">
+    <office account="2Q779P">
+        <schedule submissionPeriod="APR-2019" areaOfLaw="LEGAL HELP" scheduleNum="2L847Q/CIVIL">
+            <outcome matterType="FAMX:FAPP">
+                <outcomeItem name="FEE_CODE">COM</outcomeItem>
+                <outcomeItem name="CASE_REF_NUMBER">@</outcomeItem>
+                <outcomeItem name="CASE_START_DATE">10/11/2018</outcomeItem>
+                <outcomeItem name="CASE_ID">001</outcomeItem>
+                <outcomeItem name="UFN">101148/001</outcomeItem>
+                <outcomeItem name="PROCUREMENT_AREA">.</outcomeItem>
+                <outcomeItem name="ACCESS_POINT">AP00000</outcomeItem>
+                <outcomeItem name="CLIENT_FORENAME">@</outcomeItem>
+                <outcomeItem name="CLIENT_SURNAME">@</outcomeItem>
+                <outcomeItem name="CLIENT_DATE_OF_BIRTH">01/03/1973</outcomeItem>
+                <outcomeItem name="UCN">01031973/M/LEA</outcomeItem>
+                <outcomeItem name="GENDER">J</outcomeItem>
+                <outcomeItem name="ETHNICITY">J</outcomeItem>
+                <outcomeItem name="DISABILITY">lpo</outcomeItem>
+                <outcomeItem name="CLIENT_POST_CODE">ju</outcomeItem>
+                <outcomeItem name="WORK_CONCLUDED_DATE">02/09/2022</outcomeItem>
+                <outcomeItem name="CASE_STAGE_LEVEL">89</outcomeItem>
+                <outcomeItem name="ADVICE_TIME">120</outcomeItem>
+                <outcomeItem name="TRAVEL_TIME">0</outcomeItem>
+                <outcomeItem name="WAITING_TIME">0</outcomeItem>
+                <outcomeItem name="PROFIT_COST">96.97</outcomeItem>
+                <outcomeItem name="DISBURSEMENTS_AMOUNT">18.21</outcomeItem>
+                <outcomeItem name="COUNSEL_COST">37.86</outcomeItem>
+                <outcomeItem name="DISBURSEMENTS_VAT">1.26</outcomeItem>
+                <outcomeItem name="TRAVEL_WAITING_COSTS">0.00</outcomeItem>
+                <outcomeItem name="VAT_INDICATOR">Y</outcomeItem>
+                <outcomeItem name="LONDON_NONLONDON_RATE">Y</outcomeItem>
+                <outcomeItem name="TRAVEL_COSTS">2</outcomeItem>
+                <outcomeItem name="OUTCOME_CODE">oi</outcomeItem>
+                <outcomeItem name="POSTAL_APPL_ACCP">Y</outcomeItem>
+                <outcomeItem name="SCHEDULE_REF">2L847Q777777777777776666666hhhggffs/2023/1</outcomeItem>
+            </outcome>
+        </schedule>
+    </office>
+</submission>

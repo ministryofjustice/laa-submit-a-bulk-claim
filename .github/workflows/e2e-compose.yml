@@ -1,0 +1,260 @@
+name: E2E Compose (deep)
+
+on:
+  workflow_call:
+    inputs:
+      cucumber_tags:
+        required: false
+        default: "@smoke"
+        type: string
+      sabc_image_tag:
+        required: false
+        default: ""
+        type: string
+      claims_api_image_tag:
+        required: false
+        default: ""
+        type: string
+      claims_events_image_tag:
+        required: false
+        default: ""
+        type: string
+  workflow_dispatch:
+    inputs:
+      cucumber_tags:
+        description: "Cucumber tags to run"
+        required: false
+        default: "@smoke"
+        type: string
+      sabc_image_tag:
+        description: "SaBC image tag (optional override)"
+        required: false
+        default: ""
+        type: string
+      claims_api_image_tag:
+        description: "Claims API image tag (optional override)"
+        required: false
+        default: ""
+        type: string
+      claims_events_image_tag:
+        description: "Claims Events image tag (optional override)"
+        required: false
+        default: ""
+        type: string
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  run-compose-e2e:
+    runs-on: ubuntu-22.04
+    environment: uat
+    env:
+      PLAYWRIGHT_BROWSERS_PATH: /home/runner/.cache/ms-playwright
+    steps:
+      - name: Checkout
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+
+      - name: Set up Java
+        uses: actions/setup-java@be666c2fcd27ec809703dec50e508c2fdc7f6654 # v5
+        with:
+          distribution: temurin
+          java-version: '25'
+
+      - name: Set up Node.js
+        uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6.4.0
+        with:
+          node-version: '22'
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@50e97c2cd7a37755bbfafc9c5b7cafaece252f6e # v6.1.0
+
+      - name: Install kubectl
+        uses: azure/setup-kubectl@829323503d1be3d00ca8346e5391ca0b07a9ab0d # v5
+        with:
+          version: v1.29.4
+
+      - name: Authenticate to FSP cluster
+        uses: ministryofjustice/laa-reusable-github-actions/.github/actions/authenticate_to_cluster@7666443ea3f635ec52544311e0f0ea51830468c0
+        with:
+          kube-cert: ${{ secrets.KUBE_CERT_LAA_FEE_SCHEME_API_UAT }}
+          kube-token: ${{ secrets.KUBE_TOKEN_LAA_FEE_SCHEME_API_UAT }}
+          kube-cluster: ${{ secrets.KUBE_CLUSTER_LAA_FEE_SCHEME_API_UAT }}
+          kube-namespace: ${{ secrets.KUBE_NAMESPACE_LAA_FEE_SCHEME_API_UAT }}
+          kube-sa: deploy-user
+
+      - name: Port-forward FSP API service
+        run: |
+          set -euo pipefail
+          kubectl port-forward -n "${{ secrets.KUBE_NAMESPACE_LAA_FEE_SCHEME_API_UAT }}" service/laa-fee-scheme-api-service 8095:8085 > pf-fsp.log 2>&1 &
+          echo "PORT_FORWARD_FSP_PID=$!" >> "$GITHUB_ENV"
+          for i in {1..30}; do
+            if nc -z 127.0.0.1 8095; then
+              echo "FSP port-forward ready"
+              exit 0
+            fi
+            sleep 2
+          done
+          echo "FSP port-forward failed"
+          exit 1
+
+      - name: Authenticate to SaBC cluster
+        uses: ministryofjustice/laa-reusable-github-actions/.github/actions/authenticate_to_cluster@7666443ea3f635ec52544311e0f0ea51830468c0
+        with:
+          kube-cert: ${{ secrets.KUBE_CERT_LAA_SUBMIT_A_BULK_CLAIM_UAT }}
+          kube-token: ${{ secrets.KUBE_TOKEN_LAA_SUBMIT_A_BULK_CLAIM_UAT }}
+          kube-cluster: ${{ secrets.KUBE_CLUSTER_LAA_SUBMIT_A_BULK_CLAIM_UAT }}
+          kube-namespace: ${{ secrets.KUBE_NAMESPACE_LAA_SUBMIT_A_BULK_CLAIM_UAT }}
+          kube-sa: deploy-user
+
+      - name: Port-forward PDA proxy service
+        run: |
+          set -euo pipefail
+          kubectl port-forward -n "${{ secrets.KUBE_NAMESPACE_LAA_SUBMIT_A_BULK_CLAIM_UAT }}" service/uat-e2e-testing-pda-proxy 8186:8080 > pf-pda.log 2>&1 &
+          echo "PORT_FORWARD_PDA_PID=$!" >> "$GITHUB_ENV"
+          for i in {1..30}; do
+            if nc -z 127.0.0.1 8186; then
+              echo "PDA port-forward ready"
+              exit 0
+            fi
+            sleep 2
+          done
+          echo "PDA port-forward failed"
+          exit 1
+
+      - name: Cache Playwright browsers
+        id: playwright-cache
+        uses: actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
+        with:
+          path: /home/runner/.cache/ms-playwright
+          key: ${{ runner.os }}-playwright-1.56.0
+          restore-keys: |
+            ${{ runner.os }}-playwright-
+
+      - name: Install Playwright Chromium dependencies
+        run: npx --yes playwright@1.56.0 install-deps chromium
+
+      - name: Install Playwright Chromium browser
+        if: steps.playwright-cache.outputs.cache-hit != 'true'
+        run: npx --yes playwright@1.56.0 install chromium
+
+      - name: Prepare compose env file
+        run: |
+          set -euo pipefail
+          SABC_TAG="${{ inputs.sabc_image_tag }}"
+          if [ -z "$SABC_TAG" ]; then SABC_TAG="${{ vars.UAT_SABC_IMAGE_TAG }}"; fi
+          CLAIMS_API_TAG="${{ inputs.claims_api_image_tag }}"
+          if [ -z "$CLAIMS_API_TAG" ]; then CLAIMS_API_TAG="${{ vars.UAT_CLAIMS_API_IMAGE_TAG }}"; fi
+          CLAIMS_EVENTS_TAG="${{ inputs.claims_events_image_tag }}"
+          if [ -z "$CLAIMS_EVENTS_TAG" ]; then CLAIMS_EVENTS_TAG="${{ vars.UAT_CLAIMS_EVENTS_IMAGE_TAG }}"; fi
+          cat > bulk-submission-and-fee-scheme-tests-/.env <<EOF
+          ECR_ACCOUNT=${{ secrets.ECR_ACCOUNT }}
+          LAA_SUBMIT_A_BULK_CLAIM_ECR_REGION=${{ vars.LAA_SUBMIT_A_BULK_CLAIM_ECR_REGION }}
+          LAA_SUBMIT_A_BULK_CLAIM_ECR_REPOSITORY=${{ vars.LAA_SUBMIT_A_BULK_CLAIM_ECR_REPOSITORY }}
+          LAA_DATA_CLAIMS_EVENT_SERVICE_ECR_REGION=${{ vars.LAA_DATA_CLAIMS_EVENT_SERVICE_ECR_REGION }}
+          LAA_DATA_CLAIMS_EVENT_SERVICE_ECR_REPOSITORY=${{ vars.LAA_DATA_CLAIMS_EVENT_SERVICE_ECR_REPOSITORY }}
+          LAA_DATA_CLAIMS_API_ECR_REGION=${{ vars.LAA_DATA_CLAIMS_API_ECR_REGION }}
+          LAA_DATA_CLAIMS_API_ECR_REPOSITORY=${{ vars.LAA_DATA_CLAIMS_API_ECR_REPOSITORY }}
+          LAA_OIDC_MOCK_SERVER_ECR_REGION=${{ vars.LAA_OIDC_MOCK_SERVER_ECR_REGION }}
+          LAA_OIDC_MOCK_SERVER_ECR_REPOSITORY=${{ vars.LAA_OIDC_MOCK_SERVER_ECR_REPOSITORY }}
+          AUTH_CLIENT_ID=${{ secrets.AUTH_CLIENT_ID }}
+          AUTH_CLIENT_SECRET=${{ secrets.AUTH_CLIENT_SECRET }}
+          AUTH_SCOPE=${{ secrets.AUTH_SCOPE }}
+          AUTH_TENANT_ID=${{ secrets.AUTH_TENANT_ID }}
+          SDS_API_URL=${{ vars.SDS_API_URL }}
+          SABC_TAG=${SABC_TAG}
+          CLAIMS_API_TAG=${CLAIMS_API_TAG}
+          EVENT_SERVICE_TAG=${CLAIMS_EVENTS_TAG}
+          OIDC_TAG=oidc-mock-latest
+          FSP_API_TOKEN=${{ secrets.FSP_API_TOKEN }}
+          PROVIDER_API_KEY=${{ secrets.PDA_API_TOKEN }}
+          EOF
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@fb7eb401298e393da51cdcb2feb1ed0183619014 # v6
+        with:
+          role-to-assume: ${{ secrets.LAA_SUBMIT_A_BULK_CLAIM_ECR_ROLE_TO_ASSUME }}
+          aws-region: ${{ vars.LAA_SUBMIT_A_BULK_CLAIM_ECR_REGION }}
+
+      - name: Login to ECR
+        uses: aws-actions/amazon-ecr-login@19d944daaa35f0fa1d3f7f8af1d3f2e5de25c5b7 # v2.1.4
+
+      - name: Run compose stack
+        run: |
+          set -euo pipefail
+          docker compose -p "e2e-${GITHUB_RUN_ID}" -f bulk-submission-and-fee-scheme-tests-/docker-compose.yml up -d --wait
+
+      - name: Wait for compose app health
+        run: |
+          set -euo pipefail
+          for i in {1..36}; do
+            if curl -fsS http://127.0.0.1:8181/actuator/health | grep -q '"status":"UP"'; then
+              echo "sabc-ui healthy"
+              exit 0
+            fi
+            sleep 5
+          done
+          echo "sabc-ui health check timed out"
+          exit 1
+
+      - name: Run Java E2E login + tests
+        env:
+          PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: "1"
+          E2E_BASE_URL: http://127.0.0.1:8082
+          E2E_AUTH_MODE: mock
+          E2E_HEADLESS: true
+          E2E_STORAGE_STATE_PATH: build/e2e/storageState.json
+          CUCUMBER_TAGS: ${{ inputs.cucumber_tags }}
+          DSTEW_API_BASE_URL: http://127.0.0.1:8080
+          DSTEW_API_TOKEN: f67f968e-b479-4e61-b66e-f57984931e56
+          FSP_API_BASE_URL: http://127.0.0.1:8095
+          FSP_API_TOKEN: ${{ secrets.FSP_API_TOKEN }}
+          PROVIDER_API_KEY: ${{ secrets.PDA_API_TOKEN }}
+          MOCK_USERNAME: provider.user@provider.com
+          MOCK_PASSWORD: password
+        run: |
+          set -euo pipefail
+          ./gradlew :laa-submit-a-bulk-claim-e2e-tests:e2eLogin --no-daemon
+          ./gradlew :laa-submit-a-bulk-claim-e2e-tests:cucumberTest --no-daemon
+
+      - name: Collect docker logs
+        if: always()
+        run: |
+          mkdir -p logs
+          docker logs app > logs/sabc.log 2>&1 || true
+          docker logs data-claims-api-app > logs/claims-api.log 2>&1 || true
+          docker logs data-claims-event-service-app > logs/event-service.log 2>&1 || true
+          docker logs local-postgres > logs/postgres.log 2>&1 || true
+          docker logs event-service-localstack > logs/localstack.log 2>&1 || true
+          docker logs redis > logs/redis.log 2>&1 || true
+          docker logs oidc > logs/oidc.log 2>&1 || true
+          cat pf-fsp.log > logs/pf-fsp.log 2>&1 || true
+          cat pf-pda.log > logs/pf-pda.log 2>&1 || true
+
+      - name: Upload compose logs
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: compose-e2e-logs
+          path: logs
+          if-no-files-found: warn
+
+      - name: Upload Java E2E reports
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: java-e2e-reports
+          path: |
+            laa-submit-a-bulk-claim-e2e-tests/build/reports
+            laa-submit-a-bulk-claim-e2e-tests/build/test-results
+          if-no-files-found: warn
+
+      - name: Teardown compose + port-forwards
+        if: always()
+        run: |
+          set +e
+          docker compose -p "e2e-${GITHUB_RUN_ID}" -f bulk-submission-and-fee-scheme-tests-/docker-compose.yml down -v
+          [ -n "${PORT_FORWARD_FSP_PID:-}" ] && kill "${PORT_FORWARD_FSP_PID}" || true
+          [ -n "${PORT_FORWARD_PDA_PID:-}" ] && kill "${PORT_FORWARD_PDA_PID}" || true
+          true
