@@ -138,7 +138,8 @@ public final class GetValidationMessagesPactTest extends AbstractPactTest {
   void verify200Response() {
     ValidationMessagesResponse claims =
         dataClaimsRestClient
-            .getValidationMessages(SUBMISSION_ID, CLAIM_ID, "ERROR", "Source", 1, 10)
+            .getValidationMessages(
+                SUBMISSION_ID, CLAIM_ID, "ERROR", "Source", 1, 10, "client_surname,asc")
             .block();
 
     assertThat(claims.getContent().size()).isEqualTo(1);
@@ -150,7 +151,8 @@ public final class GetValidationMessagesPactTest extends AbstractPactTest {
   void verify200ResponseEmpty() {
     ValidationMessagesResponse claims =
         dataClaimsRestClient
-            .getValidationMessages(SUBMISSION_ID, CLAIM_ID, "ERROR", "Source", 1, 10)
+            .getValidationMessages(
+                SUBMISSION_ID, CLAIM_ID, "ERROR", "Source", 1, 10, "client_surname,asc")
             .block();
 
     assertThat(claims.getContent().isEmpty()).isTrue();

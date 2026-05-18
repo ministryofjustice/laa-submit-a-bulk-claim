@@ -87,7 +87,8 @@ public interface DataClaimsRestClient {
       @RequestParam(value = "type", required = false) String type,
       @RequestParam(value = "source", required = false) String source,
       @RequestParam(value = "page", required = false, defaultValue = "0") Integer page,
-      @RequestParam(value = "size", required = false) Integer size);
+      @RequestParam(value = "size", required = false) Integer size,
+      @RequestParam(value = "sort", required = false) String sort);
 
   @GetExchange(value = "/submissions/{id}/matter-starts")
   Mono<MatterStartResultSet> getAllMatterStartsForSubmission(@PathVariable("id") UUID submissionId);

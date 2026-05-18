@@ -35,21 +35,26 @@ public class SubmissionMessagesBuilder {
   private final PaginationUtil paginationUtil;
 
   /** Builds a {@link MessagesSummary} for a given submission ID whilst only returning errors. */
-  public MessagesSummary buildErrors(UUID submissionId, int page, int size) {
-    return build(submissionId, null, ValidationMessageType.ERROR, page, size);
+  public MessagesSummary buildErrors(UUID submissionId, int page, int size, String sort) {
+    return build(submissionId, null, ValidationMessageType.ERROR, page, size, sort);
   }
 
   /** Builds a {@link MessagesSummary} for a given submission ID with both warnings and errors. */
   public MessagesSummary buildAllWarnings(UUID submissionId, UUID claimId) {
-    return build(submissionId, claimId, ValidationMessageType.WARNING, null, null);
+    return build(submissionId, claimId, ValidationMessageType.WARNING, null, null, null);
   }
 
   public MessagesSummary build(
-      UUID submissionId, UUID claimId, ValidationMessageType type, Integer page, Integer size) {
+      UUID submissionId,
+      UUID claimId,
+      ValidationMessageType type,
+      Integer page,
+      Integer size,
+      String sort) {
     String submissionType = type != null ? type.toString() : null;
     final ValidationMessagesResponse messagesResponse =
         dataClaimsRestClient
-            .getValidationMessages(submissionId, claimId, submissionType, null, page, size)
+            .getValidationMessages(submissionId, claimId, submissionType, null, page, size, sort)
             .block();
 
     // Get all claims from data claims service (Only keep unique keys)

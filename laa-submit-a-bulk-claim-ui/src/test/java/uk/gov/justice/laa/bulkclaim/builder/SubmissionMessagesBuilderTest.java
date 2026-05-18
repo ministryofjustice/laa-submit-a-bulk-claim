@@ -49,7 +49,13 @@ class SubmissionMessagesBuilderTest {
         new ValidationMessagesResponse().content(List.of(error)).totalElements(1).totalClaims(1);
 
     when(dataClaimsRestClient.getValidationMessages(
-            submissionId, null, ValidationMessageType.ERROR.toString(), null, 0, 10))
+            submissionId,
+            null,
+            ValidationMessageType.ERROR.toString(),
+            null,
+            0,
+            10,
+            "client_surname,asc"))
         .thenReturn(Mono.just(errorResponse));
 
     when(dataClaimsRestClient.getSubmissionClaim(submissionId, claimId))
@@ -74,7 +80,7 @@ class SubmissionMessagesBuilderTest {
     when(bulkClaimImportSummaryMapper.toSubmissionSummaryClaimMessage(any(), any()))
         .thenReturn(mappedError);
 
-    MessagesSummary result = builder.buildErrors(submissionId, 0, 10);
+    MessagesSummary result = builder.buildErrors(submissionId, 0, 10, "client_surname,asc");
 
     assertThat(result.messages()).containsExactly(mappedError);
     assertThat(result.totalMessageCount()).isEqualTo(1);
@@ -87,10 +93,16 @@ class SubmissionMessagesBuilderTest {
     UUID submissionId = UUID.randomUUID();
 
     when(dataClaimsRestClient.getValidationMessages(
-            submissionId, null, ValidationMessageType.ERROR.toString(), null, 0, 10))
+            submissionId,
+            null,
+            ValidationMessageType.ERROR.toString(),
+            null,
+            0,
+            10,
+            "client_surname,asc"))
         .thenReturn(Mono.empty());
 
-    MessagesSummary result = builder.buildErrors(submissionId, 0, 10);
+    MessagesSummary result = builder.buildErrors(submissionId, 0, 10, "client_surname,asc");
 
     assertThat(result.messages()).isEmpty();
     assertThat(result.totalMessageCount()).isZero();
@@ -112,7 +124,13 @@ class SubmissionMessagesBuilderTest {
         new ValidationMessagesResponse().content(List.of(error)).totalElements(1).totalClaims(1);
 
     when(dataClaimsRestClient.getValidationMessages(
-            submissionId, null, ValidationMessageType.ERROR.toString(), null, 0, 10))
+            submissionId,
+            null,
+            ValidationMessageType.ERROR.toString(),
+            null,
+            0,
+            10,
+            "client_surname,asc"))
         .thenReturn(Mono.just(errorResponse));
 
     MessageRow mappedError =
@@ -134,7 +152,7 @@ class SubmissionMessagesBuilderTest {
     when(bulkClaimImportSummaryMapper.toSubmissionSummaryClaimMessage(any(), any()))
         .thenReturn(mappedError);
 
-    MessagesSummary result = builder.buildErrors(submissionId, 0, 10);
+    MessagesSummary result = builder.buildErrors(submissionId, 0, 10, "client_surname,asc");
 
     assertThat(result.messages()).containsExactly(mappedError);
     assertThat(result.totalMessageCount()).isEqualTo(1);
@@ -157,7 +175,13 @@ class SubmissionMessagesBuilderTest {
         new ValidationMessagesResponse().content(List.of(error)).totalElements(1).totalClaims(1);
 
     when(dataClaimsRestClient.getValidationMessages(
-            submissionId, null, ValidationMessageType.ERROR.toString(), null, 0, 10))
+            submissionId,
+            null,
+            ValidationMessageType.ERROR.toString(),
+            null,
+            0,
+            10,
+            "client_surname,asc"))
         .thenReturn(Mono.just(errorResponse));
 
     MessageRow mappedError =
@@ -179,7 +203,7 @@ class SubmissionMessagesBuilderTest {
     when(bulkClaimImportSummaryMapper.toSubmissionSummaryClaimMessage(any(), any()))
         .thenReturn(mappedError);
 
-    MessagesSummary result = builder.buildErrors(submissionId, 0, 10);
+    MessagesSummary result = builder.buildErrors(submissionId, 0, 10, "client_surname,asc");
 
     assertThat(result.messages()).containsExactly(mappedError);
     assertThat(result.totalMessageCount()).isEqualTo(1);
