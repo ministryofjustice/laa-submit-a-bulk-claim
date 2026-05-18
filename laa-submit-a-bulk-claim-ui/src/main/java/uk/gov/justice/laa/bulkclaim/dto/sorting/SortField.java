@@ -4,7 +4,7 @@ public interface SortField {
   String getValue();
 
   default SortDirection getDirection(Sort<?> sort) {
-    if (sort != null && sort.getField().equals(this)) {
+    if (sort != null && equals(sort.getField())) {
       return sort.getDirection();
     }
     return SortDirection.NONE;
