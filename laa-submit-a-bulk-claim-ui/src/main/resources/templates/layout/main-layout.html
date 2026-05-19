@@ -20,6 +20,8 @@
 <body class="govuk-template__body">
 <header th:replace="~{fragments/header :: header(${pageCategory})}"/>
 
+<div th:replace="~{fragments/cookie-banner :: cookieBanner}"/>
+
 <div class="govuk-width-container">
   <div id="govuk-back-link-container" data-module="laa-hide-on-print-button">
     <th:block th:replace="${backLink}">
