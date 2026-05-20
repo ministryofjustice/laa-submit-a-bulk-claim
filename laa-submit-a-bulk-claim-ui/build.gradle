@@ -65,6 +65,7 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-webmvc'
     implementation 'org.springframework.boot:spring-boot-starter-webflux'
     implementation 'org.springframework.boot:spring-boot-starter-log4j2'
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
     implementation 'org.reactivestreams:reactive-streams:1.0.4'
 
     implementation 'org.thymeleaf.extras:thymeleaf-extras-springsecurity6'
@@ -109,6 +110,8 @@ dependencies {
     testImplementation 'org.mock-server:mockserver-client-java:5.15.0'
 
     testImplementation 'au.com.dius.pact.consumer:junit5:4.6.19'
+
+    testImplementation 'org.jsoup:jsoup:1.22.1'
 
     accessibilityTestImplementation 'com.microsoft.playwright:playwright:1.56.0'
     accessibilityTestImplementation 'com.deque.html.axe-core:playwright:4.10.2'

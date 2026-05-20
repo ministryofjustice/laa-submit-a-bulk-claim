@@ -184,7 +184,8 @@ class SubmissionDetailControllerTest {
       // When / Then
       assertThat(
               mockMvc.perform(
-                  get("/view-submission-detail?sort=desc&submissionId=" + submissionReference)
+                  get("/view-submission-detail?sort=line_number,desc&submissionId="
+                          + submissionReference)
                       .with(oidcLogin().oidcUser(ControllerTestHelper.getOidcUser()))
                       .sessionAttr("submissionId", submissionReference)))
           .hasStatusOk()
@@ -227,7 +228,7 @@ class SubmissionDetailControllerTest {
       // When / Then
       assertThat(
               mockMvc.perform(
-                  get("/view-submission-detail?sort=desc&navTab=CLAIM_DETAILS&submissionId="
+                  get("/view-submission-detail?sort=line_number,desc&navTab=CLAIM_DETAILS&submissionId="
                           + submissionReference)
                       .with(oidcLogin().oidcUser(ControllerTestHelper.getOidcUser()))
                       .sessionAttr("submissionId", submissionReference)))
@@ -274,7 +275,7 @@ class SubmissionDetailControllerTest {
       // When / Then
       assertThat(
               mockMvc.perform(
-                  get("/view-submission-detail?sort=desc&navTab=MATTER_STARTS&submissionId="
+                  get("/view-submission-detail?sort=line_number,desc&navTab=MATTER_STARTS&submissionId="
                           + submissionReference)
                       .with(oidcLogin().oidcUser(ControllerTestHelper.getOidcUser()))
                       .sessionAttr("submissionId", submissionReference)))
@@ -318,7 +319,8 @@ class SubmissionDetailControllerTest {
       // When
       MvcTestResult response =
           mockMvc.perform(
-              get("/view-submission-detail?sort=desc&submissionId=" + submissionReference)
+              get("/view-submission-detail?sort=line_number,desc&submissionId="
+                      + submissionReference)
                   .with(oidcLogin().oidcUser(ControllerTestHelper.getOidcUser()))
                   .sessionAttr("submissionId", submissionReference));
 
@@ -449,12 +451,12 @@ class SubmissionDetailControllerTest {
       when(submissionMatterStartsDetailsBuilder.build(any()))
           .thenReturn(List.of(new SubmissionMatterStartsRow("Description", 34)));
       mockMvc.perform(
-          get("/view-submission-detail?page=0&sort=desc&submissionId=" + submissionId)
+          get("/view-submission-detail?page=0&sort=line_number,desc&submissionId=" + submissionId)
               .with(oidcLogin().oidcUser(ControllerTestHelper.getOidcUser()))
               .sessionAttr("submissionId", submissionId));
 
       verify(submissionClaimDetailsBuilder)
-          .build(eq(submissionResponse), eq(0), anyInt(), eq("desc"));
+          .build(eq(submissionResponse), eq(0), anyInt(), eq("line_number,desc"));
     }
 
     @Test

@@ -6,7 +6,7 @@
 
     <div class="govuk-grid-row">
       <form id="claims-search-form" th:action="@{/submissions/search}"
-            th:object="${submissionsSearchForm}" method="POST">
+            th:object="${submissionSearchQuery}" method="POST">
         <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
         <div class="govuk-grid-column-full">
           <div th:replace="~{fragments/error-components :: error-summary}"/>
@@ -16,7 +16,7 @@
         </div>
 
         <div class="govuk-grid-column-full">
-          <th:block th:insert="~{fragments/submission-search :: form(${submissionsSearchForm})}"/>
+          <th:block th:insert="~{fragments/submission-search :: form(${submissionSearchQuery})}"/>
         </div>
       </form>
 
@@ -34,21 +34,16 @@
           <table class="govuk-table">
             <thead class="govuk-table__head">
             <tr class="govuk-table__row">
-              <th:block th:replace="~{fragments/sortable-header ::submissionSearchSortableHeader('createdOn',
-                 'search.result.header.submission',
-                 ${submissionsSearchForm})}"></th:block>
-              <th:block th:replace="~{fragments/sortable-header ::submissionSearchSortableHeader('officeAccountNumber',
-                 'search.result.header.office',
-                 ${submissionsSearchForm})}"></th:block>
-              <th:block th:replace="~{fragments/sortable-header ::submissionSearchSortableHeader('areaOfLaw',
-                 'search.result.header.area',
-                 ${submissionsSearchForm})}"></th:block>
-              <th:block th:replace="~{fragments/sortable-header ::submissionSearchSortableHeader('submissionPeriod',
-                 'search.result.header.submissionPeriod',
-                 ${submissionsSearchForm})}"></th:block>
-              <th:block th:replace="~{fragments/sortable-header ::submissionSearchSortableHeader('status',
-                 'common.status',
-                 ${submissionsSearchForm})}"></th:block>
+              <th:block th:replace="~{fragments/sortable-header :: sortableHeader(
+                ${submissionSearchQuery}, ${SubmissionSearchSortField.CREATED_ON}, 'search.result.header.submission')}"></th:block>
+              <th:block th:replace="~{fragments/sortable-header :: sortableHeader(
+                ${submissionSearchQuery}, ${SubmissionSearchSortField.OFFICE_ACCOUNT_NUMBER}, 'search.result.header.office')}"></th:block>
+              <th:block th:replace="~{fragments/sortable-header :: sortableHeader(
+                ${submissionSearchQuery}, ${SubmissionSearchSortField.AREA_OF_LAW}, 'search.result.header.area')}"></th:block>
+              <th:block th:replace="~{fragments/sortable-header :: sortableHeader(
+                ${submissionSearchQuery}, ${SubmissionSearchSortField.SUBMISSION_PERIOD}, 'search.result.header.submissionPeriod')}"></th:block>
+              <th:block th:replace="~{fragments/sortable-header :: sortableHeader(
+                ${submissionSearchQuery}, ${SubmissionSearchSortField.STATUS}, 'common.status')}"></th:block>
             </tr>
             </thead>
             <tbody class="govuk-table__body">

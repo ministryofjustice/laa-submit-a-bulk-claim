@@ -2,7 +2,9 @@ package uk.gov.justice.laa.bulkclaim.dto.submission.claim;
 
 import java.time.LocalDate;
 import java.util.UUID;
+import lombok.Builder;
 
+@Builder
 public record SubmissionClaimRow(
     UUID id,
     int lineNumber,
