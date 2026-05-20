@@ -216,9 +216,6 @@ class SubmissionDetailControllerTest {
                   new BigDecimal("100.50"),
                   "Legal aid",
                   OffsetDateTime.of(2025, 1, 1, 10, 10, 10, 0, ZoneOffset.UTC)));
-      when(submissionClaimDetailsBuilder.build(any(), anyInt(), anyInt(), any()))
-          .thenReturn(
-              new SubmissionClaimsDetails(Collections.emptyList(), pagination, BigDecimal.ZERO));
       when(submissionMessagesBuilder.buildErrors(any(), anyInt(), anyInt(), any()))
           .thenReturn(
               new MessagesSummary(Collections.emptyList(), 0, 0, pagination, MessagesSource.CLAIM));
@@ -234,7 +231,6 @@ class SubmissionDetailControllerTest {
           .hasStatusOk()
           .hasViewName("pages/view-submission-detail-invalid");
 
-      verify(submissionClaimDetailsBuilder, times(1)).build(any(), anyInt(), anyInt());
       verify(submissionMessagesBuilder, times(1)).buildErrors(submissionReference, 0, 10, null);
       verify(submissionMatterStartsDetailsBuilder, times(1)).build(any());
     }

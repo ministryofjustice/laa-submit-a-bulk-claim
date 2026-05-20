@@ -237,11 +237,6 @@ public class SubmissionDetailController {
       SubmissionViewQuery submissionViewQuery,
       MessageQuery messageQuery) {
 
-    SubmissionClaimsDetails claimDetails =
-        submissionClaimDetailsBuilder.build(
-            submissionResponse, submissionViewQuery.getPage(), submissionViewQuery.getSize());
-    model.addAttribute("claimDetails", claimDetails);
-
     MessagesSummary messagesSummary =
         submissionMessagesBuilder.buildErrors(
             messageQuery.getSubmissionId(),
@@ -256,13 +251,15 @@ public class SubmissionDetailController {
             messagesSummary.pagination(),
             "page",
             SUBMISSION_ID,
-            submissionViewQuery.getSubmissionId()));
+            submissionViewQuery.getSubmissionId(),
+            "sort",
+            messageQuery.getSort().toString()));
 
     List<SubmissionMatterStartsRow> matterStartsDetails =
         submissionMatterStartsDetailsBuilder.build(submissionResponse);
     model.addAttribute("matterStartsDetails", matterStartsDetails);
 
-    addCounts(model, claimDetails, messagesSummary, matterStartsDetails);
+    addCounts(model, messagesSummary, matterStartsDetails);
   }
 
   private void addCommonSubmissionAttributes(
@@ -282,13 +279,20 @@ public class SubmissionDetailController {
       SubmissionClaimsDetails claimDetails,
       MessagesSummary messagesSummary,
       List<SubmissionMatterStartsRow> matterStartsDetails) {
-
     int claimCount =
         Optional.ofNullable(claimDetails)
             .map(SubmissionClaimsDetails::pagination)
             .map(Page::getTotalElements)
             .orElse(0);
+    model.addAttribute("claimCount", claimCount);
 
+    addCounts(model, messagesSummary, matterStartsDetails);
+  }
+
+  private void addCounts(
+      Model model,
+      MessagesSummary messagesSummary,
+      List<SubmissionMatterStartsRow> matterStartsDetails) {
     int messageCount =
         Optional.ofNullable(messagesSummary).map(MessagesSummary::totalMessageCount).orElse(0);
 
@@ -297,7 +301,6 @@ public class SubmissionDetailController {
             .mapToLong(SubmissionMatterStartsRow::numberOfMatterStarts)
             .sum();
 
-    model.addAttribute("claimCount", claimCount);
     model.addAttribute("messageCount", messageCount);
     model.addAttribute("matterStartsCount", matterStartsCount);
   }

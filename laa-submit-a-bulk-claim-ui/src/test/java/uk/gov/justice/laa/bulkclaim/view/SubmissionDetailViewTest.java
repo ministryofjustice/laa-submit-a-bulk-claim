@@ -397,6 +397,165 @@ class SubmissionDetailViewTest extends ViewTestBase {
             submissionId));
   }
 
+  @Test
+  void viewSubmissionDetailHasSortableClaimErrorHeaders_crime() {
+    mockErrorMessages(AreaOfLaw.CRIME_LOWER, MessagesSource.CLAIM);
+
+    var doc = renderDocumentWithParams(Map.of("navTab", "CLAIM_MESSAGES"));
+
+    Elements headers = getTableHeaders(doc);
+
+    assertTableHeaderIsSortable(
+        headers.get(0),
+        "none",
+        "Client surname",
+        String.format(
+            "/view-submission-detail?submissionId=%s&navTab=CLAIM_MESSAGES&messagesPage=0&messagesSort=client_surname,asc",
+            submissionId));
+    assertTableHeaderIsSortable(
+        headers.get(1),
+        "none",
+        "Client initial",
+        String.format(
+            "/view-submission-detail?submissionId=%s&navTab=CLAIM_MESSAGES&messagesPage=0&messagesSort=client_forename,asc",
+            submissionId));
+    assertTableHeaderIsSortable(
+        headers.get(2),
+        "none",
+        "UFN",
+        String.format(
+            "/view-submission-detail?submissionId=%s&navTab=CLAIM_MESSAGES&messagesPage=0&messagesSort=unique_file_number,asc",
+            submissionId));
+    assertTableHeaderIsSortable(
+        headers.get(3),
+        "none",
+        "Messages",
+        String.format(
+            "/view-submission-detail?submissionId=%s&navTab=CLAIM_MESSAGES&messagesPage=0&messagesSort=display_message,asc",
+            submissionId));
+  }
+
+  @Test
+  void viewSubmissionDetailHasSortableClaimErrorHeaders_civil() {
+    mockErrorMessages(AreaOfLaw.LEGAL_HELP, MessagesSource.CLAIM);
+
+    var doc = renderDocumentWithParams(Map.of("navTab", "CLAIM_MESSAGES"));
+
+    Elements headers = getTableHeaders(doc);
+
+    assertTableHeaderIsSortable(
+        headers.get(0),
+        "none",
+        "Client surname",
+        String.format(
+            "/view-submission-detail?submissionId=%s&navTab=CLAIM_MESSAGES&messagesPage=0&messagesSort=client_surname,asc",
+            submissionId));
+    assertTableHeaderIsSortable(
+        headers.get(1),
+        "none",
+        "Client initial",
+        String.format(
+            "/view-submission-detail?submissionId=%s&navTab=CLAIM_MESSAGES&messagesPage=0&messagesSort=client_forename,asc",
+            submissionId));
+    assertTableHeaderIsSortable(
+        headers.get(2),
+        "none",
+        "UFN",
+        String.format(
+            "/view-submission-detail?submissionId=%s&navTab=CLAIM_MESSAGES&messagesPage=0&messagesSort=unique_file_number,asc",
+            submissionId));
+    assertTableHeaderIsSortable(
+        headers.get(3),
+        "none",
+        "UCN",
+        String.format(
+            "/view-submission-detail?submissionId=%s&navTab=CLAIM_MESSAGES&messagesPage=0&messagesSort=unique_client_number,asc",
+            submissionId));
+    assertTableHeaderIsSortable(
+        headers.get(4),
+        "none",
+        "Messages",
+        String.format(
+            "/view-submission-detail?submissionId=%s&navTab=CLAIM_MESSAGES&messagesPage=0&messagesSort=display_message,asc",
+            submissionId));
+  }
+
+  @Test
+  void viewSubmissionDetailHasSortableClaimErrorHeaders_mediation() {
+    mockErrorMessages(AreaOfLaw.MEDIATION, MessagesSource.CLAIM);
+
+    var doc = renderDocumentWithParams(Map.of("navTab", "CLAIM_MESSAGES"));
+
+    Elements headers = getTableHeaders(doc);
+
+    assertTableHeaderIsSortable(
+        headers.get(0),
+        "none",
+        "Client 1 surname",
+        String.format(
+            "/view-submission-detail?submissionId=%s&navTab=CLAIM_MESSAGES&messagesPage=0&messagesSort=client_surname,asc",
+            submissionId));
+    assertTableHeaderIsSortable(
+        headers.get(1),
+        "none",
+        "Client 1 forename",
+        String.format(
+            "/view-submission-detail?submissionId=%s&navTab=CLAIM_MESSAGES&messagesPage=0&messagesSort=client_forename,asc",
+            submissionId));
+    assertTableHeaderIsSortable(
+        headers.get(2),
+        "none",
+        "Client 1 UCN",
+        String.format(
+            "/view-submission-detail?submissionId=%s&navTab=CLAIM_MESSAGES&messagesPage=0&messagesSort=unique_client_number,asc",
+            submissionId));
+    assertTableHeaderIsSortable(
+        headers.get(3),
+        "none",
+        "Client 2 surname",
+        String.format(
+            "/view-submission-detail?submissionId=%s&navTab=CLAIM_MESSAGES&messagesPage=0&messagesSort=client_2_surname,asc",
+            submissionId));
+    assertTableHeaderIsSortable(
+        headers.get(4),
+        "none",
+        "Client 2 forename",
+        String.format(
+            "/view-submission-detail?submissionId=%s&navTab=CLAIM_MESSAGES&messagesPage=0&messagesSort=client_2_forename,asc",
+            submissionId));
+    assertTableHeaderIsSortable(
+        headers.get(5),
+        "none",
+        "Client 2 UCN",
+        String.format(
+            "/view-submission-detail?submissionId=%s&navTab=CLAIM_MESSAGES&messagesPage=0&messagesSort=client_2_ucn,asc",
+            submissionId));
+    assertTableHeaderIsSortable(
+        headers.get(6),
+        "none",
+        "Messages",
+        String.format(
+            "/view-submission-detail?submissionId=%s&navTab=CLAIM_MESSAGES&messagesPage=0&messagesSort=display_message,asc",
+            submissionId));
+  }
+
+  @Test
+  void viewSubmissionDetailHasSortableSubmissionErrorHeaders() {
+    mockErrorMessages(AreaOfLaw.CRIME_LOWER, MessagesSource.SUBMISSION);
+
+    var doc = renderDocumentWithParams(Map.of("navTab", "CLAIM_MESSAGES"));
+
+    Elements headers = getTableHeaders(doc);
+
+    assertTableHeaderIsSortable(
+        headers.get(0),
+        "none",
+        "Messages",
+        String.format(
+            "/view-submission-detail?submissionId=%s&navTab=CLAIM_MESSAGES&messagesPage=0&messagesSort=display_message,asc",
+            submissionId));
+  }
+
   private void mockClaims(AreaOfLaw areaOfLaw) {
     Page pagination = Page.builder().totalPages(1).totalElements(1).number(0).size(10).build();
     SubmissionResponse submissionResponse =
@@ -463,5 +622,32 @@ class SubmissionDetailViewTest extends ViewTestBase {
                 0,
                 pagination,
                 MessagesSource.CLAIM));
+  }
+
+  private void mockErrorMessages(AreaOfLaw areaOfLaw, MessagesSource messagesSource) {
+    Page pagination = Page.builder().totalPages(1).totalElements(1).number(0).size(10).build();
+    SubmissionResponse submissionResponse =
+        SubmissionResponse.builder()
+            .submissionId(submissionId)
+            .status(SubmissionStatus.VALIDATION_FAILED)
+            .areaOfLaw(areaOfLaw)
+            .build();
+    when(dataClaimsRestClient.getSubmission(submissionId))
+        .thenReturn(Mono.just(submissionResponse));
+    when(submissionSummaryBuilder.build(any()))
+        .thenReturn(
+            new SubmissionSummary(
+                submissionId,
+                "Invalid",
+                LocalDate.of(2025, 5, 1),
+                "AQ2B3C",
+                BigDecimal.ONE,
+                areaOfLaw.getValue(),
+                OffsetDateTime.of(2025, 1, 1, 10, 10, 10, 0, ZoneOffset.UTC)));
+
+    when(submissionMessagesBuilder.buildErrors(any(), anyInt(), anyInt(), any()))
+        .thenReturn(
+            new MessagesSummary(
+                List.of(MessageRow.builder().build()), 0, 0, pagination, messagesSource));
   }
 }

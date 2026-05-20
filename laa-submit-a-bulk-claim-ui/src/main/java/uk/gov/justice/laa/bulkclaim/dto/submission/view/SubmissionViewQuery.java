@@ -16,8 +16,6 @@ import uk.gov.justice.laa.bulkclaim.dto.sorting.SortDirection;
 @Getter
 public class SubmissionViewQuery implements PageQuery<SubmissionViewSortField, SubmissionViewSort> {
 
-  private static final int DEFAULT_PAGE = 0;
-  private static final int DEFAULT_PAGE_SIZE = 10;
   private static final ViewSubmissionNavigationTab DEFAULT_NAV_TAB = CLAIM_DETAILS;
 
   private Integer page;
@@ -36,11 +34,6 @@ public class SubmissionViewQuery implements PageQuery<SubmissionViewSortField, S
     this.sort = Objects.requireNonNullElse(sort, SubmissionViewSort.defaults());
     this.navTab = Objects.requireNonNullElse(navTab, DEFAULT_NAV_TAB);
     this.submissionId = submissionId;
-  }
-
-  @Override
-  public Integer getSize() {
-    return DEFAULT_PAGE_SIZE;
   }
 
   @Override

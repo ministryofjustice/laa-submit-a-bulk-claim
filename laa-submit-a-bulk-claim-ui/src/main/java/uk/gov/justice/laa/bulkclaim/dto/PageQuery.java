@@ -8,9 +8,11 @@ import uk.gov.justice.laa.bulkclaim.dto.sorting.SortDirection;
 import uk.gov.justice.laa.bulkclaim.dto.sorting.SortField;
 
 public interface PageQuery<T extends SortField, U extends Sort<T>> {
-  Integer getPage();
 
-  Integer getSize();
+  int DEFAULT_PAGE = 0;
+  int DEFAULT_PAGE_SIZE = 10;
+
+  Integer getPage();
 
   U getSort();
 
@@ -20,6 +22,10 @@ public interface PageQuery<T extends SortField, U extends Sort<T>> {
 
   default String getRedirectUrl() {
     return getRedirectUrl(getPage(), getSort());
+  }
+
+  default Integer getSize() {
+    return DEFAULT_PAGE_SIZE;
   }
 
   default void addQueryParam(UriComponentsBuilder builder, String key, Object value) {

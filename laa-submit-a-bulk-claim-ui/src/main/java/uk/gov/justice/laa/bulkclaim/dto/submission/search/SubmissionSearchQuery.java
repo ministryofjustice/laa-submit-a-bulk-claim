@@ -15,9 +15,6 @@ import uk.gov.justice.laa.bulkclaim.dto.sorting.SortDirection;
 public class SubmissionSearchQuery
     implements PageQuery<SubmissionSearchSortField, SubmissionSearchSort> {
 
-  private static final int DEFAULT_PAGE = 0;
-  private static final int DEFAULT_PAGE_SIZE = 10;
-
   private Integer page;
 
   private SubmissionSearchSort sort;
@@ -49,11 +46,6 @@ public class SubmissionSearchQuery
         .offices(form.getOffices())
         .submissionStatuses(form.getSubmissionStatuses())
         .build();
-  }
-
-  @Override
-  public Integer getSize() {
-    return DEFAULT_PAGE_SIZE;
   }
 
   @Override
