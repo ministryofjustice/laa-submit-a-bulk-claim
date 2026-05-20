@@ -136,7 +136,6 @@
             <td class="govuk-table__cell"
                 th:text="${claim.concludedOrClaimedDate != null ? #temporals.format(claim.concludedOrClaimedDate, 'dd MMM yyyy') : '-'}"></td>
             <td class="govuk-table__cell govuk-table__cell--numeric"
-                th:attr="data-sort-value=${claim.costsDetails != null && claim.costsDetails.claimValue != null ? claim.costsDetails.claimValue : 0}"
                 th:text="${claim.costsDetails != null && claim.costsDetails.claimValue != null ? @currencyUtil.toString(claim.costsDetails.claimValue) : '-'}"></td>
             <td class="govuk-table__cell">
               <strong class="govuk-tag govuk-tag--pink"
@@ -175,7 +174,6 @@
             <td class="govuk-table__cell"
                 th:text="${claim.feeCode ?: '-'}"></td>
             <td class="govuk-table__cell govuk-table__cell--numeric"
-                th:attr="data-sort-value=${claim.costsDetails != null && claim.costsDetails.claimValue != null ? claim.costsDetails.claimValue : 0}"
                 th:text="${claim.costsDetails != null && claim.costsDetails.claimValue != null ? @currencyUtil.toString(claim.costsDetails.claimValue) : '-'}"></td>
             <td class="govuk-table__cell">
               <strong class="govuk-tag govuk-tag--pink"
@@ -218,7 +216,6 @@
             <td class="govuk-table__cell"
                 th:text="${claim.feeCode ?: '-'}"></td>
             <td class="govuk-table__cell govuk-table__cell--numeric"
-                th:attr="data-sort-value=${claim.costsDetails != null && claim.costsDetails.claimValue != null ? claim.costsDetails.claimValue : 0}"
                 th:text="${claim.costsDetails != null && claim.costsDetails.claimValue != null ? @currencyUtil.toString(claim.costsDetails.claimValue) : '-'}"></td>
           </tr>
           </tbody>
