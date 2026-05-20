@@ -8,13 +8,13 @@ import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 import uk.gov.justice.laa.bulkclaim.dto.SubmissionOutcomeFilter;
-import uk.gov.justice.laa.bulkclaim.dto.submission.search.SubmissionSearchForm;
+import uk.gov.justice.laa.bulkclaim.dto.submission.search.SubmissionSearchQuery;
 import uk.gov.justice.laa.bulkclaim.util.SubmissionPeriodUtil;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.AreaOfLaw;
 
 /**
- * Validator implementation for the {@code SubmissionSearchForm} class. Performs validation checks
- * on the search form inputs to ensure they meet specific criteria.
+ * Validator implementation for the {@code SubmissionSearchQuery} class. Perquerys validation checks
+ * on the search query inputs to ensure they meet specific criteria.
  *
  * <p>This class handles the following validation scenarios:
  *
@@ -47,24 +47,24 @@ public class SubmissionSearchValidator implements Validator {
 
   @Override
   public boolean supports(Class<?> clazz) {
-    return SubmissionSearchForm.class.isAssignableFrom(clazz);
+    return SubmissionSearchQuery.class.isAssignableFrom(clazz);
   }
 
   @Override
   public void validate(Object target, Errors errors) {
-    SubmissionSearchForm form = (SubmissionSearchForm) target;
+    SubmissionSearchQuery query = (SubmissionSearchQuery) target;
 
-    validateSubmissionPeriod(errors, form);
-    validateAreaOfLaw(errors, form);
-    validateSubmissionStatus(errors, form);
-    validateOffices(errors, form);
+    validateSubmissionPeriod(errors, query);
+    validateAreaOfLaw(errors, query);
+    validateSubmissionStatus(errors, query);
+    validateOffices(errors, query);
   }
 
-  private void validateSubmissionPeriod(Errors errors, SubmissionSearchForm form) {
+  private void validateSubmissionPeriod(Errors errors, SubmissionSearchQuery query) {
     Map<String, String> availableSubmissionPeriods =
         submissionPeriodUtil.getAllPossibleSubmissionPeriods();
-    if (StringUtils.isNotBlank(form.getSubmissionPeriod())
-        && !availableSubmissionPeriods.containsKey(form.getSubmissionPeriod().toUpperCase())) {
+    if (StringUtils.isNotBlank(query.getSubmissionPeriod())
+        && !availableSubmissionPeriods.containsKey(query.getSubmissionPeriod().toUpperCase())) {
       errors.rejectValue(
           SUBMISSION_PERIOD,
           "search.error.submissionPeriod.invalid",
@@ -72,10 +72,10 @@ public class SubmissionSearchValidator implements Validator {
     }
   }
 
-  private void validateAreaOfLaw(Errors errors, SubmissionSearchForm form) {
-    if (!StringUtils.isEmpty(form.getAreaOfLaw())) {
+  private void validateAreaOfLaw(Errors errors, SubmissionSearchQuery query) {
+    if (!StringUtils.isEmpty(query.getAreaOfLaw())) {
       try {
-        AreaOfLaw.fromValue(form.getAreaOfLaw().replace("_", " "));
+        AreaOfLaw.fromValue(query.getAreaOfLaw().replace("_", " "));
       } catch (IllegalArgumentException e) {
         errors.rejectValue(
             AREA_OF_LAW,
@@ -85,8 +85,8 @@ public class SubmissionSearchValidator implements Validator {
     }
   }
 
-  private void validateSubmissionStatus(Errors errors, SubmissionSearchForm form) {
-    if (Objects.isNull(form.getSubmissionStatuses())) {
+  private void validateSubmissionStatus(Errors errors, SubmissionSearchQuery query) {
+    if (Objects.isNull(query.getSubmissionStatuses())) {
       errors.rejectValue(
           SUBMISSION_STATUS,
           "search.error.submissionOutcome.invalid",
@@ -95,8 +95,8 @@ public class SubmissionSearchValidator implements Validator {
     }
   }
 
-  private void validateOffices(Errors errors, SubmissionSearchForm form) {
-    if (Objects.isNull(form.getOffices()) || form.getOffices().isEmpty()) {
+  private void validateOffices(Errors errors, SubmissionSearchQuery query) {
+    if (Objects.isNull(query.getOffices()) || query.getOffices().isEmpty()) {
       errors.rejectValue(
           OFFICES,
           "search.error.offices.empty",

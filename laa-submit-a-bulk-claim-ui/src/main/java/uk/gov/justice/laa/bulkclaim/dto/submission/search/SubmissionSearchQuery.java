@@ -12,7 +12,7 @@ import uk.gov.justice.laa.bulkclaim.dto.sorting.SortDirection;
 
 @Builder
 @Getter
-public class SubmissionSearchForm
+public class SubmissionSearchQuery
     implements PageQuery<SubmissionSearchSortField, SubmissionSearchSort> {
 
   private static final int DEFAULT_PAGE = 0;
@@ -27,7 +27,7 @@ public class SubmissionSearchForm
   private List<String> offices;
   private SubmissionOutcomeFilter submissionStatuses;
 
-  public SubmissionSearchForm(
+  public SubmissionSearchQuery(
       Integer page,
       SubmissionSearchSort sort,
       String submissionPeriod,
@@ -42,8 +42,8 @@ public class SubmissionSearchForm
     this.submissionStatuses = submissionStatuses;
   }
 
-  public static SubmissionSearchForm from(SubmissionSearchForm form) {
-    return SubmissionSearchForm.builder()
+  public static SubmissionSearchQuery from(SubmissionSearchQuery form) {
+    return SubmissionSearchQuery.builder()
         .submissionPeriod(form.getSubmissionPeriod())
         .areaOfLaw(form.getAreaOfLaw())
         .offices(form.getOffices())

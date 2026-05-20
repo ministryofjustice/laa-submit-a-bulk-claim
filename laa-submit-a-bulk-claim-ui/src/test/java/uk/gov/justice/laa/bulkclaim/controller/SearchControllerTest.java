@@ -27,7 +27,7 @@ import org.springframework.web.client.HttpClientErrorException.BadRequest;
 import reactor.core.publisher.Mono;
 import uk.gov.justice.laa.bulkclaim.client.DataClaimsRestClient;
 import uk.gov.justice.laa.bulkclaim.dto.SubmissionOutcomeFilter;
-import uk.gov.justice.laa.bulkclaim.dto.submission.search.SubmissionSearchForm;
+import uk.gov.justice.laa.bulkclaim.dto.submission.search.SubmissionSearchQuery;
 import uk.gov.justice.laa.bulkclaim.util.OidcAttributeUtils;
 import uk.gov.justice.laa.bulkclaim.util.PaginationLinksBuilder;
 import uk.gov.justice.laa.bulkclaim.util.PaginationUtil;
@@ -57,37 +57,37 @@ class SearchControllerTest {
   }
 
   @Test
-  @DisplayName("Search GET should initialise form if not present")
-  void searchShouldAddFormIfNotPresent() {
-    when(model.containsAttribute("submissionSearchForm")).thenReturn(false);
+  @DisplayName("Search GET should initialise query if not present")
+  void searchShouldAddQueryIfNotPresent() {
+    when(model.containsAttribute("submissionSearchQuery")).thenReturn(false);
 
     String view = searchController.search(model, sessionStatus, getOidcUser());
 
-    verify(model).addAttribute(eq("submissionSearchForm"), any(SubmissionSearchForm.class));
+    verify(model).addAttribute(eq("submissionSearchQuery"), any(SubmissionSearchQuery.class));
     verify(sessionStatus).setComplete();
     assertEquals("pages/submissions-search", view);
   }
 
   @Test
-  @DisplayName("Handle search should redirect to form if validation errors")
+  @DisplayName("Handle search should redirect to query if validation errors")
   void handleSearchShouldRedirectBackOnErrors() {
     when(bindingResult.hasErrors()).thenReturn(true);
-    final SubmissionSearchForm form =
-        SubmissionSearchForm.builder().submissionPeriod("01/01/2024").build();
+    final SubmissionSearchQuery query =
+        SubmissionSearchQuery.builder().submissionPeriod("01/01/2024").build();
     final Model localModel = new ExtendedModelMap();
 
-    String view = searchController.handleSearch(getOidcUser(), form, bindingResult, localModel);
+    String view = searchController.handleSearch(getOidcUser(), query, bindingResult, localModel);
 
     assertEquals("pages/submissions-search", view);
-    assertEquals(form, localModel.getAttribute("submissionSearchForm"));
+    assertEquals(query, localModel.getAttribute("submissionSearchQuery"));
   }
 
   @Test
   @DisplayName("Handle search should redirect with query params when valid")
   void handleSearchShouldRedirectWithParamsOnSuccess() {
     when(bindingResult.hasErrors()).thenReturn(false);
-    final SubmissionSearchForm form =
-        SubmissionSearchForm.builder()
+    final SubmissionSearchQuery query =
+        SubmissionSearchQuery.builder()
             .submissionPeriod("JAN-2024")
             .areaOfLaw(AreaOfLaw.CRIME_LOWER.getValue())
             .offices(List.of("12345"))
@@ -95,7 +95,7 @@ class SearchControllerTest {
             .build();
     final Model localModel = new ExtendedModelMap();
 
-    String view = searchController.handleSearch(getOidcUser(), form, bindingResult, localModel);
+    String view = searchController.handleSearch(getOidcUser(), query, bindingResult, localModel);
 
     assertEquals(
         "redirect:/submissions/search/results?page=0&submissionPeriod=JAN-2024&areaOfLaw=CRIME "
@@ -119,8 +119,8 @@ class SearchControllerTest {
     when(paginationUtil.fromSubmissionsResultSet(response, 0, 10))
         .thenReturn(new Page().totalElements(1));
 
-    var form =
-        new SubmissionSearchForm(
+    var query =
+        new SubmissionSearchQuery(
             null,
             null,
             "JAN-2024",
@@ -130,7 +130,7 @@ class SearchControllerTest {
 
     String view =
         searchController.submissionsSearchResults(
-            form, model, getOidcUser(), sessionStatus, session);
+            query, model, getOidcUser(), sessionStatus, session);
 
     verify(sessionStatus).setComplete();
     verify(model).addAttribute(eq("pagination"), any(Page.class));
@@ -147,11 +147,11 @@ class SearchControllerTest {
     when(claimsRestService.search(anyList(), any(), any(), any(), anyInt(), anyInt(), any()))
         .thenThrow(BadRequest.class);
 
-    var form = SubmissionSearchForm.builder().build();
+    var query = SubmissionSearchQuery.builder().build();
 
     String view =
         searchController.submissionsSearchResults(
-            form, model, getOidcUser(), sessionStatus, session);
+            query, model, getOidcUser(), sessionStatus, session);
 
     assertEquals("error", view);
   }
@@ -163,11 +163,11 @@ class SearchControllerTest {
     when(claimsRestService.search(anyList(), any(), any(), any(), anyInt(), anyInt(), any()))
         .thenThrow(new RuntimeException("Boom"));
 
-    var form = SubmissionSearchForm.builder().build();
+    var query = SubmissionSearchQuery.builder().build();
 
     String view =
         searchController.submissionsSearchResults(
-            form, model, getOidcUser(), sessionStatus, session);
+            query, model, getOidcUser(), sessionStatus, session);
 
     assertEquals("error", view);
   }

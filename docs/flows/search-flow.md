@@ -6,8 +6,8 @@ This document outlines how the search experience retrieves historic submissions,
 
 ```mermaid
 flowchart TD
-    start["User navigates to /submissions/search"] --> form["SearchController.search\npopulates SubmissionSearchForm"]
-    form --> submit["POST /submissions/search\nSearchController.handleSearch"]
+    start["User navigates to /submissions/search"] --> form["SearchController.search\npopulates SubmissionSearchQuery"]
+    query --> submit["POST /submissions/search\nSearchController.handleSearch"]
     submit --> validate["SubmissionSearchValidator\nchecks submissionId and date range"]
     validate -->|Validation fails| redisplay["Redirect to /submissions/search\nwith BindingResult errors"]
     validate -->|Validation passes| redirect["Redirect to /submissions/search/results\nwith filters and pagination"]
