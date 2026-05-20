@@ -1,0 +1,175 @@
+plugins {
+    id 'java'
+}
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(21)
+    }
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    testImplementation 'io.cucumber:cucumber-java:7.20.1'
+    testImplementation 'io.cucumber:cucumber-junit-platform-engine:7.20.1'
+    testImplementation 'org.junit.platform:junit-platform-suite:1.12.2'
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.12.2'
+
+    testImplementation 'com.microsoft.playwright:playwright:1.56.0'
+
+    testImplementation 'org.assertj:assertj-core:3.27.3'
+    testImplementation 'org.slf4j:slf4j-api:2.0.17'
+    testImplementation 'com.fasterxml.jackson.core:jackson-databind:2.18.2'
+    testRuntimeOnly 'ch.qos.logback:logback-classic:1.5.18'
+
+    // Database access for cleanup scripts
+    testImplementation 'org.postgresql:postgresql:42.7.3'
+}
+
+Map<String, String> loadDotEnv(File rootDir, File projectDir) {
+    Map<String, String> values = [:]
+    [new File(rootDir, '.env'), new File(projectDir, '.env')].each { envFile ->
+        if (envFile.exists()) {
+            envFile.eachLine { rawLine ->
+                String line = rawLine.trim()
+                if (line && !line.startsWith('#') && line.contains('=')) {
+                    int separatorIndex = line.indexOf('=')
+                    String key = line.substring(0, separatorIndex).trim()
+                    if (key.startsWith('export ')) {
+                        key = key.substring('export '.length()).trim()
+                    }
+
+                    String value = line.substring(separatorIndex + 1).trim()
+                    if ((value.startsWith('"') && value.endsWith('"'))
+                            || (value.startsWith("'") && value.endsWith("'"))) {
+                        value = value.substring(1, value.length() - 1)
+                    }
+
+                    if (key && !values.containsKey(key)) {
+                        values.put(key, value)
+                    }
+                }
+            }
+        }
+    }
+    return values
+}
+
+def dotEnv = loadDotEnv(rootDir, projectDir)
+def envOrDotEnv = { String key, String fallback = '' ->
+    return System.getenv(key) ?: dotEnv[key] ?: fallback
+}
+
+Closure configureE2eEnv = { task ->
+    // System properties (used by PlaywrightHooks and BaseUiSteps via System.getProperty)
+    task.systemProperty('e2e.headless', System.getProperty('e2e.headless', envOrDotEnv('E2E_HEADLESS', 'true')))
+    task.systemProperty('e2e.baseUrl',  System.getProperty('e2e.baseUrl',  envOrDotEnv('E2E_BASE_URL', 'http://localhost:8080')))
+    task.systemProperty('e2e.storageStatePath', System.getProperty('e2e.storageStatePath', envOrDotEnv('E2E_STORAGE_STATE_PATH', 'build/e2e/storageState.json')))
+    task.systemProperty(
+            'cucumber.filter.tags',
+            envOrDotEnv('CUCUMBER_TAGS', '')
+    )
+    task.systemProperty(
+            'cucumber.execution.parallel.enabled',
+            envOrDotEnv('CUCUMBER_PARALLEL_ENABLED', 'true')
+    )
+
+    task.systemProperty(
+            'cucumber.execution.parallel.config.strategy',
+            'fixed'
+    )
+
+    task.systemProperty(
+            'cucumber.execution.parallel.config.fixed.parallelism',
+            envOrDotEnv('CUCUMBER_PARALLELISM', '4')
+    )
+    // All .env values exposed as real environment variables so System.getenv() resolves them
+    task.environment 'E2E_BASE_URL',            envOrDotEnv('E2E_BASE_URL',            'http://localhost:8080')
+    task.environment 'E2E_HEADLESS',            envOrDotEnv('E2E_HEADLESS',            'true')
+    task.environment 'E2E_AUTH_MODE',           envOrDotEnv('E2E_AUTH_MODE',           'aad')
+    task.environment 'E2E_STORAGE_STATE_PATH',  envOrDotEnv('E2E_STORAGE_STATE_PATH',  'build/e2e/storageState.json')
+
+    task.environment 'UI_BASE_URL',             envOrDotEnv('UI_BASE_URL',             '')
+    task.environment 'E2E_USERNAME',           envOrDotEnv('USERNAME',               '')
+    task.environment 'USERNAME',               envOrDotEnv('USERNAME',               '')
+    task.environment 'PASSWORD',               envOrDotEnv('PASSWORD',               '')
+    task.environment 'MFA_SECRET',             envOrDotEnv('MFA_SECRET',             '')
+
+    task.environment 'DB_HOST',               envOrDotEnv('DB_HOST',               'localhost')
+    task.environment 'DB_PORT',               envOrDotEnv('DB_PORT',               '5432')
+    task.environment 'DB_USER',               envOrDotEnv('DB_USER',               '')
+    task.environment 'DB_PASS',               envOrDotEnv('DB_PASS',               '')
+    task.environment 'DB_NAME',               envOrDotEnv('DB_NAME',               '')
+    task.environment 'DB_SSL',                envOrDotEnv('DB_SSL',                'false')
+
+    task.environment 'DSTEW_API_BASE_URL',    envOrDotEnv('DSTEW_API_BASE_URL',    '')
+    task.environment 'DSTEW_API_TOKEN',       envOrDotEnv('DSTEW_API_TOKEN',       '')
+
+    task.environment 'FSP_API_BASE_URL',      envOrDotEnv('FSP_API_BASE_URL',      '')
+    task.environment 'FSP_API_TOKEN',         envOrDotEnv('FSP_API_TOKEN',         '')
+
+    task.environment 'PROVIDER_API_KEY',      envOrDotEnv('PROVIDER_API_KEY',      '')
+    task.environment 'GITHUB_RUN_NUMBER',     envOrDotEnv('GITHUB_RUN_NUMBER',     '')
+    task.environment 'PORT_FORWARD',          envOrDotEnv('PORT_FORWARD',          'false')
+}
+
+tasks.register('cucumberTest', Test) {
+    description = 'Run Java Cucumber E2E smoke journeys against real systems'
+    group = 'verification'
+
+    testClassesDirs = sourceSets.test.output.classesDirs
+    classpath = sourceSets.test.runtimeClasspath
+
+    useJUnitPlatform()
+    include '**/CucumberE2ETest.class'
+    outputs.upToDateWhen { false }
+    configureE2eEnv(it)
+}
+
+// The generic `test` task is invoked by `./gradlew build` in CI. This module runs E2E
+// via explicit tasks (e.g. cucumberTest), so we allow zero discovered tests here.
+tasks.named('test', Test) {
+    failOnNoDiscoveredTests = false
+}
+
+tasks.register('e2eCleanup', JavaExec) {
+    description = 'Clean up test submissions from the database (past 30 days)'
+    group = 'verification'
+    
+    mainClass = 'uk.gov.justice.laa.bulkclaim.e2e.utils.scripts.CleanupSubmissions'
+    classpath = sourceSets.test.runtimeClasspath
+    
+    // Pass through environment variables for database connection (falls back to .env file)
+    environment 'DB_HOST', envOrDotEnv('DB_HOST', 'localhost')
+    environment 'DB_PORT', envOrDotEnv('DB_PORT', '5432')
+    environment 'DB_USER', envOrDotEnv('DB_USER', '')
+    environment 'DB_PASS', envOrDotEnv('DB_PASS', '')
+    environment 'DB_NAME', envOrDotEnv('DB_NAME', '')
+    environment 'DB_SSL',  envOrDotEnv('DB_SSL',  'false')
+}
+
+tasks.register('e2eLogin', JavaExec) {
+    description = 'Create Playwright storage state (equivalent to npm run login)'
+    group = 'verification'
+
+    mainClass = 'uk.gov.justice.laa.bulkclaim.e2e.utils.scripts.CreateStorageState'
+    classpath = sourceSets.test.runtimeClasspath
+
+    environment 'E2E_BASE_URL', envOrDotEnv('E2E_BASE_URL', 'http://localhost:8080')
+    environment 'E2E_HEADLESS', envOrDotEnv('E2E_HEADLESS', 'false')
+    environment 'E2E_STORAGE_STATE_PATH', envOrDotEnv('E2E_STORAGE_STATE_PATH', 'build/e2e/storageState.json')
+    environment 'E2E_AUTH_MODE', envOrDotEnv('E2E_AUTH_MODE', 'aad')
+
+    // AAD mode
+    environment 'E2E_USERNAME', envOrDotEnv('USERNAME', '')
+    environment 'USERNAME', envOrDotEnv('USERNAME', '')
+    environment 'PASSWORD', envOrDotEnv('PASSWORD', '')
+    environment 'MFA_SECRET', envOrDotEnv('MFA_SECRET', '')
+
+    // Mock mode
+    environment 'MOCK_USERNAME', envOrDotEnv('MOCK_USERNAME', 'provider.user@provider.com')
+    environment 'MOCK_PASSWORD', envOrDotEnv('MOCK_PASSWORD', 'password')
+}
