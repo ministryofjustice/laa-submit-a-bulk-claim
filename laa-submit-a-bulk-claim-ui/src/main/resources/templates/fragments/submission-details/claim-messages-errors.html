@@ -1,14 +1,15 @@
 <th:block th:fragment="claim-messages-errors"
           th:if="${messagesSummary.messagesSource.toString() == 'CLAIM'}">
   <!--/*@thymesVar id="messagesSummary" type="uk.gov.justice.laa.bulkclaim.dto.submission.messages.MessagesSummary"*/-->
+  <!--/*@thymesVar id="messageQuery" type="uk.gov.justice.laa.bulkclaim.dto.submission.messages.MessageQuery"*/-->
+  <!--/*@thymesVar id="MessageSortField" type="uk.gov.justice.laa.bulkclaim.dto.submission.messages.MessageSortField"*/-->
   <th:block th:if="${messagesSummary != null}">
     <div class="govuk-grid-column-full">
       <h2 class="govuk-heading-m" id="claim-messages-errors-heading"
           th:text="#{submission.claim.errors.heading(${messagesSummary.totalMessageCount()})}"></h2>
 
       <div class="moj-scrollable-pane">
-        <table class="govuk-table sabc-sortable-table"
-               data-module="moj-sortable-table"
+        <table class="govuk-table"
                th:with="
                   area=${submissionSummary.areaOfLaw != null ? #strings.toLowerCase(submissionSummary.areaOfLaw) : ''},
                   isCrime=${area.contains('crime lower')},
@@ -19,61 +20,78 @@
 
           <thead class="govuk-table__head" th:if="${isCrime}">
           <tr class="govuk-table__row">
-            <th scope="col" class="govuk-table__header" aria-sort="none"
-                th:text="#{submission.claim.errors.table.clientSurname}"></th>
-            <th scope="col" class="govuk-table__header" aria-sort="none"
-                th:text="#{submission.claim.errors.table.clientInitial}"></th>
-            <th scope="col" class="govuk-table__header" aria-sort="none"
-                th:text="#{submission.claim.errors.table.ufn}"></th>
-            <th scope="col" class="govuk-table__header" aria-sort="none"
-                th:text="#{submission.claim.errors.table.messages}"></th>
+            <th:block th:replace="~{fragments/sortable-header :: sortableHeader(
+                ${messageQuery}, ${MessageSortField.CLIENT_SURNAME}, 'submission.claim.errors.table.clientSurname')}"></th:block>
+
+            <th:block th:replace="~{fragments/sortable-header :: sortableHeader(
+                ${messageQuery}, ${MessageSortField.CLIENT_FORENAME}, 'submission.claim.errors.table.clientInitial')}"></th:block>
+
+            <th:block th:replace="~{fragments/sortable-header :: sortableHeader(
+                ${messageQuery}, ${MessageSortField.UNIQUE_FILE_NUMBER}, 'submission.claim.errors.table.ufn')}"></th:block>
+
+            <th:block th:replace="~{fragments/sortable-header :: sortableHeader(
+                ${messageQuery}, ${MessageSortField.MESSAGES}, 'submission.claim.errors.table.messages')}"></th:block>
           </tr>
           </thead>
 
           <thead class="govuk-table__head" th:if="${isCivil}">
           <tr class="govuk-table__row">
-            <th scope="col" class="govuk-table__header" aria-sort="none"
-                th:text="#{submission.claim.errors.table.clientSurname}"></th>
-            <th scope="col" class="govuk-table__header" aria-sort="none"
-                th:text="#{submission.claim.errors.table.clientForename}"></th>
-            <th scope="col" class="govuk-table__header" aria-sort="none"
-                th:text="#{submission.claim.errors.table.ufn}"></th>
-            <th scope="col" class="govuk-table__header" aria-sort="none"
-                th:text="#{submission.claim.errors.table.ucn}"></th>
-            <th scope="col" class="govuk-table__header" aria-sort="none"
-                th:text="#{submission.claim.errors.table.messages}"></th>
+            <th:block th:replace="~{fragments/sortable-header :: sortableHeader(
+                ${messageQuery}, ${MessageSortField.CLIENT_SURNAME}, 'submission.claim.errors.table.clientSurname')}"></th:block>
+
+            <th:block th:replace="~{fragments/sortable-header :: sortableHeader(
+                ${messageQuery}, ${MessageSortField.CLIENT_FORENAME}, 'submission.claim.errors.table.clientInitial')}"></th:block>
+
+            <th:block th:replace="~{fragments/sortable-header :: sortableHeader(
+                ${messageQuery}, ${MessageSortField.UNIQUE_FILE_NUMBER}, 'submission.claim.errors.table.ufn')}"></th:block>
+
+            <th:block th:replace="~{fragments/sortable-header :: sortableHeader(
+                ${messageQuery}, ${MessageSortField.UNIQUE_CLIENT_NUMBER}, 'submission.claim.errors.table.ucn')}"></th:block>
+
+            <th:block th:replace="~{fragments/sortable-header :: sortableHeader(
+                ${messageQuery}, ${MessageSortField.MESSAGES}, 'submission.claim.errors.table.messages')}"></th:block>
           </tr>
           </thead>
 
           <thead class="govuk-table__head" th:if="${isMediation}">
           <tr class="govuk-table__row">
-            <th scope="col" class="govuk-table__header" aria-sort="none"
-                th:text="#{submission.claim.errors.table.client1Surname}"></th>
-            <th scope="col" class="govuk-table__header" aria-sort="none"
-                th:text="#{submission.claim.errors.table.client1Forename}"></th>
-            <th scope="col" class="govuk-table__header" aria-sort="none"
-                th:text="#{submission.claim.errors.table.client1Ucn}"></th>
-            <th scope="col" class="govuk-table__header" aria-sort="none"
-                th:text="#{submission.claim.errors.table.client2Surname}"></th>
-            <th scope="col" class="govuk-table__header" aria-sort="none"
-                th:text="#{submission.claim.errors.table.client2Forename}"></th>
-            <th scope="col" class="govuk-table__header" aria-sort="none"
-                th:text="#{submission.claim.errors.table.client2Ucn}"></th>
-            <th scope="col" class="govuk-table__header" aria-sort="none"
-                th:text="#{submission.claim.errors.table.messages}"></th>
+            <th:block th:replace="~{fragments/sortable-header :: sortableHeader(
+                ${messageQuery}, ${MessageSortField.CLIENT_SURNAME}, 'submission.claim.errors.table.client1Surname')}"></th:block>
+
+            <th:block th:replace="~{fragments/sortable-header :: sortableHeader(
+                ${messageQuery}, ${MessageSortField.CLIENT_FORENAME}, 'submission.claim.errors.table.client1Forename')}"></th:block>
+
+            <th:block th:replace="~{fragments/sortable-header :: sortableHeader(
+                ${messageQuery}, ${MessageSortField.UNIQUE_CLIENT_NUMBER}, 'submission.claim.errors.table.client1Ucn')}"></th:block>
+
+            <th:block th:replace="~{fragments/sortable-header :: sortableHeader(
+                ${messageQuery}, ${MessageSortField.CLIENT_2_SURNAME}, 'submission.claim.errors.table.client2Surname')}"></th:block>
+
+            <th:block th:replace="~{fragments/sortable-header :: sortableHeader(
+                ${messageQuery}, ${MessageSortField.CLIENT_2_FORENAME}, 'submission.claim.errors.table.client2Forename')}"></th:block>
+
+            <th:block th:replace="~{fragments/sortable-header :: sortableHeader(
+                ${messageQuery}, ${MessageSortField.CLIENT_2_UCN}, 'submission.claim.errors.table.client2Ucn')}"></th:block>
+
+            <th:block th:replace="~{fragments/sortable-header :: sortableHeader(
+                ${messageQuery}, ${MessageSortField.MESSAGES}, 'submission.claim.errors.table.messages')}"></th:block>
           </tr>
           </thead>
 
           <thead class="govuk-table__head" th:if="${!isCrime and !isCivil and !isMediation}">
           <tr class="govuk-table__row">
-            <th scope="col" class="govuk-table__header" aria-sort="none"
-                th:text="#{submission.claim.errors.table.client}"></th>
-            <th scope="col" class="govuk-table__header" aria-sort="none"
-                th:text="#{submission.claim.errors.table.ucn}"></th>
-            <th scope="col" class="govuk-table__header" aria-sort="none"
-                th:text="#{submission.claim.errors.table.ufn}"></th>
-            <th scope="col" class="govuk-table__header" aria-sort="none"
-                th:text="#{submission.claim.errors.table.messages}"></th>
+            <!-- client is not sortable on the API, but since this is just a fallback, use client forename to sort -->
+            <th:block th:replace="~{fragments/sortable-header :: sortableHeader(
+                ${messageQuery}, ${MessageSortField.CLIENT_FORENAME}, 'submission.claim.errors.table.client')}"></th:block>
+
+            <th:block th:replace="~{fragments/sortable-header :: sortableHeader(
+                ${messageQuery}, ${MessageSortField.UNIQUE_CLIENT_NUMBER}, 'submission.claim.errors.table.ucn')}"></th:block>
+
+            <th:block th:replace="~{fragments/sortable-header :: sortableHeader(
+                ${messageQuery}, ${MessageSortField.UNIQUE_FILE_NUMBER}, 'submission.claim.errors.table.ufn')}"></th:block>
+
+            <th:block th:replace="~{fragments/sortable-header :: sortableHeader(
+                ${messageQuery}, ${MessageSortField.MESSAGES}, 'submission.claim.errors.table.messages')}"></th:block>
           </tr>
           </thead>
 
@@ -82,16 +100,12 @@
               th:each="message, idx : ${messagesSummary.messages}"
               th:id="|claim-message-error-${idx.index}|">
             <td class="govuk-table__cell"
-                th:data-sort-value="${message.clientSurname()}"
                 th:text="${message.clientSurname() ?: '-'}"></td>
             <td class="govuk-table__cell"
-                th:data-sort-value="${message.clientForename()}"
                 th:text="${message.clientForename() ?: '-'}"></td>
             <td class="govuk-table__cell"
-                th:data-sort-value="${message.ufn()}"
                 th:text="${message.ufn() ?: '-'}"></td>
             <td class="govuk-table__cell"
-                th:data-sort-value="${message.message()}"
                 th:text="${message.message()}"></td>
           </tr>
           </tbody>
@@ -101,19 +115,14 @@
               th:each="message, idx : ${messagesSummary.messages}"
               th:id="|claim-message-error-${idx.index}|">
             <td class="govuk-table__cell"
-                th:data-sort-value="${message.clientSurname()}"
                 th:text="${message.clientSurname() ?: '-'}"></td>
             <td class="govuk-table__cell"
-                th:data-sort-value="${message.clientForename()}"
                 th:text="${message.clientForename() ?: '-'}"></td>
             <td class="govuk-table__cell"
-                th:data-sort-value="${message.ufn()}"
                 th:text="${message.ufn() ?: '-'}"></td>
             <td class="govuk-table__cell"
-                th:data-sort-value="${message.ucn()}"
                 th:text="${message.ucn() ?: '-'}"></td>
             <td class="govuk-table__cell"
-                th:data-sort-value="${message.message()}"
                 th:text="${message.message()}"></td>
           </tr>
           </tbody>
@@ -123,25 +132,18 @@
               th:each="message, idx : ${messagesSummary.messages}"
               th:id="|claim-message-error-${idx.index}|">
             <td class="govuk-table__cell"
-                th:data-sort-value="${message.clientSurname()}"
                 th:text="${message.clientSurname() ?: '-'}"></td>
             <td class="govuk-table__cell"
-                th:data-sort-value="${message.clientForename()}"
                 th:text="${message.clientForename() ?: '-'}"></td>
             <td class="govuk-table__cell"
-                th:data-sort-value="${message.ucn()}"
                 th:text="${message.ucn() ?: '-'}"></td>
             <td class="govuk-table__cell"
-                th:data-sort-value="${message.client2Surname()}"
                 th:text="${message.client2Surname() ?: '-'}"></td>
             <td class="govuk-table__cell"
-                th:data-sort-value="${message.client2Forename()}"
                 th:text="${message.client2Forename() ?: '-'}"></td>
             <td class="govuk-table__cell"
-                th:data-sort-value="${message.client2Ucn()}"
                 th:text="${message.client2Ucn() ?: '-'}"></td>
             <td class="govuk-table__cell"
-                th:data-sort-value="${message.message()}"
                 th:text="${message.message()}"></td>
           </tr>
           </tbody>
@@ -151,16 +153,12 @@
               th:each="message, idx : ${messagesSummary.messages}"
               th:id="|claim-message-error-${idx.index}|">
             <td class="govuk-table__cell"
-                th:data-sort-value="${message.client()}"
                 th:text="${message.client() ?: '-'}"></td>
             <td class="govuk-table__cell"
-                th:data-sort-value="${message.ucn()}"
                 th:text="${message.ucn() ?: '-'}"></td>
             <td class="govuk-table__cell"
-                th:data-sort-value="${message.ufn()}"
                 th:text="${message.ufn() ?: '-'}"></td>
             <td class="govuk-table__cell"
-                th:data-sort-value="${message.message()}"
                 th:text="${message.message()}"></td>
           </tr>
           </tbody>
