@@ -28,9 +28,10 @@
                     </p>
                 </div>
 
+                <form th:action="@{/cookies/consent}" method="post">
                 <div class="govuk-button-group">
                     <!-- Accept -->
-                    <form th:action="@{/cookies/consent}" method="post">
+
                         <input type="hidden"
                                name="analytics"
                                value="yes"/>
@@ -39,10 +40,8 @@
                                 data-module="govuk-button">
                             Accept additional cookies
                         </button>
-                    </form>
 
                     <!-- Reject -->
-                    <form th:action="@{/cookies/consent}" method="post">
                         <input type="hidden"
                                name="analytics"
                                value="no"/>
@@ -51,14 +50,14 @@
                                 data-module="govuk-button">
                             Reject additional cookies
                         </button>
-                    </form>
 
                     <!-- View cookies-->
-                    <a class="govuk-link"
-                       th:href="@{/cookies}">
-                        View cookies
-                    </a>
+                        <a class="govuk-link"
+                           th:href="@{/cookies}">
+                            View cookies
+                        </a>
                 </div>
+                    </form>
             </div>
         </div>
     </div>

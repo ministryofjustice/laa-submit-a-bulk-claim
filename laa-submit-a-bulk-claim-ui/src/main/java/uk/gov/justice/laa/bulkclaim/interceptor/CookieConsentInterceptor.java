@@ -33,6 +33,7 @@ public class CookieConsentInterceptor implements HandlerInterceptor {
         request.setAttribute("analyticsConsented", analyticsConsented);
         request.setAttribute("showCookieBanner", !bannerSeen);
         request.setAttribute("bannerSeen", bannerSeen && !bannerHidden);
+        request.setAttribute("isCookiesPage", request.getRequestURI().equals("/cookies"));
         return true;
     }
 }

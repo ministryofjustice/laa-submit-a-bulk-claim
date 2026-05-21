@@ -18,9 +18,10 @@
   <link rel="icon" th:href="@{/webjars/govuk-frontend/dist/govuk/assets/images/favicon.svg}" type="image/svg+xml">
 </head>
 <body class="govuk-template__body">
+<div th:unless="${isCookiesPage}">
+    <div th:replace="~{fragments/cookie-banner :: cookieBanner}"/>
+</div>
 <header th:replace="~{fragments/header :: header(${pageCategory})}"/>
-
-<div th:replace="~{fragments/cookie-banner :: cookieBanner}"/>
 
 <div class="govuk-width-container">
   <div id="govuk-back-link-container" data-module="laa-hide-on-print-button">
