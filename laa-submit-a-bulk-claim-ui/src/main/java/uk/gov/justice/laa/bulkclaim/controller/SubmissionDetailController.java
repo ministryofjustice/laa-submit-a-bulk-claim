@@ -145,7 +145,7 @@ public class SubmissionDetailController {
           model, submissionSummary, submissionResponse, submissionViewQuery);
       return "pages/view-submission-detail-accepted";
     } else {
-      handleInvalidSubmission(model, submissionResponse, submissionViewQuery, messageQuery);
+      handleInvalidSubmission(model, submissionResponse, messageQuery);
       addCommonSubmissionAttributes(
           model, submissionSummary, submissionResponse, submissionViewQuery);
       return "pages/view-submission-detail-invalid";
@@ -232,10 +232,7 @@ public class SubmissionDetailController {
   }
 
   private void handleInvalidSubmission(
-      Model model,
-      SubmissionResponse submissionResponse,
-      SubmissionViewQuery submissionViewQuery,
-      MessageQuery messageQuery) {
+      Model model, SubmissionResponse submissionResponse, MessageQuery messageQuery) {
 
     MessagesSummary messagesSummary =
         submissionMessagesBuilder.buildErrors(
@@ -249,10 +246,10 @@ public class SubmissionDetailController {
         paginationLinksBuilder.build(
             "/view-submission-detail",
             messagesSummary.pagination(),
-            "page",
+            "messagesPage",
             SUBMISSION_ID,
-            submissionViewQuery.getSubmissionId(),
-            "sort",
+            messageQuery.getSubmissionId(),
+            "messagesSort",
             messageQuery.getSort().toString()));
 
     List<SubmissionMatterStartsRow> matterStartsDetails =
