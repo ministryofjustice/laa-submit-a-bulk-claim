@@ -17,7 +17,7 @@ public abstract class Sort<T extends SortField> {
 
   @Override
   public String toString() {
-    return direction.getValue() != null
+    return field.getValue() != null && direction.getValue() != null
         ? String.format("%s,%s", field.getValue(), direction.getValue())
         : null;
   }

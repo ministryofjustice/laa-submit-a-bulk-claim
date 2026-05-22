@@ -1,6 +1,6 @@
-package uk.gov.justice.laa.bulkclaim.dto.submission.view;
+package uk.gov.justice.laa.bulkclaim.dto.submission.messages;
 
-import static uk.gov.justice.laa.bulkclaim.constants.ViewSubmissionNavigationTab.CLAIM_DETAILS;
+import static uk.gov.justice.laa.bulkclaim.constants.ViewSubmissionNavigationTab.CLAIM_MESSAGES;
 
 import jakarta.validation.constraints.NotNull;
 import java.util.Objects;
@@ -14,42 +14,42 @@ import uk.gov.justice.laa.bulkclaim.dto.sorting.SortDirection;
 
 @Builder
 @Getter
-public class SubmissionViewQuery implements PageQuery<SubmissionViewSortField, SubmissionViewSort> {
+public class MessageQuery implements PageQuery<MessageSortField, MessageSort> {
 
-  private static final ViewSubmissionNavigationTab DEFAULT_NAV_TAB = CLAIM_DETAILS;
+  private static final ViewSubmissionNavigationTab DEFAULT_NAV_TAB = CLAIM_MESSAGES;
 
   private Integer page;
-
-  private SubmissionViewSort sort;
+  private MessageSort sort;
 
   @NotNull UUID submissionId;
+
   private ViewSubmissionNavigationTab navTab;
 
-  public SubmissionViewQuery(
-      Integer page,
-      SubmissionViewSort sort,
+  public MessageQuery(
+      Integer messagesPage,
+      MessageSort messagesSort,
       UUID submissionId,
       ViewSubmissionNavigationTab navTab) {
-    this.page = Objects.requireNonNullElse(page, DEFAULT_PAGE);
-    this.sort = Objects.requireNonNullElse(sort, SubmissionViewSort.defaults());
+    this.page = Objects.requireNonNullElse(messagesPage, DEFAULT_PAGE);
+    this.sort = Objects.requireNonNullElse(messagesSort, MessageSort.defaults());
     this.navTab = Objects.requireNonNullElse(navTab, DEFAULT_NAV_TAB);
     this.submissionId = submissionId;
   }
 
   @Override
-  public String getRedirectUrl(SubmissionViewSortField field, SortDirection direction) {
+  public String getRedirectUrl(MessageSortField field, SortDirection direction) {
     return getRedirectUrl(
-        DEFAULT_PAGE, SubmissionViewSort.builder().field(field).direction(direction).build());
+        DEFAULT_PAGE, MessageSort.builder().field(field).direction(direction).build());
   }
 
   @Override
-  public String getRedirectUrl(int page, SubmissionViewSort sort) {
+  public String getRedirectUrl(int page, MessageSort sort) {
     UriComponentsBuilder builder = UriComponentsBuilder.fromPath("/view-submission-detail");
 
     addQueryParam(builder, "submissionId", submissionId);
     addQueryParam(builder, "navTab", navTab);
-    addQueryParam(builder, "page", String.valueOf(page));
-    addQueryParam(builder, "sort", Objects.toString(sort, null));
+    addQueryParam(builder, "messagesPage", String.valueOf(page));
+    addQueryParam(builder, "messagesSort", Objects.toString(sort, null));
 
     return builder.build().toUriString();
   }

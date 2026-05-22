@@ -65,7 +65,6 @@
                   th:text="${submission.getAreaOfLaw != null ? #strings.capitalize(#strings.toLowerCase(submission.getAreaOfLaw)) : '-' }"></td>
 
               <td class="govuk-table__cell"
-                  th:data-sort-value="${submissionRow.submissionPeriodSortValue}"
                   th:text="${submissionRow.submissionPeriod}"></td>
               <td class="govuk-table__cell" th:text="${submission.getStatus != null ?
                              #strings.replace(#strings.capitalize(#strings.toLowerCase(submission.getStatus)), '_', ' ') : '-' }"></td>
