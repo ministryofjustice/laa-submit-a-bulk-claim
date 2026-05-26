@@ -28,7 +28,7 @@ jobs:
 
   e2e-smoke:
     name: E2E Smoke (Compose)
-    needs: [ deploy-uat-preview, ecr-publish-image ]
+    needs: [ ecr-publish-image ]
     uses: ./.github/workflows/e2e-compose.yml
     permissions:
       contents: read

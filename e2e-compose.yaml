@@ -1,0 +1,144 @@
+name: "E2E Docker Compose"
+
+services:
+  sabc-ui:
+    container_name: app
+    image: ${ECR_ACCOUNT}.dkr.ecr.${LAA_SUBMIT_A_BULK_CLAIM_ECR_REGION}.amazonaws.com/${LAA_SUBMIT_A_BULK_CLAIM_ECR_REPOSITORY}:${SABC_TAG}
+    environment:
+      JAVA_TOOL_OPTIONS: -XX:MaxDirectMemorySize=256m
+      JAVA_OPTS: -XX:MaxDirectMemorySize=256m
+      SERVER_MAX_FILE_SIZE: 50MB
+      UPLOAD_MAX_FILE_SIZE: 10MB
+      AUTH_CLIENT_ID: ${AUTH_CLIENT_ID}
+      AUTH_CLIENT_SECRET: ${AUTH_CLIENT_SECRET}
+      AUTH_SCOPE: ${AUTH_SCOPE}
+      AUTH_TENANT_ID: ${AUTH_TENANT_ID}
+      SDS_API_URL: ${SDS_API_URL}
+      CLAIM_API_URL: http://claims-api:8080
+      CLAIMS_API_ACCESS_TOKEN: f67f968e-b479-4e61-b66e-f57984931e56
+      REST_CLIENT_CONNECT_TIMEOUT: ${REST_CLIENT_CONNECT_TIMEOUT:-5000}
+      REST_CLIENT_READ_TIMEOUT: ${REST_CLIENT_READ_TIMEOUT:-40000}
+      REDIS_HOST: redis://redis:6379
+      SPRING_PROFILES_ACTIVE: github-test-runner
+      ALLOWED_HOSTS: app,app:8082,localhost,localhost:8082,127.0.0.1,127.0.0.1:8082
+      CANONICAL_BASE_URL: http://app:8082
+    ports:
+      - "8082:8082"
+      - "8181:8081"
+    depends_on:
+      - redis
+      - laa-mock-oidc-service
+
+  claims-api:
+    container_name: data-claims-api-app
+    profiles:
+      - application
+    image: ${ECR_ACCOUNT}.dkr.ecr.${LAA_DATA_CLAIMS_API_ECR_REGION}.amazonaws.com/${LAA_DATA_CLAIMS_API_ECR_REPOSITORY}:${CLAIMS_API_TAG}
+    environment:
+      JAVA_TOOL_OPTIONS: -XX:MaxDirectMemorySize=256m
+      JAVA_OPTS: -XX:MaxDirectMemorySize=256m
+      AWS_REGION: us-east-1
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/laa_data_claims_api_dev
+      AWS_ACCESS_KEY_ID: dummy-access-key
+      AWS_SECRET_ACCESS_KEY: dummy-access-key
+      AWS_ENDPOINT_URL: http://localstack:4566
+      AWS_SQS_ENDPOINT: http://localstack:4566
+      SPRING_PROFILES_ACTIVE: local
+
+    ports:
+      - "8080:8080"
+      - "8183:8081"
+    depends_on:
+      - postgres
+      - localstack
+
+  event-service:
+    container_name: data-claims-event-service-app
+    image: ${ECR_ACCOUNT}.dkr.ecr.${LAA_DATA_CLAIMS_EVENT_SERVICE_ECR_REGION}.amazonaws.com/${LAA_DATA_CLAIMS_EVENT_SERVICE_ECR_REPOSITORY}:${EVENT_SERVICE_TAG}
+    profiles:
+      - application
+    # Using network_mode: host to allow the event service to access port forwarded services. This also means needing
+    # to use the host IP address for the event service.
+    network_mode: host
+    environment:
+      JAVA_TOOL_OPTIONS: -XX:MaxDirectMemorySize=256m
+      JAVA_OPTS: -XX:MaxDirectMemorySize=256m
+      CLAIMS_API_HOSTNAME: http://127.0.0.1:8080
+      CLAIMS_API_ACCESS_TOKEN: f67f968e-b479-4e61-b66e-f57984931e56
+      BULK_CLAIM_QUEUE_NAME: claims-api-queue
+      PROVIDER_DETAILS_API_HOSTNAME: http://127.0.0.1:8186
+      PROVIDER_DETAILS_API_ACCESS_TOKEN: ${PROVIDER_API_KEY}
+      FEE_SCHEME_PLATFORM_API_URL: http://127.0.0.1:8095
+      FEE_SCHEME_PLATFORM_API_ACCESS_TOKEN: ${FSP_API_TOKEN}
+      SUBMISSION_VALIDATION_MINIMUM_PERIOD: JAN-2015
+      SPRING_CLOUD_AWS_REGION_STATIC: us-east-1
+      AWS_REGION: us-east-1
+      AWS_ACCESS_KEY_ID: dummy-access-key
+      AWS_SECRET_ACCESS_KEY: dummy-access-key
+      AWS_ENDPOINT_URL: http://127.0.0.1:4566
+      SPRING_CLOUD_AWS_SQS_ENDPOINT: http://127.0.0.1:4566
+      SPRING_CLOUD_AWS_CREDENTIALS_ACCESS-KEY: dummy-access-key
+      SPRING_CLOUD_AWS_CREDENTIALS_SECRET-KEY: dummy-access-key
+
+    ports:
+      - "8182:8081"
+    depends_on:
+      - localstack
+
+  postgres:
+    image: postgres:17
+    container_name: local-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: laa_data_claims_api_dev
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: dev
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+
+  localstack:
+    container_name: event-service-localstack
+    build:
+      context: .
+      dockerfile: scripts/Dockerfile.localstack
+    ports:
+      - "4566:4566"
+    environment:
+      - SERVICES=sqs,sns
+      - DEBUG=1
+      - AWS_DEFAULT_REGION=us-east-1
+    healthcheck:
+      test: [ "CMD-SHELL", "awslocal sqs list-queues --region us-east-1 | grep -q 'claims-api-queue' || exit 1" ]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 30s
+    volumes:
+      - "localstack-data:/var/lib/localstack"
+      - "/var/run/docker.sock:/var/run/docker.sock"
+
+  redis:
+    image: redis:8-alpine
+    container_name: redis
+    restart: always
+    ports:
+      - "6379:6379"
+    command: redis-server --appendonly yes
+    volumes:
+      - redis_data:/data
+
+  laa-mock-oidc-service:
+    container_name: oidc
+    image: ${ECR_ACCOUNT}.dkr.ecr.${LAA_OIDC_MOCK_SERVER_ECR_REGION}.amazonaws.com/${LAA_OIDC_MOCK_SERVER_ECR_REPOSITORY}:${OIDC_TAG}
+    ports:
+      - "9000:9000"
+    environment:
+      LAA_ACCOUNTS: 0P322F,2Q779P,2Q286D,2Q263D,2Q271M,0E525U,2Q286D,2N199K,1T102C,2P746R,2L847Q,2L848R
+      REDIRECT_BASE_URI: "app:8082"
+
+volumes:
+  localstack-data:
+  redis_data:
+  postgres-data:

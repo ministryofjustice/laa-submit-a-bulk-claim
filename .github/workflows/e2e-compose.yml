@@ -104,10 +104,10 @@ jobs:
       - name: Authenticate to SaBC cluster
         uses: ministryofjustice/laa-reusable-github-actions/.github/actions/authenticate_to_cluster@7666443ea3f635ec52544311e0f0ea51830468c0
         with:
-          kube-cert: ${{ secrets.KUBE_CERT_LAA_SUBMIT_A_BULK_CLAIM_UAT }}
-          kube-token: ${{ secrets.KUBE_TOKEN_LAA_SUBMIT_A_BULK_CLAIM_UAT }}
-          kube-cluster: ${{ secrets.KUBE_CLUSTER_LAA_SUBMIT_A_BULK_CLAIM_UAT }}
-          kube-namespace: ${{ secrets.KUBE_NAMESPACE_LAA_SUBMIT_A_BULK_CLAIM_UAT }}
+          kube-cert: ${{ secrets.KUBE_CERT }}
+          kube-token: ${{ secrets.KUBE_TOKEN }}
+          kube-cluster: ${{ secrets.KUBE_CLUSTER }}
+          kube-namespace: ${{ secrets.KUBE_NAMESPACE }}
           kube-sa: deploy-user
 
       - name: Port-forward PDA proxy service
@@ -175,7 +175,7 @@ jobs:
           if [ -z "$CLAIMS_API_TAG" ]; then CLAIMS_API_TAG="$DEFAULT_CLAIMS_API_IMAGE_TAG"; fi
           CLAIMS_EVENTS_TAG="$INPUT_CLAIMS_EVENTS_IMAGE_TAG"
           if [ -z "$CLAIMS_EVENTS_TAG" ]; then CLAIMS_EVENTS_TAG="$DEFAULT_CLAIMS_EVENTS_IMAGE_TAG"; fi
-          cat > bulk-submission-and-fee-scheme-tests-/.env <<EOF
+
           ECR_ACCOUNT=$ECR_ACCOUNT
           LAA_SUBMIT_A_BULK_CLAIM_ECR_REGION=$LAA_SUBMIT_A_BULK_CLAIM_ECR_REGION
           LAA_SUBMIT_A_BULK_CLAIM_ECR_REPOSITORY=$LAA_SUBMIT_A_BULK_CLAIM_ECR_REPOSITORY
@@ -210,7 +210,7 @@ jobs:
       - name: Run compose stack
         run: |
           set -euo pipefail
-          docker compose -p "e2e-${GITHUB_RUN_ID}" -f bulk-submission-and-fee-scheme-tests-/docker-compose.yml up -d --wait
+          docker compose -p "e2e-${GITHUB_RUN_ID}" -f e2e-compose.yaml up -d --wait
 
       - name: Wait for compose app health
         run: |
@@ -260,17 +260,7 @@ jobs:
           cat pf-pda.log > logs/pf-pda.log 2>&1 || true
 
       - name: Upload compose logs
-        if: always()
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
-        with:
-          name: compose-e2e-logs
-          path: logs
-          if-no-files-found: warn
-
-      - name: Upload Java E2E reports
-        if: always()
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
-        with:
+ bn:
           name: java-e2e-reports
           path: |
             laa-submit-a-bulk-claim-e2e-tests/build/reports
@@ -281,7 +271,7 @@ jobs:
         if: always()
         run: |
           set +e
-          docker compose -p "e2e-${GITHUB_RUN_ID}" -f bulk-submission-and-fee-scheme-tests-/docker-compose.yml down -v
+          docker compose -p "e2e-${GITHUB_RUN_ID}" -f e2e-compose.yaml down -v
           [ -n "${PORT_FORWARD_FSP_PID:-}" ] && kill "${PORT_FORWARD_FSP_PID}" || true
           [ -n "${PORT_FORWARD_PDA_PID:-}" ] && kill "${PORT_FORWARD_PDA_PID}" || true
           true
