@@ -143,14 +143,17 @@ jobs:
         if: steps.playwright-cache.outputs.cache-hit != 'true'
         run: npx --yes playwright@1.56.0 install chromium
 
-      - name: Prepare compose env file
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@fb7eb401298e393da51cdcb2feb1ed0183619014 # v6
+        with:
+          role-to-assume: ${{ secrets.LAA_SUBMIT_A_BULK_CLAIM_ECR_ROLE_TO_ASSUME }}
+          aws-region: ${{ vars.LAA_SUBMIT_A_BULK_CLAIM_ECR_REGION }}
+
+      - name: Login to ECR
+        uses: aws-actions/amazon-ecr-login@19d944daaa35f0fa1d3f7f8af1d3f2e5de25c5b7 # v2.1.4
+
+      - name: Run compose stack
         env:
-          INPUT_SABC_IMAGE_TAG: ${{ inputs.sabc_image_tag }}
-          INPUT_CLAIMS_API_IMAGE_TAG: ${{ inputs.claims_api_image_tag }}
-          INPUT_CLAIMS_EVENTS_IMAGE_TAG: ${{ inputs.claims_events_image_tag }}
-          DEFAULT_SABC_IMAGE_TAG: ${{ vars.UAT_SABC_IMAGE_TAG }}
-          DEFAULT_CLAIMS_API_IMAGE_TAG: ${{ vars.UAT_CLAIMS_API_IMAGE_TAG }}
-          DEFAULT_CLAIMS_EVENTS_IMAGE_TAG: ${{ vars.UAT_CLAIMS_EVENTS_IMAGE_TAG }}
           ECR_ACCOUNT: ${{ secrets.ECR_ACCOUNT }}
           LAA_SUBMIT_A_BULK_CLAIM_ECR_REGION: ${{ vars.LAA_SUBMIT_A_BULK_CLAIM_ECR_REGION }}
           LAA_SUBMIT_A_BULK_CLAIM_ECR_REPOSITORY: ${{ vars.LAA_SUBMIT_A_BULK_CLAIM_ECR_REPOSITORY }}
@@ -167,46 +170,10 @@ jobs:
           SDS_API_URL: ${{ vars.SDS_API_URL }}
           FSP_API_TOKEN: ${{ secrets.FSP_API_TOKEN }}
           PROVIDER_API_KEY: ${{ secrets.PDA_API_TOKEN }}
-        run: |
-          set -euo pipefail
-          SABC_TAG="$INPUT_SABC_IMAGE_TAG"
-          if [ -z "$SABC_TAG" ]; then SABC_TAG="$DEFAULT_SABC_IMAGE_TAG"; fi
-          CLAIMS_API_TAG="$INPUT_CLAIMS_API_IMAGE_TAG"
-          if [ -z "$CLAIMS_API_TAG" ]; then CLAIMS_API_TAG="$DEFAULT_CLAIMS_API_IMAGE_TAG"; fi
-          CLAIMS_EVENTS_TAG="$INPUT_CLAIMS_EVENTS_IMAGE_TAG"
-          if [ -z "$CLAIMS_EVENTS_TAG" ]; then CLAIMS_EVENTS_TAG="$DEFAULT_CLAIMS_EVENTS_IMAGE_TAG"; fi
-          ECR_ACCOUNT=$ECR_ACCOUNT
-          LAA_SUBMIT_A_BULK_CLAIM_ECR_REGION=$LAA_SUBMIT_A_BULK_CLAIM_ECR_REGION
-          LAA_SUBMIT_A_BULK_CLAIM_ECR_REPOSITORY=$LAA_SUBMIT_A_BULK_CLAIM_ECR_REPOSITORY
-          LAA_DATA_CLAIMS_EVENT_SERVICE_ECR_REGION=$LAA_DATA_CLAIMS_EVENT_SERVICE_ECR_REGION
-          LAA_DATA_CLAIMS_EVENT_SERVICE_ECR_REPOSITORY=$LAA_DATA_CLAIMS_EVENT_SERVICE_ECR_REPOSITORY
-          LAA_DATA_CLAIMS_API_ECR_REGION=$LAA_DATA_CLAIMS_API_ECR_REGION
-          LAA_DATA_CLAIMS_API_ECR_REPOSITORY=$LAA_DATA_CLAIMS_API_ECR_REPOSITORY
-          LAA_OIDC_MOCK_SERVER_ECR_REGION=$LAA_OIDC_MOCK_SERVER_ECR_REGION
-          LAA_OIDC_MOCK_SERVER_ECR_REPOSITORY=$LAA_OIDC_MOCK_SERVER_ECR_REPOSITORY
-          AUTH_CLIENT_ID=$AUTH_CLIENT_ID
-          AUTH_CLIENT_SECRET=$AUTH_CLIENT_SECRET
-          AUTH_SCOPE=$AUTH_SCOPE
-          AUTH_TENANT_ID=$AUTH_TENANT_ID
-          SDS_API_URL=$SDS_API_URL
-          SABC_TAG=${SABC_TAG}
-          CLAIMS_API_TAG=${CLAIMS_API_TAG}
-          EVENT_SERVICE_TAG=${CLAIMS_EVENTS_TAG}
-          OIDC_TAG=oidc-mock-latest
-          FSP_API_TOKEN=$FSP_API_TOKEN
-          PROVIDER_API_KEY=$PROVIDER_API_KEY
-          EOF
-
-      - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@fb7eb401298e393da51cdcb2feb1ed0183619014 # v6
-        with:
-          role-to-assume: ${{ secrets.LAA_SUBMIT_A_BULK_CLAIM_ECR_ROLE_TO_ASSUME }}
-          aws-region: ${{ vars.LAA_SUBMIT_A_BULK_CLAIM_ECR_REGION }}
-
-      - name: Login to ECR
-        uses: aws-actions/amazon-ecr-login@19d944daaa35f0fa1d3f7f8af1d3f2e5de25c5b7 # v2.1.4
-
-      - name: Run compose stack
+          SABC_TAG: ${{ inputs.sabc_image_tag || vars.UAT_SABC_IMAGE_TAG }}
+          CLAIMS_API_TAG: ${{ inputs.claims_api_image_tag || vars.UAT_CLAIMS_API_IMAGE_TAG }}
+          EVENT_SERVICE_TAG: ${{ inputs.claims_events_image_tag || vars.UAT_CLAIMS_EVENTS_IMAGE_TAG }}
+          OIDC_TAG: oidc-mock-latest
         run: |
           set -euo pipefail
           docker compose -p "e2e-${GITHUB_RUN_ID}" -f e2e-compose.yaml up -d --wait
