@@ -138,7 +138,7 @@ env:
   - name: SUBMISSION_MINIMUM_PERIOD
     valueFrom:
       secretKeyRef:
-        name:
+        name: laa-submit-a-bulk-claim-secrets
         key: SUBMISSION_MINIMUM_PERIOD
         optional: true
   - name: IS_NIL_SUBMISSION_ENABLED
