@@ -7,6 +7,10 @@ bin
 
 # Ignore local application config
 application-local.yaml
+application-local.yml
+application-silas.yml
+application-silas.yaml
+application-mockoidc.yaml
 
 ### IntelliJ IDEA ###
 .idea
@@ -27,9 +31,6 @@ out/
 
 claims-api-reference/generated
 
-laa-submit-a-bulk-claim-ui/src/main/resources/application-local.yml
-laa-submit-a-bulk-claim-ui/src/main/resources/application-silas.yml
-laa-submit-a-bulk-claim-ui/src/main/resources/application-silas.yaml
 
 .env
 

@@ -13,8 +13,7 @@
   background-color: white;
 }
 
-.app-sort-link,
-.sabc-sortable-table thead tr th button {
+.app-sort-link {
   display: inline-flex;
   align-items: flex-start !important;
   text-decoration: none;
@@ -22,8 +21,7 @@
 }
 
 /* Stop the sort arrow shrinking when label text fills the available space */
-.app-sort-link__icon,
-.sabc-sortable-table thead tr th button svg {
+.app-sort-link__icon {
   flex-shrink: 0;
   padding: 0.1rem;
 }

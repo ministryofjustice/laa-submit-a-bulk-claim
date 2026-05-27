@@ -22,11 +22,6 @@ import uk.gov.justice.laa.bulkclaim.exception.SubmitBulkClaimException;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.BulkSubmissionStatus;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.GetBulkSubmissionStatusById200Response;
 
-/**
- * Controller for handling the upload being checked page after a user has submitted a bulk claim.
- *
- * @author Jamie Briggs
- */
 @Slf4j
 @Controller
 @RequiredArgsConstructor
@@ -44,10 +39,6 @@ public class BulkUploadBeingCheckedController {
   /**
    * Shows the import in progress page, and refreshes every 5 seconds. Redirects if the submission
    * is ready.
-   *
-   * @param model the Spring model.
-   * @param bulkSubmissionId the submission id session attribute.
-   * @return the import in progress view or redirects to view submission.
    */
   @GetMapping("/upload-is-being-checked")
   public String uploadBeingChecked(

@@ -7,11 +7,6 @@ import java.util.UUID;
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClientManager;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
-/**
- * Base class for Pact tests.
- *
- * @author Jamie Briggs
- */
 public abstract class AbstractPactTest {
   public static final String CONSUMER = "laa-submit-a-bulk-claim";
   public static final String PROVIDER = "laa-data-claims-api";
@@ -29,9 +24,11 @@ public abstract class AbstractPactTest {
 
   // Any number, but not 0 alone. Maximum 8 digits
   protected static final String ANY_NUMBER_REGEX = "([1-9][0-9]{0,7})";
-  protected static final String SORT_REGEX = "[a-zA-Z]+,(asc|desc)";
+  protected static final String SORT_REGEX = "[a-zA-Z_]+,(asc|desc)";
   protected static final String SORT_CLAIMS_REGEX_V2 =
       "(client_surname|client_forename|client_2_surname|client_2_forename|unique_file_number|unique_client_number|fee_code|case_concluded_date|total_amount|escape_case_flag|total_warnings),(asc|desc)";
+  protected static final String MESSAGE_REGEX =
+      "(client_surname|client_forename|unique_file_number|unique_client_number|display_message|client_2_surname|client_2_forename|client_2_ucn),(asc|desc)";
 
   protected static final List<String> USER_OFFICES = List.of("ABC123", "XYZ789");
   protected static final UUID BULK_SUBMISSION_ID = UUID.randomUUID();

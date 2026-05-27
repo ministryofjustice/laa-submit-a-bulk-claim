@@ -172,11 +172,10 @@ class SubmissionDetailControllerTest {
                   new BigDecimal("100.50"),
                   "Legal aid",
                   OffsetDateTime.of(2025, 1, 1, 10, 10, 10, 0, ZoneOffset.UTC)));
-      when(submissionMessagesBuilder.build(any(), any(), any(), anyInt(), anyInt()))
+      when(submissionMessagesBuilder.build(any(), any(), any(), anyInt(), anyInt(), any()))
           .thenReturn(
               new MessagesSummary(Collections.emptyList(), 0, 0, pagination, MessagesSource.CLAIM));
-      when(submissionClaimDetailsBuilder.build(
-              eq(submissionResponse), anyInt(), anyInt(), anyString()))
+      when(submissionClaimDetailsBuilder.build(eq(submissionResponse), anyInt(), anyInt(), any()))
           .thenReturn(
               new SubmissionClaimsDetails(Collections.emptyList(), pagination, BigDecimal.ZERO));
       when(submissionMatterStartsDetailsBuilder.build(any()))
@@ -184,14 +183,15 @@ class SubmissionDetailControllerTest {
       // When / Then
       assertThat(
               mockMvc.perform(
-                  get("/view-submission-detail?sort=desc&submissionId=" + submissionReference)
+                  get("/view-submission-detail?sort=line_number,desc&submissionId="
+                          + submissionReference)
                       .with(oidcLogin().oidcUser(ControllerTestHelper.getOidcUser()))
                       .sessionAttr("submissionId", submissionReference)))
           .hasStatusOk()
           .hasViewName("pages/view-submission-detail-accepted");
-      verify(submissionClaimDetailsBuilder, times(1)).build(any(), anyInt(), anyInt(), anyString());
+      verify(submissionClaimDetailsBuilder, times(1)).build(any(), anyInt(), anyInt(), any());
       verify(submissionMessagesBuilder, times(1))
-          .build(submissionReference, null, ValidationMessageType.WARNING, 0, 10);
+          .build(submissionReference, null, ValidationMessageType.WARNING, 0, 10, null);
       verify(submissionMatterStartsDetailsBuilder, times(1)).build(any());
     }
 
@@ -216,10 +216,7 @@ class SubmissionDetailControllerTest {
                   new BigDecimal("100.50"),
                   "Legal aid",
                   OffsetDateTime.of(2025, 1, 1, 10, 10, 10, 0, ZoneOffset.UTC)));
-      when(submissionClaimDetailsBuilder.build(any(), anyInt(), anyInt(), anyString()))
-          .thenReturn(
-              new SubmissionClaimsDetails(Collections.emptyList(), pagination, BigDecimal.ZERO));
-      when(submissionMessagesBuilder.buildErrors(any(), anyInt(), anyInt()))
+      when(submissionMessagesBuilder.buildErrors(any(), anyInt(), anyInt(), any()))
           .thenReturn(
               new MessagesSummary(Collections.emptyList(), 0, 0, pagination, MessagesSource.CLAIM));
       when(submissionMatterStartsDetailsBuilder.build(any()))
@@ -227,15 +224,14 @@ class SubmissionDetailControllerTest {
       // When / Then
       assertThat(
               mockMvc.perform(
-                  get("/view-submission-detail?sort=desc&navTab=CLAIM_DETAILS&submissionId="
+                  get("/view-submission-detail?sort=line_number,desc&navTab=CLAIM_DETAILS&submissionId="
                           + submissionReference)
                       .with(oidcLogin().oidcUser(ControllerTestHelper.getOidcUser()))
                       .sessionAttr("submissionId", submissionReference)))
           .hasStatusOk()
           .hasViewName("pages/view-submission-detail-invalid");
 
-      verify(submissionClaimDetailsBuilder, times(1)).build(any(), anyInt(), anyInt());
-      verify(submissionMessagesBuilder, times(1)).buildErrors(submissionReference, 0, 10);
+      verify(submissionMessagesBuilder, times(1)).buildErrors(submissionReference, 0, 10, null);
       verify(submissionMatterStartsDetailsBuilder, times(1)).build(any());
     }
 
@@ -264,23 +260,23 @@ class SubmissionDetailControllerTest {
                   OffsetDateTime.of(2025, 1, 1, 10, 10, 10, 0, ZoneOffset.UTC)));
       List<SubmissionMatterStartsRow> matterTypes = new ArrayList<>();
       matterTypes.add(new SubmissionMatterStartsRow("Description", 34));
-      when(submissionClaimDetailsBuilder.build(any(), anyInt(), anyInt(), anyString()))
+      when(submissionClaimDetailsBuilder.build(any(), anyInt(), anyInt(), any()))
           .thenReturn(
               new SubmissionClaimsDetails(Collections.emptyList(), pagination, BigDecimal.ZERO));
-      when(submissionMessagesBuilder.build(any(), any(), any(), anyInt(), anyInt()))
+      when(submissionMessagesBuilder.build(any(), any(), any(), anyInt(), anyInt(), any()))
           .thenReturn(
               new MessagesSummary(Collections.emptyList(), 0, 0, pagination, MessagesSource.CLAIM));
       when(submissionMatterStartsDetailsBuilder.build(any())).thenReturn(matterTypes);
       // When / Then
       assertThat(
               mockMvc.perform(
-                  get("/view-submission-detail?sort=desc&navTab=MATTER_STARTS&submissionId="
+                  get("/view-submission-detail?sort=line_number,desc&navTab=MATTER_STARTS&submissionId="
                           + submissionReference)
                       .with(oidcLogin().oidcUser(ControllerTestHelper.getOidcUser()))
                       .sessionAttr("submissionId", submissionReference)))
           .hasStatusOk()
           .hasViewName("pages/view-submission-detail-accepted");
-      verify(submissionClaimDetailsBuilder).build(any(), anyInt(), anyInt(), anyString());
+      verify(submissionClaimDetailsBuilder).build(any(), anyInt(), anyInt(), any());
       verify(submissionMatterStartsDetailsBuilder, times(1)).build(any());
     }
 
@@ -308,25 +304,26 @@ class SubmissionDetailControllerTest {
                   null,
                   AreaOfLaw.CRIME_LOWER.getValue(),
                   OffsetDateTime.of(2025, 1, 1, 10, 10, 10, 0, ZoneOffset.UTC)));
-      when(submissionClaimDetailsBuilder.build(any(), anyInt(), anyInt(), anyString()))
+      when(submissionClaimDetailsBuilder.build(any(), anyInt(), anyInt(), any()))
           .thenReturn(
               new SubmissionClaimsDetails(Collections.emptyList(), pagination, BigDecimal.TEN));
-      when(submissionMessagesBuilder.build(any(), any(), any(), anyInt(), anyInt()))
+      when(submissionMessagesBuilder.build(any(), any(), any(), anyInt(), anyInt(), any()))
           .thenReturn(
               new MessagesSummary(Collections.emptyList(), 0, 0, pagination, MessagesSource.CLAIM));
 
       // When
       MvcTestResult response =
           mockMvc.perform(
-              get("/view-submission-detail?sort=desc&submissionId=" + submissionReference)
+              get("/view-submission-detail?sort=line_number,desc&submissionId="
+                      + submissionReference)
                   .with(oidcLogin().oidcUser(ControllerTestHelper.getOidcUser()))
                   .sessionAttr("submissionId", submissionReference));
 
       // Then
       assertThat(response).hasStatusOk().hasViewName("pages/view-submission-detail-accepted");
-      verify(submissionClaimDetailsBuilder).build(any(), anyInt(), anyInt(), anyString());
+      verify(submissionClaimDetailsBuilder).build(any(), anyInt(), anyInt(), any());
       verify(submissionMessagesBuilder)
-          .build(submissionReference, null, ValidationMessageType.WARNING, 0, 10);
+          .build(submissionReference, null, ValidationMessageType.WARNING, 0, 10, null);
     }
 
     @Test
@@ -352,7 +349,7 @@ class SubmissionDetailControllerTest {
                   BigDecimal.ONE,
                   AreaOfLaw.CRIME_LOWER.getValue(),
                   OffsetDateTime.of(2025, 1, 1, 10, 10, 10, 0, ZoneOffset.UTC)));
-      when(submissionClaimDetailsBuilder.build(any(), anyInt(), anyInt(), anyString()))
+      when(submissionClaimDetailsBuilder.build(any(), anyInt(), anyInt(), any()))
           .thenReturn(
               new SubmissionClaimsDetails(
                   List.of(
@@ -384,7 +381,7 @@ class SubmissionDetailControllerTest {
                           Boolean.FALSE)),
                   pagination,
                   BigDecimal.ONE));
-      when(submissionMessagesBuilder.build(any(), any(), any(), anyInt(), anyInt()))
+      when(submissionMessagesBuilder.build(any(), any(), any(), anyInt(), anyInt(), any()))
           .thenReturn(
               new MessagesSummary(Collections.emptyList(), 0, 0, pagination, MessagesSource.CLAIM));
 
@@ -438,23 +435,23 @@ class SubmissionDetailControllerTest {
                   OffsetDateTime.of(2025, 1, 1, 10, 10, 10, 0, ZoneOffset.UTC)));
 
       var pagination = Page.builder().totalPages(1).totalElements(0).number(0).size(10).build();
-      when(submissionClaimDetailsBuilder.build(any(), anyInt(), anyInt(), anyString()))
+      when(submissionClaimDetailsBuilder.build(any(), anyInt(), anyInt(), any()))
           .thenReturn(
               new SubmissionClaimsDetails(Collections.emptyList(), pagination, BigDecimal.ZERO));
 
-      when(submissionMessagesBuilder.build(any(), any(), any(), anyInt(), anyInt()))
+      when(submissionMessagesBuilder.build(any(), any(), any(), anyInt(), anyInt(), any()))
           .thenReturn(
               new MessagesSummary(Collections.emptyList(), 0, 0, pagination, MessagesSource.CLAIM));
 
       when(submissionMatterStartsDetailsBuilder.build(any()))
           .thenReturn(List.of(new SubmissionMatterStartsRow("Description", 34)));
       mockMvc.perform(
-          get("/view-submission-detail?page=0&sort=desc&submissionId=" + submissionId)
+          get("/view-submission-detail?page=0&sort=line_number,desc&submissionId=" + submissionId)
               .with(oidcLogin().oidcUser(ControllerTestHelper.getOidcUser()))
               .sessionAttr("submissionId", submissionId));
 
       verify(submissionClaimDetailsBuilder)
-          .build(eq(submissionResponse), eq(0), anyInt(), eq("desc"));
+          .build(eq(submissionResponse), eq(0), anyInt(), eq("line_number,desc"));
     }
 
     @Test
@@ -479,11 +476,11 @@ class SubmissionDetailControllerTest {
                   OffsetDateTime.of(2025, 1, 1, 10, 10, 10, 0, ZoneOffset.UTC)));
 
       var pagination = Page.builder().totalPages(1).totalElements(0).number(0).size(10).build();
-      when(submissionClaimDetailsBuilder.build(any(), anyInt(), anyInt(), anyString()))
+      when(submissionClaimDetailsBuilder.build(any(), anyInt(), anyInt(), any()))
           .thenReturn(
               new SubmissionClaimsDetails(Collections.emptyList(), pagination, BigDecimal.ZERO));
 
-      when(submissionMessagesBuilder.build(any(), any(), any(), anyInt(), anyInt()))
+      when(submissionMessagesBuilder.build(any(), any(), any(), anyInt(), anyInt(), any()))
           .thenReturn(
               new MessagesSummary(Collections.emptyList(), 0, 0, pagination, MessagesSource.CLAIM));
 

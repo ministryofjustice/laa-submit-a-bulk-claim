@@ -1,4 +1,4 @@
-<th:block th:fragment="form(submissionsSearchForm)">
+<th:block th:fragment="form(submissionSearchQuery)">
   <div class="search-panel govuk-!-margin-bottom-6">
     <div class="govuk-grid-row">
 
@@ -120,7 +120,7 @@
                              th:id="${idx.index > 0} ? |offices-input-${idx.index}| : |offices-input|"
                              type="checkbox"
                              name="offices"
-                             th:checked="${submissionsSearchForm.offices != null and #arrays.contains(submissionsSearchForm.offices, office)}"
+                             th:checked="${submissionSearchQuery.offices != null and #arrays.contains(submissionSearchQuery.offices, office)}"
                              th:value="${office}">
                       <label class="govuk-label govuk-checkboxes__label"
                              th:for="${idx.index > 0} ? |offices-input-${idx.index}| : |offices-input|"
