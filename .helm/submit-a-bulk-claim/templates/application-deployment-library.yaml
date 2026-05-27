@@ -159,7 +159,7 @@ spec:
             {{- end }}
           {{- end }}
           env:
-            {{- if .Values.env }}
+            {{ if .Values.env }}
             {{- range .Values.env }}
             - name: {{ .name }}
               {{- if .value }}
@@ -167,7 +167,7 @@ spec:
               {{- else if .valueFrom }}
               valueFrom:
                 {{- tpl (toYaml .valueFrom) $ | nindent 14 }}
-            {{- end }}
+              {{- end }}
           {{- end }}
           {{- end }}
           {{ if .Values.extraEnvVars }}
