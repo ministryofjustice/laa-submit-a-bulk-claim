@@ -141,6 +141,11 @@ env:
         name: laa-submit-a-bulk-claim-secrets
         key: SUBMISSION_MINIMUM_PERIOD
         optional: true
+  - name: IS_NIL_SUBMISSION_ENABLED
+    valueFrom:
+      configMapKeyRef:
+        name: feature-flags
+        key: is-nil-submission-enabled
 
 extraEnvVars:
   - name: ALLOWED_HOSTS
