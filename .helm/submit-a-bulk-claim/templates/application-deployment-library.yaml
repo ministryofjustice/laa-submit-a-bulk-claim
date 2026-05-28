@@ -172,14 +172,14 @@ spec:
           {{- end }}
           {{ if .Values.extraEnvVars }}
           {{- range .Values.extraEnvVars }}
-            - name: {{ .name }}
-              {{- if .value }}
-              value: {{ tpl .value $ | quote }}
-              {{- end }}
-              {{- if .valueFrom }}
-              valueFrom:
-                {{- tpl (toYaml .valueFrom) $ | nindent 16 }}
-              {{- end }}
+          - name: {{ .name }}
+            {{- if .value }}
+            value: {{ tpl .value $ | quote }}
+            {{- end }}
+            {{- if .valueFrom }}
+            valueFrom:
+              {{- tpl (toYaml .valueFrom) $ | nindent 14 }}
+            {{- end }}
           {{- end }}
           {{- end }}
           {{/*
