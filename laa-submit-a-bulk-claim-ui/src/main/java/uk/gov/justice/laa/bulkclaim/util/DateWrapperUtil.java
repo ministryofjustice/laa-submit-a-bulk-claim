@@ -6,8 +6,12 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class DateWrapperUtil {
+
   public LocalDate now() {
     return LocalDate.now();
   }
-  public LocalDateTime timeNow(){ return LocalDateTime.now();}
+
+  public LocalDateTime timeNow() {
+    return LocalDateTime.now();
+  }
 }

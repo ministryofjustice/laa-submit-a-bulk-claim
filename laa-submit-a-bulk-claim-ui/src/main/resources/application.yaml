@@ -62,7 +62,7 @@ app:
   submission:
     minimum-period: ${SUBMISSION_MINIMUM_PERIOD:APR-2015}
   maintenance:
-    disable-at-time: ${MAINTENANCE_DISABLE_AT_TIMESTAMP:2026-05-21T17:29:00Z}
+    disable-at-time: ${MAINTENANCE_DISABLE_AT_TIMESTAMP:2026-05-29T17:29:00Z}
     outage-banner-message: ${MAINTENANCE_OUTAGE_BANNER_MESSAGE:Submit a Bulk Claim will be unavailable on Thursday 18 May between 5:00pm and 9:00pm due to planned maintenance.}
 
 links:

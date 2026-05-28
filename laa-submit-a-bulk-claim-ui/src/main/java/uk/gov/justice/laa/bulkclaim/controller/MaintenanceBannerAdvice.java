@@ -10,7 +10,6 @@ import uk.gov.justice.laa.bulkclaim.util.DateWrapperUtil;
 @ControllerAdvice
 public class MaintenanceBannerAdvice {
 
-
   private final ZonedDateTime disableAtTime;
   private final String maintenanceBannerMessage;
 
@@ -18,8 +17,7 @@ public class MaintenanceBannerAdvice {
 
   public MaintenanceBannerAdvice(
       @Value("${app.maintenance.disable-at-time}") ZonedDateTime disableAtTime,
-      @Value("${app.maintenance.outage-banner-message}")
-      String outageBannerMessage,
+      @Value("${app.maintenance.outage-banner-message}") String outageBannerMessage,
       DateWrapperUtil dateWrapperUtil) {
     this.disableAtTime = disableAtTime;
     this.maintenanceBannerMessage = outageBannerMessage;
@@ -33,7 +31,7 @@ public class MaintenanceBannerAdvice {
   }
 
   @ModelAttribute("maintenanceBannerMessage")
-  public String getMaintenanceBannerMessage(){
+  public String getMaintenanceBannerMessage() {
     return maintenanceBannerMessage;
   }
 }
