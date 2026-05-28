@@ -166,24 +166,20 @@ spec:
               value: {{ tpl .value $ | quote }}
               {{- else if .valueFrom }}
               valueFrom:
-                {{- tpl (toYaml .valueFrom) $ | nindent 14 }}
+                {{- tpl (toYaml .valueFrom) $ | nindent 16 }}
               {{- end }}
           {{- end }}
           {{- end }}
           {{ if .Values.extraEnvVars }}
           {{- range .Values.extraEnvVars }}
-          - name: {{ .name }}
-            {{- if .value }}
-            value: {{ tpl .value $ | quote }}
-            {{- end }}
-            {{- if .valueFrom }}
-            valueFrom:
-              {{- if .valueFrom.secretKeyRef }}
-              secretKeyRef:
-                name: {{ tpl .valueFrom.secretKeyRef.name $ | quote }}
-                key: {{ .valueFrom.secretKeyRef.key }}
+            - name: {{ .name }}
+              {{- if .value }}
+              value: {{ tpl .value $ | quote }}
               {{- end }}
-            {{- end }}
+              {{- if .valueFrom }}
+              valueFrom:
+                {{- tpl (toYaml .valueFrom) $ | nindent 16 }}
+              {{- end }}
           {{- end }}
           {{- end }}
           {{/*
