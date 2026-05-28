@@ -52,9 +52,7 @@ public class WebMvcTestConfig {
     return new DateWrapperUtil();
   }
 
-  /**
-   * This disables the host header handling filter for tests.
-   */
+  /** This disables the host header handling filter for tests. */
   @Bean
   public HostValidationFilter hostValidationFilter() {
     return new HostValidationFilter(null) {

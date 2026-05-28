@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.UUID;
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClientManager;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
-import uk.gov.justice.laa.bulkclaim.util.DateWrapperUtil;
 
 public abstract class AbstractPactTest {
   public static final String CONSUMER = "laa-submit-a-bulk-claim";
@@ -292,5 +291,4 @@ public abstract class AbstractPactTest {
           });
 
   @MockitoBean OAuth2AuthorizedClientManager authorizedClientManager;
-
 }
