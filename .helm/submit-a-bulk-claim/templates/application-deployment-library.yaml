@@ -159,29 +159,29 @@ spec:
             {{- end }}
           {{- end }}
           env:
-            {{ if .Values.env }}
-            {{- range .Values.env }}
-            - name: {{ .name }}
-              {{- if .value }}
-              value: {{ tpl .value $ | quote }}
-              {{- else if .valueFrom }}
-              valueFrom:
-                {{- tpl (toYaml .valueFrom) $ | nindent 16 }}
-              {{- end }}
+          {{ if .Values.env }}
+          {{- range .Values.env }}
+          - name: {{ .name }}
+            {{- if .value }}
+            value: {{ tpl .value $ | quote }}
+            {{- else if .valueFrom }}
+            valueFrom:
+              {{- tpl (toYaml .valueFrom) $ | nindent 16 }}
+            {{- end }}
           {{- end }}
           {{- end }}
           {{ if .Values.extraEnvVars }}
           {{- range .Values.extraEnvVars }}
-            - name: {{ .name }}
+          - name: {{ .name }}
             {{- if .value }}
-              value: {{ tpl .value $ | quote }}
+            value: {{ tpl .value $ | quote }}
             {{- end }}
             {{- if .valueFrom }}
-              valueFrom:
+            valueFrom:
               {{- if .valueFrom.secretKeyRef }}
-                secretKeyRef:
-                  name: {{ tpl .valueFrom.secretKeyRef.name $ | quote }}
-                  key: {{ .valueFrom.secretKeyRef.key }}
+              secretKeyRef:
+                name: {{ tpl .valueFrom.secretKeyRef.name $ | quote }}
+                key: {{ .valueFrom.secretKeyRef.key }}
               {{- end }}
             {{- end }}
           {{- end }}
