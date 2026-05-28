@@ -16,6 +16,10 @@ app:
     url: xx
     timeout: 1
   upload-max-file-size: 10MB
+  maintenance:
+    disable-at-time: ${OUTAGE_BANNER_DISABLE_AT_TIMESTAMP:2026-05-29T17:29:00Z}
+    outage-banner-message: ${OUTAGE_BANNER_MESSAGE:Submit a Bulk Claim will be unavailable on Thursday 18 May between 5:00pm and 9:00pm due to planned maintenance.}
+
 
 rest-client:
   connect-timeout: 5
