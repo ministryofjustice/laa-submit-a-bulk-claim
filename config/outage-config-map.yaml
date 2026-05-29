@@ -1,9 +1,0 @@
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: outage-banner-properties
-data:
-  outage-banner-disable-at-timestamp: '2026-05-29T17:29:00Z'
-  outage-banner-message: >
-    Submit a Bulk Claim will be unavailable on Thursday 18 May
-    between 5:00pm and 6:00pm due to planned maintenance.

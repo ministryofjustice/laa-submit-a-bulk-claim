@@ -10,7 +10,7 @@ import uk.gov.justice.laa.bulkclaim.util.DateWrapperUtil;
 @ControllerAdvice
 public class OutageBannerAdvice {
 
-  private final ZonedDateTime disableAtTime;
+  private final ChronoLocalDateTime<?> disableAtTime;
   private final String outageBannerMessage;
 
   private final DateWrapperUtil dateWrapperUtil;
@@ -19,7 +19,7 @@ public class OutageBannerAdvice {
       @Value("${app.maintenance.disable-at-time}") ZonedDateTime disableAtTime,
       @Value("${app.maintenance.outage-banner-message}") String outageBannerMessage,
       DateWrapperUtil dateWrapperUtil) {
-    this.disableAtTime = disableAtTime;
+    this.disableAtTime = ChronoLocalDateTime.from(disableAtTime);
     this.outageBannerMessage = outageBannerMessage;
     this.dateWrapperUtil = dateWrapperUtil;
   }
@@ -27,7 +27,7 @@ public class OutageBannerAdvice {
   @ModelAttribute("outageBannerEnabled")
   public boolean getOutageBannerEnabled() {
     var currentTime = dateWrapperUtil.timeNow();
-    return currentTime.isBefore(ChronoLocalDateTime.from(disableAtTime));
+    return currentTime.isBefore(disableAtTime);
   }
 
   @ModelAttribute("outageBannerMessage")

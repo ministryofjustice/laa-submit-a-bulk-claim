@@ -22,9 +22,6 @@ app:
     access-token: e37da3d4-b8bc-4204-9528-deb6fa3bb39d
   submission:
     minimum-period: JAN-2024
-  maintenance:
-    disable-at-time: ${OUTAGE_BANNER_DISABLE_AT_TIMESTAMP:2026-05-29T17:29:00Z}
-    outage-banner-message: ${OUTAGE_BANNER_MESSAGE:Submit a Bulk Claim will be unavailable on Thursday 18 May between 5:00pm and 9:00pm due to planned maintenance.}
 
 
 links:
