@@ -37,6 +37,12 @@ public class CookieConsentController {
                 consentCookie.getMaxAge()
         );
         response.setHeader("Set-Cookie", cookieHeader);
+        Cookie hiddenCookie = new Cookie("cookies_banner_hidden", "");
+        hiddenCookie.setPath("/");
+        hiddenCookie.setMaxAge(0);
+        hiddenCookie.setHttpOnly(false);
+        hiddenCookie.setSecure(false);
+        response.addCookie(hiddenCookie);
         // Redirect back to where the user came from
         String referer = request.getHeader("Referer");
         return "redirect:" + (referer != null ? referer : "/");
@@ -86,6 +92,12 @@ public class CookieConsentController {
                 consentCookie.getMaxAge()
         );
         response.setHeader("Set-Cookie", cookieHeader);
+        Cookie hiddenCookie = new Cookie("cookies_banner_hidden", "");
+        hiddenCookie.setPath("/");
+        hiddenCookie.setMaxAge(0);
+        hiddenCookie.setHttpOnly(false);
+        hiddenCookie.setSecure(false);
+        response.addCookie(hiddenCookie);
         // Redirect back to where the user came from
         return "redirect:/cookies?success=true";
     }
