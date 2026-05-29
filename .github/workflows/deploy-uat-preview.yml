@@ -133,7 +133,6 @@ jobs:
           if-no-files-found: warn
 
   ecr-publish-image:
-    needs: [ build-and-test ]
     uses: ministryofjustice/laa-ccms-common-workflows/.github/workflows/ecr-publish-image.yml@v2
     permissions:
       contents: read

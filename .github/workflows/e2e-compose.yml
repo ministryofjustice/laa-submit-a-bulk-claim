@@ -149,8 +149,41 @@ jobs:
           role-to-assume: ${{ secrets.LAA_SUBMIT_A_BULK_CLAIM_ECR_ROLE_TO_ASSUME }}
           aws-region: ${{ vars.LAA_SUBMIT_A_BULK_CLAIM_ECR_REGION }}
 
-      - name: Login to ECR
-        uses: aws-actions/amazon-ecr-login@19d944daaa35f0fa1d3f7f8af1d3f2e5de25c5b7 # v2.1.4
+      - name: Pull SABC image
+        uses: ./.github/actions/pull-ecr-image
+        with:
+          role-to-assume: ${{ secrets.LAA_SUBMIT_A_BULK_CLAIM_ECR_ROLE_TO_ASSUME }}
+          aws-region: ${{ vars.LAA_SUBMIT_A_BULK_CLAIM_ECR_REGION }}
+          registry-account: ${{ secrets.ECR_ACCOUNT }}
+          repository: ${{ vars.LAA_SUBMIT_A_BULK_CLAIM_ECR_REPOSITORY }}
+          image-tag: ${{ inputs.sabc_image_tag }}
+
+      - name: Pull OIDC image
+        uses: ./.github/actions/pull-ecr-image
+        with:
+          role-to-assume: ${{ secrets.LAA_OIDC_MOCK_SERVER_ECR_ROLE_TO_ASSUME }}
+          aws-region: ${{ vars.LAA_OIDC_MOCK_SERVER_ECR_REGION }}
+          registry-account: ${{ secrets.ECR_ACCOUNT }}
+          repository: ${{ vars.LAA_OIDC_MOCK_SERVER_ECR_REPOSITORY }}
+          image-tag: oidc-mock-latest
+
+      - name: Pull Event Service image
+        uses: ./.github/actions/pull-ecr-image
+        with:
+          role-to-assume: ${{ secrets.LAA_DATA_CLAIMS_EVENT_SERVICE_ECR_ROLE_TO_ASSUME }}
+          aws-region: ${{ vars.LAA_DATA_CLAIMS_EVENT_SERVICE_ECR_REGION }}
+          registry-account: ${{ secrets.ECR_ACCOUNT }}
+          repository: ${{ vars.LAA_DATA_CLAIMS_EVENT_SERVICE_ECR_REPOSITORY }}
+          image-tag: ${{ inputs.claims_events_image_tag }}
+
+      - name: Pull Claims API image
+        uses: ./.github/actions/pull-ecr-image
+        with:
+          role-to-assume: ${{ secrets.LAA_DATA_CLAIMS_API_ECR_ROLE_TO_ASSUME }}
+          aws-region: ${{ vars.LAA_DATA_CLAIMS_API_ECR_REGION }}
+          registry-account: ${{ secrets.ECR_ACCOUNT }}
+          repository: ${{ vars.LAA_DATA_CLAIMS_API_ECR_REPOSITORY }}
+          image-tag: ${{ inputs.claims_api_image_tag }}
 
       - name: Run compose stack
         env:
