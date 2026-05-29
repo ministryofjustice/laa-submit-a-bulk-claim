@@ -30,7 +30,13 @@ public class CookieConsentController {
         consentCookie.setMaxAge(365 * 24 * 60 * 60);
 
         // Must be readable by JS for GA4 consentCookie.setSecure(true);
-        response.addCookie(consentCookie);
+        String cookieHeader = String.format(
+                "%s=%s; Max-Age=%d; Path=/; Secure; SameSite=Lax",
+                consentCookie.getName(),
+                consentCookie.getValue(),
+                consentCookie.getMaxAge()
+        );
+        response.setHeader("Set-Cookie", cookieHeader);
         // Redirect back to where the user came from
         String referer = request.getHeader("Referer");
         return "redirect:" + (referer != null ? referer : "/");
@@ -69,12 +75,17 @@ public class CookieConsentController {
 
         consentCookie.setPath("/");
         consentCookie.setHttpOnly(false);
-        consentCookie.setSecure(false);
         // 1 year
         consentCookie.setMaxAge(365 * 24 * 60 * 60);
 
         // Must be readable by JS for GA4 consentCookie.setSecure(true);
-        response.addCookie(consentCookie);
+        String cookieHeader = String.format(
+                "%s=%s; Max-Age=%d; Path=/; Secure; SameSite=Lax",
+                consentCookie.getName(),
+                consentCookie.getValue(),
+                consentCookie.getMaxAge()
+        );
+        response.setHeader("Set-Cookie", cookieHeader);
         // Redirect back to where the user came from
         return "redirect:/cookies?success=true";
     }
