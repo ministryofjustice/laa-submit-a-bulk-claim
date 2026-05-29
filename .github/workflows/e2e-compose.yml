@@ -27,17 +27,7 @@ on:
         default: "@smoke"
         type: string
       sabc_image_tag:
-        description: "SaBC image tag (optional override)"
-        required: false
-        default: ""
-        type: string
-      claims_api_image_tag:
-        description: "Claims API image tag (optional override)"
-        required: false
-        default: ""
-        type: string
-      claims_events_image_tag:
-        description: "Claims Events image tag (optional override)"
+        description: "SaBC image tag"
         required: false
         default: ""
         type: string
@@ -47,7 +37,136 @@ permissions:
   contents: read
 
 jobs:
+  get-app-versions:
+    runs-on: ubuntu-latest
+    outputs:
+      sabc_image_tag: ${{ inputs.sabc_image_tag || steps.sabc.outputs.image_tag }}
+      claims_events_image_tag: ${{ inputs.claims_events_image_tag || steps.claims_events.outputs.image_tag }}
+      claims_api_image_tag: ${{ inputs.claims_api_image_tag || steps.claims_api.outputs.image_tag }}
+      fsp_api_image_tag: ${{ steps.fsp_api.outputs.image_tag }}
+    environment: uat
+    permissions:
+      id-token: write
+      contents: read
+      packages: read
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.branch || github.ref }}
+
+      - name: Install kubectl
+        uses: azure/setup-kubectl@v3
+        with:
+          version: v1.29.4
+
+      - name: Authenticate to the SaBC EKS cluster
+        uses: ministryofjustice/laa-reusable-github-actions/.github/actions/authenticate_to_cluster@768f673017edbb793cf052fa159c272d6c1f9177
+        with:
+          kube-cert: ${{ secrets.KUBE_CERT_LAA_SUBMIT_A_BULK_CLAIM_UAT }}
+          kube-token: ${{ secrets.KUBE_TOKEN_LAA_SUBMIT_A_BULK_CLAIM_UAT }}
+          kube-cluster: ${{ secrets.KUBE_CLUSTER_LAA_SUBMIT_A_BULK_CLAIM_UAT }}
+          kube-namespace: ${{ secrets.KUBE_NAMESPACE_LAA_SUBMIT_A_BULK_CLAIM_UAT }}
+          kube-sa: deploy-user
+
+      - name: Collect SaBC version
+        id: sabc
+        uses: ./.github/actions/collect-deployment-version
+        with:
+          deployment: uat-submit-a-bulk-claim
+          namespace: ${{ secrets.KUBE_NAMESPACE_LAA_SUBMIT_A_BULK_CLAIM_UAT }}
+          friendly_name: Submit a Bulk Claim
+
+      - name: Authenticate to the Claims API EKS cluster
+        uses: ministryofjustice/laa-reusable-github-actions/.github/actions/authenticate_to_cluster@768f673017edbb793cf052fa159c272d6c1f9177
+        with:
+          kube-cert: ${{ secrets.KUBE_CERT_LAA_DATA_CLAIMS_API_UAT }}
+          kube-token: ${{ secrets.KUBE_TOKEN_LAA_DATA_CLAIMS_API_UAT }}
+          kube-cluster: ${{ secrets.KUBE_CLUSTER_LAA_DATA_CLAIMS_API_UAT }}
+          kube-namespace: ${{ secrets.KUBE_NAMESPACE_LAA_DATA_CLAIMS_API_UAT }}
+          kube-sa: deploy-user
+
+      - name: Collect Claims API version
+        id: claims_api
+        uses: ./.github/actions/collect-deployment-version
+        with:
+          deployment: main-data-claims-api
+          namespace: ${{ secrets.KUBE_NAMESPACE_LAA_DATA_CLAIMS_API_UAT }}
+          friendly_name: Data Claims API
+
+      - name: Authenticate to the FSP API EKS cluster
+        uses: ministryofjustice/laa-reusable-github-actions/.github/actions/authenticate_to_cluster@768f673017edbb793cf052fa159c272d6c1f9177
+        with:
+          kube-cert: ${{ secrets.KUBE_CERT_LAA_FEE_SCHEME_API_UAT }}
+          kube-token: ${{ secrets.KUBE_TOKEN_LAA_FEE_SCHEME_API_UAT }}
+          kube-cluster: ${{ secrets.KUBE_CLUSTER_LAA_FEE_SCHEME_API_UAT }}
+          kube-namespace: ${{ secrets.KUBE_NAMESPACE_LAA_FEE_SCHEME_API_UAT }}
+          kube-sa: deploy-user
+
+      - name: Collect FSP API version
+        id: fsp_api
+        uses: ./.github/actions/collect-deployment-version
+        with:
+          deployment: laa-fee-scheme-api-uat-deployment
+          namespace: ${{ secrets.KUBE_NAMESPACE_LAA_FEE_SCHEME_API_UAT }}
+          friendly_name: FSP API
+
+
+      - name: Authenticate to the Claims Event Service EKS cluster
+        uses: ministryofjustice/laa-reusable-github-actions/.github/actions/authenticate_to_cluster@768f673017edbb793cf052fa159c272d6c1f9177
+        with:
+          kube-cert: ${{ secrets.KUBE_CERT_LAA_DATA_CLAIMS_EVENT_SERVICE_UAT }}
+          kube-token: ${{ secrets.KUBE_TOKEN_LAA_DATA_CLAIMS_EVENT_SERVICE_UAT }}
+          kube-cluster: ${{ secrets.KUBE_CLUSTER_LAA_DATA_CLAIMS_EVENT_SERVICE_UAT }}
+          kube-namespace: ${{ secrets.KUBE_NAMESPACE_LAA_DATA_CLAIMS_EVENT_SERVICE_UAT }}
+          kube-sa: deploy-user
+
+      - name: Collect Claims Event Service version
+        id: claims_events
+        uses: ./.github/actions/collect-deployment-version
+        with:
+          deployment: uat-data-claims-events
+          namespace: ${{ secrets.KUBE_NAMESPACE_LAA_DATA_CLAIMS_EVENT_SERVICE_UAT }}
+          friendly_name: Data Claims Events
+
+
+      - name: Publish test image versions summary
+        run: |
+          {
+            echo "## Versions testing against deployment versions"
+            echo ""
+            echo "| Service | Context | Image tag | Release time | Status |"
+            echo "| --- | --- | --- | --- | --- |"
+
+            SABC_TAG="${{ steps.sabc.outputs.image_tag }}"
+            SABC_OVERRIDE=""
+            if [ -n "${{ inputs.sabc_image_tag }}" ]; then
+              SABC_OVERRIDE=" (overridden: ${{ inputs.sabc_image_tag }})"
+            fi
+            echo "| Submit a Bulk Claim | ${{ steps.sabc.outputs.context }} | ${SABC_TAG}${SABC_OVERRIDE} | ${{ steps.sabc.outputs.release_time }} | ${{ steps.sabc.outputs.status }} |"
+
+            EVENTS_TAG="${{ steps.claims_events.outputs.image_tag }}"
+            EVENTS_OVERRIDE=""
+            if [ -n "${{ inputs.claims_events_image_tag }}" ]; then
+              EVENTS_OVERRIDE=" (overridden: ${{ inputs.claims_events_image_tag }})"
+            fi
+            echo "| Data Claims Events | ${{ steps.claims_events.outputs.context }} | ${EVENTS_TAG}${EVENTS_OVERRIDE} | ${{ steps.claims_events.outputs.release_time }} | ${{ steps.claims_events.outputs.status }} |"
+
+            API_TAG="${{ steps.claims_api.outputs.image_tag }}"
+            API_OVERRIDE=""
+            if [ -n "${{ inputs.claims_api_image_tag }}" ]; then
+              API_OVERRIDE=" (overridden: ${{ inputs.claims_api_image_tag }})"
+            fi
+            echo "| Data Claims API | ${{ steps.claims_api.outputs.context }} | ${API_TAG}${API_OVERRIDE} | ${{ steps.claims_api.outputs.release_time }} | ${{ steps.claims_api.outputs.status }} |"
+
+            echo "| FSP API | ${{ steps.fsp_api.outputs.context }} | ${{ steps.fsp_api.outputs.image_tag }} | ${{ steps.fsp_api.outputs.release_time }} | ${{ steps.fsp_api.outputs.status }} |"
+          } >> "$GITHUB_STEP_SUMMARY"
+
+
+
   run-compose-e2e:
+    needs:
+      - get-app-versions
     runs-on: ubuntu-22.04
     environment: uat
     env:
@@ -156,7 +275,7 @@ jobs:
           aws-region: ${{ vars.LAA_SUBMIT_A_BULK_CLAIM_ECR_REGION }}
           registry-account: ${{ secrets.ECR_ACCOUNT }}
           repository: ${{ vars.LAA_SUBMIT_A_BULK_CLAIM_ECR_REPOSITORY }}
-          image-tag: ${{ inputs.sabc_image_tag }}
+          image-tag: ${{ needs.get-app-versions.outputs.sabc_image_tag }}
 
       - name: Pull OIDC image
         uses: ./.github/actions/pull-ecr-image
@@ -174,7 +293,7 @@ jobs:
           aws-region: ${{ vars.LAA_DATA_CLAIMS_EVENT_SERVICE_ECR_REGION }}
           registry-account: ${{ secrets.ECR_ACCOUNT }}
           repository: ${{ vars.LAA_DATA_CLAIMS_EVENT_SERVICE_ECR_REPOSITORY }}
-          image-tag: ${{ inputs.claims_events_image_tag }}
+          image-tag: ${{ needs.get-app-versions.outputs.claims_events_image_tag }}
 
       - name: Pull Claims API image
         uses: ./.github/actions/pull-ecr-image
@@ -183,7 +302,7 @@ jobs:
           aws-region: ${{ vars.LAA_DATA_CLAIMS_API_ECR_REGION }}
           registry-account: ${{ secrets.ECR_ACCOUNT }}
           repository: ${{ vars.LAA_DATA_CLAIMS_API_ECR_REPOSITORY }}
-          image-tag: ${{ inputs.claims_api_image_tag }}
+          image-tag: ${{ needs.get-app-versions.outputs.claims_api_image_tag }}
 
       - name: Run compose stack
         env:
@@ -203,9 +322,9 @@ jobs:
           SDS_API_URL: ${{ vars.SDS_API_URL }}
           FSP_API_TOKEN: ${{ secrets.FSP_API_TOKEN }}
           PROVIDER_API_KEY: ${{ secrets.PDA_API_TOKEN }}
-          SABC_TAG: ${{ inputs.sabc_image_tag || vars.UAT_SABC_IMAGE_TAG }}
-          CLAIMS_API_TAG: ${{ inputs.claims_api_image_tag || vars.UAT_CLAIMS_API_IMAGE_TAG }}
-          EVENT_SERVICE_TAG: ${{ inputs.claims_events_image_tag || vars.UAT_CLAIMS_EVENTS_IMAGE_TAG }}
+          SABC_TAG: ${{ needs.get-app-versions.outputs.sabc_image_tag }}
+          CLAIMS_API_TAG: ${{ needs.get-app-versions.outputs.claims_api_image_tag }}
+          EVENT_SERVICE_TAG: ${{ needs.get-app-versions.outputs.claims_events_image_tag }}
           OIDC_TAG: oidc-mock-latest
         run: |
           set -euo pipefail

@@ -32,6 +32,7 @@ jobs:
     uses: ./.github/workflows/e2e-compose.yml
     permissions:
       contents: read
+      packages: read
       id-token: write
     with:
       cucumber_tags: "@smoke"
@@ -134,6 +135,7 @@ jobs:
 
   ecr-publish-image:
     uses: ministryofjustice/laa-ccms-common-workflows/.github/workflows/ecr-publish-image.yml@v2
+    needs: define-preview-version
     permissions:
       contents: read
       id-token: write
