@@ -8,30 +8,30 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import uk.gov.justice.laa.bulkclaim.util.DateWrapperUtil;
 
 @ControllerAdvice
-public class MaintenanceBannerAdvice {
+public class OutageBannerAdvice {
 
   private final ZonedDateTime disableAtTime;
-  private final String maintenanceBannerMessage;
+  private final String outageBannerMessage;
 
   private final DateWrapperUtil dateWrapperUtil;
 
-  public MaintenanceBannerAdvice(
+  public OutageBannerAdvice(
       @Value("${app.maintenance.disable-at-time}") ZonedDateTime disableAtTime,
       @Value("${app.maintenance.outage-banner-message}") String outageBannerMessage,
       DateWrapperUtil dateWrapperUtil) {
     this.disableAtTime = disableAtTime;
-    this.maintenanceBannerMessage = outageBannerMessage;
+    this.outageBannerMessage = outageBannerMessage;
     this.dateWrapperUtil = dateWrapperUtil;
   }
 
-  @ModelAttribute("maintenanceBannerEnabled")
-  public boolean getMaintenanceBannerEnabled() {
+  @ModelAttribute("outageBannerEnabled")
+  public boolean getOutageBannerEnabled() {
     var currentTime = dateWrapperUtil.timeNow();
     return currentTime.isBefore(ChronoLocalDateTime.from(disableAtTime));
   }
 
-  @ModelAttribute("maintenanceBannerMessage")
-  public String getMaintenanceBannerMessage() {
-    return maintenanceBannerMessage;
+  @ModelAttribute("outageBannerMessage")
+  public String getOutageBannerMessage() {
+    return outageBannerMessage;
   }
 }
