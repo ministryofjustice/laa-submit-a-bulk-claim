@@ -100,9 +100,7 @@ services:
 
   localstack:
     container_name: event-service-localstack
-    build:
-      context: .
-      dockerfile: scripts/Dockerfile.localstack
+    image: localstack/localstack:4.14.0
     ports:
       - "4566:4566"
     environment:
@@ -116,7 +114,8 @@ services:
       retries: 12
       start_period: 30s
     volumes:
-      - "localstack-data:/var/lib/localstack"
+      - "./docker-scripts/init-localstack.sh:/etc/localstack/init/ready.d/init-localstack.sh"
+      - "${LOCALSTACK_VOLUME_DIR:-./volume}:/var/lib/localstack"
       - "/var/run/docker.sock:/var/run/docker.sock"
 
   redis:
