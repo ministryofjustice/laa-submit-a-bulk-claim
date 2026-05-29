@@ -30,11 +30,14 @@ runs:
   steps:
     - id: collect
       shell: bash
+      env:
+        DEPLOYMENT: ${{ inputs.deployment }}
+        NAMESPACE: ${{ inputs.namespace }}
       run: |
         set -u
 
-        DEPLOYMENT="${{ inputs.deployment }}"
-        NAMESPACE="${{ inputs.namespace }}"
+        DEPLOYMENT="${{ env.DEPLOYMENT }}"
+        NAMESPACE="${{ env.NAMESPACE }}"
         CONTEXT="$(kubectl config current-context 2>/dev/null || true)"
 
         if ! kubectl get deploy "$DEPLOYMENT" -n "$NAMESPACE" >/dev/null 2>&1; then

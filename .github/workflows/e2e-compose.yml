@@ -63,10 +63,10 @@ jobs:
       - name: Authenticate to the SaBC EKS cluster
         uses: ministryofjustice/laa-reusable-github-actions/.github/actions/authenticate_to_cluster@768f673017edbb793cf052fa159c272d6c1f9177
         with:
-          kube-cert: ${{ secrets.KUBE_CERT_LAA_SUBMIT_A_BULK_CLAIM_UAT }}
-          kube-token: ${{ secrets.KUBE_TOKEN_LAA_SUBMIT_A_BULK_CLAIM_UAT }}
-          kube-cluster: ${{ secrets.KUBE_CLUSTER_LAA_SUBMIT_A_BULK_CLAIM_UAT }}
-          kube-namespace: ${{ secrets.KUBE_NAMESPACE_LAA_SUBMIT_A_BULK_CLAIM_UAT }}
+          kube-cert: ${{ secrets.KUBE_CERT }}
+          kube-token: ${{ secrets.KUBE_TOKEN }}
+          kube-cluster: ${{ secrets.KUBE_CLUSTER }}
+          kube-namespace: ${{ secrets.KUBE_NAMESPACE }}
           kube-sa: deploy-user
 
       - name: Collect SaBC version
@@ -131,35 +131,58 @@ jobs:
 
 
       - name: Publish test image versions summary
+        env:
+          SABC_IMAGE_TAG: ${{ inputs.sabc_image_tag }}
+          CLAIMS_API_IMAGE_TAG_OVERRIDE: ${{ inputs.claims_api_image_tag }}
+          CLAIMS_EVENT_IMAGE_TAG_OVERRIDE: ${{ inputs.claims_events_image_tag }}
+
+          SABC_TAG: ${{ steps.sabc.outputs.image_tag }}
+          SABC_CONTEXT: ${{ steps.sabc.outputs.context }}
+          SABC_RELEASE_TIME: ${{ steps.sabc.outputs.release_time }}
+          SABC_STATUS: ${{ steps.sabc.outputs.status }}
+
+          CLAIMS_API_TAG: ${{ steps.claims_api.outputs.image_tag }}
+          CLAIMS_API_CONTEXT: ${{ steps.claims_api.outputs.context }}
+          CLAIMS_API_RELEASE_TIME: ${{ steps.claims_api.outputs.release_time }}
+          CLAIMS_API_STATUS: ${{ steps.claims_api.outputs.status }}
+
+          CLAIMS_EVENTS_TAG: ${{ steps.claims_events.outputs.image_tag }}
+          CLAIMS_EVENTS_CONTEXT: ${{ steps.claims_events.outputs.context }}
+          CLAIMS_EVENTS_RELEASE_TIME: ${{ steps.claims_events.outputs.release_time }}
+          CLAIMS_EVENTS_STATUS: ${{ steps.claims_events.outputs.status }}
+
+          FSP_API_TAG: ${{ steps.fsp_api.outputs.image_tag }}
+          FSP_API_CONTEXT: ${{ steps.fsp_api.outputs.context }}
+          FSP_API_RELEASE_TIME: ${{ steps.fsp_api.outputs.release_time }}
+          FSP_API_STATUS: ${{ steps.fsp_api.outputs.status }}
+
         run: |
+          set -euo pipefail
           {
             echo "## Versions testing against deployment versions"
             echo ""
             echo "| Service | Context | Image tag | Release time | Status |"
             echo "| --- | --- | --- | --- | --- |"
 
-            SABC_TAG="${{ steps.sabc.outputs.image_tag }}"
             SABC_OVERRIDE=""
-            if [ -n "${{ inputs.sabc_image_tag }}" ]; then
-              SABC_OVERRIDE=" (overridden: ${{ inputs.sabc_image_tag }})"
+            if [ -n "${SABC_IMAGE_TAG:-}" ]; then
+              SABC_OVERRIDE=" (overridden: ${SABC_IMAGE_TAG})"
             fi
-            echo "| Submit a Bulk Claim | ${{ steps.sabc.outputs.context }} | ${SABC_TAG}${SABC_OVERRIDE} | ${{ steps.sabc.outputs.release_time }} | ${{ steps.sabc.outputs.status }} |"
+            echo "| Submit a Bulk Claim | ${SABC_CONTEXT} | ${SABC_TAG}${SABC_OVERRIDE} | ${SABC_RELEASE_TIME} | ${SABC_STATUS} |"
 
-            EVENTS_TAG="${{ steps.claims_events.outputs.image_tag }}"
             EVENTS_OVERRIDE=""
-            if [ -n "${{ inputs.claims_events_image_tag }}" ]; then
-              EVENTS_OVERRIDE=" (overridden: ${{ inputs.claims_events_image_tag }})"
+            if [ -n "${CLAIMS_EVENT_IMAGE_TAG_OVERRIDE:-}" ]; then
+              EVENTS_OVERRIDE=" (overridden: ${CLAIMS_EVENT_IMAGE_TAG_OVERRIDE})"
             fi
-            echo "| Data Claims Events | ${{ steps.claims_events.outputs.context }} | ${EVENTS_TAG}${EVENTS_OVERRIDE} | ${{ steps.claims_events.outputs.release_time }} | ${{ steps.claims_events.outputs.status }} |"
+            echo "| Data Claims Events | ${CLAIMS_EVENTS_CONTEXT} | ${CLAIMS_EVENTS_TAG}${EVENTS_OVERRIDE} | ${CLAIMS_EVENTS_RELEASE_TIME} | ${CLAIMS_EVENTS_STATUS} |"
 
-            API_TAG="${{ steps.claims_api.outputs.image_tag }}"
             API_OVERRIDE=""
-            if [ -n "${{ inputs.claims_api_image_tag }}" ]; then
-              API_OVERRIDE=" (overridden: ${{ inputs.claims_api_image_tag }})"
+            if [ -n "${CLAIMS_API_IMAGE_TAG_OVERRIDE:-}" ]; then
+              API_OVERRIDE=" (overridden: ${CLAIMS_API_IMAGE_TAG_OVERRIDE})"
             fi
-            echo "| Data Claims API | ${{ steps.claims_api.outputs.context }} | ${API_TAG}${API_OVERRIDE} | ${{ steps.claims_api.outputs.release_time }} | ${{ steps.claims_api.outputs.status }} |"
+            echo "| Data Claims API | ${CLAIMS_API_CONTEXT} | ${CLAIMS_API_TAG}${API_OVERRIDE} | ${CLAIMS_API_RELEASE_TIME} | ${CLAIMS_API_STATUS} |"
 
-            echo "| FSP API | ${{ steps.fsp_api.outputs.context }} | ${{ steps.fsp_api.outputs.image_tag }} | ${{ steps.fsp_api.outputs.release_time }} | ${{ steps.fsp_api.outputs.status }} |"
+            echo "| FSP API | ${FSP_API_CONTEXT} | ${FSP_API_TAG} | ${FSP_API_RELEASE_TIME} | ${FSP_API_STATUS} |"
           } >> "$GITHUB_STEP_SUMMARY"
 
 
