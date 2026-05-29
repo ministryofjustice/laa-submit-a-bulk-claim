@@ -20,8 +20,7 @@ import uk.gov.justice.laa.bulkclaim.util.DateWrapperUtil;
 @DisplayName("Maintenance Banner Advice Test")
 class OutageBannerAdviceTest {
 
-  @Mock
-  DateWrapperUtil dateWrapperUtil;
+  @Mock DateWrapperUtil dateWrapperUtil;
 
   ZonedDateTime rootTime =
       ZonedDateTime.of(LocalDate.of(2026, 1, 1), LocalTime.of(0, 0), ZoneId.systemDefault());
@@ -37,8 +36,8 @@ class OutageBannerAdviceTest {
       ZonedDateTime disableAtTime = rootTime.minusDays(1);
       ZonedDateTime currentTime = rootTime;
       when(dateWrapperUtil.timeNow()).thenReturn(LocalDateTime.from(currentTime));
-      OutageBannerAdvice outageBannerAdvice = new OutageBannerAdvice(
-          disableAtTime, "Banner text", dateWrapperUtil);
+      OutageBannerAdvice outageBannerAdvice =
+          new OutageBannerAdvice(disableAtTime, "Banner text", dateWrapperUtil);
       // When
       var result = outageBannerAdvice.getOutageBannerEnabled();
       // Then
@@ -52,8 +51,8 @@ class OutageBannerAdviceTest {
       ZonedDateTime disableAtTime = rootTime.plusDays(1);
       ZonedDateTime currentTime = rootTime;
       when(dateWrapperUtil.timeNow()).thenReturn(LocalDateTime.from(currentTime));
-      OutageBannerAdvice outageBannerAdvice = new OutageBannerAdvice(
-          disableAtTime, "Banner text", dateWrapperUtil);
+      OutageBannerAdvice outageBannerAdvice =
+          new OutageBannerAdvice(disableAtTime, "Banner text", dateWrapperUtil);
       // When
       var result = outageBannerAdvice.getOutageBannerEnabled();
       // Then
@@ -63,14 +62,15 @@ class OutageBannerAdviceTest {
 
   @Nested
   @DisplayName("Get Outage Banner Message Tests")
-  class GetOutageBannerMessageTests{
+  class GetOutageBannerMessageTests {
 
     @Test
     @DisplayName("Should return outage banner message")
-    void shouldReturnMessage(){
+    void shouldReturnMessage() {
       // Given
       String message = "Outage message";
-      OutageBannerAdvice outageBannerAdvice = new OutageBannerAdvice(null, message, dateWrapperUtil);
+      OutageBannerAdvice outageBannerAdvice =
+          new OutageBannerAdvice(null, message, dateWrapperUtil);
       // When
       var result = outageBannerAdvice.getOutageBannerMessage();
       // Then
