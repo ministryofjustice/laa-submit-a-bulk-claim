@@ -291,15 +291,6 @@ jobs:
           role-to-assume: ${{ secrets.LAA_SUBMIT_A_BULK_CLAIM_ECR_ROLE_TO_ASSUME }}
           aws-region: ${{ vars.LAA_SUBMIT_A_BULK_CLAIM_ECR_REGION }}
 
-      - name: Pull SABC image
-        uses: ./.github/actions/pull-ecr-image
-        with:
-          role-to-assume: ${{ secrets.LAA_SUBMIT_A_BULK_CLAIM_ECR_ROLE_TO_ASSUME }}
-          aws-region: ${{ vars.LAA_SUBMIT_A_BULK_CLAIM_ECR_REGION }}
-          registry-account: ${{ secrets.ECR_ACCOUNT }}
-          repository: ${{ vars.LAA_SUBMIT_A_BULK_CLAIM_ECR_REPOSITORY }}
-          image-tag: ${{ needs.get-app-versions.outputs.sabc_image_tag }}
-
       - name: Pull OIDC image
         uses: ./.github/actions/pull-ecr-image
         with:
@@ -326,6 +317,15 @@ jobs:
           registry-account: ${{ secrets.ECR_ACCOUNT }}
           repository: ${{ vars.LAA_DATA_CLAIMS_API_ECR_REPOSITORY }}
           image-tag: ${{ needs.get-app-versions.outputs.claims_api_image_tag }}
+
+      - name: Pull SABC image
+        uses: ./.github/actions/pull-ecr-image
+        with:
+          role-to-assume: ${{ secrets.LAA_SUBMIT_A_BULK_CLAIM_ECR_ROLE_TO_ASSUME }}
+          aws-region: ${{ vars.LAA_SUBMIT_A_BULK_CLAIM_ECR_REGION }}
+          registry-account: ${{ secrets.ECR_ACCOUNT }}
+          repository: ${{ vars.LAA_SUBMIT_A_BULK_CLAIM_ECR_REPOSITORY }}
+          image-tag: ${{ needs.get-app-versions.outputs.sabc_image_tag }}
 
       - name: Run compose stack
         env:
