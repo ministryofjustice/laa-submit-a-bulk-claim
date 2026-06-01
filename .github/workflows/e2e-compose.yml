@@ -327,6 +327,29 @@ jobs:
           repository: ${{ vars.LAA_SUBMIT_A_BULK_CLAIM_ECR_REPOSITORY }}
           image-tag: ${{ needs.get-app-versions.outputs.sabc_image_tag }}
 
+      # This step is required to allow E2E to use http://oidc:9000, just like the containers would. This keeps
+      # the host name the same, generating a valid JWT for SaBC. On the github runner, this should resolve to
+      # the IP address of the 127.0.0.1 container. Otherwise, should resolve to 127.0.0.1.
+      - name: Map hostnames to 127.0.0.1
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          HOST_IP="$(getent ahostsv4 127.0.0.1 | awk 'NR==1 {print $1}')"
+          echo "Resolved IPv4 127.0.0.1 to: ${HOST_IP}"
+
+          if ! grep -qE '(^|[[:space:]])oidc([[:space:]]|$)' /etc/hosts; then
+            echo "${HOST_IP} oidc" | sudo tee -a /etc/hosts >/dev/null
+          else
+            echo "oidc already present in /etc/hosts, skipping"
+          fi
+
+          if ! grep -qE '(^|[[:space:]])app([[:space:]]|$)' /etc/hosts; then
+            echo "${HOST_IP} app" | sudo tee -a /etc/hosts >/dev/null
+          else
+            echo "oidc already present in /etc/hosts, skipping"
+          fi
+
       - name: Run compose stack
         env:
           ECR_ACCOUNT: ${{ secrets.ECR_ACCOUNT }}
