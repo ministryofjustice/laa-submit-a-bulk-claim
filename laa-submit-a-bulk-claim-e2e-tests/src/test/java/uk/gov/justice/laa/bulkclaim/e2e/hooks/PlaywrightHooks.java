@@ -58,10 +58,12 @@ public class PlaywrightHooks {
       }
     }
 
+    String appBaseUrl = resolveAppBaseUrl();
+
     // Create browser context with optional storage state support.
     Browser.NewContextOptions options = new Browser.NewContextOptions()
         .setAcceptDownloads(true)
-        .setBaseURL(System.getenv("UI_BASE_URL") != null ? System.getenv("UI_BASE_URL") : "about:blank");
+        .setBaseURL(appBaseUrl);
     
     if (workerStorageStatePath != null && Files.exists(workerStorageStatePath)) {
       options.setStorageStatePath(workerStorageStatePath);
@@ -76,10 +78,9 @@ public class PlaywrightHooks {
     
     // ⭐ Navigate to base URL to load auth state
     try {
-      String baseUrl = System.getenv("UI_BASE_URL") != null ? System.getenv("UI_BASE_URL") : "about:blank";
-      page.navigate(baseUrl);
+      page.navigate(appBaseUrl);
       page.waitForLoadState();
-      System.out.println("[" + workerId + "] ✅ Navigated to: " + baseUrl);
+      System.out.println("[" + workerId + "] ✅ Navigated to: " + appBaseUrl);
     } catch (Exception e) {
       System.out.println("[" + workerId + "] ⚠️ Navigation warning: " + e.getMessage());
     }
@@ -150,6 +151,25 @@ public class PlaywrightHooks {
     }
 
     return Path.of("build", "e2e", "storageState.json");
+  }
+
+  private static String resolveAppBaseUrl() {
+    String fromProperty = System.getProperty("e2e.baseUrl");
+    if (fromProperty != null && !fromProperty.isBlank()) {
+      return fromProperty;
+    }
+
+    String fromE2eEnv = System.getenv("E2E_BASE_URL");
+    if (fromE2eEnv != null && !fromE2eEnv.isBlank()) {
+      return fromE2eEnv;
+    }
+
+    String fromUiEnv = System.getenv("UI_BASE_URL");
+    if (fromUiEnv != null && !fromUiEnv.isBlank()) {
+      return fromUiEnv;
+    }
+
+    return "http://localhost:8082";
   }
 }
 

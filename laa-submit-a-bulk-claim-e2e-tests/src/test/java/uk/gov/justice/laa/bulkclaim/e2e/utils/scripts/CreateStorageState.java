@@ -14,7 +14,7 @@ import uk.gov.justice.laa.bulkclaim.e2e.utils.TotpUtil;
 public final class CreateStorageState {
 
   public static void main(String[] args) throws Exception {
-    String baseUrl = envOrDefault("E2E_BASE_URL", "http://localhost:8080");
+    String baseUrl = envOrDefault("E2E_BASE_URL", "http://localhost:8082");
     String storagePathRaw = envOrDefault("E2E_STORAGE_STATE_PATH", "build/e2e/storageState.json");
     Path storagePath = Path.of(storagePathRaw);
     Files.createDirectories(storagePath.getParent());

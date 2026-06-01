@@ -14,7 +14,7 @@ public class NavigationSteps extends BaseUiSteps {
 
   @Given("I am on the bulk import page")
   public void iAmOnTheBulkImportPage() {
-    bulkImportPage().open();
+    bulkImportPage().open(baseUrl());
   }
 
   @Given("I am on the bulk submission landing page")

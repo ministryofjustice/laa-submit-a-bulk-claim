@@ -13,13 +13,10 @@ public final class BulkImportPage extends BasePage {
     super(page);
   }
 
-  public void open( ) {
+  public void open(String baseUrl) {
 //    String normalizedBase = baseUrl.endsWith("/") ? baseUrl.substring(0, baseUrl.length() - 1) : baseUrl;
-    System.out.println("[BulkImportPage] Navigating to /upload from: " + page.url());
     page.navigate( "/upload");
     page.waitForURL(url -> url.contains("/upload"));
-    System.out.println("[BulkImportPage] Arrived at: " + page.url());
-
     page.waitForLoadState(com.microsoft.playwright.options.LoadState.DOMCONTENTLOADED);
   }
 

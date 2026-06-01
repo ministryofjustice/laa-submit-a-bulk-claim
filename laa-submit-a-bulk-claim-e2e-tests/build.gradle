@@ -171,7 +171,7 @@ tasks.register('e2eLogin', JavaExec) {
     mainClass = 'uk.gov.justice.laa.bulkclaim.e2e.utils.scripts.CreateStorageState'
     classpath = sourceSets.test.runtimeClasspath
 
-    environment 'E2E_BASE_URL', envOrDotEnv('E2E_BASE_URL', 'http://localhost:8080')
+    environment 'E2E_BASE_URL', envOrDotEnv('E2E_BASE_URL', 'http://localhost:8082')
     environment 'E2E_HEADLESS', envOrDotEnv('E2E_HEADLESS', 'false')
     environment 'E2E_STORAGE_STATE_PATH', envOrDotEnv('E2E_STORAGE_STATE_PATH', 'build/e2e/storageState.json')
     environment 'E2E_AUTH_MODE', envOrDotEnv('E2E_AUTH_MODE', 'aad')
