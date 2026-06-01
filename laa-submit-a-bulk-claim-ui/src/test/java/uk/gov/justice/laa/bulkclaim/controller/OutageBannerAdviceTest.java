@@ -70,7 +70,7 @@ class OutageBannerAdviceTest {
       // Given
       String message = "Outage message";
       OutageBannerAdvice outageBannerAdvice =
-          new OutageBannerAdvice(null, message, dateWrapperUtil);
+          new OutageBannerAdvice(rootTime, message, dateWrapperUtil);
       // When
       var result = outageBannerAdvice.getOutageBannerMessage();
       // Then
