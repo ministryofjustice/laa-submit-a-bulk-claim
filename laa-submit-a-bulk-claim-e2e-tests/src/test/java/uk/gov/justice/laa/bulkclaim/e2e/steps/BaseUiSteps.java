@@ -248,7 +248,7 @@ public abstract class BaseUiSteps {
       importLink.click(new com.microsoft.playwright.Locator.ClickOptions().setTimeout(60_000));
     } else {
       // Fallback keeps legacy scenarios moving even if nav is not rendered on the current page.
-      bulkImportPage().open(baseUrl());
+      bulkImportPage().open();
       return;
     }
 
