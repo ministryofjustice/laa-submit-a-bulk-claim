@@ -93,7 +93,6 @@ Closure configureE2eEnv = { task ->
     task.environment 'E2E_AUTH_MODE',           envOrDotEnv('E2E_AUTH_MODE',           'aad')
     task.environment 'E2E_STORAGE_STATE_PATH',  envOrDotEnv('E2E_STORAGE_STATE_PATH',  'build/e2e/storageState.json')
 
-    task.environment 'UI_BASE_URL',             envOrDotEnv('UI_BASE_URL',             '')
     task.environment 'E2E_USERNAME',           envOrDotEnv('USERNAME',               '')
     task.environment 'USERNAME',               envOrDotEnv('USERNAME',               '')
     task.environment 'PASSWORD',               envOrDotEnv('PASSWORD',               '')

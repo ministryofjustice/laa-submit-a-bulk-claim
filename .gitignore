@@ -35,3 +35,4 @@ laa-submit-a-bulk-claim-ui/src/main/resources/application-silas.yaml
 
 /node_modules
 /package-lock.json
+allure-report/

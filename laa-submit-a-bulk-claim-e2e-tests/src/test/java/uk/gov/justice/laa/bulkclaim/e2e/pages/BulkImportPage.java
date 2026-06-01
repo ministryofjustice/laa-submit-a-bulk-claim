@@ -14,7 +14,7 @@ public final class BulkImportPage extends BasePage {
   }
 
   public void open(String baseUrl) {
-//    String normalizedBase = baseUrl.endsWith("/") ? baseUrl.substring(0, baseUrl.length() - 1) : baseUrl;
+    String normalizedBase = baseUrl.endsWith("/") ? baseUrl.substring(0, baseUrl.length() - 1) : baseUrl;
     page.navigate( "/upload");
     page.waitForURL(url -> url.contains("/upload"));
     page.waitForLoadState(com.microsoft.playwright.options.LoadState.DOMCONTENTLOADED);
