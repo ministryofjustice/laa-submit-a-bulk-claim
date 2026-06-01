@@ -28,8 +28,8 @@ app:
   submission:
     minimum-period: JAN-2024
   maintenance:
-    disable-at-time: ${OUTAGE_BANNER_DISABLE_AT_TIMESTAMP:2026-05-29T17:29:00Z}
-    outage-banner-message: ${OUTAGE_BANNER_MESSAGE:}
+    disable-at-time: 2026-05-29T17:29:00Z
+    outage-banner-message: Outage banner
 
 
 rest-client:
