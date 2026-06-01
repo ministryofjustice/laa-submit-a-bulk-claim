@@ -351,7 +351,7 @@ jobs:
           OIDC_TAG: oidc-mock-latest
         run: |
           set -euo pipefail
-          docker compose -p "e2e-${GITHUB_RUN_ID}" -f e2e-compose.yaml up -d --wait
+          docker compose -p "e2e-${GITHUB_RUN_ID}" -f e2e-compose.yaml up sabc-ui event-service claims-api -d --wait
 
       - name: Wait for compose app health
         run: |
