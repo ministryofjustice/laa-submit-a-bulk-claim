@@ -98,6 +98,8 @@ public class PlaywrightHooks {
         Files.createDirectories(dir);
         Path screenshot = dir.resolve(System.currentTimeMillis() + "-" + sanitize(scenario.getName()) + ".png");
         page.screenshot(new Page.ScreenshotOptions().setPath(screenshot).setFullPage(true));
+        byte[] screenshotBytes = Files.readAllBytes(screenshot);
+        scenario.attach(screenshotBytes, "image/png", "Failure screenshot");
       }
     } catch (Exception ignored) {
       // Best-effort screenshot capture.

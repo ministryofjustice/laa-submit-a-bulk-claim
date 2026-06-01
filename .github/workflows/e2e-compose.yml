@@ -437,6 +437,7 @@ jobs:
         with:
           name: java-e2e-reports
           path: |
+            laa-submit-a-bulk-claim-e2e-tests/build/allure-results
             laa-submit-a-bulk-claim-e2e-tests/build/reports
             laa-submit-a-bulk-claim-e2e-tests/build/test-results
           if-no-files-found: warn

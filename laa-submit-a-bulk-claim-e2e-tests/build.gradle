@@ -19,6 +19,7 @@ dependencies {
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.12.2'
 
     testImplementation 'com.microsoft.playwright:playwright:1.56.0'
+    testImplementation 'io.qameta.allure:allure-cucumber7-jvm:2.29.1'
 
     testImplementation 'org.assertj:assertj-core:3.27.3'
     testImplementation 'org.slf4j:slf4j-api:2.0.17'
@@ -125,8 +126,20 @@ tasks.register('cucumberTest', Test) {
 
     useJUnitPlatform()
     include '**/CucumberE2ETest.class'
+    systemProperty 'allure.results.directory', layout.buildDirectory.dir('allure-results').get().asFile.path
     outputs.upToDateWhen { false }
     configureE2eEnv(it)
+}
+
+tasks.register('allureGenerateE2eReport', Exec) {
+    description = 'Runs cucumberTest and generates a static Allure report for Java E2E tests.'
+    group = 'verification'
+    dependsOn tasks.named('cucumberTest')
+
+    def resultsPath = layout.buildDirectory.dir('allure-results').get().asFile.path
+    def reportPath = layout.buildDirectory.dir('reports/allure-report').get().asFile.path
+
+    commandLine 'bash', '-lc', "command -v allure >/dev/null 2>&1 || { echo 'Allure CLI is not installed. Install it with: brew install allure'; exit 127; }; allure generate '${resultsPath}' --clean -o '${reportPath}'"
 }
 
 // The generic `test` task is invoked by `./gradlew build` in CI. This module runs E2E

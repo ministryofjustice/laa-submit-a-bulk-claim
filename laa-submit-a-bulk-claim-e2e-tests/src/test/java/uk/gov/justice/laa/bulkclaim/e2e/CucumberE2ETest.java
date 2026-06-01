@@ -15,25 +15,8 @@ import org.junit.platform.suite.api.Suite;
 )
 @ConfigurationParameter(
         key = Constants.PLUGIN_PROPERTY_NAME,
-        value = "pretty,html:build/reports/cucumber/cucumber.html,json:build/reports/cucumber/cucumber.json"
+        value = "pretty,html:build/reports/cucumber/cucumber.html,json:build/reports/cucumber/cucumber.json,io.qameta.allure.cucumber7jvm.AllureCucumber7Jvm"
 )
-//@ConfigurationParameter(key = "cucumber.execution.parallel.enabled", value = "true")
-//@ConfigurationParameter(key = "cucumber.execution.parallel.config.strategy", value = "fixed")
-//@ConfigurationParameter(key = "cucumber.execution.parallel.config.fixed.parallelism", value = "4")
-public class CucumberE2ETest {
 
-//    static {
-//        String tags = System.getenv("CUCUMBER_TAGS");
-//
-//        if (tags != null && !tags.isBlank()) {
-//            System.setProperty("cucumber.filter.tags", tags);
-//        }
-//
-//        String parallelEnabled = System.getenv("CUCUMBER_PARALLEL_ENABLED");
-//        String parallelism = System.getenv("CUCUMBER_PARALLELISM");
-//
-//        System.setProperty("cucumber.execution.parallel.enabled", parallelEnabled);
-//        System.setProperty("cucumber.execution.parallel.config.strategy", "fixed");
-//        System.setProperty("cucumber.execution.parallel.config.fixed.parallelism", parallelism);
-//    }
+public class CucumberE2ETest {
 }
