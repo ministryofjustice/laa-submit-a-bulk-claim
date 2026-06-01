@@ -8,6 +8,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.web.client.RestClient;
 import uk.gov.justice.laa.bulkclaim.metrics.BulkClaimMetricService;
 import uk.gov.justice.laa.bulkclaim.util.CurrencyUtil;
+import uk.gov.justice.laa.bulkclaim.util.DateWrapperUtil;
 import uk.gov.justice.laa.bulkclaim.util.ThymeleafHrefUtils;
 
 @TestConfiguration
@@ -44,6 +45,11 @@ public class WebMvcTestConfig {
   @Bean
   ThymeleafHrefUtils thymeleafHrefUtils() {
     return new ThymeleafHrefUtils();
+  }
+
+  @Bean
+  DateWrapperUtil dateWrapperUtil() {
+    return new DateWrapperUtil();
   }
 
   /** This disables the host header handling filter for tests. */

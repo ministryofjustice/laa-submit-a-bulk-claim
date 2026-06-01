@@ -76,7 +76,7 @@ dependencies {
     implementation 'org.webjars:webjars-locator-lite'
     // https://mvnrepository.com/artifact/org.webjars.npm/govuk-frontend
     implementation 'org.webjars.npm:govuk-frontend:5.13.0'
-    implementation 'org.webjars.npm:ministryofjustice__frontend:5.1.5'
+    implementation 'org.webjars.npm:ministryofjustice__frontend:9.0.0'
     implementation 'org.webjars.npm:accessible-autocomplete:3.0.1'
     implementation 'org.springframework.boot:spring-boot-starter-actuator'
     implementation 'io.prometheus:prometheus-metrics-tracer-initializer'

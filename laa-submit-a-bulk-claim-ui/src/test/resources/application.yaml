@@ -16,6 +16,10 @@ app:
     url: xx
     timeout: 1
   upload-max-file-size: 10MB
+  maintenance:
+    disable-at-time: 2026-05-29T17:29:00Z
+    outage-banner-message: Planned maintenance.
+
 
 rest-client:
   connect-timeout: 5

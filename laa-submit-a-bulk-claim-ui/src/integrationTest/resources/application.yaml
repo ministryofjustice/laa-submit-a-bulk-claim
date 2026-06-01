@@ -27,6 +27,10 @@ app:
   upload-max-file-size: 10MB
   submission:
     minimum-period: JAN-2024
+  maintenance:
+    disable-at-time: 2026-05-29T17:29:00Z
+    outage-banner-message: Outage banner
+
 
 rest-client:
   connect-timeout: 5
