@@ -22,8 +22,8 @@ import lombok.extern.slf4j.Slf4j;
 import uk.gov.justice.laa.bulkclaim.e2e.utils.db.DatabaseManager;
 
 /**
- * Java parity helper for TS submissionPeriodHelper.ts.
- * Picks unique, contract-valid submission periods using DB + provider/fsp APIs.
+ * Java parity helper for TS submissionPeriodHelper.ts. Picks unique, contract-valid submission
+ * periods using DB + provider/fsp APIs.
  */
 @Slf4j
 public final class SubmissionPeriodHelper {
@@ -41,16 +41,19 @@ public final class SubmissionPeriodHelper {
   private static final ThreadLocal<Map<String, Set<String>>> USED_PERIODS_TL =
       ThreadLocal.withInitial(ConcurrentHashMap::new);
 
-  private static final Set<String> USED_SCHEDULE_REFS = Collections.synchronizedSet(new HashSet<>());
+  private static final Set<String> USED_SCHEDULE_REFS =
+      Collections.synchronizedSet(new HashSet<>());
   private static final Map<String, ContractValidity> PROVIDER_CACHE = new ConcurrentHashMap<>();
 
-  private static final DatabaseManager SUBMISSION_MANAGER = new DatabaseManager("submissionPeriodHelper");
+  private static final DatabaseManager SUBMISSION_MANAGER =
+      new DatabaseManager("submissionPeriodHelper");
 
-  private SubmissionPeriodHelper() {}
+  private SubmissionPeriodHelper() {
+  }
 
   /**
-   * Clear thread-local context for current thread.
-   * Call in @Before hook to isolate each scenario's submission period cache.
+   * Clear thread-local context for current thread. Call in @Before hook to isolate each scenario's
+   * submission period cache.
    */
   public static void clearThreadContext() {
     USED_PERIODS_TL.remove();
@@ -81,7 +84,8 @@ public final class SubmissionPeriodHelper {
     return periods;
   }
 
-  public static SubmissionPeriodResult getUniqueSubmissionPeriod(String account, String areaOfLaw, String feeCode) {
+  public static SubmissionPeriodResult getUniqueSubmissionPeriod(String account, String areaOfLaw,
+      String feeCode) {
     List<String> allowed = allowedPeriods();
     if (allowed.isEmpty()) {
       throw new IllegalStateException("No allowed submission periods available");
@@ -117,7 +121,8 @@ public final class SubmissionPeriodHelper {
           continue;
         }
 
-        ContractValidity contract = hasValidContract(accountKey, providerLawKey, candidate, categoryOfLawCode);
+        ContractValidity contract =
+            hasValidContract(accountKey, providerLawKey, candidate, categoryOfLawCode);
         if (!contract.valid()) {
           continue;
         }
@@ -160,7 +165,8 @@ public final class SubmissionPeriodHelper {
     usedPeriods.putIfAbsent(cacheKey, Collections.synchronizedSet(new HashSet<>()));
 
     synchronized (usedPeriods.get(cacheKey)) {
-      if (SUBMISSION_MANAGER.ensureInitialized() && existsSubmissionInDb(dbLawKey, period, accountKey)) {
+      if (SUBMISSION_MANAGER.ensureInitialized() && existsSubmissionInDb(
+          dbLawKey, period, accountKey)) {
         throw new IllegalStateException("Cannot lock period " + period + " - already used in DB");
       }
       usedPeriods.get(cacheKey).add(period);
@@ -243,12 +249,16 @@ public final class SubmissionPeriodHelper {
     String providerLawKey = normaliseProviderAreaOfLaw(areaOfLaw);
 
     if (SUBMISSION_MANAGER.ensureInitialized() && existsSubmissionInDb(dbLawKey, period, office)) {
+      log.debug(
+          "Period {} already exists for office {} and area of law {}", period, office, areaOfLaw);
       return false;
     }
 
     String cacheKey = dbLawKey + "_" + office.trim() + "_ANY";
     Map<String, Set<String>> usedPeriods = getUsedPeriods();
     if (usedPeriods.containsKey(cacheKey) && usedPeriods.get(cacheKey).contains(period)) {
+      log.debug(
+          "Period {} already exists for office {} and area of law {}", period, office, areaOfLaw);
       return false;
     }
 
@@ -274,7 +284,8 @@ public final class SubmissionPeriodHelper {
         builder.header("Authorization", token);
       }
 
-      HttpResponse<String> response = HTTP.send(builder.build(), HttpResponse.BodyHandlers.ofString());
+      HttpResponse<String> response =
+          HTTP.send(builder.build(), HttpResponse.BodyHandlers.ofString());
       if (response.statusCode() >= 400) {
         return new FeeDetails(null, null);
       }
@@ -293,7 +304,9 @@ public final class SubmissionPeriodHelper {
       String providerAreaOfLaw,
       String period,
       String categoryOfLawCode) {
-    String cacheKey = office + "_" + providerAreaOfLaw + "_" + period + "_" + (categoryOfLawCode == null ? "ANY" : categoryOfLawCode);
+    String cacheKey =
+        office + "_" + providerAreaOfLaw + "_" + period + "_" + (categoryOfLawCode == null ? "ANY"
+            : categoryOfLawCode);
     if (PROVIDER_CACHE.containsKey(cacheKey)) {
       return PROVIDER_CACHE.get(cacheKey);
     }
@@ -304,10 +317,13 @@ public final class SubmissionPeriodHelper {
 
     String providerBase = envOrDefault(
         "PROVIDER_API",
-        "https://laa-provider-details-api-uat.apps.live.cloud-platform.service.justice.gov.uk/api/v1/provider-offices");
+        "https://laa-provider-details-api-uat.apps.live.cloud-platform.service.justice.gov"
+            + ".uk/api/v1/provider-offices");
 
     try {
-      String url = providerBase + "/" + office + "/schedules?effectiveDate=" + effectiveDate + "&areaOfLaw=" + providerAreaOfLaw.replace(" ", "%20");
+      String url =
+          providerBase + "/" + office + "/schedules?effectiveDate=" + effectiveDate + "&areaOfLaw="
+              + providerAreaOfLaw.replace(" ", "%20");
       HttpRequest.Builder builder =
           HttpRequest.newBuilder().uri(URI.create(url)).GET().header("accept", "application/json");
 
@@ -316,7 +332,12 @@ public final class SubmissionPeriodHelper {
         builder.header("X-Authorization", providerApiKey);
       }
 
-      HttpResponse<String> response = HTTP.send(builder.build(), HttpResponse.BodyHandlers.ofString());
+      HttpResponse<String> response =
+          HTTP.send(builder.build(), HttpResponse.BodyHandlers.ofString());
+      log.debug(
+          "Provider API request for office {} and area of law {} with effective date {} returned "
+              + "status code {}",
+          office, providerAreaOfLaw, effectiveDate, response.statusCode());
       if (response.statusCode() >= 400) {
         ContractValidity invalid = new ContractValidity(false, null, null);
         PROVIDER_CACHE.put(cacheKey, invalid);
@@ -340,7 +361,8 @@ public final class SubmissionPeriodHelper {
           continue;
         }
 
-        if (categoryOfLawCode != null && s.has("scheduleLines") && s.get("scheduleLines").isArray()) {
+        if (categoryOfLawCode != null && s.has("scheduleLines") && s.get("scheduleLines")
+            .isArray()) {
           boolean categoryMatch = false;
           for (JsonNode line : s.get("scheduleLines")) {
             if (categoryOfLawCode.equals(textOrNull(line.get("categoryOfLaw")))) {
@@ -390,12 +412,20 @@ public final class SubmissionPeriodHelper {
     return value == null || value.isBlank() ? defaultValue : value;
   }
 
-  public record SubmissionPeriodResult(String period, String scheduleStart, String scheduleEnd) {}
+  public record SubmissionPeriodResult(String period, String scheduleStart, String scheduleEnd) {
 
-  public record PeriodRangeResult(String officeUsed, String period1, String period2) {}
+  }
 
-  private record FeeDetails(String categoryOfLawCode, String feeType) {}
+  public record PeriodRangeResult(String officeUsed, String period1, String period2) {
 
-  private record ContractValidity(boolean valid, String start, String end) {}
+  }
+
+  private record FeeDetails(String categoryOfLawCode, String feeType) {
+
+  }
+
+  private record ContractValidity(boolean valid, String start, String end) {
+
+  }
 }
 
