@@ -1,4 +1,6 @@
 services:
+  # Please ensure that in you /etc/hosts file, the following line is included:
+  # 127.0.0.1       oidc
   sabc-ui-oidc:
     container_name: submit-a-bulk-claim-oidc-app
     profiles:
