@@ -185,8 +185,6 @@ jobs:
             echo "| FSP API | ${FSP_API_CONTEXT} | ${FSP_API_TAG} | ${FSP_API_RELEASE_TIME} | ${FSP_API_STATUS} |"
           } >> "$GITHUB_STEP_SUMMARY"
 
-
-
   run-compose-e2e:
     needs:
       - get-app-versions
