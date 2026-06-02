@@ -37,7 +37,6 @@ jobs:
     with:
       cucumber_tags: "@smoke"
       sabc_image_tag: ${{ needs.ecr-publish-image.outputs.published_image_version }}
-      debug_enabled: 'true'
     secrets: inherit
 
   build-and-test:
