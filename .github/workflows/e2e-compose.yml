@@ -372,6 +372,12 @@ jobs:
           CLAIMS_API_TAG: ${{ needs.get-app-versions.outputs.claims_api_image_tag }}
           EVENT_SERVICE_TAG: ${{ needs.get-app-versions.outputs.claims_events_image_tag }}
           OIDC_TAG: oidc-mock-latest
+          DB_HOST: localhost
+          DB_PORT: 5432
+          DB_NAME: laa_data_claims_api_dev
+          DB_USER: user
+          DB_PASS: dev
+          DB_SSL: false
         run: |
           set -euo pipefail
           docker compose -p "e2e-${GITHUB_RUN_ID}" -f e2e-compose.yaml up sabc-ui event-service claims-api -d --wait
