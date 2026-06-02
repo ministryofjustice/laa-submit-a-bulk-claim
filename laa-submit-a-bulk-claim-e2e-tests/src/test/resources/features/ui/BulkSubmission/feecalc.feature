@@ -3,7 +3,7 @@ Feature: Bulk Submission via UI
 
   Background:
     Given I start from a clean logged-in state
-    Given I am on the bulk import page
+#    Given I am on the bulk import page
 
   Scenario: Legal Help – CAPA calculation with disbursement VAT
     Given I generate "Legal help" "csv" file with the following civil claims

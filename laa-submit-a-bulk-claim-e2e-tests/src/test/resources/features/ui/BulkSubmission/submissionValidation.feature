@@ -3,7 +3,7 @@ Feature: Invalid submission level validation
 
   Background:
     Given I start from a clean logged-in state
-    Given I am on the bulk import page
+#    Given I am on the bulk import page
 
 #  @submissionValidation @smoke
 #  Scenario: Reject submission due to period prior to 2015

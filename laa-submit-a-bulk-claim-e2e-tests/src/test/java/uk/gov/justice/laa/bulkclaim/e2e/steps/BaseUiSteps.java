@@ -54,7 +54,7 @@ public abstract class BaseUiSteps {
     if (fromEnv != null && !fromEnv.isBlank()) {
       return fromEnv;
     }
-    return "http://localhost:8080";
+    return "http://localhost:8082";
   }
 
   protected BulkImportPage bulkImportPage() {

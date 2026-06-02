@@ -10,6 +10,7 @@ public class NavigationSteps extends BaseUiSteps {
   public void iStartFromCleanLoggedInState() {
     AuthenticationHelper.logoutAndWipe(page());
     AuthenticationHelper.navigateWithAuthRetry(page(), baseUrl());
+    page().locator("a.govuk-button--start").click();
   }
 
   @Given("I am on the bulk import page")

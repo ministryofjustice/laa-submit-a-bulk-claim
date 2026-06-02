@@ -3,7 +3,7 @@ Feature: Submission details - Fixed fee & Fee type
 
   Background:
     And I start from a clean logged-in state
-    Given I am on the bulk import page
+#    Given I am on the bulk import page
 
   @escapeCaseCoverage
   Scenario: Should show both escaped and fixed claims - Legal Help

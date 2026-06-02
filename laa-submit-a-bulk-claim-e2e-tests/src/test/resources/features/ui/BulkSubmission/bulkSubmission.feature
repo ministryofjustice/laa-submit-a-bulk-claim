@@ -3,7 +3,7 @@ Feature: Bulk Submission via UI
 
   Background:
     Given I start from a clean logged-in state
-    Given I am on the bulk import page
+#    Given I am on the bulk import page
 
 
   Scenario Outline: Successful bulk submission for <AreaOfLaw>
