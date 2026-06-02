@@ -18,12 +18,14 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import lombok.extern.slf4j.Slf4j;
 import uk.gov.justice.laa.bulkclaim.e2e.utils.db.DatabaseManager;
 
 /**
  * Java parity helper for TS submissionPeriodHelper.ts.
  * Picks unique, contract-valid submission periods using DB + provider/fsp APIs.
  */
+@Slf4j
 public final class SubmissionPeriodHelper {
 
   private static final List<String> LEGAL_HELP_OFFICES =
@@ -73,6 +75,9 @@ public final class SubmissionPeriodHelper {
         periods.add(MONTHS.get(month) + "-" + year);
       }
     }
+
+    log.info("Generated {} allowed submission periods", periods.size());
+    log.debug("Allowed submission periods: {}", periods);
     return periods;
   }
 
@@ -187,6 +192,7 @@ public final class SubmissionPeriodHelper {
 
     for (String office : officesToTry) {
       for (String period1 : candidates) {
+        log.info("Checking period {} for office {} and area {}", period1, office, areaOfLaw);
         if (!isPeriodAvailable(office, areaOfLaw, period1)) {
           continue;
         }
