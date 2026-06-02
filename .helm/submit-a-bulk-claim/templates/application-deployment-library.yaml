@@ -164,14 +164,9 @@ spec:
           - name: {{ .name }}
             {{- if .value }}
             value: {{ tpl .value $ | quote }}
-            {{- end }}
-            {{- if .valueFrom }}
+            {{- else if .valueFrom }}
             valueFrom:
-              {{- if .valueFrom.secretKeyRef }}
-              secretKeyRef:
-                name: {{ tpl .valueFrom.secretKeyRef.name $ | quote }}
-                key: {{ .valueFrom.secretKeyRef.key }}
-              {{- end }}
+              {{- tpl (toYaml .valueFrom) $ | nindent 16 }}
             {{- end }}
           {{- end }}
           {{- end }}

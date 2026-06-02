@@ -2,7 +2,6 @@ package uk.gov.justice.laa.bulkclaim.accessibility.pages;
 
 import com.microsoft.playwright.Page;
 
-/** Page object for claim detail navigation. */
 public final class ClaimDetailPage {
 
   private final Page page;

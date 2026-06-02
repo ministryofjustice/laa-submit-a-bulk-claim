@@ -1,10 +1,5 @@
 package uk.gov.justice.laa.bulkclaim.constants;
 
-/**
- * Contains session constant names used across the application.
- *
- * @author Jamie Briggs
- */
 public final class SessionConstants {
 
   private SessionConstants() {}

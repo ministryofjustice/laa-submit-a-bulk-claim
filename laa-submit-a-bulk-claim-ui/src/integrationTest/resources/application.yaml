@@ -27,6 +27,10 @@ app:
   upload-max-file-size: 10MB
   submission:
     minimum-period: JAN-2024
+  maintenance:
+    disable-at-time: 2026-05-29T17:29:00Z
+    outage-banner-message: Outage banner
+
 
 rest-client:
   connect-timeout: 5
@@ -36,3 +40,6 @@ links:
   laa-homepage: https://www.gov.uk/government/organisations/legal-aid-agency
   bulk-upload-guidance: https://www.gov.uk/guidance/submit-a-bulk-claim-sabc
   bulk-upload-amendments: https://www.gov.uk/guidance/submit-a-contracted-work-and-administration-cwa-claim-online#amendments-to-submitted-claims
+
+feature-flags:
+  is-nil-submission-enabled: true

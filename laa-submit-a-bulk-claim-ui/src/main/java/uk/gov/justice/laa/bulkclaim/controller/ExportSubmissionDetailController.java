@@ -18,12 +18,6 @@ import uk.gov.justice.laa.bulkclaim.client.ExportDataClaimsRestClient;
 import uk.gov.justice.laa.bulkclaim.exception.SubmitBulkClaimException;
 import uk.gov.justice.laa.bulkclaim.util.OidcAttributeUtils;
 
-/**
- * Controller responsible for exporting submission details as a CSV file. This class provides an
- * endpoint to trigger the export of submission data for a specified area of law and office.
- *
- * @author Jamie Briggs
- */
 @Slf4j
 @Controller
 @RequiredArgsConstructor
@@ -32,16 +26,6 @@ public class ExportSubmissionDetailController {
   private final ExportDataClaimsRestClient exportDataClaimsRestClient;
   private final OidcAttributeUtils oidcAttributeUtils;
 
-  /**
-   * Exports the submission details as a CSV file for a specified submission ID, office, and area of
-   * law. The generated file is sent as a downloadable resource in the response.
-   *
-   * @param submissionId the unique identifier of the submission to be exported
-   * @param office the office account number for the submission
-   * @param areaOfLaw the area of law for the submission
-   * @return a {@code Mono} of {@code ResponseEntity} containing a downloadable {@code Resource} of
-   *     the CSV export
-   */
   @GetMapping("/submission/{submissionId}/export")
   public Mono<ResponseEntity<Resource>> exportSubmissionDetail(
       @PathVariable UUID submissionId,

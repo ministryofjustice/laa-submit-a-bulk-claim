@@ -34,42 +34,27 @@ public class SubmissionMessagesBuilder {
   private final BulkClaimImportSummaryMapper bulkClaimImportSummaryMapper;
   private final PaginationUtil paginationUtil;
 
-  /**
-   * Builds a {@link MessagesSummary} for a given submission ID whilst only returning errors.
-   *
-   * @param submissionId The submission ID to fetch errors for.
-   * @param page The page number to fetch errors for.
-   * @return The built {@link MessagesSummary}.
-   */
-  public MessagesSummary buildErrors(UUID submissionId, int page, int size) {
-    return build(submissionId, null, ValidationMessageType.ERROR, page, size);
+  /** Builds a {@link MessagesSummary} for a given submission ID whilst only returning errors. */
+  public MessagesSummary buildErrors(UUID submissionId, int page, int size, String sort) {
+    return build(submissionId, null, ValidationMessageType.ERROR, page, size, sort);
   }
 
-  /**
-   * Builds a {@link MessagesSummary} for a given submission ID with both warnings and errors.
-   *
-   * @param submissionId The submission ID to fetch errors for.
-   * @param claimId The claim ID to fetch errors for.
-   * @return The built {@link MessagesSummary}.
-   */
+  /** Builds a {@link MessagesSummary} for a given submission ID with both warnings and errors. */
   public MessagesSummary buildAllWarnings(UUID submissionId, UUID claimId) {
-    return build(submissionId, claimId, ValidationMessageType.WARNING, null, null);
+    return build(submissionId, claimId, ValidationMessageType.WARNING, null, null, null);
   }
 
-  /**
-   * Builds a {@link MessagesSummary} for a given submission ID and claim ID.
-   *
-   * @param submissionId the submission ID to fetch messages for.
-   * @param claimId the claim ID to fetch messages for.
-   * @param page the page number to fetch messages for.
-   * @return the built {@link MessagesSummary}.
-   */
   public MessagesSummary build(
-      UUID submissionId, UUID claimId, ValidationMessageType type, Integer page, Integer size) {
+      UUID submissionId,
+      UUID claimId,
+      ValidationMessageType type,
+      Integer page,
+      Integer size,
+      String sort) {
     String submissionType = type != null ? type.toString() : null;
     final ValidationMessagesResponse messagesResponse =
         dataClaimsRestClient
-            .getValidationMessages(submissionId, claimId, submissionType, null, page, size)
+            .getValidationMessages(submissionId, claimId, submissionType, null, page, size, sort)
             .block();
 
     // Get all claims from data claims service (Only keep unique keys)
