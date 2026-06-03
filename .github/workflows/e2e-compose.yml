@@ -236,7 +236,7 @@ jobs:
 
       - name: Print API docs of FSP-API for debugging
         run: |
-          curl -s http://localhost:8095/v3/api-docs
+          curl -s http://localhost:8095/v3/api-docs | grep -E 'paths|components'
 
       - name: Authenticate to SaBC cluster
         uses: ministryofjustice/laa-reusable-github-actions/.github/actions/authenticate_to_cluster@7666443ea3f635ec52544311e0f0ea51830468c0
@@ -259,7 +259,7 @@ jobs:
 
       - name: Print API docs of PDA-API for debugging
         run: |
-          curl -s http://localhost:8186/v3/api-docs/v1
+          curl -s http://localhost:8186/v3/api-docs
 
       - name: Cache Playwright browsers
         id: playwright-cache
