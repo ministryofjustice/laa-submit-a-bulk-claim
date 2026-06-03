@@ -393,9 +393,6 @@ jobs:
           CUCUMBER_TAGS: ${{ inputs.cucumber_tags }}
           DSTEW_API_BASE_URL: http://127.0.0.1:8080
           DSTEW_API_TOKEN: f67f968e-b479-4e61-b66e-f57984931e56
-          FSP_API_BASE_URL: http://127.0.0.1:8095
-          FSP_API_TOKEN: ${{ secrets.FSP_API_TOKEN }}
-          PROVIDER_API_KEY: ${{ secrets.PDA_API_TOKEN }}
           MOCK_USERNAME: provider.user@provider.com
           MOCK_PASSWORD: password
           DB_HOST: localhost
@@ -404,6 +401,10 @@ jobs:
           DB_USER: user
           DB_PASS: dev
           DB_SSL: false
+          FSP_API_BASE_URL: http://localhost:8095
+          FSP_API_TOKEN: ${{ secrets.FSP_API_TOKEN }}
+          PROVIDER_API_BASE_URL: http://localhost:8186
+          PROVIDER_API_KEY: ${{ secrets.PDA_API_TOKEN }}
         run: |
           set -euo pipefail
           ./gradlew :laa-submit-a-bulk-claim-e2e-tests:e2eLogin --no-daemon
