@@ -234,6 +234,10 @@ jobs:
           pid_env_var: PORT_FORWARD_PID
           wait_label: fsp-api
 
+      - name: Print API docs of FSP-API for debugging
+        run: |
+          curl -s http://localhost:8095/v3/api-docs
+
       - name: Authenticate to SaBC cluster
         uses: ministryofjustice/laa-reusable-github-actions/.github/actions/authenticate_to_cluster@7666443ea3f635ec52544311e0f0ea51830468c0
         with:
@@ -252,6 +256,10 @@ jobs:
           remote_port: "8080"
           pid_env_var: PORT_FORWARD_PID
           wait_label: pda-api
+
+      - name: Print API docs of PDA-API for debugging
+        run: |
+          curl -s http://localhost:8186/v3/api-docs/v1
 
       - name: Cache Playwright browsers
         id: playwright-cache
