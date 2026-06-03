@@ -112,6 +112,7 @@ Closure configureE2eEnv = { task ->
     task.environment 'FSP_API_BASE_URL',      envOrDotEnv('FSP_API_BASE_URL',      '')
     task.environment 'FSP_API_TOKEN',         envOrDotEnv('FSP_API_TOKEN',         '')
 
+    task.environment 'PROVIDER_API_BASE_URL',      envOrDotEnv('PROVIDER_API_BASE_URL',      '')
     task.environment 'PROVIDER_API_KEY',      envOrDotEnv('PROVIDER_API_KEY',      '')
     task.environment 'GITHUB_RUN_NUMBER',     envOrDotEnv('GITHUB_RUN_NUMBER',     '')
     task.environment 'PORT_FORWARD',          envOrDotEnv('PORT_FORWARD',          'false')

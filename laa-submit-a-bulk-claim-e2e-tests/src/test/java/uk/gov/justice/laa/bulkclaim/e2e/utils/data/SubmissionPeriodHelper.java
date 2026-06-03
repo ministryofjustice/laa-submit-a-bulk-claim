@@ -316,7 +316,7 @@ public final class SubmissionPeriodHelper {
     String effectiveDate = LocalDate.of(year, month + 1, 15).toString();
 
     String providerBase = envOrDefault(
-        "PROVIDER_API",
+        "PROVIDER_API_BASE_URL",
         "https://laa-provider-details-api-uat.apps.live.cloud-platform.service.justice.gov"
             + ".uk/api/v1/provider-offices");
 
