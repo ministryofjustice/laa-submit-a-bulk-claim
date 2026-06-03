@@ -259,7 +259,7 @@ jobs:
 
       - name: Print API docs of PDA-API for debugging
         run: |
-          curl -s http://localhost:8186/v3/api-docs
+          curl -s http://localhost:8186/v3/api-docs | grep -E 'paths|components'
 
       - name: Cache Playwright browsers
         id: playwright-cache

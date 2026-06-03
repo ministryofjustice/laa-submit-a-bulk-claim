@@ -329,15 +329,16 @@ public final class SubmissionPeriodHelper {
 
       String providerApiKey = System.getenv("PROVIDER_API_KEY");
       if (providerApiKey != null && !providerApiKey.isBlank()) {
+        log.debug("Using provider API key for request to {}", url);
         builder.header("X-Authorization", providerApiKey);
       }
 
       HttpResponse<String> response =
           HTTP.send(builder.build(), HttpResponse.BodyHandlers.ofString());
       log.debug(
-          "Provider API request for office {} and area of law {} with effective date {} returned "
+          "Provider API request {} returned "
               + "status code {}",
-          office, providerAreaOfLaw, effectiveDate, response.statusCode());
+          url, response.statusCode());
       if (response.statusCode() >= 400) {
         ContractValidity invalid = new ContractValidity(false, null, null);
         PROVIDER_CACHE.put(cacheKey, invalid);
