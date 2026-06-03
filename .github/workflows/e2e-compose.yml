@@ -246,7 +246,7 @@ jobs:
       - name: Port forward to PDA-API Service SaBC Namespace
         uses: ./.github/actions/port-forward-service
         with:
-          kube_namespace: ${{ secrets.KUBE_NAMESPACE_LAA_SUBMIT_A_BULK_CLAIM_UAT }}
+          kube_namespace: ${{ secrets.KUBE_NAMESPACE }}
           service_name: 'uat-e2e-testing-pda-proxy'
           local_port: "8186"
           remote_port: "8080"
