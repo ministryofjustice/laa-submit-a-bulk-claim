@@ -329,7 +329,6 @@ public final class SubmissionPeriodHelper {
 
       String providerApiKey = System.getenv("PROVIDER_API_KEY");
       if (providerApiKey != null && !providerApiKey.isBlank()) {
-        log.debug("Using provider API key for request to {}", url);
         builder.header("X-Authorization", providerApiKey);
       }
 

@@ -403,7 +403,7 @@ jobs:
           DB_SSL: false
           FSP_API_BASE_URL: http://localhost:8095
           FSP_API_TOKEN: ${{ secrets.FSP_API_TOKEN }}
-          PROVIDER_API_BASE_URL: http://localhost:8186
+          PROVIDER_API_BASE_URL: http://localhost:8186/api/v1/provider-offices
           PROVIDER_API_KEY: ${{ secrets.PDA_API_TOKEN }}
         run: |
           set -euo pipefail
