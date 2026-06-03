@@ -117,6 +117,7 @@ Feature: Duplicate checks - Legal Help - Disbursements
       | <ucn> | <feeCode> | <feeCode> | <ufn> |
     When I upload the first file
     And click import
+    And I wait on validation in progress screen
     When I upload the second file
     Then I should see the following submission error messages for "Legal help":
       | Error Message  |
