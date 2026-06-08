@@ -49,10 +49,8 @@ public interface DataClaimsRestClient {
           List<SubmissionStatus> submissionStatus,
       @RequestParam(value = "page", required = false, defaultValue = "0") Integer page,
       @RequestParam(value = "size", required = false, defaultValue = "10") Integer size,
-      @RequestParam(value = "submitted_date_from", required = false, defaultValue = "10")
-          String dateFrom,
-      @RequestParam(value = "submitted_date_to", required = false, defaultValue = "10")
-          String dateTo,
+      @RequestParam(value = "submitted_date_from", required = false) String dateFrom,
+      @RequestParam(value = "submitted_date_to", required = false) String dateTo,
       @RequestParam(value = "sort", required = false) String sort);
 
   default Mono<SubmissionsResultSet> search(
