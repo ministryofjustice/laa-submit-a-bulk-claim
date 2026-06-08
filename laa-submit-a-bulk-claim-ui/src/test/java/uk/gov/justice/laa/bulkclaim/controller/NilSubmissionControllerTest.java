@@ -8,11 +8,7 @@ import static uk.gov.justice.laa.bulkclaim.controller.ControllerTestHelper.getOi
 import jakarta.servlet.http.HttpSession;
 import java.time.YearMonth;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Locale;
-import java.util.Set;
+import java.util.*;
 import org.jspecify.annotations.NonNull;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -161,10 +157,13 @@ class NilSubmissionControllerTest {
     }
   }
 
-  // @Test
+  @Test
   void removedMatchingSubmissionPeriods() {
+    String ym = YearMonth.now().minusMonths(1).format(DateTimeFormatter.ofPattern("MMM uuuu"));
+    when(submissionPeriodUtil.getSubmissionPeriod(any())).thenReturn(ym);
     Set<String> months =
         nilSubmissionController.getMonthsWithOutSubmissions(getSubmissionsResultSet());
-    assertEquals(10, months.size());
+    assertEquals(11, months.size());
+    assertFalse(months.contains(ym));
   }
 }
