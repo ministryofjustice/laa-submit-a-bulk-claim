@@ -49,7 +49,22 @@ public interface DataClaimsRestClient {
           List<SubmissionStatus> submissionStatus,
       @RequestParam(value = "page", required = false, defaultValue = "0") Integer page,
       @RequestParam(value = "size", required = false, defaultValue = "10") Integer size,
+      @RequestParam(value = "submitted_date_from", required = false) String dateFrom,
+      @RequestParam(value = "submitted_date_to", required = false) String dateTo,
       @RequestParam(value = "sort", required = false) String sort);
+
+  default Mono<SubmissionsResultSet> search(
+      @RequestParam(value = "offices") List<String> offices,
+      @RequestParam(value = "submission_period", required = false) String submissionPeriod,
+      @RequestParam(value = "area_of_law", required = false) AreaOfLaw areaOfLaw,
+      @RequestParam(value = "submission_statuses", required = false)
+          List<SubmissionStatus> submissionStatus,
+      @RequestParam(value = "page", required = false, defaultValue = "0") Integer page,
+      @RequestParam(value = "size", required = false, defaultValue = "10") Integer size,
+      @RequestParam(value = "sort", required = false) String sort) {
+    return search(
+        offices, submissionPeriod, areaOfLaw, submissionStatus, page, size, null, null, sort);
+  }
 
   @GetExchange(value = "/submissions/{submissionId}")
   Mono<SubmissionResponse> getSubmission(@PathVariable UUID submissionId)
