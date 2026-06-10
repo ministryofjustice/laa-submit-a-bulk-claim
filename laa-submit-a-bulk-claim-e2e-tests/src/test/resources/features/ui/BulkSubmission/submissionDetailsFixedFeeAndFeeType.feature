@@ -3,9 +3,7 @@ Feature: Submission details - Fixed fee & Fee type
 
   Background:
     And I start from a clean logged-in state
-#    Given I am on the bulk import page
 
-  @escapeCaseCoverage
   Scenario: Should show both escaped and fixed claims - Legal Help
     Given I generate "Legal help" "csv" file with the following claims
       | feeCode | profitCost | londonNonLondonRate |
@@ -19,7 +17,6 @@ Feature: Submission details - Fixed fee & Fee type
       | FPB020  | Escaped    | View (1) |
       | FPB010  | No         |          |
 
-  @feeSchemeWarning  @escapeCaseCoverage
   Scenario: Should show both escaped and fixed claims - Crime lower
     Given I generate "Crime" "csv" file with the following claims
       | feeCode | travelCost | travelWaitingCosts |

@@ -17,7 +17,6 @@ public class ClaimDetailSteps extends BaseUiSteps {
   }
 
   @Then("the fee calculation should show the following values")
-  @Then("the crime fee calculation should show the following values")
   public void theFeeCalculationShouldShowTheFollowingValues(DataTable table) {
     assertFeeCalculationRows(table);
   }

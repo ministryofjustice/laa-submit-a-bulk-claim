@@ -3,7 +3,6 @@ Feature: Display message checks
 
   Background:
     Given I start from a clean logged-in state
-#    Given I am on the bulk import page
 
   Scenario: Invalid Fee code
     When I upload "tests/data/invalid/legal_Invalid_Feecode.txt"

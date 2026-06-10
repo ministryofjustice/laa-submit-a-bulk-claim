@@ -3,7 +3,6 @@ Feature: Bulk Submission via UI
 
   Background:
     Given I start from a clean logged-in state
-#    Given I am on the bulk import page
 
   Scenario: Legal Help – CAPA calculation with disbursement VAT
     Given I generate "Legal help" "csv" file with the following civil claims
@@ -39,7 +38,7 @@ Feature: Bulk Submission via UI
     When I upload the generated file
     Then the submission summary total should be "£131.50"
     When I view the first claim
-    Then the crime fee calculation should show the following values
+    Then the fee calculation should show the following values
       | Item              | Entered | Calculated |
       | Net Profit Cost   |   40.00 |      40.00 |
       | Net Disbursements |   20.00 |      20.00 |
@@ -48,7 +47,6 @@ Feature: Bulk Submission via UI
       | Waiting Costs     |   30.00 |      30.00 |
       | Total             |         |     131.50 |
 
-    @sm
   Scenario Outline: Immigration and Asylum – Fixed fee with bolt-ons
     Given I generate "Legal help" "csv" file for office "<office>" with the following immigration claims
       | feeCode   | startDate   | immigrationPriorAuthorityNumber   | detentionTravelAndWaitingCosts   | jrFormFilling   | boltOnHomeOfficeInterview   | boltOnAdjournedHearing   | boltOnCmrhOral   | boltOnCmrhTelephone   | boltOnSubstantiveHearing   | vatIndicator   | netDisbursementAmount   | disbursementVatAmount   | expectedTotal   | ucn   |

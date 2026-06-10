@@ -3,7 +3,6 @@ Feature: Duplicate checks - Legal Help - Disbursements
 
   Background:
     Given I start from a clean logged-in state
-#    Given I am on the bulk import page
 
   Scenario Outline: Should accept submission if more than <monthsDifference> months apart
     Given I generate two Legal help files in "<format>" format for office "<office>" that are "<monthsDifference>" months apart with the following claims
@@ -20,7 +19,6 @@ Feature: Duplicate checks - Legal Help - Disbursements
       | csv    | 0P322F | 020725/123 | 03021998/S/CSVA | 3                |
       | csv    | 2L849T | 020725/124 | 04021998/S/CSVA | 4                |
 
-  @wede
   Scenario Outline: Within file duplicates
     Given I generate "Legal help" "<format>" file with the following claims
       | ucn   | feeCode | ufn   |
@@ -94,7 +92,6 @@ Feature: Duplicate checks - Legal Help - Disbursements
       | csv    | 1T102C  | 0P322F  | 011025/123 | 01021998/S/CSVA |
 
 
-  @duplicateChecks @stable
   Scenario Outline: Not duplicate if different fee code
     Given I generate two Legal help files in "<format>" format for office "<office>" that are "1" months apart with the following claims
       | ucn   | ufn   | feeCode1 | feeCode2 |
@@ -110,7 +107,6 @@ Feature: Duplicate checks - Legal Help - Disbursements
       | csv    | 2P746R | 301025/§123 | 01021998/S/CSVA |
 
 
-  @duplicateChecks
   Scenario Outline: Duplicate rule – should reject second submission for matching claims generated <monthsDifference> months apart
     Given I generate two Legal help files in "<format>" format for office "<office>" that are "<monthsDifference>" months apart with the following claims
       | ucn   | feeCode1  | feeCode2  | ufn   |
@@ -133,7 +129,6 @@ Feature: Duplicate checks - Legal Help - Disbursements
       | csv    | 2L849T | 03011998/S/CSVA | 010725/323 | ICISD   | 0                | Submission already exists for Office              |
       | csv    | 0P322F | 04011998/S/CSVA | 020825/423 | ICISD   | 1                | A duplicate claim was found in another submission |
 
-  @duplicateChecks
   Scenario: Duplicate claim is accepted when earlier CCD is on or before the cutoff
     Given I generate two Legal help files outside the duplicate cutoff in "csv" format for office "0P322F" with the following claims
       | ucn             | feeCode1 | feeCode2 | ufn        |

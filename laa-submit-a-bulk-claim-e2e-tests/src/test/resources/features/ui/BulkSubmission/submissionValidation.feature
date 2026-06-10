@@ -3,16 +3,7 @@ Feature: Invalid submission level validation
 
   Background:
     Given I start from a clean logged-in state
-#    Given I am on the bulk import page
 
-#  @submissionValidation @smoke
-#  Scenario: Reject submission due to period prior to 2015
-#    When I upload "tests/data/invalid/submissionPeriod.txt"
-#    And I wait on validation in progress screen
-#    Then I should see a submission error message for "<AreaOfLaw>"
-#    """
-#    Submissions for periods before JAN-2015 are not accepted. Please submit for a period on or after JAN-2015.
-#    """
 
   @submissionValidation
   Scenario Outline: Reject submission due to invalid submission periods
