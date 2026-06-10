@@ -1,0 +1,120 @@
+# Snyk (https://snyk.io) policy file
+version: v1.25.0
+ignore:
+  SNYK-JAVA-IOMICROMETER-17260885:
+    - '*':
+        reason: Will be fixed when Spring 4.1 is released
+        expires: 2026-12-31T00:00:00.000Z
+  SNYK-JAVA-IONETTY-17265116:
+    - '*':
+        reason: Will be fixed when Spring 4.1 is released
+        expires: 2026-12-31T00:00:00.000Z
+  SNYK-JAVA-IONETTY-17254661:
+    - '*':
+        reason: Will be fixed when Spring 4.1 is released
+        expires: 2026-12-31T00:00:00.000Z
+  SNYK-JAVA-IONETTY-17263195:
+    - '*':
+        reason: Will be fixed when Spring 4.1 is released
+        expires: 2026-12-31T00:00:00.000Z
+  SNYK-JAVA-IONETTY-17254117:
+    - '*':
+        reason: Will be fixed when Spring 4.1 is released
+        expires: 2026-12-31T00:00:00.000Z
+  SNYK-JAVA-IONETTY-17254120:
+    - '*':
+        reason: Will be fixed when Spring 4.1 is released
+        expires: 2026-12-31T00:00:00.000Z
+  SNYK-JAVA-IONETTY-17261131:
+    - '*':
+        reason: Will be fixed when Spring 4.1 is released
+        expires: 2026-12-31T00:00:00.000Z
+  SNYK-JAVA-IONETTY-17261020:
+    - '*':
+        reason: Will be fixed when Spring 4.1 is released
+        expires: 2026-12-31T00:00:00.000Z
+  SNYK-JAVA-IONETTY-17262734:
+    - '*':
+        reason: Will be fixed when Spring 4.1 is released
+        expires: 2026-12-31T00:00:00.000Z
+  SNYK-JAVA-IONETTY-17260879:
+    - '*':
+        reason: Will be fixed when Spring 4.1 is released
+        expires: 2026-12-31T00:00:00.000Z
+  SNYK-JAVA-IOPROJECTREACTORNETTY-17260961:
+    - '*':
+        reason: Will be fixed when Spring 4.1 is released
+        expires: 2026-12-31T00:00:00.000Z
+  SNYK-JAVA-ORGSPRINGFRAMEWORK-17254051:
+    - '*':
+        reason: Will be fixed when Spring 4.1 is released
+        expires: 2026-12-31T00:00:00.000Z
+  SNYK-JAVA-ORGSPRINGFRAMEWORK-17255206:
+    - '*':
+        reason: Will be fixed when Spring 4.1 is released
+        expires: 2026-12-31T00:00:00.000Z
+  SNYK-JAVA-ORGSPRINGFRAMEWORK-17253570:
+    - '*':
+        reason: Will be fixed when Spring 4.1 is released
+        expires: 2026-12-31T00:00:00.000Z
+  SNYK-JAVA-ORGSPRINGFRAMEWORK-17253311:
+    - '*':
+        reason: Will be fixed when Spring 4.1 is released
+        expires: 2026-12-31T00:00:00.000Z
+  SNYK-JAVA-ORGSPRINGFRAMEWORK-17254109:
+    - '*':
+        reason: Will be fixed when Spring 4.1 is released
+        expires: 2026-12-31T00:00:00.000Z
+  SNYK-JAVA-ORGSPRINGFRAMEWORK-17254128:
+    - '*':
+        reason: Will be fixed when Spring 4.1 is released
+        expires: 2026-12-31T00:00:00.000Z
+  SNYK-JAVA-ORGSPRINGFRAMEWORK-17254521:
+    - '*':
+        reason: Will be fixed when Spring 4.1 is released
+        expires: 2026-12-31T00:00:00.000Z
+  SNYK-JAVA-ORGSPRINGFRAMEWORK-17255245:
+    - '*':
+        reason: Will be fixed when Spring 4.1 is released
+        expires: 2026-12-31T00:00:00.000Z
+  SNYK-JAVA-ORGSPRINGFRAMEWORK-17253520:
+    - '*':
+        reason: Will be fixed when Spring 4.1 is released
+        expires: 2026-12-31T00:00:00.000Z
+  SNYK-JAVA-ORGSPRINGFRAMEWORK-17254122:
+    - '*':
+        reason: Will be fixed when Spring 4.1 is released
+        expires: 2026-12-31T00:00:00.000Z
+  SNYK-JAVA-ORGSPRINGFRAMEWORK-17254115:
+    - '*':
+        reason: Will be fixed when Spring 4.1 is released
+        expires: 2026-12-31T00:00:00.000Z
+  SNYK-JAVA-ORGSPRINGFRAMEWORK-17254528:
+    - '*':
+        reason: Will be fixed when Spring 4.1 is released
+        expires: 2026-12-31T00:00:00.000Z
+  SNYK-JAVA-ORGSPRINGFRAMEWORK-17254543:
+    - '*':
+        reason: Will be fixed when Spring 4.1 is released
+        expires: 2026-12-31T00:00:00.000Z
+  SNYK-JAVA-ORGSPRINGFRAMEWORK-17254062:
+    - '*':
+        reason: Will be fixed when Spring 4.1 is released
+        expires: 2026-12-31T00:00:00.000Z
+  SNYK-JAVA-ORGSPRINGFRAMEWORK-17254121:
+    - '*':
+        reason: Will be fixed when Spring 4.1 is released
+        expires: 2026-12-31T00:00:00.000Z
+  SNYK-JAVA-ORGSPRINGFRAMEWORK-17254116:
+    - '*':
+        reason: Will be fixed when Spring 4.1 is released
+        expires: 2026-12-31T00:00:00.000Z
+  SNYK-JAVA-ORGSPRINGFRAMEWORK-17254527:
+    - '*':
+        reason: Will be fixed when Spring 4.1 is released
+        expires: 2026-12-31T00:00:00.000Z
+  SNYK-JAVA-ORGSPRINGFRAMEWORK-17254544:
+    - '*':
+        reason: Will be fixed when Spring 4.1 is released
+        expires: 2026-12-31T00:00:00.000Z
+patch: {}
