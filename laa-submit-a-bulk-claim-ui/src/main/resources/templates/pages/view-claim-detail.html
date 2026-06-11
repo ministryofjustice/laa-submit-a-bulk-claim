@@ -30,9 +30,8 @@
   <span class="govuk-!-font-weight-bold" th:text="|${title}:|"/>
   <th:block th:text="${value}"/>
 </th:block>
-<th:block id="back-link"
-          th:with="viewSubmissionUrl=@{/submission/{submissionId}(submissionId=${submissionId})}">
-  <a th:href="${@thymeleafHrefUtils.build(viewSubmissionUrl, 'page', page, 'navTab', navigationTab, 'messagesPage', messagesPage)}"
+<th:block id="back-link">
+  <a th:href="${viewSubmissionBackLink}"
      class="govuk-back-link"
      th:text="#{common.back}"/>
 </th:block>

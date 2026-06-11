@@ -68,7 +68,7 @@
 
         </svg>
         <a class="moj-header__link moj-header__link--organisation-name"
-           th:href="${@environment.getProperty('links.laa-homepage')}"
+          th:href="${laaHomepageLink}"
            th:text="#{service.provider}"/>
       </div>
       <div class="moj-header__content" sec:authorize="isAuthenticated()">
@@ -89,11 +89,11 @@
       </div>
     </div>
   </div>
+
   <div
       th:replace="~{fragments/service-navigation :: service-navigation(${pageCategory})}"/>
 
   <div class="govuk-width-container">
-
     <div class="govuk-phase-banner" data-module="laa-hide-on-print-button">
       <p class="govuk-phase-banner__content">
         <strong class="govuk-tag govuk-phase-banner__content__tag" id="phase-banner-tag"
@@ -110,6 +110,10 @@
         </div>
     </nav>
   </div>
+  <div class="govuk-width-container" th:if="${outageBannerEnabled}">
+    <th:block th:replace="~{fragments/outage-banner :: outage-banner}"/>
+  </div>
+
 </header>
 </body>
 </html>

@@ -2,9 +2,9 @@ package uk.gov.justice.laa.bulkclaim.validation;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;
-import org.springframework.validation.Validator;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.multipart.MultipartFile;
@@ -13,24 +13,14 @@ import uk.gov.justice.laa.bulkclaim.exception.TokenProviderException;
 import uk.gov.justice.laa.bulkclaim.exception.VirusCheckException;
 import uk.gov.justice.laa.bulkclaim.service.VirusCheckService;
 
-/**
- * A validator for validating files intended for bulk submissions. This class implements the {@link
- * Validator}, and performs a virus check on the file.
- *
- * @author Jamie Briggs
- */
+@Profile("!github-test-runner")
 @Component
 @Slf4j
 @RequiredArgsConstructor
-public class BulkImportFileVirusValidator implements Validator {
+public class BulkImportFileVirusValidator implements FileFirusValidator {
 
   private final VirusCheckService virusCheckService;
 
-  /**
-   * Checks the class type is supported by this validator.
-   *
-   * @return true if class is a {@link MultipartFile}.
-   */
   @Override
   public boolean supports(Class<?> clazz) {
     return MultipartFile.class.isAssignableFrom(clazz);

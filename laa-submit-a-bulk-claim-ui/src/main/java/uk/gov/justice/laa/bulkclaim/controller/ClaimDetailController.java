@@ -25,11 +25,6 @@ import uk.gov.justice.laa.bulkclaim.mapper.ClaimSummaryMapper;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.ClaimResponse;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionResponse;
 
-/**
- * Controller for handling viewing a claim from a submission.
- *
- * @author Jamie Briggs
- */
 @Slf4j
 @Controller
 @RequiredArgsConstructor
@@ -41,13 +36,6 @@ public final class ClaimDetailController {
   private final ClaimFeeCalculationBreakdownMapper claimFeeCalculationBreakdownMapper;
   private final SubmissionMessagesBuilder submissionMessagesBuilder;
 
-  /**
-   * Gets the claim reference, stores it in the session and redirects to the view claim detail page.
-   *
-   * @param model the spring model
-   * @param claimReference the claim reference
-   * @return the redirect to view a claim detail
-   */
   @GetMapping("/submission/claim/{claimReference}")
   public String getClaimDetail(
       Model model,
@@ -68,14 +56,6 @@ public final class ClaimDetailController {
     return "redirect:" + uri;
   }
 
-  /**
-   * Views the submission detail page.
-   *
-   * @param model the spring model
-   * @param submissionId the submission id in the session
-   * @param claimId the claim id in the session
-   * @return the view claim detail page
-   */
   @GetMapping("/view-claim-detail")
   public String getClaimDetail(
       Model model,
@@ -89,6 +69,14 @@ public final class ClaimDetailController {
     model.addAttribute("page", page);
     model.addAttribute("messagesPage", messagesPage);
     model.addAttribute("navigationTab", navigationTab.toString());
+    model.addAttribute(
+        "viewSubmissionBackLink",
+        UriComponentsBuilder.fromPath("/submission/{submissionId}")
+            .queryParam("page", page)
+            .queryParam("navTab", navigationTab.toString())
+            .queryParam("messagesPage", messagesPage)
+            .buildAndExpand(submissionId)
+            .toUriString());
 
     ClaimResponse claimResponse =
         dataClaimsRestClient

@@ -3,19 +3,18 @@
     <nav class="moj-sub-navigation" aria-label="Sub navigation">
       <ul class="moj-sub-navigation__list"
           th:with="baseUrl=@{/view-submission-detail(submissionId=${submissionSummary.submissionReference})}">
-        <!--/*@thymesVar id="navTab" type="uk.gov.justice.laa.bulkclaim.constants.ViewSubmissionNavigationTab"*/-->
         <li class="moj-sub-navigation__item">
           <a class="moj-sub-navigation__link"
-             th:with="isCurrent=${navTab.toString() == 'CLAIM_DETAILS'},
-              url=@{${baseUrl}(navTab=${navTab.CLAIM_DETAILS.toString()})}"
+             th:with="isCurrent=${navTab == 'CLAIM_DETAILS'},
+              url=@{${baseUrl}(navTab='CLAIM_DETAILS')}"
              th:attr="aria-current=${isCurrent ? 'page' : null}"
              th:href="${isCurrent ? '#claims' : url}"
              th:text="#{submission.summary.nav.claims(${claimCount})}"></a>
         </li>
         <li class="moj-sub-navigation__item" th:if="${messagesSummary != null}">
           <a class="moj-sub-navigation__link"
-             th:with="isCurrent=${navTab.toString() == 'CLAIM_MESSAGES'},
-              url=@{${baseUrl}(navTab=${navTab.CLAIM_MESSAGES.toString()})}"
+             th:with="isCurrent=${navTab == 'CLAIM_MESSAGES'},
+              url=@{${baseUrl}(navTab='CLAIM_MESSAGES')}"
              th:attr="aria-current=${isCurrent ? 'page' : null}"
              th:href="${isCurrent ? '#messages' : url}"
              th:text="#{submission.summary.nav.messages(${messageCount})}"></a>
@@ -23,8 +22,8 @@
         <li class="moj-sub-navigation__item"
             th:unless="${isCrimeLower}">
           <a class="moj-sub-navigation__link"
-             th:with="isCurrent=${navTab.toString() == 'MATTER_STARTS'},
-              url=@{${baseUrl}(navTab=${navTab.MATTER_STARTS.toString()})}"
+             th:with="isCurrent=${navTab == 'MATTER_STARTS'},
+              url=@{${baseUrl}(navTab='MATTER_STARTS')}"
              th:attr="aria-current=${isCurrent ? 'page' : null}"
              th:href="${isCurrent ? '#matter-starts' : url}"
              th:text="#{submission.summary.nav.matterStarts(${matterStartsCount})}"></a>

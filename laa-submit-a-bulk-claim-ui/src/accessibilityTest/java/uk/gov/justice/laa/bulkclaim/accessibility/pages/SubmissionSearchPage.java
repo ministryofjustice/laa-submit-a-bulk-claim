@@ -2,7 +2,6 @@ package uk.gov.justice.laa.bulkclaim.accessibility.pages;
 
 import com.microsoft.playwright.Page;
 
-/** Page object for submission search and results views. */
 public final class SubmissionSearchPage {
 
   private static final String SEARCH_RESULTS_QUERY =

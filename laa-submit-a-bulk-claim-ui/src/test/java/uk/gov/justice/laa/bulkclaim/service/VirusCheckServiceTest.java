@@ -38,8 +38,7 @@ class VirusCheckServiceTest {
   void shouldSuccessfullyCheckVirusInFile() {
     // Given
     String mockToken = "mock-token";
-    SdsVirusCheckResponseDto expectedResponse = new SdsVirusCheckResponseDto();
-    expectedResponse.setSuccess("success");
+    SdsVirusCheckResponseDto expectedResponse = new SdsVirusCheckResponseDto(null, "success");
 
     RestClient.RequestBodyUriSpec requestBodyUriSpec = mock(RestClient.RequestBodyUriSpec.class);
     RestClient.RequestBodySpec requestBodySpec = mock(RestClient.RequestBodySpec.class);

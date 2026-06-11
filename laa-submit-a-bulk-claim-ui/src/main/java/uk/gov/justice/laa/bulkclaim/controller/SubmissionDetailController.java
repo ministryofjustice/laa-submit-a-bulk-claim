@@ -3,6 +3,7 @@ package uk.gov.justice.laa.bulkclaim.controller;
 import static uk.gov.justice.laa.bulkclaim.constants.SessionConstants.BULK_SUBMISSION_ID;
 import static uk.gov.justice.laa.bulkclaim.constants.SessionConstants.SUBMISSION_ID;
 
+import jakarta.validation.Valid;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -28,8 +29,13 @@ import uk.gov.justice.laa.bulkclaim.constants.ViewSubmissionNavigationTab;
 import uk.gov.justice.laa.bulkclaim.dto.submission.SubmissionMatterStartsRow;
 import uk.gov.justice.laa.bulkclaim.dto.submission.SubmissionSummary;
 import uk.gov.justice.laa.bulkclaim.dto.submission.claim.SubmissionClaimsDetails;
+import uk.gov.justice.laa.bulkclaim.dto.submission.messages.MessageQuery;
+import uk.gov.justice.laa.bulkclaim.dto.submission.messages.MessageSortField;
 import uk.gov.justice.laa.bulkclaim.dto.submission.messages.MessagesSummary;
+import uk.gov.justice.laa.bulkclaim.dto.submission.view.SubmissionViewQuery;
+import uk.gov.justice.laa.bulkclaim.dto.submission.view.SubmissionViewSortField;
 import uk.gov.justice.laa.bulkclaim.exception.SubmitBulkClaimException;
+import uk.gov.justice.laa.bulkclaim.util.PaginationLinksBuilder;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.AreaOfLaw;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.Page;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionBase;
@@ -38,11 +44,6 @@ import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionStatus;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionsResultSet;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.ValidationMessageType;
 
-/**
- * Controller for handling viewing a submission.
- *
- * @author Jamie Briggs
- */
 @Slf4j
 @Controller
 @RequiredArgsConstructor
@@ -54,18 +55,11 @@ public class SubmissionDetailController {
   private final SubmissionMessagesBuilder submissionMessagesBuilder;
   private final SubmissionMatterStartsDetailsBuilder submissionMatterStartsDetailsBuilder;
   private final DataClaimsRestClient dataClaimsRestClient;
+  private final PaginationLinksBuilder paginationLinksBuilder;
 
-  private static final int DEFAULT_PAGE_SIZE = 10;
-
-  /**
-   * Gets the submission reference, stores it in the session and redirects to the view submission.
-   *
-   * @param submissionReference the submission reference
-   * @return the redirect to view a submission detail
-   */
   @GetMapping("/submission/{submissionReference}")
   public String getSubmissionReference(
-      @PathVariable("submissionReference") UUID submissionReference,
+      @PathVariable UUID submissionReference,
       @SessionAttribute(value = "submissions", required = false) SubmissionsResultSet submissions,
       @SessionAttribute(value = SUBMISSION_ID, required = false) UUID submissionId,
       @RequestParam(value = "page", defaultValue = "0") final int page,
@@ -115,36 +109,29 @@ public class SubmissionDetailController {
     return "redirect:" + uri;
   }
 
-  /**
-   * Views the submission detail page.
-   *
-   * @param model the spring model
-   * @param submissionId the submission id in the session
-   * @return the view submission detail page
-   */
   @GetMapping("/view-submission-detail")
   public String getSubmissionDetail(
       Model model,
-      @RequestParam(value = "page", defaultValue = "0") final int page,
-      @RequestParam(value = "messagesPage", defaultValue = "0") final int messagesPage,
-      @RequestParam(value = SUBMISSION_ID) UUID submissionId,
-      @RequestParam(value = "navTab", required = false, defaultValue = "CLAIM_DETAILS")
-          ViewSubmissionNavigationTab navigationTab,
-      @RequestParam(value = "sort", defaultValue = "line_number,asc", required = false)
-          String sort) {
+      @Valid SubmissionViewQuery submissionViewQuery,
+      @Valid MessageQuery messageQuery) {
 
-    // Adding page and messagesPage to model
-    model.addAttribute("page", page);
-    model.addAttribute("messagesPage", messagesPage);
-    model.addAttribute("ViewSubmissionNavigationTab", ViewSubmissionNavigationTab.class);
+    model.addAttribute("submissionViewQuery", submissionViewQuery);
+    model.addAttribute("SubmissionViewSortField", SubmissionViewSortField.class);
+
+    model.addAttribute("messageQuery", messageQuery);
+    model.addAttribute("MessageSortField", MessageSortField.class);
+
+    model.addAttribute("claimDetailsTab", ViewSubmissionNavigationTab.CLAIM_DETAILS);
+
     final SubmissionResponse submissionResponse =
         dataClaimsRestClient
-            .getSubmission(submissionId)
+            .getSubmission(submissionViewQuery.getSubmissionId())
             .blockOptional()
             .orElseThrow(
                 () ->
                     new SubmitBulkClaimException(
-                        "Submission %s does not exist".formatted(submissionId.toString())));
+                        "Submission %s does not exist"
+                            .formatted(submissionViewQuery.getSubmissionId().toString())));
 
     SubmissionSummary submissionSummary = submissionSummaryBuilder.build(submissionResponse);
     boolean submissionAccepted =
@@ -153,14 +140,14 @@ public class SubmissionDetailController {
     if (submissionAccepted) {
       submissionSummary =
           handleAcceptedSubmission(
-              model, submissionSummary, submissionResponse, submissionId, page, messagesPage, sort);
+              model, submissionSummary, submissionResponse, submissionViewQuery, messageQuery);
       addCommonSubmissionAttributes(
-          model, submissionSummary, submissionResponse, navigationTab, submissionId);
+          model, submissionSummary, submissionResponse, submissionViewQuery);
       return "pages/view-submission-detail-accepted";
     } else {
-      handleInvalidSubmission(model, submissionResponse, submissionId, page);
+      handleInvalidSubmission(model, submissionResponse, messageQuery);
       addCommonSubmissionAttributes(
-          model, submissionSummary, submissionResponse, navigationTab, submissionId);
+          model, submissionSummary, submissionResponse, submissionViewQuery);
       return "pages/view-submission-detail-invalid";
     }
   }
@@ -169,14 +156,28 @@ public class SubmissionDetailController {
       Model model,
       SubmissionSummary submissionSummary,
       SubmissionResponse submissionResponse,
-      UUID submissionId,
-      int page,
-      int messagesPage,
-      String sort) {
+      SubmissionViewQuery submissionViewQuery,
+      MessageQuery messageQuery) {
 
     SubmissionClaimsDetails claimDetails =
-        submissionClaimDetailsBuilder.build(submissionResponse, page, DEFAULT_PAGE_SIZE, sort);
+        submissionClaimDetailsBuilder.build(
+            submissionResponse,
+            submissionViewQuery.getPage(),
+            submissionViewQuery.getSize(),
+            submissionViewQuery.getSort().toString());
     model.addAttribute("claimDetails", claimDetails);
+    model.addAttribute(
+        "claimDetailsPaginationLinks",
+        paginationLinksBuilder.build(
+            "/view-submission-detail#claims-table",
+            claimDetails.pagination(),
+            "page",
+            SUBMISSION_ID,
+            submissionViewQuery.getSubmissionId(),
+            "navTab",
+            ViewSubmissionNavigationTab.CLAIM_DETAILS,
+            "sort",
+            submissionViewQuery.getSort().toString()));
 
     if (claimDetails.totalClaimValue() != null) {
       submissionSummary =
@@ -192,8 +193,25 @@ public class SubmissionDetailController {
 
     MessagesSummary messagesSummary =
         submissionMessagesBuilder.build(
-            submissionId, null, ValidationMessageType.WARNING, messagesPage, DEFAULT_PAGE_SIZE);
+            messageQuery.getSubmissionId(),
+            null,
+            ValidationMessageType.WARNING,
+            messageQuery.getPage(),
+            messageQuery.getSize(),
+            messageQuery.getSort().toString());
     model.addAttribute("messagesSummary", messagesSummary);
+    model.addAttribute(
+        "messagesPaginationLinks",
+        paginationLinksBuilder.build(
+            "/view-submission-detail",
+            messagesSummary.pagination(),
+            "messagesPage",
+            SUBMISSION_ID,
+            submissionViewQuery.getSubmissionId(),
+            "navTab",
+            ViewSubmissionNavigationTab.CLAIM_MESSAGES,
+            "messagesSort",
+            messageQuery.getSort().toString()));
 
     List<SubmissionMatterStartsRow> matterStartsDetails =
         submissionMatterStartsDetailsBuilder.build(submissionResponse);
@@ -214,34 +232,43 @@ public class SubmissionDetailController {
   }
 
   private void handleInvalidSubmission(
-      Model model, SubmissionResponse submissionResponse, UUID submissionId, int page) {
-
-    SubmissionClaimsDetails claimDetails =
-        submissionClaimDetailsBuilder.build(submissionResponse, page, DEFAULT_PAGE_SIZE);
-    model.addAttribute("claimDetails", claimDetails);
+      Model model, SubmissionResponse submissionResponse, MessageQuery messageQuery) {
 
     MessagesSummary messagesSummary =
-        submissionMessagesBuilder.buildErrors(submissionId, page, DEFAULT_PAGE_SIZE);
+        submissionMessagesBuilder.buildErrors(
+            messageQuery.getSubmissionId(),
+            messageQuery.getPage(),
+            messageQuery.getSize(),
+            messageQuery.getSort().toString());
     model.addAttribute("messagesSummary", messagesSummary);
+    model.addAttribute(
+        "messagesPaginationLinks",
+        paginationLinksBuilder.build(
+            "/view-submission-detail",
+            messagesSummary.pagination(),
+            "messagesPage",
+            SUBMISSION_ID,
+            messageQuery.getSubmissionId(),
+            "messagesSort",
+            messageQuery.getSort().toString()));
 
     List<SubmissionMatterStartsRow> matterStartsDetails =
         submissionMatterStartsDetailsBuilder.build(submissionResponse);
     model.addAttribute("matterStartsDetails", matterStartsDetails);
 
-    addCounts(model, claimDetails, messagesSummary, matterStartsDetails);
+    addCounts(model, messagesSummary, matterStartsDetails);
   }
 
   private void addCommonSubmissionAttributes(
       Model model,
       SubmissionSummary submissionSummary,
       SubmissionResponse submissionResponse,
-      ViewSubmissionNavigationTab navigationTab,
-      UUID submissionId) {
+      SubmissionViewQuery submissionViewQuery) {
 
     model.addAttribute("submissionSummary", submissionSummary);
     model.addAttribute("submissionStatus", submissionResponse.getStatus());
-    model.addAttribute("navTab", navigationTab);
-    model.addAttribute(SUBMISSION_ID, submissionId);
+    model.addAttribute("navTab", submissionViewQuery.getNavTab().toString());
+    model.addAttribute(SUBMISSION_ID, submissionViewQuery.getSubmissionId());
   }
 
   private void addCounts(
@@ -249,13 +276,20 @@ public class SubmissionDetailController {
       SubmissionClaimsDetails claimDetails,
       MessagesSummary messagesSummary,
       List<SubmissionMatterStartsRow> matterStartsDetails) {
-
     int claimCount =
         Optional.ofNullable(claimDetails)
             .map(SubmissionClaimsDetails::pagination)
             .map(Page::getTotalElements)
             .orElse(0);
+    model.addAttribute("claimCount", claimCount);
 
+    addCounts(model, messagesSummary, matterStartsDetails);
+  }
+
+  private void addCounts(
+      Model model,
+      MessagesSummary messagesSummary,
+      List<SubmissionMatterStartsRow> matterStartsDetails) {
     int messageCount =
         Optional.ofNullable(messagesSummary).map(MessagesSummary::totalMessageCount).orElse(0);
 
@@ -264,7 +298,6 @@ public class SubmissionDetailController {
             .mapToLong(SubmissionMatterStartsRow::numberOfMatterStarts)
             .sum();
 
-    model.addAttribute("claimCount", claimCount);
     model.addAttribute("messageCount", messageCount);
     model.addAttribute("matterStartsCount", matterStartsCount);
   }

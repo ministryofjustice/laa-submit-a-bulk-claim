@@ -141,6 +141,22 @@ env:
         name: laa-submit-a-bulk-claim-secrets
         key: SUBMISSION_MINIMUM_PERIOD
         optional: true
+  - name: IS_NIL_SUBMISSION_ENABLED
+    valueFrom:
+      configMapKeyRef:
+        name: feature-flags
+        key: is-nil-submission-enabled
+  - name: OUTAGE_BANNER_DISABLE_AT_TIMESTAMP
+    valueFrom:
+      configMapKeyRef:
+        name: outage-banner-properties
+        key: outage-banner-disable-at-timestamp
+  - name: OUTAGE_BANNER_MESSAGE
+    valueFrom:
+      configMapKeyRef:
+        name: outage-banner-properties
+        key: outage-banner-message
+        
 
 extraEnvVars:
   - name: ALLOWED_HOSTS

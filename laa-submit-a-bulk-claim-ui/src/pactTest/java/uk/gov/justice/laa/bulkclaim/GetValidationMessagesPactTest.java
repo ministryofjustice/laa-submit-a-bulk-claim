@@ -41,8 +41,6 @@ import uk.gov.justice.laa.dstew.payments.claimsdata.model.ValidationMessagesResp
  *   <li>Match Header: The header we wish to match against (authorization key).
  *   <li>Method: The HTTP method.
  * </ul>
- *
- * @author Jamie Briggs
  */
 @SpringBootTest(
     webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
@@ -70,6 +68,7 @@ public final class GetValidationMessagesPactTest extends AbstractPactTest {
         .matchQuery("source", ANY_FORMAT_REGEX)
         .matchQuery("page", ANY_NUMBER_REGEX)
         .matchQuery("size", ANY_NUMBER_REGEX)
+        .matchQuery("sort", MESSAGE_REGEX)
         .matchHeader(HttpHeaders.AUTHORIZATION, UUID_REGEX)
         .method("GET")
         .willRespondWith()
@@ -115,6 +114,7 @@ public final class GetValidationMessagesPactTest extends AbstractPactTest {
         .matchQuery("source", ANY_FORMAT_REGEX)
         .matchQuery("page", ANY_NUMBER_REGEX)
         .matchQuery("size", ANY_NUMBER_REGEX)
+        .matchQuery("sort", MESSAGE_REGEX)
         .matchHeader(HttpHeaders.AUTHORIZATION, UUID_REGEX)
         .method("GET")
         .willRespondWith()
@@ -140,7 +140,8 @@ public final class GetValidationMessagesPactTest extends AbstractPactTest {
   void verify200Response() {
     ValidationMessagesResponse claims =
         dataClaimsRestClient
-            .getValidationMessages(SUBMISSION_ID, CLAIM_ID, "ERROR", "Source", 1, 10)
+            .getValidationMessages(
+                SUBMISSION_ID, CLAIM_ID, "ERROR", "Source", 1, 10, "display_message,asc")
             .block();
 
     assertThat(claims.getContent().size()).isEqualTo(1);
@@ -152,7 +153,8 @@ public final class GetValidationMessagesPactTest extends AbstractPactTest {
   void verify200ResponseEmpty() {
     ValidationMessagesResponse claims =
         dataClaimsRestClient
-            .getValidationMessages(SUBMISSION_ID, CLAIM_ID, "ERROR", "Source", 1, 10)
+            .getValidationMessages(
+                SUBMISSION_ID, CLAIM_ID, "ERROR", "Source", 1, 10, "display_message,asc")
             .block();
 
     assertThat(claims.getContent().isEmpty()).isTrue();

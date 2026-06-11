@@ -25,10 +25,9 @@ import uk.gov.justice.laa.bulkclaim.dto.FileUploadForm;
 import uk.gov.justice.laa.bulkclaim.metrics.BulkClaimMetricService;
 import uk.gov.justice.laa.bulkclaim.util.OidcAttributeUtils;
 import uk.gov.justice.laa.bulkclaim.validation.BulkImportFileValidator;
-import uk.gov.justice.laa.bulkclaim.validation.BulkImportFileVirusValidator;
+import uk.gov.justice.laa.bulkclaim.validation.FileFirusValidator;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.CreateBulkSubmission201Response;
 
-/** Controller for handling the bulk upload requests. */
 @Slf4j
 @RequiredArgsConstructor
 @Controller
@@ -39,18 +38,12 @@ public class BulkImportController {
   private static final String UPLOAD_FAILED_CODE = "bulkImport.validation.uploadFailed";
 
   private final BulkImportFileValidator bulkImportFileValidator;
-  private final BulkImportFileVirusValidator bulkImportFileVirusValidator;
+  private final FileFirusValidator bulkImportFileVirusValidator;
   private final DataClaimsRestClient dataClaimsRestClient;
   private final OidcAttributeUtils oidcAttributeUtils;
   private final BulkClaimMetricService bulkClaimMetricService;
   private final ObjectMapper objectMapper;
 
-  /**
-   * Renders the upload page.
-   *
-   * @param model the model to be populated with data
-   * @return the upload page
-   */
   @GetMapping("/upload")
   public String showUploadPage(Model model, SessionStatus sessionStatus) {
 
@@ -65,13 +58,6 @@ public class BulkImportController {
     return "pages/upload";
   }
 
-  /**
-   * Performs a bulk upload for the given file.
-   *
-   * @param fileUploadForm the file to be uploaded
-   * @param oidcUser the authenticated user principal
-   * @return the submission page
-   */
   @PostMapping("/upload")
   public String performUpload(
       @ModelAttribute(FILE_UPLOAD_FORM_MODEL_ATTR) FileUploadForm fileUploadForm,
@@ -138,12 +124,6 @@ public class BulkImportController {
     }
   }
 
-  /**
-   * Redirects back to the upload page with the errors.
-   *
-   * @param bindingResult binding result of errors
-   * @return redirect back to upload page
-   */
   private String showErrorOnUpload(
       FileUploadForm fileUploadForm, BindingResult bindingResult, Model model) {
 

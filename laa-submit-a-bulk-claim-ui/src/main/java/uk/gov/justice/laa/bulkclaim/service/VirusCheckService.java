@@ -12,7 +12,6 @@ import org.springframework.web.multipart.MultipartFile;
 import uk.gov.justice.laa.bulkclaim.exception.VirusCheckException;
 import uk.gov.justice.laa.bulkclaim.response.SdsVirusCheckResponseDto;
 
-/** Service class for performing virus check. */
 @Service
 @RequiredArgsConstructor
 public class VirusCheckService {
@@ -23,12 +22,6 @@ public class VirusCheckService {
   @Value("${app.sds-api.url}")
   private String sdsApiUrl;
 
-  /**
-   * Perform a virus check for the given file.
-   *
-   * @param file the file
-   * @throws VirusCheckException if virus check fails
-   */
   public void checkVirus(MultipartFile file) throws VirusCheckException {
     if (file == null) {
       throw new VirusCheckException("File cannot be null");
@@ -46,7 +39,7 @@ public class VirusCheckService {
             .retrieve()
             .body(SdsVirusCheckResponseDto.class);
     if (sdsVirusCheckResponseDto == null
-        || !StringUtils.hasText(sdsVirusCheckResponseDto.getSuccess())) {
+        || !StringUtils.hasText(sdsVirusCheckResponseDto.success())) {
       throw new VirusCheckException("Virus check failed");
     }
   }

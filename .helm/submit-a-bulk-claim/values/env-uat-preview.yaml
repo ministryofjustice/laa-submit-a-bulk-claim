@@ -99,6 +99,33 @@ env:
     value: mock-oidc
   - name: LAA_ACCOUNTS
     value: "0P322F,2Q779P,2Q286D,2Q263D,2Q271M,0E525U,2Q286D,2N199K,1T102C,2P746R,2L847Q"
+  - name: APP_LANDING_DEADLINE_OVERRIDE_MESSAGE
+    valueFrom:
+      secretKeyRef:
+        name: laa-submit-a-bulk-claim-secrets
+        key: APP_LANDING_DEADLINE_OVERRIDE_MESSAGE
+        optional: true
+  - name: SUBMISSION_MINIMUM_PERIOD
+    valueFrom:
+      secretKeyRef:
+        name: laa-submit-a-bulk-claim-secrets
+        key: SUBMISSION_MINIMUM_PERIOD
+        optional: true
+  - name: IS_NIL_SUBMISSION_ENABLED
+    valueFrom:
+      configMapKeyRef:
+        name: feature-flags
+        key: is-nil-submission-enabled
+  - name: OUTAGE_BANNER_DISABLE_AT_TIMESTAMP
+    valueFrom:
+      configMapKeyRef:
+        name: outage-banner-properties
+        key: outage-banner-disable-at-timestamp
+  - name: OUTAGE_BANNER_MESSAGE
+    valueFrom:
+      configMapKeyRef:
+        name: outage-banner-properties
+        key: outage-banner-message
 
 autoscaling:
   enabled: false

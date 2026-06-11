@@ -25,7 +25,7 @@
         <dt class="govuk-summary-list__key"
             th:text="#{submission.summary.properties.dateTime}"></dt>
         <dd class="govuk-summary-list__value"
-            th:text="|${#temporals.format(submissionSummary.submitted,'d MMM yyyy')} at ${#temporals.format(submissionSummary.submitted(),'HH:mm:ss')}|"></dd>
+            th:text="|${#temporals.format(submissionSummary.submitted,'d MMM yyyy')} at ${#temporals.format(submissionSummary.submitted(),'h:mma')}|"></dd>
       </div>
       <div class="govuk-summary-list__row">
         <dt class="govuk-summary-list__key"

@@ -1,6 +1,9 @@
 <th:block th:fragment="claim-details">
+  <!--/*@thymesVar id="submissionViewQuery" type="uk.gov.justice.laa.bulkclaim.dto.submission.view.SubmissionViewQuery"*/-->
+  <!--/*@thymesVar id="SubmissionViewSortField" type="uk.gov.justice.laa.bulkclaim.dto.submission.view.SubmissionViewSortField"*/-->
+
   <!--Claim details information-->
-  <th:block th:if="${navTab.toString() == ViewSubmissionNavigationTab.CLAIM_DETAILS.toString()}">
+  <th:block th:if="${submissionViewQuery.navTab == claimDetailsTab}">
     <div class="govuk-grid-column-full">
       <h2 class="govuk-heading-m" id="messages"
           th:text="#{submission.summary.claims.caption}"></h2>
@@ -26,32 +29,29 @@
             <th scope="col" class="govuk-table__header"
                 th:text="#{submission.summary.claims.table.claim}"></th>
 
-            <th:block th:replace="~{fragments/sortable-header ::sortableHeader('client_surname',${ViewSubmissionNavigationTab.CLAIM_DETAILS.toString()},
-                                                                               'submission.summary.claims.table.clientSurname')}"></th:block>
-            <th:block th:replace="~{fragments/sortable-header ::sortableHeader('client_forename',${ViewSubmissionNavigationTab.CLAIM_DETAILS.toString()},
-                                                                               'submission.summary.claims.table.clientInitial')}"></th:block>
+            <th:block th:replace="~{fragments/sortable-header :: sortableHeader(
+                ${submissionViewQuery}, ${SubmissionViewSortField.CLIENT_SURNAME}, 'submission.summary.claims.table.clientSurname')}"></th:block>
 
-            <th:block th:replace="~{fragments/sortable-header ::sortableHeader('unique_file_number',${ViewSubmissionNavigationTab.CLAIM_DETAILS.toString()},
-                                                                               'submission.summary.claims.table.ufn')}"></th:block>
+            <th:block th:replace="~{fragments/sortable-header :: sortableHeader(
+                ${submissionViewQuery}, ${SubmissionViewSortField.CLIENT_FORENAME}, 'submission.summary.claims.table.clientInitial')}"></th:block>
 
+            <th:block th:replace="~{fragments/sortable-header :: sortableHeader(
+                ${submissionViewQuery}, ${SubmissionViewSortField.UNIQUE_FILE_NUMBER}, 'submission.summary.claims.table.ufn')}"></th:block>
 
-            <th:block th:replace="~{fragments/sortable-header ::sortableHeader('fee_code',${ViewSubmissionNavigationTab.CLAIM_DETAILS.toString()},
-                                                                               'submission.summary.claims.table.feeCode')}"></th:block>
+            <th:block th:replace="~{fragments/sortable-header :: sortableHeader(
+                ${submissionViewQuery}, ${SubmissionViewSortField.FEE_CODE}, 'submission.summary.claims.table.feeCode')}"></th:block>
 
+            <th:block th:replace="~{fragments/sortable-header :: sortableHeader(
+                ${submissionViewQuery}, ${SubmissionViewSortField.CASE_CONCLUDED_DATE}, 'submission.summary.claims.table.dateWorkConcluded')}"></th:block>
 
-            <th:block th:replace="~{fragments/sortable-header ::sortableHeader('case_concluded_date',${ViewSubmissionNavigationTab.CLAIM_DETAILS.toString()},
-                                                                               'submission.summary.claims.table.dateWorkConcluded')}"></th:block>
+            <th:block th:replace="~{fragments/sortable-header :: sortableHeader(
+                ${submissionViewQuery}, ${SubmissionViewSortField.TOTAL_AMOUNT}, 'submission.summary.claims.table.calculatedValue')}"></th:block>
 
+            <th:block th:replace="~{fragments/sortable-header :: sortableHeader(
+                ${submissionViewQuery}, ${SubmissionViewSortField.ESCAPE_CASE_FLAG}, 'submission.summary.claims.table.escapeCase')}"></th:block>
 
-            <th:block th:replace="~{fragments/sortable-header ::sortableHeader('total_amount',${ViewSubmissionNavigationTab.CLAIM_DETAILS.toString()},
-                                                                               'submission.summary.claims.table.calculatedValue')}"></th:block>
-
-            <th:block th:replace="~{fragments/sortable-header ::sortableHeader('escape_case_flag',${ViewSubmissionNavigationTab.CLAIM_DETAILS.toString()},
-                                                                               'submission.summary.claims.table.escapeCase')}"></th:block>
-
-            <th:block th:replace="~{fragments/sortable-header ::sortableHeader('total_warnings',${ViewSubmissionNavigationTab.CLAIM_DETAILS.toString()},
-                                                                               'submission.summary.claims.table.messages')}"></th:block>
-
+            <th:block th:replace="~{fragments/sortable-header :: sortableHeader(
+                ${submissionViewQuery}, ${SubmissionViewSortField.TOTAL_WARNINGS}, 'submission.summary.claims.table.messages')}"></th:block>
           </tr>
           </thead>
 
@@ -60,30 +60,30 @@
             <th scope="col" class="govuk-table__header"
                 th:text="#{submission.summary.claims.table.claim}"></th>
 
+            <th:block th:replace="~{fragments/sortable-header :: sortableHeader(
+                ${submissionViewQuery}, ${SubmissionViewSortField.CLIENT_SURNAME}, 'submission.summary.claims.table.clientSurname')}"></th:block>
 
-            <th:block th:replace="~{fragments/sortable-header ::sortableHeader('client_surname',${ViewSubmissionNavigationTab.CLAIM_DETAILS.toString()},
-                                                                               'submission.summary.claims.table.clientSurname')}"></th:block>
+            <th:block th:replace="~{fragments/sortable-header :: sortableHeader(
+                ${submissionViewQuery}, ${SubmissionViewSortField.CLIENT_FORENAME}, 'submission.summary.claims.table.clientForename')}"></th:block>
 
-            <th:block th:replace="~{fragments/sortable-header ::sortableHeader('client_forename',${ViewSubmissionNavigationTab.CLAIM_DETAILS.toString()},
-                                                                               'submission.summary.claims.table.clientForename')}"></th:block>
+            <th:block th:replace="~{fragments/sortable-header :: sortableHeader(
+                ${submissionViewQuery}, ${SubmissionViewSortField.UNIQUE_FILE_NUMBER}, 'submission.summary.claims.table.ufn')}"></th:block>
 
-            <th:block th:replace="~{fragments/sortable-header ::sortableHeader('unique_file_number',${ViewSubmissionNavigationTab.CLAIM_DETAILS.toString()},
-                                                                               'submission.summary.claims.table.ufn')}"></th:block>
+            <th:block th:replace="~{fragments/sortable-header :: sortableHeader(
+                ${submissionViewQuery}, ${SubmissionViewSortField.UNIQUE_CLIENT_NUMBER}, 'submission.summary.claims.table.ucn')}"></th:block>
 
-            <th:block th:replace="~{fragments/sortable-header ::sortableHeader('unique_client_number',${ViewSubmissionNavigationTab.CLAIM_DETAILS.toString()},
-                                                                               'submission.summary.claims.table.ucn')}"></th:block>
+            <th:block th:replace="~{fragments/sortable-header :: sortableHeader(
+                ${submissionViewQuery}, ${SubmissionViewSortField.FEE_CODE}, 'submission.summary.claims.table.feeCode')}"></th:block>
 
-            <th:block th:replace="~{fragments/sortable-header ::sortableHeader('fee_code',${ViewSubmissionNavigationTab.CLAIM_DETAILS.toString()},
-                                                                               'submission.summary.claims.table.feeCode')}"></th:block>
+            <th:block th:replace="~{fragments/sortable-header :: sortableHeader(
+                ${submissionViewQuery}, ${SubmissionViewSortField.TOTAL_AMOUNT}, 'submission.summary.claims.table.calculatedValue')}"></th:block>
 
-            <th:block th:replace="~{fragments/sortable-header ::sortableHeader('total_amount',${ViewSubmissionNavigationTab.CLAIM_DETAILS.toString()},
-                                                                               'submission.summary.claims.table.calculatedValue')}"></th:block>
+            <th:block th:replace="~{fragments/sortable-header :: sortableHeader(
+                ${submissionViewQuery}, ${SubmissionViewSortField.ESCAPE_CASE_FLAG}, 'submission.summary.claims.table.escapeCase')}"></th:block>
 
-            <th:block th:replace="~{fragments/sortable-header ::sortableHeader('escape_case_flag',${ViewSubmissionNavigationTab.CLAIM_DETAILS.toString()},
-                                                                               'submission.summary.claims.table.escapeCase')}"></th:block>
-
-            <th:block th:replace="~{fragments/sortable-header ::sortableHeader('total_warnings',${ViewSubmissionNavigationTab.CLAIM_DETAILS.toString()},
-                                                                               'submission.summary.claims.table.messages')}"></th:block>
+            <th:block th:replace="~{fragments/sortable-header :: sortableHeader(
+                ${submissionViewQuery}, ${SubmissionViewSortField.TOTAL_WARNINGS}, 'submission.summary.claims.table.messages')}"></th:block>
+          </tr>
           </thead>
 
           <thead class="govuk-table__head" th:if="${isMediation}">
@@ -91,31 +91,29 @@
             <th scope="col" class="govuk-table__header"
                 th:text="#{submission.summary.claims.table.claim}"></th>
 
+            <th:block th:replace="~{fragments/sortable-header :: sortableHeader(
+                ${submissionViewQuery}, ${SubmissionViewSortField.CLIENT_SURNAME}, 'submission.summary.claims.table.client1Surname')}"></th:block>
 
-            <th:block th:replace="~{fragments/sortable-header ::sortableHeader('client_surname',${ViewSubmissionNavigationTab.CLAIM_DETAILS.toString()},
-                                                                               'submission.summary.claims.table.client1Surname')}"></th:block>
+            <th:block th:replace="~{fragments/sortable-header :: sortableHeader(
+                ${submissionViewQuery}, ${SubmissionViewSortField.CLIENT_FORENAME}, 'submission.summary.claims.table.client1Forename')}"></th:block>
 
-            <th:block th:replace="~{fragments/sortable-header ::sortableHeader('client_forename',${ViewSubmissionNavigationTab.CLAIM_DETAILS.toString()},
-                                                                               'submission.summary.claims.table.client1Forename')}"></th:block>
+            <th:block th:replace="~{fragments/sortable-header :: sortableHeader(
+                ${submissionViewQuery}, ${SubmissionViewSortField.UNIQUE_CLIENT_NUMBER}, 'submission.summary.claims.table.client1Ucn')}"></th:block>
 
-            <th:block th:replace="~{fragments/sortable-header ::sortableHeader('unique_client_number',${ViewSubmissionNavigationTab.CLAIM_DETAILS.toString()},
-                                                                               'submission.summary.claims.table.client1Ucn')}"></th:block>
+            <th:block th:replace="~{fragments/sortable-header :: sortableHeader(
+                ${submissionViewQuery}, ${SubmissionViewSortField.CLIENT_2_SURNAME}, 'submission.summary.claims.table.client2Surname')}"></th:block>
 
-            <th:block th:replace="~{fragments/sortable-header ::sortableHeader('client_2_surname',${ViewSubmissionNavigationTab.CLAIM_DETAILS.toString()},
-                                                                               'submission.summary.claims.table.client2Surname')}"></th:block>
+            <th:block th:replace="~{fragments/sortable-header :: sortableHeader(
+                ${submissionViewQuery}, ${SubmissionViewSortField.CLIENT_2_FORENAME}, 'submission.summary.claims.table.client2Forename')}"></th:block>
 
-            <th:block th:replace="~{fragments/sortable-header ::sortableHeader('client_2_forename',${ViewSubmissionNavigationTab.CLAIM_DETAILS.toString()},
-                                                                               'submission.summary.claims.table.client2Forename')}"></th:block>
+            <th:block th:replace="~{fragments/sortable-header :: sortableHeader(
+                ${submissionViewQuery}, ${SubmissionViewSortField.CLIENT_2_UCN}, 'submission.summary.claims.table.client2Ucn')}"></th:block>
 
+            <th:block th:replace="~{fragments/sortable-header :: sortableHeader(
+                ${submissionViewQuery}, ${SubmissionViewSortField.FEE_CODE}, 'submission.summary.claims.table.feeCode')}"></th:block>
 
-            <th:block th:replace="~{fragments/sortable-header ::sortableHeader('client_2_ucn',${ViewSubmissionNavigationTab.CLAIM_DETAILS.toString()},
-                                                                               'submission.summary.claims.table.client2Ucn')}"></th:block>
-
-            <th:block th:replace="~{fragments/sortable-header ::sortableHeader('fee_code',${ViewSubmissionNavigationTab.CLAIM_DETAILS.toString()},
-                                                                               'submission.summary.claims.table.feeCode')}"></th:block>
-
-            <th:block th:replace="~{fragments/sortable-header ::sortableHeader('total_amount',${ViewSubmissionNavigationTab.CLAIM_DETAILS.toString()},
-                                                                               'submission.summary.claims.table.calculatedValue')}"></th:block>
+            <th:block th:replace="~{fragments/sortable-header :: sortableHeader(
+                ${submissionViewQuery}, ${SubmissionViewSortField.TOTAL_AMOUNT}, 'submission.summary.claims.table.calculatedValue')}"></th:block>
           </tr>
           </thead>
 
@@ -125,7 +123,7 @@
               th:each="claim, idx : ${claimDetails.submissionClaims}">
             <td class="govuk-table__cell">
               <th:block
-                  th:replace="~{fragments/submission-details/claim-row-detail :: claim-row-detail(claimHref=@{/submission/claim/{id}(id=${claim.id}, page=${page})}, status=${claim.status})}"></th:block>
+                  th:replace="~{fragments/submission-details/claim-row-detail :: claim-row-detail(claimHref=@{/submission/claim/{id}(id=${claim.id}, page=${submissionViewQuery.page})}, status=${claim.status})}"></th:block>
             </td>
             <td class="govuk-table__cell"
                 th:text="${claim.clientSurname ?: '-'}"></td>
@@ -138,7 +136,6 @@
             <td class="govuk-table__cell"
                 th:text="${claim.concludedOrClaimedDate != null ? #temporals.format(claim.concludedOrClaimedDate, 'dd MMM yyyy') : '-'}"></td>
             <td class="govuk-table__cell govuk-table__cell--numeric"
-                th:attr="data-sort-value=${claim.costsDetails != null && claim.costsDetails.claimValue != null ? claim.costsDetails.claimValue : 0}"
                 th:text="${claim.costsDetails != null && claim.costsDetails.claimValue != null ? @currencyUtil.toString(claim.costsDetails.claimValue) : '-'}"></td>
             <td class="govuk-table__cell">
               <strong class="govuk-tag govuk-tag--pink"
@@ -152,7 +149,7 @@
             <td class="govuk-table__cell">
               <a class="govuk-link"
                  th:if="${claim.totalMessages > 0}"
-                 th:href="@{/submission/claim/{id}(id=${claim.id}, page=${page})}"
+                 th:href="@{/submission/claim/{id}(id=${claim.id}, page=${submissionViewQuery.page})}"
                  th:text="#{submission.summary.claims.messages.count(${claim.totalMessages})}"></a>
             </td>
           </tr>
@@ -162,9 +159,9 @@
                  th:if="${isCivil and claimDetails != null and !claimDetails.submissionClaims.isEmpty()}">
           <tr class="govuk-table__row"
               th:each="claim, idx : ${claimDetails.submissionClaims}">
-            <td class="govuk-table__cell" th:with="claimDetailsUrl=@{/submission/claim/{id}(id=${claim.id})}">
+            <td class="govuk-table__cell">
               <th:block
-                  th:replace="~{fragments/submission-details/claim-row-detail :: claim-row-detail(claimHref=${@thymeleafHrefUtils.build(claimDetailsUrl, 'page', page, 'navTab', 'CLAIM_DETAILS')}, status=${claim.status})}"></th:block>
+                  th:replace="~{fragments/submission-details/claim-row-detail :: claim-row-detail(claimHref=@{/submission/claim/{id}(id=${claim.id}, page=${submissionViewQuery.page}, navTab=${claimDetailsTab})}, status=${claim.status})}"></th:block>
             </td>
             <td class="govuk-table__cell"
                 th:text="${claim.clientSurname ?: '-'}"></td>
@@ -177,7 +174,6 @@
             <td class="govuk-table__cell"
                 th:text="${claim.feeCode ?: '-'}"></td>
             <td class="govuk-table__cell govuk-table__cell--numeric"
-                th:attr="data-sort-value=${claim.costsDetails != null && claim.costsDetails.claimValue != null ? claim.costsDetails.claimValue : 0}"
                 th:text="${claim.costsDetails != null && claim.costsDetails.claimValue != null ? @currencyUtil.toString(claim.costsDetails.claimValue) : '-'}"></td>
             <td class="govuk-table__cell">
               <strong class="govuk-tag govuk-tag--pink"
@@ -188,10 +184,10 @@
               <span th:if="${claim.escapeCase != null and !claim.escapeCase}"
                     th:text="#{submission.summary.claims.escapeCase.no}"></span>
             </td>
-            <td class="govuk-table__cell" th:with="claimDetailsUrl=@{/submission/claim/{id}(id=${claim.id})}">
+            <td class="govuk-table__cell">
               <a class="govuk-link"
                  th:if="${claim.totalMessages > 0}"
-                 th:href="${@thymeleafHrefUtils.build(claimDetailsUrl, 'page', page, 'navTab', ViewSubmissionNavigationTab.CLAIM_DETAILS.toString())}"
+                 th:href="@{/submission/claim/{id}(id=${claim.id}, page=${submissionViewQuery.page}, navTab=${claimDetailsTab})}"
                  th:text="#{submission.summary.claims.messages.count(${claim.totalMessages})}"></a>
             </td>
           </tr>
@@ -203,7 +199,7 @@
               th:each="claim, idx : ${claimDetails.submissionClaims}">
             <td class="govuk-table__cell">
               <th:block
-                  th:replace="~{fragments/submission-details/claim-row-detail :: claim-row-detail(claimHref=@{/submission/claim/{id}(id=${claim.id}, page=${page})}, status=${claim.status})}"></th:block>
+                  th:replace="~{fragments/submission-details/claim-row-detail :: claim-row-detail(claimHref=@{/submission/claim/{id}(id=${claim.id}, page=${submissionViewQuery.page})}, status=${claim.status})}"></th:block>
             </td>
             <td class="govuk-table__cell"
                 th:text="${claim.clientSurname ?: '-'}"></td>
@@ -220,7 +216,6 @@
             <td class="govuk-table__cell"
                 th:text="${claim.feeCode ?: '-'}"></td>
             <td class="govuk-table__cell govuk-table__cell--numeric"
-                th:attr="data-sort-value=${claim.costsDetails != null && claim.costsDetails.claimValue != null ? claim.costsDetails.claimValue : 0}"
                 th:text="${claim.costsDetails != null && claim.costsDetails.claimValue != null ? @currencyUtil.toString(claim.costsDetails.claimValue) : '-'}"></td>
           </tr>
           </tbody>
@@ -228,18 +223,9 @@
 
         </table>
       </div>
-      <div
-              th:with="
-    baseUrl=@{/view-submission-detail(navTab=${ViewSubmissionNavigationTab.CLAIM_DETAILS.toString()}, submissionId=${submissionId})},
-    currentSort=${param.sort != null ? param.sort[0] : null},
-    claimDetailsUrl=${currentSort != null ? @thymeleafHrefUtils.build(baseUrl, 'sort', currentSort) : baseUrl},
-    claimDetailsUrlWithAnchor=${claimDetailsUrl + '#claims-table'}
-  ">
       <th:block th:if="${claimDetails != null}"
-                  th:insert="~{fragments/pagination :: pagination(currentUrl=${claimDetailsUrlWithAnchor},
-           page=${claimDetails.pagination})}">
-        </th:block>
-      </div>
+                th:insert="~{fragments/pagination :: pagination(page=${claimDetails.pagination}, links=${claimDetailsPaginationLinks})}">
+      </th:block>
     </div>
   </th:block>
 </th:block>

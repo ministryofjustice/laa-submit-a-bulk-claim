@@ -24,11 +24,7 @@ public class TokenProvider {
 
   private final OAuth2AuthorizedClientManager authorizedClientManager;
 
-  /**
-   * Get SDS API access token.
-   *
-   * @return the access token
-   */
+  /** Get SDS API access token. */
   @Cacheable(value = CACHE_NAME, key = CACHE_KEY)
   public OAuth2AccessToken getTokenFromProvider() {
     try {

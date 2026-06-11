@@ -44,8 +44,6 @@ import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionsResultSet;
  *   <li>Match Header: The header we wish to match against (authorization key).
  *   <li>Method: The HTTP method.
  * </ul>
- *
- * @author Jamie Briggs
  */
 @SpringBootTest(
     webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
@@ -76,7 +74,8 @@ public final class GetSubmissionsPactTest extends AbstractPactTest {
                 + "|VALIDATION_FAILED|REPLACED)")
         .matchQuery("page", ANY_NUMBER_REGEX)
         .matchQuery("size", ANY_NUMBER_REGEX)
-        .matchQuery("sort", "(asc|desc)")
+        .matchQuery(
+            "sort", "(createdOn|officeAccountNumber|areaOfLaw|submissionPeriod|status),(asc|desc)")
         .matchHeader(HttpHeaders.AUTHORIZATION, UUID_REGEX)
         .method("GET")
         .willRespondWith()
@@ -137,7 +136,8 @@ public final class GetSubmissionsPactTest extends AbstractPactTest {
                 + "|VALIDATION_FAILED|REPLACED)")
         .matchQuery("page", ANY_NUMBER_REGEX)
         .matchQuery("size", ANY_NUMBER_REGEX)
-        .matchQuery("sort", "(asc|desc)")
+        .matchQuery(
+            "sort", "(createdOn|officeAccountNumber|areaOfLaw|submissionPeriod|status),(asc|desc)")
         .matchHeader(HttpHeaders.AUTHORIZATION, UUID_REGEX)
         .method("GET")
         .willRespondWith()
@@ -171,7 +171,7 @@ public final class GetSubmissionsPactTest extends AbstractPactTest {
                   List.of(SubmissionStatus.CREATED),
                   10,
                   10,
-                  "asc")
+                  "createdOn,asc")
               .block();
       assertThat(submission.getContent().size()).isEqualTo(1);
     } catch (Exception e) {
@@ -193,7 +193,7 @@ public final class GetSubmissionsPactTest extends AbstractPactTest {
                 List.of(SubmissionStatus.CREATED),
                 10,
                 10,
-                "asc")
+                "createdOn,asc")
             .block();
 
     assertThat(submission.getContent().isEmpty()).isTrue();

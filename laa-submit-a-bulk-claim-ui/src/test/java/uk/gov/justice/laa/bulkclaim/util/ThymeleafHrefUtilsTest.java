@@ -2,7 +2,9 @@ package uk.gov.justice.laa.bulkclaim.util;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
+import java.util.List;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.ValueSource;
@@ -58,5 +60,19 @@ class ThymeleafHrefUtilsTest {
     // Then
     assertThat(result)
         .isEqualTo(href + appendSymbol + "param=value1&paramTwo=value2&paramThree=value3");
+  }
+
+  @Test
+  @DisplayName("Should add non-string and repeated request params")
+  void shouldAddNonStringAndRepeatedRequestParams() {
+    // Given
+    String href = "/test";
+
+    // When
+    String result =
+        thymeleafHrefUtils.build(href, "page", 2, "offices", List.of("ABC123", "DEF456"));
+
+    // Then
+    assertThat(result).isEqualTo("/test?page=2&offices=ABC123&offices=DEF456");
   }
 }

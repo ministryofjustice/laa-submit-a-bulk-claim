@@ -15,16 +15,15 @@
 
 .app-sort-link {
   display: inline-flex;
-  align-items: center;
-  gap: 4px;
+  align-items: flex-start !important;
   text-decoration: none;
-
+  gap: 4px;
 }
 
-
+/* Stop the sort arrow shrinking when label text fills the available space */
 .app-sort-link__icon {
-  flex: 0 0 auto;
-  display: block;
+  flex-shrink: 0;
+  padding: 0.1rem;
 }
 
 .govuk-table__header .govuk-link.app-sort-link:hover,

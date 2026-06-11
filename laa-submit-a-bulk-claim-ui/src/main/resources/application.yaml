@@ -4,6 +4,8 @@ server:
   port: 8082
 
 spring:
+  application:
+    name: laa-submit-a-bulk-claim
   servlet:
     multipart:
       max-file-size: ${SERVER_MAX_FILE_SIZE}
@@ -59,6 +61,9 @@ app:
   csp: default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; font-src 'self' data:; object-src 'none'; frame-ancestors 'none'; base-uri 'self';
   submission:
     minimum-period: ${SUBMISSION_MINIMUM_PERIOD:APR-2015}
+  maintenance:
+    disable-at-time: ${OUTAGE_BANNER_DISABLE_AT_TIMESTAMP:2026-05-29T17:29:00Z}
+    outage-banner-message: ${OUTAGE_BANNER_MESSAGE:Submit a Bulk Claim will be unavailable on Thursday 18 May between 5:00pm and 9:00pm due to planned maintenance.}
 
 links:
   laa-homepage: https://www.gov.uk/government/organisations/legal-aid-agency
@@ -75,6 +80,9 @@ sentry:
     minimum-event-level: error
     minimum-breadcrumb-level: info
 
+feature-flags:
+  is-nil-submission-enabled: ${IS_NIL_SUBMISSION_ENABLED:false}
+
 management:
   server:
     port: 8081
@@ -90,3 +98,25 @@ management:
           - health
           - info
           - prometheus
+
+---
+spring:
+  config:
+    activate:
+      on-profile: "!local"
+
+# ECS structured logging
+logging:
+  level:
+    root: ${ROOT_LOGGING_LEVEL:info}
+    org.springframework: ${SPRING_LOGGING_LEVEL:info}
+    uk.gov.justice.laa.bulkclaim: ${APP_LOGGING_LEVEL:info}
+  structured:
+    format:
+      console: ecs
+    ecs:
+      service:
+        name: ${spring.application.name:default}
+        version: ${spring.application.version:default}
+        environment: ${spring.profiles.active:default}
+        node_name: ${HOSTNAME:unknown}

@@ -43,11 +43,6 @@ import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionStatus;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionsResultSet;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.ValidationMessagesResponse;
 
-/**
- * Integration tests for the {@link uk.gov.justice.laa.bulkclaim.client.DataClaimsRestClient}.
- *
- * @author Jamie Briggs
- */
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureMockMvc(addFilters = false)
 @Import(WebMvcTestConfig.class)
@@ -876,7 +871,7 @@ class DataClaimsRestClientIntegrationTest extends MockServerIntegrationTest {
       // Then
       ValidationMessagesResponse block =
           dataClaimsRestClient
-              .getValidationMessages(submissionId, null, null, null, null, null)
+              .getValidationMessages(submissionId, null, null, null, null, null, null)
               .block();
       String result = objectMapper.writeValueAsString(block);
       assertThatJsonMatches(expectJson, result);
@@ -898,7 +893,7 @@ class DataClaimsRestClientIntegrationTest extends MockServerIntegrationTest {
       // Then
       ValidationMessagesResponse block =
           dataClaimsRestClient
-              .getValidationMessages(submissionId, null, null, null, null, null)
+              .getValidationMessages(submissionId, null, null, null, null, null, null)
               .block();
       String result = objectMapper.writeValueAsString(block);
       assertThatJsonMatches(expectJson, result);
@@ -918,7 +913,7 @@ class DataClaimsRestClientIntegrationTest extends MockServerIntegrationTest {
           BadRequest.class,
           () ->
               dataClaimsRestClient
-                  .getValidationMessages(submissionId, null, null, null, null, null)
+                  .getValidationMessages(submissionId, null, null, null, null, null, null)
                   .block());
     }
 
@@ -936,7 +931,7 @@ class DataClaimsRestClientIntegrationTest extends MockServerIntegrationTest {
           Unauthorized.class,
           () ->
               dataClaimsRestClient
-                  .getValidationMessages(submissionId, null, null, null, null, null)
+                  .getValidationMessages(submissionId, null, null, null, null, null, null)
                   .block());
     }
 
@@ -954,7 +949,7 @@ class DataClaimsRestClientIntegrationTest extends MockServerIntegrationTest {
           Forbidden.class,
           () ->
               dataClaimsRestClient
-                  .getValidationMessages(submissionId, null, null, null, null, null)
+                  .getValidationMessages(submissionId, null, null, null, null, null, null)
                   .block());
     }
 
@@ -972,7 +967,7 @@ class DataClaimsRestClientIntegrationTest extends MockServerIntegrationTest {
           NotFound.class,
           () ->
               dataClaimsRestClient
-                  .getValidationMessages(submissionId, null, null, null, null, null)
+                  .getValidationMessages(submissionId, null, null, null, null, null, null)
                   .block());
     }
 
@@ -990,7 +985,7 @@ class DataClaimsRestClientIntegrationTest extends MockServerIntegrationTest {
           InternalServerError.class,
           () ->
               dataClaimsRestClient
-                  .getValidationMessages(submissionId, null, null, null, null, null)
+                  .getValidationMessages(submissionId, null, null, null, null, null, null)
                   .block());
     }
 
