@@ -2,6 +2,11 @@
 
 This module hosts Java Cucumber E2E journeys for bulk submission.
 
+## Start Here
+
+- Data generator handover: `DATA_GENERATORS_HANDOVER.md`
+- How to write tests and contribute: `CONTRIBUTING_E2E_TESTS.md`
+
 ## Scope
 
 - Real-system E2E layer (no WireMock in this module)
@@ -16,6 +21,7 @@ The `laa-submit-a-bulk-claim-e2e-tests` `build.gradle` currently exposes:
 - `e2eLogin` - creates Playwright storage state
 - `cucumberTest` - runs the JUnit Platform suite class `CucumberE2ETest`
 - `e2eCleanup` - removes recent test submissions from DB
+- `allureGenerateE2eReport` - generates static Allure report from E2E results
 
 There is no active `cucumberTestSmoke` task at the moment.
 
