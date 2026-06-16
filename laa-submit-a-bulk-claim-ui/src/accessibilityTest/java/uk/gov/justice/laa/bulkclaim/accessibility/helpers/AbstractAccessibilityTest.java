@@ -9,9 +9,12 @@ import com.microsoft.playwright.BrowserContext;
 import com.microsoft.playwright.BrowserType;
 import com.microsoft.playwright.Page;
 import com.microsoft.playwright.Playwright;
+import io.qameta.allure.Allure;
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.time.Instant;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
@@ -19,6 +22,9 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.TestInstance.Lifecycle;
+import org.junit.jupiter.api.extension.ExtensionContext;
+import org.junit.jupiter.api.extension.RegisterExtension;
+import org.junit.jupiter.api.extension.TestExecutionExceptionHandler;
 import org.junit.jupiter.params.provider.Arguments;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
@@ -38,6 +44,9 @@ import uk.gov.justice.laa.bulkclaim.validation.BulkImportFileVirusValidator;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @TestInstance(Lifecycle.PER_CLASS)
 public abstract class AbstractAccessibilityTest {
+
+  private static final Path FAILURE_SCREENSHOT_DIR =
+      Path.of("build", "reports", "test-failure-screenshots");
 
   protected static final String BULK_SUBMISSION_ID = "86d8c0df-9f4f-4688-acdc-98f6b4a16ed1";
 
@@ -71,7 +80,7 @@ public abstract class AbstractAccessibilityTest {
           "MEDIATION",
           true);
 
-  private static final WireMockServer WIREMOCK =
+  protected static final WireMockServer WIREMOCK =
       AccessibilityWiremockSupport.createStartedServer(
           BULK_SUBMISSION_ID, LEGAL_HELP, CRIME_LOWER, MEDIATION);
 
@@ -85,6 +94,15 @@ public abstract class AbstractAccessibilityTest {
   protected Browser browser;
   protected BrowserContext context;
   protected Page page;
+
+  @RegisterExtension
+  final TestExecutionExceptionHandler screenshotOnFailure =
+      (extensionContext, throwable) -> {
+        if (isUiTestClass(extensionContext)) {
+          captureFailureScreenshot(extensionContext);
+        }
+        throw throwable;
+      };
 
   @DynamicPropertySource
   static void registerProperties(DynamicPropertyRegistry registry) {
@@ -128,7 +146,7 @@ public abstract class AbstractAccessibilityTest {
     doNothing().when(virusCheckService).checkVirus(any());
     doNothing().when(bulkImportFileValidator).validate(any(), any());
     doNothing().when(bulkImportFileVirusValidator).validate(any(), any());
-    context = browser.newContext();
+    context = browser.newContext(new Browser.NewContextOptions().setAcceptDownloads(true));
     page = context.newPage();
   }
 
@@ -137,6 +155,45 @@ public abstract class AbstractAccessibilityTest {
     if (context != null) {
       context.close();
     }
+  }
+
+  private void captureFailureScreenshot(ExtensionContext extensionContext) {
+    if (page == null) {
+      return;
+    }
+
+    try {
+      Files.createDirectories(FAILURE_SCREENSHOT_DIR);
+      String className = sanitize(extensionContext.getRequiredTestClass().getSimpleName());
+      String methodName = sanitize(extensionContext.getRequiredTestMethod().getName());
+      String fileName = Instant.now().toEpochMilli() + "-" + className + "-" + methodName + ".png";
+      Path screenshotPath = FAILURE_SCREENSHOT_DIR.resolve(fileName);
+
+      byte[] screenshotBytes =
+          page.screenshot(new Page.ScreenshotOptions().setPath(screenshotPath).setFullPage(true));
+      Allure.addAttachment(
+          "Failure screenshot",
+          "image/png",
+          new ByteArrayInputStream(screenshotBytes),
+          ".png");
+      Allure.addAttachment("Failure page URL", "text/plain", page.url(), ".txt");
+      Allure.addAttachment("Failure page HTML", "text/html", page.content(), ".html");
+      System.out.println("Saved failure screenshot: " + screenshotPath.toAbsolutePath());
+    } catch (Exception screenshotError) {
+      System.out.println(
+          "Failed to capture failure screenshot: " + screenshotError.getMessage());
+    }
+  }
+
+  private static String sanitize(String value) {
+    return value.replaceAll("[^a-zA-Z0-9._-]", "_");
+  }
+
+  private static boolean isUiTestClass(ExtensionContext extensionContext) {
+    return extensionContext
+        .getRequiredTestClass()
+        .getPackageName()
+        .contains(".ui.");
   }
 
   @AfterAll
@@ -212,7 +269,7 @@ public abstract class AbstractAccessibilityTest {
     return scenarios.map(scenario -> Arguments.of(scenario.areaOfLawAbbr(), scenario));
   }
 
-  protected record AreaScenario(
+  public record AreaScenario(
       String areaOfLaw,
       String areaOfLawAbbr,
       String validSubmissionId,

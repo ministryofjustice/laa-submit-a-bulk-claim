@@ -1,0 +1,199 @@
+{
+  "content": [
+    {
+      "id": "%s",
+      "submission_id": "%s",
+      "status": "VALID",
+      "line_number": 24,
+      "unique_file_number": "010100/024",
+      "fee_code": "PROL2",
+      "client_forename": "Xena",
+      "client_surname": "Adams",
+      "submission_period": "MAY-2025",
+      "total_warnings": 0,
+      "fee_calculation_response": {
+        "claim_id": "%s",
+        "fee_code": "PROL2",
+        "fee_type": "FIXED",
+        "total_amount": 540.00,
+        "bolt_on_details": { "escape_case_flag": true }
+      }
+    },
+    {
+      "id": "%s",
+      "submission_id": "%s",
+      "status": "VALID",
+      "line_number": 8,
+      "unique_file_number": "010100/008",
+      "fee_code": "PROL2",
+      "client_forename": "Henry",
+      "client_surname": "Clarke",
+      "submission_period": "MAY-2025",
+      "total_warnings": 0,
+      "fee_calculation_response": {
+        "claim_id": "%s",
+        "fee_code": "PROL2",
+        "fee_type": "FIXED",
+        "total_amount": 450.00,
+        "bolt_on_details": { "escape_case_flag": false }
+      }
+    },
+    {
+      "id": "%s",
+      "submission_id": "%s",
+      "status": "VALID",
+      "line_number": 17,
+      "unique_file_number": "010100/017",
+      "fee_code": "PROL1",
+      "client_forename": "Quinn",
+      "client_surname": "Turner",
+      "submission_period": "MAY-2025",
+      "total_warnings": 0,
+      "fee_calculation_response": {
+        "claim_id": "%s",
+        "fee_code": "PROL1",
+        "fee_type": "HOURLY",
+        "total_amount": 430.00,
+        "bolt_on_details": { "escape_case_flag": true }
+      }
+    },
+    {
+      "id": "%s",
+      "submission_id": "%s",
+      "status": "VALID",
+      "line_number": 26,
+      "unique_file_number": "010100/026",
+      "fee_code": "PROL3",
+      "client_forename": "Zane",
+      "client_surname": "Cooper",
+      "submission_period": "MAY-2025",
+      "total_warnings": 0,
+      "fee_calculation_response": {
+        "claim_id": "%s",
+        "fee_code": "PROL3",
+        "fee_type": "FIXED",
+        "total_amount": 430.00,
+        "bolt_on_details": { "escape_case_flag": false }
+      }
+    },
+    {
+      "id": "%s",
+      "submission_id": "%s",
+      "status": "VALID",
+      "line_number": 7,
+      "unique_file_number": "010100/007",
+      "fee_code": "PROL3",
+      "client_forename": "Grace",
+      "client_surname": "Hughes",
+      "submission_period": "MAY-2025",
+      "total_warnings": 3,
+      "fee_calculation_response": {
+        "claim_id": "%s",
+        "fee_code": "PROL3",
+        "fee_type": "HOURLY",
+        "total_amount": 350.75,
+        "bolt_on_details": { "escape_case_flag": true }
+      }
+    },
+    {
+      "id": "%s",
+      "submission_id": "%s",
+      "status": "VALID",
+      "line_number": 12,
+      "unique_file_number": "010100/012",
+      "fee_code": "PROL1",
+      "client_forename": "Leo",
+      "client_surname": "Owen",
+      "submission_period": "MAY-2025",
+      "total_warnings": 0,
+      "fee_calculation_response": {
+        "claim_id": "%s",
+        "fee_code": "PROL1",
+        "fee_type": "FIXED",
+        "total_amount": 300.00,
+        "bolt_on_details": { "escape_case_flag": true }
+      }
+    },
+    {
+      "id": "%s",
+      "submission_id": "%s",
+      "status": "VALID",
+      "line_number": 28,
+      "unique_file_number": "010100/028",
+      "fee_code": "PROL2",
+      "client_forename": "Ben",
+      "client_surname": "Evans",
+      "submission_period": "MAY-2025",
+      "total_warnings": 1,
+      "fee_calculation_response": {
+        "claim_id": "%s",
+        "fee_code": "PROL2",
+        "fee_type": "FIXED",
+        "total_amount": 300.00,
+        "bolt_on_details": { "escape_case_flag": false }
+      }
+    },
+    {
+      "id": "%s",
+      "submission_id": "%s",
+      "status": "VALID",
+      "line_number": 2,
+      "unique_file_number": "010100/002",
+      "fee_code": "PROL2",
+      "client_forename": "Bob",
+      "client_surname": "Morris",
+      "submission_period": "MAY-2025",
+      "total_warnings": 1,
+      "fee_calculation_response": {
+        "claim_id": "%s",
+        "fee_code": "PROL2",
+        "fee_type": "HOURLY",
+        "total_amount": 250.00,
+        "bolt_on_details": { "escape_case_flag": true }
+      }
+    },
+    {
+      "id": "%s",
+      "submission_id": "%s",
+      "status": "VALID",
+      "line_number": 15,
+      "unique_file_number": "010100/015",
+      "fee_code": "PROL1",
+      "client_forename": "Olivia",
+      "client_surname": "Reed",
+      "submission_period": "MAY-2025",
+      "total_warnings": 3,
+      "fee_calculation_response": {
+        "claim_id": "%s",
+        "fee_code": "PROL1",
+        "fee_type": "HOURLY",
+        "total_amount": 200.00,
+        "bolt_on_details": { "escape_case_flag": false }
+      }
+    },
+    {
+      "id": "%s",
+      "submission_id": "%s",
+      "status": "VALID",
+      "line_number": 5,
+      "unique_file_number": "010100/005",
+      "fee_code": "PROL2",
+      "client_forename": "Emma",
+      "client_surname": "Brown",
+      "submission_period": "MAY-2025",
+      "total_warnings": 1,
+      "fee_calculation_response": {
+        "claim_id": "%s",
+        "fee_code": "PROL2",
+        "fee_type": "HOURLY",
+        "total_amount": 100.00,
+        "bolt_on_details": { "escape_case_flag": false }
+      }
+    }
+  ],
+  "total_pages": 3,
+  "total_elements": 30,
+  "number": 2,
+  "size": 10
+}
+

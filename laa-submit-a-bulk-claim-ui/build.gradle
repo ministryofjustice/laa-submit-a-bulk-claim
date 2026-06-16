@@ -18,12 +18,10 @@ repositories {
     mavenCentral()
 }
 
-// Upgrade to fix remaining Apache Tomcat vulnerabilities reported against 11.0.21
-ext['tomcat.version'] = '11.0.22'
+// Upgrade to fix remaining Apache Tomcat vulnerabilities reported against 11.0.18/11.0.20
+ext['tomcat.version'] = '11.0.21'
 // Upgrade to fix SNYK-JAVA-ORGAPACHELOGGINGLOG4J-15967727 and related vulnerabilities
 ext['log4j2.version'] = '2.25.4'
-// Upgrade to fix HTTP Request Smuggling (SNYK-JAVA-IONETTY-16425695)
-ext['netty.version'] = '4.2.15.Final'
 
 dependencyManagement {
     dependencies {
@@ -48,9 +46,19 @@ sourceSets {
         compileClasspath += sourceSets.main.output + configurations.testRuntimeClasspath
         runtimeClasspath += sourceSets.main.output + configurations.testRuntimeClasspath
     }
+    uiTest {
+        java.srcDir file('src/uiTest/java')
+        resources.srcDir file('src/uiTest/resources')
+        resources.srcDir file('src/accessibilityTest/resources')
+        compileClasspath += sourceSets.main.output + sourceSets.accessibilityTest.output + configurations.testRuntimeClasspath
+        runtimeClasspath += output + compileClasspath
+    }
 }
 
 dependencies {
+    // Upgrade to fix vulnerability GHSA-72hv-8253-57qq
+    implementation 'com.fasterxml.jackson.core:jackson-core:2.21.2'
+    implementation 'tools.jackson.core:jackson-core:3.1.1'
     // Fixes CWE-770
     implementation 'tools.jackson.core:jackson-core:3.1.1'
 
@@ -105,6 +113,7 @@ dependencies {
 
     testImplementation 'org.springframework.boot:spring-boot-starter-webmvc-test'
     testImplementation 'org.springframework.security:spring-security-test'
+    testImplementation 'io.qameta.allure:allure-junit5:2.29.1'
 
     testImplementation 'org.testcontainers:mockserver:1.21.3'
     testImplementation 'org.mock-server:mockserver-client-java:5.15.0'
@@ -129,6 +138,8 @@ configurations {
     pactTestRuntimeOnly.extendsFrom testRuntimeOnly
     accessibilityTestImplementation.extendsFrom testImplementation
     accessibilityTestRuntimeOnly.extendsFrom testRuntimeOnly
+    uiTestImplementation.extendsFrom accessibilityTestImplementation
+    uiTestRuntimeOnly.extendsFrom accessibilityTestRuntimeOnly
 }
 
 tasks.register('pactTest', Test) {
@@ -182,11 +193,69 @@ tasks.register('accessibilityTest', Test) {
     }
 }
 
+tasks.register('uiTest', Test) {
+
+    description = 'Runs the UI flow tests for Allure report generation.'
+    group = 'verification'
+
+    testClassesDirs = sourceSets.uiTest.output.classesDirs
+    classpath = sourceSets.uiTest.runtimeClasspath
+    useJUnitPlatform()
+    ignoreFailures = true
+
+    systemProperty(
+            'ui.headless',
+            System.getProperty(
+                    'ui.headless',
+                    System.getenv('UI_HEADLESS') ?: 'true'
+            )
+    )
+
+    systemProperty(
+            'accessibility.headless',
+            System.getProperty(
+                    'accessibility.headless',
+                    System.getProperty(
+                            'ui.headless',
+                            System.getenv('UI_HEADLESS') ?: 'true'
+                    )
+            )
+    )
+    systemProperty 'allure.results.directory', layout.buildDirectory.dir("allure-results").get().asFile.path
+
+    jvmArgs(
+            '--enable-native-access=ALL-UNNAMED',
+            '-Xshare:off'
+    )
+
+    def configuredParallelForks =
+            System.getProperty('ui.maxParallelForks')
+                    ?: System.getenv('UI_MAX_PARALLEL_FORKS')
+    maxParallelForks = configuredParallelForks
+            ? Integer.parseInt(configuredParallelForks)
+            : 4
+}
+
+tasks.register('allureGenerateUiReport', Exec) {
+    description = 'Runs UI tests and generates a static Allure report.'
+    group = 'verification'
+    dependsOn tasks.named('uiTest')
+
+    def resultsPath = layout.buildDirectory.dir('allure-results').get().asFile.path
+    def reportPath = layout.buildDirectory.dir('reports/allure-report').get().asFile.path
+
+    commandLine 'bash', '-lc', "command -v allure >/dev/null 2>&1 || { echo 'Allure CLI is not installed. Install it with: brew install allure'; exit 127; }; allure generate '${resultsPath}' --clean -o '${reportPath}'"
+}
+
 tasks.named('processPactTestResources') {
     duplicatesStrategy = DuplicatesStrategy.INCLUDE
 }
 
 tasks.named('processAccessibilityTestResources') {
+    duplicatesStrategy = DuplicatesStrategy.INCLUDE
+}
+
+tasks.named('processUiTestResources') {
     duplicatesStrategy = DuplicatesStrategy.INCLUDE
 }
 
