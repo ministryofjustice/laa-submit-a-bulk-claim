@@ -1,0 +1,31 @@
+{
+  "total_pages": 1,
+  "total_elements": 2,
+  "number": 0,
+  "size": 10,
+  "content": [
+    {
+      "submission_id": "88888888-8888-8888-8888-888888888888",
+      "office_account_number": "0P322F",
+      "submission_period": "MAY-2025",
+      "previous_submission_id": null,
+      "is_nil_submission": false,
+      "number_of_claims": 1,
+      "area_of_law": "LEGAL HELP",
+      "status": "VALIDATION_FAILED",
+      "submitted": "2025-05-08T12:32:00Z"
+    },
+    {
+      "submission_id": "99999999-9999-9999-9999-999999999999",
+      "office_account_number": "2Q779P",
+      "submission_period": "MAY-2025",
+      "previous_submission_id": null,
+      "is_nil_submission": false,
+      "number_of_claims": 1,
+      "area_of_law": "MEDIATION",
+      "status": "VALIDATION_FAILED",
+      "submitted": "2025-05-09T12:32:00Z"
+    }
+  ]
+}
+
