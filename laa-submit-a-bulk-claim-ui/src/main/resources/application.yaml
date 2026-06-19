@@ -81,7 +81,7 @@ sentry:
     minimum-breadcrumb-level: info
 
 feature-flags:
-  is-nil-submission-enabled: ${IS_NIL_SUBMISSION_ENABLED:false}
+  is-nil-submission-enabled: ${IS_NIL_SUBMISSION_ENABLED:true}
 
 management:
   server:
