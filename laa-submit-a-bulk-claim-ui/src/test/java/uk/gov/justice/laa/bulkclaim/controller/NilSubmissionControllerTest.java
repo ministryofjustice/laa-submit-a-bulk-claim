@@ -72,7 +72,7 @@ class NilSubmissionControllerTest {
     doReturn(offices).when(oidcAttributeUtils).getUserOffices(any(OidcUser.class));
 
     String view = nilSubmissionController.getNilSubmission(model, getOidcUser());
-    assertEquals("pages/nil-submission", view);
+    assertEquals("pages/nil-submission-office", view);
     verify(model, times(1)).addAttribute("userOffices", offices);
   }
 
@@ -89,7 +89,7 @@ class NilSubmissionControllerTest {
         .thenReturn(Mono.just(response));
 
     String view =
-        nilSubmissionController.getNilSubmission(
+        nilSubmissionController.getNilSubmissionPeriod(
             model, office, AreaOfLaw.MEDIATION.getValue(), getOidcUser());
     assertEquals("pages/nil-submission-period", view);
 
@@ -136,7 +136,7 @@ class NilSubmissionControllerTest {
     assertThrows(
         SubmitBulkClaimException.class,
         () ->
-            nilSubmissionController.getNilSubmission(
+            nilSubmissionController.getNilSubmissionPeriod(
                 model, office, AreaOfLaw.MEDIATION.getValue(), getOidcUser()));
   }
 

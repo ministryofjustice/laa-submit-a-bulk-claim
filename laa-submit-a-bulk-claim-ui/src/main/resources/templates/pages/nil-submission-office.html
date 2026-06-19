@@ -1,0 +1,49 @@
+<!DOCTYPE HTML>
+<html lang="en" class="govuk-template" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{ layout/main-layout :: layout(#{nilSubmission.heading}, ~{::main},
+       ~{},~{})}">
+<main class="govuk-main-wrapper" id="main-content">
+
+  <div class="govuk-grid-row">
+
+      <!--/*@thymesVar id="fileUploadForm" type="uk.gov.justice.laa.bulkclaim.dto.FileUploadForm"*/-->
+      <form class="form" th:action="@{/nil-submission}" method="get">
+        <h1 class="govuk-heading-xl" th:text="#{nilSubmission.office.heading}"/>
+        <div class="govuk-grid-column-full">
+          <!--<details class="govuk-details" th:open="${#fields.hasErrors('offices')}">
+            <summary class="govuk-details__summary"
+                     id="choose-office-account-details-summary">
+              <span class="govuk-details__summary-text"
+                    th:text="#{search.result.header.chooseOffice}">
+              </span>
+            </summary> -->
+            <div class="govuk-details__text">
+              <!--<div class="govuk-form-group" th:classappend="${#fields.hasErrors('offices')} ? 'govuk-form-group--error' : ''">-->
+                <fieldset class="govuk-fieldset">
+                  <!--<th:block th:replace="~{fragments/error-components :: error-messages('offices')}"/>-->
+                  <div class="govuk-radios govuk-radios--inline govuk-radios--small"
+                       data-module="govuk-radios" id="offices-input-container">
+                    <th:block th:each="office,idx : ${userOffices}">
+                      <div class="govuk-radios__item">
+                        <input class="govuk-radios__input"
+                               th:id="${idx.index > 0} ? |offices-input-${idx.index}| : |offices-input|"
+                               type="radio"
+                               name="offices"
+                               th:value="${office}">
+                        <label class="govuk-label govuk-radio__label"
+                               th:for="${idx.index > 0} ? |offices-input-${idx.index}| : |offices-input|"
+                               th:text="${office}">
+                        </label>
+                      </div>
+                    </th:block>
+
+                  </div>
+                </fieldset>
+              </div>
+        </div>
+        <button type="submit" class="govuk-button" data-module="govuk-button"
+                th:text="#{nilSubmission.primaryButton}"/>
+    </form>
+  </div>
+</main>
+</html>

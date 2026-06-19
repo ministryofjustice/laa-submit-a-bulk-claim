@@ -20,8 +20,12 @@ import org.springframework.security.oauth2.core.oidc.user.OidcUser;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.SessionAttributes;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import uk.gov.justice.laa.bulkclaim.client.DataClaimsRestClient;
 import uk.gov.justice.laa.bulkclaim.config.FeatureFlagsConfig;
 import uk.gov.justice.laa.bulkclaim.dto.sorting.SortDirection;
@@ -39,6 +43,7 @@ import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionsResultSet;
 @Slf4j
 @Controller
 @RequiredArgsConstructor
+@SessionAttributes("nilSubmissionSelection")
 public class NilSubmissionController {
 
   private final OidcAttributeUtils oidcAttributeUtils;
@@ -55,11 +60,42 @@ public class NilSubmissionController {
 
     var userOffices = oidcAttributeUtils.getUserOffices(oidcUser);
     model.addAttribute("userOffices", userOffices);
-    return "pages/nil-submission";
+    return "pages/nil-submission-office";
+  }
+
+  @PostMapping("/nil-submission-office")
+  public String getNilSubmissionOffice(
+      Model model,
+      @ModelAttribute("nilSubmissionSelection") String selection,
+      @AuthenticationPrincipal OidcUser oidcUser,
+      RedirectAttributes attributes) {
+
+    if (!featureFlagsConfig.getIsNilSubmissionEnabled()) {
+      return "error";
+    }
+    // Store selection
+    attributes.addFlashAttribute("nilSubmissionSelection", "mySelection");
+    // Provice the Area of Law options for the selected office
+    var userOffices = oidcAttributeUtils.getUserOffices(oidcUser);
+    model.addAttribute("userOffices", userOffices);
+    // Forward to area of law page
+    return "pages/nil-submission-areaoflaw";
+  }
+
+  @GetMapping("/nil-submission-areaoflaw")
+  public String getNilSubmissionAreaOfLaw(Model model, @AuthenticationPrincipal OidcUser oidcUser) {
+
+    if (!featureFlagsConfig.getIsNilSubmissionEnabled()) {
+      return "error";
+    }
+
+    var userOffices = oidcAttributeUtils.getUserOffices(oidcUser);
+    model.addAttribute("userOffices", userOffices);
+    return "pages/nil-submission-period";
   }
 
   @GetMapping("/nil-submission/{office}")
-  public String getNilSubmission(
+  public String getNilSubmissionPeriod(
       Model model,
       @PathVariable String office,
       @RequestParam(value = "areaOfLaw") String areaOfLaw,
@@ -144,6 +180,11 @@ public class NilSubmissionController {
   private String getSubmissionDateFrom() {
     LocalDate lastDateOfMonth = YearMonth.from(LocalDate.now()).minusYears(1).atEndOfMonth();
     return getFormatted(lastDateOfMonth);
+  }
+
+  @ModelAttribute("nilSubmissionSelection")
+  public String nilSubmissionSelection() {
+    return "";
   }
 
   static Set<String> getLastTwelveMonths() {
