@@ -58,64 +58,64 @@ public class NilSubmissionController {
   private final SubmissionPeriodUtil submissionPeriodUtil;
   private final FeatureFlagsConfig featureFlagsConfig;
 
-  @GetMapping("/nil-submission")
-  public String getNilSubmission(Model model, @AuthenticationPrincipal OidcUser oidcUser) {
-
-    if (!featureFlagsConfig.getIsNilSubmissionEnabled()) {
-      return "error";
-    }
-
-    var userOffices = oidcAttributeUtils.getUserOffices(oidcUser);
-    model.addAttribute("userOffices", userOffices);
-    return "pages/nil-submission-office";
-  }
-
-  @PostMapping("/nil-submission-office")
-  public String getNilSubmissionOffice(
-      Model model,
-      @ModelAttribute("nilSubmissionSelection") Map<String, String> selection,
-      @AuthenticationPrincipal OidcUser oidcUser,
-      @RequestParam String offices) {
-
-    model.addAttribute(NIL_SUBMISSION_SELECTION, selection);
-    if (!featureFlagsConfig.getIsNilSubmissionEnabled()) {
-      return "error";
-    }
-    // Store selection
-    if (selection != null) {
-      model.addAttribute(NIL_SUBMISSION_SELECTION, offices);
-    }
-
-    // Provide the Area of Law options for the selected office
-    Set<String> areasOfLaw =
-        new HashSet<>(Set.of(AreaOfLaw.values()).stream().map(Enum::name).toList());
-    model.addAttribute(AREA_OF_LAW_SELECTION, areasOfLaw);
-
-    return "pages/nil-submission-areaoflaw";
-  }
-
-  @PostMapping("/nil-submission-areaoflaw")
-  public String getNilSubmissionAreaOfLaw(
-      Model model,
-      @ModelAttribute(NIL_SUBMISSION_SELECTION) Map<String, String> selection,
-      @RequestParam String areaOfLaw,
-      @AuthenticationPrincipal OidcUser oidcUser) {
-
-    model.addAttribute(NIL_SUBMISSION_SELECTION, selection);
-    if (!featureFlagsConfig.getIsNilSubmissionEnabled()) {
-      return "error";
-    }
-
-    //      // Store selection
-    if (selection != null) {
-      model.addAttribute(NIL_SUBMISSION_SELECTION, areaOfLaw);
-    }
-    //
-    //    var userOffices = oidcAttributeUtils.getUserOffices(oidcUser);
-    //    model.addAttribute("userOffices", userOffices);
-
-    return "pages/nil-submission-areaoflaw";
-  }
+//  @GetMapping("/nil-submission")
+//  public String getNilSubmission(Model model, @AuthenticationPrincipal OidcUser oidcUser) {
+//
+//    if (!featureFlagsConfig.getIsNilSubmissionEnabled()) {
+//      return "error";
+//    }
+//
+//    var userOffices = oidcAttributeUtils.getUserOffices(oidcUser);
+//    model.addAttribute("userOffices", userOffices);
+//    return "pages/nil-submission-office";
+//  }
+//
+//  @PostMapping("/nil-submission-office")
+//  public String getNilSubmissionOffice(
+//      Model model,
+//      @ModelAttribute("") Map<String, String> selection,
+//      @AuthenticationPrincipal OidcUser oidcUser,
+//      @RequestParam String offices) {
+//
+//    model.addAttribute(NIL_SUBMISSION_SELECTION, selection);
+//    if (!featureFlagsConfig.getIsNilSubmissionEnabled()) {
+//      return "error";
+//    }
+//    // Store selection
+//    if (selection != null) {
+//      model.addAttribute(NIL_SUBMISSION_SELECTION, offices);
+//    }
+//
+//    // Provide the Area of Law options for the selected office
+//    Set<String> areasOfLaw =
+//        new HashSet<>(Set.of(AreaOfLaw.values()).stream().map(Enum::name).toList());
+//    model.addAttribute(AREA_OF_LAW_SELECTION, areasOfLaw);
+//
+//    return "pages/nil-submission-areaoflaw";
+//  }
+//
+//  @PostMapping("/nil-submission-areaoflaw")
+//  public String getNilSubmissionAreaOfLaw(
+//      Model model,
+//      @ModelAttribute(NIL_SUBMISSION_SELECTION) Map<String, String> selection,
+//      @RequestParam String areaOfLaw,
+//      @AuthenticationPrincipal OidcUser oidcUser) {
+//
+//    model.addAttribute(NIL_SUBMISSION_SELECTION, selection);
+//    if (!featureFlagsConfig.getIsNilSubmissionEnabled()) {
+//      return "error";
+//    }
+//
+//    //      // Store selection
+//    if (selection != null) {
+//      model.addAttribute(NIL_SUBMISSION_SELECTION, areaOfLaw);
+//    }
+//    //
+//    //    var userOffices = oidcAttributeUtils.getUserOffices(oidcUser);
+//    //    model.addAttribute("userOffices", userOffices);
+//
+//    return "pages/nil-submission-areaoflaw";
+//  }
 
   @GetMapping("/nil-submission/{office}")
   public String getNilSubmissionPeriod(

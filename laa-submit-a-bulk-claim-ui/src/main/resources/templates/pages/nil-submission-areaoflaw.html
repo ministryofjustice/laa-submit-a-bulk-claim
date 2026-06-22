@@ -23,17 +23,18 @@
                         <!--<th:block th:replace="~{fragments/error-components :: error-messages('offices')}"/>-->
                         <div class="govuk-radios govuk-radios--inline govuk-radios--small"
                              data-module="govuk-radios" id="arias-of-law-input-container">
+                            <label class="govuk-label govuk-radios__label"
+                                   th:text="${nilSubmissionForm.office}"/>
                             <th:block th:each="areaOfLaw,idx : ${areasOfLaw}">
                                 <div class="govuk-radios__item">
                                     <input class="govuk-radios__input"
                                            th:id="${idx.index > 0} ? |areas-of-law-input-${idx.index}| : |areas-of-law-input|"
                                            type="radio"
-                                           name="areasOfLaw"
-                                           th:value="${areaOfLaw}">
+                                           name="areaOfLaw"
+                                           th:value="${areaOfLaw}"
+                                           th:checked="${nilSubmissionForm.areaOfLaw == areaOfLaw}">
                                     <label class="govuk-label govuk-radios__label"
-                                           th:for="${idx.index > 0} ? |areas-of-law-input-${idx.index}| : |areas-of-law-input|"
-                                           th:text="${areaOfLaw}">
-                                    </label>
+                                    th:for="${idx.index > 0} ? |areas-of-law-input-${idx.index}| : |areas-of-law-input|"               th:text="${areaOfLaw}">        </label>
                                 </div>
                             </th:block>
 
@@ -43,7 +44,7 @@
 
                 <div class="govuk-details__text">
                     <label class="govuk-label govuk-label--s"
-                           th:text="${nilSubmissionSelection}"></label>
+                           th:text="${nilSubmissionForm.areaOfLaw}"></label>
                 </div>
             </div>
             <button type="submit" class="govuk-button" data-module="govuk-button"

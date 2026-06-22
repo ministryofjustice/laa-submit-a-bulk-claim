@@ -10,17 +10,8 @@
       <form class="form" th:action="@{/nil-submission-office}" method="post">
         <h1 class="govuk-heading-xl" th:text="#{nilSubmission.office.heading}"/>
         <div class="govuk-grid-column-full">
-          <!--<details class="govuk-details" th:open="${#fields.hasErrors('offices')}">
-            <summary class="govuk-details__summary"
-                     id="choose-office-account-details-summary">
-              <span class="govuk-details__summary-text"
-                    th:text="#{search.result.header.chooseOffice}">
-              </span>
-            </summary> -->
             <div class="govuk-details__text">
-              <!--<div class="govuk-form-group" th:classappend="${#fields.hasErrors('offices')} ? 'govuk-form-group--error' : ''">-->
-                <fieldset class="govuk-fieldset">
-                  <!--<th:block th:replace="~{fragments/error-components :: error-messages('offices')}"/>-->
+               <fieldset class="govuk-fieldset">
                   <div class="govuk-radios govuk-radios--inline govuk-radios--small"
                        data-module="govuk-radios" id="offices-input-container">
                     <th:block th:each="office,idx : ${userOffices}">
@@ -28,8 +19,9 @@
                         <input class="govuk-radios__input"
                                th:id="${idx.index > 0} ? |offices-input-${idx.index}| : |offices-input|"
                                type="radio"
-                               name="offices"
-                               th:value="${office}">
+                               name="office"
+                               th:value="${office}"
+                               th:checked="${nilSubmissionForm.office == office}">
                         <label class="govuk-label govuk-radios__label"
                                th:for="${idx.index > 0} ? |offices-input-${idx.index}| : |offices-input|"
                                th:text="${office}">
@@ -43,7 +35,7 @@
 
             <div class="govuk-details__text">
                 <label class="govuk-label govuk-label--s"
-                       th:text="${nilSubmissionSelection}"></label>
+                       th:text="${nilSubmissionForm.office}"></label>
             </div>
         </div>
         <button type="submit" class="govuk-button" data-module="govuk-button"
