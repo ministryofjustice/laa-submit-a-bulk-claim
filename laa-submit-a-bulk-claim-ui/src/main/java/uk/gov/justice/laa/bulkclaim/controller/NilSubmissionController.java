@@ -1,12 +1,20 @@
 package uk.gov.justice.laa.bulkclaim.controller;
 
+import static uk.gov.justice.laa.bulkclaim.constants.SessionConstants.NIL_SUBMISSION_SELECTION;
 import static uk.gov.justice.laa.bulkclaim.dto.SubmissionOutcomeFilter.SUCCEEDED;
 
-import io.micrometer.common.util.StringUtils;
 import java.time.LocalDate;
 import java.time.YearMonth;
 import java.time.format.DateTimeFormatter;
-import java.util.*;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
 import java.util.stream.Stream;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -15,7 +23,6 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.core.oidc.user.OidcUser;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -39,9 +46,13 @@ import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionsResultSet;
 @Slf4j
 @Controller
 @RequiredArgsConstructor
-@SessionAttributes("nilSubmissionSelection")
+@SessionAttributes({NIL_SUBMISSION_SELECTION})
 public class NilSubmissionController {
 
+  public static final String OFFICE_SELECTION = "office";
+  public static final String AREA_OF_LAW_SELECTION = "areaOfLaw";
+  public static final String SUBMISSION_PERIOD_SELECTION = "submissionPeriod";
+  public static final String SCHEDULE_REFERENCE_SELECTION = "scheduleReference";
   private final OidcAttributeUtils oidcAttributeUtils;
   private final DataClaimsRestClient claimsRestService;
   private final SubmissionPeriodUtil submissionPeriodUtil;
@@ -66,36 +77,42 @@ public class NilSubmissionController {
       @AuthenticationPrincipal OidcUser oidcUser,
       @RequestParam String offices) {
 
-    model.addAttribute("nilSubmissionSelection", selection);
+    model.addAttribute(NIL_SUBMISSION_SELECTION, selection);
     if (!featureFlagsConfig.getIsNilSubmissionEnabled()) {
       return "error";
     }
     // Store selection
     if (selection != null) {
-      model.addAttribute("nilSubmissionSelection", selection.get("office"));
+      model.addAttribute(NIL_SUBMISSION_SELECTION, offices);
     }
 
     // Provide the Area of Law options for the selected office
+    Set<String> areasOfLaw =
+        new HashSet<>(Set.of(AreaOfLaw.values()).stream().map(Enum::name).toList());
+    model.addAttribute(AREA_OF_LAW_SELECTION, areasOfLaw);
 
-    // Forward to area of law page
     return "pages/nil-submission-areaoflaw";
   }
 
   @PostMapping("/nil-submission-areaoflaw")
-  public String getNilSubmissionAreaOfLaw(Model model, @ModelAttribute("nilSubmissionSelection") Map<String, String> selection, @AuthenticationPrincipal OidcUser oidcUser) {
+  public String getNilSubmissionAreaOfLaw(
+      Model model,
+      @ModelAttribute(NIL_SUBMISSION_SELECTION) Map<String, String> selection,
+      @RequestParam String areaOfLaw,
+      @AuthenticationPrincipal OidcUser oidcUser) {
 
-      model.addAttribute("nilSubmissionSelection", selection);
+    model.addAttribute(NIL_SUBMISSION_SELECTION, selection);
     if (!featureFlagsConfig.getIsNilSubmissionEnabled()) {
       return "error";
     }
 
-//      // Store selection
-      if (selection != null) {
-          model.addAttribute("nilSubmissionSelection", selection.get("areaOfLaw"));
-      }
-//
-//    var userOffices = oidcAttributeUtils.getUserOffices(oidcUser);
-//    model.addAttribute("userOffices", userOffices);
+    //      // Store selection
+    if (selection != null) {
+      model.addAttribute(NIL_SUBMISSION_SELECTION, areaOfLaw);
+    }
+    //
+    //    var userOffices = oidcAttributeUtils.getUserOffices(oidcUser);
+    //    model.addAttribute("userOffices", userOffices);
 
     return "pages/nil-submission-areaoflaw";
   }
@@ -188,13 +205,13 @@ public class NilSubmissionController {
     return getFormatted(lastDateOfMonth);
   }
 
-  @ModelAttribute("nilSubmissionSelection")
-  public Map<String, String > nilSubmissionSelection() {
-      HashMap<String, String> selectionMap = new HashMap<>();
-      selectionMap.put("office", "");
-      selectionMap.put("areaOfLaw", "");
-      selectionMap.put("submissionPeriod", "");
-      selectionMap.put("scheduleReference", "");
+  @ModelAttribute(NIL_SUBMISSION_SELECTION)
+  public Map<String, String> nilSubmissionSelection() {
+    HashMap<String, String> selectionMap = new HashMap<>();
+    selectionMap.put(OFFICE_SELECTION, "");
+    selectionMap.put(AREA_OF_LAW_SELECTION, "");
+    selectionMap.put(SUBMISSION_PERIOD_SELECTION, "");
+    selectionMap.put(SCHEDULE_REFERENCE_SELECTION, "");
     return selectionMap;
   }
 
