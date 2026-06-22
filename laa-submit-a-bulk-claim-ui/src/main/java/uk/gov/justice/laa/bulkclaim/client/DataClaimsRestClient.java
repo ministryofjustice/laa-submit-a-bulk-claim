@@ -5,6 +5,7 @@ import java.util.UUID;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.multipart.MultipartFile;
@@ -13,17 +14,7 @@ import org.springframework.web.service.annotation.GetExchange;
 import org.springframework.web.service.annotation.HttpExchange;
 import org.springframework.web.service.annotation.PostExchange;
 import reactor.core.publisher.Mono;
-import uk.gov.justice.laa.dstew.payments.claimsdata.model.AreaOfLaw;
-import uk.gov.justice.laa.dstew.payments.claimsdata.model.ClaimResponse;
-import uk.gov.justice.laa.dstew.payments.claimsdata.model.ClaimResultSet;
-import uk.gov.justice.laa.dstew.payments.claimsdata.model.CreateBulkSubmission201Response;
-import uk.gov.justice.laa.dstew.payments.claimsdata.model.GetBulkSubmissionStatusById200Response;
-import uk.gov.justice.laa.dstew.payments.claimsdata.model.MatterStartGet;
-import uk.gov.justice.laa.dstew.payments.claimsdata.model.MatterStartResultSet;
-import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionResponse;
-import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionStatus;
-import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionsResultSet;
-import uk.gov.justice.laa.dstew.payments.claimsdata.model.ValidationMessagesResponse;
+import uk.gov.justice.laa.dstew.payments.claimsdata.model.*;
 
 @HttpExchange("/api/v1")
 public interface DataClaimsRestClient {
@@ -107,4 +98,8 @@ public interface DataClaimsRestClient {
 
   @GetExchange(value = "/submissions/{id}/matter-starts")
   Mono<MatterStartResultSet> getAllMatterStartsForSubmission(@PathVariable("id") UUID submissionId);
+
+  @PostExchange("/submissions")
+  ResponseEntity<CreateSubmission201Response> createSubmission(
+      @RequestBody SubmissionPost submission);
 }
