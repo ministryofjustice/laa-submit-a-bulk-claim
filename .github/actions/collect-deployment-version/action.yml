@@ -1,0 +1,62 @@
+name: "Collect deployment version"
+
+inputs:
+  deployment:
+    description: "Kubernetes deployment name"
+    required: true
+  namespace:
+    description: "Kubernetes namespace"
+    required: true
+  friendly_name:
+    description: "Display name for summaries"
+    required: true
+
+outputs:
+  context:
+    description: "Current kubectl context"
+    value: ${{ steps.collect.outputs.context }}
+  image_tag:
+    description: "Deployment image tag"
+    value: ${{ steps.collect.outputs.image_tag }}
+  release_time:
+    description: "Deployment release timestamp"
+    value: ${{ steps.collect.outputs.release_time }}
+  status:
+    description: "Collection status"
+    value: ${{ steps.collect.outputs.status }}
+
+runs:
+  using: "composite"
+  steps:
+    - id: collect
+      shell: bash
+      env:
+        DEPLOYMENT: ${{ inputs.deployment }}
+        NAMESPACE: ${{ inputs.namespace }}
+      run: |
+        set -u
+
+        DEPLOYMENT="${{ env.DEPLOYMENT }}"
+        NAMESPACE="${{ env.NAMESPACE }}"
+        CONTEXT="$(kubectl config current-context 2>/dev/null || true)"
+
+        if ! kubectl get deploy "$DEPLOYMENT" -n "$NAMESPACE" >/dev/null 2>&1; then
+          {
+            echo "context=${CONTEXT:-unknown}"
+            echo "image_tag=unavailable"
+            echo "release_time=unavailable"
+            echo "status=not-found"
+          } >> "$GITHUB_OUTPUT"
+          exit 0
+        fi
+
+        IMAGE="$(kubectl get deploy "$DEPLOYMENT" -n "$NAMESPACE" -o=jsonpath='{.spec.template.spec.containers[0].image}' 2>/dev/null)"
+        RELEASE_TIME="$(kubectl get deploy "$DEPLOYMENT" -n "$NAMESPACE" -o=jsonpath='{.status.conditions[?(@.type=="Progressing")].lastUpdateTime}' 2>/dev/null)"
+        IMAGE_TAG="${IMAGE##*:}"
+
+        {
+          echo "context=${CONTEXT:-unknown}"
+          echo "image_tag=${IMAGE_TAG:-unknown}"
+          echo "release_time=${RELEASE_TIME:-unknown}"
+          echo "status=ok"
+        } >> "$GITHUB_OUTPUT"

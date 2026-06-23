@@ -36,3 +36,4 @@ claims-api-reference/generated
 
 /node_modules
 /package-lock.json
+allure-report/
