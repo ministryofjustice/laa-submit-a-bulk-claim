@@ -216,7 +216,7 @@ to login to the UI with the newly created account.
 
 #### OIDC Mock Server
 
-Included in docker-compose as `laa-mock-oidc-service`. This is exposed on `http://oidc:9000`
+Included in `docker-compose-oidc.yaml` as `laa-mock-oidc-service`. This is exposed on `http://oidc:9000`
 and align issuer/client details with your local Spring profile. This app is a Spring Authentication
 Server which is acting as a quick replacement for SILAS. It's mainly used by the E2E tests, but can
 be useful to run locally sometimes if you have no access to SILAS.
