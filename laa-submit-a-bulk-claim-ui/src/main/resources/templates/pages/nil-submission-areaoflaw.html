@@ -8,7 +8,7 @@
 
         <!--/*@thymesVar id="fileUploadForm" type="uk.gov.justice.laa.bulkclaim.dto.FileUploadForm"*/-->
         <form class="form" th:action="@{/nil-submission-areaoflaw}" method="post">
-            <h1 class="govuk-heading-xl" th:text="#{nilSubmission.areOfLaw.heading}"/>
+            <h1 class="govuk-heading-xl" th:text="#{nilSubmission.areaOfLaw.heading}"/>
             <div class="govuk-grid-column-full">
                 <!--<details class="govuk-details" th:open="${#fields.hasErrors('offices')}">
                   <summary class="govuk-details__summary"
@@ -34,7 +34,9 @@
                                            th:value="${areaOfLaw}"
                                            th:checked="${nilSubmissionForm.areaOfLaw == areaOfLaw}">
                                     <label class="govuk-label govuk-radios__label"
-                                    th:for="${idx.index > 0} ? |areas-of-law-input-${idx.index}| : |areas-of-law-input|"               th:text="${areaOfLaw}">        </label>
+                                           th:for="${idx.index > 0} ? |areas-of-law-input-${idx.index}| : |areas-of-law-input|"
+                                           th:text="${areaOfLaw}">
+                                    </label>
                                 </div>
                             </th:block>
 

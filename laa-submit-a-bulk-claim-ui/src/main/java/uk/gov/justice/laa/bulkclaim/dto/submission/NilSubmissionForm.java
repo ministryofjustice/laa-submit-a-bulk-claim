@@ -12,5 +12,5 @@ public class NilSubmissionForm implements Serializable {
     private String office;
     private String areaOfLaw;
     private String submissionPeriod;
-    private String scheduleNumber;
+    private String scheduleReference;
 }

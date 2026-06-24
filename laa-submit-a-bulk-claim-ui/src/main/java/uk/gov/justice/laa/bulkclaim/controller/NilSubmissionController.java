@@ -117,50 +117,50 @@ public class NilSubmissionController {
 //    return "pages/nil-submission-areaoflaw";
 //  }
 
-  @GetMapping("/nil-submission/{office}")
-  public String getNilSubmissionPeriod(
-      Model model,
-      @PathVariable String office,
-      @RequestParam(value = "areaOfLaw") String areaOfLaw,
-      @AuthenticationPrincipal OidcUser oidcUser) {
-
-    if (!featureFlagsConfig.getIsNilSubmissionEnabled()) {
-      return "error";
-    }
-    var offices = oidcAttributeUtils.getUserOffices(oidcUser);
-    if (!offices.contains(office)) {
-      throw new SubmitBulkClaimException(
-          "User (%s) does not have access to office: %s"
-              .formatted(oidcUser.getPreferredUsername(), office));
-    }
-    SubmissionSearchQuery submissionSearchQuery =
-        SubmissionSearchQuery.builder()
-            .areaOfLaw(areaOfLaw)
-            .offices(List.of(office))
-            .submissionStatuses(SUCCEEDED)
-            .build();
-    SubmissionsResultSet submissionsResults =
-        claimsRestService
-            .search(
-                Collections.singletonList(office),
-                null,
-                getAreaOfLaw(areaOfLaw),
-                List.of(SubmissionStatus.VALIDATION_SUCCEEDED),
-                submissionSearchQuery.getPage(),
-                12,
-                getSubmissionDateFrom(),
-                getSubmissionDateTo(),
-                Objects.toString(
-                    SubmissionSearchSort.builder()
-                        .field(SubmissionSearchSortField.SUBMISSION_PERIOD)
-                        .direction(SortDirection.DESCENDING)))
-            .block();
-
-    model.addAttribute("submissionPeriods", getMonthsWithOutSubmissions(submissionsResults));
-    model.addAttribute("submissionSearchQuery", submissionSearchQuery);
-
-    return "pages/nil-submission-period";
-  }
+//  @GetMapping("/nil-submission/{office}")
+//  public String getNilSubmissionPeriod(
+//      Model model,
+//      @PathVariable String office,
+//      @RequestParam(value = "areaOfLaw") String areaOfLaw,
+//      @AuthenticationPrincipal OidcUser oidcUser) {
+//
+//    if (!featureFlagsConfig.getIsNilSubmissionEnabled()) {
+//      return "error";
+//    }
+//    var offices = oidcAttributeUtils.getUserOffices(oidcUser);
+//    if (!offices.contains(office)) {
+//      throw new SubmitBulkClaimException(
+//          "User (%s) does not have access to office: %s"
+//              .formatted(oidcUser.getPreferredUsername(), office));
+//    }
+//    SubmissionSearchQuery submissionSearchQuery =
+//        SubmissionSearchQuery.builder()
+//            .areaOfLaw(areaOfLaw)
+//            .offices(List.of(office))
+//            .submissionStatuses(SUCCEEDED)
+//            .build();
+//    SubmissionsResultSet submissionsResults =
+//        claimsRestService
+//            .search(
+//                Collections.singletonList(office),
+//                null,
+//                getAreaOfLaw(areaOfLaw),
+//                List.of(SubmissionStatus.VALIDATION_SUCCEEDED),
+//                submissionSearchQuery.getPage(),
+//                12,
+//                getSubmissionDateFrom(),
+//                getSubmissionDateTo(),
+//                Objects.toString(
+//                    SubmissionSearchSort.builder()
+//                        .field(SubmissionSearchSortField.SUBMISSION_PERIOD)
+//                        .direction(SortDirection.DESCENDING)))
+//            .block();
+//
+//    model.addAttribute("submissionPeriods", getMonthsWithOutSubmissions(submissionsResults));
+//    model.addAttribute("submissionSearchQuery", submissionSearchQuery);
+//
+//    return "pages/nil-submission-period";
+//  }
 
   private static AreaOfLaw getAreaOfLaw(String areaOfLaw) {
     try {
