@@ -5,18 +5,12 @@
 <main class="govuk-main-wrapper" id="main-content">
 
     <div class="govuk-grid-row">
-
+        <th:block th:replace="~{fragments/nil-submission-summary :: nil-submission-summary}"/>
         <!--/*@thymesVar id="fileUploadForm" type="uk.gov.justice.laa.bulkclaim.dto.FileUploadForm"*/-->
         <form class="form" th:action="@{/nil-submission-areaoflaw}" method="post">
             <h1 class="govuk-heading-xl" th:text="#{nilSubmission.areaOfLaw.heading}"/>
             <div class="govuk-grid-column-full">
-                <!--<details class="govuk-details" th:open="${#fields.hasErrors('offices')}">
-                  <summary class="govuk-details__summary"
-                           id="choose-office-account-details-summary">
-                    <span class="govuk-details__summary-text"
-                          th:text="#{search.result.header.chooseOffice}">
-                    </span>
-                  </summary> -->
+
                 <div class="govuk-details__text">
                     <!--<div class="govuk-form-group" th:classappend="${#fields.hasErrors('offices')} ? 'govuk-form-group--error' : ''">-->
                     <fieldset class="govuk-fieldset">

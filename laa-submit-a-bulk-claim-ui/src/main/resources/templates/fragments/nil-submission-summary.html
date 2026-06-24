@@ -1,0 +1,37 @@
+
+<th:block th:fragment="nil-submission-summary"
+     th:if="${nilSubmissionForm != null}">
+  <tbody class="govuk-table__body">
+
+  <th:block th:if="${nilSubmissionForm.office != null}">
+    <tr class="govuk-table__row">
+      <td class="govuk-table__cell govuk-!-font-weight-bold" th:text="#{nilSubmission.office.heading}"></td>
+      <td class="govuk-table__cell" colspan="3" th:text="${nilSubmissionForm.office}"/>
+      <td class="govuk-table__cell">
+        <a
+                th:href="@{/nil-submission}"
+                th:data-testid="nil-submission-office"
+                class="govuk-link govuk-link--no-visited-state">
+          <th:block th:text="#{nilSubmission.changeLink}"></th:block>
+          <span class="govuk-visually-hidden" th:text="| #{nilSubmission.office.heading}|"></span>
+        </a>
+      </td>
+    </tr>
+    </th:block>
+  <th:block th:if="${nilSubmissionForm.areaOfLaw != null}">
+    <tr class="govuk-table__row">
+      <td class="govuk-table__cell govuk-!-font-weight-bold" th:text="#{nilSubmission.areaOfLaw.heading}"></td>
+      <td class="govuk-table__cell" colspan="3" th:text="${nilSubmissionForm.areaOfLaw}"/>
+      <td class="govuk-table__cell">
+        <a
+                th:href="@{/nil-submission-office}"
+                th:data-testid="nil-submission-areaoflaw"
+                class="govuk-link govuk-link--no-visited-state">
+          <th:block th:text="#{nilSubmission.changeLink}"></th:block>
+          <span class="govuk-visually-hidden" th:text="| #{nilSubmission.areaOfLaw.heading}|"></span>
+        </a>
+      </td>
+    </tr>
+  </th:block>
+</tbody>
+</th:block>
