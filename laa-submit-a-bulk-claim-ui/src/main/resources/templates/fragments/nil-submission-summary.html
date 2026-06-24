@@ -1,10 +1,8 @@
-
 <th:block th:fragment="nil-submission-summary"
-     th:if="${nilSubmissionForm != null}">
-  <tbody class="govuk-table__body">
-
-  <th:block th:if="${nilSubmissionForm.office != null}">
-    <tr class="govuk-table__row">
+          th:if="${nilSubmissionForm != null}" xmlns:th="http://www.w3.org/1999/xhtml">
+    <table class="govuk-table">
+    <tbody class="govuk-table__body">
+    <tr class="govuk-table__row" th:if="${nilSubmissionForm.office != null}">
       <td class="govuk-table__cell govuk-!-font-weight-bold" th:text="#{nilSubmission.office.heading}"></td>
       <td class="govuk-table__cell" colspan="3" th:text="${nilSubmissionForm.office}"/>
       <td class="govuk-table__cell">
@@ -17,14 +15,12 @@
         </a>
       </td>
     </tr>
-    </th:block>
-  <th:block th:if="${nilSubmissionForm.areaOfLaw != null}">
-    <tr class="govuk-table__row">
+    <tr class="govuk-table__row" th:if="${nilSubmissionForm.areaOfLaw != null}">
       <td class="govuk-table__cell govuk-!-font-weight-bold" th:text="#{nilSubmission.areaOfLaw.heading}"></td>
       <td class="govuk-table__cell" colspan="3" th:text="${nilSubmissionForm.areaOfLaw}"/>
       <td class="govuk-table__cell">
         <a
-                th:href="@{/nil-submission-office}"
+                th:href="@{/nil-submission-areaoflaw}"
                 th:data-testid="nil-submission-areaoflaw"
                 class="govuk-link govuk-link--no-visited-state">
           <th:block th:text="#{nilSubmission.changeLink}"></th:block>
@@ -32,6 +28,32 @@
         </a>
       </td>
     </tr>
-  </th:block>
+      <tr class="govuk-table__row" th:if="${nilSubmissionForm.submissionPeriod != null}">
+          <td class="govuk-table__cell govuk-!-font-weight-bold" th:text="#{nilSubmission.period.heading}"></td>
+          <td class="govuk-table__cell" colspan="3" th:text="${nilSubmissionForm.submissionPeriod}"/>
+          <td class="govuk-table__cell">
+              <a
+                      th:href="@{/nil-submission/{office}(office=${nilSubmissionForm.office})}"
+                      th:data-testid="nil-submission-submission-period"
+                      class="govuk-link govuk-link--no-visited-state">
+                  <th:block th:text="#{nilSubmission.changeLink}"></th:block>
+                  <span class="govuk-visually-hidden" th:text="| #{nilSubmission.period.heading}|"></span>
+              </a>
+          </td>
+      </tr>
+      <tr class="govuk-table__row" th:if="${nilSubmissionForm.scheduleReference != null}">
+          <td class="govuk-table__cell govuk-!-font-weight-bold" th:text="#{nilSubmission.reference.heading}"></td>
+          <td class="govuk-table__cell" colspan="3" th:text="${nilSubmissionForm.scheduleReference}"/>
+          <td class="govuk-table__cell">
+              <a
+                      th:href="@{/nil-submission-reference}"
+                      th:data-testid="nil-submission-schedule-reference"
+                      class="govuk-link govuk-link--no-visited-state">
+                  <th:block th:text="#{nilSubmission.changeLink}"></th:block>
+                  <span class="govuk-visually-hidden" th:text="| #{nilSubmission.reference.heading}|"></span>
+              </a>
+          </td>
+      </tr>
 </tbody>
+    </table>
 </th:block>

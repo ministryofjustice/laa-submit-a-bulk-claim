@@ -5,7 +5,7 @@
 <main class="govuk-main-wrapper" id="main-content">
 
     <div class="govuk-grid-row">
-
+        <th:block th:replace="~{fragments/nil-submission-summary :: nil-submission-summary}"/>
         <!--/*@thymesVar id="fileUploadForm" type="uk.gov.justice.laa.bulkclaim.dto.FileUploadForm"*/-->
         <form class="form" th:object="${nilSubmissionForm}" th:action="@{/nil-submission-reference}" method="post">
             <h1 class="govuk-heading-xl" th:text="#{nilSubmission.reference.heading}"/>
