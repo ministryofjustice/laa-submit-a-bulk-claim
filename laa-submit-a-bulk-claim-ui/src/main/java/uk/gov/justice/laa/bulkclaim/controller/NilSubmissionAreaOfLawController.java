@@ -23,7 +23,8 @@ public class NilSubmissionAreaOfLawController {
   private final FeatureFlagsConfig featureFlagsConfig;
 
   @GetMapping("/nil-submission-areaoflaw")
-  public String getPage(@ModelAttribute("nilSubmissionForm") NilSubmissionForm form, Model model) {
+  public String getAreasOfLaw(
+      @ModelAttribute("nilSubmissionForm") NilSubmissionForm form, Model model) {
 
     if (!featureFlagsConfig.getIsNilSubmissionEnabled()) {
       return "error";
@@ -35,7 +36,7 @@ public class NilSubmissionAreaOfLawController {
   }
 
   @PostMapping("/nil-submission-areaoflaw")
-  public String postPage(
+  public String postAreaOfLaw(
       @ModelAttribute("nilSubmissionForm") NilSubmissionForm form, @RequestParam String areaOfLaw) {
 
     form.setAreaOfLaw(areaOfLaw);

@@ -53,7 +53,7 @@ public class NilSubmissionPeriodController {
   private final DataClaimsRestClient claimsRestService;
 
   @GetMapping("/nil-submission/{office}")
-  public String getPage(
+  public String getSubmissionPeriods(
       @ModelAttribute("nilSubmissionForm") NilSubmissionForm selection,
       @PathVariable String office,
       Model model,
@@ -70,10 +70,6 @@ public class NilSubmissionPeriodController {
           "User (%s) does not have access to office: %s"
               .formatted(oidcUser.getPreferredUsername(), office));
     }
-    //
-    //        if (selection.getAreaOfLaw() == null) {
-    //            return "redirect:/nil-submission-areaoflaw";
-    //        }
 
     SubmissionSearchQuery submissionSearchQuery =
         SubmissionSearchQuery.builder()
@@ -98,16 +94,14 @@ public class NilSubmissionPeriodController {
             .block();
 
     model.addAttribute("submissionPeriods", getMonthsWithOutSubmissions(submissionsResults));
-    // model.addAttribute("submissionSearchQuery", submissionSearchQuery);
     return "pages/nil-submission-period";
   }
 
   @PostMapping("/nil-submission/{office}")
-  public String postPage(
+  public String postSubmissionPeriod(
       @ModelAttribute("nilSubmissionForm") NilSubmissionForm form,
       @RequestParam String submissionPeriod) {
 
-    System.out.println("form: " + form);
     form.setSubmissionPeriod(submissionPeriod);
 
     return "redirect:/nil-submission-reference";
@@ -132,7 +126,6 @@ public class NilSubmissionPeriodController {
           .forEach(
               submission -> {
                 String period = submissionPeriodUtil.getSubmissionPeriod(submission);
-                System.out.println("period: " + period);
                 if (period != null) {
                   nonSubmissionMonths.remove(period);
                 }

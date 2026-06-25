@@ -27,17 +27,12 @@ public class NilSubmissionScheduleReferenceController {
   private final FeatureFlagsConfig featureFlagsConfig;
 
   @GetMapping("/nil-submission-reference")
-  public String getPage(@ModelAttribute("nilSubmissionForm") NilSubmissionForm form, Model model) {
+  public String getReference(
+      @ModelAttribute("nilSubmissionForm") NilSubmissionForm form, Model model) {
 
     if (!featureFlagsConfig.getIsNilSubmissionEnabled()) {
       return "error";
     }
-    //        Set<String> areasOfLaw =
-    //                Arrays.stream(AreaOfLaw.values())
-    //                        .map(Enum::name)
-    //                        .collect(Collectors.toSet());
-    //        model.addAttribute("areasOfLaw", areasOfLaw);
-
     String label =
         switch (form.getAreaOfLaw()) {
           case "CRIME LOWER" -> "Crime schedule reference";
@@ -52,7 +47,7 @@ public class NilSubmissionScheduleReferenceController {
   }
 
   @PostMapping("/nil-submission-reference")
-  public String postPage(
+  public String postReference(
       @ModelAttribute("nilSubmissionForm") NilSubmissionForm form,
       @RequestParam String scheduleReference,
       @AuthenticationPrincipal OidcUser oidcUser) {
@@ -74,7 +69,6 @@ public class NilSubmissionScheduleReferenceController {
             .createdByUserId("Submit-a-bulk-claim")
             .build();
 
-    System.out.println("POST: " + submissionPost);
     claimsRestService.createSubmission(submissionPost);
     return "redirect:/nil-submission-reference";
   }

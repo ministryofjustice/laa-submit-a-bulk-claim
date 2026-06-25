@@ -1,5 +1,6 @@
 package uk.gov.justice.laa.bulkclaim.controller;
 
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.core.oidc.user.OidcUser;
@@ -28,27 +29,31 @@ public class NilSubmissionOfficeController {
   }
 
   @GetMapping("/nil-submission")
-  public String getNilSubmission(@AuthenticationPrincipal OidcUser oidcUser, Model model) {
+  public String getNilSubmission(
+      @ModelAttribute("nilSubmissionForm") NilSubmissionForm form,
+      @AuthenticationPrincipal OidcUser oidcUser,
+      Model model) {
 
     if (!featureFlagsConfig.getIsNilSubmissionEnabled()) {
       return "error";
     }
 
-    model.addAttribute("userOffices", oidcAttributeUtils.getUserOffices(oidcUser));
+    List<String> userOffices = oidcAttributeUtils.getUserOffices(oidcUser);
+    form.setOfficeCount(userOffices.size());
+    System.out.println(form.getOfficeCount());
+    model.addAttribute("userOffices", userOffices);
 
     return "pages/nil-submission-office";
   }
 
   @PostMapping("/nil-submission-office")
-  public String getNilSubmissionOffice(
+  public String postNilSubmissionOffice(
       @ModelAttribute("nilSubmissionForm") NilSubmissionForm form,
       Model model,
       @RequestParam String office) {
 
     form.setOffice(office);
-    //    if (selection != null) {
     model.addAttribute("selectedOffice", office);
-    //    }
 
     return "redirect:/nil-submission-areaoflaw";
   }
