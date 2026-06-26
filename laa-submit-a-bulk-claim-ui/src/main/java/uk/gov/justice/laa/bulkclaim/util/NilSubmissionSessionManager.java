@@ -35,6 +35,31 @@ public class NilSubmissionSessionManager {
     return true;
   }
 
-  public static void nilSubmissionCleanseSession(
-      NilSubmissionForm nilSubmissionForm, NilSubmissionPage page) {}
+  public static NilSubmissionForm nilSubmissionCleanseSession(
+      NilSubmissionForm nilSubmissionForm, NilSubmissionPage page) {
+
+    switch (page) {
+      case OTHER -> nilSubmissionForm = null;
+      case OFFICE -> cleanseOffice(nilSubmissionForm);
+      case AREA_OF_LAW -> cleanseAreaOfLaw(nilSubmissionForm);
+      case SUBMISSION_PERIOD -> cleanseSubmissionPeriod(nilSubmissionForm);
+    }
+
+    return nilSubmissionForm;
+  }
+
+  static void cleanseOffice(NilSubmissionForm form) {
+    form.setAreaOfLaw(null);
+    form.setSubmissionPeriod(null);
+    form.setScheduleReference(null);
+  }
+
+  static void cleanseAreaOfLaw(NilSubmissionForm form) {
+    form.setSubmissionPeriod(null);
+    form.setScheduleReference(null);
+  }
+
+  static void cleanseSubmissionPeriod(NilSubmissionForm form) {
+    form.setScheduleReference(null);
+  }
 }
