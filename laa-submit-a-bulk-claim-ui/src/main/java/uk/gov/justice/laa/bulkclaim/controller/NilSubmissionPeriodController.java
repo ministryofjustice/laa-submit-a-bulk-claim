@@ -75,6 +75,9 @@ public class NilSubmissionPeriodController {
                 "createdOn,desc")
             .block();
 
+    if(submissionsResults == null) {
+        return "pages/nil-submission-no-periods";
+    }
     model.addAttribute("submissionPeriods", getMonthsWithOutSubmissions(submissionsResults));
     return "pages/nil-submission-period";
   }
