@@ -64,7 +64,6 @@ jobs:
       contents: write
       packages: write
     with:
-      publish_package: false
       override_version: ${{ needs.define-preview-version.outputs.preview_version }}
       integration_test_task: integrationTest
       semgrep_check: 'true'

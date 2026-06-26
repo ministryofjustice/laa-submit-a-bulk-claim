@@ -20,7 +20,6 @@ jobs:
       packages: write
     with:
       build_command: 'assemble'
-      publish_package: false
       junit_results: 'false'
       junit_report: 'false'
       checkstyle_report: 'false'
