@@ -2,6 +2,7 @@ package uk.gov.justice.laa.bulkclaim.controller;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
@@ -12,7 +13,6 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import jakarta.servlet.http.HttpSession;
 import java.time.YearMonth;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -27,15 +27,11 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.ui.Model;
-import org.springframework.validation.BindingResult;
 import reactor.core.publisher.Mono;
 import uk.gov.justice.laa.bulkclaim.client.DataClaimsRestClient;
 import uk.gov.justice.laa.bulkclaim.config.FeatureFlagsConfig;
 import uk.gov.justice.laa.bulkclaim.dto.submission.NilSubmissionForm;
-import uk.gov.justice.laa.bulkclaim.util.PaginationLinksBuilder;
-import uk.gov.justice.laa.bulkclaim.util.PaginationUtil;
 import uk.gov.justice.laa.bulkclaim.util.SubmissionPeriodUtil;
-import uk.gov.justice.laa.bulkclaim.validation.SubmissionSearchValidator;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.AreaOfLaw;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionBase;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionsResultSet;
@@ -44,12 +40,8 @@ import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionsResultSet;
 class NilSubmissionPeriodControllerTest {
 
   @Mock private Model model;
-  @Mock private BindingResult bindingResult;
-  @Mock private HttpSession session;
-  @Mock private SubmissionSearchValidator submissionSearchValidator;
+
   @Mock private DataClaimsRestClient claimsRestService;
-  @Mock private PaginationUtil paginationUtil;
-  @Mock private PaginationLinksBuilder paginationLinksBuilder;
   @Mock private SubmissionPeriodUtil submissionPeriodUtil;
   @Mock private FeatureFlagsConfig featureFlagsConfig;
 
@@ -61,14 +53,16 @@ class NilSubmissionPeriodControllerTest {
   }
 
   @Test
-  void whenFeatureFlagDisabled_returnsErrorView() {
+  void whenFeatureFlagDisabled_all_mappings_returnsErrorView() {
     NilSubmissionForm form = new NilSubmissionForm();
 
     doReturn(false).when(featureFlagsConfig).getIsNilSubmissionEnabled();
-    String view = nilSubmissionPeriodController.getSubmissionPeriods(form, model);
 
-    assertEquals("error", view);
-    verify(model, times(0)).addAttribute("userOffices");
+    assertEquals("error", nilSubmissionPeriodController.getSubmissionPeriods(form, model));
+    verify(model, times(0)).addAttribute(eq("submissionPeriods"), any(Map.class));
+
+    assertEquals("error", nilSubmissionPeriodController.postSubmissionPeriod(form, "JAN-2024"));
+    assertNull(form.getSubmissionPeriod());
   }
 
   @Test
@@ -88,6 +82,27 @@ class NilSubmissionPeriodControllerTest {
     assertEquals("pages/nil-submission-period", view);
     verify(model, times(1)).addAttribute(eq("submissionPeriods"), any(Map.class));
   }
+
+  @Test
+  void postNilSubmission_SuccessView() {
+    NilSubmissionForm form = new NilSubmissionForm();
+    form.setOffice("officeA");
+    form.setAreaOfLaw(AreaOfLaw.MEDIATION.getValue());
+    doReturn(true).when(featureFlagsConfig).getIsNilSubmissionEnabled();
+
+    final SubmissionsResultSet response = getSubmissionsEmptyPeriodResultSet();
+
+    when(claimsRestService.search(
+            anyList(), any(), any(), any(), anyInt(), anyInt(), any(), any(), any()))
+        .thenReturn(Mono.just(response));
+
+    String view = nilSubmissionPeriodController.postSubmissionPeriod(form, "JAN-2024");
+    assertEquals("redirect:/nil-submission-reference", view);
+    assertEquals("JAN-2024", form.getSubmissionPeriod());
+  }
+
+  @Test
+  void postNilSubmission_InvalidPeriod_ReturnsErrorView() {}
 
   private static @NonNull SubmissionsResultSet getSubmissionsResultSet() {
     SubmissionBase s1 = new SubmissionBase();
