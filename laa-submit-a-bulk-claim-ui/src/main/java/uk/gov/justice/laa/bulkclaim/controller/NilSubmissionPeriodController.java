@@ -1,10 +1,6 @@
 package uk.gov.justice.laa.bulkclaim.controller;
 
 import static uk.gov.justice.laa.bulkclaim.constants.SessionConstants.NIL_SUBMISSION_SELECTION;
-import static uk.gov.justice.laa.bulkclaim.controller.NilSubmissionController.AREA_OF_LAW_SELECTION;
-import static uk.gov.justice.laa.bulkclaim.controller.NilSubmissionController.OFFICE_SELECTION;
-import static uk.gov.justice.laa.bulkclaim.controller.NilSubmissionController.SCHEDULE_REFERENCE_SELECTION;
-import static uk.gov.justice.laa.bulkclaim.controller.NilSubmissionController.SUBMISSION_PERIOD_SELECTION;
 import static uk.gov.justice.laa.bulkclaim.dto.SubmissionOutcomeFilter.SUCCEEDED;
 
 import java.time.LocalDate;
@@ -40,11 +36,16 @@ import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionsResultSet;
 @SessionAttributes("nilSubmissionForm")
 public class NilSubmissionPeriodController {
 
+  private static final String OFFICE_SELECTION = "office";
+  private static final String AREA_OF_LAW_SELECTION = "areaOfLaw";
+  private static final String SUBMISSION_PERIOD_SELECTION = "submissionPeriod";
+  private static final String SCHEDULE_REFERENCE_SELECTION = "scheduleReference";
+
   private final SubmissionPeriodUtil submissionPeriodUtil;
   private final FeatureFlagsConfig featureFlagsConfig;
   private final DataClaimsRestClient claimsRestService;
 
-  @GetMapping("/nil-submission")
+  @GetMapping("/nil-submission-period")
   public String getSubmissionPeriods(
       @ModelAttribute("nilSubmissionForm") NilSubmissionForm selection, Model model) {
 
@@ -78,7 +79,7 @@ public class NilSubmissionPeriodController {
     return "pages/nil-submission-period";
   }
 
-  @PostMapping("/nil-submission/{office}")
+  @PostMapping("/nil-submission-period")
   public String postSubmissionPeriod(
       @ModelAttribute("nilSubmissionForm") NilSubmissionForm form,
       @RequestParam String submissionPeriod) {
