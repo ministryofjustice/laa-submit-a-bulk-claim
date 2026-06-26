@@ -17,14 +17,29 @@ jobs:
       preview_version: ${{ steps.get-preview-version.outputs.preview_version }}
     steps:
       - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
+        with:
+          fetch-depth: 0
+          fetch-tags: true
+      - name: Compute version
+        id: compute
+        uses: ministryofjustice/laa-ccms-common-workflows/.github/actions/compute-version@4daa796eff475c7a107e17daf4e4882b8a1b949b # v2.3.0
       - name: Get preview version
         id: get-preview-version
+        shell: bash
+        env:
+          BUMP_TYPE: ${{ steps.compute.outputs.bump_type }}
+          MAJOR:     ${{ steps.compute.outputs.major }}
+          MINOR:     ${{ steps.compute.outputs.minor }}
+          PATCH:     ${{ steps.compute.outputs.patch }}
         run: |
           set -euo pipefail
+          BUMP="${BUMP_TYPE:-none}"
+          M="${MAJOR:-0}"; N="${MINOR:-0}"; P="${PATCH:-0}"
+          if [[ "$BUMP" == "none" ]]; then P=$((P+1)); fi
           commit_hash=$(git rev-parse --short HEAD)
-          version=$(awk -F= '/^version=/{print $2}' gradle.properties)
-          echo "preview_version=${version}-${commit_hash}" >> "$GITHUB_OUTPUT"
-          echo "Preview version: submit-a-bulk-claim-${version}-${commit_hash}"
+          version="${M}.${N}.${P}-SNAPSHOT-${commit_hash}"
+          echo "preview_version=${version}" >> "$GITHUB_OUTPUT"
+          echo "Preview version: submit-a-bulk-claim-${version}"
 
   test-smoke:
     name: Test @smoke
@@ -44,7 +59,7 @@ jobs:
 
   build-and-test:
     needs: [ define-preview-version ]
-    uses: ministryofjustice/laa-ccms-common-workflows/.github/workflows/gradle-build-and-publish.yml@v2
+    uses: ministryofjustice/laa-ccms-common-workflows/.github/workflows/gradle-build-and-publish.yml@4daa796eff475c7a107e17daf4e4882b8a1b949b # v2.3.0
     permissions:
       contents: write
       packages: write
@@ -59,7 +74,7 @@ jobs:
 
   pact-test:
     needs: [ define-preview-version ]
-    uses: ministryofjustice/laa-ccms-common-workflows/.github/workflows/pact-and-publish.yml@v2
+    uses: ministryofjustice/laa-ccms-common-workflows/.github/workflows/pact-and-publish.yml@4daa796eff475c7a107e17daf4e4882b8a1b949b # v2.3.0
     permissions:
       contents: write
       packages: write
@@ -138,7 +153,7 @@ jobs:
 
   ecr-publish-image:
     needs: [ build-and-test ]
-    uses: ministryofjustice/laa-ccms-common-workflows/.github/workflows/ecr-publish-image.yml@v2
+    uses: ministryofjustice/laa-ccms-common-workflows/.github/workflows/ecr-publish-image.yml@4daa796eff475c7a107e17daf4e4882b8a1b949b # v2.3.0
     permissions:
       contents: read
       id-token: write
