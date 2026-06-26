@@ -55,6 +55,6 @@ public class NilSubmissionsSummaryController {
 
     System.out.println("form: " + submissionPost);
     claimsRestService.createSubmission(submissionPost);
-    return "redirect:/nil-submission-summary-details";
+    return "redirect:/view-submission-detail-accepted";
   }
 }

@@ -35,9 +35,9 @@ public class NilSubmissionScheduleReferenceController {
 
     String label =
         switch (form.getAreaOfLaw()) {
-          case "CRIME LOWER" -> "Crime schedule reference";
-          case "MEDIATION" -> "Mediation schedule reference";
-          case "LEGAL HELP" -> "Legal help schedule reference";
+          case "CRIME LOWER" -> "Crime schedule number";
+          case "MEDIATION" -> "Mediation submission reference";
+          case "LEGAL HELP" -> "Civil submission reference";
           default -> "Reference";
         };
 
