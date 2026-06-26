@@ -13,6 +13,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.SessionAttributes;
 import uk.gov.justice.laa.bulkclaim.config.FeatureFlagsConfig;
 import uk.gov.justice.laa.bulkclaim.dto.submission.NilSubmissionForm;
+import uk.gov.justice.laa.bulkclaim.util.NilSubmissionPage;
+import uk.gov.justice.laa.bulkclaim.util.NilSubmissionSessionManager;
 import uk.gov.justice.laa.bulkclaim.util.OidcAttributeUtils;
 
 @Controller
@@ -37,6 +39,8 @@ public class NilSubmissionOfficeController {
     if (!featureFlagsConfig.getIsNilSubmissionEnabled()) {
       return "error";
     }
+
+    NilSubmissionSessionManager.nilSubmissionCleanseSession(form, NilSubmissionPage.OFFICE);
 
     List<String> userOffices = oidcAttributeUtils.getUserOffices(oidcUser);
     form.setOfficeCount(userOffices.size());

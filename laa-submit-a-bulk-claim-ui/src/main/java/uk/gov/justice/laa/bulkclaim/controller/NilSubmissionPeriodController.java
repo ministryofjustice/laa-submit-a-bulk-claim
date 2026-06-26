@@ -26,6 +26,8 @@ import uk.gov.justice.laa.bulkclaim.config.FeatureFlagsConfig;
 import uk.gov.justice.laa.bulkclaim.dto.submission.NilSubmissionForm;
 import uk.gov.justice.laa.bulkclaim.dto.submission.search.SubmissionSearchQuery;
 import uk.gov.justice.laa.bulkclaim.util.DateWrapperUtil;
+import uk.gov.justice.laa.bulkclaim.util.NilSubmissionPage;
+import uk.gov.justice.laa.bulkclaim.util.NilSubmissionSessionManager;
 import uk.gov.justice.laa.bulkclaim.util.SubmissionPeriodUtil;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.AreaOfLaw;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionStatus;
@@ -47,11 +49,16 @@ public class NilSubmissionPeriodController {
 
   @GetMapping("/nil-submission-period")
   public String getSubmissionPeriods(
-      @ModelAttribute("nilSubmissionForm") NilSubmissionForm selection, Model model) {
+      @ModelAttribute("nilSubmissionForm") NilSubmissionForm selection,
+      Model model,
+      NilSubmissionForm form) {
 
     if (!featureFlagsConfig.getIsNilSubmissionEnabled()) {
       return "error";
     }
+
+    NilSubmissionSessionManager.nilSubmissionCleanseSession(
+        form, NilSubmissionPage.SUBMISSION_PERIOD);
 
     SubmissionSearchQuery submissionSearchQuery =
         SubmissionSearchQuery.builder()

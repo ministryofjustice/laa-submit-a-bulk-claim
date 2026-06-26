@@ -13,6 +13,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.SessionAttributes;
 import uk.gov.justice.laa.bulkclaim.config.FeatureFlagsConfig;
 import uk.gov.justice.laa.bulkclaim.dto.submission.NilSubmissionForm;
+import uk.gov.justice.laa.bulkclaim.util.NilSubmissionPage;
+import uk.gov.justice.laa.bulkclaim.util.NilSubmissionSessionManager;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.AreaOfLaw;
 
 @Controller
@@ -29,6 +31,9 @@ public class NilSubmissionAreaOfLawController {
     if (!featureFlagsConfig.getIsNilSubmissionEnabled()) {
       return "error";
     }
+
+    NilSubmissionSessionManager.nilSubmissionCleanseSession(form, NilSubmissionPage.AREA_OF_LAW);
+
     Set<String> areasOfLaw =
         Arrays.stream(AreaOfLaw.values()).map(Enum::name).collect(Collectors.toSet());
     model.addAttribute("areasOfLaw", areasOfLaw);
