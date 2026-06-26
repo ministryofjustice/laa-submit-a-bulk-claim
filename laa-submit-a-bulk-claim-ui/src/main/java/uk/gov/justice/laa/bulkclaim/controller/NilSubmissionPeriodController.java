@@ -12,22 +12,16 @@ import java.time.YearMonth;
 import java.time.format.DateTimeFormatter;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 import lombok.RequiredArgsConstructor;
 import org.jspecify.annotations.NonNull;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.oauth2.core.oidc.user.OidcUser;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.SessionAttributes;
@@ -35,8 +29,7 @@ import uk.gov.justice.laa.bulkclaim.client.DataClaimsRestClient;
 import uk.gov.justice.laa.bulkclaim.config.FeatureFlagsConfig;
 import uk.gov.justice.laa.bulkclaim.dto.submission.NilSubmissionForm;
 import uk.gov.justice.laa.bulkclaim.dto.submission.search.SubmissionSearchQuery;
-import uk.gov.justice.laa.bulkclaim.exception.SubmitBulkClaimException;
-import uk.gov.justice.laa.bulkclaim.util.OidcAttributeUtils;
+import uk.gov.justice.laa.bulkclaim.util.DateWrapperUtil;
 import uk.gov.justice.laa.bulkclaim.util.SubmissionPeriodUtil;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.AreaOfLaw;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionStatus;
@@ -47,43 +40,31 @@ import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionsResultSet;
 @SessionAttributes("nilSubmissionForm")
 public class NilSubmissionPeriodController {
 
-  private final OidcAttributeUtils oidcAttributeUtils;
   private final SubmissionPeriodUtil submissionPeriodUtil;
   private final FeatureFlagsConfig featureFlagsConfig;
   private final DataClaimsRestClient claimsRestService;
 
-  @GetMapping("/nil-submission/{office}")
+  @GetMapping("/nil-submission")
   public String getSubmissionPeriods(
-      @ModelAttribute("nilSubmissionForm") NilSubmissionForm selection,
-      @PathVariable String office,
-      Model model,
-      @AuthenticationPrincipal OidcUser oidcUser) {
+      @ModelAttribute("nilSubmissionForm") NilSubmissionForm selection, Model model) {
 
-    String areaOfLaw = selection.getAreaOfLaw();
     if (!featureFlagsConfig.getIsNilSubmissionEnabled()) {
       return "error";
-    }
-    var offices = oidcAttributeUtils.getUserOffices(oidcUser);
-
-    if (!offices.contains(office)) {
-      throw new SubmitBulkClaimException(
-          "User (%s) does not have access to office: %s"
-              .formatted(oidcUser.getPreferredUsername(), office));
     }
 
     SubmissionSearchQuery submissionSearchQuery =
         SubmissionSearchQuery.builder()
-            .areaOfLaw(areaOfLaw)
-            .offices(List.of(office))
+            .areaOfLaw(selection.getAreaOfLaw())
+            .offices(List.of(selection.getOffice()))
             .submissionStatuses(SUCCEEDED)
             .build();
 
     SubmissionsResultSet submissionsResults =
         claimsRestService
             .search(
-                Collections.singletonList(office),
+                Collections.singletonList(selection.getOffice()),
                 null,
-                getAreaOfLaw(areaOfLaw),
+                getAreaOfLaw(selection.getAreaOfLaw()),
                 List.of(SubmissionStatus.VALIDATION_SUCCEEDED),
                 submissionSearchQuery.getPage(),
                 12,
@@ -117,8 +98,8 @@ public class NilSubmissionPeriodController {
     }
   }
 
-  HashMap<String, String> getMonthsWithOutSubmissions(SubmissionsResultSet submissionsResults) {
-    HashMap<String, String> nonSubmissionMonths = getLastTwelveMonths();
+  Map<String, String> getMonthsWithOutSubmissions(SubmissionsResultSet submissionsResults) {
+    Map<String, String> nonSubmissionMonths = getLastTwelveMonths();
 
     if (submissionsResults != null && submissionsResults.getContent() != null) {
       submissionsResults
@@ -159,16 +140,11 @@ public class NilSubmissionPeriodController {
     return selectionMap;
   }
 
-  static HashMap<String, String> getLastTwelveMonths() {
-    DateTimeFormatter formatterView = DateTimeFormatter.ofPattern("MMMM uuuu", Locale.ENGLISH);
+  static Map<String, String> getLastTwelveMonths() {
     DateTimeFormatter formatterKey = DateTimeFormatter.ofPattern("MMM-yyyy", Locale.ENGLISH);
-    HashMap<String, String> months =
-        new LinkedHashMap<>(
-            Stream.iterate(YearMonth.now(), m -> m.minusMonths(1))
-                .limit(12)
-                .collect(
-                    Collectors.toMap(m -> m.format(formatterKey), m -> m.format(formatterView))));
-    ;
-    return months;
+    SubmissionPeriodUtil submissionPeriodUtil =
+        new SubmissionPeriodUtil(
+            new DateWrapperUtil(), YearMonth.now().minusMonths(12).format(formatterKey));
+    return submissionPeriodUtil.getAllPossibleSubmissionPeriods();
   }
 }
