@@ -53,7 +53,7 @@ public class NilSubmissionsSummaryController {
             .createdByUserId("Submit-a-bulk-claim")
             .build();
 
-      System.out.println("form: " + submissionPost);
+    System.out.println("form: " + submissionPost);
     claimsRestService.createSubmission(submissionPost);
     return "redirect:/nil-submission-summary-details";
   }
