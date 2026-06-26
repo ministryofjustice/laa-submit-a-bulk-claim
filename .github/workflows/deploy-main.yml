@@ -27,7 +27,7 @@ jobs:
       jacoco_coverage_report: 'false'
       semgrep_check: 'true'
       java_version: 25
-      release_type: ${{ inputs.release_type != 'auto' && inputs.release_type || '' }}
+      release_type: ${{ github.event.inputs.release_type || '' }}
     secrets:
       gh_token: ${{ secrets.GITHUB_TOKEN }}
 
