@@ -6,7 +6,7 @@
 
     <div class="govuk-grid-row">
         <th:block th:replace="~{fragments/nil-submission-summary :: nil-submission-summary}"/>
-        <form  class="form" th:object="${nilSubmissionForm}" th:action="@{/nil-submission/{office}(office=${nilSubmissionForm.office})}" method="post">
+        <form  class="form" th:object="${nilSubmissionForm}" th:action="@{/nil-submission-period}" method="post">
             <h1 class="govuk-heading-xl" th:text="#{nilSubmission.period.heading}"/>
             <div class="govuk-grid-column-full">
                 <div class="govuk-details__text">

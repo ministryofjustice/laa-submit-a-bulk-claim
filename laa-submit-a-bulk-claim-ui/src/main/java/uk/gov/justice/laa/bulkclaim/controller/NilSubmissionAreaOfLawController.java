@@ -41,6 +41,6 @@ public class NilSubmissionAreaOfLawController {
 
     form.setAreaOfLaw(areaOfLaw);
 
-    return "redirect:/nil-submission/" + form.getOffice();
+    return "redirect:/nil-submission-period";
   }
 }

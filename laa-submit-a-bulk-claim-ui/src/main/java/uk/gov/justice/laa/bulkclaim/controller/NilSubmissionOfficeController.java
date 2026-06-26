@@ -40,7 +40,6 @@ public class NilSubmissionOfficeController {
 
     List<String> userOffices = oidcAttributeUtils.getUserOffices(oidcUser);
     form.setOfficeCount(userOffices.size());
-    System.out.println(form.getOfficeCount());
     model.addAttribute("userOffices", userOffices);
 
     return "pages/nil-submission-office";

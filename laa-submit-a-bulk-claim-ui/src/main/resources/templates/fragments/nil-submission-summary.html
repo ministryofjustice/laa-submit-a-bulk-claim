@@ -33,7 +33,7 @@
           <td class="govuk-table__cell" colspan="3" th:text="${nilSubmissionForm.submissionPeriod}"/>
           <td class="govuk-table__cell">
               <a
-                      th:href="@{/nil-submission/{office}(office=${nilSubmissionForm.office})}"
+                      th:href="@{/nil-submission-period}"
                       th:data-testid="nil-submission-submission-period"
                       class="govuk-link govuk-link--no-visited-state">
                   <th:block th:if="${nilSubmissionForm.officeCount > 1}" th:text="#{nilSubmission.changeLink}"></th:block>
