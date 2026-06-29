@@ -11,8 +11,6 @@ import org.springframework.web.bind.annotation.SessionAttributes;
 import uk.gov.justice.laa.bulkclaim.client.DataClaimsRestClient;
 import uk.gov.justice.laa.bulkclaim.config.FeatureFlagsConfig;
 import uk.gov.justice.laa.bulkclaim.dto.submission.NilSubmissionForm;
-import uk.gov.justice.laa.bulkclaim.util.NilSubmissionPage;
-import uk.gov.justice.laa.bulkclaim.util.NilSubmissionSessionManager;
 
 @Controller
 @RequiredArgsConstructor
@@ -29,9 +27,6 @@ public class NilSubmissionScheduleReferenceController {
     if (!featureFlagsConfig.getIsNilSubmissionEnabled()) {
       return "error";
     }
-
-    NilSubmissionSessionManager.nilSubmissionCleanseSession(
-        form, NilSubmissionPage.SCHEDULE_REFERENCE);
 
     String label =
         switch (form.getAreaOfLaw()) {

@@ -49,8 +49,7 @@ public class NilSubmissionPeriodController {
 
   @GetMapping("/nil-submission-period")
   public String getSubmissionPeriods(
-      @ModelAttribute("nilSubmissionForm") NilSubmissionForm selection,
-      Model model) {
+      @ModelAttribute("nilSubmissionForm") NilSubmissionForm selection, Model model) {
 
     if (!featureFlagsConfig.getIsNilSubmissionEnabled()) {
       return "error";
@@ -84,7 +83,7 @@ public class NilSubmissionPeriodController {
     if (submissionsResults == null) {
       return "pages/nil-submission-no-periods";
     }
-      System.out.println("PERIODS: " + getMonthsWithOutSubmissions(submissionsResults));
+    System.out.println("PERIODS: " + getMonthsWithOutSubmissions(submissionsResults));
     model.addAttribute("submissionPeriods", getMonthsWithOutSubmissions(submissionsResults));
     return "pages/nil-submission-period";
   }

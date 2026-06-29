@@ -30,7 +30,7 @@ public class NilSubmissionOfficeController {
     return new NilSubmissionForm();
   }
 
-  @GetMapping("/nil-submission")
+  @GetMapping("/nil-submission-office")
   public String getNilSubmission(
       @ModelAttribute("nilSubmissionForm") NilSubmissionForm form,
       @AuthenticationPrincipal OidcUser oidcUser,
