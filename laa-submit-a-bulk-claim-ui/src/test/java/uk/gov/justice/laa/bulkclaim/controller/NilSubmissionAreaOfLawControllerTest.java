@@ -51,6 +51,7 @@ class NilSubmissionAreaOfLawControllerTest {
 
   @Test
   void postAreaOfLaw_setsFormAndRedirects() {
+    when(featureFlagsConfig.getIsNilSubmissionEnabled()).thenReturn(true);
     NilSubmissionForm form = new NilSubmissionForm();
     form.setOffice("office1");
 
@@ -72,5 +73,22 @@ class NilSubmissionAreaOfLawControllerTest {
     String view_on_invalid = controller.postAreaOfLaw(form, "NOT_A_AREA_OF_LAW");
     assertEquals("error", view_on_invalid);
     assertNull(form.getAreaOfLaw());
+  }
+
+  @Test
+  void getAreaOfLaw_session_management_cleansing() {
+    when(featureFlagsConfig.getIsNilSubmissionEnabled()).thenReturn(true);
+
+    NilSubmissionForm form = new NilSubmissionForm();
+    form.setOffice("office1");
+    form.setAreaOfLaw("areaOfLaw1");
+    form.setSubmissionPeriod("submissionPeriod1");
+    form.setScheduleReference("scheduleReference1");
+
+    controller.getAreasOfLaw(form, model);
+    assertNotNull(form.getOffice());
+    assertNotNull(form.getAreaOfLaw());
+    assertNull(form.getSubmissionPeriod());
+    assertNull(form.getScheduleReference());
   }
 }

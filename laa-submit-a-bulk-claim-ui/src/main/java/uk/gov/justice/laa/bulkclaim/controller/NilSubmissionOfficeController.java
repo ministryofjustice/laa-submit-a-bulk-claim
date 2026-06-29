@@ -31,7 +31,7 @@ public class NilSubmissionOfficeController {
   }
 
   @GetMapping("/nil-submission-office")
-  public String getNilSubmission(
+  public String getNilSubmissionOffice(
       @ModelAttribute("nilSubmissionForm") NilSubmissionForm form,
       @AuthenticationPrincipal OidcUser oidcUser,
       Model model) {
@@ -54,6 +54,9 @@ public class NilSubmissionOfficeController {
       @ModelAttribute("nilSubmissionForm") NilSubmissionForm form,
       Model model,
       @RequestParam String office) {
+    if (!featureFlagsConfig.getIsNilSubmissionEnabled()) {
+      return "error";
+    }
 
     form.setOffice(office);
     model.addAttribute("selectedOffice", office);

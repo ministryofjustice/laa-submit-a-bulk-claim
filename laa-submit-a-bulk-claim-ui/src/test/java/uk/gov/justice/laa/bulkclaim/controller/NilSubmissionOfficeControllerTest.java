@@ -1,6 +1,7 @@
 package uk.gov.justice.laa.bulkclaim.controller;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
@@ -41,7 +42,7 @@ class NilSubmissionOfficeControllerTest {
 
     NilSubmissionForm form = new NilSubmissionForm();
 
-    assertEquals("error", controller.getNilSubmission(form, getOidcUser(), model));
+    assertEquals("error", controller.getNilSubmissionOffice(form, getOidcUser(), model));
     verify(model, never()).addAttribute(eq("userOffices"), any());
 
     assertEquals("error", controller.postNilSubmissionOffice(form, model, "OfficeA"));
@@ -49,20 +50,20 @@ class NilSubmissionOfficeControllerTest {
   }
 
   @Test
-  void whenFeatureFlagEnabled_getAreasOfLaw_addsAreasAndReturnsView() {
+  void whenFeatureFlagEnabled_getOffice_addsAreasAndReturnsView() {
     when(featureFlagsConfig.getIsNilSubmissionEnabled()).thenReturn(true);
     List<String> offices = List.of("officeA", "officeB");
     doReturn(offices).when(oidcAttributeUtils).getUserOffices(any(OidcUser.class));
 
     NilSubmissionForm form = new NilSubmissionForm();
-    String view = controller.getNilSubmission(form, getOidcUser(), model);
+    String view = controller.getNilSubmissionOffice(form, getOidcUser(), model);
 
     assertEquals("pages/nil-submission-office", view);
     verify(model).addAttribute("userOffices", offices);
   }
 
   @Test
-  void postAreaOfLaw_setsFormAndRedirects() {
+  void postOffice_setsFormAndRedirects() {
     when(featureFlagsConfig.getIsNilSubmissionEnabled()).thenReturn(true);
     NilSubmissionForm form = new NilSubmissionForm();
     form.setOffice("office1");
@@ -74,7 +75,7 @@ class NilSubmissionOfficeControllerTest {
   }
 
   @Test
-  void postAreaOfLaw_whenAreaOfLawIsInvalid_returnsErrorView() {
+  void postOffice_whenOfficeIsInvalid_returnsErrorView() {
     NilSubmissionForm form = new NilSubmissionForm();
 
     String view_on_null = controller.postNilSubmissionOffice(form, model, null);
@@ -84,5 +85,22 @@ class NilSubmissionOfficeControllerTest {
     String view_on_invalid = controller.postNilSubmissionOffice(form, model, "NOT_A_OFFICE");
     assertEquals("error", view_on_invalid);
     assertNull(form.getOffice());
+  }
+
+  @Test
+  void getOffice_session_management_cleansing() {
+    when(featureFlagsConfig.getIsNilSubmissionEnabled()).thenReturn(true);
+
+    NilSubmissionForm form = new NilSubmissionForm();
+    form.setOffice("office1");
+    form.setAreaOfLaw("areaOfLaw1");
+    form.setSubmissionPeriod("submissionPeriod1");
+    form.setScheduleReference("scheduleReference1");
+
+    controller.getNilSubmissionOffice(form, getOidcUser(), model);
+    assertFalse(form.getOffice().isEmpty());
+    assertNull(form.getAreaOfLaw());
+    assertNull(form.getSubmissionPeriod());
+    assertNull(form.getScheduleReference());
   }
 }

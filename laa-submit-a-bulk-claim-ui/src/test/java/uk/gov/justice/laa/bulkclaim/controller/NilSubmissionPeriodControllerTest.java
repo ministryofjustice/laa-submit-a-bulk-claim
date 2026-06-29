@@ -2,6 +2,7 @@ package uk.gov.justice.laa.bulkclaim.controller;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
@@ -161,5 +162,26 @@ class NilSubmissionPeriodControllerTest {
         nilSubmissionPeriodController.getMonthsWithOutSubmissions(getSubmissionsResultSet());
     assertEquals(11, months.size());
     assertFalse(months.containsKey(ym));
+  }
+
+  @Test
+  void getAreaOfLaw_session_management_cleansing() {
+    when(featureFlagsConfig.getIsNilSubmissionEnabled()).thenReturn(true);
+
+    NilSubmissionForm form = new NilSubmissionForm();
+    form.setOffice("office1");
+    form.setAreaOfLaw("areaOfLaw1");
+    form.setSubmissionPeriod("submissionPeriod1");
+    form.setScheduleReference("scheduleReference1");
+
+    when(claimsRestService.search(
+            anyList(), any(), any(), any(), anyInt(), anyInt(), any(), any(), any()))
+        .thenReturn(Mono.just(getSubmissionsEmptyPeriodResultSet()));
+
+    nilSubmissionPeriodController.getSubmissionPeriods(form, model);
+    assertNotNull(form.getOffice());
+    assertNotNull(form.getAreaOfLaw());
+    assertNotNull(form.getSubmissionPeriod());
+    assertNull(form.getScheduleReference());
   }
 }

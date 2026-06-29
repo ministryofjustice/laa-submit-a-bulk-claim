@@ -93,6 +93,9 @@ public class NilSubmissionPeriodController {
       @ModelAttribute("nilSubmissionForm") NilSubmissionForm form,
       @RequestParam String submissionPeriod) {
 
+    if (!featureFlagsConfig.getIsNilSubmissionEnabled()) {
+      return "error";
+    }
     form.setSubmissionPeriod(submissionPeriod);
 
     return "redirect:/nil-submission-reference";

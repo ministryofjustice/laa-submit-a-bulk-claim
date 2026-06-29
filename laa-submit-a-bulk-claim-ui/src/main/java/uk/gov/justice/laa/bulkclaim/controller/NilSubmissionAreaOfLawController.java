@@ -45,6 +45,9 @@ public class NilSubmissionAreaOfLawController {
   public String postAreaOfLaw(
       @ModelAttribute("nilSubmissionForm") NilSubmissionForm form, @RequestParam String areaOfLaw) {
 
+    if (!featureFlagsConfig.getIsNilSubmissionEnabled()) {
+      return "error";
+    }
     form.setAreaOfLaw(areaOfLaw);
 
     return "redirect:/nil-submission-period";

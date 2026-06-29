@@ -47,14 +47,14 @@ public class NilSubmissionsSummaryController {
             .legalHelpSubmissionReference(form.getScheduleReference())
             .isNilSubmission(true)
             .submissionId(Generators.timeBasedEpochGenerator().generate())
-            // format of period is wrong
-            .submissionPeriod("DEC-2025")
+            .submissionPeriod(form.getSubmissionPeriod())
             .providerUserId(oidcUser.getPreferredUsername())
             .createdByUserId("Submit-a-bulk-claim")
             .build();
 
     System.out.println("form: " + submissionPost);
     claimsRestService.createSubmission(submissionPost);
+
     return "redirect:/view-submission-detail-accepted";
   }
 }

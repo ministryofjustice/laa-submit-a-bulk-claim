@@ -45,7 +45,9 @@ public class NilSubmissionScheduleReferenceController {
   public String postReference(
       @ModelAttribute("nilSubmissionForm") NilSubmissionForm form,
       @RequestParam String scheduleReference) {
-
+    if (!featureFlagsConfig.getIsNilSubmissionEnabled()) {
+      return "error";
+    }
     form.setScheduleReference(scheduleReference);
     return "redirect:/nil-submission-summary-details";
   }
