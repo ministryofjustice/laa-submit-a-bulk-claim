@@ -4,20 +4,21 @@
     <tbody class="govuk-table__body">
     <tr class="govuk-table__row" th:if="${nilSubmissionForm.office != null}">
       <td class="govuk-table__cell govuk-!-font-weight-bold" th:text="#{nilSubmission.office.heading}"></td>
-      <td class="govuk-table__cell" colspan="3" th:text="${nilSubmissionForm.office}"/>
+      <td class="govuk-table__cell" th:text="${nilSubmissionForm.office}"/>
       <td class="govuk-table__cell">
         <a
                 th:href="@{/nil-submission-office}"
                 th:data-testid="nil-submission-office"
                 class="govuk-link govuk-link--no-visited-state">
-          <th:block th:if="${nilSubmissionForm.officeCount > 1}" th:text="#{nilSubmission.changeLink}"></th:block>
-          <span class="govuk-visually-hidden" th:text="| #{nilSubmission.office.heading}|"></span>
+          <th:block th:if="${nilSubmissionForm.officeCount < 1}" th:text="#{nilSubmission.changeLink}"></th:block>
+            <span th:unless="${nilSubmissionForm.officeCount < 1}"></span>
+            <span class="govuk-visually-hidden" th:text="| #{nilSubmission.office.heading}|"></span>
         </a>
       </td>
     </tr>
     <tr class="govuk-table__row" th:if="${nilSubmissionForm.areaOfLaw != null}">
       <td class="govuk-table__cell govuk-!-font-weight-bold" th:text="#{nilSubmission.areaOfLaw.heading}"></td>
-      <td class="govuk-table__cell" colspan="3" th:text="${nilSubmissionForm.areaOfLaw}"/>
+      <td class="govuk-table__cell" th:text="${nilSubmissionForm.areaOfLaw}"/>
       <td class="govuk-table__cell">
         <a
                 th:href="@{/nil-submission-areaoflaw}"
@@ -30,7 +31,7 @@
     </tr>
       <tr class="govuk-table__row" th:if="${nilSubmissionForm.submissionPeriod != null}">
           <td class="govuk-table__cell govuk-!-font-weight-bold" th:text="#{nilSubmission.period.heading}"></td>
-          <td class="govuk-table__cell" colspan="3" th:text="${nilSubmissionForm.submissionPeriod}"/>
+          <td class="govuk-table__cell" th:text="${nilSubmissionForm.submissionPeriod}"/>
           <td class="govuk-table__cell">
               <a
                       th:href="@{/nil-submission-period}"
@@ -43,7 +44,7 @@
       </tr>
       <tr class="govuk-table__row" th:if="${nilSubmissionForm.scheduleReference != null}">
           <td class="govuk-table__cell govuk-!-font-weight-bold" th:text="#{nilSubmission.reference.heading}"></td>
-          <td class="govuk-table__cell" colspan="3" th:text="${nilSubmissionForm.scheduleReference}"/>
+          <td class="govuk-table__cell" th:text="${nilSubmissionForm.scheduleReference}"/>
           <td class="govuk-table__cell">
               <a
                       th:href="@{/nil-submission-reference}"

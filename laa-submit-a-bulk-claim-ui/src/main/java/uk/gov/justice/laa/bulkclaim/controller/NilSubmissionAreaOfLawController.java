@@ -49,7 +49,7 @@ public class NilSubmissionAreaOfLawController {
       return "error";
     }
     form.setAreaOfLaw(areaOfLaw);
-
+      System.out.println("AOL: " + form.getAreaOfLaw());
     return "redirect:/nil-submission-period";
   }
 }

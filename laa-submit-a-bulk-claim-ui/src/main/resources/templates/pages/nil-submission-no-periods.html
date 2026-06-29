@@ -3,7 +3,11 @@
       th:replace="~{ layout/main-layout :: layout(#{nilSubmission.noPeriods.heading}, ~{::main},
        ~{},~{})}">
 <main class="govuk-main-wrapper" id="main-content">
-
+    <th:block id="back-link">
+        <a th:href="@{/nil-submission-areaoflaw}"
+           class="govuk-back-link"
+           th:text="#{common.back}"/>
+    </th:block>
     <div class="govuk-grid-row">
         <th:block th:replace="~{fragments/nil-submission-summary :: nil-submission-summary}"/>
         <form class="form" th:object="${nilSubmissionForm}"  th:action="@{/nil-submission-no-periods}" method="post">
