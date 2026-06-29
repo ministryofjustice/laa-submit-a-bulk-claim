@@ -26,9 +26,9 @@
 
                                     <option
                                             th:each="period, idx : ${submissionPeriods}"
-                                            th:value="${period}"
+                                            th:value="${period.getKey()}"
                                             th:id="|submission-period-${idx.index}|"
-                                            th:text="${period}">
+                                            th:text="${period.getValue()}">
                                     </option>
 
                                 </select>
