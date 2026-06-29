@@ -3,43 +3,38 @@
       th:replace="~{ layout/main-layout :: layout(#{nilSubmission.heading}, ~{::main},
        ~{},~{})}">
 <main class="govuk-main-wrapper" id="main-content">
+    <div class="govuk-width-container">
+        <div class="govuk-grid-row">
+            <div class="govuk-grid-column-full">
+                <h1 class="govuk-heading-l" th:text="#{nilSubmission.office.heading}"/>
+                <form class="form" th:action="@{/nil-submission-office}" method="post">
+                    <div class="govuk-form-group">
+                        <fieldset class="govuk-fieldset">
+                            <div class="govuk-radios govuk-radios--inline govuk-radios--small"
+                                 data-module="govuk-radios" id="offices-input-container">
+                                <th:block th:each="office,idx : ${userOffices}">
+                                    <div class="govuk-radios__item">
+                                        <input class="govuk-radios__input"
+                                               th:id="${idx.index > 0} ? |offices-input-${idx.index}| : |offices-input|"
+                                               type="radio"
+                                               name="office"
+                                               th:value="${office}"
+                                               th:checked="${nilSubmissionForm.office == office}">
+                                        <label class="govuk-label govuk-radios__label"
+                                               th:for="${idx.index > 0} ? |offices-input-${idx.index}| : |offices-input|"
+                                               th:text="${office}">
+                                        </label>
+                                    </div>
+                                </th:block>
 
-  <div class="govuk-grid-row">
-
-      <form class="form" th:action="@{/nil-submission-office}" method="post">
-        <h1 class="govuk-heading-l" th:text="#{nilSubmission.office.heading}"/>
-        <div class="govuk-grid-column-full">
-            <div class="govuk-details__text">
-               <fieldset class="govuk-fieldset">
-                  <div class="govuk-radios govuk-radios--inline govuk-radios--small"
-                       data-module="govuk-radios" id="offices-input-container">
-                    <th:block th:each="office,idx : ${userOffices}">
-                      <div class="govuk-radios__item">
-                        <input class="govuk-radios__input"
-                               th:id="${idx.index > 0} ? |offices-input-${idx.index}| : |offices-input|"
-                               type="radio"
-                               name="office"
-                               th:value="${office}"
-                               th:checked="${nilSubmissionForm.office == office}">
-                        <label class="govuk-label govuk-radios__label"
-                               th:for="${idx.index > 0} ? |offices-input-${idx.index}| : |offices-input|"
-                               th:text="${office}">
-                        </label>
-                      </div>
-                    </th:block>
-
-                  </div>
-                </fieldset>
-              </div>
-
-            <div class="govuk-details__text">
-                <label class="govuk-label govuk-label--s"
-                       th:text="${nilSubmissionForm.office}"></label>
+                            </div>
+                        </fieldset>
+                    </div>
+                    <button type="submit" class="govuk-button" data-module="govuk-button"
+                            th:text="#{nilSubmission.primaryButton}"/>
+                </form>
             </div>
         </div>
-        <button type="submit" class="govuk-button" data-module="govuk-button"
-                th:text="#{nilSubmission.primaryButton}"/>
-    </form>
-  </div>
+    </div>
 </main>
 </html>

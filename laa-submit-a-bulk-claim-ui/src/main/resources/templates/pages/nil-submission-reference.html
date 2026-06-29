@@ -3,36 +3,33 @@
       th:replace="~{ layout/main-layout :: layout(#{nilSubmission.heading}, ~{::main},
        ~{},~{})}">
 <main class="govuk-main-wrapper" id="main-content">
-
-    <div class="govuk-grid-row">
-        <th:block th:replace="~{fragments/nil-submission-summary :: nil-submission-summary}"/>
-        <form class="form" th:object="${nilSubmissionForm}" th:action="@{/nil-submission-reference}" method="post">
-            <h1 class="govuk-heading-l" th:text="#{nilSubmission.reference.heading}"></h1>
+    <div class="govuk-width-container">
+        <div class="govuk-grid-row">
             <div class="govuk-grid-column-full">
-                <div class="govuk-details__text">
-                   <fieldset class="govuk-fieldset">
-                       <div class="govuk-radios govuk-radios--inline govuk-radios--small"
-                             data-module="govuk-radios" id="arias-of-law-input-container">
-                            <label class="govuk-label govuk-label--m"
-                                   for="schedule-reference"
-                                   th:text="${referenceLabel}">
-                            </label>
-                            <input class="govuk-input"
-                                   id="schedule-reference"
-                                   type="text"
-                                   th:field="*{scheduleReference}"/>
-                        </div>
-                    </fieldset>
-                </div>
-
-                <div class="govuk-details__text">
-                    <label class="govuk-label govuk-label--s"
-                           th:text="${nilSubmissionForm.scheduleReference}"></label>
-                </div>
+                <h1 class="govuk-heading-l" th:text="#{nilSubmission.reference.heading}"></h1>
+                <th:block th:replace="~{fragments/nil-submission-summary :: nil-submission-summary}"/>
+                <form class="form" th:object="${nilSubmissionForm}" th:action="@{/nil-submission-reference}"
+                      method="post">
+                    <div class="govuk-form-group">
+                        <fieldset class="govuk-fieldset">
+                            <div class="govuk-radios govuk-radios--inline govuk-radios--small"
+                                 data-module="govuk-radios" id="arias-of-law-input-container">
+                                <label class="govuk-label govuk-label--m"
+                                       for="schedule-reference"
+                                       th:text="${referenceLabel}">
+                                </label>
+                                <input class="govuk-input"
+                                       id="schedule-reference"
+                                       type="text"
+                                       th:field="*{scheduleReference}"/>
+                            </div>
+                        </fieldset>
+                    </div>
+                    <button type="submit" class="govuk-button" data-module="govuk-button"
+                            th:text="#{nilSubmission.primaryButton}"/>
+                </form>
             </div>
-            <button type="submit" class="govuk-button" data-module="govuk-button"
-                    th:text="#{nilSubmission.primaryButton}"/>
-        </form>
+        </div>
     </div>
 </main>
 </html>

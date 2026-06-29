@@ -4,12 +4,17 @@
        ~{},~{})}">
 <main class="govuk-main-wrapper" id="main-content">
 
-    <div class="govuk-grid-row">
-        <th:block th:replace="~{fragments/nil-submission-summary :: nil-submission-summary}"/>
-        <form class="form" th:object="${nilSubmissionForm}"  th:action="@{/nil-submission-summary-details}" method="post">
-            <button type="submit" class="govuk-button" data-module="govuk-button"
-                    th:text="#{nilSubmission.primaryButton}"/>
-        </form>
+    <div class="govuk-width-container">
+        <div class="govuk-grid-row">
+            <div class="govuk-grid-column-full">
+                <th:block th:replace="~{fragments/nil-submission-summary :: nil-submission-summary}"/>
+                <form class="form" th:object="${nilSubmissionForm}" th:action="@{/nil-submission-summary-details}"
+                      method="post">
+                    <button type="submit" class="govuk-button" data-module="govuk-button"
+                            th:text="#{nilSubmission.primaryButton}"/>
+                </form>
+            </div>
+        </div>
     </div>
 </main>
 </html>
