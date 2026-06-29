@@ -39,7 +39,6 @@ public class NilSubmissionSessionManager {
       NilSubmissionForm nilSubmissionForm, NilSubmissionPage page) {
 
     switch (page) {
-      // case OTHER -> nilSubmissionForm = null;
       case OFFICE -> cleanseOffice(nilSubmissionForm);
       case AREA_OF_LAW -> cleanseAreaOfLaw(nilSubmissionForm);
       case SUBMISSION_PERIOD -> cleanseSubmissionPeriod(nilSubmissionForm);

@@ -2,8 +2,14 @@
 <html lang="en" class="govuk-template" xmlns:th="http://www.thymeleaf.org"
       th:replace="~{ layout/main-layout :: layout(#{nilSubmission.heading}, ~{::main},
        ~{},~{})}">
+
 <main class="govuk-main-wrapper" id="main-content">
     <div class="govuk-width-container">
+        <th:block id="back-link">
+            <a th:href="@{/nil-submission-office}"
+               class="govuk-back-link"
+               th:text="#{common.back}"/>
+        </th:block>
         <div class="govuk-grid-row">
             <div class="govuk-grid-column-full">
                 <h1 class="govuk-heading-l" th:text="#{nilSubmission.areaOfLaw.heading}"/>
@@ -19,11 +25,11 @@
                                                th:id="${idx.index > 0} ? |areas-of-law-input-${idx.index}| : |areas-of-law-input|"
                                                type="radio"
                                                name="areaOfLaw"
-                                               th:value="${areaOfLaw}"
+                                               th:value="${areaOfLaw.name()}"
                                                th:checked="${nilSubmissionForm.areaOfLaw == areaOfLaw}">
                                         <label class="govuk-label govuk-radios__label"
                                                th:for="${idx.index > 0} ? |areas-of-law-input-${idx.index}| : |areas-of-law-input|"
-                                               th:text="${areaOfLaw}">
+                                               th:text="${areaOfLaw.getValue()}">
                                         </label>
                                     </div>
                                 </th:block>

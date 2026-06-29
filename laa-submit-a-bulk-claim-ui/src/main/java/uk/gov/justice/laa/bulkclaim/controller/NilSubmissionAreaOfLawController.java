@@ -1,6 +1,7 @@
 package uk.gov.justice.laa.bulkclaim.controller;
 
 import java.util.Arrays;
+import java.util.EnumSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
@@ -34,8 +35,7 @@ public class NilSubmissionAreaOfLawController {
 
     NilSubmissionSessionManager.nilSubmissionCleanseSession(form, NilSubmissionPage.AREA_OF_LAW);
 
-    Set<String> areasOfLaw =
-        Arrays.stream(AreaOfLaw.values()).map(AreaOfLaw::getValue).collect(Collectors.toSet());
+    Set<AreaOfLaw> areasOfLaw = EnumSet.allOf(AreaOfLaw.class);
     System.out.println("Areas of law: " + areasOfLaw);
     model.addAttribute("areasOfLaw", areasOfLaw);
     return "pages/nil-submission-areaoflaw";
