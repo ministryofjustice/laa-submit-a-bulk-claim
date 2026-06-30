@@ -13,6 +13,7 @@
     <div class="govuk-width-container">
         <div class="govuk-grid-row">
             <div class="govuk-grid-column-full">
+                <div id="nil-submission-hint" class="govuk-hint" th:text="#{nilSubmission.hint}"></div>
                 <h1 class="govuk-heading-l" th:text="#{nilSubmission.office.heading}"/>
                 <form class="form" th:action="@{/nil-submission-office}" method="post">
                     <div class="govuk-form-group">

@@ -3,21 +3,20 @@
     <table class="govuk-table">
     <tbody class="govuk-table__body">
     <tr class="govuk-table__row" th:if="${nilSubmissionForm.office != null}">
-      <td class="govuk-table__cell govuk-!-font-weight-bold" th:text="#{nilSubmission.office.heading}"></td>
+      <td class="govuk-table__cell govuk-!-font-weight-bold" th:text="#{nilSubmission.office.changeValue}"></td>
       <td class="govuk-table__cell" th:text="${nilSubmissionForm.office}"/>
       <td class="govuk-table__cell">
         <a
                 th:href="@{/nil-submission-office}"
                 th:data-testid="nil-submission-office"
                 class="govuk-link govuk-link--no-visited-state">
-          <th:block th:if="${nilSubmissionForm.officeCount < 1}" th:text="#{nilSubmission.changeLink}"></th:block>
-            <span th:unless="${nilSubmissionForm.officeCount < 1}"></span>
-            <span class="govuk-visually-hidden" th:text="| #{nilSubmission.office.heading}|"></span>
+          <th:block th:if="${nilSubmissionForm.officeCount > 1}" th:text="#{nilSubmission.changeLink}"></th:block>
+            <span th:unless="${nilSubmissionForm.officeCount > 1}"></span>
         </a>
       </td>
     </tr>
     <tr class="govuk-table__row" th:if="${nilSubmissionForm.areaOfLaw != null}">
-      <td class="govuk-table__cell govuk-!-font-weight-bold" th:text="#{nilSubmission.areaOfLaw.heading}"></td>
+      <td class="govuk-table__cell govuk-!-font-weight-bold" th:text="#{nilSubmission.areaOfLaw.changeValue}"></td>
       <td class="govuk-table__cell" th:text="${nilSubmissionForm.getAreaOfLawDisplayText()}"/>
       <td class="govuk-table__cell">
         <a
@@ -25,12 +24,11 @@
                 th:data-testid="nil-submission-areaoflaw"
                 class="govuk-link govuk-link--no-visited-state">
           <th:block th:if="${nilSubmissionForm.officeCount > 1}" th:text="#{nilSubmission.changeLink}"></th:block>
-          <span class="govuk-visually-hidden" th:text="| #{nilSubmission.areaOfLaw.heading}|"></span>
         </a>
       </td>
     </tr>
       <tr class="govuk-table__row" th:if="${nilSubmissionForm.submissionPeriod != null}">
-          <td class="govuk-table__cell govuk-!-font-weight-bold" th:text="#{nilSubmission.period.heading}"></td>
+          <td class="govuk-table__cell govuk-!-font-weight-bold" th:text="#{nilSubmission.period.changeValue}"></td>
           <td class="govuk-table__cell" th:text="${nilSubmissionForm.submissionPeriod}"/>
           <td class="govuk-table__cell">
               <a
@@ -38,12 +36,11 @@
                       th:data-testid="nil-submission-submission-period"
                       class="govuk-link govuk-link--no-visited-state">
                   <th:block th:if="${nilSubmissionForm.officeCount > 1}" th:text="#{nilSubmission.changeLink}"></th:block>
-                  <span class="govuk-visually-hidden" th:text="| #{nilSubmission.period.heading}|"></span>
               </a>
           </td>
       </tr>
       <tr class="govuk-table__row" th:if="${nilSubmissionForm.scheduleReference != null}">
-          <td class="govuk-table__cell govuk-!-font-weight-bold" th:text="#{nilSubmission.reference.heading}"></td>
+          <td class="govuk-table__cell govuk-!-font-weight-bold" th:text="#{nilSubmission.reference.changeValue}"></td>
           <td class="govuk-table__cell" th:text="${nilSubmissionForm.scheduleReference}"/>
           <td class="govuk-table__cell">
               <a
@@ -51,7 +48,6 @@
                       th:data-testid="nil-submission-schedule-reference"
                       class="govuk-link govuk-link--no-visited-state">
                   <th:block th:if="${nilSubmissionForm.officeCount > 1}" th:text="#{nilSubmission.changeLink}"></th:block>
-                  <span class="govuk-visually-hidden" th:text="| #{nilSubmission.reference.heading}|"></span>
               </a>
           </td>
       </tr>
