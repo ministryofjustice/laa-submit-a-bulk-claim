@@ -1,9 +1,6 @@
 package uk.gov.justice.laa.bulkclaim.controller;
 
-import java.util.Arrays;
-import java.util.EnumSet;
-import java.util.Set;
-import java.util.stream.Collectors;
+import java.util.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -35,9 +32,7 @@ public class NilSubmissionAreaOfLawController {
 
     NilSubmissionSessionManager.nilSubmissionCleanseSession(form, NilSubmissionPage.AREA_OF_LAW);
 
-    Set<AreaOfLaw> areasOfLaw = EnumSet.allOf(AreaOfLaw.class);
-    System.out.println("Areas of law: " + areasOfLaw);
-    model.addAttribute("areasOfLaw", areasOfLaw);
+    model.addAttribute("areasOfLaw", getAreaOfLawOptions());
     return "pages/nil-submission-areaoflaw";
   }
 
@@ -52,4 +47,14 @@ public class NilSubmissionAreaOfLawController {
       System.out.println("AOL: " + form.getAreaOfLaw());
     return "redirect:/nil-submission-period";
   }
+
+    private Map<String, String> getAreaOfLawOptions() {
+        Map<String, String> options = new LinkedHashMap<>();
+
+        options.put(AreaOfLaw.CRIME_LOWER.name(), "Crime lower");
+        options.put(AreaOfLaw.LEGAL_HELP.name(), "Legal help");
+        options.put(AreaOfLaw.MEDIATION.name(), "Mediation");
+
+        return options;
+    }
 }
