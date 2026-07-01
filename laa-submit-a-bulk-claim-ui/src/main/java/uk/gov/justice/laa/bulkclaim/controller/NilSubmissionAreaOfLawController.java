@@ -1,6 +1,7 @@
 package uk.gov.justice.laa.bulkclaim.controller;
 
-import java.util.*;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -44,17 +45,17 @@ public class NilSubmissionAreaOfLawController {
       return "error";
     }
     form.setAreaOfLaw(areaOfLaw);
-      System.out.println("AOL: " + form.getAreaOfLaw());
+    System.out.println("AOL: " + form.getAreaOfLaw());
     return "redirect:/nil-submission-period";
   }
 
-    private Map<String, String> getAreaOfLawOptions() {
-        Map<String, String> options = new LinkedHashMap<>();
+  private Map<String, String> getAreaOfLawOptions() {
+    Map<String, String> options = new LinkedHashMap<>();
 
-        options.put(AreaOfLaw.CRIME_LOWER.name(), "Crime lower");
-        options.put(AreaOfLaw.LEGAL_HELP.name(), "Legal help");
-        options.put(AreaOfLaw.MEDIATION.name(), "Mediation");
+    options.put(AreaOfLaw.CRIME_LOWER.name(), "Crime lower");
+    options.put(AreaOfLaw.LEGAL_HELP.name(), "Legal help");
+    options.put(AreaOfLaw.MEDIATION.name(), "Mediation");
 
-        return options;
-    }
+    return options;
+  }
 }

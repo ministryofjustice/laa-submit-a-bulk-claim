@@ -1,9 +1,11 @@
 package uk.gov.justice.laa.bulkclaim.controller;
 
+import static uk.gov.justice.laa.bulkclaim.constants.SessionConstants.SUBMISSION_ID;
+
 import com.fasterxml.uuid.Generators;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.ProblemDetail;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.core.oidc.user.OidcUser;
@@ -21,15 +23,11 @@ import uk.gov.justice.laa.bulkclaim.client.DataClaimsRestClient;
 import uk.gov.justice.laa.bulkclaim.config.FeatureFlagsConfig;
 import uk.gov.justice.laa.bulkclaim.dto.submission.NilSubmissionForm;
 import uk.gov.justice.laa.bulkclaim.dto.submission.SubmissionValidationErrorResponse;
-import uk.gov.justice.laa.dstew.payments.claimsdata.model.*;
+import uk.gov.justice.laa.dstew.payments.claimsdata.model.AreaOfLaw;
+import uk.gov.justice.laa.dstew.payments.claimsdata.model.CreateSubmission201Response;
+import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionPost;
+import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionStatus;
 
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
-import java.util.stream.Collectors;
-
-import static uk.gov.justice.laa.bulkclaim.constants.SessionConstants.BULK_SUBMISSION_ID;
-import static uk.gov.justice.laa.bulkclaim.constants.SessionConstants.SUBMISSION_ID;
 
 @Controller
 @RequiredArgsConstructor
@@ -71,56 +69,55 @@ public class NilSubmissionsSummaryController {
             .createdByUserId("Submit-a-bulk-claim")
             .build();
 
-      switch (form.getAreaOfLaw()) {
-          case "LEGAL_HELP" -> submissionPost.setLegalHelpSubmissionReference(form.getScheduleReference());
-          case "MEDIATION" -> submissionPost.setMediationSubmissionReference(form.getScheduleReference());
-          case "CRIME_LOWER" -> submissionPost.setCrimeLowerScheduleNumber(form.getScheduleReference());
-      }
+    switch (form.getAreaOfLaw()) {
+      case "LEGAL_HELP" ->
+          submissionPost.setLegalHelpSubmissionReference(form.getScheduleReference());
+      case "MEDIATION" ->
+          submissionPost.setMediationSubmissionReference(form.getScheduleReference());
+      case "CRIME_LOWER" -> submissionPost.setCrimeLowerScheduleNumber(form.getScheduleReference());
+    }
 
+    try {
+      ResponseEntity<CreateSubmission201Response> responseEntity =
+          claimsRestService.createSubmission(submissionPost);
+      CreateSubmission201Response submissionResponse = responseEntity.getBody();
+
+      log.info("Claims API submission UUID: {}", submissionResponse.getId());
+
+      model.addAttribute(SUBMISSION_ID, submissionResponse.getId());
+      addSessionAttributesToModel(model, form);
+      System.out.println("redirect:/submission/" + responseEntity.getBody().getId());
+      redirectAttributes.addFlashAttribute(SUBMISSION_ID, responseEntity.getBody().getId());
+      return "redirect:/submission/" + responseEntity.getBody().getId();
+
+    } catch (WebClientResponseException e) {
       try {
-          ResponseEntity<CreateSubmission201Response> responseEntity =  claimsRestService.createSubmission(submissionPost);
-          CreateSubmission201Response submissionResponse = responseEntity.getBody();
+        SubmissionValidationErrorResponse error =
+            objectMapper.readValue(
+                e.getResponseBodyAsString(), SubmissionValidationErrorResponse.class);
 
-          log.info(
-                  "Claims API submission UUID: {}",
-                  submissionResponse.getId());
+        List<String> errorMessages =
+            error.getIssues().stream()
+                .map(SubmissionValidationErrorResponse.Issue::getMessage)
+                .filter(StringUtils::hasText)
+                .toList();
 
-          model.addAttribute(
-                  SUBMISSION_ID, submissionResponse.getId());
-          addSessionAttributesToModel(model, form);
-          System.out.println("redirect:/submission/" + responseEntity.getBody().getId());
-          redirectAttributes.addFlashAttribute(
-                  SUBMISSION_ID, responseEntity.getBody().getId());
-          return "redirect:/submission/" + responseEntity.getBody().getId();
+        log.error("API upload failed: {}", errorMessages.getFirst());
 
-      } catch (WebClientResponseException e) {
-          try {
-              SubmissionValidationErrorResponse error =
-                      objectMapper.readValue(
-                              e.getResponseBodyAsString(),
-                              SubmissionValidationErrorResponse.class);
-
-              List<String> errorMessages = error.getIssues().stream()
-                      .map(SubmissionValidationErrorResponse.Issue::getMessage)
-                      .filter(StringUtils::hasText)
-                      .toList();
-
-              log.error("API upload failed: {}", errorMessages.getFirst());
-
-          } catch (Exception ex) {
-              log.error("Failed to submit nil submission to Claims API with message: {}", ex.getMessage());
-
-          }
-
-          return "redirect:/view-nil-submission-detail-rejected";
-
-      } catch (Exception e) {
-          log.error("Failed to submit nil submission API failure: {}", e.getMessage());
-          return "error";
+      } catch (Exception ex) {
+        log.error(
+            "Failed to submit nil submission to Claims API with message: {}", ex.getMessage());
       }
+
+      return "redirect:/view-nil-submission-detail-rejected";
+
+    } catch (Exception e) {
+      log.error("Failed to submit nil submission API failure: {}", e.getMessage());
+      return "error";
+    }
   }
 
   private void addSessionAttributesToModel(Model model, NilSubmissionForm form) {
-      model.addAttribute("areaOfLaw", form.getAreaOfLaw());
+    model.addAttribute("areaOfLaw", form.getAreaOfLaw());
   }
 }

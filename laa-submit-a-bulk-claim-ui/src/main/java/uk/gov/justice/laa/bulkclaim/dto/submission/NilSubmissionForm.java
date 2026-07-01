@@ -15,11 +15,11 @@ public class NilSubmissionForm implements Serializable {
   private String scheduleReference;
   private int officeCount;
 
-    public String getAreaOfLawDisplayText() {
-        return switch (AreaOfLaw.valueOf(areaOfLaw)) {
-            case CRIME_LOWER -> "Crime lower";
-            case LEGAL_HELP -> "Legal help";
-            case MEDIATION -> "Mediation";
-        };
-    }
+  public String getAreaOfLawDisplayText() {
+    return switch (AreaOfLaw.valueOf(areaOfLaw)) {
+      case CRIME_LOWER -> "Crime lower";
+      case LEGAL_HELP -> "Legal help";
+      case MEDIATION -> "Mediation";
+    };
+  }
 }

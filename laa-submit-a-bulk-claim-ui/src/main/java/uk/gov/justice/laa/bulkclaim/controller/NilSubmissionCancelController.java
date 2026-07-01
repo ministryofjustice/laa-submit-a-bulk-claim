@@ -14,17 +14,16 @@ import uk.gov.justice.laa.bulkclaim.util.NilSubmissionSessionManager;
 @RequiredArgsConstructor
 @SessionAttributes("nilSubmissionForm")
 public class NilSubmissionCancelController {
-    private final FeatureFlagsConfig featureFlagsConfig;
+  private final FeatureFlagsConfig featureFlagsConfig;
 
-    @GetMapping("/nil-submission-cancel")
-    public String getCancel(
-            @ModelAttribute("nilSubmissionForm") NilSubmissionForm form) {
+  @GetMapping("/nil-submission-cancel")
+  public String getCancel(@ModelAttribute("nilSubmissionForm") NilSubmissionForm form) {
 
-        if (!featureFlagsConfig.getIsNilSubmissionEnabled()) {
-            return "error";
-        }
-
-        NilSubmissionSessionManager.nilSubmissionCleanseSession(form, NilSubmissionPage.OTHER);
-        return "redirect:/upload";
+    if (!featureFlagsConfig.getIsNilSubmissionEnabled()) {
+      return "error";
     }
+
+    NilSubmissionSessionManager.nilSubmissionCleanseSession(form, NilSubmissionPage.OTHER);
+    return "redirect:/upload";
+  }
 }
