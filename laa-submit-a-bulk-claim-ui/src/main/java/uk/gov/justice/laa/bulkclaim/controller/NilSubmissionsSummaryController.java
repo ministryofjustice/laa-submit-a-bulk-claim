@@ -3,6 +3,8 @@ package uk.gov.justice.laa.bulkclaim.controller;
 import static uk.gov.justice.laa.bulkclaim.constants.SessionConstants.SUBMISSION_ID;
 
 import com.fasterxml.uuid.Generators;
+
+import java.time.OffsetDateTime;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -19,10 +21,13 @@ import org.springframework.web.bind.annotation.SessionAttributes;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import tools.jackson.databind.ObjectMapper;
+import uk.gov.justice.laa.bulkclaim.builder.SubmissionMessagesBuilder;
 import uk.gov.justice.laa.bulkclaim.client.DataClaimsRestClient;
 import uk.gov.justice.laa.bulkclaim.config.FeatureFlagsConfig;
 import uk.gov.justice.laa.bulkclaim.dto.submission.NilSubmissionForm;
 import uk.gov.justice.laa.bulkclaim.dto.submission.SubmissionValidationErrorResponse;
+import uk.gov.justice.laa.bulkclaim.dto.submission.messages.MessagesSummary;
+import uk.gov.justice.laa.bulkclaim.dto.submission.messages.NilSubmissionMessagesSummary;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.AreaOfLaw;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.CreateSubmission201Response;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionPost;
@@ -104,12 +109,24 @@ public class NilSubmissionsSummaryController {
 
         log.error("API upload failed: {}", errorMessages.getFirst());
 
+          NilSubmissionMessagesSummary summary = NilSubmissionMessagesSummary.builder()
+                  .totalMessageCount(errorMessages.size())
+                  .submitted(OffsetDateTime.now())
+                  .officeAccount(form.getOffice())
+                  .areaOfLaw(form.getAreaOfLaw())
+                  .submissionPeriod(form.getSubmissionPeriod())
+                  .submissionReference(form.getScheduleReference())
+                  .messages(errorMessages)
+                  .build();
+
+        model.addAttribute("messagesSummary", summary);
+
       } catch (Exception ex) {
         log.error(
             "Failed to submit nil submission to Claims API with message: {}", ex.getMessage());
       }
 
-      return "redirect:/view-nil-submission-detail-rejected";
+      return "pages/nil-submission-detail-invalid";
 
     } catch (Exception e) {
       log.error("Failed to submit nil submission API failure: {}", e.getMessage());

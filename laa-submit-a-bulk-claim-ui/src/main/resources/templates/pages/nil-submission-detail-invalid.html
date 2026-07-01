@@ -1,0 +1,16 @@
+<!DOCTYPE HTML>
+<html lang="en" class="govuk-template" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{ layout/main-layout :: layout(#{viewSubmission.heading},~{::main},~{}, 'search-submissions')}">
+<main class="govuk-main-wrapper" id="main-content">
+    <div class="govuk-width-container">
+        <div class="govuk-grid-row">
+            <th:block
+                    th:replace="~{fragments/submission-details/nil-submission-validation-error-banner :: nil-submission-validation-error-banner(${messagesSummary})}"></th:block>
+            <th:block
+                    th:replace="~{fragments/submission-details/nil-submission-error-summary :: error-summary('govuk-tag--red', #{submission.summary.status.rejected}, ${messagesSummary})}"></th:block>
+            <th:block
+                    th:replace="~{fragments/submission-details/nil-submission-messages-errors :: nil-submission-messages-errors}"></th:block>
+        </div>
+    </div>
+</main>
+</html>
