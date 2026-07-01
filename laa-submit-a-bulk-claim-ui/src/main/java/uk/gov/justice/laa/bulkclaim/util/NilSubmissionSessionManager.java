@@ -42,10 +42,17 @@ public class NilSubmissionSessionManager {
       case OFFICE -> cleanseOffice(nilSubmissionForm);
       case AREA_OF_LAW -> cleanseAreaOfLaw(nilSubmissionForm);
       case SUBMISSION_PERIOD -> cleanseSubmissionPeriod(nilSubmissionForm);
+      case OTHER -> cleanseOther(nilSubmissionForm);
       default -> nilSubmissionForm = null;
     }
-
     return nilSubmissionForm;
+  }
+
+  static void cleanseOther(NilSubmissionForm form) {
+    form.setOffice(null);
+    form.setAreaOfLaw(null);
+    form.setSubmissionPeriod(null);
+    form.setScheduleReference(null);
   }
 
   static void cleanseOffice(NilSubmissionForm form) {

@@ -8,7 +8,6 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.SessionAttributes;
-import uk.gov.justice.laa.bulkclaim.client.DataClaimsRestClient;
 import uk.gov.justice.laa.bulkclaim.config.FeatureFlagsConfig;
 import uk.gov.justice.laa.bulkclaim.dto.submission.NilSubmissionForm;
 
@@ -17,7 +16,6 @@ import uk.gov.justice.laa.bulkclaim.dto.submission.NilSubmissionForm;
 @SessionAttributes("nilSubmissionForm")
 public class NilSubmissionScheduleReferenceController {
 
-  private final DataClaimsRestClient claimsRestService;
   private final FeatureFlagsConfig featureFlagsConfig;
 
   @GetMapping("/nil-submission-reference")
@@ -47,6 +45,7 @@ public class NilSubmissionScheduleReferenceController {
     if (!featureFlagsConfig.getIsNilSubmissionEnabled()) {
       return "error";
     }
+    form.setScheduleReference(scheduleReference);
     form.setScheduleReference(scheduleReference);
     return "redirect:/nil-submission-summary-details";
   }
