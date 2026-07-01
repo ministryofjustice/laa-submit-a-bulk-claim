@@ -29,14 +29,14 @@ class NilSubmissionCancelControllerTest {
 
     when(featureFlagsConfig.getIsNilSubmissionEnabled()).thenReturn(false);
 
-    assertEquals("error", nilSubmissionCancelController.getCancel(form));
+    assertEquals("error", nilSubmissionCancelController.getCancel("UPLOAD", form));
 
     verify(featureFlagsConfig).getIsNilSubmissionEnabled();
     verifyNoMoreInteractions(featureFlagsConfig);
   }
 
   @Test
-  void whenFeatureFlagEnabled_shouldRedirectToUpload() {
+  void whenFeatureFlagEnabledAndDestinationUpload_shouldRedirectToUpload() {
     when(featureFlagsConfig.getIsNilSubmissionEnabled()).thenReturn(true);
     NilSubmissionForm form = new NilSubmissionForm();
 
@@ -45,8 +45,28 @@ class NilSubmissionCancelControllerTest {
     form.setSubmissionPeriod("submissionPeriod1");
     form.setScheduleReference("scheduleReference1");
 
-    nilSubmissionCancelController.getCancel(form);
+    String result = nilSubmissionCancelController.getCancel("UPLOAD", form);
 
+    assertEquals("redirect:/upload", result);
+    assertNull(form.getOffice());
+    assertNull(form.getAreaOfLaw());
+    assertNull(form.getSubmissionPeriod());
+    assertNull(form.getScheduleReference());
+  }
+
+  @Test
+  void whenFeatureFlagEnabledAndDestinationSearch_shouldRedirectToUpload() {
+    when(featureFlagsConfig.getIsNilSubmissionEnabled()).thenReturn(true);
+    NilSubmissionForm form = new NilSubmissionForm();
+
+    form.setOffice("office1");
+    form.setAreaOfLaw("areaOfLaw1");
+    form.setSubmissionPeriod("submissionPeriod1");
+    form.setScheduleReference("scheduleReference1");
+
+    String result = nilSubmissionCancelController.getCancel("SEARCH", form);
+
+    assertEquals("redirect:/submissions/search", result);
     assertNull(form.getOffice());
     assertNull(form.getAreaOfLaw());
     assertNull(form.getSubmissionPeriod());
