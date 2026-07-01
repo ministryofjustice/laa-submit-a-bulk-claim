@@ -38,10 +38,11 @@
                             </div>
                         </fieldset>
                     </div>
-
-                    <button type="submit" class="govuk-button" data-module="govuk-button"
-                            th:text="#{nilSubmission.primaryButton}"/>
-
+                    <div class="govuk-button-group">
+                        <button type="submit" class="govuk-button" data-module="govuk-button"
+                                th:text="#{nilSubmission.primaryButton}"/>
+                        <a th:href="@{${redirectUrl}}" th:text="Cancel" class="govuk-link govuk-link--no-visited-state"></a>
+                    </div>
                 </form>
             </div>
         </div>

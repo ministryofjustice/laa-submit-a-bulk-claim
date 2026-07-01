@@ -11,30 +11,30 @@
 
 <main class="govuk-main-wrapper" id="main-content">
     <div class="govuk-grid-row">
-        <th:block th:replace="~{fragments/nil-submission-summary :: nil-submission-summary}"/>
-        <form class="form" th:object="${nilSubmissionForm}"  th:action="@{/nil-submission-no-periods}" method="post">
-            <button type="submit" class="govuk-button" data-module="govuk-button"
-                    th:text="#{nilSubmission.primaryButton}"/>
-        </form>
-    </div>
-    <div class="govuk-grid-row">
-        No submission periods are available for the combination of office account and area of law you selected.
-    </div>
-    <div class="govuk-grid-row">
-        Go back to
-        <a
-                th:href="@{/nil-submission}"
-                th:data-testid="submit-a-bulk-claim"
-                class="govuk-link govuk-link--no-visited-state">
-            <th:block th:if="${nilSubmissionForm.officeCount > 1}" th:text="#{nilSubmission.submit}"></th:block>
-        </a>
-        or
-        <a
-                th:href="@{/nil-submission}"
-                th:data-testid="search-for-previous-submission"
-                class="govuk-link govuk-link--no-visited-state">
-            <th:block th:if="${nilSubmissionForm.officeCount > 1}" th:text="#{nilSubmission.search}"></th:block>
-        </a>
+        <div class="govuk-grid-column-full">
+            <h1 class="govuk-heading-l" th:text="#{nilSubmission.reference.heading}"></h1>
+            <th:block th:replace="~{fragments/nil-submission-summary :: nil-submission-summary}"/>
+
+            <p class="govuk-body">
+                No submission periods are available for the combination of office account and area of law you selected.
+            </p>
+            <p class="govuk-body">
+                Go back to
+                <a
+                        th:href="@{/upload}"
+                        th:data-testid="submit-a-bulk-claim"
+                        class="govuk-link govuk-link--no-visited-state">
+                    <th:block th:text="#{nilSubmission.submit}"></th:block>
+                </a>
+                or
+                <a
+                        th:href="@{/submissions/search}"
+                        th:data-testid="search-for-previous-submission"
+                        class="govuk-link govuk-link--no-visited-state">
+                    <th:block th:text="#{nilSubmission.search}"></th:block>
+                </a>
+            </p>
+        </div>
     </div>
 </main>
 </html>
