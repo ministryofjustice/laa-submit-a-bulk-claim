@@ -71,6 +71,12 @@ public class NilSubmissionsSummaryController {
             .createdByUserId("Submit-a-bulk-claim")
             .build();
 
+      switch (form.getAreaOfLaw()) {
+          case "LEGAL_HELP" -> submissionPost.setLegalHelpSubmissionReference(form.getScheduleReference());
+          case "MEDIATION" -> submissionPost.setMediationSubmissionReference(form.getScheduleReference());
+          case "CRIME_LOWER" -> submissionPost.setCrimeLowerScheduleNumber(form.getScheduleReference());
+      }
+
       try {
           ResponseEntity<CreateSubmission201Response> responseEntity =  claimsRestService.createSubmission(submissionPost);
           CreateSubmission201Response submissionResponse = responseEntity.getBody();

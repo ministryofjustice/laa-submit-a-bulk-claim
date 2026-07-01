@@ -28,13 +28,12 @@ public class NilSubmissionScheduleReferenceController {
       return "error";
     }
 
-    String label =
-        switch (form.getAreaOfLaw()) {
-          case "CRIME LOWER" -> "Crime schedule number";
+      String label = switch (form.getAreaOfLaw()) {
+          case "LEGAL_HELP" -> "Civil submission reference";
           case "MEDIATION" -> "Mediation submission reference";
-          case "LEGAL HELP" -> "Civil submission reference";
-          default -> "Reference";
-        };
+          case "CRIME_LOWER" -> "Crime schedule number";
+          default -> throw new IllegalStateException("Unexpected value: " + form.getAreaOfLaw());
+      };
 
     model.addAttribute("referenceLabel", label);
 
