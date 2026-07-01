@@ -28,6 +28,8 @@ import uk.gov.justice.laa.bulkclaim.dto.submission.NilSubmissionForm;
 import uk.gov.justice.laa.bulkclaim.dto.submission.SubmissionValidationErrorResponse;
 import uk.gov.justice.laa.bulkclaim.dto.submission.messages.MessagesSummary;
 import uk.gov.justice.laa.bulkclaim.dto.submission.messages.NilSubmissionMessagesSummary;
+import uk.gov.justice.laa.bulkclaim.util.NilSubmissionPage;
+import uk.gov.justice.laa.bulkclaim.util.NilSubmissionSessionManager;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.AreaOfLaw;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.CreateSubmission201Response;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionPost;
@@ -90,9 +92,9 @@ public class NilSubmissionsSummaryController {
       log.info("Claims API submission UUID: {}", submissionResponse.getId());
 
       model.addAttribute(SUBMISSION_ID, submissionResponse.getId());
-      addSessionAttributesToModel(model, form);
-      System.out.println("redirect:/submission/" + responseEntity.getBody().getId());
       redirectAttributes.addFlashAttribute(SUBMISSION_ID, responseEntity.getBody().getId());
+
+      NilSubmissionSessionManager.nilSubmissionCleanseSession(form, NilSubmissionPage.OTHER);
       return "redirect:/submission/" + responseEntity.getBody().getId();
 
     } catch (WebClientResponseException e) {
@@ -126,6 +128,7 @@ public class NilSubmissionsSummaryController {
             "Failed to submit nil submission to Claims API with message: {}", ex.getMessage());
       }
 
+      NilSubmissionSessionManager.nilSubmissionCleanseSession(form, NilSubmissionPage.OTHER);
       return "pages/nil-submission-detail-invalid";
 
     } catch (Exception e) {
@@ -134,7 +137,4 @@ public class NilSubmissionsSummaryController {
     }
   }
 
-  private void addSessionAttributesToModel(Model model, NilSubmissionForm form) {
-    model.addAttribute("areaOfLaw", form.getAreaOfLaw());
-  }
 }
