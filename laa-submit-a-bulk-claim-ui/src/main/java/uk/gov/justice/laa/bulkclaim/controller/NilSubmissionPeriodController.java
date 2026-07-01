@@ -6,7 +6,6 @@ import static uk.gov.justice.laa.bulkclaim.dto.SubmissionOutcomeFilter.SUCCEEDED
 import java.time.LocalDate;
 import java.time.YearMonth;
 import java.time.format.DateTimeFormatter;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -30,7 +29,6 @@ import uk.gov.justice.laa.bulkclaim.util.NilSubmissionPage;
 import uk.gov.justice.laa.bulkclaim.util.NilSubmissionSessionManager;
 import uk.gov.justice.laa.bulkclaim.util.SubmissionPeriodUtil;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.AreaOfLaw;
-import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionStatus;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionsResultSet;
 
 @Controller
@@ -43,7 +41,6 @@ public class NilSubmissionPeriodController {
   private static final String SUBMISSION_PERIOD_SELECTION = "submissionPeriod";
   private static final String SCHEDULE_REFERENCE_SELECTION = "scheduleReference";
 
-  private final SubmissionPeriodUtil submissionPeriodUtil;
   private final FeatureFlagsConfig featureFlagsConfig;
   private final DataClaimsRestClient claimsRestService;
 
@@ -68,10 +65,10 @@ public class NilSubmissionPeriodController {
     SubmissionsResultSet submissionsResults =
         claimsRestService
             .search(
-                Collections.singletonList(selection.getOffice()),
+                submissionSearchQuery.getOffices(),
                 null,
-                getAreaOfLaw(selection.getAreaOfLaw()),
-                List.of(SubmissionStatus.VALIDATION_SUCCEEDED),
+                getAreaOfLaw(submissionSearchQuery.getAreaOfLaw()),
+                submissionSearchQuery.getSubmissionStatuses().getStatuses(),
                 submissionSearchQuery.getPage(),
                 12,
                 getSubmissionDateFrom(),
@@ -119,7 +116,7 @@ public class NilSubmissionPeriodController {
           .getContent()
           .forEach(
               submission -> {
-                String period = submissionPeriodUtil.getSubmissionPeriod(submission);
+                String period = submission.getSubmissionPeriod();
                 if (period != null) {
                   nonSubmissionMonths.remove(period);
                 }
@@ -130,8 +127,7 @@ public class NilSubmissionPeriodController {
   }
 
   private String getSubmissionDateTo() {
-    LocalDate lastDateOfMonth = YearMonth.from(LocalDate.now()).minusMonths(1).atEndOfMonth();
-    return getFormatted(lastDateOfMonth);
+    return getFormatted(LocalDate.now());
   }
 
   private static @NonNull String getFormatted(LocalDate lastDateOfMonth) {

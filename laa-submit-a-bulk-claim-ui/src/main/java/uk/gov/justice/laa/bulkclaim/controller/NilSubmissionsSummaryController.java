@@ -28,7 +28,6 @@ import uk.gov.justice.laa.dstew.payments.claimsdata.model.CreateSubmission201Res
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionPost;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionStatus;
 
-
 @Controller
 @RequiredArgsConstructor
 @Slf4j
@@ -75,6 +74,7 @@ public class NilSubmissionsSummaryController {
       case "MEDIATION" ->
           submissionPost.setMediationSubmissionReference(form.getScheduleReference());
       case "CRIME_LOWER" -> submissionPost.setCrimeLowerScheduleNumber(form.getScheduleReference());
+      default -> log.error("Area of law {} is not valid", form.getAreaOfLaw());
     }
 
     try {

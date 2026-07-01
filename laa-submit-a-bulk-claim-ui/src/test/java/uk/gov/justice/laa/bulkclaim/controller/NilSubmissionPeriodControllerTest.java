@@ -32,7 +32,6 @@ import reactor.core.publisher.Mono;
 import uk.gov.justice.laa.bulkclaim.client.DataClaimsRestClient;
 import uk.gov.justice.laa.bulkclaim.config.FeatureFlagsConfig;
 import uk.gov.justice.laa.bulkclaim.dto.submission.NilSubmissionForm;
-import uk.gov.justice.laa.bulkclaim.util.SubmissionPeriodUtil;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.AreaOfLaw;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionBase;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionsResultSet;
@@ -43,7 +42,6 @@ class NilSubmissionPeriodControllerTest {
   @Mock private Model model;
 
   @Mock private DataClaimsRestClient claimsRestService;
-  @Mock private SubmissionPeriodUtil submissionPeriodUtil;
   @Mock private FeatureFlagsConfig featureFlagsConfig;
 
   @InjectMocks private NilSubmissionPeriodController nilSubmissionPeriodController;
@@ -109,8 +107,8 @@ class NilSubmissionPeriodControllerTest {
     SubmissionBase s1 = new SubmissionBase();
     SubmissionBase s2 = new SubmissionBase();
     List<SubmissionBase> content = new ArrayList<>();
-    content.add(s1.submissionPeriod("January 2026"));
-    content.add(s2.submissionPeriod("February 2026"));
+    content.add(s1.submissionPeriod("JAN-2026"));
+    content.add(s2.submissionPeriod("FEB-2026"));
 
     final SubmissionsResultSet response = new SubmissionsResultSet();
     response.setContent(content);
@@ -152,16 +150,11 @@ class NilSubmissionPeriodControllerTest {
 
   @Test
   void removedMatchingSubmissionPeriods() {
-    String ym =
-        YearMonth.now()
-            .minusMonths(1)
-            .format(DateTimeFormatter.ofPattern("MMM-uuuu"))
-            .toUpperCase();
-    when(submissionPeriodUtil.getSubmissionPeriod(any())).thenReturn(ym);
-    Map<String, String> months =
-        nilSubmissionPeriodController.getMonthsWithOutSubmissions(getSubmissionsResultSet());
-    assertEquals(11, months.size());
-    assertFalse(months.containsKey(ym));
+    SubmissionsResultSet results = getSubmissionsResultSet();
+    Map<String, String> months = nilSubmissionPeriodController.getMonthsWithOutSubmissions(results);
+    assertEquals(10, months.size());
+    assertFalse(months.containsKey(results.getContent().get(0).getSubmissionPeriod()));
+    assertFalse(months.containsKey(results.getContent().get(1).getSubmissionPeriod()));
   }
 
   @Test
