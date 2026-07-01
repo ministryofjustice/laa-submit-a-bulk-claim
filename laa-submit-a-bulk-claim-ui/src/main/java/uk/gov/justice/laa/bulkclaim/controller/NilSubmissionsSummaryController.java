@@ -3,7 +3,6 @@ package uk.gov.justice.laa.bulkclaim.controller;
 import static uk.gov.justice.laa.bulkclaim.constants.SessionConstants.SUBMISSION_ID;
 
 import com.fasterxml.uuid.Generators;
-
 import java.time.OffsetDateTime;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -21,12 +20,10 @@ import org.springframework.web.bind.annotation.SessionAttributes;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import tools.jackson.databind.ObjectMapper;
-import uk.gov.justice.laa.bulkclaim.builder.SubmissionMessagesBuilder;
 import uk.gov.justice.laa.bulkclaim.client.DataClaimsRestClient;
 import uk.gov.justice.laa.bulkclaim.config.FeatureFlagsConfig;
 import uk.gov.justice.laa.bulkclaim.dto.submission.NilSubmissionForm;
 import uk.gov.justice.laa.bulkclaim.dto.submission.SubmissionValidationErrorResponse;
-import uk.gov.justice.laa.bulkclaim.dto.submission.messages.MessagesSummary;
 import uk.gov.justice.laa.bulkclaim.dto.submission.messages.NilSubmissionMessagesSummary;
 import uk.gov.justice.laa.bulkclaim.util.NilSubmissionPage;
 import uk.gov.justice.laa.bulkclaim.util.NilSubmissionSessionManager;
@@ -111,15 +108,16 @@ public class NilSubmissionsSummaryController {
 
         log.error("API upload failed: {}", errorMessages.getFirst());
 
-          NilSubmissionMessagesSummary summary = NilSubmissionMessagesSummary.builder()
-                  .totalMessageCount(errorMessages.size())
-                  .submitted(OffsetDateTime.now())
-                  .officeAccount(form.getOffice())
-                  .areaOfLaw(form.getAreaOfLaw())
-                  .submissionPeriod(form.getSubmissionPeriod())
-                  .submissionReference(form.getScheduleReference())
-                  .messages(errorMessages)
-                  .build();
+        NilSubmissionMessagesSummary summary =
+            NilSubmissionMessagesSummary.builder()
+                .totalMessageCount(errorMessages.size())
+                .submitted(OffsetDateTime.now())
+                .officeAccount(form.getOffice())
+                .areaOfLaw(form.getAreaOfLaw())
+                .submissionPeriod(form.getSubmissionPeriod())
+                .submissionReference(form.getScheduleReference())
+                .messages(errorMessages)
+                .build();
 
         model.addAttribute("messagesSummary", summary);
 
@@ -136,5 +134,4 @@ public class NilSubmissionsSummaryController {
       return "error";
     }
   }
-
 }
