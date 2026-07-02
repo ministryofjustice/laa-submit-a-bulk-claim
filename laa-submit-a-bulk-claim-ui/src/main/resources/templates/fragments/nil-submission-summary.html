@@ -1,56 +1,61 @@
 <th:block th:fragment="nil-submission-summary"
           th:if="${nilSubmissionForm != null}" xmlns:th="http://www.w3.org/1999/xhtml">
     <table class="govuk-table">
-    <tbody class="govuk-table__body">
-    <tr class="govuk-table__row" th:if="${nilSubmissionForm.office != null}">
-      <td class="govuk-table__cell govuk-!-font-weight-bold" th:text="#{nilSubmission.office.changeValue}"></td>
-      <td class="govuk-table__cell" th:text="${nilSubmissionForm.office}"/>
-      <td class="govuk-table__cell">
-        <a
-                th:href="@{/nil-submission-office}"
-                th:data-testid="nil-submission-office"
-                class="govuk-link govuk-link--no-visited-state">
-          <th:block th:if="${nilSubmissionForm.officeCount > 1}" th:text="#{nilSubmission.changeLink}"></th:block>
-            <span th:unless="${nilSubmissionForm.officeCount > 1}"></span>
-        </a>
-      </td>
-    </tr>
-    <tr class="govuk-table__row" th:if="${nilSubmissionForm.areaOfLaw != null}">
-      <td class="govuk-table__cell govuk-!-font-weight-bold" th:text="#{nilSubmission.areaOfLaw.changeValue}"></td>
-      <td class="govuk-table__cell" th:text="${nilSubmissionForm.getAreaOfLawDisplayText()}"/>
-      <td class="govuk-table__cell">
-        <a
-                th:href="@{/nil-submission-areaoflaw}"
-                th:data-testid="nil-submission-areaoflaw"
-                class="govuk-link govuk-link--no-visited-state">
-          <th:block th:if="${nilSubmissionForm.officeCount > 1}" th:text="#{nilSubmission.changeLink}"></th:block>
-        </a>
-      </td>
-    </tr>
-      <tr class="govuk-table__row" th:if="${nilSubmissionForm.submissionPeriod != null}">
-          <td class="govuk-table__cell govuk-!-font-weight-bold" th:text="#{nilSubmission.period.changeValue}"></td>
-          <td class="govuk-table__cell" th:text="${nilSubmissionForm.submissionPeriod}"/>
-          <td class="govuk-table__cell">
-              <a
-                      th:href="@{/nil-submission-period}"
-                      th:data-testid="nil-submission-submission-period"
-                      class="govuk-link govuk-link--no-visited-state">
-                  <th:block th:if="${nilSubmissionForm.officeCount > 1}" th:text="#{nilSubmission.changeLink}"></th:block>
-              </a>
-          </td>
-      </tr>
-      <tr class="govuk-table__row" th:if="${nilSubmissionForm.scheduleReference != null}">
-          <td class="govuk-table__cell govuk-!-font-weight-bold" th:text="${referenceLabel}"></td>
-          <td class="govuk-table__cell" th:text="${nilSubmissionForm.scheduleReference}"/>
-          <td class="govuk-table__cell">
-              <a
-                      th:href="@{/nil-submission-reference}"
-                      th:data-testid="nil-submission-schedule-reference"
-                      class="govuk-link govuk-link--no-visited-state">
-                  <th:block th:if="${nilSubmissionForm.officeCount > 1}" th:text="#{nilSubmission.changeLink}"></th:block>
-              </a>
-          </td>
-      </tr>
-</tbody>
+        <tbody class="govuk-table__body">
+        <tr class="govuk-table__row" th:if="${nilSubmissionForm.office != null}">
+            <td class="govuk-table__cell govuk-!-font-weight-bold" th:text="#{nilSubmission.office.changeValue}"></td>
+            <td class="govuk-table__cell" th:text="${nilSubmissionForm.office}"></td>
+            <td class="govuk-table__cell">
+                <a
+                        th:href="@{/nil-submission-office}"
+                        th:data-testid="nil-submission-office"
+                        class="govuk-link govuk-link--no-visited-state">
+                    <th:block th:if="${nilSubmissionForm.officeCount > 1}"
+                              th:text="#{nilSubmission.changeLink}"></th:block>
+                    <span th:unless="${nilSubmissionForm.officeCount > 1}"></span>
+                </a>
+            </td>
+        </tr>
+        <tr class="govuk-table__row" th:if="${nilSubmissionForm.areaOfLaw != null}">
+            <td class="govuk-table__cell govuk-!-font-weight-bold"
+                th:text="#{nilSubmission.areaOfLaw.changeValue}"></td>
+            <td class="govuk-table__cell" th:text="${nilSubmissionForm.getAreaOfLawDisplayText()}"></td>
+            <td class="govuk-table__cell">
+                <a
+                        th:href="@{/nil-submission-areaoflaw}"
+                        th:data-testid="nil-submission-areaoflaw"
+                        class="govuk-link govuk-link--no-visited-state">
+                    <th:block th:if="${nilSubmissionForm.officeCount > 1}"
+                              th:text="#{nilSubmission.changeLink}"></th:block>
+                </a>
+            </td>
+        </tr>
+        <tr class="govuk-table__row" th:if="${nilSubmissionForm.submissionPeriod != null}">
+            <td class="govuk-table__cell govuk-!-font-weight-bold" th:text="#{nilSubmission.period.changeValue}"></td>
+            <td class="govuk-table__cell" th:text="${nilSubmissionForm.submissionPeriod}"></td>
+            <td class="govuk-table__cell">
+                <a
+                        th:href="@{/nil-submission-period}"
+                        th:data-testid="nil-submission-submission-period"
+                        class="govuk-link govuk-link--no-visited-state">
+                    <th:block th:if="${nilSubmissionForm.officeCount > 1}"
+                              th:text="#{nilSubmission.changeLink}"></th:block>
+                </a>
+            </td>
+        </tr>
+        <tr class="govuk-table__row" th:if="${nilSubmissionForm.scheduleReference != null}">
+            <td class="govuk-table__cell govuk-!-font-weight-bold" th:text="${referenceLabel}"></td>
+            <td class="govuk-table__cell" th:text="${nilSubmissionForm.scheduleReference}"></td>
+            <td class="govuk-table__cell">
+                <a
+                        th:href="@{/nil-submission-reference}"
+                        th:data-testid="nil-submission-schedule-reference"
+                        class="govuk-link govuk-link--no-visited-state">
+                    <th:block th:if="${nilSubmissionForm.officeCount > 1}"
+                              th:text="#{nilSubmission.changeLink}"></th:block>
+                </a>
+            </td>
+        </tr>
+        </tbody>
     </table>
 </th:block>
