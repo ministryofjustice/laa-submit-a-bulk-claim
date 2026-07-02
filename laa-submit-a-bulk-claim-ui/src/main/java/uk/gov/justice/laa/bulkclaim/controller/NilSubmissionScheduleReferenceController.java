@@ -1,5 +1,7 @@
 package uk.gov.justice.laa.bulkclaim.controller;
 
+import static uk.gov.justice.laa.bulkclaim.constants.SessionConstants.NIL_SUBMISSION_FORM;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -14,7 +16,7 @@ import uk.gov.justice.laa.bulkclaim.util.NilSubmissionReferenceUtil;
 
 @Controller
 @RequiredArgsConstructor
-@SessionAttributes("nilSubmissionForm")
+@SessionAttributes(NIL_SUBMISSION_FORM)
 public class NilSubmissionScheduleReferenceController {
 
   private final FeatureFlagsConfig featureFlagsConfig;
@@ -22,7 +24,7 @@ public class NilSubmissionScheduleReferenceController {
 
   @GetMapping("/nil-submission-reference")
   public String getReference(
-      @ModelAttribute("nilSubmissionForm") NilSubmissionForm form, Model model) {
+      @ModelAttribute(NIL_SUBMISSION_FORM) NilSubmissionForm form, Model model) {
 
     if (!featureFlagsConfig.getIsNilSubmissionEnabled()) {
       return "error";
@@ -39,7 +41,7 @@ public class NilSubmissionScheduleReferenceController {
 
   @PostMapping("/nil-submission-reference")
   public String postReference(
-      @ModelAttribute("nilSubmissionForm") NilSubmissionForm form,
+      @ModelAttribute(NIL_SUBMISSION_FORM) NilSubmissionForm form,
       @RequestParam String scheduleReference) {
     if (!featureFlagsConfig.getIsNilSubmissionEnabled()) {
       return "error";

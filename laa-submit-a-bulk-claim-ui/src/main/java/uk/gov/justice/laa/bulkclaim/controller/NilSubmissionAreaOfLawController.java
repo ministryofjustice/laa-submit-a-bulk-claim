@@ -1,5 +1,7 @@
 package uk.gov.justice.laa.bulkclaim.controller;
 
+import static uk.gov.justice.laa.bulkclaim.constants.SessionConstants.NIL_SUBMISSION_FORM;
+
 import java.util.LinkedHashMap;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
@@ -18,14 +20,14 @@ import uk.gov.justice.laa.dstew.payments.claimsdata.model.AreaOfLaw;
 
 @Controller
 @RequiredArgsConstructor
-@SessionAttributes("nilSubmissionForm")
+@SessionAttributes(NIL_SUBMISSION_FORM)
 public class NilSubmissionAreaOfLawController {
 
   private final FeatureFlagsConfig featureFlagsConfig;
 
   @GetMapping("/nil-submission-areaoflaw")
   public String getAreasOfLaw(
-      @ModelAttribute("nilSubmissionForm") NilSubmissionForm form, Model model) {
+      @ModelAttribute(NIL_SUBMISSION_FORM) NilSubmissionForm form, Model model) {
 
     if (!featureFlagsConfig.getIsNilSubmissionEnabled()) {
       return "error";
@@ -39,13 +41,12 @@ public class NilSubmissionAreaOfLawController {
 
   @PostMapping("/nil-submission-areaoflaw")
   public String postAreaOfLaw(
-      @ModelAttribute("nilSubmissionForm") NilSubmissionForm form, @RequestParam String areaOfLaw) {
+      @ModelAttribute(NIL_SUBMISSION_FORM) NilSubmissionForm form, @RequestParam String areaOfLaw) {
 
     if (!featureFlagsConfig.getIsNilSubmissionEnabled()) {
       return "error";
     }
     form.setAreaOfLaw(areaOfLaw);
-    System.out.println("AOL: " + form.getAreaOfLaw());
     return "redirect:/nil-submission-period";
   }
 

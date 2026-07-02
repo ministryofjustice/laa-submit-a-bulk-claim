@@ -2,13 +2,12 @@ package uk.gov.justice.laa.bulkclaim.controller;
 
 import static uk.gov.justice.laa.bulkclaim.constants.NilSubmissionInfoMessageConstants.SUBMISSION_INFO_MESSAGE_PAGE_HEADING;
 import static uk.gov.justice.laa.bulkclaim.constants.NilSubmissionInfoMessageConstants.SUBMISSION_INFO_MESSAGE_TEXT;
-import static uk.gov.justice.laa.bulkclaim.constants.SessionConstants.NIL_SUBMISSION_SELECTION;
+import static uk.gov.justice.laa.bulkclaim.constants.SessionConstants.NIL_SUBMISSION_FORM;
 import static uk.gov.justice.laa.bulkclaim.dto.SubmissionOutcomeFilter.SUCCEEDED;
 
 import java.time.LocalDate;
 import java.time.YearMonth;
 import java.time.format.DateTimeFormatter;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -36,13 +35,8 @@ import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionsResultSet;
 
 @Controller
 @RequiredArgsConstructor
-@SessionAttributes("nilSubmissionForm")
+@SessionAttributes(NIL_SUBMISSION_FORM)
 public class NilSubmissionPeriodController {
-
-  private static final String OFFICE_SELECTION = "office";
-  private static final String AREA_OF_LAW_SELECTION = "areaOfLaw";
-  private static final String SUBMISSION_PERIOD_SELECTION = "submissionPeriod";
-  private static final String SCHEDULE_REFERENCE_SELECTION = "scheduleReference";
 
   private final FeatureFlagsConfig featureFlagsConfig;
   private final DataClaimsRestClient claimsRestService;
@@ -50,7 +44,7 @@ public class NilSubmissionPeriodController {
 
   @GetMapping("/nil-submission-period")
   public String getSubmissionPeriods(
-      @ModelAttribute("nilSubmissionForm") NilSubmissionForm selection, Model model) {
+      @ModelAttribute(NIL_SUBMISSION_FORM) NilSubmissionForm selection, Model model) {
 
     if (!featureFlagsConfig.getIsNilSubmissionEnabled()) {
       return "error";
@@ -96,7 +90,7 @@ public class NilSubmissionPeriodController {
 
   @PostMapping("/nil-submission-period")
   public String postSubmissionPeriod(
-      @ModelAttribute("nilSubmissionForm") NilSubmissionForm form,
+      @ModelAttribute(NIL_SUBMISSION_FORM) NilSubmissionForm form,
       @RequestParam String submissionPeriod) {
 
     if (!featureFlagsConfig.getIsNilSubmissionEnabled()) {
@@ -146,16 +140,6 @@ public class NilSubmissionPeriodController {
   private String getSubmissionDateFrom() {
     LocalDate lastDateOfMonth = YearMonth.from(LocalDate.now()).minusYears(1).atEndOfMonth();
     return getFormatted(lastDateOfMonth);
-  }
-
-  @ModelAttribute(NIL_SUBMISSION_SELECTION)
-  public Map<String, String> nilSubmissionSelection() {
-    HashMap<String, String> selectionMap = new HashMap<>();
-    selectionMap.put(OFFICE_SELECTION, "");
-    selectionMap.put(AREA_OF_LAW_SELECTION, "");
-    selectionMap.put(SUBMISSION_PERIOD_SELECTION, "");
-    selectionMap.put(SCHEDULE_REFERENCE_SELECTION, "");
-    return selectionMap;
   }
 
   static Map<String, String> getLastTwelveMonths() {

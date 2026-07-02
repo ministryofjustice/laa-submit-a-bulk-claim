@@ -70,13 +70,15 @@ class NilSubmissionSessionManagerTest {
   }
 
   @Test
-  void shouldReturnNullWhenPageIsOther() {
+  void shouldEmptySessionWhenPageIsOther() {
     NilSubmissionForm form = createPopulatedForm();
 
-    NilSubmissionForm result =
-        NilSubmissionSessionManager.nilSubmissionCleanseSession(form, NilSubmissionPage.OTHER);
+    NilSubmissionSessionManager.nilSubmissionCleanseSession(form, NilSubmissionPage.OTHER);
 
-    assertNull(result);
+    assertNull(form.getOffice());
+    assertNull(form.getAreaOfLaw());
+    assertNull(form.getSubmissionPeriod());
+    assertNull(form.getScheduleReference());
   }
 
   @Test

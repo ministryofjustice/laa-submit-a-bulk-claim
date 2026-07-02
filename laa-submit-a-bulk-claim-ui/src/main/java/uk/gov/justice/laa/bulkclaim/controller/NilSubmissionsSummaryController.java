@@ -1,5 +1,9 @@
 package uk.gov.justice.laa.bulkclaim.controller;
 
+import static uk.gov.justice.laa.bulkclaim.constants.AreaOfLawConstants.CRIME_LOWER;
+import static uk.gov.justice.laa.bulkclaim.constants.AreaOfLawConstants.LEGAL_HELP;
+import static uk.gov.justice.laa.bulkclaim.constants.AreaOfLawConstants.MEDIATION;
+import static uk.gov.justice.laa.bulkclaim.constants.SessionConstants.NIL_SUBMISSION_FORM;
 import static uk.gov.justice.laa.bulkclaim.constants.SessionConstants.SUBMISSION_ID;
 
 import com.fasterxml.uuid.Generators;
@@ -36,8 +40,9 @@ import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionStatus;
 @Controller
 @RequiredArgsConstructor
 @Slf4j
-@SessionAttributes({"nilSubmissionForm", SUBMISSION_ID})
+@SessionAttributes({NIL_SUBMISSION_FORM, SUBMISSION_ID})
 public class NilSubmissionsSummaryController {
+
   private final DataClaimsRestClient claimsRestService;
   private final FeatureFlagsConfig featureFlagsConfig;
   private final ObjectMapper objectMapper;
@@ -45,7 +50,7 @@ public class NilSubmissionsSummaryController {
 
   @GetMapping("/nil-submission-summary-details")
   public String getSummary(
-      @ModelAttribute("nilSubmissionForm") NilSubmissionForm form, Model model) {
+      @ModelAttribute(NIL_SUBMISSION_FORM) NilSubmissionForm form, Model model) {
 
     if (!featureFlagsConfig.getIsNilSubmissionEnabled()) {
       return "error";
@@ -59,7 +64,7 @@ public class NilSubmissionsSummaryController {
 
   @PostMapping("/nil-submission-summary-details")
   public String postSummary(
-      @ModelAttribute("nilSubmissionForm") NilSubmissionForm form,
+      @ModelAttribute(NIL_SUBMISSION_FORM) NilSubmissionForm form,
       RedirectAttributes redirectAttributes,
       Model model,
       @AuthenticationPrincipal OidcUser oidcUser) {
@@ -141,11 +146,10 @@ public class NilSubmissionsSummaryController {
 
   void setSubmissionReferenceByAreaOfLaw(NilSubmissionForm form, SubmissionPost submissionPost) {
     switch (form.getAreaOfLaw()) {
-      case "LEGAL_HELP" ->
+      case LEGAL_HELP ->
           submissionPost.setLegalHelpSubmissionReference(form.getScheduleReference());
-      case "MEDIATION" ->
-          submissionPost.setMediationSubmissionReference(form.getScheduleReference());
-      case "CRIME_LOWER" -> submissionPost.setCrimeLowerScheduleNumber(form.getScheduleReference());
+      case MEDIATION -> submissionPost.setMediationSubmissionReference(form.getScheduleReference());
+      case CRIME_LOWER -> submissionPost.setCrimeLowerScheduleNumber(form.getScheduleReference());
       default -> log.error("Area of law {} is not valid", form.getAreaOfLaw());
     }
   }

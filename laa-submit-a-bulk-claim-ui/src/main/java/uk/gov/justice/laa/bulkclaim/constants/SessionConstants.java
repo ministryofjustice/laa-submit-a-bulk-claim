@@ -11,5 +11,5 @@ public final class SessionConstants {
   public static final String UPLOADED_FILENAME = "uploadedFilename";
   public static final String CLAIM_ID = "claimId";
 
-  public static final String NIL_SUBMISSION_SELECTION = "nilSubmissionSelection";
+  public static final String NIL_SUBMISSION_FORM = "nilSubmissionForm";
 }

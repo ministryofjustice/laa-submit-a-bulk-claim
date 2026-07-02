@@ -46,7 +46,7 @@ class NilSubmissionAreaOfLawControllerTest {
     String view = controller.getAreasOfLaw(form, model);
 
     assertEquals("pages/nil-submission-areaoflaw", view);
-    verify(model).addAttribute(eq("areasOfLaw"), anySet());
+    verify(model).addAttribute(eq("areasOfLaw"), anyMap());
   }
 
   @Test

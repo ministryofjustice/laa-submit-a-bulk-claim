@@ -2,6 +2,7 @@ package uk.gov.justice.laa.bulkclaim.controller;
 
 import static uk.gov.justice.laa.bulkclaim.constants.NilSubmissionInfoMessageConstants.SUBMISSION_INFO_MESSAGE_PAGE_HEADING;
 import static uk.gov.justice.laa.bulkclaim.constants.NilSubmissionInfoMessageConstants.SUBMISSION_INFO_MESSAGE_TEXT;
+import static uk.gov.justice.laa.bulkclaim.constants.SessionConstants.NIL_SUBMISSION_FORM;
 
 import java.util.List;
 import java.util.Locale;
@@ -24,21 +25,21 @@ import uk.gov.justice.laa.bulkclaim.util.OidcAttributeUtils;
 
 @Controller
 @RequiredArgsConstructor
-@SessionAttributes("nilSubmissionForm")
+@SessionAttributes(NIL_SUBMISSION_FORM)
 public class NilSubmissionOfficeController {
 
   private final OidcAttributeUtils oidcAttributeUtils;
   private final FeatureFlagsConfig featureFlagsConfig;
   private final MessageSource messageSource;
 
-  @ModelAttribute("nilSubmissionForm")
+  @ModelAttribute(NIL_SUBMISSION_FORM)
   public NilSubmissionForm nilSubmissionForm() {
     return new NilSubmissionForm();
   }
 
   @GetMapping("/nil-submission-office")
   public String getNilSubmissionOffice(
-      @ModelAttribute("nilSubmissionForm") NilSubmissionForm form,
+      @ModelAttribute(NIL_SUBMISSION_FORM) NilSubmissionForm form,
       @AuthenticationPrincipal OidcUser oidcUser,
       Model model) {
 
@@ -66,7 +67,7 @@ public class NilSubmissionOfficeController {
 
   @PostMapping("/nil-submission-office")
   public String postNilSubmissionOffice(
-      @ModelAttribute("nilSubmissionForm") NilSubmissionForm form,
+      @ModelAttribute(NIL_SUBMISSION_FORM) NilSubmissionForm form,
       Model model,
       @RequestParam String office) {
     if (!featureFlagsConfig.getIsNilSubmissionEnabled()) {

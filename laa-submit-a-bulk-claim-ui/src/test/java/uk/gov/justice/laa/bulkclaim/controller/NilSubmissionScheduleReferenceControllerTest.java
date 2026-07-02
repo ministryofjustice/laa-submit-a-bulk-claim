@@ -14,12 +14,12 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.ui.Model;
 import uk.gov.justice.laa.bulkclaim.config.FeatureFlagsConfig;
 import uk.gov.justice.laa.bulkclaim.dto.submission.NilSubmissionForm;
-import uk.gov.justice.laa.bulkclaim.util.OidcAttributeUtils;
+import uk.gov.justice.laa.bulkclaim.util.NilSubmissionReferenceUtil;
 
 public class NilSubmissionScheduleReferenceControllerTest {
   @Mock private FeatureFlagsConfig featureFlagsConfig;
-  @Mock private OidcAttributeUtils oidcAttributeUtils;
   @Mock private Model model;
+  @Mock private NilSubmissionReferenceUtil nilSubmissionReferenceUtil;
 
   @InjectMocks private NilSubmissionScheduleReferenceController controller;
 
@@ -44,6 +44,8 @@ public class NilSubmissionScheduleReferenceControllerTest {
   @Test
   void whenFeatureFlagEnabled_getAreasOfLaw_addsAreasAndReturnsView() {
     when(featureFlagsConfig.getIsNilSubmissionEnabled()).thenReturn(true);
+    when(nilSubmissionReferenceUtil.getLabel(any(), any()))
+        .thenReturn("Mediation submission reference");
 
     NilSubmissionForm form = new NilSubmissionForm();
     form.setAreaOfLaw("MEDIATION");
