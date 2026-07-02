@@ -13,6 +13,7 @@ import java.util.Map;
 import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import org.jspecify.annotations.NonNull;
+import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -40,9 +41,13 @@ public class NilSubmissionPeriodController {
   private static final String AREA_OF_LAW_SELECTION = "areaOfLaw";
   private static final String SUBMISSION_PERIOD_SELECTION = "submissionPeriod";
   private static final String SCHEDULE_REFERENCE_SELECTION = "scheduleReference";
+  private static final String SUBMISSION_INFO_MESSAGE_TEXT = "submissionInfoMessageText";
+  private static final String SUBMISSION_INFO_MESSAGE_PAGE_HEADING =
+      "submissionInfoMessagePageHeading";
 
   private final FeatureFlagsConfig featureFlagsConfig;
   private final DataClaimsRestClient claimsRestService;
+  private final MessageSource messageSource;
 
   @GetMapping("/nil-submission-period")
   public String getSubmissionPeriods(
@@ -76,12 +81,17 @@ public class NilSubmissionPeriodController {
                 // pre-existing was wrong
                 "createdOn,desc")
             .block();
-
-    if (submissionsResults == null) {
-      return "pages/nil-submission-no-periods";
+    Map<String, String> submissionPeriods = getMonthsWithOutSubmissions(submissionsResults);
+    if (submissionPeriods.isEmpty()) {
+      model.addAttribute(
+          SUBMISSION_INFO_MESSAGE_PAGE_HEADING,
+          messageSource.getMessage("nilSubmission.noPeriods.primary.heading", null, Locale.UK));
+      model.addAttribute(
+          SUBMISSION_INFO_MESSAGE_TEXT,
+          messageSource.getMessage("nilSubmission.noPeriods.message", null, Locale.UK));
+      return "pages/nil-submission-info-message";
     }
-    System.out.println("PERIODS: " + getMonthsWithOutSubmissions(submissionsResults));
-    model.addAttribute("submissionPeriods", getMonthsWithOutSubmissions(submissionsResults));
+    model.addAttribute("submissionPeriods", submissionPeriods);
     return "pages/nil-submission-period";
   }
 

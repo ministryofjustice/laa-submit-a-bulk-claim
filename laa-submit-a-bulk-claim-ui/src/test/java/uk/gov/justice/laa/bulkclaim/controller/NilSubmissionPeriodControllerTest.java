@@ -27,6 +27,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
+import org.springframework.context.MessageSource;
 import org.springframework.ui.Model;
 import reactor.core.publisher.Mono;
 import uk.gov.justice.laa.bulkclaim.client.DataClaimsRestClient;
@@ -43,6 +44,7 @@ class NilSubmissionPeriodControllerTest {
 
   @Mock private DataClaimsRestClient claimsRestService;
   @Mock private FeatureFlagsConfig featureFlagsConfig;
+  @Mock private MessageSource messageSource;
 
   @InjectMocks private NilSubmissionPeriodController nilSubmissionPeriodController;
 
@@ -71,11 +73,12 @@ class NilSubmissionPeriodControllerTest {
     form.setAreaOfLaw(AreaOfLaw.MEDIATION.getValue());
     doReturn(true).when(featureFlagsConfig).getIsNilSubmissionEnabled();
 
-    final SubmissionsResultSet response = getSubmissionsEmptyPeriodResultSet();
+    final SubmissionsResultSet response = getSubmissionsResultSet(0);
 
     when(claimsRestService.search(
             anyList(), any(), any(), any(), anyInt(), anyInt(), any(), any(), any()))
         .thenReturn(Mono.just(response));
+    when(messageSource.getMessage(any(), any(), any())).thenReturn("Message");
 
     String view = nilSubmissionPeriodController.getSubmissionPeriods(form, model);
     assertEquals("pages/nil-submission-period", view);
@@ -89,7 +92,7 @@ class NilSubmissionPeriodControllerTest {
     form.setAreaOfLaw(AreaOfLaw.MEDIATION.getValue());
     doReturn(true).when(featureFlagsConfig).getIsNilSubmissionEnabled();
 
-    final SubmissionsResultSet response = getSubmissionsEmptyPeriodResultSet();
+    final SubmissionsResultSet response = getSubmissionsResultSet(0);
 
     when(claimsRestService.search(
             anyList(), any(), any(), any(), anyInt(), anyInt(), any(), any(), any()))
@@ -103,32 +106,22 @@ class NilSubmissionPeriodControllerTest {
   @Test
   void postNilSubmission_InvalidPeriod_ReturnsErrorView() {}
 
-  private static @NonNull SubmissionsResultSet getSubmissionsResultSet() {
-    SubmissionBase s1 = new SubmissionBase();
-    SubmissionBase s2 = new SubmissionBase();
-    List<SubmissionBase> content = new ArrayList<>();
-    content.add(s1.submissionPeriod("JAN-2026"));
-    content.add(s2.submissionPeriod("FEB-2026"));
+  @Test
+  void getNilSubmission_NoPeriods_ReturnsInfoMessageView() {
+    NilSubmissionForm form = new NilSubmissionForm();
+    form.setOffice("officeA");
+    form.setAreaOfLaw(AreaOfLaw.MEDIATION.getValue());
+    doReturn(true).when(featureFlagsConfig).getIsNilSubmissionEnabled();
 
-    final SubmissionsResultSet response = new SubmissionsResultSet();
-    response.setContent(content);
-    response.setTotalElements(2);
-    response.setNumber(0);
-    response.setSize(12);
-    response.setTotalPages(1);
-    return response;
-  }
+    final SubmissionsResultSet response = getSubmissionsResultSet(12);
 
-  private static @NonNull SubmissionsResultSet getSubmissionsEmptyPeriodResultSet() {
-    List<SubmissionBase> content = new ArrayList<>();
+    when(claimsRestService.search(
+            anyList(), any(), any(), any(), anyInt(), anyInt(), any(), any(), any()))
+        .thenReturn(Mono.just(response));
 
-    final SubmissionsResultSet response = new SubmissionsResultSet();
-    response.setContent(content);
-    response.setTotalElements(2);
-    response.setNumber(0);
-    response.setSize(12);
-    response.setTotalPages(1);
-    return response;
+    String view = nilSubmissionPeriodController.getSubmissionPeriods(form, model);
+    assertEquals("pages/nil-submission-info-message", view);
+    verify(model, times(0)).addAttribute(eq("submissionPeriods"), any(Map.class));
   }
 
   @Test
@@ -150,7 +143,7 @@ class NilSubmissionPeriodControllerTest {
 
   @Test
   void removedMatchingSubmissionPeriods() {
-    SubmissionsResultSet results = getSubmissionsResultSet();
+    SubmissionsResultSet results = getSubmissionsResultSet(2);
     Map<String, String> months = nilSubmissionPeriodController.getMonthsWithOutSubmissions(results);
     assertEquals(10, months.size());
     assertFalse(months.containsKey(results.getContent().get(0).getSubmissionPeriod()));
@@ -169,12 +162,33 @@ class NilSubmissionPeriodControllerTest {
 
     when(claimsRestService.search(
             anyList(), any(), any(), any(), anyInt(), anyInt(), any(), any(), any()))
-        .thenReturn(Mono.just(getSubmissionsEmptyPeriodResultSet()));
+        .thenReturn(Mono.just(getSubmissionsResultSet(0)));
 
     nilSubmissionPeriodController.getSubmissionPeriods(form, model);
     assertNotNull(form.getOffice());
     assertNotNull(form.getAreaOfLaw());
     assertNotNull(form.getSubmissionPeriod());
     assertNull(form.getScheduleReference());
+  }
+
+  private @NonNull SubmissionsResultSet getSubmissionsResultSet(int noOfPeriods) {
+
+    List<SubmissionBase> content = new ArrayList<>();
+    YearMonth ym = YearMonth.now().minusMonths(1);
+    for (int i = 0; i < noOfPeriods; i++) {
+      SubmissionBase s1 = new SubmissionBase();
+      content.add(
+          s1.submissionPeriod(
+              ym.format(DateTimeFormatter.ofPattern("MMM-yyyy", Locale.ENGLISH)).toUpperCase()));
+      ym = ym.minusMonths(1);
+    }
+
+    final SubmissionsResultSet response = new SubmissionsResultSet();
+    response.setContent(content);
+    response.setTotalElements(2);
+    response.setNumber(0);
+    response.setSize(12);
+    response.setTotalPages(1);
+    return response;
   }
 }
