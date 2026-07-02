@@ -1,23 +1,21 @@
 <!DOCTYPE HTML>
 <html lang="en" class="govuk-template" xmlns:th="http://www.thymeleaf.org"
-      th:replace="~{ layout/main-layout :: layout(#{nilSubmission.noPeriods.heading}, ~{::main},
+      th:replace="~{ layout/main-layout :: layout(#{nilSubmission.heading}, ~{::main},
        ~{::#back-link},~{})}">
 
-<th:block id="back-link">
-    <a th:href="@{/nil-submission-areaoflaw}"
-       class="govuk-back-link"
-       th:text="#{common.back}"/>
-</th:block>
+<!--<th:block id="back-link">-->
+<!--    <a th:href="@{/nil-submission-areaoflaw}"-->
+<!--       class="govuk-back-link"-->
+<!--       th:text="#{common.back}"/>-->
+<!--</th:block>-->
 
 <main class="govuk-main-wrapper" id="main-content">
     <div class="govuk-grid-row">
         <div class="govuk-grid-column-full">
-            <h1 class="govuk-heading-l" th:text="#{nilSubmission.reference.heading}"></h1>
+            <h1 class="govuk-heading-l" th:text="${submissionInfoMessagePageHeading}"></h1>
             <th:block th:replace="~{fragments/nil-submission-summary :: nil-submission-summary}"/>
 
-            <p class="govuk-body">
-                No submission periods are available for the combination of office account and area of law you selected.
-            </p>
+            <p class="govuk-body" th:text="${submissionInfoMessageText}"></p>
             <p class="govuk-body">
                 Go back to
                 <a
