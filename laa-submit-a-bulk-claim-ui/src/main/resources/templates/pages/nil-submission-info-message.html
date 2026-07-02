@@ -3,11 +3,11 @@
       th:replace="~{ layout/main-layout :: layout(#{nilSubmission.heading}, ~{::main},
        ~{::#back-link},~{})}">
 
-<!--<th:block id="back-link">-->
-<!--    <a th:href="@{/nil-submission-areaoflaw}"-->
-<!--       class="govuk-back-link"-->
-<!--       th:text="#{common.back}"/>-->
-<!--</th:block>-->
+<th:block id="back-link">
+    <a th:href="@{/nil-submission-areaoflaw}"
+       class="govuk-back-link"
+       th:text="#{common.back}"/>
+</th:block>
 
 <main class="govuk-main-wrapper" id="main-content">
     <div class="govuk-grid-row">
@@ -19,14 +19,14 @@
             <p class="govuk-body">
                 Go back to
                 <a
-                        th:href="@{/upload}"
+                        th:href="@{/nil-submission-cancel(destination='UPLOAD')}"
                         th:data-testid="submit-a-bulk-claim"
                         class="govuk-link govuk-link--no-visited-state">
                     <th:block th:text="#{nilSubmission.submit}"></th:block>
                 </a>
                 or
                 <a
-                        th:href="@{/submissions/search}"
+                        th:href="@{/nil-submission-cancel(destination='SEARCH')}"
                         th:data-testid="search-for-previous-submission"
                         class="govuk-link govuk-link--no-visited-state">
                     <th:block th:text="#{nilSubmission.search}"></th:block>
