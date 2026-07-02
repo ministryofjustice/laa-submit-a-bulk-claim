@@ -25,6 +25,8 @@ updates:
     directory: "/"
     schedule:
       interval: "daily"
+    cooldown:
+      default-days: 7
     registries:
       - maven-central
       - spring-boot-common-github-packages
@@ -40,6 +42,8 @@ updates:
     directory: "/"
     schedule:
       interval: "daily"
+    cooldown:
+      default-days: 7
     groups:
       github-actions:
         patterns:
@@ -48,6 +52,9 @@ updates:
     directory: "/"
     schedule:
       interval: "daily"
+    cooldown:
+      default-days: 7
+
     groups:
       npm-dependencies:
         patterns:
