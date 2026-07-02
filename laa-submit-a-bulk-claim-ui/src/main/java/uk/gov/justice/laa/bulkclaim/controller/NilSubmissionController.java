@@ -122,7 +122,6 @@ public class NilSubmissionController {
           .forEach(
               submission -> {
                 String period = submissionPeriodUtil.getSubmissionPeriod(submission);
-                System.out.println("period: " + period);
                 if (period != null) {
                   nonSubmissionMonths.remove(period);
                 }

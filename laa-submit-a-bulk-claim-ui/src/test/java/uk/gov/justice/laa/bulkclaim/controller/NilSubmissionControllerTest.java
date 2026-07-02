@@ -159,7 +159,7 @@ class NilSubmissionControllerTest {
 
   @Test
   void removedMatchingSubmissionPeriods() {
-    String ym = YearMonth.now().minusMonths(1).format(DateTimeFormatter.ofPattern("MMM uuuu"));
+    String ym = YearMonth.now().minusMonths(1).format(DateTimeFormatter.ofPattern("MMMM uuuu"));
     when(submissionPeriodUtil.getSubmissionPeriod(any())).thenReturn(ym);
     Set<String> months =
         nilSubmissionController.getMonthsWithOutSubmissions(getSubmissionsResultSet());
