@@ -1,5 +1,7 @@
 package uk.gov.justice.laa.bulkclaim.controller;
 
+import static uk.gov.justice.laa.bulkclaim.constants.NilSubmissionInfoMessageConstants.SUBMISSION_INFO_MESSAGE_PAGE_HEADING;
+import static uk.gov.justice.laa.bulkclaim.constants.NilSubmissionInfoMessageConstants.SUBMISSION_INFO_MESSAGE_TEXT;
 import static uk.gov.justice.laa.bulkclaim.constants.SessionConstants.NIL_SUBMISSION_SELECTION;
 import static uk.gov.justice.laa.bulkclaim.dto.SubmissionOutcomeFilter.SUCCEEDED;
 
@@ -41,9 +43,6 @@ public class NilSubmissionPeriodController {
   private static final String AREA_OF_LAW_SELECTION = "areaOfLaw";
   private static final String SUBMISSION_PERIOD_SELECTION = "submissionPeriod";
   private static final String SCHEDULE_REFERENCE_SELECTION = "scheduleReference";
-  private static final String SUBMISSION_INFO_MESSAGE_TEXT = "submissionInfoMessageText";
-  private static final String SUBMISSION_INFO_MESSAGE_PAGE_HEADING =
-      "submissionInfoMessagePageHeading";
 
   private final FeatureFlagsConfig featureFlagsConfig;
   private final DataClaimsRestClient claimsRestService;

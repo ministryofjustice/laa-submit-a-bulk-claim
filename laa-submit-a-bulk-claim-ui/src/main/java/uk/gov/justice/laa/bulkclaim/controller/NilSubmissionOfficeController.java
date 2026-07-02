@@ -1,7 +1,12 @@
 package uk.gov.justice.laa.bulkclaim.controller;
 
+import static uk.gov.justice.laa.bulkclaim.constants.NilSubmissionInfoMessageConstants.SUBMISSION_INFO_MESSAGE_PAGE_HEADING;
+import static uk.gov.justice.laa.bulkclaim.constants.NilSubmissionInfoMessageConstants.SUBMISSION_INFO_MESSAGE_TEXT;
+
 import java.util.List;
+import java.util.Locale;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.MessageSource;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.core.oidc.user.OidcUser;
 import org.springframework.stereotype.Controller;
@@ -24,6 +29,7 @@ public class NilSubmissionOfficeController {
 
   private final OidcAttributeUtils oidcAttributeUtils;
   private final FeatureFlagsConfig featureFlagsConfig;
+  private final MessageSource messageSource;
 
   @ModelAttribute("nilSubmissionForm")
   public NilSubmissionForm nilSubmissionForm() {
@@ -43,6 +49,15 @@ public class NilSubmissionOfficeController {
     NilSubmissionSessionManager.nilSubmissionCleanseSession(form, NilSubmissionPage.OFFICE);
 
     List<String> userOffices = oidcAttributeUtils.getUserOffices(oidcUser);
+    if (userOffices.isEmpty()) {
+      model.addAttribute(
+          SUBMISSION_INFO_MESSAGE_PAGE_HEADING,
+          messageSource.getMessage("nilSubmission.noOffices.primary.heading", null, Locale.UK));
+      model.addAttribute(
+          SUBMISSION_INFO_MESSAGE_TEXT,
+          messageSource.getMessage("nilSubmission.noOffices.message", null, Locale.UK));
+      return "pages/nil-submission-info-message";
+    }
     form.setOfficeCount(userOffices.size());
     model.addAttribute("userOffices", userOffices);
 

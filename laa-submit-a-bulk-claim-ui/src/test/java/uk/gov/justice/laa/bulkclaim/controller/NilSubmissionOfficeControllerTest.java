@@ -17,6 +17,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.context.MessageSource;
 import org.springframework.security.oauth2.core.oidc.user.OidcUser;
 import org.springframework.ui.Model;
 import uk.gov.justice.laa.bulkclaim.config.FeatureFlagsConfig;
@@ -27,6 +28,7 @@ class NilSubmissionOfficeControllerTest {
 
   @Mock private FeatureFlagsConfig featureFlagsConfig;
   @Mock private OidcAttributeUtils oidcAttributeUtils;
+  @Mock private MessageSource messageSource;
   @Mock private Model model;
 
   @InjectMocks private NilSubmissionOfficeController controller;
@@ -60,6 +62,19 @@ class NilSubmissionOfficeControllerTest {
 
     assertEquals("pages/nil-submission-office", view);
     verify(model).addAttribute("userOffices", offices);
+  }
+
+  @Test
+  void whenFeatureFlagEnabled_getOffice_no_offices_return_info_message() {
+    when(featureFlagsConfig.getIsNilSubmissionEnabled()).thenReturn(true);
+    List<String> offices = List.of();
+    doReturn(offices).when(oidcAttributeUtils).getUserOffices(any(OidcUser.class));
+
+    NilSubmissionForm form = new NilSubmissionForm();
+    String view = controller.getNilSubmissionOffice(form, getOidcUser(), model);
+
+    assertEquals("pages/nil-submission-info-message", view);
+    verify(model, never()).addAttribute(eq("userOffices"), any());
   }
 
   @Test
