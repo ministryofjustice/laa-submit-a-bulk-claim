@@ -6,9 +6,9 @@ import static uk.gov.justice.laa.bulkclaim.constants.AreaOfLawConstants.MEDIATIO
 import static uk.gov.justice.laa.bulkclaim.constants.SessionConstants.NIL_SUBMISSION_FORM;
 import static uk.gov.justice.laa.bulkclaim.constants.SessionConstants.SUBMISSION_ID;
 
-import com.fasterxml.uuid.Generators;
 import java.time.OffsetDateTime;
 import java.util.List;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -72,20 +72,7 @@ public class NilSubmissionsSummaryController {
     if (!featureFlagsConfig.getIsNilSubmissionEnabled()) {
       return "error";
     }
-    SubmissionPost submissionPost =
-        SubmissionPost.builder()
-            .officeAccountNumber(form.getOffice())
-            .numberOfClaims(0)
-            .status(SubmissionStatus.READY_FOR_VALIDATION)
-            .areaOfLaw(AreaOfLaw.valueOf(form.getAreaOfLaw()))
-            .isNilSubmission(true)
-            .submissionId(Generators.timeBasedEpochGenerator().generate())
-            .submissionPeriod(form.getSubmissionPeriod())
-            .providerUserId(oidcUser.getPreferredUsername())
-            .createdByUserId("Submit-a-bulk-claim")
-            .build();
-
-    setSubmissionReferenceByAreaOfLaw(form, submissionPost);
+    SubmissionPost submissionPost = buildSubmissionPost(form, oidcUser);
 
     try {
       ResponseEntity<CreateSubmission201Response> responseEntity =
@@ -115,15 +102,7 @@ public class NilSubmissionsSummaryController {
         log.error("API upload failed: {}", errorMessages.getFirst());
 
         NilSubmissionMessagesSummary summary =
-            NilSubmissionMessagesSummary.builder()
-                .totalMessageCount(errorMessages.size())
-                .submitted(OffsetDateTime.now())
-                .officeAccount(form.getOffice())
-                .areaOfLaw(form.getAreaOfLaw())
-                .submissionPeriod(form.getSubmissionPeriod())
-                .submissionReference(form.getScheduleReference())
-                .messages(errorMessages)
-                .build();
+            buildNilSubmissionMessagesSummary(form, errorMessages);
 
         String label = nilSubmissionReferenceUtil.getLabel(form.getAreaOfLaw(), "reference");
 
@@ -142,6 +121,37 @@ public class NilSubmissionsSummaryController {
       log.error("Failed to submit nil submission API failure: {}", e.getMessage());
       return "error";
     }
+  }
+
+  private static NilSubmissionMessagesSummary buildNilSubmissionMessagesSummary(
+      NilSubmissionForm form, List<String> errorMessages) {
+    return NilSubmissionMessagesSummary.builder()
+        .totalMessageCount(errorMessages.size())
+        .submitted(OffsetDateTime.now())
+        .officeAccount(form.getOffice())
+        .areaOfLaw(form.getAreaOfLaw())
+        .submissionPeriod(form.getSubmissionPeriod())
+        .submissionReference(form.getScheduleReference())
+        .messages(errorMessages)
+        .build();
+  }
+
+  private SubmissionPost buildSubmissionPost(NilSubmissionForm form, OidcUser oidcUser) {
+    SubmissionPost submissionPost =
+        SubmissionPost.builder()
+            .officeAccountNumber(form.getOffice())
+            .numberOfClaims(0)
+            .status(SubmissionStatus.READY_FOR_VALIDATION)
+            .areaOfLaw(AreaOfLaw.valueOf(form.getAreaOfLaw()))
+            .isNilSubmission(true)
+            .submissionId(UUID.randomUUID())
+            .submissionPeriod(form.getSubmissionPeriod())
+            .providerUserId(oidcUser.getPreferredUsername())
+            .createdByUserId("Submit-a-bulk-claim")
+            .build();
+
+    setSubmissionReferenceByAreaOfLaw(form, submissionPost);
+    return submissionPost;
   }
 
   void setSubmissionReferenceByAreaOfLaw(NilSubmissionForm form, SubmissionPost submissionPost) {
