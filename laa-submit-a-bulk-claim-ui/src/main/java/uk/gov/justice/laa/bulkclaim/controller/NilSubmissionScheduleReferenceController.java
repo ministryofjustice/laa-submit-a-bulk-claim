@@ -30,8 +30,12 @@ public class NilSubmissionScheduleReferenceController {
       return "error";
     }
 
-    String label = nilSubmissionReferenceUtil.getLabel(form.getAreaOfLaw(), "reference");
-    String exampleText = nilSubmissionReferenceUtil.getLabel(form.getAreaOfLaw(), "example");
+    String label =
+        nilSubmissionReferenceUtil.getSubmissionReferenceByAreaOfLaw(
+            form.getAreaOfLaw(), "reference");
+    String exampleText =
+        nilSubmissionReferenceUtil.getSubmissionReferenceByAreaOfLaw(
+            form.getAreaOfLaw(), "example");
 
     model.addAttribute("referenceLabel", label);
     model.addAttribute("exampleText", exampleText);

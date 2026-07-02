@@ -44,7 +44,7 @@ public class NilSubmissionScheduleReferenceControllerTest {
   @Test
   void whenFeatureFlagEnabled_getAreasOfLaw_addsAreasAndReturnsView() {
     when(featureFlagsConfig.getIsNilSubmissionEnabled()).thenReturn(true);
-    when(nilSubmissionReferenceUtil.getLabel(any(), any()))
+    when(nilSubmissionReferenceUtil.getSubmissionReferenceByAreaOfLaw(any(), any()))
         .thenReturn("Mediation submission reference");
 
     NilSubmissionForm form = new NilSubmissionForm();

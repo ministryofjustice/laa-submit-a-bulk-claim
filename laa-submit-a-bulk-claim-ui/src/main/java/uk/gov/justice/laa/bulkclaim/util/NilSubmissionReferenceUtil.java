@@ -14,7 +14,7 @@ import org.springframework.stereotype.Component;
 public class NilSubmissionReferenceUtil {
   private final MessageSource messageSource;
 
-  public String getLabel(String areaOfLaw, String messageSuffix) {
+  public String getSubmissionReferenceByAreaOfLaw(String areaOfLaw, String messageSuffix) {
     String key =
         switch (areaOfLaw) {
           case LEGAL_HELP -> "nilSubmission.civil." + messageSuffix;

@@ -56,7 +56,9 @@ public class NilSubmissionsSummaryController {
       return "error";
     }
 
-    String label = nilSubmissionReferenceUtil.getLabel(form.getAreaOfLaw(), "reference");
+    String label =
+        nilSubmissionReferenceUtil.getSubmissionReferenceByAreaOfLaw(
+            form.getAreaOfLaw(), "reference");
     model.addAttribute("referenceLabel", label);
 
     return "pages/nil-submission-summary-details";
@@ -104,7 +106,9 @@ public class NilSubmissionsSummaryController {
         NilSubmissionMessagesSummary summary =
             buildNilSubmissionMessagesSummary(form, errorMessages);
 
-        String label = nilSubmissionReferenceUtil.getLabel(form.getAreaOfLaw(), "reference");
+        String label =
+            nilSubmissionReferenceUtil.getSubmissionReferenceByAreaOfLaw(
+                form.getAreaOfLaw(), "reference");
 
         model.addAttribute("messagesSummary", summary);
         model.addAttribute("referenceLabel", label);
