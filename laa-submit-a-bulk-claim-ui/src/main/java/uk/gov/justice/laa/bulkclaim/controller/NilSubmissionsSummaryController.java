@@ -127,7 +127,7 @@ public class NilSubmissionsSummaryController {
     }
   }
 
-  private static NilSubmissionMessagesSummary buildNilSubmissionMessagesSummary(
+  static NilSubmissionMessagesSummary buildNilSubmissionMessagesSummary(
       NilSubmissionForm form, List<String> errorMessages) {
     return NilSubmissionMessagesSummary.builder()
         .totalMessageCount(errorMessages.size())
@@ -140,7 +140,7 @@ public class NilSubmissionsSummaryController {
         .build();
   }
 
-  private SubmissionPost buildSubmissionPost(NilSubmissionForm form, OidcUser oidcUser) {
+  SubmissionPost buildSubmissionPost(NilSubmissionForm form, OidcUser oidcUser) {
     SubmissionPost submissionPost =
         SubmissionPost.builder()
             .officeAccountNumber(form.getOffice())
