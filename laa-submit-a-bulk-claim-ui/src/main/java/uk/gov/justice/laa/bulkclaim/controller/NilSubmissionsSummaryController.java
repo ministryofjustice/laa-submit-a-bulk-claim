@@ -5,11 +5,8 @@ import static uk.gov.justice.laa.bulkclaim.constants.SessionConstants.SUBMISSION
 import com.fasterxml.uuid.Generators;
 import java.time.OffsetDateTime;
 import java.util.List;
-import java.util.Locale;
-
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.context.MessageSource;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.core.oidc.user.OidcUser;
@@ -29,6 +26,7 @@ import uk.gov.justice.laa.bulkclaim.dto.submission.NilSubmissionForm;
 import uk.gov.justice.laa.bulkclaim.dto.submission.SubmissionValidationErrorResponse;
 import uk.gov.justice.laa.bulkclaim.dto.submission.messages.NilSubmissionMessagesSummary;
 import uk.gov.justice.laa.bulkclaim.util.NilSubmissionPage;
+import uk.gov.justice.laa.bulkclaim.util.NilSubmissionReferenceUtil;
 import uk.gov.justice.laa.bulkclaim.util.NilSubmissionSessionManager;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.AreaOfLaw;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.CreateSubmission201Response;
@@ -43,24 +41,18 @@ public class NilSubmissionsSummaryController {
   private final DataClaimsRestClient claimsRestService;
   private final FeatureFlagsConfig featureFlagsConfig;
   private final ObjectMapper objectMapper;
-    private final MessageSource messageSource;
+  private final NilSubmissionReferenceUtil nilSubmissionReferenceUtil;
 
   @GetMapping("/nil-submission-summary-details")
-  public String getSummary(@ModelAttribute("nilSubmissionForm") NilSubmissionForm form,  Model model) {
+  public String getSummary(
+      @ModelAttribute("nilSubmissionForm") NilSubmissionForm form, Model model) {
 
     if (!featureFlagsConfig.getIsNilSubmissionEnabled()) {
       return "error";
     }
 
-      String label =
-              switch (form.getAreaOfLaw()) {
-                  case "LEGAL_HELP" -> messageSource.getMessage("nilSubmission.civil.reference", null, Locale.UK);
-                  case "MEDIATION" -> messageSource.getMessage("nilSubmission.mediation.reference", null, Locale.UK);
-                  case "CRIME_LOWER" -> messageSource.getMessage("nilSubmission.crime.reference", null, Locale.UK);
-                  default -> throw new IllegalStateException("Unexpected value: " + form.getAreaOfLaw());
-              };
-
-      model.addAttribute("referenceLabel", label);
+    String label = nilSubmissionReferenceUtil.getLabel(form.getAreaOfLaw(), "reference");
+    model.addAttribute("referenceLabel", label);
 
     return "pages/nil-submission-summary-details";
   }
@@ -78,7 +70,6 @@ public class NilSubmissionsSummaryController {
             .numberOfClaims(0)
             .status(SubmissionStatus.READY_FOR_VALIDATION)
             .areaOfLaw(AreaOfLaw.valueOf(form.getAreaOfLaw()))
-            .legalHelpSubmissionReference(form.getScheduleReference())
             .isNilSubmission(true)
             .submissionId(Generators.timeBasedEpochGenerator().generate())
             .submissionPeriod(form.getSubmissionPeriod())
@@ -133,7 +124,10 @@ public class NilSubmissionsSummaryController {
                 .messages(errorMessages)
                 .build();
 
+        String label = nilSubmissionReferenceUtil.getLabel(form.getAreaOfLaw(), "reference");
+
         model.addAttribute("messagesSummary", summary);
+        model.addAttribute("referenceLabel", label);
 
       } catch (Exception ex) {
         log.error(
