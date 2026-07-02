@@ -5,8 +5,11 @@ import static uk.gov.justice.laa.bulkclaim.constants.SessionConstants.SUBMISSION
 import com.fasterxml.uuid.Generators;
 import java.time.OffsetDateTime;
 import java.util.List;
+import java.util.Locale;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.MessageSource;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.core.oidc.user.OidcUser;
@@ -40,13 +43,24 @@ public class NilSubmissionsSummaryController {
   private final DataClaimsRestClient claimsRestService;
   private final FeatureFlagsConfig featureFlagsConfig;
   private final ObjectMapper objectMapper;
+    private final MessageSource messageSource;
 
   @GetMapping("/nil-submission-summary-details")
-  public String getSummary() {
+  public String getSummary(@ModelAttribute("nilSubmissionForm") NilSubmissionForm form,  Model model) {
 
     if (!featureFlagsConfig.getIsNilSubmissionEnabled()) {
       return "error";
     }
+
+      String label =
+              switch (form.getAreaOfLaw()) {
+                  case "LEGAL_HELP" -> messageSource.getMessage("nilSubmission.civil.reference", null, Locale.UK);
+                  case "MEDIATION" -> messageSource.getMessage("nilSubmission.mediation.reference", null, Locale.UK);
+                  case "CRIME_LOWER" -> messageSource.getMessage("nilSubmission.crime.reference", null, Locale.UK);
+                  default -> throw new IllegalStateException("Unexpected value: " + form.getAreaOfLaw());
+              };
+
+      model.addAttribute("referenceLabel", label);
 
     return "pages/nil-submission-summary-details";
   }

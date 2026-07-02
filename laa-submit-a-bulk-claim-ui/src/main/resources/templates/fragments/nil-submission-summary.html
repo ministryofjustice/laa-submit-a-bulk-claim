@@ -40,7 +40,7 @@
           </td>
       </tr>
       <tr class="govuk-table__row" th:if="${nilSubmissionForm.scheduleReference != null}">
-          <td class="govuk-table__cell govuk-!-font-weight-bold" th:text="#{nilSubmission.reference.changeValue}"></td>
+          <td class="govuk-table__cell govuk-!-font-weight-bold" th:text="${referenceLabel}"></td>
           <td class="govuk-table__cell" th:text="${nilSubmissionForm.scheduleReference}"/>
           <td class="govuk-table__cell">
               <a

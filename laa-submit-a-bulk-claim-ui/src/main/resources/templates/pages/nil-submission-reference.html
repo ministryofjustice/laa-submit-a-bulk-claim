@@ -20,12 +20,13 @@
                       method="post">
                     <div class="govuk-form-group">
                         <fieldset class="govuk-fieldset">
-                            <div class="govuk-radios govuk-radios--inline govuk-radios--small"
+                            <div class="govuk-body"
                                  data-module="govuk-radios" id="arias-of-law-input-container">
                                 <label class="govuk-label govuk-label--m"
                                        for="schedule-reference"
                                        th:text="${referenceLabel}">
                                 </label>
+                                <div id="nil-submission-example-hint" class="govuk-hint" th:text="${exampleText}"></div>
                                 <input class="govuk-input"
                                        id="schedule-reference"
                                        type="text"
