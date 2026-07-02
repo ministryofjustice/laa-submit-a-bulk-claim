@@ -64,6 +64,9 @@ public class NilSubmissionsSummaryController {
       Model model,
       @AuthenticationPrincipal OidcUser oidcUser) {
 
+    if (!featureFlagsConfig.getIsNilSubmissionEnabled()) {
+      return "error";
+    }
     SubmissionPost submissionPost =
         SubmissionPost.builder()
             .officeAccountNumber(form.getOffice())
@@ -77,14 +80,7 @@ public class NilSubmissionsSummaryController {
             .createdByUserId("Submit-a-bulk-claim")
             .build();
 
-    switch (form.getAreaOfLaw()) {
-      case "LEGAL_HELP" ->
-          submissionPost.setLegalHelpSubmissionReference(form.getScheduleReference());
-      case "MEDIATION" ->
-          submissionPost.setMediationSubmissionReference(form.getScheduleReference());
-      case "CRIME_LOWER" -> submissionPost.setCrimeLowerScheduleNumber(form.getScheduleReference());
-      default -> log.error("Area of law {} is not valid", form.getAreaOfLaw());
-    }
+    setSubmissionReferenceByAreaOfLaw(form, submissionPost);
 
     try {
       ResponseEntity<CreateSubmission201Response> responseEntity =
@@ -140,6 +136,17 @@ public class NilSubmissionsSummaryController {
     } catch (Exception e) {
       log.error("Failed to submit nil submission API failure: {}", e.getMessage());
       return "error";
+    }
+  }
+
+  void setSubmissionReferenceByAreaOfLaw(NilSubmissionForm form, SubmissionPost submissionPost) {
+    switch (form.getAreaOfLaw()) {
+      case "LEGAL_HELP" ->
+          submissionPost.setLegalHelpSubmissionReference(form.getScheduleReference());
+      case "MEDIATION" ->
+          submissionPost.setMediationSubmissionReference(form.getScheduleReference());
+      case "CRIME_LOWER" -> submissionPost.setCrimeLowerScheduleNumber(form.getScheduleReference());
+      default -> log.error("Area of law {} is not valid", form.getAreaOfLaw());
     }
   }
 }
