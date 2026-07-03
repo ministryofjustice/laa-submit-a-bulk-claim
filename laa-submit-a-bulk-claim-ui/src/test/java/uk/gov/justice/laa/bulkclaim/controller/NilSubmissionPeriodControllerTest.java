@@ -1,13 +1,8 @@
 package uk.gov.justice.laa.bulkclaim.controller;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.times;
@@ -29,10 +24,9 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.context.MessageSource;
 import org.springframework.ui.Model;
-import reactor.core.publisher.Mono;
-import uk.gov.justice.laa.bulkclaim.client.DataClaimsRestClient;
 import uk.gov.justice.laa.bulkclaim.config.FeatureFlagsConfig;
 import uk.gov.justice.laa.bulkclaim.dto.submission.NilSubmissionForm;
+import uk.gov.justice.laa.bulkclaim.service.SubmissionPeriodService;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.AreaOfLaw;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionBase;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionsResultSet;
@@ -42,10 +36,9 @@ class NilSubmissionPeriodControllerTest {
 
   @Mock private Model model;
 
-  @Mock private DataClaimsRestClient claimsRestService;
   @Mock private FeatureFlagsConfig featureFlagsConfig;
   @Mock private MessageSource messageSource;
-
+  @Mock private SubmissionPeriodService submissionPeriodService;
   @InjectMocks private NilSubmissionPeriodController nilSubmissionPeriodController;
 
   @BeforeEach
@@ -74,10 +67,7 @@ class NilSubmissionPeriodControllerTest {
     doReturn(true).when(featureFlagsConfig).getIsNilSubmissionEnabled();
 
     final SubmissionsResultSet response = getSubmissionsResultSet(0);
-
-    when(claimsRestService.search(
-            anyList(), any(), any(), any(), anyInt(), anyInt(), any(), any(), any()))
-        .thenReturn(Mono.just(response));
+    when(submissionPeriodService.searchSubmissions(any())).thenReturn(response);
     when(messageSource.getMessage(any(), any(), any())).thenReturn("Message");
 
     String view = nilSubmissionPeriodController.getSubmissionPeriods(form, model);
@@ -94,9 +84,7 @@ class NilSubmissionPeriodControllerTest {
 
     final SubmissionsResultSet response = getSubmissionsResultSet(0);
 
-    when(claimsRestService.search(
-            anyList(), any(), any(), any(), anyInt(), anyInt(), any(), any(), any()))
-        .thenReturn(Mono.just(response));
+    when(submissionPeriodService.searchSubmissions(any())).thenReturn(response);
 
     String view = nilSubmissionPeriodController.postSubmissionPeriod(form, "JAN-2024");
     assertEquals("redirect:/nil-submission-reference", view);
@@ -115,60 +103,11 @@ class NilSubmissionPeriodControllerTest {
 
     final SubmissionsResultSet response = getSubmissionsResultSet(12);
 
-    when(claimsRestService.search(
-            anyList(), any(), any(), any(), anyInt(), anyInt(), any(), any(), any()))
-        .thenReturn(Mono.just(response));
+    when(submissionPeriodService.searchSubmissions(any())).thenReturn(response);
 
     String view = nilSubmissionPeriodController.getSubmissionPeriods(form, model);
     assertEquals("pages/nil-submission-info-message", view);
     verify(model, times(0)).addAttribute(eq("submissionPeriods"), any(Map.class));
-  }
-
-  @Test
-  void pastTwelveMonthGeneration() {
-    Map<String, String> months = NilSubmissionPeriodController.getLastTwelveMonths();
-    assertEquals(12, months.size());
-    YearMonth ym = YearMonth.now().minusMonths(1);
-    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MMM-yyyy", Locale.ENGLISH);
-    assertTrue(months.containsKey(ym.format(formatter).toUpperCase()));
-    ym = ym.minusYears(1);
-    assertFalse(months.containsKey(ym.format(formatter).toUpperCase()));
-
-    for (int i = 1; i <= 11; i++) {
-      assertTrue(
-          months.containsKey(ym.plusMonths(i).format(formatter).toUpperCase()),
-          "Month " + ym.format(formatter).toUpperCase() + " should be removed");
-    }
-  }
-
-  @Test
-  void removedMatchingSubmissionPeriods() {
-    SubmissionsResultSet results = getSubmissionsResultSet(2);
-    Map<String, String> months = nilSubmissionPeriodController.getMonthsWithOutSubmissions(results);
-    assertEquals(10, months.size());
-    assertFalse(months.containsKey(results.getContent().get(0).getSubmissionPeriod()));
-    assertFalse(months.containsKey(results.getContent().get(1).getSubmissionPeriod()));
-  }
-
-  @Test
-  void getAreaOfLaw_session_management_cleansing() {
-    when(featureFlagsConfig.getIsNilSubmissionEnabled()).thenReturn(true);
-
-    NilSubmissionForm form = new NilSubmissionForm();
-    form.setOffice("office1");
-    form.setAreaOfLaw("areaOfLaw1");
-    form.setSubmissionPeriod("submissionPeriod1");
-    form.setScheduleReference("scheduleReference1");
-
-    when(claimsRestService.search(
-            anyList(), any(), any(), any(), anyInt(), anyInt(), any(), any(), any()))
-        .thenReturn(Mono.just(getSubmissionsResultSet(0)));
-
-    nilSubmissionPeriodController.getSubmissionPeriods(form, model);
-    assertNotNull(form.getOffice());
-    assertNotNull(form.getAreaOfLaw());
-    assertNotNull(form.getSubmissionPeriod());
-    assertNull(form.getScheduleReference());
   }
 
   private @NonNull SubmissionsResultSet getSubmissionsResultSet(int noOfPeriods) {

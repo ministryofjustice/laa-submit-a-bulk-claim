@@ -3,17 +3,12 @@ package uk.gov.justice.laa.bulkclaim.controller;
 import static uk.gov.justice.laa.bulkclaim.constants.NilSubmissionInfoMessageConstants.SUBMISSION_INFO_MESSAGE_PAGE_HEADING;
 import static uk.gov.justice.laa.bulkclaim.constants.NilSubmissionInfoMessageConstants.SUBMISSION_INFO_MESSAGE_TEXT;
 import static uk.gov.justice.laa.bulkclaim.constants.SessionConstants.NIL_SUBMISSION_FORM;
-import static uk.gov.justice.laa.bulkclaim.dto.SubmissionOutcomeFilter.SUCCEEDED;
 
-import java.time.LocalDate;
 import java.time.YearMonth;
 import java.time.format.DateTimeFormatter;
-import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Objects;
 import lombok.RequiredArgsConstructor;
-import org.jspecify.annotations.NonNull;
 import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -22,15 +17,13 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.SessionAttributes;
-import uk.gov.justice.laa.bulkclaim.client.DataClaimsRestClient;
 import uk.gov.justice.laa.bulkclaim.config.FeatureFlagsConfig;
 import uk.gov.justice.laa.bulkclaim.dto.submission.NilSubmissionForm;
-import uk.gov.justice.laa.bulkclaim.dto.submission.search.SubmissionSearchQuery;
+import uk.gov.justice.laa.bulkclaim.service.SubmissionPeriodService;
 import uk.gov.justice.laa.bulkclaim.util.DateWrapperUtil;
 import uk.gov.justice.laa.bulkclaim.util.NilSubmissionPage;
 import uk.gov.justice.laa.bulkclaim.util.NilSubmissionSessionManager;
 import uk.gov.justice.laa.bulkclaim.util.SubmissionPeriodUtil;
-import uk.gov.justice.laa.dstew.payments.claimsdata.model.AreaOfLaw;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionsResultSet;
 
 @Controller
@@ -39,7 +32,7 @@ import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionsResultSet;
 public class NilSubmissionPeriodController {
 
   private final FeatureFlagsConfig featureFlagsConfig;
-  private final DataClaimsRestClient claimsRestService;
+  private final SubmissionPeriodService submissionPeriodService;
   private final MessageSource messageSource;
 
   @GetMapping("/nil-submission-period")
@@ -53,27 +46,7 @@ public class NilSubmissionPeriodController {
     NilSubmissionSessionManager.nilSubmissionCleanseSession(
         selection, NilSubmissionPage.SUBMISSION_PERIOD);
 
-    SubmissionSearchQuery submissionSearchQuery =
-        SubmissionSearchQuery.builder()
-            .areaOfLaw(selection.getAreaOfLaw())
-            .offices(List.of(selection.getOffice()))
-            .submissionStatuses(SUCCEEDED)
-            .build();
-
-    SubmissionsResultSet submissionsResults =
-        claimsRestService
-            .search(
-                submissionSearchQuery.getOffices(),
-                null,
-                getAreaOfLaw(submissionSearchQuery.getAreaOfLaw()),
-                submissionSearchQuery.getSubmissionStatuses().getStatuses(),
-                submissionSearchQuery.getPage(),
-                12,
-                getSubmissionDateFrom(),
-                getSubmissionDateTo(),
-                // pre-existing was wrong
-                "createdOn,desc")
-            .block();
+    SubmissionsResultSet submissionsResults = submissionPeriodService.searchSubmissions(selection);
     Map<String, String> submissionPeriods = getMonthsWithOutSubmissions(submissionsResults);
     if (submissionPeriods.isEmpty()) {
       model.addAttribute(
@@ -101,16 +74,6 @@ public class NilSubmissionPeriodController {
     return "redirect:/nil-submission-reference";
   }
 
-  private static AreaOfLaw getAreaOfLaw(String areaOfLaw) {
-    try {
-      return Objects.isNull(areaOfLaw)
-          ? null
-          : AreaOfLaw.fromValue(areaOfLaw.replace("_", " ").toUpperCase());
-    } catch (IllegalArgumentException e) {
-      return null;
-    }
-  }
-
   Map<String, String> getMonthsWithOutSubmissions(SubmissionsResultSet submissionsResults) {
     Map<String, String> nonSubmissionMonths = getLastTwelveMonths();
 
@@ -125,21 +88,7 @@ public class NilSubmissionPeriodController {
                 }
               });
     }
-
     return nonSubmissionMonths;
-  }
-
-  private String getSubmissionDateTo() {
-    return getFormatted(LocalDate.now());
-  }
-
-  private static @NonNull String getFormatted(LocalDate lastDateOfMonth) {
-    return lastDateOfMonth.format(DateTimeFormatter.ISO_LOCAL_DATE);
-  }
-
-  private String getSubmissionDateFrom() {
-    LocalDate lastDateOfMonth = YearMonth.from(LocalDate.now()).minusYears(1).atEndOfMonth();
-    return getFormatted(lastDateOfMonth);
   }
 
   static Map<String, String> getLastTwelveMonths() {
