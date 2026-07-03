@@ -26,7 +26,7 @@
 
         <ul class="govuk-service-navigation__list" id="navigation">
           <li class="govuk-service-navigation__item"
-              th:classappend="${#strings.isEmpty(package)} ? 'govuk-service-navigation__item--active' : ${package}">
+              th:classappend="${#strings.isEmpty(package)} and package != 'none-selected' ? 'govuk-service-navigation__item--active' : ${package}">
             <a class="govuk-service-navigation__link" th:href="@{/upload}"
                id="import-claims-link"
                th:attr="aria-current=${#strings.isEmpty(package)} ? 'page' : null">
