@@ -7,13 +7,14 @@
             <td class="govuk-table__cell" th:text="${nilSubmissionForm.office}"></td>
             <td class="govuk-table__cell">
                 <a
+                        th:if="${nilSubmissionForm.officeCount > 1}"
                         th:href="@{/nil-submission-office}"
-                        th:data-testid="nil-submission-office"
-                        class="govuk-link govuk-link--no-visited-state">
-                    <th:block th:if="${nilSubmissionForm.officeCount > 1}"
-                              th:text="#{nilSubmission.changeLink}"></th:block>
-                    <span th:unless="${nilSubmissionForm.officeCount > 1}"></span>
+                        class="govuk-link govuk-link--no-visited-state"
+                        th:text="#{nilSubmission.changeLink}">
                 </a>
+                <span
+                        th:if="${nilSubmissionForm.officeCount <= 1}">&nbsp;
+                </span>
             </td>
         </tr>
         <tr class="govuk-table__row" th:if="${nilSubmissionForm.areaOfLaw != null}">
