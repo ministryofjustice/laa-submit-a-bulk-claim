@@ -16,6 +16,21 @@ on:
       image_tag:
         required: true
         type: string
+    secrets:
+      pact_broker_username:
+        required: true
+      pact_broker_password:
+        required: true
+      KUBE_CLUSTER:
+        required: true
+      KUBE_NAMESPACE:
+        required: true
+      KUBE_TOKEN:
+        required: true
+      KUBE_CERT:
+        required: true
+      LAA_SUBMIT_A_BULK_CLAIM_ECR_ROLE_TO_ASSUME:
+        required: true
 
 jobs:
   deploy:
