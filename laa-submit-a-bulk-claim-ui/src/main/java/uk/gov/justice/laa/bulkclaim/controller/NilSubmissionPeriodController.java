@@ -1,5 +1,6 @@
 package uk.gov.justice.laa.bulkclaim.controller;
 
+import static java.util.stream.Collectors.toMap;
 import static uk.gov.justice.laa.bulkclaim.constants.NilSubmissionInfoMessageConstants.SUBMISSION_INFO_MESSAGE_PAGE_HEADING;
 import static uk.gov.justice.laa.bulkclaim.constants.NilSubmissionInfoMessageConstants.SUBMISSION_INFO_MESSAGE_TEXT;
 import static uk.gov.justice.laa.bulkclaim.constants.SessionConstants.NIL_SUBMISSION_FORM;
@@ -8,8 +9,9 @@ import java.time.YearMonth;
 import java.time.format.DateTimeFormatter;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
-import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -24,6 +26,7 @@ import uk.gov.justice.laa.bulkclaim.util.DateWrapperUtil;
 import uk.gov.justice.laa.bulkclaim.util.NilSubmissionPage;
 import uk.gov.justice.laa.bulkclaim.util.NilSubmissionSessionManager;
 import uk.gov.justice.laa.bulkclaim.util.SubmissionPeriodUtil;
+import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionBase;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionsResultSet;
 
 @Controller
@@ -33,7 +36,6 @@ public class NilSubmissionPeriodController {
 
   private final FeatureFlagsConfig featureFlagsConfig;
   private final SubmissionPeriodService submissionPeriodService;
-  private final MessageSource messageSource;
 
   @GetMapping("/nil-submission-period")
   public String getSubmissionPeriods(
@@ -50,11 +52,8 @@ public class NilSubmissionPeriodController {
     Map<String, String> submissionPeriods = getMonthsWithOutSubmissions(submissionsResults);
     if (submissionPeriods.isEmpty()) {
       model.addAttribute(
-          SUBMISSION_INFO_MESSAGE_PAGE_HEADING,
-          messageSource.getMessage("nilSubmission.noPeriods.primary.heading", null, Locale.UK));
-      model.addAttribute(
-          SUBMISSION_INFO_MESSAGE_TEXT,
-          messageSource.getMessage("nilSubmission.noPeriods.message", null, Locale.UK));
+          SUBMISSION_INFO_MESSAGE_PAGE_HEADING, "nilSubmission.noPeriods.primary.heading");
+      model.addAttribute(SUBMISSION_INFO_MESSAGE_TEXT, "nilSubmission.noPeriods.message");
       return "pages/nil-submission-info-message";
     }
     model.addAttribute("submissionPeriods", submissionPeriods);
@@ -78,15 +77,13 @@ public class NilSubmissionPeriodController {
     Map<String, String> nonSubmissionMonths = getLastTwelveMonths();
 
     if (submissionsResults != null && submissionsResults.getContent() != null) {
-      submissionsResults
-          .getContent()
-          .forEach(
-              submission -> {
-                String period = submission.getSubmissionPeriod();
-                if (period != null) {
-                  nonSubmissionMonths.remove(period);
-                }
-              });
+      Set<String> submissionPeriods =
+          submissionsResults.getContent().stream()
+              .map(SubmissionBase::getSubmissionPeriod)
+              .collect(Collectors.toSet());
+      return nonSubmissionMonths.entrySet().stream()
+          .filter(entry -> !submissionPeriods.contains(entry.getKey()))
+          .collect(toMap(Map.Entry::getKey, Map.Entry::getValue));
     }
     return nonSubmissionMonths;
   }

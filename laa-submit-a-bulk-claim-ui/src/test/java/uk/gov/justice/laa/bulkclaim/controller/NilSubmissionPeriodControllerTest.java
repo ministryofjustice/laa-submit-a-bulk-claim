@@ -1,7 +1,9 @@
 package uk.gov.justice.laa.bulkclaim.controller;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
@@ -108,6 +110,24 @@ class NilSubmissionPeriodControllerTest {
     String view = nilSubmissionPeriodController.getSubmissionPeriods(form, model);
     assertEquals("pages/nil-submission-info-message", view);
     verify(model, times(0)).addAttribute(eq("submissionPeriods"), any(Map.class));
+  }
+
+  @Test
+  void removal_of_submission_months_from_selection_list() {
+    NilSubmissionForm form = new NilSubmissionForm();
+    form.setOffice("officeA");
+    form.setAreaOfLaw(AreaOfLaw.MEDIATION.getValue());
+    doReturn(true).when(featureFlagsConfig).getIsNilSubmissionEnabled();
+
+    SubmissionsResultSet results = getSubmissionsResultSet(12);
+    Map<String, String> validPeriods =
+        nilSubmissionPeriodController.getMonthsWithOutSubmissions(results);
+    assertTrue(validPeriods.isEmpty());
+
+    results = getSubmissionsResultSet(1);
+    validPeriods = nilSubmissionPeriodController.getMonthsWithOutSubmissions(results);
+    assertEquals(11, validPeriods.size());
+    assertFalse(validPeriods.containsKey(results.getContent().getFirst().getSubmissionPeriod()));
   }
 
   private @NonNull SubmissionsResultSet getSubmissionsResultSet(int noOfPeriods) {
