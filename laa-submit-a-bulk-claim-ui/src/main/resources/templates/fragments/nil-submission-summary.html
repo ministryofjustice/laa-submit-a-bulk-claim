@@ -1,59 +1,112 @@
 <th:block th:fragment="nil-submission-summary"
           th:if="${nilSubmissionForm != null}" xmlns:th="http://www.w3.org/1999/xhtml">
-    <table class="govuk-table">
-        <tbody class="govuk-table__body">
-        <tr class="govuk-table__row" th:if="${nilSubmissionForm.office != null}">
-            <td class="govuk-table__cell govuk-!-font-weight-bold" th:text="#{nilSubmission.office.changeValue}"></td>
-            <td class="govuk-table__cell" th:text="${nilSubmissionForm.office}"></td>
-            <td class="govuk-table__cell">
+    <dl class="govuk-summary-list">
+        <div class="govuk-summary-list__row"
+             th:if="${nilSubmissionForm.office != null}">
+
+            <dt class="govuk-summary-list__key"
+                th:text="#{nilSubmission.office.changeValue}">
+            </dt>
+
+            <dd class="govuk-summary-list__value"
+                th:text="${nilSubmissionForm.office}">
+            </dd>
+            <dd class="govuk-summary-list__actions">
                 <a
+                        th:class="govuk-link"
+                        th:data-testid="nil-submission-office"
                         th:if="${nilSubmissionForm.officeCount > 1}"
                         th:href="@{/nil-submission-office}"
-                        class="govuk-link govuk-link--no-visited-state"
                         th:text="#{nilSubmission.changeLink}">
                 </a>
-                <span
-                        th:if="${nilSubmissionForm.officeCount <= 1}">&nbsp;
-                </span>
-            </td>
-        </tr>
-        <tr class="govuk-table__row" th:if="${nilSubmissionForm.areaOfLaw != null}">
-            <td class="govuk-table__cell govuk-!-font-weight-bold"
-                th:text="#{nilSubmission.areaOfLaw.changeValue}"></td>
-            <td class="govuk-table__cell" th:text="${nilSubmissionForm.getAreaOfLawDisplayText()}"></td>
-            <td class="govuk-table__cell">
+            </dd>
+
+        </div>
+
+        <div class="govuk-summary-list__row"
+             th:if="${nilSubmissionForm.areaOfLaw != null}">
+
+            <dt class="govuk-summary-list__key"
+                th:text="#{nilSubmission.areaOfLaw.changeValue}">
+            </dt>
+
+            <dd class="govuk-summary-list__value"
+                th:text="${nilSubmissionForm.getAreaOfLawDisplayText()}">
+            </dd>
+            <dd class="govuk-summary-list__actions">
                 <a
-                        th:href="@{/nil-submission-areaoflaw}"
+                        th:class="govuk-link"
                         th:data-testid="nil-submission-areaoflaw"
-                        class="govuk-link govuk-link--no-visited-state"
+                        th:href="@{/nil-submission-areaoflaw}"
                         th:text="#{nilSubmission.changeLink}">
                 </a>
-            </td>
-        </tr>
-        <tr class="govuk-table__row" th:if="${nilSubmissionForm.submissionPeriod != null}">
-            <td class="govuk-table__cell govuk-!-font-weight-bold" th:text="#{nilSubmission.period.changeValue}"></td>
-            <td class="govuk-table__cell" th:text="${nilSubmissionForm.submissionPeriod}"></td>
-            <td class="govuk-table__cell">
+            </dd>
+
+        </div>
+
+        <div class="govuk-summary-list__row"
+             th:if="${nilSubmissionForm.submissionPeriod != null}">
+
+            <dt class="govuk-summary-list__key"
+                th:text="#{nilSubmission.period.changeValue}">
+            </dt>
+
+            <dd class="govuk-summary-list__value"
+                th:text="${nilSubmissionForm.submissionPeriod}">
+            </dd>
+            <dd class="govuk-summary-list__actions">
                 <a
+                        th:class="govuk-link"
+                        th:data-testid="nil-submission-period"
                         th:href="@{/nil-submission-period}"
-                        th:data-testid="nil-submission-submission-period"
-                        class="govuk-link govuk-link--no-visited-state"
                         th:text="#{nilSubmission.changeLink}">
                 </a>
-            </td>
-        </tr>
-        <tr class="govuk-table__row" th:if="${nilSubmissionForm.scheduleReference != null}">
-            <td class="govuk-table__cell govuk-!-font-weight-bold" th:text="${referenceLabel}"></td>
-            <td class="govuk-table__cell" th:text="${nilSubmissionForm.scheduleReference}"></td>
-            <td class="govuk-table__cell">
+            </dd>
+
+        </div>
+        <div class="govuk-summary-list__row"
+             th:if="${nilSubmissionForm.scheduleReference != null}">
+
+            <dt class="govuk-summary-list__key"
+                th:text="${referenceLabel}">
+            </dt>
+
+            <dd class="govuk-summary-list__value"
+                th:text="${nilSubmissionForm.scheduleReference}">
+            </dd>
+            <dd class="govuk-summary-list__actions">
                 <a
+                        th:class="govuk-link"
+                        th:data-testid="nil-submission-reference"
                         th:href="@{/nil-submission-reference}"
-                        th:data-testid="nil-submission-schedule-reference"
-                        class="govuk-link govuk-link--no-visited-state"
                         th:text="#{nilSubmission.changeLink}">
                 </a>
-            </td>
-        </tr>
-        </tbody>
-    </table>
+            </dd>
+
+        </div>
+        <!--        <tr class="govuk-table__row" th:if="${nilSubmissionForm.submissionPeriod != null}">-->
+        <!--            <td class="govuk-table__cell govuk-!-font-weight-bold" th:text="#{nilSubmission.period.changeValue}"></td>-->
+        <!--            <td class="govuk-table__cell" th:text="${nilSubmissionForm.submissionPeriod}"></td>-->
+        <!--            <td class="govuk-table__cell">-->
+        <!--                <a-->
+        <!--                        th:href="@{/nil-submission-period}"-->
+        <!--                        th:data-testid="nil-submission-submission-period"-->
+        <!--                        class="govuk-link govuk-link&#45;&#45;no-visited-state"-->
+        <!--                        th:text="#{nilSubmission.changeLink}">-->
+        <!--                </a>-->
+        <!--            </td>-->
+        <!--        </tr>-->
+        <!--        <tr class="govuk-table__row" th:if="${nilSubmissionForm.scheduleReference != null}">-->
+        <!--            <td class="govuk-table__cell govuk-!-font-weight-bold" th:text="${referenceLabel}"></td>-->
+        <!--            <td class="govuk-table__cell" th:text="${nilSubmissionForm.scheduleReference}"></td>-->
+        <!--            <td class="govuk-table__cell">-->
+        <!--                <a-->
+        <!--                        th:href="@{/nil-submission-reference}"-->
+        <!--                        th:data-testid="nil-submission-schedule-reference"-->
+        <!--                        class="govuk-link govuk-link&#45;&#45;no-visited-state"-->
+        <!--                        th:text="#{nilSubmission.changeLink}">-->
+        <!--                </a>-->
+        <!--            </td>-->
+        <!--        </tr>-->
+    </dl>
 </th:block>

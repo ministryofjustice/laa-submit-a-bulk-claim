@@ -51,7 +51,6 @@ public class NilSubmissionScheduleReferenceController {
       return "error";
     }
     form.setScheduleReference(scheduleReference);
-    form.setScheduleReference(scheduleReference);
     return "redirect:/nil-submission-summary-details";
   }
 }

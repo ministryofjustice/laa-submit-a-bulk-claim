@@ -7,6 +7,7 @@ import static uk.gov.justice.laa.bulkclaim.constants.SessionConstants.NIL_SUBMIS
 import static uk.gov.justice.laa.bulkclaim.constants.SessionConstants.SUBMISSION_ID;
 
 import java.time.OffsetDateTime;
+import java.time.ZoneId;
 import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
@@ -131,7 +132,7 @@ public class NilSubmissionsSummaryController {
       NilSubmissionForm form, List<String> errorMessages) {
     return NilSubmissionMessagesSummary.builder()
         .totalMessageCount(errorMessages.size())
-        .submitted(OffsetDateTime.now())
+        .submitted(OffsetDateTime.now(ZoneId.of("Europe/London")))
         .officeAccount(form.getOffice())
         .areaOfLaw(form.getAreaOfLaw())
         .submissionPeriod(form.getSubmissionPeriod())
