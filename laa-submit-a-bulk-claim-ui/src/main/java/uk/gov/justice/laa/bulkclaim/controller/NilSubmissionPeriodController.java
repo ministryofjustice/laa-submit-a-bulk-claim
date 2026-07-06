@@ -6,8 +6,6 @@ import static uk.gov.justice.laa.bulkclaim.constants.NilSubmissionInfoMessageCon
 import static uk.gov.justice.laa.bulkclaim.constants.SessionConstants.NIL_SUBMISSION_FORM;
 
 import java.time.YearMonth;
-import java.time.format.DateTimeFormatter;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -89,10 +87,10 @@ public class NilSubmissionPeriodController {
   }
 
   static Map<String, String> getLastTwelveMonths() {
-    DateTimeFormatter formatterKey = DateTimeFormatter.ofPattern("MMM-yyyy", Locale.ENGLISH);
     SubmissionPeriodUtil submissionPeriodUtil =
         new SubmissionPeriodUtil(
-            new DateWrapperUtil(), YearMonth.now().minusMonths(12).format(formatterKey));
+            new DateWrapperUtil(),
+            YearMonth.now().minusMonths(12).format(SubmissionPeriodUtil.IN_FMT));
     return submissionPeriodUtil.getAllPossibleSubmissionPeriods();
   }
 }
