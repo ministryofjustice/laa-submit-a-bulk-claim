@@ -45,7 +45,7 @@ public class NilSubmissionOfficeController {
     }
 
     // copy session value into displayOffice value
-    // String displayOffice = form.getOffice();
+    model.addAttribute("displayOffice", form.getOffice());
     NilSubmissionSessionManager.nilSubmissionCleanseSession(form, NilSubmissionPage.OFFICE);
 
     List<String> userOffices = oidcAttributeUtils.getUserOffices(oidcUser);
@@ -57,7 +57,7 @@ public class NilSubmissionOfficeController {
     }
     form.setOfficeCount(userOffices.size());
     model.addAttribute("userOffices", userOffices);
-    // model.addAttribute("displayOffice", displayOffice);
+
     return "pages/nil-submission-office";
   }
 

@@ -27,7 +27,7 @@
                                                type="radio"
                                                name="office"
                                                th:value="${office}"
-                                               th:checked="${nilSubmissionForm.office == office}">
+                                               th:checked="${displayOffice == office}">
                                         <label class="govuk-label govuk-radios__label"
                                                th:for="${idx.index > 0} ? |offices-input-${idx.index}| : |offices-input|"
                                                th:text="${office}">

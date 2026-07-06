@@ -87,7 +87,7 @@ class NilSubmissionAreaOfLawControllerTest {
 
     controller.getAreasOfLaw(form, model);
     assertNotNull(form.getOffice());
-    assertNotNull(form.getAreaOfLaw());
+    assertNull(form.getAreaOfLaw());
     assertNull(form.getSubmissionPeriod());
     assertNull(form.getScheduleReference());
   }

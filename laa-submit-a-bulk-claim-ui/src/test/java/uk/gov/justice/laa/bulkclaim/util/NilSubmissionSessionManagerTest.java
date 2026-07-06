@@ -92,8 +92,7 @@ class NilSubmissionSessionManagerTest {
     assertNull(result.getAreaOfLaw());
     assertNull(result.getSubmissionPeriod());
     assertNull(result.getScheduleReference());
-
-    assertNotNull(result.getOffice());
+    assertNull(result.getOffice());
   }
 
   @Test
@@ -108,8 +107,8 @@ class NilSubmissionSessionManagerTest {
 
     assertNull(result.getSubmissionPeriod());
     assertNull(result.getScheduleReference());
+    assertNull(result.getAreaOfLaw());
 
-    assertNotNull(result.getAreaOfLaw());
     assertNotNull(result.getOffice());
   }
 
@@ -120,6 +119,23 @@ class NilSubmissionSessionManagerTest {
     NilSubmissionForm result =
         NilSubmissionSessionManager.nilSubmissionCleanseSession(
             form, NilSubmissionPage.SUBMISSION_PERIOD);
+
+    assertSame(form, result);
+
+    assertNotNull(result.getOffice());
+    assertNotNull(result.getAreaOfLaw());
+
+    assertNull(result.getSubmissionPeriod());
+    assertNull(result.getScheduleReference());
+  }
+
+  @Test
+  void shouldCleanseScheduleReferenceFields() {
+    NilSubmissionForm form = createPopulatedForm();
+
+    NilSubmissionForm result =
+        NilSubmissionSessionManager.nilSubmissionCleanseSession(
+            form, NilSubmissionPage.SCHEDULE_REFERENCE);
 
     assertSame(form, result);
 

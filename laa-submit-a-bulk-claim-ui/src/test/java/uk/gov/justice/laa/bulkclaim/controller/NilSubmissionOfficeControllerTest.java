@@ -1,7 +1,6 @@
 package uk.gov.justice.laa.bulkclaim.controller;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
@@ -17,7 +16,6 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.springframework.context.MessageSource;
 import org.springframework.security.oauth2.core.oidc.user.OidcUser;
 import org.springframework.ui.Model;
 import uk.gov.justice.laa.bulkclaim.config.FeatureFlagsConfig;
@@ -28,7 +26,6 @@ class NilSubmissionOfficeControllerTest {
 
   @Mock private FeatureFlagsConfig featureFlagsConfig;
   @Mock private OidcAttributeUtils oidcAttributeUtils;
-  @Mock private MessageSource messageSource;
   @Mock private Model model;
 
   @InjectMocks private NilSubmissionOfficeController controller;
@@ -113,7 +110,7 @@ class NilSubmissionOfficeControllerTest {
     form.setScheduleReference("scheduleReference1");
 
     controller.getNilSubmissionOffice(form, getOidcUser(), model);
-    assertFalse(form.getOffice().isEmpty());
+    assertNull(form.getOffice());
     assertNull(form.getAreaOfLaw());
     assertNull(form.getSubmissionPeriod());
     assertNull(form.getScheduleReference());

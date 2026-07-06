@@ -39,34 +39,34 @@ public class NilSubmissionSessionManager {
       NilSubmissionForm nilSubmissionForm, NilSubmissionPage page) {
 
     switch (page) {
-      case OFFICE -> cleanseOffice(nilSubmissionForm);
+      case OFFICE, OTHER -> cleanseAll(nilSubmissionForm);
       case AREA_OF_LAW -> cleanseAreaOfLaw(nilSubmissionForm);
       case SUBMISSION_PERIOD -> cleanseSubmissionPeriod(nilSubmissionForm);
-      case OTHER -> cleanseOther(nilSubmissionForm);
+      case SCHEDULE_REFERENCE -> cleanseScheduleReference(nilSubmissionForm);
       default -> nilSubmissionForm = null;
     }
     return nilSubmissionForm;
   }
 
-  static void cleanseOther(NilSubmissionForm form) {
+  static void cleanseAll(NilSubmissionForm form) {
     form.setOffice(null);
     form.setAreaOfLaw(null);
     form.setSubmissionPeriod(null);
     form.setScheduleReference(null);
   }
 
-  static void cleanseOffice(NilSubmissionForm form) {
+  static void cleanseAreaOfLaw(NilSubmissionForm form) {
     form.setAreaOfLaw(null);
     form.setSubmissionPeriod(null);
     form.setScheduleReference(null);
   }
 
-  static void cleanseAreaOfLaw(NilSubmissionForm form) {
+  static void cleanseSubmissionPeriod(NilSubmissionForm form) {
     form.setSubmissionPeriod(null);
     form.setScheduleReference(null);
   }
 
-  static void cleanseSubmissionPeriod(NilSubmissionForm form) {
+  static void cleanseScheduleReference(NilSubmissionForm form) {
     form.setScheduleReference(null);
   }
 }
