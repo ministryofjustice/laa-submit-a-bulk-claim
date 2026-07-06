@@ -13,24 +13,24 @@
 <main class="govuk-main-wrapper" id="main-content">
     <div class="govuk-grid-row">
         <div class="govuk-grid-column-full">
-            <h1 class="govuk-heading-l" th:text="#{__${submissionInfoMessagePageHeading}__}"></h1>
+<!--            <h1 class="govuk-heading-l" th:text="#{__${submissionInfoMessagePageHeading}__}"></h1>-->
             <th:block th:replace="~{fragments/nil-submission-summary :: nil-submission-summary}"/>
 
-            <p class="govuk-body" th:text="#{__${submissionInfoMessageText}__}"></p>
+<!--            <p class="govuk-body" th:text="#{__${submissionInfoMessageText}__}"></p>-->
             <p class="govuk-body">
                 Go back to
                 <a
                         th:href="@{/nil-submission-cancel(destination='UPLOAD')}"
                         th:data-testid="submit-a-bulk-claim"
-                        class="govuk-link govuk-link--no-visited-state">
-                    <th:block th:text="#{nilSubmission.submit}"></th:block>
+                        class="govuk-link govuk-link--no-visited-state"
+                        th:text="#{nilSubmission.submit}">
                 </a>
                 or
                 <a
                         th:href="@{/nil-submission-cancel(destination='SEARCH')}"
                         th:data-testid="search-for-previous-submission"
-                        class="govuk-link govuk-link--no-visited-state">
-                    <th:block th:text="#{nilSubmission.search}"></th:block>
+                        class="govuk-link govuk-link--no-visited-state"
+                        th:text="#{nilSubmission.search}">
                 </a>
             </p>
         </div>
