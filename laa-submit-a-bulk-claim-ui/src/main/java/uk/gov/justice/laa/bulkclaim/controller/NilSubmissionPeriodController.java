@@ -3,6 +3,12 @@ package uk.gov.justice.laa.bulkclaim.controller;
 import static java.util.stream.Collectors.toMap;
 import static uk.gov.justice.laa.bulkclaim.constants.SessionConstants.NIL_SUBMISSION_FORM;
 
+import java.time.YearMonth;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeFormatterBuilder;
+import java.util.Comparator;
+import java.util.LinkedHashMap;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -46,10 +52,12 @@ public class NilSubmissionPeriodController {
 
     SubmissionsResultSet submissionsResults = submissionPeriodService.searchSubmissions(selection);
     Map<String, String> submissionPeriods = getMonthsWithOutSubmissions(submissionsResults);
-    if (submissionPeriods.isEmpty()) {
+    Map<String, String> sortedSubmissionPeriods = sortSubmissionPeriods(submissionPeriods);
+
+    if (sortedSubmissionPeriods.isEmpty()) {
       return "pages/nil-submission-no-submission-periods";
     }
-    model.addAttribute("submissionPeriods", submissionPeriods);
+    model.addAttribute("submissionPeriods", sortedSubmissionPeriods);
     return "pages/nil-submission-period";
   }
 
@@ -79,6 +87,20 @@ public class NilSubmissionPeriodController {
           .collect(toMap(Map.Entry::getKey, Map.Entry::getValue));
     }
     return nonSubmissionMonths;
+  }
+
+  Map<String, String> sortSubmissionPeriods(Map<String, String> submissionPeriods) {
+    DateTimeFormatter formatter =
+        new DateTimeFormatterBuilder()
+            .parseCaseInsensitive()
+            .appendPattern("MMMM yyyy")
+            .toFormatter(Locale.UK);
+
+    return submissionPeriods.entrySet().stream()
+        .sorted(Comparator.comparing(e -> YearMonth.parse(e.getValue(), formatter)))
+        .collect(
+            Collectors.toMap(
+                Map.Entry::getKey, Map.Entry::getValue, (a, b) -> a, LinkedHashMap::new));
   }
 
   Map<String, String> getLastTwelveMonths() {

@@ -19,17 +19,15 @@
                     <div class="govuk-form-group">
                         <fieldset class="govuk-fieldset">
 
-                            <div class="govuk-body govuk-input--width-10">
-                                <div class="autocomplete-wrapper">
+                            <div class="govuk-body govuk-input--width-15">
                                     <label class="govuk-label govuk-label--s" for="submission-period"
                                            th:text="#{search.submissionPeriod}"></label>
 
                                     <select class="govuk-select"
                                             id="submission-period"
-                                            th:field="*{submissionPeriod}"
-                                            data-module="make-autocomplete">
+                                            th:field="*{submissionPeriod}">
 
-                                        <option value=""></option>
+                                        <option value="">Select a submission period</option>
 
                                         <option
                                                 th:each="period, idx : ${submissionPeriods}"
@@ -39,8 +37,6 @@
                                         </option>
 
                                     </select>
-
-                                </div>
                             </div>
                         </fieldset>
                     </div>
