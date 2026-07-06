@@ -1,6 +1,7 @@
 package uk.gov.justice.laa.bulkclaim.controller;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.Mockito.*;
 
@@ -55,7 +56,7 @@ class NilSubmissionCancelControllerTest {
   }
 
   @Test
-  void whenFeatureFlagEnabledAndDestinationSearch_shouldRedirectToUpload() {
+  void whenFeatureFlagEnabledAndDestinationSearch_shouldRedirectToUpload_SessionRetained() {
     when(featureFlagsConfig.getIsNilSubmissionEnabled()).thenReturn(true);
     NilSubmissionForm form = new NilSubmissionForm();
 
@@ -67,9 +68,9 @@ class NilSubmissionCancelControllerTest {
     String result = nilSubmissionCancelController.getCancel("SEARCH", form);
 
     assertEquals("redirect:/submissions/search", result);
-    assertNull(form.getOffice());
-    assertNull(form.getAreaOfLaw());
-    assertNull(form.getSubmissionPeriod());
-    assertNull(form.getScheduleReference());
+    assertNotNull(form.getOffice());
+    assertNotNull(form.getAreaOfLaw());
+    assertNotNull(form.getSubmissionPeriod());
+    assertNotNull(form.getScheduleReference());
   }
 }

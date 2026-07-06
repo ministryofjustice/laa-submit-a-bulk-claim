@@ -1,8 +1,6 @@
 package uk.gov.justice.laa.bulkclaim.controller;
 
 import static java.util.stream.Collectors.toMap;
-import static uk.gov.justice.laa.bulkclaim.constants.NilSubmissionInfoMessageConstants.SUBMISSION_INFO_MESSAGE_PAGE_HEADING;
-import static uk.gov.justice.laa.bulkclaim.constants.NilSubmissionInfoMessageConstants.SUBMISSION_INFO_MESSAGE_TEXT;
 import static uk.gov.justice.laa.bulkclaim.constants.SessionConstants.NIL_SUBMISSION_FORM;
 
 import java.util.Map;
@@ -49,10 +47,7 @@ public class NilSubmissionPeriodController {
     SubmissionsResultSet submissionsResults = submissionPeriodService.searchSubmissions(selection);
     Map<String, String> submissionPeriods = getMonthsWithOutSubmissions(submissionsResults);
     if (submissionPeriods.isEmpty()) {
-      model.addAttribute(
-          SUBMISSION_INFO_MESSAGE_PAGE_HEADING, "nilSubmission.noPeriods.primary.heading");
-      model.addAttribute(SUBMISSION_INFO_MESSAGE_TEXT, "nilSubmission.noPeriods.message");
-      return "pages/nil-submission-info-message";
+      return "pages/nil-submission-no-submission-periods";
     }
     model.addAttribute("submissionPeriods", submissionPeriods);
     return "pages/nil-submission-period";

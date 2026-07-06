@@ -116,7 +116,7 @@ class NilSubmissionPeriodControllerTest {
     when(dateWrapperUtil.now()).thenReturn(LocalDate.now());
 
     String view = nilSubmissionPeriodController.getSubmissionPeriods(form, model);
-    assertEquals("pages/nil-submission-info-message", view);
+    assertEquals("pages/nil-submission-no-submission-periods", view);
     verify(model, times(0)).addAttribute(eq("submissionPeriods"), any(Map.class));
   }
 
