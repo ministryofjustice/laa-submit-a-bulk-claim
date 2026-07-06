@@ -28,11 +28,11 @@ public class NilSubmissionCancelController {
       return "error";
     }
 
-    NilSubmissionSessionManager.nilSubmissionCleanseSession(form, NilSubmissionPage.OTHER);
-
     if ("SEARCH".equalsIgnoreCase(destination)) {
       return "redirect:/submissions/search";
     }
+
+    NilSubmissionSessionManager.nilSubmissionCleanseSession(form, NilSubmissionPage.OTHER);
     return "redirect:/upload";
   }
 }
