@@ -5,7 +5,6 @@ import static uk.gov.justice.laa.bulkclaim.constants.NilSubmissionInfoMessageCon
 import static uk.gov.justice.laa.bulkclaim.constants.NilSubmissionInfoMessageConstants.SUBMISSION_INFO_MESSAGE_TEXT;
 import static uk.gov.justice.laa.bulkclaim.constants.SessionConstants.NIL_SUBMISSION_FORM;
 
-import java.time.YearMonth;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -34,6 +33,7 @@ public class NilSubmissionPeriodController {
 
   private final FeatureFlagsConfig featureFlagsConfig;
   private final SubmissionPeriodService submissionPeriodService;
+  private final DateWrapperUtil dateWrapperUtil;
 
   @GetMapping("/nil-submission-period")
   public String getSubmissionPeriods(
@@ -86,11 +86,12 @@ public class NilSubmissionPeriodController {
     return nonSubmissionMonths;
   }
 
-  static Map<String, String> getLastTwelveMonths() {
+  Map<String, String> getLastTwelveMonths() {
+
     SubmissionPeriodUtil submissionPeriodUtil =
         new SubmissionPeriodUtil(
-            new DateWrapperUtil(),
-            YearMonth.now().minusMonths(12).format(SubmissionPeriodUtil.IN_FMT));
+            dateWrapperUtil,
+            dateWrapperUtil.nowYearMonth().minusMonths(12).format(SubmissionPeriodUtil.IN_FMT));
     return submissionPeriodUtil.getAllPossibleSubmissionPeriods();
   }
 }
