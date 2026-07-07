@@ -40,9 +40,7 @@ public class NilSubmissionOfficeController {
       @AuthenticationPrincipal OidcUser oidcUser,
       Model model) {
 
-    if (!featureFlagsConfig.getIsNilSubmissionEnabled()) {
-      return "error";
-    }
+    featureFlagsConfig.checkNilSubmissionEnabled();
 
     // copy session value into displayOffice value
     model.addAttribute("displayOffice", form.getOffice());
@@ -66,9 +64,7 @@ public class NilSubmissionOfficeController {
       @ModelAttribute(NIL_SUBMISSION_FORM) NilSubmissionForm form,
       Model model,
       @RequestParam String office) {
-    if (!featureFlagsConfig.getIsNilSubmissionEnabled()) {
-      return "error";
-    }
+    featureFlagsConfig.checkNilSubmissionEnabled();
 
     form.setOffice(office);
     model.addAttribute("selectedOffice", office);

@@ -27,7 +27,6 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.context.MessageSource;
 import org.springframework.ui.Model;
-import uk.gov.justice.laa.bulkclaim.config.FeatureFlagsConfig;
 import uk.gov.justice.laa.bulkclaim.dto.submission.NilSubmissionForm;
 import uk.gov.justice.laa.bulkclaim.service.SubmissionPeriodService;
 import uk.gov.justice.laa.bulkclaim.util.DateWrapperUtil;
@@ -36,11 +35,10 @@ import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionBase;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionsResultSet;
 
 @AutoConfigureMockMvc(addFilters = false)
-class NilSubmissionPeriodControllerTest {
+class NilSubmissionPeriodControllerTest extends BaseControllerTest {
 
   @Mock private Model model;
 
-  @Mock private FeatureFlagsConfig featureFlagsConfig;
   @Mock private MessageSource messageSource;
   @Mock private SubmissionPeriodService submissionPeriodService;
   @Mock private DateWrapperUtil dateWrapperUtil;

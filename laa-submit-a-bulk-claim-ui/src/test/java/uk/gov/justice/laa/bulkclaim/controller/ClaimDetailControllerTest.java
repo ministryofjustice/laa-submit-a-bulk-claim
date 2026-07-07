@@ -23,7 +23,6 @@ import org.springframework.test.web.servlet.assertj.MockMvcTester;
 import reactor.core.publisher.Mono;
 import uk.gov.justice.laa.bulkclaim.builder.SubmissionMessagesBuilder;
 import uk.gov.justice.laa.bulkclaim.client.DataClaimsRestClient;
-import uk.gov.justice.laa.bulkclaim.config.WebMvcTestConfig;
 import uk.gov.justice.laa.bulkclaim.dto.submission.claim.ClaimFeeCalculationBreakdown;
 import uk.gov.justice.laa.bulkclaim.dto.submission.claim.ClaimSummary;
 import uk.gov.justice.laa.bulkclaim.dto.submission.messages.MessageRow;
@@ -38,9 +37,9 @@ import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionResponse;
 
 @WebMvcTest(ClaimDetailController.class)
 @AutoConfigureMockMvc
-@Import({WebMvcTestConfig.class, ThymeleafHrefUtils.class})
+@Import({ThymeleafHrefUtils.class})
 @DisplayName("Claim detail controller test")
-class ClaimDetailControllerTest {
+class ClaimDetailControllerTest extends BaseControllerTest {
 
   @Autowired private MockMvcTester mockMvc;
 
