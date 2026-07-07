@@ -1,45 +1,40 @@
 package uk.gov.justice.laa.bulkclaim.controller;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.time.LocalDate;
 import java.time.YearMonth;
-import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
 import java.util.Map;
-import org.jspecify.annotations.NonNull;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
-import org.springframework.context.MessageSource;
+import org.springframework.http.HttpStatus;
 import org.springframework.ui.Model;
+import org.springframework.web.server.ResponseStatusException;
 import uk.gov.justice.laa.bulkclaim.dto.submission.NilSubmissionForm;
+import uk.gov.justice.laa.bulkclaim.helper.SubmissionsResultSetTestHelper;
 import uk.gov.justice.laa.bulkclaim.service.SubmissionPeriodService;
 import uk.gov.justice.laa.bulkclaim.util.DateWrapperUtil;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.AreaOfLaw;
-import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionBase;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionsResultSet;
 
 @AutoConfigureMockMvc(addFilters = false)
 class NilSubmissionPeriodControllerTest extends BaseControllerTest {
 
   @Mock private Model model;
-
-  @Mock private MessageSource messageSource;
   @Mock private SubmissionPeriodService submissionPeriodService;
   @Mock private DateWrapperUtil dateWrapperUtil;
 
@@ -53,13 +48,18 @@ class NilSubmissionPeriodControllerTest extends BaseControllerTest {
   @Test
   void whenFeatureFlagDisabled_all_mappings_returnsErrorView() {
     NilSubmissionForm form = new NilSubmissionForm();
+    doThrow(new ResponseStatusException(HttpStatus.NOT_FOUND, "isNilSubmissionEnabled is false"))
+        .when(featureFlagsConfig)
+        .checkNilSubmissionEnabled();
 
-    doReturn(false).when(featureFlagsConfig).getIsNilSubmissionEnabled();
+    assertThrows(
+        ResponseStatusException.class,
+        () -> nilSubmissionPeriodController.getSubmissionPeriods(form, model));
+    verify(model, never()).addAttribute(eq("submissionPeriods"), any());
 
-    assertEquals("error", nilSubmissionPeriodController.getSubmissionPeriods(form, model));
-    verify(model, times(0)).addAttribute(eq("submissionPeriods"), any(Map.class));
-
-    assertEquals("error", nilSubmissionPeriodController.postSubmissionPeriod(form, "JAN-2024"));
+    assertThrows(
+        ResponseStatusException.class,
+        () -> nilSubmissionPeriodController.postSubmissionPeriod(form, "JAN-2024"));
     assertNull(form.getSubmissionPeriod());
   }
 
@@ -68,11 +68,9 @@ class NilSubmissionPeriodControllerTest extends BaseControllerTest {
     NilSubmissionForm form = new NilSubmissionForm();
     form.setOffice("officeA");
     form.setAreaOfLaw(AreaOfLaw.MEDIATION.getValue());
-    doReturn(true).when(featureFlagsConfig).getIsNilSubmissionEnabled();
 
-    final SubmissionsResultSet response = getSubmissionsResultSet(0);
-    when(submissionPeriodService.searchSubmissions(any())).thenReturn(response);
-    when(messageSource.getMessage(any(), any(), any())).thenReturn("Message");
+    when(submissionPeriodService.sortSubmissionPeriods(any()))
+        .thenReturn(Map.of("JAN-2024", "January 2024"));
     when(dateWrapperUtil.nowYearMonth()).thenReturn(YearMonth.now());
     when(dateWrapperUtil.now()).thenReturn(LocalDate.now());
 
@@ -88,7 +86,7 @@ class NilSubmissionPeriodControllerTest extends BaseControllerTest {
     form.setAreaOfLaw(AreaOfLaw.MEDIATION.getValue());
     doReturn(true).when(featureFlagsConfig).getIsNilSubmissionEnabled();
 
-    final SubmissionsResultSet response = getSubmissionsResultSet(0);
+    final SubmissionsResultSet response = SubmissionsResultSetTestHelper.getSubmissionsResultSet(0);
 
     when(submissionPeriodService.searchSubmissions(any())).thenReturn(response);
 
@@ -107,7 +105,8 @@ class NilSubmissionPeriodControllerTest extends BaseControllerTest {
     form.setAreaOfLaw(AreaOfLaw.MEDIATION.getValue());
     doReturn(true).when(featureFlagsConfig).getIsNilSubmissionEnabled();
 
-    final SubmissionsResultSet response = getSubmissionsResultSet(12);
+    final SubmissionsResultSet response =
+        SubmissionsResultSetTestHelper.getSubmissionsResultSet(12);
 
     when(submissionPeriodService.searchSubmissions(any())).thenReturn(response);
     when(dateWrapperUtil.nowYearMonth()).thenReturn(YearMonth.now());
@@ -116,46 +115,5 @@ class NilSubmissionPeriodControllerTest extends BaseControllerTest {
     String view = nilSubmissionPeriodController.getSubmissionPeriods(form, model);
     assertEquals("pages/nil-submission-no-submission-periods", view);
     verify(model, times(0)).addAttribute(eq("submissionPeriods"), any(Map.class));
-  }
-
-  @Test
-  void removal_of_submission_months_from_selection_list() {
-    NilSubmissionForm form = new NilSubmissionForm();
-    form.setOffice("officeA");
-    form.setAreaOfLaw(AreaOfLaw.MEDIATION.getValue());
-    doReturn(true).when(featureFlagsConfig).getIsNilSubmissionEnabled();
-    when(dateWrapperUtil.nowYearMonth()).thenReturn(YearMonth.now());
-    when(dateWrapperUtil.now()).thenReturn(LocalDate.now());
-
-    SubmissionsResultSet results = getSubmissionsResultSet(12);
-    Map<String, String> validPeriods =
-        nilSubmissionPeriodController.getMonthsWithOutSubmissions(results);
-    assertTrue(validPeriods.isEmpty());
-
-    results = getSubmissionsResultSet(1);
-    validPeriods = nilSubmissionPeriodController.getMonthsWithOutSubmissions(results);
-    assertEquals(11, validPeriods.size());
-    assertFalse(validPeriods.containsKey(results.getContent().getFirst().getSubmissionPeriod()));
-  }
-
-  private @NonNull SubmissionsResultSet getSubmissionsResultSet(int noOfPeriods) {
-
-    List<SubmissionBase> content = new ArrayList<>();
-    YearMonth ym = YearMonth.now().minusMonths(1);
-    for (int i = 0; i < noOfPeriods; i++) {
-      SubmissionBase s1 = new SubmissionBase();
-      content.add(
-          s1.submissionPeriod(
-              ym.format(DateTimeFormatter.ofPattern("MMM-yyyy", Locale.ENGLISH)).toUpperCase()));
-      ym = ym.minusMonths(1);
-    }
-
-    final SubmissionsResultSet response = new SubmissionsResultSet();
-    response.setContent(content);
-    response.setTotalElements(2);
-    response.setNumber(0);
-    response.setSize(12);
-    response.setTotalPages(1);
-    return response;
   }
 }

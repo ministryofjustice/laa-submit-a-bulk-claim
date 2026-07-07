@@ -1,8 +1,10 @@
 package uk.gov.justice.laa.bulkclaim.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.anyInt;
 import static org.mockito.Mockito.anyList;
@@ -11,6 +13,8 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.time.LocalDate;
+import java.time.YearMonth;
+import java.util.Map;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
@@ -20,6 +24,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import reactor.core.publisher.Mono;
 import uk.gov.justice.laa.bulkclaim.client.DataClaimsRestClient;
 import uk.gov.justice.laa.bulkclaim.dto.submission.NilSubmissionForm;
+import uk.gov.justice.laa.bulkclaim.helper.SubmissionsResultSetTestHelper;
 import uk.gov.justice.laa.bulkclaim.util.DateWrapperUtil;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.AreaOfLaw;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionsResultSet;
@@ -120,5 +125,23 @@ public class SubmissionPeriodServiceTest {
     assertNull(
         areaCaptor.getValue(),
         "Invalid areaOfLaw strings should result in null AreaOfLaw passed to the client");
+  }
+
+  @Test
+  void removal_of_submission_months_from_selection_list() {
+    NilSubmissionForm form = new NilSubmissionForm();
+    form.setOffice("officeA");
+    form.setAreaOfLaw(AreaOfLaw.MEDIATION.getValue());
+    when(dateWrapperUtil.nowYearMonth()).thenReturn(YearMonth.now());
+    when(dateWrapperUtil.now()).thenReturn(LocalDate.now());
+
+    SubmissionsResultSet results = SubmissionsResultSetTestHelper.getSubmissionsResultSet(12);
+    Map<String, String> validPeriods = submissionPeriodService.getMonthsWithOutSubmissions(results);
+    assertTrue(validPeriods.isEmpty());
+
+    results = SubmissionsResultSetTestHelper.getSubmissionsResultSet(1);
+    validPeriods = submissionPeriodService.getMonthsWithOutSubmissions(results);
+    assertEquals(11, validPeriods.size());
+    assertFalse(validPeriods.containsKey(results.getContent().getFirst().getSubmissionPeriod()));
   }
 }

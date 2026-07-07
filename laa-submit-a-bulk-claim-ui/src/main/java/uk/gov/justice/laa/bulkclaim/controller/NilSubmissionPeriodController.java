@@ -1,17 +1,8 @@
 package uk.gov.justice.laa.bulkclaim.controller;
 
-import static java.util.stream.Collectors.toMap;
 import static uk.gov.justice.laa.bulkclaim.constants.SessionConstants.NIL_SUBMISSION_FORM;
 
-import java.time.YearMonth;
-import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeFormatterBuilder;
-import java.util.Comparator;
-import java.util.LinkedHashMap;
-import java.util.Locale;
 import java.util.Map;
-import java.util.Set;
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -23,11 +14,8 @@ import org.springframework.web.bind.annotation.SessionAttributes;
 import uk.gov.justice.laa.bulkclaim.config.FeatureFlagsConfig;
 import uk.gov.justice.laa.bulkclaim.dto.submission.NilSubmissionForm;
 import uk.gov.justice.laa.bulkclaim.service.SubmissionPeriodService;
-import uk.gov.justice.laa.bulkclaim.util.DateWrapperUtil;
 import uk.gov.justice.laa.bulkclaim.util.NilSubmissionPage;
 import uk.gov.justice.laa.bulkclaim.util.NilSubmissionSessionManager;
-import uk.gov.justice.laa.bulkclaim.util.SubmissionPeriodUtil;
-import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionBase;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionsResultSet;
 
 @Controller
@@ -37,22 +25,20 @@ public class NilSubmissionPeriodController {
 
   private final FeatureFlagsConfig featureFlagsConfig;
   private final SubmissionPeriodService submissionPeriodService;
-  private final DateWrapperUtil dateWrapperUtil;
 
   @GetMapping("/nil-submission-period")
   public String getSubmissionPeriods(
       @ModelAttribute(NIL_SUBMISSION_FORM) NilSubmissionForm selection, Model model) {
 
-    if (!featureFlagsConfig.getIsNilSubmissionEnabled()) {
-      return "error";
-    }
+    featureFlagsConfig.checkNilSubmissionEnabled();
 
     NilSubmissionSessionManager.nilSubmissionCleanseSession(
         selection, NilSubmissionPage.SUBMISSION_PERIOD);
 
     SubmissionsResultSet submissionsResults = submissionPeriodService.searchSubmissions(selection);
-    Map<String, String> submissionPeriods = getMonthsWithOutSubmissions(submissionsResults);
-    Map<String, String> sortedSubmissionPeriods = sortSubmissionPeriods(submissionPeriods);
+    Map<String, String> sortedSubmissionPeriods =
+        submissionPeriodService.sortSubmissionPeriods(
+            submissionPeriodService.getMonthsWithOutSubmissions(submissionsResults));
 
     if (sortedSubmissionPeriods.isEmpty()) {
       return "pages/nil-submission-no-submission-periods";
@@ -66,49 +52,10 @@ public class NilSubmissionPeriodController {
       @ModelAttribute(NIL_SUBMISSION_FORM) NilSubmissionForm form,
       @RequestParam String submissionPeriod) {
 
-    if (!featureFlagsConfig.getIsNilSubmissionEnabled()) {
-      return "error";
-    }
+    featureFlagsConfig.checkNilSubmissionEnabled();
+
     form.setSubmissionPeriod(submissionPeriod);
 
     return "redirect:/nil-submission-reference";
-  }
-
-  Map<String, String> getMonthsWithOutSubmissions(SubmissionsResultSet submissionsResults) {
-    Map<String, String> nonSubmissionMonths = getLastTwelveMonths();
-
-    if (submissionsResults != null && submissionsResults.getContent() != null) {
-      Set<String> submissionPeriods =
-          submissionsResults.getContent().stream()
-              .map(SubmissionBase::getSubmissionPeriod)
-              .collect(Collectors.toSet());
-      return nonSubmissionMonths.entrySet().stream()
-          .filter(entry -> !submissionPeriods.contains(entry.getKey()))
-          .collect(toMap(Map.Entry::getKey, Map.Entry::getValue));
-    }
-    return nonSubmissionMonths;
-  }
-
-  Map<String, String> sortSubmissionPeriods(Map<String, String> submissionPeriods) {
-    DateTimeFormatter formatter =
-        new DateTimeFormatterBuilder()
-            .parseCaseInsensitive()
-            .appendPattern("MMMM yyyy")
-            .toFormatter(Locale.UK);
-
-    return submissionPeriods.entrySet().stream()
-        .sorted(Comparator.comparing(e -> YearMonth.parse(e.getValue(), formatter)))
-        .collect(
-            Collectors.toMap(
-                Map.Entry::getKey, Map.Entry::getValue, (a, b) -> a, LinkedHashMap::new));
-  }
-
-  Map<String, String> getLastTwelveMonths() {
-
-    SubmissionPeriodUtil submissionPeriodUtil =
-        new SubmissionPeriodUtil(
-            dateWrapperUtil,
-            dateWrapperUtil.nowYearMonth().minusMonths(12).format(SubmissionPeriodUtil.IN_FMT));
-    return submissionPeriodUtil.getAllPossibleSubmissionPeriods();
   }
 }
