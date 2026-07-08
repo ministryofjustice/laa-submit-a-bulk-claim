@@ -49,7 +49,10 @@ class NilSubmissionSummaryControllerTest {
     NilSubmissionForm form = buildSessionForm();
 
     assertEquals("error", controller.getSummary(form, model));
-    assertEquals("error", controller.postSummary(form, redirectAttributes, model, ControllerTestHelper.getOidcUser()));
+    assertEquals(
+        "error",
+        controller.postSummary(
+            form, redirectAttributes, model, ControllerTestHelper.getOidcUser()));
 
     verifyNoInteractions(claimsRestService);
   }
@@ -58,7 +61,8 @@ class NilSubmissionSummaryControllerTest {
   void whenFeatureFlagEnabled_getSummary_returnsSummaryView() {
     when(featureFlagsConfig.getIsNilSubmissionEnabled()).thenReturn(true);
 
-    assertEquals("pages/nil-submission-summary-details", controller.getSummary(buildSessionForm(), model));
+    assertEquals(
+        "pages/nil-submission-summary-details", controller.getSummary(buildSessionForm(), model));
   }
 
   @Test
@@ -68,15 +72,18 @@ class NilSubmissionSummaryControllerTest {
     UUID submissionId = UUID.fromString("00000000-0000-0000-0000-0000000000a1");
     CreateSubmission201Response submissionResponse = mock(CreateSubmission201Response.class);
     when(submissionResponse.getId()).thenReturn(submissionId);
-    when(claimsRestService.createSubmission(any())).thenReturn(ResponseEntity.ok(submissionResponse));
+    when(claimsRestService.createSubmission(any()))
+        .thenReturn(ResponseEntity.ok(submissionResponse));
 
     NilSubmissionForm form = buildSessionForm();
 
     assertEquals(
         "redirect:/submission/" + submissionId,
-        controller.postSummary(form, redirectAttributes, model, ControllerTestHelper.getOidcUser()));
+        controller.postSummary(
+            form, redirectAttributes, model, ControllerTestHelper.getOidcUser()));
 
-    ArgumentCaptor<SubmissionPost> submissionPostCaptor = ArgumentCaptor.forClass(SubmissionPost.class);
+    ArgumentCaptor<SubmissionPost> submissionPostCaptor =
+        ArgumentCaptor.forClass(SubmissionPost.class);
     verify(claimsRestService).createSubmission(submissionPostCaptor.capture());
     SubmissionPost submissionPost = submissionPostCaptor.getValue();
     assertEquals("12345", submissionPost.getOfficeAccountNumber());
@@ -122,7 +129,8 @@ class NilSubmissionSummaryControllerTest {
 
     assertEquals(
         "pages/nil-submission-detail-invalid",
-        controller.postSummary(form, redirectAttributes, model, ControllerTestHelper.getOidcUser()));
+        controller.postSummary(
+            form, redirectAttributes, model, ControllerTestHelper.getOidcUser()));
 
     verify(model).addAttribute(eq("messagesSummary"), any(NilSubmissionMessagesSummary.class));
 
@@ -137,16 +145,21 @@ class NilSubmissionSummaryControllerTest {
     NilSubmissionForm form = buildSessionForm();
     NilSubmissionMessagesSummary summary =
         NilSubmissionsSummaryController.buildNilSubmissionMessagesSummary(
-            form, List.of("Submission already exists for Office (12345), Area of Law (MEDIATION), Period (OCT-2025)",
-                        "Mediation submission reference must be a maximum of 20 characters and contain only letters, numbers and forward slashes"));
+            form,
+            List.of(
+                "Submission already exists for Office (12345), Area of Law (MEDIATION), Period (OCT-2025)",
+                "Mediation submission reference must be a maximum of 20 characters and contain only letters, numbers and forward slashes"));
 
     assertEquals(2, summary.totalMessageCount());
     assertEquals(AreaOfLaw.MEDIATION, summary.areaOfLaw());
     assertEquals("12345", summary.officeAccount());
     assertEquals("OCT-2025", summary.submissionPeriod());
     assertEquals("REF-123", summary.submissionReference());
-    assertEquals(List.of("Submission already exists for Office (12345), Area of Law (MEDIATION), Period (OCT-2025)",
-            "Mediation submission reference must be a maximum of 20 characters and contain only letters, numbers and forward slashes"), summary.messages());
+    assertEquals(
+        List.of(
+            "Submission already exists for Office (12345), Area of Law (MEDIATION), Period (OCT-2025)",
+            "Mediation submission reference must be a maximum of 20 characters and contain only letters, numbers and forward slashes"),
+        summary.messages());
   }
 
   private static NilSubmissionForm buildSessionForm() {
