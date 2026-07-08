@@ -30,7 +30,7 @@
                 <dt class="govuk-summary-list__key"
                     th:text="#{submission.summary.properties.areaOfLaw}"></dt>
                 <dd class="govuk-summary-list__value"
-                    th:text="${messagesSummary.areaOfLaw != null ? #strings.capitalize(#strings.toLowerCase(messagesSummary.areaOfLaw)) : '-'}"></dd>
+                    th:text="#{__${'areaOfLaw.' + messagesSummary.areaOfLaw}__}"></dd>
             </div>
             <div class="govuk-summary-list__row">
                 <dt class="govuk-summary-list__key"

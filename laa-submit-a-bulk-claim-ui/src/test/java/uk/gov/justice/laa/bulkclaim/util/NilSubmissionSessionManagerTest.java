@@ -96,7 +96,7 @@ class NilSubmissionSessionManagerTest {
   }
 
   @Test
-  void shouldCleanseAreaOfLawFields() {
+  void shouldCleanseSessionValuesPriorToAreaOfLawSelectionFields() {
     NilSubmissionForm form = createPopulatedForm();
 
     NilSubmissionForm result =
@@ -113,7 +113,7 @@ class NilSubmissionSessionManagerTest {
   }
 
   @Test
-  void shouldCleanseSubmissionPeriodFields() {
+  void shouldCleanseSessionValuesPriorToSubmissionPeriodSelectionFields() {
     NilSubmissionForm form = createPopulatedForm();
 
     NilSubmissionForm result =
@@ -130,7 +130,7 @@ class NilSubmissionSessionManagerTest {
   }
 
   @Test
-  void shouldCleanseScheduleReferenceFields() {
+  void shouldCleanseSessionValuesPriorToScheduleReferenceEntryFields() {
     NilSubmissionForm form = createPopulatedForm();
 
     NilSubmissionForm result =

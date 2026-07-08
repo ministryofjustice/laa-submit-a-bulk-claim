@@ -87,8 +87,8 @@ public class NilSubmissionsSummaryController {
                 e.getResponseBodyAsString(), SubmissionValidationErrorResponse.class);
 
         List<String> errorMessages =
-            error.getIssues().stream()
-                .map(SubmissionValidationErrorResponse.Issue::getMessage)
+            error.issues().stream()
+                .map(SubmissionValidationErrorResponse.Issue::message)
                 .filter(StringUtils::hasText)
                 .toList();
 

@@ -12,7 +12,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
@@ -46,7 +45,7 @@ public class SubmissionPeriodService {
         .search(
             submissionSearchQuery.getOffices(),
             null,
-            getAreaOfLaw(submissionSearchQuery.getAreaOfLaw()),
+            AreaOfLaw.valueOf(submissionSearchQuery.getAreaOfLaw()),
             submissionSearchQuery.getSubmissionStatuses().getStatuses(),
             submissionSearchQuery.getPage(),
             12,
@@ -54,16 +53,6 @@ public class SubmissionPeriodService {
             getSubmissionDateTo(),
             "createdOn,desc")
         .block();
-  }
-
-  private static AreaOfLaw getAreaOfLaw(String areaOfLaw) {
-    try {
-      return Objects.isNull(areaOfLaw)
-          ? null
-          : AreaOfLaw.fromValue(areaOfLaw.replace("_", " ").toUpperCase());
-    } catch (IllegalArgumentException e) {
-      return null;
-    }
   }
 
   private String getSubmissionDateTo() {

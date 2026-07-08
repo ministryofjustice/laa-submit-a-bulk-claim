@@ -41,34 +41,36 @@ public class NilSubmissionSessionManager {
       NilSubmissionForm nilSubmissionForm, NilSubmissionPage page) {
 
     switch (page) {
-      case OFFICE, OTHER -> cleanseAll(nilSubmissionForm);
-      case AREA_OF_LAW -> cleanseAreaOfLaw(nilSubmissionForm);
-      case SUBMISSION_PERIOD -> cleanseSubmissionPeriod(nilSubmissionForm);
-      case SCHEDULE_REFERENCE -> cleanseScheduleReference(nilSubmissionForm);
+      case OFFICE, OTHER -> cleanseAllNilSubmissionSessionValues(nilSubmissionForm);
+      case AREA_OF_LAW -> cleanseSessionValuesPriorToAreaOfLawSelection(nilSubmissionForm);
+      case SUBMISSION_PERIOD ->
+          cleanseSessionValuesPriorToSubmissionPeriodSelection(nilSubmissionForm);
+      case SCHEDULE_REFERENCE ->
+          cleanseSessionValuesPriorToScheduleReferenceEntry(nilSubmissionForm);
       default -> nilSubmissionForm = null;
     }
     return nilSubmissionForm;
   }
 
-  static void cleanseAll(NilSubmissionForm form) {
+  static void cleanseAllNilSubmissionSessionValues(NilSubmissionForm form) {
     form.setOffice(null);
     form.setAreaOfLaw(null);
     form.setSubmissionPeriod(null);
     form.setScheduleReference(null);
   }
 
-  static void cleanseAreaOfLaw(NilSubmissionForm form) {
+  static void cleanseSessionValuesPriorToAreaOfLawSelection(NilSubmissionForm form) {
     form.setAreaOfLaw(null);
     form.setSubmissionPeriod(null);
     form.setScheduleReference(null);
   }
 
-  static void cleanseSubmissionPeriod(NilSubmissionForm form) {
+  static void cleanseSessionValuesPriorToSubmissionPeriodSelection(NilSubmissionForm form) {
     form.setSubmissionPeriod(null);
     form.setScheduleReference(null);
   }
 
-  static void cleanseScheduleReference(NilSubmissionForm form) {
+  static void cleanseSessionValuesPriorToScheduleReferenceEntry(NilSubmissionForm form) {
     form.setScheduleReference(null);
   }
 }

@@ -100,23 +100,23 @@ management:
           - prometheus
 
 ---
-#spring:
-#  config:
-#    activate:
-#      on-profile: "!local"
+spring:
+  config:
+    activate:
+      on-profile: "!local"
 
 # ECS structured logging
-#logging:
-#  level:
-#    root: ${ROOT_LOGGING_LEVEL:info}
-#    org.springframework: ${SPRING_LOGGING_LEVEL:info}
-#    uk.gov.justice.laa.bulkclaim: ${APP_LOGGING_LEVEL:info}
-#  structured:
-#    format:
-#      console: ecs
-#    ecs:
-#      service:
-#        name: ${spring.application.name:default}
-#        version: ${spring.application.version:default}
-#        environment: ${spring.profiles.active:default}
-#        node_name: ${HOSTNAME:unknown}
+logging:
+  level:
+    root: ${ROOT_LOGGING_LEVEL:info}
+    org.springframework: ${SPRING_LOGGING_LEVEL:info}
+    uk.gov.justice.laa.bulkclaim: ${APP_LOGGING_LEVEL:info}
+  structured:
+    format:
+      console: ecs
+    ecs:
+      service:
+        name: ${spring.application.name:default}
+        version: ${spring.application.version:default}
+        environment: ${spring.profiles.active:default}
+        node_name: ${HOSTNAME:unknown}
