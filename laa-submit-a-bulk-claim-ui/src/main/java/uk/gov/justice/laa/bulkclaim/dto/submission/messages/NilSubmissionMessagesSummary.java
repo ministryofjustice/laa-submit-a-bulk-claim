@@ -3,6 +3,7 @@ package uk.gov.justice.laa.bulkclaim.dto.submission.messages;
 import java.time.OffsetDateTime;
 import java.util.List;
 import lombok.Builder;
+import uk.gov.justice.laa.dstew.payments.claimsdata.model.AreaOfLaw;
 
 @Builder
 public record NilSubmissionMessagesSummary(
@@ -11,5 +12,5 @@ public record NilSubmissionMessagesSummary(
     String submissionReference,
     String submissionPeriod,
     String officeAccount,
-    String areaOfLaw,
+    AreaOfLaw areaOfLaw,
     OffsetDateTime submitted) {}

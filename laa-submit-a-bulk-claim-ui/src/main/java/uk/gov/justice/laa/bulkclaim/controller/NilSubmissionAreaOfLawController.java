@@ -54,9 +54,9 @@ public class NilSubmissionAreaOfLawController {
   private Map<String, String> getAreaOfLawOptions() {
     Map<String, String> options = new LinkedHashMap<>();
 
-    options.put(AreaOfLaw.CRIME_LOWER.name(), "Crime lower");
-    options.put(AreaOfLaw.LEGAL_HELP.name(), "Legal help");
-    options.put(AreaOfLaw.MEDIATION.name(), "Mediation");
+    options.put(AreaOfLaw.CRIME_LOWER.name(), "areaOfLaw.CRIME_LOWER");
+    options.put(AreaOfLaw.LEGAL_HELP.name(), "areaOfLaw.LEGAL_HELP");
+    options.put(AreaOfLaw.MEDIATION.name(), "areaOfLaw.MEDIATION");
 
     return options;
   }

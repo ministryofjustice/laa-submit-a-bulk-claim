@@ -1,8 +1,10 @@
 package uk.gov.justice.laa.bulkclaim.util;
 
+import lombok.experimental.UtilityClass;
 import org.springframework.util.StringUtils;
 import uk.gov.justice.laa.bulkclaim.dto.submission.NilSubmissionForm;
 
+@UtilityClass
 public class NilSubmissionSessionManager {
 
   public static boolean isNilSubmissionSessionStateValid(
@@ -12,7 +14,7 @@ public class NilSubmissionSessionManager {
       case AREA_OF_LAW -> sessionValidForAreaOfLaw(nilSubmissionForm);
       case SUBMISSION_PERIOD -> sessionValidForSubmissionPeriod(nilSubmissionForm);
       case SCHEDULE_REFERENCE -> sessionValidForScheduleReference(nilSubmissionForm);
-      default -> false;
+      case OTHER -> false;
     };
   }
 

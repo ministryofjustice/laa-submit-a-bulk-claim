@@ -2,7 +2,6 @@ package uk.gov.justice.laa.bulkclaim.dto.submission;
 
 import java.io.Serializable;
 import lombok.Data;
-import uk.gov.justice.laa.dstew.payments.claimsdata.model.AreaOfLaw;
 
 @Data
 public class NilSubmissionForm implements Serializable {
@@ -14,12 +13,4 @@ public class NilSubmissionForm implements Serializable {
   private String submissionPeriod;
   private String scheduleReference;
   private int officeCount;
-
-  public String getAreaOfLawDisplayText() {
-    return switch (AreaOfLaw.valueOf(areaOfLaw)) {
-      case CRIME_LOWER -> "Crime lower";
-      case LEGAL_HELP -> "Legal help";
-      case MEDIATION -> "Mediation";
-    };
-  }
 }

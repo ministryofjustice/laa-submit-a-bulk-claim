@@ -31,7 +31,8 @@
             </dt>
 
             <dd class="govuk-summary-list__value"
-                th:text="${nilSubmissionForm.getAreaOfLawDisplayText()}">
+                th:text="#{__${'areaOfLaw.' + nilSubmissionForm.areaOfLaw}__}">
+
             </dd>
             <dd class="govuk-summary-list__actions">
                 <a
@@ -68,7 +69,7 @@
              th:if="${nilSubmissionForm.scheduleReference != null}">
 
             <dt class="govuk-summary-list__key"
-                th:text="${referenceLabel}">
+                th:text="#{__${'nilSubmission.summary.reference.' + nilSubmissionForm.areaOfLaw}__}">
             </dt>
 
             <dd class="govuk-summary-list__value"

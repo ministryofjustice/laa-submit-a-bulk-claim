@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.SessionAttributes;
 import uk.gov.justice.laa.bulkclaim.config.FeatureFlagsConfig;
 import uk.gov.justice.laa.bulkclaim.dto.submission.NilSubmissionForm;
 import uk.gov.justice.laa.bulkclaim.util.NilSubmissionPage;
-import uk.gov.justice.laa.bulkclaim.util.NilSubmissionReferenceUtil;
 import uk.gov.justice.laa.bulkclaim.util.NilSubmissionSessionManager;
 
 @Controller
@@ -22,7 +21,6 @@ import uk.gov.justice.laa.bulkclaim.util.NilSubmissionSessionManager;
 public class NilSubmissionScheduleReferenceController {
 
   private final FeatureFlagsConfig featureFlagsConfig;
-  private final NilSubmissionReferenceUtil nilSubmissionReferenceUtil;
 
   @GetMapping("/nil-submission-reference")
   public String getReference(
@@ -35,15 +33,6 @@ public class NilSubmissionScheduleReferenceController {
     model.addAttribute("displayReference", form.getScheduleReference());
     NilSubmissionSessionManager.nilSubmissionCleanseSession(
         form, NilSubmissionPage.SCHEDULE_REFERENCE);
-    String label =
-        nilSubmissionReferenceUtil.getSubmissionReferenceByAreaOfLaw(
-            form.getAreaOfLaw(), "reference");
-    String exampleText =
-        nilSubmissionReferenceUtil.getSubmissionReferenceByAreaOfLaw(
-            form.getAreaOfLaw(), "example");
-
-    model.addAttribute("referenceLabel", label);
-    model.addAttribute("exampleText", exampleText);
 
     return "pages/nil-submission-reference";
   }

@@ -1,8 +1,5 @@
 package uk.gov.justice.laa.bulkclaim.controller;
 
-import static uk.gov.justice.laa.bulkclaim.constants.AreaOfLawConstants.CRIME_LOWER;
-import static uk.gov.justice.laa.bulkclaim.constants.AreaOfLawConstants.LEGAL_HELP;
-import static uk.gov.justice.laa.bulkclaim.constants.AreaOfLawConstants.MEDIATION;
 import static uk.gov.justice.laa.bulkclaim.constants.SessionConstants.NIL_SUBMISSION_FORM;
 import static uk.gov.justice.laa.bulkclaim.constants.SessionConstants.SUBMISSION_ID;
 
@@ -31,7 +28,6 @@ import uk.gov.justice.laa.bulkclaim.dto.submission.NilSubmissionForm;
 import uk.gov.justice.laa.bulkclaim.dto.submission.SubmissionValidationErrorResponse;
 import uk.gov.justice.laa.bulkclaim.dto.submission.messages.NilSubmissionMessagesSummary;
 import uk.gov.justice.laa.bulkclaim.util.NilSubmissionPage;
-import uk.gov.justice.laa.bulkclaim.util.NilSubmissionReferenceUtil;
 import uk.gov.justice.laa.bulkclaim.util.NilSubmissionSessionManager;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.AreaOfLaw;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.CreateSubmission201Response;
@@ -47,7 +43,6 @@ public class NilSubmissionsSummaryController {
   private final DataClaimsRestClient claimsRestService;
   private final FeatureFlagsConfig featureFlagsConfig;
   private final ObjectMapper objectMapper;
-  private final NilSubmissionReferenceUtil nilSubmissionReferenceUtil;
 
   @GetMapping("/nil-submission-summary-details")
   public String getSummary(
@@ -56,11 +51,6 @@ public class NilSubmissionsSummaryController {
     if (!featureFlagsConfig.getIsNilSubmissionEnabled()) {
       return "error";
     }
-
-    String label =
-        nilSubmissionReferenceUtil.getSubmissionReferenceByAreaOfLaw(
-            form.getAreaOfLaw(), "reference");
-    model.addAttribute("referenceLabel", label);
 
     return "pages/nil-submission-summary-details";
   }
@@ -107,12 +97,7 @@ public class NilSubmissionsSummaryController {
         NilSubmissionMessagesSummary summary =
             buildNilSubmissionMessagesSummary(form, errorMessages);
 
-        String label =
-            nilSubmissionReferenceUtil.getSubmissionReferenceByAreaOfLaw(
-                form.getAreaOfLaw(), "reference");
-
         model.addAttribute("messagesSummary", summary);
-        model.addAttribute("referenceLabel", label);
 
       } catch (Exception ex) {
         log.error(
@@ -134,7 +119,7 @@ public class NilSubmissionsSummaryController {
         .totalMessageCount(errorMessages.size())
         .submitted(OffsetDateTime.now(ZoneId.of("Europe/London")))
         .officeAccount(form.getOffice())
-        .areaOfLaw(form.getAreaOfLaw())
+        .areaOfLaw(AreaOfLaw.valueOf(form.getAreaOfLaw()))
         .submissionPeriod(form.getSubmissionPeriod())
         .submissionReference(form.getScheduleReference())
         .messages(errorMessages)
@@ -160,11 +145,13 @@ public class NilSubmissionsSummaryController {
   }
 
   void setSubmissionReferenceByAreaOfLaw(NilSubmissionForm form, SubmissionPost submissionPost) {
-    switch (form.getAreaOfLaw()) {
-      case LEGAL_HELP ->
+    switch (AreaOfLaw.valueOf(form.getAreaOfLaw())) {
+      case AreaOfLaw.LEGAL_HELP ->
           submissionPost.setLegalHelpSubmissionReference(form.getScheduleReference());
-      case MEDIATION -> submissionPost.setMediationSubmissionReference(form.getScheduleReference());
-      case CRIME_LOWER -> submissionPost.setCrimeLowerScheduleNumber(form.getScheduleReference());
+      case AreaOfLaw.MEDIATION ->
+          submissionPost.setMediationSubmissionReference(form.getScheduleReference());
+      case AreaOfLaw.CRIME_LOWER ->
+          submissionPost.setCrimeLowerScheduleNumber(form.getScheduleReference());
       default -> log.error("Area of law {} is not valid", form.getAreaOfLaw());
     }
   }
