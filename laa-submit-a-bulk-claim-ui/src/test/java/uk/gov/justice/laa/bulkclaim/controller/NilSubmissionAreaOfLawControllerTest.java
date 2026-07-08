@@ -26,7 +26,7 @@ class NilSubmissionAreaOfLawControllerTest {
   }
 
   @Test
-  void whenFeatureFlagDisabled_all_mappings_returnsErrorView() {
+  void whenFeatureFlagDisabled_allMappings_returnsErrorView() {
     when(featureFlagsConfig.getIsNilSubmissionEnabled()).thenReturn(false);
 
     NilSubmissionForm form = new NilSubmissionForm();
