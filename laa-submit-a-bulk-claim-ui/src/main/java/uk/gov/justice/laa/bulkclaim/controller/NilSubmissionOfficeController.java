@@ -42,7 +42,6 @@ public class NilSubmissionOfficeController {
 
     featureFlagsConfig.checkNilSubmissionEnabled();
 
-    // copy session value into displayOffice value
     model.addAttribute("displayOffice", form.getOffice());
     NilSubmissionSessionManager.nilSubmissionCleanseSession(form, NilSubmissionPage.OFFICE);
 

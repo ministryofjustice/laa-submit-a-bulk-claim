@@ -1,6 +1,7 @@
 package uk.gov.justice.laa.bulkclaim.controller;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
@@ -82,6 +83,23 @@ public class NilSubmissionScheduleReferenceControllerTest {
 
     String view_on_invalid = controller.postReference(form, "NOT_A_REF");
     assertEquals("error", view_on_invalid);
+    assertNull(form.getScheduleReference());
+  }
+
+  @Test
+  void getScheduleReference_session_management_cleansing() {
+    when(featureFlagsConfig.getIsNilSubmissionEnabled()).thenReturn(true);
+
+    NilSubmissionForm form = new NilSubmissionForm();
+    form.setOffice("office1");
+    form.setAreaOfLaw("areaOfLaw1");
+    form.setSubmissionPeriod("submissionPeriod1");
+    form.setScheduleReference("scheduleReference1");
+
+    controller.getReference(form, model);
+    assertNotNull(form.getOffice());
+    assertNotNull(form.getAreaOfLaw());
+    assertNotNull(form.getSubmissionPeriod());
     assertNull(form.getScheduleReference());
   }
 }

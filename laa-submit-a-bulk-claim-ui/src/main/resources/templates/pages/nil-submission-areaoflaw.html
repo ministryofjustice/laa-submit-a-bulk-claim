@@ -27,7 +27,7 @@
                                                type="radio"
                                                name="areaOfLaw"
                                                th:value="${areaOfLaw.getKey()}"
-                                               th:checked="${nilSubmissionForm.areaOfLaw == areaOfLaw.getKey()}">
+                                               th:checked="${displayAreaOfLaw == areaOfLaw.getKey()}">
                                         <label class="govuk-label govuk-radios__label"
                                                th:for="${idx.index > 0} ? |areas-of-law-input-${idx.index}| : |areas-of-law-input|"
                                                th:text="${areaOfLaw.getValue()}">

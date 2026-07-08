@@ -33,6 +33,7 @@ public class NilSubmissionAreaOfLawController {
       return "error";
     }
 
+    model.addAttribute("displayAreaOfLaw", form.getAreaOfLaw());
     NilSubmissionSessionManager.nilSubmissionCleanseSession(form, NilSubmissionPage.AREA_OF_LAW);
 
     model.addAttribute("areasOfLaw", getAreaOfLawOptions());

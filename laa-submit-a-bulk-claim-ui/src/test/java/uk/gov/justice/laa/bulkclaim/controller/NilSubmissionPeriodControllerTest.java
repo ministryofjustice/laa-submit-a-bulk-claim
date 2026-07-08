@@ -1,6 +1,7 @@
 package uk.gov.justice.laa.bulkclaim.controller;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
@@ -96,7 +97,9 @@ class NilSubmissionPeriodControllerTest extends BaseControllerTest {
   }
 
   @Test
-  void postNilSubmission_InvalidPeriod_ReturnsErrorView() {}
+  void postNilSubmission_InvalidPeriod_ReturnsErrorView() {
+    // TODO
+  }
 
   @Test
   void getNilSubmission_NoPeriods_ReturnsInfoMessageView() {
@@ -115,5 +118,22 @@ class NilSubmissionPeriodControllerTest extends BaseControllerTest {
     String view = nilSubmissionPeriodController.getSubmissionPeriods(form, model);
     assertEquals("pages/nil-submission-no-submission-periods", view);
     verify(model, times(0)).addAttribute(eq("submissionPeriods"), any(Map.class));
+  }
+
+  @Test
+  void getSubmissionPeriod_session_management_cleansing() {
+    when(featureFlagsConfig.getIsNilSubmissionEnabled()).thenReturn(true);
+
+    NilSubmissionForm form = new NilSubmissionForm();
+    form.setOffice("office1");
+    form.setAreaOfLaw("areaOfLaw1");
+    form.setSubmissionPeriod("submissionPeriod1");
+    form.setScheduleReference("scheduleReference1");
+
+    nilSubmissionPeriodController.getSubmissionPeriods(form, model);
+    assertNotNull(form.getOffice());
+    assertNotNull(form.getAreaOfLaw());
+    assertNull(form.getSubmissionPeriod());
+    assertNull(form.getScheduleReference());
   }
 }

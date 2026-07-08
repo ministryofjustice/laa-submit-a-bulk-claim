@@ -29,8 +29,9 @@
                                 <div id="nil-submission-example-hint" class="govuk-hint" th:text="${exampleText}"></div>
                                 <input class="govuk-input"
                                        id="schedule-reference"
+                                       name="scheduleReference"
                                        type="text"
-                                       th:field="*{scheduleReference}"/>
+                                       th:value="${displayReference}"/>
                             </div>
                         </fieldset>
                     </div>
