@@ -44,7 +44,7 @@ public class NilSubmissionsSummaryController {
   private final FeatureFlagsConfig featureFlagsConfig;
   private final ObjectMapper objectMapper;
 
-  @GetMapping("/nil-submission-summary-details")
+  @GetMapping("/nil-submission/summary-details")
   public String getSummary(
       @ModelAttribute(NIL_SUBMISSION_FORM) NilSubmissionForm form, Model model) {
 
@@ -55,7 +55,7 @@ public class NilSubmissionsSummaryController {
     return "pages/nil-submission/summary-details";
   }
 
-  @PostMapping("/nil-submission-summary-details")
+  @PostMapping("/nil-submission/summary-details")
   public String postSummary(
       @ModelAttribute(NIL_SUBMISSION_FORM) NilSubmissionForm form,
       RedirectAttributes redirectAttributes,

@@ -22,7 +22,7 @@ public class NilSubmissionScheduleReferenceController {
 
   private final FeatureFlagsConfig featureFlagsConfig;
 
-  @GetMapping("/nil-submission-reference")
+  @GetMapping("/nil-submission/reference")
   public String getReference(
       @ModelAttribute(NIL_SUBMISSION_FORM) NilSubmissionForm form, Model model) {
 
@@ -37,7 +37,7 @@ public class NilSubmissionScheduleReferenceController {
     return "pages/nil-submission/reference";
   }
 
-  @PostMapping("/nil-submission-reference")
+  @PostMapping("/nil-submission/reference")
   public String postReference(
       @ModelAttribute(NIL_SUBMISSION_FORM) NilSubmissionForm form,
       @RequestParam String scheduleReference) {
@@ -45,6 +45,6 @@ public class NilSubmissionScheduleReferenceController {
       return "error";
     }
     form.setScheduleReference(scheduleReference);
-    return "redirect:/nil-submission-summary-details";
+    return "redirect:/nil-submission/summary-details";
   }
 }

@@ -15,7 +15,7 @@
             <div class="govuk-grid-column-full">
                 <div id="nil-submission-hint" class="govuk-hint" th:text="#{nilSubmission.hint}"></div>
                 <h1 class="govuk-heading-l" th:text="#{nilSubmission.office.heading}"/>
-                <form class="form" th:action="@{/nil-submission-office}" method="post">
+                <form class="form" th:action="@{/nil-submission/office}" method="post">
                     <div class="govuk-form-group">
                         <fieldset class="govuk-fieldset">
                             <div class="govuk-radios govuk-radios--small"
@@ -41,7 +41,7 @@
                     <div class="govuk-button-group">
                         <button type="submit" data-prevent-double-click="true" class="govuk-button" data-module="govuk-button"
                                 th:text="#{nilSubmission.primaryButton}"/>
-                        <a th:href="@{/nil-submission-cancel(destination='UPLOAD')}" th:text="#{nilSubmission.cancel}"
+                        <a th:href="@{/nil-submission/cancel(destination='UPLOAD')}" th:text="#{nilSubmission.cancel}"
                            class="govuk-link govuk-link--no-visited-state"></a>
                     </div>
                 </form>

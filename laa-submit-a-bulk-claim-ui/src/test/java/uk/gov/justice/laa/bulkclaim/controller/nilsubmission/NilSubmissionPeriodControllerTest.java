@@ -93,7 +93,7 @@ class NilSubmissionPeriodControllerTest extends BaseControllerTest {
     when(submissionPeriodService.searchSubmissions(any())).thenReturn(response);
 
     String view = nilSubmissionPeriodController.postSubmissionPeriod(form, "JAN-2024");
-    assertEquals("redirect:/nil-submission-reference", view);
+    assertEquals("redirect:/nil-submission/reference", view);
     assertEquals("JAN-2024", form.getSubmissionPeriod());
   }
 

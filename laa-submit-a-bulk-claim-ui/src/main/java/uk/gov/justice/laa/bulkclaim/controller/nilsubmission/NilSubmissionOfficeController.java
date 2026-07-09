@@ -34,7 +34,7 @@ public class NilSubmissionOfficeController {
     return new NilSubmissionForm();
   }
 
-  @GetMapping("/nil-submission-office")
+  @GetMapping("/nil-submission/office")
   public String getNilSubmissionOffice(
       @ModelAttribute(NIL_SUBMISSION_FORM) NilSubmissionForm form,
       @AuthenticationPrincipal OidcUser oidcUser,
@@ -58,7 +58,7 @@ public class NilSubmissionOfficeController {
     return "pages/nil-submission/office";
   }
 
-  @PostMapping("/nil-submission-office")
+  @PostMapping("/nil-submission/office")
   public String postNilSubmissionOffice(
       @ModelAttribute(NIL_SUBMISSION_FORM) NilSubmissionForm form,
       Model model,
@@ -68,6 +68,6 @@ public class NilSubmissionOfficeController {
     form.setOffice(office);
     model.addAttribute("selectedOffice", office);
 
-    return "redirect:/nil-submission-areaoflaw";
+    return "redirect:/nil-submission/areaoflaw";
   }
 }

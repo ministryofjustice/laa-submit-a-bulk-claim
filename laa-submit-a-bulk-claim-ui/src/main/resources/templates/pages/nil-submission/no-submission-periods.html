@@ -20,14 +20,14 @@
             <p class="govuk-body">
                 Go back to
                 <a
-                        th:href="@{/nil-submission-cancel(destination='UPLOAD')}"
+                        th:href="@{/nil-submission/cancel(destination='UPLOAD')}"
                         th:data-testid="submit-a-bulk-claim"
                         class="govuk-link govuk-link--no-visited-state"
                         th:text="#{nilSubmission.submit}">
                 </a>
                 or
                 <a
-                        th:href="@{/nil-submission-cancel(destination='SEARCH')}"
+                        th:href="@{/nil-submission/cancel(destination='SEARCH')}"
                         th:data-testid="search-for-previous-submission"
                         class="govuk-link govuk-link--no-visited-state"
                         th:text="#{nilSubmission.search}">

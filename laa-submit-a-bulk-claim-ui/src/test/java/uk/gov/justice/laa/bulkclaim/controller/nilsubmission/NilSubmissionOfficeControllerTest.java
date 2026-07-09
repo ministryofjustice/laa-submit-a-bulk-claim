@@ -92,7 +92,7 @@ class NilSubmissionOfficeControllerTest extends BaseControllerTest {
 
     String view = controller.postNilSubmissionOffice(form, model, "OfficeA");
 
-    assertEquals("redirect:/nil-submission-areaoflaw", view);
+    assertEquals("redirect:/nil-submission/areaoflaw", view);
     assertEquals("OfficeA", form.getOffice());
   }
 

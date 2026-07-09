@@ -25,7 +25,7 @@ public class NilSubmissionAreaOfLawController {
 
   private final FeatureFlagsConfig featureFlagsConfig;
 
-  @GetMapping("/nil-submission-areaoflaw")
+  @GetMapping("/nil-submission/areaoflaw")
   public String getAreasOfLaw(
       @ModelAttribute(NIL_SUBMISSION_FORM) NilSubmissionForm form, Model model) {
 
@@ -40,7 +40,7 @@ public class NilSubmissionAreaOfLawController {
     return "pages/nil-submission/areaoflaw";
   }
 
-  @PostMapping("/nil-submission-areaoflaw")
+  @PostMapping("/nil-submission/areaoflaw")
   public String postAreaOfLaw(
       @ModelAttribute(NIL_SUBMISSION_FORM) NilSubmissionForm form, @RequestParam String areaOfLaw) {
 
@@ -48,7 +48,7 @@ public class NilSubmissionAreaOfLawController {
       return "error";
     }
     form.setAreaOfLaw(areaOfLaw);
-    return "redirect:/nil-submission-period";
+    return "redirect:/nil-submission/period";
   }
 
   private Map<String, String> getAreaOfLawOptions() {

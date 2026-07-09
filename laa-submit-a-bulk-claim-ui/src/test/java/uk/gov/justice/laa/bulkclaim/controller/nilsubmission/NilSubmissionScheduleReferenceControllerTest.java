@@ -61,7 +61,7 @@ public class NilSubmissionScheduleReferenceControllerTest {
 
     String view = controller.postReference(form, "reference");
 
-    assertEquals("redirect:/nil-submission-summary-details", view);
+    assertEquals("redirect:/nil-submission/summary-details", view);
     assertEquals("reference", form.getScheduleReference());
   }
 

@@ -19,7 +19,7 @@ import uk.gov.justice.laa.bulkclaim.util.NilSubmissionSessionManager;
 public class NilSubmissionCancelController {
   private final FeatureFlagsConfig featureFlagsConfig;
 
-  @GetMapping("/nil-submission-cancel")
+  @GetMapping("/nil-submission/cancel")
   public String getCancel(
       @RequestParam(defaultValue = "UPLOAD") String destination,
       @ModelAttribute(NIL_SUBMISSION_FORM) NilSubmissionForm form) {

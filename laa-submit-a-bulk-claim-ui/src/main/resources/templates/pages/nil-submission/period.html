@@ -4,7 +4,7 @@
         ~{::#back-link},'nil-submission')}">
 
 <th:block id="back-link">
-    <a th:href="@{/nil-submission-areaoflaw}"
+    <a th:href="@{/nil-submission/areaoflaw}"
        class="govuk-back-link"
        th:text="#{common.back}"/>
 </th:block>
@@ -15,7 +15,7 @@
                 <div id="nil-submission-hint" class="govuk-hint" th:text="#{nilSubmission.hint}"></div>
                 <h1 class="govuk-heading-l" th:text="#{nilSubmission.period.heading}"/>
                 <th:block th:replace="~{fragments/nil-submission-summary :: nil-submission-summary}"/>
-                <form class="form" th:object="${nilSubmissionForm}" th:action="@{/nil-submission-period}" method="post">
+                <form class="form" th:object="${nilSubmissionForm}" th:action="@{/nil-submission/period}" method="post">
                     <div class="govuk-form-group">
                         <fieldset class="govuk-fieldset">
 
@@ -43,7 +43,7 @@
                     <div class="govuk-button-group">
                         <button type="submit" data-prevent-double-click="true" class="govuk-button" data-module="govuk-button"
                                 th:text="#{nilSubmission.primaryButton}"/>
-                        <a th:href="@{/nil-submission-cancel(destination='UPLOAD')}" th:text="#{nilSubmission.cancel}"
+                        <a th:href="@{/nil-submission/cancel(destination='UPLOAD')}" th:text="#{nilSubmission.cancel}"
                            class="govuk-link govuk-link--no-visited-state"></a>
                     </div>
                 </form>

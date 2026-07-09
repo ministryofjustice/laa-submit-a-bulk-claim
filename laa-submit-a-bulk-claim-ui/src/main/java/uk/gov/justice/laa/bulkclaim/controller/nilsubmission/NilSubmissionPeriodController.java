@@ -26,7 +26,7 @@ public class NilSubmissionPeriodController {
   private final FeatureFlagsConfig featureFlagsConfig;
   private final SubmissionPeriodService submissionPeriodService;
 
-  @GetMapping("/nil-submission-period")
+  @GetMapping("/nil-submission/period")
   public String getSubmissionPeriods(
       @ModelAttribute(NIL_SUBMISSION_FORM) NilSubmissionForm selection, Model model) {
 
@@ -47,7 +47,7 @@ public class NilSubmissionPeriodController {
     return "pages/nil-submission/period";
   }
 
-  @PostMapping("/nil-submission-period")
+  @PostMapping("/nil-submission/period")
   public String postSubmissionPeriod(
       @ModelAttribute(NIL_SUBMISSION_FORM) NilSubmissionForm form,
       @RequestParam String submissionPeriod) {
@@ -56,6 +56,6 @@ public class NilSubmissionPeriodController {
 
     form.setSubmissionPeriod(submissionPeriod);
 
-    return "redirect:/nil-submission-reference";
+    return "redirect:/nil-submission/reference";
   }
 }

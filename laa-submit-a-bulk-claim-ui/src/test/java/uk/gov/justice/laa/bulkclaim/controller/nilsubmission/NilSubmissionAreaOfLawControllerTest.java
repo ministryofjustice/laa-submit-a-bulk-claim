@@ -57,7 +57,7 @@ class NilSubmissionAreaOfLawControllerTest {
 
     String view = controller.postAreaOfLaw(form, "SOME_AREA");
 
-    assertEquals("redirect:/nil-submission-period", view);
+    assertEquals("redirect:/nil-submission/period", view);
     assertEquals("SOME_AREA", form.getAreaOfLaw());
   }
 
