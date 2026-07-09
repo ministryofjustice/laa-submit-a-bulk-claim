@@ -1,4 +1,4 @@
-package uk.gov.justice.laa.bulkclaim.controller;
+package uk.gov.justice.laa.bulkclaim.controller.nilsubmission;
 
 import static uk.gov.justice.laa.bulkclaim.constants.SessionConstants.NIL_SUBMISSION_FORM;
 import static uk.gov.justice.laa.bulkclaim.constants.SessionConstants.SUBMISSION_ID;
@@ -52,7 +52,7 @@ public class NilSubmissionsSummaryController {
       return "error";
     }
 
-    return "pages/nil-submission-summary-details";
+    return "pages/nil-submission/summary-details";
   }
 
   @PostMapping("/nil-submission-summary-details")
@@ -105,7 +105,7 @@ public class NilSubmissionsSummaryController {
       }
 
       NilSubmissionSessionManager.nilSubmissionCleanseSession(form, NilSubmissionPage.OTHER);
-      return "pages/nil-submission-detail-invalid";
+      return "pages/nil-submission/detail-invalid";
 
     } catch (Exception e) {
       log.error("Failed to submit nil submission API failure: {}", e.getMessage());

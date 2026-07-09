@@ -1,4 +1,4 @@
-package uk.gov.justice.laa.bulkclaim.controller;
+package uk.gov.justice.laa.bulkclaim.controller.nilsubmission;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
@@ -45,7 +45,7 @@ class NilSubmissionAreaOfLawControllerTest {
     NilSubmissionForm form = new NilSubmissionForm();
     String view = controller.getAreasOfLaw(form, model);
 
-    assertEquals("pages/nil-submission-areaoflaw", view);
+    assertEquals("pages/nil-submission/areaoflaw", view);
     verify(model).addAttribute(eq("areasOfLaw"), anyMap());
   }
 

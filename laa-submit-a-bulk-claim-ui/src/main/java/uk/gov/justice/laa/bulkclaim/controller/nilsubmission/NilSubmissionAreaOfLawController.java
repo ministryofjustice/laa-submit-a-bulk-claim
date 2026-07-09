@@ -1,4 +1,4 @@
-package uk.gov.justice.laa.bulkclaim.controller;
+package uk.gov.justice.laa.bulkclaim.controller.nilsubmission;
 
 import static uk.gov.justice.laa.bulkclaim.constants.SessionConstants.NIL_SUBMISSION_FORM;
 
@@ -37,7 +37,7 @@ public class NilSubmissionAreaOfLawController {
     NilSubmissionSessionManager.nilSubmissionCleanseSession(form, NilSubmissionPage.AREA_OF_LAW);
 
     model.addAttribute("areasOfLaw", getAreaOfLawOptions());
-    return "pages/nil-submission-areaoflaw";
+    return "pages/nil-submission/areaoflaw";
   }
 
   @PostMapping("/nil-submission-areaoflaw")

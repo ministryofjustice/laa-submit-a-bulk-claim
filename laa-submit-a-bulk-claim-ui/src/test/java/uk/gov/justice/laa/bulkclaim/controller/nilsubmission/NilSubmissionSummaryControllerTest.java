@@ -1,4 +1,4 @@
-package uk.gov.justice.laa.bulkclaim.controller;
+package uk.gov.justice.laa.bulkclaim.controller.nilsubmission;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
@@ -19,6 +19,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import tools.jackson.databind.ObjectMapper;
 import uk.gov.justice.laa.bulkclaim.client.DataClaimsRestClient;
 import uk.gov.justice.laa.bulkclaim.config.FeatureFlagsConfig;
+import uk.gov.justice.laa.bulkclaim.controller.ControllerTestHelper;
 import uk.gov.justice.laa.bulkclaim.dto.submission.NilSubmissionForm;
 import uk.gov.justice.laa.bulkclaim.dto.submission.SubmissionValidationErrorResponse;
 import uk.gov.justice.laa.bulkclaim.dto.submission.messages.NilSubmissionMessagesSummary;
@@ -62,7 +63,7 @@ class NilSubmissionSummaryControllerTest {
     when(featureFlagsConfig.getIsNilSubmissionEnabled()).thenReturn(true);
 
     assertEquals(
-        "pages/nil-submission-summary-details", controller.getSummary(buildSessionForm(), model));
+        "pages/nil-submission/summary-details", controller.getSummary(buildSessionForm(), model));
   }
 
   @Test
@@ -128,7 +129,7 @@ class NilSubmissionSummaryControllerTest {
     NilSubmissionForm form = buildSessionForm();
 
     assertEquals(
-        "pages/nil-submission-detail-invalid",
+        "pages/nil-submission/detail-invalid",
         controller.postSummary(
             form, redirectAttributes, model, ControllerTestHelper.getOidcUser()));
 

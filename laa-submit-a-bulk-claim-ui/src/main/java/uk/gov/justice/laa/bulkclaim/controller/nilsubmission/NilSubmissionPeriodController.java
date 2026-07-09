@@ -1,4 +1,4 @@
-package uk.gov.justice.laa.bulkclaim.controller;
+package uk.gov.justice.laa.bulkclaim.controller.nilsubmission;
 
 import static uk.gov.justice.laa.bulkclaim.constants.SessionConstants.NIL_SUBMISSION_FORM;
 
@@ -41,10 +41,10 @@ public class NilSubmissionPeriodController {
             submissionPeriodService.getMonthsWithOutSubmissions(submissionsResults));
 
     if (sortedSubmissionPeriods.isEmpty()) {
-      return "pages/nil-submission-no-submission-periods";
+      return "pages/nil-submission/no-submission-periods";
     }
     model.addAttribute("submissionPeriods", sortedSubmissionPeriods);
-    return "pages/nil-submission-period";
+    return "pages/nil-submission/period";
   }
 
   @PostMapping("/nil-submission-period")

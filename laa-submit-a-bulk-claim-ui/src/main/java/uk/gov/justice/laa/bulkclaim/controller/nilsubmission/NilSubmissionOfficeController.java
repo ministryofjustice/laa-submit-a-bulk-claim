@@ -1,4 +1,4 @@
-package uk.gov.justice.laa.bulkclaim.controller;
+package uk.gov.justice.laa.bulkclaim.controller.nilsubmission;
 
 import static uk.gov.justice.laa.bulkclaim.constants.NilSubmissionInfoMessageConstants.SUBMISSION_INFO_MESSAGE_PAGE_HEADING;
 import static uk.gov.justice.laa.bulkclaim.constants.NilSubmissionInfoMessageConstants.SUBMISSION_INFO_MESSAGE_TEXT;
@@ -50,12 +50,12 @@ public class NilSubmissionOfficeController {
       model.addAttribute(
           SUBMISSION_INFO_MESSAGE_PAGE_HEADING, "nilSubmission.noOffices.primary.heading");
       model.addAttribute(SUBMISSION_INFO_MESSAGE_TEXT, "nilSubmission.noOffices.message");
-      return "pages/nil-submission-info-message";
+      return "pages/nil-submission/info-message";
     }
     form.setOfficeCount(userOffices.size());
     model.addAttribute("userOffices", userOffices);
 
-    return "pages/nil-submission-office";
+    return "pages/nil-submission/office";
   }
 
   @PostMapping("/nil-submission-office")

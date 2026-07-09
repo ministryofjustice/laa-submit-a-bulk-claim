@@ -1,4 +1,4 @@
-package uk.gov.justice.laa.bulkclaim.controller;
+package uk.gov.justice.laa.bulkclaim.controller.nilsubmission;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
@@ -22,6 +22,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.oauth2.core.oidc.user.OidcUser;
 import org.springframework.ui.Model;
 import org.springframework.web.server.ResponseStatusException;
+import uk.gov.justice.laa.bulkclaim.controller.BaseControllerTest;
 import uk.gov.justice.laa.bulkclaim.dto.submission.NilSubmissionForm;
 import uk.gov.justice.laa.bulkclaim.util.OidcAttributeUtils;
 
@@ -66,7 +67,7 @@ class NilSubmissionOfficeControllerTest extends BaseControllerTest {
     NilSubmissionForm form = new NilSubmissionForm();
     String view = controller.getNilSubmissionOffice(form, getOidcUser(), model);
 
-    assertEquals("pages/nil-submission-office", view);
+    assertEquals("pages/nil-submission/office", view);
     verify(model).addAttribute("userOffices", offices);
   }
 
@@ -79,7 +80,7 @@ class NilSubmissionOfficeControllerTest extends BaseControllerTest {
     NilSubmissionForm form = new NilSubmissionForm();
     String view = controller.getNilSubmissionOffice(form, getOidcUser(), model);
 
-    assertEquals("pages/nil-submission-info-message", view);
+    assertEquals("pages/nil-submission/info-message", view);
     verify(model, never()).addAttribute(eq("userOffices"), any());
   }
 

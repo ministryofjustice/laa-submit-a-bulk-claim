@@ -1,4 +1,4 @@
-package uk.gov.justice.laa.bulkclaim.controller;
+package uk.gov.justice.laa.bulkclaim.controller.nilsubmission;
 
 import static uk.gov.justice.laa.bulkclaim.constants.SessionConstants.NIL_SUBMISSION_FORM;
 
@@ -34,7 +34,7 @@ public class NilSubmissionScheduleReferenceController {
     NilSubmissionSessionManager.nilSubmissionCleanseSession(
         form, NilSubmissionPage.SCHEDULE_REFERENCE);
 
-    return "pages/nil-submission-reference";
+    return "pages/nil-submission/reference";
   }
 
   @PostMapping("/nil-submission-reference")

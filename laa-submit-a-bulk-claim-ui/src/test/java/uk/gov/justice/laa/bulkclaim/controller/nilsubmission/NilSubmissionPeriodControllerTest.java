@@ -1,4 +1,4 @@
-package uk.gov.justice.laa.bulkclaim.controller;
+package uk.gov.justice.laa.bulkclaim.controller.nilsubmission;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -25,6 +25,7 @@ import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.http.HttpStatus;
 import org.springframework.ui.Model;
 import org.springframework.web.server.ResponseStatusException;
+import uk.gov.justice.laa.bulkclaim.controller.BaseControllerTest;
 import uk.gov.justice.laa.bulkclaim.dto.submission.NilSubmissionForm;
 import uk.gov.justice.laa.bulkclaim.helper.SubmissionsResultSetTestHelper;
 import uk.gov.justice.laa.bulkclaim.service.SubmissionPeriodService;
@@ -76,7 +77,7 @@ class NilSubmissionPeriodControllerTest extends BaseControllerTest {
     when(dateWrapperUtil.now()).thenReturn(LocalDate.now());
 
     String view = nilSubmissionPeriodController.getSubmissionPeriods(form, model);
-    assertEquals("pages/nil-submission-period", view);
+    assertEquals("pages/nil-submission/period", view);
     verify(model, times(1)).addAttribute(eq("submissionPeriods"), any(Map.class));
   }
 
@@ -116,7 +117,7 @@ class NilSubmissionPeriodControllerTest extends BaseControllerTest {
     when(dateWrapperUtil.now()).thenReturn(LocalDate.now());
 
     String view = nilSubmissionPeriodController.getSubmissionPeriods(form, model);
-    assertEquals("pages/nil-submission-no-submission-periods", view);
+    assertEquals("pages/nil-submission/no-submission-periods", view);
     verify(model, times(0)).addAttribute(eq("submissionPeriods"), any(Map.class));
   }
 

@@ -1,4 +1,4 @@
-package uk.gov.justice.laa.bulkclaim.controller;
+package uk.gov.justice.laa.bulkclaim.controller.nilsubmission;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -48,7 +48,7 @@ public class NilSubmissionScheduleReferenceControllerTest {
     form.setAreaOfLaw("MEDIATION");
     String view = controller.getReference(form, model);
 
-    assertEquals("pages/nil-submission-reference", view);
+    assertEquals("pages/nil-submission/reference", view);
   }
 
   @Test
