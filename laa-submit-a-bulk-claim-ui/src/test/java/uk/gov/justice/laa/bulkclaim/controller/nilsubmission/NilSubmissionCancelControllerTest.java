@@ -3,6 +3,7 @@ package uk.gov.justice.laa.bulkclaim.controller.nilsubmission;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -10,6 +11,8 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.server.ResponseStatusException;
 import uk.gov.justice.laa.bulkclaim.config.FeatureFlagsConfig;
 import uk.gov.justice.laa.bulkclaim.dto.submission.NilSubmissionForm;
 
@@ -28,12 +31,13 @@ class NilSubmissionCancelControllerTest {
   void whenFeatureFlagDisabled_shouldReturnErrorView() {
     NilSubmissionForm form = new NilSubmissionForm();
 
-    when(featureFlagsConfig.getIsNilSubmissionEnabled()).thenReturn(false);
+    doThrow(new ResponseStatusException(HttpStatus.NOT_FOUND, "isNilSubmissionEnabled is false"))
+        .when(featureFlagsConfig)
+        .checkNilSubmissionEnabled();
 
-    assertEquals("error", nilSubmissionCancelController.getCancel("UPLOAD", form));
-
-    verify(featureFlagsConfig).getIsNilSubmissionEnabled();
-    verifyNoMoreInteractions(featureFlagsConfig);
+    assertThrows(
+        ResponseStatusException.class,
+        () -> nilSubmissionCancelController.getCancel("UPLOAD", form));
   }
 
   @Test

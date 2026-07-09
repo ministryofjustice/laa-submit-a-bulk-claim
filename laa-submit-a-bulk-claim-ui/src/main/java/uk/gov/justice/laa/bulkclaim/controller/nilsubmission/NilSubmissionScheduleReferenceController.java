@@ -26,9 +26,7 @@ public class NilSubmissionScheduleReferenceController {
   public String getReference(
       @ModelAttribute(NIL_SUBMISSION_FORM) NilSubmissionForm form, Model model) {
 
-    if (!featureFlagsConfig.getIsNilSubmissionEnabled()) {
-      return "error";
-    }
+    featureFlagsConfig.checkNilSubmissionEnabled();
 
     model.addAttribute("displayReference", form.getScheduleReference());
     NilSubmissionSessionManager.nilSubmissionCleanseSession(
@@ -41,9 +39,8 @@ public class NilSubmissionScheduleReferenceController {
   public String postReference(
       @ModelAttribute(NIL_SUBMISSION_FORM) NilSubmissionForm form,
       @RequestParam String scheduleReference) {
-    if (!featureFlagsConfig.getIsNilSubmissionEnabled()) {
-      return "error";
-    }
+    featureFlagsConfig.checkNilSubmissionEnabled();
+
     form.setScheduleReference(scheduleReference);
     return "redirect:/nil-submission/summary-details";
   }

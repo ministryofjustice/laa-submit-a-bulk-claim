@@ -24,9 +24,7 @@ public class NilSubmissionCancelController {
       @RequestParam(defaultValue = "UPLOAD") String destination,
       @ModelAttribute(NIL_SUBMISSION_FORM) NilSubmissionForm form) {
 
-    if (!featureFlagsConfig.getIsNilSubmissionEnabled()) {
-      return "error";
-    }
+    featureFlagsConfig.checkNilSubmissionEnabled();
 
     if ("SEARCH".equalsIgnoreCase(destination)) {
       return "redirect:/submissions/search";

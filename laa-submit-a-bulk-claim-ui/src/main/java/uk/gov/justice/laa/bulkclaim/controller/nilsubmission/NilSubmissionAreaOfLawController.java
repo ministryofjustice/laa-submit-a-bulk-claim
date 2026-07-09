@@ -29,9 +29,7 @@ public class NilSubmissionAreaOfLawController {
   public String getAreasOfLaw(
       @ModelAttribute(NIL_SUBMISSION_FORM) NilSubmissionForm form, Model model) {
 
-    if (!featureFlagsConfig.getIsNilSubmissionEnabled()) {
-      return "error";
-    }
+    featureFlagsConfig.checkNilSubmissionEnabled();
 
     model.addAttribute("displayAreaOfLaw", form.getAreaOfLaw());
     NilSubmissionSessionManager.nilSubmissionCleanseSession(form, NilSubmissionPage.AREA_OF_LAW);
@@ -44,9 +42,8 @@ public class NilSubmissionAreaOfLawController {
   public String postAreaOfLaw(
       @ModelAttribute(NIL_SUBMISSION_FORM) NilSubmissionForm form, @RequestParam String areaOfLaw) {
 
-    if (!featureFlagsConfig.getIsNilSubmissionEnabled()) {
-      return "error";
-    }
+    featureFlagsConfig.checkNilSubmissionEnabled();
+
     form.setAreaOfLaw(areaOfLaw);
     return "redirect:/nil-submission/period";
   }

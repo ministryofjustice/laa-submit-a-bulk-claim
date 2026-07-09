@@ -60,7 +60,7 @@ class NilSubmissionOfficeControllerTest extends BaseControllerTest {
 
   @Test
   void whenFeatureFlagEnabled_getOffice_addsAreasAndReturnsView() {
-    when(featureFlagsConfig.getIsNilSubmissionEnabled()).thenReturn(true);
+
     List<String> offices = List.of("officeA", "officeB");
     doReturn(offices).when(oidcAttributeUtils).getUserOffices(any(OidcUser.class));
 
@@ -94,19 +94,6 @@ class NilSubmissionOfficeControllerTest extends BaseControllerTest {
 
     assertEquals("redirect:/nil-submission/areaoflaw", view);
     assertEquals("OfficeA", form.getOffice());
-  }
-
-  // @Test
-  void postOffice_whenOfficeIsInvalid_returnsErrorView() {
-    NilSubmissionForm form = new NilSubmissionForm();
-
-    String view_on_null = controller.postNilSubmissionOffice(form, model, null);
-    assertEquals("error", view_on_null);
-    assertNull(form.getOffice());
-
-    String view_on_invalid = controller.postNilSubmissionOffice(form, model, "NOT_A_OFFICE");
-    assertEquals("error", view_on_invalid);
-    assertNull(form.getOffice());
   }
 
   @Test

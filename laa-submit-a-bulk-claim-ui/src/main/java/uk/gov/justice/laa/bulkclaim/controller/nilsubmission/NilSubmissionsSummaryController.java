@@ -48,9 +48,7 @@ public class NilSubmissionsSummaryController {
   public String getSummary(
       @ModelAttribute(NIL_SUBMISSION_FORM) NilSubmissionForm form, Model model) {
 
-    if (!featureFlagsConfig.getIsNilSubmissionEnabled()) {
-      return "error";
-    }
+    featureFlagsConfig.checkNilSubmissionEnabled();
 
     return "pages/nil-submission/summary-details";
   }
@@ -62,9 +60,8 @@ public class NilSubmissionsSummaryController {
       Model model,
       @AuthenticationPrincipal OidcUser oidcUser) {
 
-    if (!featureFlagsConfig.getIsNilSubmissionEnabled()) {
-      return "error";
-    }
+    featureFlagsConfig.checkNilSubmissionEnabled();
+
     SubmissionPost submissionPost = buildSubmissionPost(form, oidcUser);
 
     try {

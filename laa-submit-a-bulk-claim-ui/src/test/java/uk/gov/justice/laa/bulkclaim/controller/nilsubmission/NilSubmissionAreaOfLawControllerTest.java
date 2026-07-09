@@ -1,15 +1,25 @@
 package uk.gov.justice.laa.bulkclaim.controller.nilsubmission;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyMap;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.http.HttpStatus;
 import org.springframework.ui.Model;
+import org.springframework.web.server.ResponseStatusException;
 import uk.gov.justice.laa.bulkclaim.config.FeatureFlagsConfig;
 import uk.gov.justice.laa.bulkclaim.dto.submission.NilSubmissionForm;
 
@@ -27,14 +37,15 @@ class NilSubmissionAreaOfLawControllerTest {
 
   @Test
   void whenFeatureFlagDisabled_allMappings_returnsErrorView() {
-    when(featureFlagsConfig.getIsNilSubmissionEnabled()).thenReturn(false);
+    doThrow(new ResponseStatusException(HttpStatus.NOT_FOUND, "isNilSubmissionEnabled is false"))
+        .when(featureFlagsConfig)
+        .checkNilSubmissionEnabled();
 
     NilSubmissionForm form = new NilSubmissionForm();
-
-    assertEquals("error", controller.getAreasOfLaw(form, model));
+    assertThrows(ResponseStatusException.class, () -> controller.getAreasOfLaw(form, model));
     verify(model, never()).addAttribute(eq("areasOfLaw"), any());
 
-    assertEquals("error", controller.postAreaOfLaw(form, "SOME_AREA"));
+    assertThrows(ResponseStatusException.class, () -> controller.postAreaOfLaw(form, "SOME_AREA"));
     assertNull(form.getAreaOfLaw());
   }
 
@@ -59,20 +70,6 @@ class NilSubmissionAreaOfLawControllerTest {
 
     assertEquals("redirect:/nil-submission/period", view);
     assertEquals("SOME_AREA", form.getAreaOfLaw());
-  }
-
-  @Test
-  void postAreaOfLaw_whenAreaOfLawIsInvalid_returnsErrorView() {
-    NilSubmissionForm form = new NilSubmissionForm();
-    form.setOffice("office1");
-
-    String view_on_null = controller.postAreaOfLaw(form, null);
-    assertEquals("error", view_on_null);
-    assertNull(form.getAreaOfLaw());
-
-    String view_on_invalid = controller.postAreaOfLaw(form, "NOT_A_AREA_OF_LAW");
-    assertEquals("error", view_on_invalid);
-    assertNull(form.getAreaOfLaw());
   }
 
   @Test

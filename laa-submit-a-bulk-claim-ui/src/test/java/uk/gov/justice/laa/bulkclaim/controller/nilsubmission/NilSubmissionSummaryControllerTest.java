@@ -2,6 +2,7 @@ package uk.gov.justice.laa.bulkclaim.controller.nilsubmission;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
@@ -12,9 +13,11 @@ import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.*;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.ui.Model;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
+import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import tools.jackson.databind.ObjectMapper;
 import uk.gov.justice.laa.bulkclaim.client.DataClaimsRestClient;
@@ -45,22 +48,25 @@ class NilSubmissionSummaryControllerTest {
 
   @Test
   void whenFeatureFlagDisabled_all_mappings_returnsErrorView() {
-    when(featureFlagsConfig.getIsNilSubmissionEnabled()).thenReturn(false);
+    doThrow(new ResponseStatusException(HttpStatus.NOT_FOUND, "isNilSubmissionEnabled is false"))
+        .when(featureFlagsConfig)
+        .checkNilSubmissionEnabled();
 
     NilSubmissionForm form = buildSessionForm();
 
-    assertEquals("error", controller.getSummary(form, model));
-    assertEquals(
-        "error",
-        controller.postSummary(
-            form, redirectAttributes, model, ControllerTestHelper.getOidcUser()));
+    assertThrows(ResponseStatusException.class, () -> controller.getSummary(form, model));
+
+    assertThrows(
+        ResponseStatusException.class,
+        () ->
+            controller.postSummary(
+                form, redirectAttributes, model, ControllerTestHelper.getOidcUser()));
 
     verifyNoInteractions(claimsRestService);
   }
 
   @Test
   void whenFeatureFlagEnabled_getSummary_returnsSummaryView() {
-    when(featureFlagsConfig.getIsNilSubmissionEnabled()).thenReturn(true);
 
     assertEquals(
         "pages/nil-submission/summary-details", controller.getSummary(buildSessionForm(), model));
