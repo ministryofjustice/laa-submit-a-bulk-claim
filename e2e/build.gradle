@@ -1,0 +1,38 @@
+plugins {
+    id 'java'
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation 'com.microsoft.playwright:playwright:1.60.0'
+    implementation 'io.github.cdimascio:dotenv-java:3.2.0'
+    implementation 'com.fasterxml.jackson.core:jackson-databind:2.22.0'
+    implementation 'org.slf4j:slf4j-simple:2.0.18'
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:6.1.0'
+    testImplementation 'org.junit.jupiter:junit-jupiter-params:6.1.0'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:6.1.0'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+
+    testImplementation 'org.postgresql:postgresql:42.7.11'
+
+    // Lombok
+    compileOnly 'org.projectlombok:lombok:1.18.46'
+    annotationProcessor 'org.projectlombok:lombok:1.18.46'
+}
+
+tasks.withType(Test).configureEach {
+    useJUnitPlatform()
+
+    // Ensure test files + Allure always re-run
+    outputs.upToDateWhen { false }
+
+    // Enable readable test output in CI
+    testLogging {
+        events "passed", "failed", "skipped"
+        exceptionFormat "full"
+        showStandardStreams = true
+    }
+}

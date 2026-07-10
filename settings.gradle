@@ -21,3 +21,4 @@ plugins {
 rootProject.name = 'laa-submit-a-bulk-claim'
 
 include 'laa-submit-a-bulk-claim-ui'
+include 'e2e'
