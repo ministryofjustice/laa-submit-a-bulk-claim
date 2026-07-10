@@ -48,6 +48,8 @@ public class SubmissionPeriodService {
             AreaOfLaw.valueOf(submissionSearchQuery.getAreaOfLaw()),
             submissionSearchQuery.getSubmissionStatuses().getStatuses(),
             submissionSearchQuery.getPage(),
+            // 12 is used here as we can only expect to get a maximum of 12 periods back from the
+            // API, so we can set the page size to 12 to avoid multiple calls to the API
             12,
             getSubmissionDateFrom(),
             getSubmissionDateTo(),
