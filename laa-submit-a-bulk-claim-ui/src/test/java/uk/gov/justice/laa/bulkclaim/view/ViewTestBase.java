@@ -18,9 +18,11 @@ import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Import;
 import org.springframework.mock.web.MockHttpSession;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.util.MultiValueMap;
+import uk.gov.justice.laa.bulkclaim.config.FeatureFlagsConfig;
 import uk.gov.justice.laa.bulkclaim.config.WebMvcTestConfig;
 import uk.gov.justice.laa.bulkclaim.controller.ControllerTestHelper;
 import uk.gov.justice.laa.bulkclaim.util.ThymeleafHrefUtils;
@@ -29,6 +31,8 @@ import uk.gov.justice.laa.bulkclaim.util.ThymeleafHrefUtils;
 public abstract class ViewTestBase {
 
   @Autowired protected MockMvc mockMvc;
+
+  @MockitoBean protected FeatureFlagsConfig featureFlagsConfig;
 
   @BeforeEach
   public void setup() {

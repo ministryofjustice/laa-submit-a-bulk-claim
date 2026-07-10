@@ -1,0 +1,22 @@
+<!DOCTYPE HTML>
+<html lang="en" class="govuk-template" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{ layout/main-layout :: layout(#{nilSubmission.heading}, ~{::main},
+       ~{::#back-link},'nil-submission')}">
+
+<th:block id="back-link">
+    <a href="#"
+       data-module="default-back-link"
+       class="govuk-back-link"
+       th:text="#{common.back}"/>
+</th:block>
+
+<main class="govuk-main-wrapper" id="main-content">
+    <div class="govuk-grid-row">
+        <div class="govuk-grid-column-full">
+            <h1 class="govuk-heading-l" th:text="#{__${submissionInfoMessagePageHeading}__}"></h1>
+
+            <p class="govuk-body" th:text="#{__${submissionInfoMessageText}__}"></p>
+        </div>
+    </div>
+</main>
+</html>

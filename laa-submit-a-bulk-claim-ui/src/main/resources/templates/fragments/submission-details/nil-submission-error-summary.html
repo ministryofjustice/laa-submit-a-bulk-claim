@@ -1,0 +1,50 @@
+<th:block th:fragment="error-summary(tagModifier, statusText, messagesSummary)"
+          xmlns:th="http://www.w3.org/1999/xhtml">
+    <div class="govuk-grid-column-one-half-from-desktop" data-module="laa-print-button"
+         data-print-action-container="secondary-action-container">
+        <h1 class="govuk-heading-l" th:text="#{submission.summary.heading}"></h1>
+    </div>
+
+    <div class="govuk-grid-column-full govuk-!-padding-bottom-8">
+        <strong class="govuk-tag"
+                th:classappend="${tagModifier}"
+                th:text="${statusText}"></strong>
+        <br>
+    </div>
+
+    <div class="govuk-grid-column-two-thirds-from-desktop">
+        <dl class="govuk-summary-list">
+            <div class="govuk-summary-list__row">
+                <dt class="govuk-summary-list__key"
+                    th:text="#{submission.summary.properties.dateTime}"></dt>
+                <dd class="govuk-summary-list__value"
+                    th:text="|${#temporals.format(messagesSummary.submitted,'d MMM yyyy')} at ${#temporals.format(messagesSummary.submitted(),'h:mma')}|"></dd>
+            </div>
+            <div class="govuk-summary-list__row">
+                <dt class="govuk-summary-list__key"
+                    th:text="#{submission.summary.properties.account}"></dt>
+                <dd class="govuk-summary-list__value"
+                    th:text="${messagesSummary.officeAccount}"></dd>
+            </div>
+            <div class="govuk-summary-list__row">
+                <dt class="govuk-summary-list__key"
+                    th:text="#{submission.summary.properties.areaOfLaw}"></dt>
+                <dd class="govuk-summary-list__value"
+                    th:text="#{__${'areaOfLaw.' + messagesSummary.areaOfLaw}__}"></dd>
+            </div>
+            <div class="govuk-summary-list__row">
+                <dt class="govuk-summary-list__key"
+                    th:text="#{submission.summary.properties.submissionPeriod}"></dt>
+                <dd class="govuk-summary-list__value"
+                    th:text="${messagesSummary.submissionPeriod}"></dd>
+            </div>
+            <div class="govuk-summary-list__row">
+                <dt class="govuk-summary-list__key"
+                    th:text="#{__${'nilSubmission.summary.reference.' + messagesSummary.areaOfLaw}__}"></dt>
+                <dd class="govuk-summary-list__value"
+                    th:text="${messagesSummary.submissionReference}"></dd>
+            </div>
+        </dl>
+
+    </div>
+</th:block>

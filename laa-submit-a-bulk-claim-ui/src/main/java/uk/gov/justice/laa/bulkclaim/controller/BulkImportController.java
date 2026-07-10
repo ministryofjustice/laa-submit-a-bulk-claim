@@ -21,6 +21,7 @@ import org.springframework.web.reactive.function.client.WebClientResponseExcepti
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import tools.jackson.databind.ObjectMapper;
 import uk.gov.justice.laa.bulkclaim.client.DataClaimsRestClient;
+import uk.gov.justice.laa.bulkclaim.config.FeatureFlagsConfig;
 import uk.gov.justice.laa.bulkclaim.dto.FileUploadForm;
 import uk.gov.justice.laa.bulkclaim.metrics.BulkClaimMetricService;
 import uk.gov.justice.laa.bulkclaim.util.OidcAttributeUtils;
@@ -43,6 +44,7 @@ public class BulkImportController {
   private final OidcAttributeUtils oidcAttributeUtils;
   private final BulkClaimMetricService bulkClaimMetricService;
   private final ObjectMapper objectMapper;
+  private final FeatureFlagsConfig featureFlagsConfig;
 
   @GetMapping("/upload")
   public String showUploadPage(Model model, SessionStatus sessionStatus) {
@@ -54,6 +56,8 @@ public class BulkImportController {
     if (!model.containsAttribute(FILE_UPLOAD_FORM_MODEL_ATTR)) {
       model.addAttribute(FILE_UPLOAD_FORM_MODEL_ATTR, new FileUploadForm());
     }
+
+    model.addAttribute("isNilSubmissionEnabled", featureFlagsConfig.getIsNilSubmissionEnabled());
 
     return "pages/upload";
   }
@@ -129,6 +133,7 @@ public class BulkImportController {
 
     model.addAttribute(FILE_UPLOAD_FORM_MODEL_ATTR, fileUploadForm);
     model.addAttribute(BindingResult.MODEL_KEY_PREFIX + FILE_UPLOAD_FORM_MODEL_ATTR, bindingResult);
+    model.addAttribute("isNilSubmissionEnabled", featureFlagsConfig.getIsNilSubmissionEnabled());
     return "pages/upload";
   }
 }

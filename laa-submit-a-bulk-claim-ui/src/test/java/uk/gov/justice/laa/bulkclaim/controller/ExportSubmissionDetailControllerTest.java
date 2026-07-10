@@ -16,21 +16,18 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
-import org.springframework.context.annotation.Import;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.assertj.MockMvcTester;
 import reactor.core.publisher.Mono;
 import uk.gov.justice.laa.bulkclaim.client.ExportDataClaimsRestClient;
-import uk.gov.justice.laa.bulkclaim.config.WebMvcTestConfig;
 import uk.gov.justice.laa.bulkclaim.exception.SubmitBulkClaimException;
 import uk.gov.justice.laa.bulkclaim.util.OidcAttributeUtils;
 
 @WebMvcTest(ExportSubmissionDetailController.class)
 @AutoConfigureMockMvc
-@Import(WebMvcTestConfig.class)
 @DisplayName("Export Submission Detail Controller Tests")
-class ExportSubmissionDetailControllerTest {
+class ExportSubmissionDetailControllerTest extends BaseControllerTest {
 
   @Autowired private MockMvcTester mockMvc;
 

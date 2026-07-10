@@ -1,0 +1,25 @@
+<!DOCTYPE HTML>
+<html lang="en" class="govuk-template" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{ layout/main-layout :: layout(#{nilSubmission.heading}, ~{::main},
+       ~{},'nil-submission')}">
+<main class="govuk-main-wrapper" id="main-content">
+
+    <div class="govuk-width-container">
+        <div class="govuk-grid-row">
+            <div class="govuk-grid-column-full">
+                <div id="nil-submission-hint" class="govuk-hint" th:text="#{nilSubmission.hint}"></div>
+                <h1 class="govuk-heading-l" th:text="#{nilSubmission.areaOfLaw.heading}"/>
+                <th:block th:replace="~{fragments/nil-submission-summary :: nil-submission-summary}"/>
+                <form class="form" th:object="${nilSubmissionForm}" th:action="@{/nil-submission/summary-details}"
+                      method="post">
+                    <div class="govuk-button-group">
+                        <button type="submit" data-prevent-double-click="true" class="govuk-button" data-module="govuk-button"
+                                th:text="#{nilSubmission.submitButton}"/>
+                        <a th:href="@{/nil-submission/cancel(destination='UPLOAD')}" th:text="#{nilSubmission.cancel}" class="govuk-link govuk-link--no-visited-state"></a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</main>
+</html>

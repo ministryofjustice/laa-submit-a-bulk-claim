@@ -34,6 +34,7 @@ import org.springframework.web.reactive.function.client.WebClientResponseExcepti
 import reactor.core.publisher.Mono;
 import tools.jackson.databind.ObjectMapper;
 import uk.gov.justice.laa.bulkclaim.client.DataClaimsRestClient;
+import uk.gov.justice.laa.bulkclaim.config.FeatureFlagsConfig;
 import uk.gov.justice.laa.bulkclaim.config.WebMvcTestConfig;
 import uk.gov.justice.laa.bulkclaim.dto.FileUploadForm;
 import uk.gov.justice.laa.bulkclaim.metrics.BulkClaimMetricService;
@@ -55,6 +56,7 @@ class BulkImportControllerTest {
   @MockitoBean private DataClaimsRestClient dataClaimsRestClient;
   @MockitoBean private OidcAttributeUtils oidcAttributeUtils;
   @MockitoBean private BulkClaimMetricService bulkClaimMetricService;
+  @MockitoBean private FeatureFlagsConfig featureFlagsConfig;
 
   @Nested
   @DisplayName("GET: /upload")
