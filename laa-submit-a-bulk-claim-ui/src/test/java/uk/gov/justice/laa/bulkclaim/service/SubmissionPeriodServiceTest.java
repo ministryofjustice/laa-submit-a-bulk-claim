@@ -2,7 +2,6 @@ package uk.gov.justice.laa.bulkclaim.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.any;
@@ -14,6 +13,7 @@ import static org.mockito.Mockito.when;
 
 import java.time.LocalDate;
 import java.time.YearMonth;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -38,7 +38,7 @@ public class SubmissionPeriodServiceTest {
   @InjectMocks private SubmissionPeriodService submissionPeriodService;
 
   @Test
-  void searchSubmissions_passesCorrectAreaAndDates() {
+  void searchSubmissions_correctAreaAndDates_success() {
     when(dateWrapperUtil.now()).thenReturn(LocalDate.of(2024, 7, 3));
 
     SubmissionsResultSet response = new SubmissionsResultSet();
@@ -86,49 +86,8 @@ public class SubmissionPeriodServiceTest {
     assertEquals("2024-07-03", toCaptor.getValue());
   }
 
-  // @Test
-  void searchSubmissions_withInvalidAreaPassesNullArea() {
-    when(dateWrapperUtil.now()).thenReturn(LocalDate.of(2024, 7, 3));
-
-    SubmissionsResultSet response = new SubmissionsResultSet();
-    when(claimsRestService.search(
-            anyList(),
-            any(),
-            any(),
-            anyList(),
-            anyInt(),
-            anyInt(),
-            anyString(),
-            anyString(),
-            anyString()))
-        .thenReturn(Mono.just(response));
-
-    NilSubmissionForm form = new NilSubmissionForm();
-    form.setOffice("office1");
-    form.setAreaOfLaw("INVALID_VALUE_THAT_DOES_NOT_MATCH_ENUM");
-
-    submissionPeriodService.searchSubmissions(form);
-
-    ArgumentCaptor<AreaOfLaw> areaCaptor = ArgumentCaptor.forClass(AreaOfLaw.class);
-    verify(claimsRestService)
-        .search(
-            anyList(),
-            any(),
-            areaCaptor.capture(),
-            anyList(),
-            anyInt(),
-            anyInt(),
-            anyString(),
-            anyString(),
-            anyString());
-
-    assertNull(
-        areaCaptor.getValue(),
-        "Invalid areaOfLaw strings should result in null AreaOfLaw passed to the client");
-  }
-
   @Test
-  void removal_of_submission_months_from_selection_list() {
+  void monthsWithoutSubmission_removalOfPreviousSubmissionMonths_listWithReducedPeriods() {
     NilSubmissionForm form = new NilSubmissionForm();
     form.setOffice("officeA");
     form.setAreaOfLaw(AreaOfLaw.MEDIATION.getValue());
@@ -143,5 +102,38 @@ public class SubmissionPeriodServiceTest {
     validPeriods = submissionPeriodService.getMonthsWithOutSubmissions(results);
     assertEquals(11, validPeriods.size());
     assertFalse(validPeriods.containsKey(results.getContent().getFirst().getSubmissionPeriod()));
+  }
+
+  @Test
+  void monthsWithoutSubmission_noPreviousSubmissionMonth_fullListReturned() {
+    NilSubmissionForm form = new NilSubmissionForm();
+    form.setOffice("officeA");
+    form.setAreaOfLaw(AreaOfLaw.MEDIATION.getValue());
+    when(dateWrapperUtil.nowYearMonth()).thenReturn(YearMonth.now());
+    when(dateWrapperUtil.now()).thenReturn(LocalDate.now());
+
+    Map<String, String> validPeriods = submissionPeriodService.getMonthsWithOutSubmissions(null);
+    assertEquals(12, validPeriods.size());
+  }
+
+  @Test
+  void sortSubmissionPeriods_unsorted_input_returns_chronologically_sorted_map() {
+    Map<String, String> unsortedPeriods = new LinkedHashMap<>();
+    unsortedPeriods.put("MAR-2024", "March 2024");
+    unsortedPeriods.put("JAN-2024", "January 2024");
+    unsortedPeriods.put("FEB-2024", "February 2024");
+    unsortedPeriods.put("APR-2024", "April 2024");
+
+    Map<String, String> sortedPeriods =
+        submissionPeriodService.sortSubmissionPeriods(unsortedPeriods);
+
+    assertEquals(4, sortedPeriods.size());
+    assertEquals(LinkedHashMap.class, sortedPeriods.getClass());
+
+    var iterator = sortedPeriods.entrySet().iterator();
+    assertEquals("JAN-2024", iterator.next().getKey());
+    assertEquals("FEB-2024", iterator.next().getKey());
+    assertEquals("MAR-2024", iterator.next().getKey());
+    assertEquals("APR-2024", iterator.next().getKey());
   }
 }
