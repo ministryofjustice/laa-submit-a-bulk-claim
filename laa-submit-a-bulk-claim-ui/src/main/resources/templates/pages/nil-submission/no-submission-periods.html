@@ -3,12 +3,7 @@
       th:replace="~{ layout/main-layout :: layout(#{nilSubmission.heading}, ~{::main},
        ~{::#back-link},'nil-submission')}">
 
-<th:block id="back-link">
-    <a href="#"
-       data-module="default-back-link"
-       class="govuk-back-link"
-       th:text="#{common.back}"/>
-</th:block>
+<th:block id="back-link"></th:block>
 
 <main class="govuk-main-wrapper" id="main-content">
     <div class="govuk-grid-row">
@@ -18,7 +13,7 @@
 
             <p class="govuk-body" th:text="#{nilSubmission.noPeriods.message}"></p>
             <p class="govuk-body">
-                Go back to
+                <th:block th:text="#{nilSubmission.noPeriods.goBack}"/>
                 <a
                         th:href="@{/nil-submission/cancel(destination='UPLOAD')}"
                         th:data-testid="submit-a-bulk-claim"
