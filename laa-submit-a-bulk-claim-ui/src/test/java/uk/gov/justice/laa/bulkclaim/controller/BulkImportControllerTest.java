@@ -83,7 +83,7 @@ class BulkImportControllerTest {
     void shouldRedirectWhenFileHasValidationErrors() throws Exception {
       MockMultipartFile file =
           new MockMultipartFile("fileUpload", "empty.txt", "text/plain", "text".getBytes());
-      FileUploadForm input = new FileUploadForm(file);
+      FileUploadForm input = new FileUploadForm(file, false);
 
       doAnswer(
               invocationOnMock -> {
@@ -108,7 +108,7 @@ class BulkImportControllerTest {
     void shouldRedirectWhenFileFailsVirusCheck() throws Exception {
       MockMultipartFile file =
           new MockMultipartFile("fileUpload", "empty.txt", "text/plain", "text".getBytes());
-      FileUploadForm input = new FileUploadForm(file);
+      FileUploadForm input = new FileUploadForm(file, false);
 
       doAnswer(
               invocationOnMock -> {
@@ -134,9 +134,9 @@ class BulkImportControllerTest {
     void shouldRedirectWhenUploadServiceFails() throws Exception {
       MockMultipartFile file =
           new MockMultipartFile("fileUpload", "test.csv", "text/csv", "text".getBytes());
-      FileUploadForm input = new FileUploadForm(file);
+      FileUploadForm input = new FileUploadForm(file, false);
 
-      when(dataClaimsRestClient.upload(any(), any(), any()))
+      when(dataClaimsRestClient.upload(any(), any(), any(), any()))
           .thenThrow(new RuntimeException("Unexpected error"));
 
       mockMvc
@@ -154,9 +154,9 @@ class BulkImportControllerTest {
     void shouldUploadFileSuccessfully() throws Exception {
       MockMultipartFile file =
           new MockMultipartFile("fileUpload", "test.csv", "text/csv", "text".getBytes());
-      FileUploadForm input = new FileUploadForm(file);
+      FileUploadForm input = new FileUploadForm(file, false);
 
-      when(dataClaimsRestClient.upload(any(), any(), any()))
+      when(dataClaimsRestClient.upload(any(), any(), any(), any()))
           .thenReturn(
               Mono.just(
                   ResponseEntity.of(
@@ -179,10 +179,11 @@ class BulkImportControllerTest {
     void webClientExceptionWithErrorDetails() throws Exception {
       var input =
           new FileUploadForm(
-              new MockMultipartFile("fileUpload", "test.csv", "text/csv", "text".getBytes()));
+              new MockMultipartFile("fileUpload", "test.csv", "text/csv", "text".getBytes()),
+              false);
       var errorDetails = "VAT Applicable must only include Y or N";
       var problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, errorDetails);
-      when(dataClaimsRestClient.upload(any(), any(), any()))
+      when(dataClaimsRestClient.upload(any(), any(), any(), any()))
           .thenThrow(
               new WebClientResponseException(
                   HttpStatus.BAD_REQUEST.value(),
@@ -202,7 +203,11 @@ class BulkImportControllerTest {
               .andReturn();
 
       verify(dataClaimsRestClient)
-          .upload(eq(input.getFile()), eq(OIDC_USER.getEmail()), eq(Collections.emptyList()));
+          .upload(
+              eq(input.getFile()),
+              eq(OIDC_USER.getEmail()),
+              eq(Collections.emptyList()),
+              eq(input.isSaveAsDraft()));
       verify(bulkClaimMetricService)
           .recordFailedFileUploadSize(eq(input.getFile().getSize()), eq(errorDetails));
       assertTrue(result.getResponse().getContentAsString().contains(errorDetails));
@@ -213,10 +218,11 @@ class BulkImportControllerTest {
     void webClientExceptionWithDefaultErrorMessage() throws Exception {
       var input =
           new FileUploadForm(
-              new MockMultipartFile("fileUpload", "test.csv", "text/csv", "text".getBytes()));
+              new MockMultipartFile("fileUpload", "test.csv", "text/csv", "text".getBytes()),
+              false);
       var defaultErrorMessage = "An unknown error occurred during upload.";
       var problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, "");
-      when(dataClaimsRestClient.upload(any(), any(), any()))
+      when(dataClaimsRestClient.upload(any(), any(), any(), any()))
           .thenThrow(
               new WebClientResponseException(
                   HttpStatus.BAD_REQUEST.value(),
@@ -236,7 +242,11 @@ class BulkImportControllerTest {
               .andReturn();
 
       verify(dataClaimsRestClient)
-          .upload(eq(input.getFile()), eq(OIDC_USER.getEmail()), eq(Collections.emptyList()));
+          .upload(
+              eq(input.getFile()),
+              eq(OIDC_USER.getEmail()),
+              eq(Collections.emptyList()),
+              eq(input.isSaveAsDraft()));
       verify(bulkClaimMetricService)
           .recordFailedFileUploadSize(eq(input.getFile().getSize()), eq(defaultErrorMessage));
       assertTrue(result.getResponse().getContentAsString().contains(defaultErrorMessage));
@@ -248,10 +258,11 @@ class BulkImportControllerTest {
     void webClientExceptionWithProviderDetailsNotInJsonFormat() throws Exception {
       var input =
           new FileUploadForm(
-              new MockMultipartFile("fileUpload", "test.csv", "text/csv", "text".getBytes()));
+              new MockMultipartFile("fileUpload", "test.csv", "text/csv", "text".getBytes()),
+              false);
       var defaultErrorMessage = "The selected file could not be uploaded - try again";
       var problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, "");
-      when(dataClaimsRestClient.upload(any(), any(), any()))
+      when(dataClaimsRestClient.upload(any(), any(), any(), any()))
           .thenThrow(
               new WebClientResponseException(
                   HttpStatus.BAD_REQUEST.value(),
