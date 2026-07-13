@@ -135,7 +135,8 @@ public class SubmissionDetailController {
 
     SubmissionSummary submissionSummary = submissionSummaryBuilder.build(submissionResponse);
     boolean submissionAccepted =
-        submissionResponse.getStatus() == SubmissionStatus.VALIDATION_SUCCEEDED;
+        submissionResponse.getStatus() == SubmissionStatus.VALIDATION_SUCCEEDED
+            || submissionResponse.getStatus() == SubmissionStatus.READY_FOR_SUBMISSION;
 
     if (submissionAccepted) {
       submissionSummary =
@@ -188,7 +189,8 @@ public class SubmissionDetailController {
               submissionSummary.officeAccount(),
               claimDetails.totalClaimValue(),
               submissionSummary.areaOfLaw(),
-              submissionSummary.submitted());
+              submissionSummary.submitted(),
+              submissionSummary.isDraft());
     }
 
     MessagesSummary messagesSummary =
