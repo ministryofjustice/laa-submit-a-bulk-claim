@@ -31,7 +31,7 @@ public class BulkUploadBeingCheckedController {
   private final DataClaimsRestClient dataClaimsRestClient;
 
   private final List<BulkSubmissionStatus> completedStatuses =
-      List.of(BulkSubmissionStatus.VALIDATION_SUCCEEDED, BulkSubmissionStatus.VALIDATION_FAILED);
+      List.of(BulkSubmissionStatus.VALIDATION_SUCCEEDED, BulkSubmissionStatus.VALIDATION_FAILED, BulkSubmissionStatus.READY_FOR_SUBMISSION);
 
   private final List<BulkSubmissionStatus> pendingStatuses =
       List.of(BulkSubmissionStatus.READY_FOR_PARSING, BulkSubmissionStatus.PARSING_COMPLETED);
