@@ -65,6 +65,7 @@ jobs:
       packages: write
     with:
       override_version: ${{ needs.define-preview-version.outputs.preview_version }}
+      build_command: ':laa-submit-a-bulk-claim-ui:assemble'
       integration_test_task: integrationTest
       semgrep_check: 'true'
       java_version: 25
