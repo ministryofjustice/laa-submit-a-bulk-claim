@@ -1,7 +1,9 @@
 name: Deploy UAT preview (branch)
 
-on:
-  pull_request:
+# TODO: Uncomment
+#on:
+#  pull_request:on:
+#  pull_request:
 
 permissions:
   contents: read
