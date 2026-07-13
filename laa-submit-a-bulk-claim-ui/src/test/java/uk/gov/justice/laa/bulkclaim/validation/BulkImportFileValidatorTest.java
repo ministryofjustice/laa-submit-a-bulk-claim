@@ -25,7 +25,7 @@ class BulkImportFileValidatorTest {
     // Given an empty file
     MockMultipartFile file =
         new MockMultipartFile("file", "test.txt", "text/plain", new byte[10 * 1024 * 1024]);
-    FileUploadForm fileUploadForm = new FileUploadForm(file);
+    FileUploadForm fileUploadForm = new FileUploadForm(file, false);
     SimpleErrors errors = new SimpleErrors(fileUploadForm);
 
     // When
@@ -42,7 +42,7 @@ class BulkImportFileValidatorTest {
     // Given
     MockMultipartFile file =
         new MockMultipartFile("file", fileName, "application/xml", new byte[10 * 1024 * 1024]);
-    FileUploadForm fileUploadForm = new FileUploadForm(file);
+    FileUploadForm fileUploadForm = new FileUploadForm(file, false);
     SimpleErrors errors = new SimpleErrors(fileUploadForm);
 
     // When
@@ -59,7 +59,7 @@ class BulkImportFileValidatorTest {
     // Given
     MockMultipartFile file =
         new MockMultipartFile("file", fileName, "text/csv", new byte[10 * 1024 * 1024]);
-    FileUploadForm fileUploadForm = new FileUploadForm(file);
+    FileUploadForm fileUploadForm = new FileUploadForm(file, false);
     SimpleErrors errors = new SimpleErrors(fileUploadForm);
 
     // When
@@ -77,7 +77,7 @@ class BulkImportFileValidatorTest {
     MockMultipartFile file =
         new MockMultipartFile(
             "file", fileName, "application/vnd.ms-excel", new byte[10 * 1024 * 1024]);
-    FileUploadForm fileUploadForm = new FileUploadForm(file);
+    FileUploadForm fileUploadForm = new FileUploadForm(file, false);
     SimpleErrors errors = new SimpleErrors(fileUploadForm);
 
     // When
@@ -94,7 +94,7 @@ class BulkImportFileValidatorTest {
     // Given
     MockMultipartFile file =
         new MockMultipartFile("file", fileName, "text/plain", new byte[10 * 1024 * 1024]);
-    FileUploadForm fileUploadForm = new FileUploadForm(file);
+    FileUploadForm fileUploadForm = new FileUploadForm(file, false);
     SimpleErrors errors = new SimpleErrors(fileUploadForm);
 
     // When
@@ -109,7 +109,7 @@ class BulkImportFileValidatorTest {
   void shouldHaveErrorsIfFileIsEmpty() {
     // Given an empty file
     MockMultipartFile file = new MockMultipartFile("file", "test.xml", "text/xml", new byte[0]);
-    FileUploadForm fileUploadForm = new FileUploadForm(file);
+    FileUploadForm fileUploadForm = new FileUploadForm(file, false);
     SimpleErrors errors = new SimpleErrors(fileUploadForm);
 
     // When
@@ -125,7 +125,7 @@ class BulkImportFileValidatorTest {
   @DisplayName("Should have errors if no file is provided")
   void shouldHaveErrorsIfFileIsMissing() {
     // Given no file selected
-    FileUploadForm fileUploadForm = new FileUploadForm(null);
+    FileUploadForm fileUploadForm = new FileUploadForm(null, false);
     SimpleErrors errors = new SimpleErrors(fileUploadForm);
 
     // When
@@ -143,7 +143,7 @@ class BulkImportFileValidatorTest {
     // Given an empty file (Override original file name, can't create MockMultipartFile without it)
     MockMultipartFile file = Mockito.mock(MockMultipartFile.class);
     when(file.getOriginalFilename()).thenReturn("");
-    FileUploadForm fileUploadForm = new FileUploadForm(file);
+    FileUploadForm fileUploadForm = new FileUploadForm(file, false);
     SimpleErrors errors = new SimpleErrors(fileUploadForm);
 
     // When
@@ -163,7 +163,7 @@ class BulkImportFileValidatorTest {
     MockMultipartFile file =
         new MockMultipartFile(
             "file", fileName, "application/json", "content".getBytes(StandardCharsets.UTF_8));
-    FileUploadForm fileUploadForm = new FileUploadForm(file);
+    FileUploadForm fileUploadForm = new FileUploadForm(file, false);
     SimpleErrors errors = new SimpleErrors(fileUploadForm);
 
     // When
@@ -183,7 +183,7 @@ class BulkImportFileValidatorTest {
     MockMultipartFile file =
         new MockMultipartFile(
             "file", "test.csv", mimeType, "col1,col2".getBytes(StandardCharsets.UTF_8));
-    FileUploadForm fileUploadForm = new FileUploadForm(file);
+    FileUploadForm fileUploadForm = new FileUploadForm(file, false);
     SimpleErrors errors = new SimpleErrors(fileUploadForm);
 
     // When
@@ -203,7 +203,7 @@ class BulkImportFileValidatorTest {
     MockMultipartFile file =
         new MockMultipartFile(
             "file", "test.xml", mimeType, "<p></p>".getBytes(StandardCharsets.UTF_8));
-    FileUploadForm fileUploadForm = new FileUploadForm(file);
+    FileUploadForm fileUploadForm = new FileUploadForm(file, false);
     SimpleErrors errors = new SimpleErrors(fileUploadForm);
 
     // When
@@ -223,7 +223,7 @@ class BulkImportFileValidatorTest {
     MockMultipartFile file =
         new MockMultipartFile(
             "file", "test.txt", mimeType, "Hello".getBytes(StandardCharsets.UTF_8));
-    FileUploadForm fileUploadForm = new FileUploadForm(file);
+    FileUploadForm fileUploadForm = new FileUploadForm(file, false);
     SimpleErrors errors = new SimpleErrors(fileUploadForm);
 
     // When

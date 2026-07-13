@@ -4,14 +4,28 @@
 <main class="govuk-main-wrapper" id="main-content">
   <div class="govuk-width-container">
     <div class="govuk-grid-row">
-      <th:block th:replace="~{fragments/submission-details/success-banner :: success-banner}"></th:block>
-      <th:block
-          th:replace="~{fragments/submission-details/summary :: summary(' govuk-tag--green', #{submission.summary.status.accepted}, true, true)}"></th:block>
+      <th:block th:if="${submissionSummary.isDraft()}">
+        <th:block th:replace="~{fragments/submission-details/draft-banner :: draft-banner}"/>
+        <th:block
+          th:replace="~{fragments/submission-details/summary :: summary(' govuk-tag--blue', #{submission.summary.status.draft}, true, true)}"/>
+      </th:block>
+
+      <th:block th:unless="${submissionSummary.isDraft()}">
+        <th:block th:unless="${submissionSummary.isDraft()}" th:replace="~{fragments/submission-details/success-banner :: success-banner}"></th:block>
+        <th:block th:unless="${submissionSummary.isDraft()}"
+                th:replace="~{fragments/submission-details/summary :: summary(' govuk-tag--green', #{submission.summary.status.accepted}, true, true)}"></th:block>
+      </th:block>
+
       <th:block
           th:replace="~{fragments/submission-details/navigation :: navigation(${claimCount}, ${messageCount}, ${matterStartsCount})}"></th:block>
       <th:block th:replace="~{fragments/submission-details/claim-details :: claim-details}"></th:block>
       <th:block th:replace="~{fragments/submission-details/matter-starts :: matter-starts}"></th:block>
       <th:block th:replace="~{fragments/submission-details/claim-messages-warnings :: claim-messages-warnings(pageVarName='messagesPage')}"></th:block>
+
+      <div class="govuk-grid-column-full" th:if="${submissionSummary.isDraft()}">
+        <button type="submit" class="govuk-button" data-module="govuk-button"
+                th:text="#{viewSubmission.draft.submit}"/>
+      </div>
     </div>
   </div>
 </main>

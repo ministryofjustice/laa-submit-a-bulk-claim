@@ -26,6 +26,7 @@ public interface SubmissionSummaryMapper {
   @Mapping(target = "status", source = "status", qualifiedByName = "mapStatus")
   @Mapping(target = "submitted", source = "submitted")
   @Mapping(target = "submissionValue", ignore = true)
+  @Mapping(target = "isDraft", source = "submissionResponse", qualifiedByName = "mapIsDraft")
   SubmissionSummary toSubmissionSummary(SubmissionResponse submissionResponse);
 
   @Named("fromAreaOfLaw")
@@ -40,9 +41,15 @@ public interface SubmissionSummaryMapper {
     }
     return switch (status) {
       case VALIDATION_SUCCEEDED -> "Submitted";
+      case READY_FOR_SUBMISSION -> "Draft";
       case VALIDATION_FAILED, REPLACED -> "Invalid";
       case CREATED, READY_FOR_VALIDATION, VALIDATION_IN_PROGRESS -> "In progress";
     };
+  }
+
+  @Named("mapIsDraft")
+  default boolean mapIsDraft(SubmissionResponse submissionResponse) {
+    return submissionResponse.getStatus() == SubmissionStatus.READY_FOR_SUBMISSION;
   }
 
   @Named("toSubmissionPeriod")

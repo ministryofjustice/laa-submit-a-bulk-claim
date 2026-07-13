@@ -30,6 +30,25 @@
           </div>
         </div>
 
+        <div class="govuk-form-group">
+          <fieldset class="govuk-fieldset" aria-describedby="changedName-hint">
+            <legend class="govuk-fieldset__legend govuk-fieldset__legend--m">
+              <h2 class="govuk-fieldset__heading" th:text="#{bulkImport.saveAsDraft}"/>
+            </legend>
+            <div id="changedName-hint" class="govuk-hint" th:text="#{bulkImport.saveAsDraft.hint}"/>
+            <div class="govuk-radios govuk-radios--inline" data-module="govuk-radios">
+              <div class="govuk-radios__item">
+                <input class="govuk-radios__input" id="save-as-draft-radio-yes" th:field="*{saveAsDraft}" type="radio" value="true">
+                <label class="govuk-label govuk-radios__label" for="save-as-draft-radio-yes" th:text="#{common.yes}"/>
+              </div>
+              <div class="govuk-radios__item">
+                <input class="govuk-radios__input" id="save-as-draft-radio-no" th:field="*{saveAsDraft}" type="radio" value="false">
+                <label class="govuk-label govuk-radios__label" for="save-as-draft-radio-no" th:text="#{common.no}"/>
+              </div>
+            </div>
+          </fieldset>
+        </div>
+
         <button type="submit" class="govuk-button" data-module="govuk-button"
                 th:text="#{bulkImport.primaryButton}"/>
 

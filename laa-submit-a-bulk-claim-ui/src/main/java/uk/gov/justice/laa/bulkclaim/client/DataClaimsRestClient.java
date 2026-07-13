@@ -34,7 +34,8 @@ public interface DataClaimsRestClient {
       @RequestParam String userId,
       // Allows Claims API to read the file and tell the user what office they're missing. Users
       // shouldn't be in a position where they have no offices unless they've been set up wrong.
-      @RequestParam(required = false) List<String> offices)
+      @RequestParam(required = false) List<String> offices,
+      @RequestParam("saveAsDraft") boolean saveAsDraft)
       throws WebClientResponseException;
 
   @GetExchange(value = "/bulk-submissions/{id}/summary")

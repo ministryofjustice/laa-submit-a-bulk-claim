@@ -171,7 +171,8 @@ class SubmissionDetailControllerTest {
                   "AQ2B3C",
                   new BigDecimal("100.50"),
                   "Legal aid",
-                  OffsetDateTime.of(2025, 1, 1, 10, 10, 10, 0, ZoneOffset.UTC)));
+                  OffsetDateTime.of(2025, 1, 1, 10, 10, 10, 0, ZoneOffset.UTC),
+                  false));
       when(submissionMessagesBuilder.build(any(), any(), any(), anyInt(), anyInt(), any()))
           .thenReturn(
               new MessagesSummary(Collections.emptyList(), 0, 0, pagination, MessagesSource.CLAIM));
@@ -215,7 +216,8 @@ class SubmissionDetailControllerTest {
                   "AQ2B3C",
                   new BigDecimal("100.50"),
                   "Legal aid",
-                  OffsetDateTime.of(2025, 1, 1, 10, 10, 10, 0, ZoneOffset.UTC)));
+                  OffsetDateTime.of(2025, 1, 1, 10, 10, 10, 0, ZoneOffset.UTC),
+                  false));
       when(submissionMessagesBuilder.buildErrors(any(), anyInt(), anyInt(), any()))
           .thenReturn(
               new MessagesSummary(Collections.emptyList(), 0, 0, pagination, MessagesSource.CLAIM));
@@ -257,7 +259,8 @@ class SubmissionDetailControllerTest {
                   "AQ2B3C",
                   new BigDecimal("100.50"),
                   AreaOfLaw.LEGAL_HELP.getValue(),
-                  OffsetDateTime.of(2025, 1, 1, 10, 10, 10, 0, ZoneOffset.UTC)));
+                  OffsetDateTime.of(2025, 1, 1, 10, 10, 10, 0, ZoneOffset.UTC),
+                  false));
       List<SubmissionMatterStartsRow> matterTypes = new ArrayList<>();
       matterTypes.add(new SubmissionMatterStartsRow("Description", 34));
       when(submissionClaimDetailsBuilder.build(any(), anyInt(), anyInt(), any()))
@@ -303,7 +306,8 @@ class SubmissionDetailControllerTest {
                   "AQ2B3C",
                   null,
                   AreaOfLaw.CRIME_LOWER.getValue(),
-                  OffsetDateTime.of(2025, 1, 1, 10, 10, 10, 0, ZoneOffset.UTC)));
+                  OffsetDateTime.of(2025, 1, 1, 10, 10, 10, 0, ZoneOffset.UTC),
+                  false));
       when(submissionClaimDetailsBuilder.build(any(), anyInt(), anyInt(), any()))
           .thenReturn(
               new SubmissionClaimsDetails(Collections.emptyList(), pagination, BigDecimal.TEN));
@@ -348,7 +352,8 @@ class SubmissionDetailControllerTest {
                   "AQ2B3C",
                   BigDecimal.ONE,
                   AreaOfLaw.CRIME_LOWER.getValue(),
-                  OffsetDateTime.of(2025, 1, 1, 10, 10, 10, 0, ZoneOffset.UTC)));
+                  OffsetDateTime.of(2025, 1, 1, 10, 10, 10, 0, ZoneOffset.UTC),
+                  false));
       when(submissionClaimDetailsBuilder.build(any(), anyInt(), anyInt(), any()))
           .thenReturn(
               new SubmissionClaimsDetails(
@@ -432,7 +437,8 @@ class SubmissionDetailControllerTest {
                   "AQ2B3C",
                   new BigDecimal("100.50"),
                   AreaOfLaw.LEGAL_HELP.getValue(),
-                  OffsetDateTime.of(2025, 1, 1, 10, 10, 10, 0, ZoneOffset.UTC)));
+                  OffsetDateTime.of(2025, 1, 1, 10, 10, 10, 0, ZoneOffset.UTC),
+                  false));
 
       var pagination = Page.builder().totalPages(1).totalElements(0).number(0).size(10).build();
       when(submissionClaimDetailsBuilder.build(any(), anyInt(), anyInt(), any()))
@@ -473,7 +479,8 @@ class SubmissionDetailControllerTest {
                   "AQ2B3C",
                   new BigDecimal("100.50"),
                   AreaOfLaw.LEGAL_HELP.getValue(),
-                  OffsetDateTime.of(2025, 1, 1, 10, 10, 10, 0, ZoneOffset.UTC)));
+                  OffsetDateTime.of(2025, 1, 1, 10, 10, 10, 0, ZoneOffset.UTC),
+                  false));
 
       var pagination = Page.builder().totalPages(1).totalElements(0).number(0).size(10).build();
       when(submissionClaimDetailsBuilder.build(any(), anyInt(), anyInt(), any()))

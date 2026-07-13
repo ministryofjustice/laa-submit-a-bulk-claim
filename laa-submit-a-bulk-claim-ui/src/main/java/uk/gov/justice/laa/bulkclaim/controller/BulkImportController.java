@@ -84,7 +84,8 @@ public class BulkImportController {
               .upload(
                   fileUploadForm.getFile(),
                   oidcUser.getPreferredUsername(),
-                  oidcAttributeUtils.getUserOffices(oidcUser))
+                  oidcAttributeUtils.getUserOffices(oidcUser),
+                  fileUploadForm.isSaveAsDraft())
               .block();
 
       CreateBulkSubmission201Response bulkSubmissionResponse = responseEntity.getBody();

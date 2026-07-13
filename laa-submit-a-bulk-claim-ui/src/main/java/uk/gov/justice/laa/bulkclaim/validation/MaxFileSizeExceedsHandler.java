@@ -46,7 +46,7 @@ public class MaxFileSizeExceedsHandler {
 
   /** Builds the upload view response with a file size validation error. */
   private String buildErrorResponse(Exception ex, Model model) {
-    FileUploadForm fileUploadForm = new FileUploadForm(null);
+    FileUploadForm fileUploadForm = new FileUploadForm(null, false);
     BindingResult bindingResult =
         new BeanPropertyBindingResult(
             fileUploadForm, BulkImportController.FILE_UPLOAD_FORM_MODEL_ATTR);
