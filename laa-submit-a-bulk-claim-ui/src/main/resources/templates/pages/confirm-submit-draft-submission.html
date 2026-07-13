@@ -1,0 +1,60 @@
+<!DOCTYPE HTML>
+<html lang="en" class="govuk-template" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{ layout/main-layout :: layout(#{landing.heading},~{::main},~{}, 'landing')}">
+<main class="govuk-main-wrapper" id="main-content">
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds-from-desktop">
+      <h1 class="govuk-heading-xl" th:text="#{submitDraftSubmission.heading}"/>
+
+      <p class="govuk-body govuk-body-lead" th:text="#{submitDraftSubmission.leadParagraph}"></p>
+    </div>
+      <div class="govuk-grid-column-two-thirds-from-desktop">
+        <dl class="govuk-summary-list">
+          <div class="govuk-summary-list__row">
+            <dt class="govuk-summary-list__key"
+                th:text="#{submission.summary.properties.dateTime}"></dt>
+            <dd class="govuk-summary-list__value"
+                th:text="|${#temporals.format(submissionSummary.submitted,'d MMM yyyy')} at ${#temporals.format(submissionSummary.submitted(),'h:mma')}|"></dd>
+          </div>
+          <div class="govuk-summary-list__row">
+            <dt class="govuk-summary-list__key"
+                th:text="#{submission.summary.properties.account}"></dt>
+            <dd class="govuk-summary-list__value"
+                th:text="${submissionSummary.officeAccount}"></dd>
+          </div>
+          <div class="govuk-summary-list__row">
+            <dt class="govuk-summary-list__key"
+                th:text="#{submission.summary.properties.areaOfLaw}"></dt>
+            <dd class="govuk-summary-list__value"
+                th:text="${submissionSummary.areaOfLaw != null ? #strings.capitalize(#strings.toLowerCase(submissionSummary.areaOfLaw)) : '-'}"></dd>
+          </div>
+          <div class="govuk-summary-list__row">
+            <dt class="govuk-summary-list__key"
+                th:text="#{submission.summary.properties.submissionPeriod}"></dt>
+            <dd class="govuk-summary-list__value"
+                th:text="${#temporals.format(submissionSummary.submissionPeriod, 'MMM-yyyy').toUpperCase()}"></dd>
+          </div>
+          <div class="govuk-summary-list__row">
+            <dt class="govuk-summary-list__key"
+                th:text="#{submission.summary.properties.reference}"></dt>
+            <dd class="govuk-summary-list__value"
+                th:text="${submissionSummary.submissionReference}"></dd>
+          </div>
+          <div class="govuk-summary-list__row"
+               th:if="${submissionSummary.submissionValue() != null}">
+            <dt class="govuk-summary-list__key"
+                th:text="#{submission.summary.properties.calculatedBulkValue}"></dt>
+            <dd class="govuk-summary-list__value"
+                th:text="${@currencyUtil.toString(submissionSummary.submissionValue())}"></dd>
+          </div>
+        </dl>
+
+      <form th:action="@{/submit-draft-submission}" method="post">
+        <input type="hidden" name="_csrf" th:value="${_csrf.token}"/>
+        <button class="govuk-button" data-module="govuk-button" type="submit"
+                th:text="#{submitDraftSubmission.submit}"></button>
+      </form>
+    </div>
+  </div>
+</main>
+</html>
