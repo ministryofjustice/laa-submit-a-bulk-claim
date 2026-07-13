@@ -1,5 +1,6 @@
 plugins {
     id 'java'
+    id("io.qameta.allure") version "4.1.0"
 }
 
 repositories {
@@ -21,9 +22,14 @@ dependencies {
     // Lombok
     compileOnly 'org.projectlombok:lombok:1.18.46'
     annotationProcessor 'org.projectlombok:lombok:1.18.46'
+
+    // Allure
+    testImplementation platform('io.qameta.allure:allure-bom:2.35.3')
+    testImplementation 'io.qameta.allure:allure-junit5'
+    testImplementation 'io.qameta.allure:allure-playwright'
 }
 
-tasks.withType(Test).configureEach {
+test {
     useJUnitPlatform()
 
     // Ensure test files + Allure always re-run
@@ -35,4 +41,8 @@ tasks.withType(Test).configureEach {
         exceptionFormat "full"
         showStandardStreams = true
     }
+
+    jvmArgs = [
+        "-Dorg.slf4j.simpleLogger.log.io.qameta.allure.playwright.AllurePlaywright=error"
+    ]
 }

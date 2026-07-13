@@ -20,3 +20,12 @@ To run a single test, specify the test class and method name. e.g:
 ```bash
 ./gradlew :e2e:test --tests "*BulkSubmissionE2ETest.happyPath"
 ```
+
+## Generating Allure reports locally
+
+Allure results are collected in the `src/e2e/build/allure-results` directory. To generate a report, 
+run the following command:
+
+```bash
+./gradlew :e2e:allureReport
+```

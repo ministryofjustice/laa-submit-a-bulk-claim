@@ -47,20 +47,20 @@ public class DatabaseQueryExecutor implements AutoCloseable {
     inserts.stream().map(SqlStatement::fromFile).forEach(this::executeUpdate);
   }
 
-  public void clean() {
-    delete("validation_message_log");
-    delete("assessment");
-    delete("calculated_fee_detail");
-    delete("claim_summary_fee");
-    delete("client");
-    delete("claim_case");
-    delete("claim");
-    delete("matter_start");
-    delete("submission");
-    delete("bulk_submission");
+  public void cleanAll() {
+    deleteAll("validation_message_log");
+    deleteAll("assessment");
+    deleteAll("calculated_fee_detail");
+    deleteAll("claim_summary_fee");
+    deleteAll("client");
+    deleteAll("claim_case");
+    deleteAll("claim");
+    deleteAll("matter_start");
+    deleteAll("submission");
+    deleteAll("bulk_submission");
   }
 
-  public void delete(String table) {
+  public void deleteAll(String table) {
     String sql = String.format("DELETE FROM claims.%s", table);
     executeUpdate(SqlStatement.fromRaw(sql));
   }

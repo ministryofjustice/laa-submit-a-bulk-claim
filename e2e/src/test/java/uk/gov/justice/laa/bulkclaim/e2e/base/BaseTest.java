@@ -44,7 +44,7 @@ public abstract class BaseTest {
   public void setup() {
     try {
       dqe = new DatabaseQueryExecutor();
-      dqe.clean();
+      dqe.cleanAll();
       dqe.seed(inserts());
     } catch (SQLException e) {
       throw new RuntimeException("Failed to seed database", e);
