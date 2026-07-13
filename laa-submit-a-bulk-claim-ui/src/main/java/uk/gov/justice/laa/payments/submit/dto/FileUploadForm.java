@@ -11,4 +11,5 @@ import org.springframework.web.multipart.MultipartFile;
 public class FileUploadForm {
 
   private MultipartFile file;
+  private boolean saveAsDraft;
 }

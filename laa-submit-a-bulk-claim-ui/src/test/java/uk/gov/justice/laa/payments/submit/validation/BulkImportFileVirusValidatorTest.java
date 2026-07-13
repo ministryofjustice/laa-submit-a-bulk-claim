@@ -41,7 +41,7 @@ class BulkImportFileVirusValidatorTest {
     // Given an empty file
     MockMultipartFile file =
         new MockMultipartFile("file", "test.txt", "text/plain", new byte[10 * 1024 * 1024]);
-    FileUploadForm fileUploadForm = new FileUploadForm(file);
+    FileUploadForm fileUploadForm = new FileUploadForm(file, false);
     SimpleErrors errors = new SimpleErrors(fileUploadForm);
 
     // When
@@ -58,7 +58,7 @@ class BulkImportFileVirusValidatorTest {
     // Given an empty file
     MockMultipartFile file =
         new MockMultipartFile("file", "test.txt", "text/plain", new byte[10 * 1024 * 1024]);
-    FileUploadForm fileUploadForm = new FileUploadForm(file);
+    FileUploadForm fileUploadForm = new FileUploadForm(file, false);
     SimpleErrors errors = new SimpleErrors(fileUploadForm);
     doThrow(new VirusCheckException("Virus check failed")).when(virusCheckService).checkVirus(file);
 
@@ -77,7 +77,7 @@ class BulkImportFileVirusValidatorTest {
   void shouldHaveErrorsWhenTokenProviderException() {
     MockMultipartFile file =
         new MockMultipartFile("file", "test.txt", "text/plain", new byte[10 * 1024 * 1024]);
-    FileUploadForm fileUploadForm = new FileUploadForm(file);
+    FileUploadForm fileUploadForm = new FileUploadForm(file, false);
     SimpleErrors errors = new SimpleErrors(fileUploadForm);
     doThrow(new TokenProviderException("Invalid SDS Token"))
         .when(virusCheckService)
@@ -96,7 +96,7 @@ class BulkImportFileVirusValidatorTest {
   void shouldHaveErrorsWhenTokenProviderExceptionIncorrectSDSConfig() {
     MockMultipartFile file =
         new MockMultipartFile("file", "test.txt", "text/plain", new byte[10 * 1024 * 1024]);
-    FileUploadForm fileUploadForm = new FileUploadForm(file);
+    FileUploadForm fileUploadForm = new FileUploadForm(file, false);
     SimpleErrors errors = new SimpleErrors(fileUploadForm);
     doThrow(new HttpClientErrorException(HttpStatus.BAD_REQUEST, "Invalid SDS Token"))
         .when(virusCheckService)
@@ -112,7 +112,7 @@ class BulkImportFileVirusValidatorTest {
   void shouldThrowExceptionWhenResourceNotFound() {
     MockMultipartFile file =
         new MockMultipartFile("file", "test.txt", "text/plain", new byte[10 * 1024 * 1024]);
-    FileUploadForm fileUploadForm = new FileUploadForm(file);
+    FileUploadForm fileUploadForm = new FileUploadForm(file, false);
     SimpleErrors errors = new SimpleErrors(fileUploadForm);
     doThrow(new ResourceAccessException("Resource not found"))
         .when(virusCheckService)

@@ -12,4 +12,5 @@ public record SubmissionSummary(
     String officeAccount,
     BigDecimal submissionValue,
     String areaOfLaw,
-    OffsetDateTime submitted) {}
+    OffsetDateTime submitted,
+    boolean isDraft) {}
