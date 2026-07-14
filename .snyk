@@ -1,9 +1,4 @@
 # Snyk (https://snyk.io) policy file
 version: v1.25.0
-ignore:
-  SNYK-JAVA-COMFASTERXMLJACKSONCORE-17457695:
-    - '*':
-        reason: Waiting for Jackson to release fix
-        expires: 2026-07-31T00:00:00.000Z
-
+ignore: {}
 patch: {}
