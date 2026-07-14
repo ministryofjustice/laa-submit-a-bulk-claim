@@ -18,10 +18,33 @@ repositories {
     mavenCentral()
 }
 
+configurations.configureEach {
+    resolutionStrategy.eachDependency { DependencyResolveDetails details ->
+        if (details.requested.group == 'com.fasterxml.jackson.core' && details.requested.name == 'jackson-annotations') {
+            details.useVersion '2.21'
+        } else if (details.requested.group.startsWith('com.fasterxml.jackson')) {
+            details.useVersion '2.21.5'
+            details.because 'Fixes Improperly Controlled Modification of Dynamically-Determined Object Attributes (SNYK-JAVA-COMFASTERXMLJACKSONCORE-17457695)'
+        }
+        if (details.requested.group == 'org.apache.httpcomponents.core5' && details.requested.name == 'httpcore5-h2') {
+            details.useVersion '5.4.3'
+            details.because 'Fixes Allocation of Resources Without Limits or Throttling (SNYK-JAVA-ORGAPACHEHTTPCOMPONENTSCORE5-17817217)'
+        }
+        if (details.requested.group == 'org.codehaus.plexus' && details.requested.name == 'plexus-utils') {
+            details.useVersion '4.0.3'
+            details.because 'Fixes Directory Traversal (SNYK-JAVA-ORGCODEHAUSPLEXUS-15766699)'
+        }
+        if (details.requested.group == 'commons-beanutils' && details.requested.name == 'commons-beanutils') {
+            details.useVersion '1.11.0'
+            details.because 'Fixes Unsafe Reflection (SNYK-JAVA-COMMONSBEANUTILS-10259368)'
+        }
+    }
+}
+
 // Upgrade to fix remaining Apache Tomcat vulnerabilities reported against 11.0.22
 ext['tomcat.version'] = '11.0.23'
-// Upgrade to fix SNYK-JAVA-ORGAPACHELOGGINGLOG4J-15967727 and related vulnerabilities
-ext['log4j2.version'] = '2.25.4'
+// Upgrade to fix SNYK-JAVA-ORGAPACHELOGGINGLOG4J-17954276 and related vulnerabilities
+ext['log4j2.version'] = '2.25.5'
 // Upgrade to fix HTTP Request Smuggling (SNYK-JAVA-IONETTY-16425695)
 ext['netty.version'] = '4.2.15.Final'
 
@@ -107,7 +130,7 @@ dependencies {
     testImplementation 'org.springframework.security:spring-security-test'
 
     testImplementation 'org.testcontainers:mockserver:1.21.3'
-    testImplementation 'org.mock-server:mockserver-client-java:5.15.0'
+    testImplementation 'org.mock-server:mockserver-client-java:7.0.0'
 
     testImplementation 'au.com.dius.pact.consumer:junit5:4.6.19'
 

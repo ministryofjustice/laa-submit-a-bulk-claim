@@ -66,7 +66,7 @@ class DataClaimsRestClientIntegrationTest extends MockServerIntegrationTest {
     void shouldHandle201Response() {
       // Given
       MockMultipartFile file =
-          new MockMultipartFile("file", "test.txt", "text/plain", new byte[10 * 1024 * 1024]);
+          new MockMultipartFile("file", "test.txt", "text/plain", new byte[10]);
       String expectedBody =
           """
               {
@@ -105,7 +105,7 @@ class DataClaimsRestClientIntegrationTest extends MockServerIntegrationTest {
     void shouldHandle201ResponseWithEmptyOfficeArray() {
       // Given
       MockMultipartFile file =
-          new MockMultipartFile("file", "test.txt", "text/plain", new byte[10 * 1024 * 1024]);
+          new MockMultipartFile("file", "test.txt", "text/plain", new byte[10]);
       String expectedBody =
           """
               {
@@ -144,7 +144,7 @@ class DataClaimsRestClientIntegrationTest extends MockServerIntegrationTest {
     void shouldHandle400Response() {
       // Given
       MockMultipartFile file =
-          new MockMultipartFile("file", "test.txt", "text/plain", new byte[10 * 1024 * 1024]);
+          new MockMultipartFile("file", "test.txt", "text/plain", new byte[10]);
       mockServerClient
           .when(HttpRequest.request().withMethod("POST").withPath("/api/v1/bulk-submissions"))
           .respond(response().withStatusCode(400).withHeader("Content-Type", "application/json"));
@@ -160,7 +160,7 @@ class DataClaimsRestClientIntegrationTest extends MockServerIntegrationTest {
     void shouldHandle401Response() {
       // Given
       MockMultipartFile file =
-          new MockMultipartFile("file", "test.txt", "text/plain", new byte[10 * 1024 * 1024]);
+          new MockMultipartFile("file", "test.txt", "text/plain", new byte[10]);
       mockServerClient
           .when(HttpRequest.request().withMethod("POST").withPath("/api/v1/bulk-submissions"))
           .respond(response().withStatusCode(401).withHeader("Content-Type", "application/json"));
@@ -176,7 +176,7 @@ class DataClaimsRestClientIntegrationTest extends MockServerIntegrationTest {
     void shouldHandle403Response() {
       // Given
       MockMultipartFile file =
-          new MockMultipartFile("file", "test.txt", "text/plain", new byte[10 * 1024 * 1024]);
+          new MockMultipartFile("file", "test.txt", "text/plain", new byte[10]);
       mockServerClient
           .when(HttpRequest.request().withMethod("POST").withPath("/api/v1/bulk-submissions"))
           .respond(response().withStatusCode(403).withHeader("Content-Type", "application/json"));
@@ -192,7 +192,7 @@ class DataClaimsRestClientIntegrationTest extends MockServerIntegrationTest {
     void shouldHandle500Response() {
       // Given
       MockMultipartFile file =
-          new MockMultipartFile("file", "test.txt", "text/plain", new byte[10 * 1024 * 1024]);
+          new MockMultipartFile("file", "test.txt", "text/plain", new byte[10]);
       mockServerClient
           .when(HttpRequest.request().withMethod("POST").withPath("/api/v1/bulk-submissions"))
           .respond(response().withStatusCode(500).withHeader("Content-Type", "application/json"));
