@@ -20,15 +20,15 @@ public class EnvConfig {
   }
 
   public static String authMethod() {
-    return getOrDefault("E2E_AUTH_METHOD", "silas");
+    return getOrDefault("E2E_AUTH_METHOD", "mock");
   }
 
   public static String silasUsername() {
-    return getOrDefault("E2E_SILAS_USERNAME", "standard_user");
+    return getOrDefault("E2E_SILAS_USERNAME", "");
   }
 
   public static String silasPassword() {
-    return getOrDefault("E2E_SILAS_PASSWORD", "secret_sauce");
+    return getOrDefault("E2E_SILAS_PASSWORD", "");
   }
 
   public static String silasMfaSecret() {
@@ -45,9 +45,5 @@ public class EnvConfig {
 
   public static String dbPassword() {
     return getOrDefault("E2E_DB_PASSWORD", "");
-  }
-
-  public static String userId() {
-    return "LAA-Submit-A-Bulk-Claim-E2E-Tests";
   }
 }

@@ -1,9 +1,7 @@
 name: Deploy UAT preview (branch)
 
-# TODO: Uncomment
-#on:
-#  pull_request:on:
-#  pull_request:
+on:
+  pull_request:
 
 permissions:
   contents: read
@@ -43,22 +41,6 @@ jobs:
           echo "preview_version=${version}" >> "$GITHUB_OUTPUT"
           echo "Preview version: submit-a-bulk-claim-${version}"
 
-  test-smoke:
-    name: Test @smoke
-    needs: [ define-preview-version ]
-    uses: ministryofjustice/bulk-submission-and-fee-scheme-tests-/.github/workflows/trigger-e2e-dispatch.yml@bb8c62731903909f477ced8396ec5b8e41c8c62b # 17/04/2026
-    permissions:
-      contents: read
-      id-token: write
-    with:
-      sabc_image_tag: submit-a-bulk-claim-${{ needs.define-preview-version.outputs.preview_version }}
-      test_annotation: "@smoke"
-      pr_number: ${{ github.event.number }}
-      github_app_organisation: 'ministryofjustice'
-    secrets:
-      github_app_id: ${{ vars.LAA_CCMS_CAAB_SERVICE_APP_ID }}
-      github_app_private_key: ${{ secrets.LAA_CCMS_CAAB_SERVICE_KEY }}
-
   build-and-test:
     needs: [ define-preview-version ]
     uses: ministryofjustice/laa-ccms-common-workflows/.github/workflows/gradle-build-and-publish.yml@4daa796eff475c7a107e17daf4e4882b8a1b949b # v2.3.0
@@ -73,6 +55,28 @@ jobs:
       java_version: 25
     secrets:
       gh_token: ${{ secrets.GITHUB_TOKEN }}
+
+  e2e-tests:
+    uses: ./.github/workflows/e2e-tests.yml
+    permissions:
+      id-token: write
+      contents: read
+    secrets:
+      pat_token: ${{ secrets.PAT_TOKEN }}
+      kube_cert: ${{ secrets.KUBE_CERT }}
+      kube_cluster: ${{ secrets.KUBE_CLUSTER }}
+      kube_namespace: ${{ secrets.KUBE_NAMESPACE }}
+      kube_token: ${{ secrets.KUBE_TOKEN }}
+      kube_namespace_laa_fee_scheme_api_uat: ${{ secrets.KUBE_NAMESPACE_LAA_FEE_SCHEME_API_UAT }}
+      kube_cert_laa_fee_scheme_api_uat: ${{ secrets.KUBE_CERT_LAA_FEE_SCHEME_API_UAT }}
+      kube_token_laa_fee_scheme_api_uat: ${{ secrets.KUBE_TOKEN_LAA_FEE_SCHEME_API_UAT }}
+      kube_cluster_laa_fee_scheme_api_uat: ${{ secrets.KUBE_CLUSTER_LAA_FEE_SCHEME_API_UAT }}
+      auth_client_id: ${{ secrets.AUTH_CLIENT_ID }}
+      auth_client_secret: ${{ secrets.AUTH_CLIENT_SECRET }}
+      auth_scope: ${{ secrets.AUTH_SCOPE }}
+      auth_tenant_id: ${{ secrets.AUTH_TENANT_ID }}
+      fsp_api_token: ${{ secrets.FSP_API_TOKEN }}
+      pda_api_token: ${{ secrets.PDA_API_TOKEN }}
 
   pact-test:
     needs: [ define-preview-version ]
@@ -115,7 +119,7 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with:
-          node-version: '22'
+          node-version: '24'
   
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@3f131e8634966bd73d06cc69884922b02e6faf92 # v6.2.0
