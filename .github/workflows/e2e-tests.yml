@@ -51,7 +51,6 @@ jobs:
         with:
           repository: ministryofjustice/laa-data-claims-parent
           path: laa-data-claims-parent
-          ref: test/BC-671-e2e-pipeline # TODO: Remove
           submodules: 'true'
 
       - name: Update parent submodules
@@ -63,14 +62,6 @@ jobs:
           cd laa-submit-a-bulk-claim          
           git fetch origin "$SUBMIT_REF"
           git checkout -B "$SUBMIT_REF" FETCH_HEAD
-          
-          cd ../laa-data-claims-api
-          git fetch origin test/BC-671-e2e-pipeline
-          git checkout -B test/BC-671-e2e-pipeline FETCH_HEAD
-          
-          cd ../laa-data-claims-event-service
-          git fetch origin task/BC-671-e2e-pipeline
-          git checkout -B task/BC-671-e2e-pipeline FETCH_HEAD
 
       - name: Install kubectl
         uses: azure/setup-kubectl@829323503d1be3d00ca8346e5391ca0b07a9ab0d # v5.1.0
@@ -123,8 +114,6 @@ jobs:
 
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@3f131e8634966bd73d06cc69884922b02e6faf92 # v6.2.0
-        with:
-          cache-read-only: false # TODO: This is just for testing
 
       - name: Install task
         uses: go-task/setup-task@01a4adf9db2d14c1de7a560f09170b6e0df736aa # v2.1.0
@@ -139,10 +128,11 @@ jobs:
           AUTH_SCOPE: ${{ secrets.auth_scope }}
           AUTH_TENANT_ID: ${{ secrets.auth_tenant_id }}
           SDS_API_URL: ${{ vars.SDS_API_URL }}
-          FSP_API_BASE_URL: 'http://localhost:8095'
-          FSP_API_TOKEN: ${{ secrets.fsp_api_token }}
-          PROVIDER_API_BASE_URL: 'http://localhost:8186'
-          PROVIDER_API_KEY: ${{ secrets.pda_api_token }}
+          FEE_SCHEME_PLATFORM_API_URL: 'http://localhost:8095'
+          FEE_SCHEME_PLATFORM_API_ACCESS_TOKEN: ${{ secrets.fsp_api_token }}
+          PROVIDER_DETAILS_API_URL: 'http://localhost:8186'
+          PROVIDER_DETAILS_API_HOSTNAME: 'http://localhost:8186'
+          PROVIDER_DETAILS_API_ACCESS_TOKEN: ${{ secrets.pda_api_token }}
 
       - name: Wait for services to be ready
         working-directory: laa-data-claims-parent/laa-submit-a-bulk-claim

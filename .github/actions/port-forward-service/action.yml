@@ -1,8 +1,8 @@
-name: "Port forward to pod"
+name: "Port forward to service"
 
 inputs:
   kube_namespace:
-    description: "Namespace that contains the target pod"
+    description: "Namespace that contains the target service"
     required: true
     type: string
   service_name:
@@ -14,7 +14,7 @@ inputs:
     required: true
     type: string
   remote_port:
-    description: "Remote pod port to forward to (defaults to local_port)"
+    description: "Remote service port to forward to (defaults to local_port)"
     required: false
     type: string
     default: ""
@@ -37,7 +37,7 @@ inputs:
     description: "Path to the wait-for-port script"
     required: false
     type: string
-    default: "./scripts/wait-for-port.sh"
+    default: "./.github/scripts/wait-for-port.sh"
 
 runs:
   using: "composite"
