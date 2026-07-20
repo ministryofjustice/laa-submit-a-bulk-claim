@@ -1,5 +1,5 @@
 plugins {
-    id 'uk.gov.laa.springboot.laa-spring-boot-gradle-plugin' version '2.3.0' apply false
+    id 'uk.gov.laa.springboot.laa-spring-boot-gradle-plugin' version '2.3.6' apply false
 }
 
 subprojects {
