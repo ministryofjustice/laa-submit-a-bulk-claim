@@ -52,21 +52,6 @@ services:
     ports:
       - "8091:8080"
 
-  laa-mock-oidc-service:
-    container_name: oidc
-    build: ../laa-oidc-mock-server
-    ports:
-      - "9000:9000"
-    healthcheck:
-      test: ["CMD", "nc", "-z", "localhost", "9000"] # Checks if the port is open
-      interval: 5s
-      timeout: 5s
-      retries: 5
-      start_period: 10s
-    environment:
-      LAA_ACCOUNTS: 1,123,0P322F,2Q779P,2Q286D,2Q263D,2Q271M,0E525U,2Q286D,2N199K,1T102C,2P746R,2L847Q
-      REDIRECT_BASE_URI: "localhost:8082"
-
   redis:
     image: redis:8-alpine
     container_name: redis
