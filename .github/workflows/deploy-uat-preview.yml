@@ -51,6 +51,10 @@ jobs:
       override_version: ${{ needs.define-preview-version.outputs.preview_version }}
       build_command: ':laa-submit-a-bulk-claim-ui:assemble'
       integration_test_task: integrationTest
+      junit_results_path: 'laa-submit-a-bulk-claim-ui/build/test-results'
+      junit_report_path: 'laa-submit-a-bulk-claim-ui/build/reports/tests'
+      checkstyle_report_path: 'laa-submit-a-bulk-claim-ui/build/reports/checkstyle'
+      jacoco_coverage_report_path: 'laa-submit-a-bulk-claim-ui/build/reports/jacoco'
       semgrep_check: 'true'
       java_version: 25
     secrets:

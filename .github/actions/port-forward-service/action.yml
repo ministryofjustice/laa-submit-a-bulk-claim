@@ -102,7 +102,7 @@ runs:
             if [ -z "$WAIT_NAME" ]; then
               WAIT_NAME="port-${WAIT_PORT}"
             fi
-            "$WAIT_SCRIPT" "$WAIT_PORT" "$WAIT_NAME"
+            bash "$WAIT_SCRIPT" "$WAIT_PORT" "$WAIT_NAME"
           else
             echo "Wait script '$WAIT_SCRIPT' not found, skipping wait step." >&2
           fi

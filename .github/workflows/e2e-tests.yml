@@ -84,7 +84,7 @@ jobs:
           service_name: 'uat-e2e-testing-pda-proxy'
           local_port: "8186"
           remote_port: "8080"
-          pid_env_var: PORT_FORWARD_PID
+          pid_env_var: PORT_FORWARD_PDA_PID
           wait_label: pda-api
 
       - name: Authenticate to FSP cluster
@@ -103,7 +103,7 @@ jobs:
           service_name: 'laa-fee-scheme-api-service'
           local_port: "8095"
           remote_port: "8085"
-          pid_env_var: PORT_FORWARD_PID
+          pid_env_var: PORT_FORWARD_FSP_PID
           wait_label: fsp-api
 
       - name: Set up Java
@@ -160,8 +160,8 @@ jobs:
           docker logs event-service-localstack > logs/localstack.log 2>&1 || true
           docker logs redis > logs/redis.log 2>&1 || true
           docker logs oidc > logs/oidc.log 2>&1 || true
-          cat pf-fsp.log > logs/pf-fsp.log 2>&1 || true
-          cat pf-pda.log > logs/pf-pda.log 2>&1 || true
+          cat pf-8095.log > logs/pf-fsp.log 2>&1 || true
+          cat pf-8186.log > logs/pf-pda.log 2>&1 || true
 
       - name: Upload logs
         if: always()
@@ -177,16 +177,17 @@ jobs:
         with:
           name: e2e-tests-reports
           path: |
-            laa-submit-a-bulk-claim-e2e-tests/build/allure-results
-            laa-submit-a-bulk-claim-e2e-tests/build/reports
-            laa-submit-a-bulk-claim-e2e-tests/build/test-results
+            laa-data-claims-parent/laa-submit-a-bulk-claim/e2e/build/allure-results
+            laa-data-claims-parent/laa-submit-a-bulk-claim/e2e/build/reports
+            laa-data-claims-parent/laa-submit-a-bulk-claim/e2e/build/test-results
           if-no-files-found: warn
 
       - name: Cleanup
         if: always()
+        working-directory: laa-data-claims-parent
         run: |
           set +e
-          docker compose down
+          task down
           [ -n "${PORT_FORWARD_FSP_PID:-}" ] && kill "${PORT_FORWARD_FSP_PID}" || true
           [ -n "${PORT_FORWARD_PDA_PID:-}" ] && kill "${PORT_FORWARD_PDA_PID}" || true
           true
