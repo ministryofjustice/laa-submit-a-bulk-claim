@@ -1,12 +1,12 @@
-name: "Port forward to pod"
+name: "Port forward to service"
 
 inputs:
   kube_namespace:
-    description: "Namespace that contains the target pod"
+    description: "Namespace that contains the target service"
     required: true
     type: string
-  pod_selector:
-    description: "Label selector used to resolve the pod"
+  service_name:
+    description: "Service name to port-forward to"
     required: true
     type: string
   local_port:
@@ -14,7 +14,7 @@ inputs:
     required: true
     type: string
   remote_port:
-    description: "Remote pod port to forward to (defaults to local_port)"
+    description: "Remote service port to forward to (defaults to local_port)"
     required: false
     type: string
     default: ""
@@ -46,7 +46,7 @@ runs:
       shell: bash
       env:
         KUBE_NAMESPACE: ${{ inputs.kube_namespace }}
-        POD_SELECTOR: ${{ inputs.pod_selector }}
+        SERVICE_NAME_INPUT: ${{ inputs.service_name }}
         LOCAL_PORT: ${{ inputs.local_port }}
         REMOTE_PORT_INPUT: ${{ inputs.remote_port }}
         PID_ENV_VAR: ${{ inputs.pid_env_var }}
@@ -61,13 +61,14 @@ runs:
           exit 1
         fi
 
-        if [ -z "$POD_SELECTOR" ]; then
-          echo "pod_selector input is required" >&2
+        if [ -z "$LOCAL_PORT" ]; then
+          echo "local_port input is required" >&2
           exit 1
         fi
 
-        if [ -z "$LOCAL_PORT" ]; then
-          echo "local_port input is required" >&2
+        SERVICE_NAME="$SERVICE_NAME_INPUT"
+        if [ -z "$SERVICE_NAME" ]; then
+          echo "service_name input is required" >&2
           exit 1
         fi
 
@@ -76,18 +77,18 @@ runs:
           REMOTE_PORT="$LOCAL_PORT"
         fi
 
-        POD_NAME=$(kubectl get pod -n "$KUBE_NAMESPACE" -l "$POD_SELECTOR" -o jsonpath='{.items[0].metadata.name}')
-        if [ -z "$POD_NAME" ]; then
-          echo "Unable to resolve pod for selector '$POD_SELECTOR' in namespace '$KUBE_NAMESPACE'." >&2
-          exit 1
-        fi
-
-        echo "Port forwarding pod: $POD_NAME ($LOCAL_PORT -> $REMOTE_PORT)"
         LOG_FILE="pf-${LOCAL_PORT}.log"
-        kubectl port-forward -n "$KUBE_NAMESPACE" pod/"$POD_NAME" "${LOCAL_PORT}:${REMOTE_PORT}" > "$LOG_FILE" 2>&1 &
-        PORT_FORWARD_PID=$!
-        echo "Port-forward started with PID $PORT_FORWARD_PID (log: $LOG_FILE)"
+        echo "Port forwarding service: $SERVICE_NAME ($LOCAL_PORT -> $REMOTE_PORT)"
 
+        bash ./.github/scripts/port-forward-watchdog.sh \
+          "$KUBE_NAMESPACE" \
+          "$SERVICE_NAME" \
+          "$LOCAL_PORT" \
+          "$REMOTE_PORT" \
+          "$LOG_FILE" &
+          PORT_FORWARD_PID=$!
+
+        echo "Port-forward watchdog started with PID $PORT_FORWARD_PID (log: $LOG_FILE)"
         echo "${PID_ENV_VAR}=${PORT_FORWARD_PID}" >> "$GITHUB_ENV"
 
         WAIT_PORT="$WAIT_PORT_INPUT"
@@ -101,7 +102,7 @@ runs:
             if [ -z "$WAIT_NAME" ]; then
               WAIT_NAME="port-${WAIT_PORT}"
             fi
-            "$WAIT_SCRIPT" "$WAIT_PORT" "$WAIT_NAME"
+            bash "$WAIT_SCRIPT" "$WAIT_PORT" "$WAIT_NAME"
           else
             echo "Wait script '$WAIT_SCRIPT' not found, skipping wait step." >&2
           fi

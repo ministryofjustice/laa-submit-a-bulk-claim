@@ -1,0 +1,193 @@
+name: E2E tests
+
+on:
+  workflow_call:
+    secrets:
+      pat_token:
+        required: true
+      kube_cert:
+        required: true
+      kube_cluster:
+        required: true
+      kube_namespace:
+        required: true
+      kube_token:
+        required: true
+      kube_namespace_laa_fee_scheme_api_uat:
+        required: true
+      kube_cert_laa_fee_scheme_api_uat:
+        required: true
+      kube_token_laa_fee_scheme_api_uat:
+        required: true
+      kube_cluster_laa_fee_scheme_api_uat:
+        required: true
+      auth_client_id:
+        required: true
+      auth_client_secret:
+        required: true
+      auth_scope:
+        required: true
+      auth_tenant_id:
+        required: true
+      fsp_api_token:
+        required: true
+      pda_api_token:
+        required: true
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  e2e-tests:
+    runs-on: ubuntu-latest
+    environment: uat
+    steps:
+      - name: Checkout
+        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10
+
+      - name: Checkout laa-data-claims-parent
+        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
+        with:
+          repository: ministryofjustice/laa-data-claims-parent
+          path: laa-data-claims-parent
+          submodules: 'true'
+
+      - name: Update parent submodules
+        working-directory: laa-data-claims-parent
+        env:
+          SUBMIT_REF: ${{ github.head_ref || github.ref_name }}
+        run: |
+          ./update-bulk-claim-repos.sh
+          cd laa-submit-a-bulk-claim          
+          git fetch origin "$SUBMIT_REF"
+          git checkout -B "$SUBMIT_REF" FETCH_HEAD
+
+      - name: Install kubectl
+        uses: azure/setup-kubectl@829323503d1be3d00ca8346e5391ca0b07a9ab0d # v5.1.0
+        with:
+          version: v1.29.4
+
+      - name: Authenticate to SaBC cluster
+        uses: ministryofjustice/laa-reusable-github-actions/.github/actions/authenticate_to_cluster@768f673017edbb793cf052fa159c272d6c1f9177 # unversioned
+        with:
+          kube-cert: ${{ secrets.kube_cert }}
+          kube-cluster: ${{ secrets.kube_cluster }}
+          kube-namespace: ${{ secrets.kube_namespace }}
+          kube-token: ${{ secrets.kube_token }}
+          kube-sa: deploy-user
+
+      - name: Port forward to PDA-API service in SaBC namespace
+        uses: ./.github/actions/port-forward-service
+        with:
+          kube_namespace: ${{ secrets.kube_namespace }}
+          service_name: 'uat-e2e-testing-pda-proxy'
+          local_port: "8186"
+          remote_port: "8080"
+          pid_env_var: PORT_FORWARD_PDA_PID
+          wait_label: pda-api
+
+      - name: Authenticate to FSP cluster
+        uses: ministryofjustice/laa-reusable-github-actions/.github/actions/authenticate_to_cluster@768f673017edbb793cf052fa159c272d6c1f9177 # unversioned
+        with:
+          kube-cert: ${{ secrets.kube_cert_laa_fee_scheme_api_uat }}
+          kube-token: ${{ secrets.kube_token_laa_fee_scheme_api_uat }}
+          kube-cluster: ${{ secrets.kube_cluster_laa_fee_scheme_api_uat }}
+          kube-namespace: ${{ secrets.kube_namespace_laa_fee_scheme_api_uat }}
+          kube-sa: deploy-user
+
+      - name: Port forward to FPS-API service in FSP namespace
+        uses: ./.github/actions/port-forward-service
+        with:
+          kube_namespace: ${{ secrets.kube_namespace_laa_fee_scheme_api_uat }}
+          service_name: 'laa-fee-scheme-api-service'
+          local_port: "8095"
+          remote_port: "8085"
+          pid_env_var: PORT_FORWARD_FSP_PID
+          wait_label: fsp-api
+
+      - name: Set up Java
+        uses: actions/setup-java@ad2b38190b15e4d6bdf0c97fb4fca8412226d287 # v5.3.0
+        with:
+          distribution: temurin
+          java-version: '25'
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@3f131e8634966bd73d06cc69884922b02e6faf92 # v6.2.0
+
+      - name: Install task
+        uses: go-task/setup-task@01a4adf9db2d14c1de7a560f09170b6e0df736aa # v2.1.0
+
+      - name: Build and start services
+        working-directory: laa-data-claims-parent
+        run: task up:submit
+        env:
+          GITHUB_TOKEN: ${{ secrets.pat_token }} # PAT token required for providers-api dependency
+          AUTH_CLIENT_ID: ${{ secrets.auth_client_id }}
+          AUTH_CLIENT_SECRET: ${{ secrets.auth_client_secret }}
+          AUTH_SCOPE: ${{ secrets.auth_scope }}
+          AUTH_TENANT_ID: ${{ secrets.auth_tenant_id }}
+          SDS_API_URL: ${{ vars.SDS_API_URL }}
+          FEE_SCHEME_PLATFORM_API_URL: 'http://localhost:8095'
+          FEE_SCHEME_PLATFORM_API_ACCESS_TOKEN: ${{ secrets.fsp_api_token }}
+          PROVIDER_DETAILS_API_URL: 'http://localhost:8186'
+          PROVIDER_DETAILS_API_HOSTNAME: 'http://localhost:8186'
+          PROVIDER_DETAILS_API_ACCESS_TOKEN: ${{ secrets.pda_api_token }}
+
+      - name: Wait for services to be ready
+        working-directory: laa-data-claims-parent/laa-submit-a-bulk-claim
+        run: ./.github/scripts/wait-for-services.sh
+
+      - name: Run E2E Tests
+        working-directory: laa-data-claims-parent/laa-submit-a-bulk-claim
+        run: ./gradlew :e2e:test --no-configuration-cache
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          E2E_AUTH_METHOD: mock
+          E2E_BASE_URL: http://localhost:8082
+          E2E_DB_CONNECTION_URL: jdbc:postgresql://localhost:5432/laa_data_claims_api_dev
+          E2E_DB_USER: user
+          E2E_DB_PASSWORD: dev
+
+      - name: Collect logs
+        if: always()
+        run: |
+          mkdir -p logs
+          docker logs submit-a-bulk-claim-app > logs/sabc.log 2>&1 || true
+          docker logs data-claims-api-app > logs/claims-api.log 2>&1 || true
+          docker logs data-claims-event-service-app > logs/event-service.log 2>&1 || true
+          docker logs local-postgres > logs/postgres.log 2>&1 || true
+          docker logs event-service-localstack > logs/localstack.log 2>&1 || true
+          docker logs redis > logs/redis.log 2>&1 || true
+          docker logs oidc > logs/oidc.log 2>&1 || true
+          cat pf-8095.log > logs/pf-fsp.log 2>&1 || true
+          cat pf-8186.log > logs/pf-pda.log 2>&1 || true
+
+      - name: Upload logs
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: e2e-tests-docker-logs
+          path: logs
+          if-no-files-found: warn
+
+      - name: Upload reports
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: e2e-tests-reports
+          path: |
+            laa-data-claims-parent/laa-submit-a-bulk-claim/e2e/build/allure-results
+            laa-data-claims-parent/laa-submit-a-bulk-claim/e2e/build/reports
+            laa-data-claims-parent/laa-submit-a-bulk-claim/e2e/build/test-results
+          if-no-files-found: warn
+
+      - name: Cleanup
+        if: always()
+        working-directory: laa-data-claims-parent
+        run: |
+          set +e
+          task down
+          [ -n "${PORT_FORWARD_FSP_PID:-}" ] && kill "${PORT_FORWARD_FSP_PID}" || true
+          [ -n "${PORT_FORWARD_PDA_PID:-}" ] && kill "${PORT_FORWARD_PDA_PID}" || true
+          true

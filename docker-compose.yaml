@@ -5,7 +5,7 @@ services:
       - application
     build:
       context: .
-      dockerfile: Dockerfile_internal
+      dockerfile: Dockerfile
       args:
         - BUILD_SOURCE=internal
       secrets:
@@ -14,10 +14,6 @@ services:
     environment:
       SERVER_MAX_FILE_SIZE: 50MB
       UPLOAD_MAX_FILE_SIZE: 10MB
-      SILAS_CLIENT_ID: ${SILAS_CLIENT_ID}
-      SILAS_CLIENT_SECRET: ${SILAS_CLIENT_SECRET}
-      SILAS_SCOPE: ${SILAS_SCOPE}
-      SILAS_TENANT_ID: ${SILAS_TENANT_ID}
       AUTH_CLIENT_ID: ${AUTH_CLIENT_ID}
       AUTH_CLIENT_SECRET: ${AUTH_CLIENT_SECRET}
       AUTH_SCOPE: ${AUTH_SCOPE}
@@ -28,16 +24,17 @@ services:
       REST_CLIENT_CONNECT_TIMEOUT: ${REST_CLIENT_CONNECT_TIMEOUT:-5000}
       REST_CLIENT_READ_TIMEOUT: ${REST_CLIENT_READ_TIMEOUT:-40000}
       REDIS_HOST: redis://redis:6379
-      #SPRING_PROFILES_ACTIVE: github-test-runner
+      SPRING_PROFILES_ACTIVE: oidc
       JAVA_TOOL_OPTIONS: -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005
-    # Information on why these ports here: https://github.com/ministryofjustice/laa-data-claims-parent#exposed-ports
       IS_NIL_SUBMISSION_ENABLED: true
+    # Information on why these ports here: https://github.com/ministryofjustice/laa-data-claims-parent#exposed-ports
     ports:
       - "8082:8082"
       - "8182:8081"
       - "5082:5005"
     depends_on:
       - redis
+      - laa-mock-oidc-service
 
   claim-service:
     image: wiremock/wiremock:latest
@@ -54,10 +51,10 @@ services:
     restart: always
     ports:
       - "8091:8080"
-  # Follow guidance here to run this service via docker: https://github.com/ministryofjustice/laa-oidc-mock-server?tab=readme-ov-file#running-the-server-via-docker
+
   laa-mock-oidc-service:
     container_name: oidc
-    image: laa-oidc-mock-server:latest
+    build: ../laa-oidc-mock-server
     ports:
       - "9000:9000"
     healthcheck:
@@ -68,6 +65,7 @@ services:
       start_period: 10s
     environment:
       LAA_ACCOUNTS: 1,123,0P322F,2Q779P,2Q286D,2Q263D,2Q271M,0E525U,2Q286D,2N199K,1T102C,2P746R,2L847Q
+      REDIRECT_BASE_URI: "localhost:8082"
 
   redis:
     image: redis:8-alpine
