@@ -33,6 +33,8 @@ dependencyManagement {
         dependency 'org.apache.httpcomponents.core5:httpcore5-h2:5.4.3'
         // Force commons-beanutils version to fix Snyk vulnerability
         dependency 'commons-beanutils:commons-beanutils:1.11.0'
+        // Force netty-codec-http to fix Snyk vulnerability
+        dependency 'io.netty:netty-codec-http:4.2.16.Final'
     }
 }
 
