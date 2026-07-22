@@ -5,11 +5,9 @@ import static java.util.regex.Pattern.compile;
 
 import com.microsoft.playwright.Page;
 import java.sql.SQLException;
-import java.util.List;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import uk.gov.justice.laa.bulkclaim.e2e.config.EnvConfig;
-import uk.gov.justice.laa.bulkclaim.e2e.models.Insert;
 import uk.gov.justice.laa.bulkclaim.e2e.persistence.DatabaseQueryExecutor;
 
 /**
@@ -38,14 +36,11 @@ public abstract class BaseTest {
   protected DatabaseQueryExecutor dqe;
   protected Page page;
 
-  protected abstract List<Insert> inserts();
-
   @BeforeEach
   public void setup() {
     try {
       dqe = new DatabaseQueryExecutor();
       dqe.cleanAll();
-      dqe.seed(inserts());
     } catch (SQLException e) {
       throw new RuntimeException("Failed to seed database", e);
     }

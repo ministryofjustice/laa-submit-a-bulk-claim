@@ -133,6 +133,7 @@ jobs:
           PROVIDER_DETAILS_API_URL: 'http://localhost:8186'
           PROVIDER_DETAILS_API_HOSTNAME: 'http://localhost:8186'
           PROVIDER_DETAILS_API_ACCESS_TOKEN: ${{ secrets.pda_api_token }}
+          LAA_ACCOUNTS: 0P322F
 
       - name: Wait for services to be ready
         working-directory: laa-data-claims-parent/laa-submit-a-bulk-claim
