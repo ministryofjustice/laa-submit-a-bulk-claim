@@ -7,6 +7,10 @@ repositories {
     mavenCentral()
 }
 
+
+// Upgrade to fix HTTP Request Smuggling (SNYK-JAVA-IONETTY-16425695)
+ext['netty.version'] = '4.2.16.Final'
+
 dependencies {
     implementation 'com.microsoft.playwright:playwright:1.60.0'
     implementation 'io.github.cdimascio:dotenv-java:3.2.0'
