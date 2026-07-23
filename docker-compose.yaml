@@ -34,7 +34,6 @@ services:
       - "5082:5005"
     depends_on:
       - redis
-      - laa-mock-oidc-service
 
   claim-service:
     image: wiremock/wiremock:latest
