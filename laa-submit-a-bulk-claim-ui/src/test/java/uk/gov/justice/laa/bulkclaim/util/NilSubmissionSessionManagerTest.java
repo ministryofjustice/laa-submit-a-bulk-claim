@@ -1,6 +1,7 @@
 package uk.gov.justice.laa.bulkclaim.util;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static uk.gov.justice.laa.dstew.payments.claimsdata.model.AreaOfLaw.MEDIATION;
 
 import org.junit.jupiter.api.Test;
 import uk.gov.justice.laa.bulkclaim.dto.submission.NilSubmissionForm;
@@ -38,7 +39,7 @@ class NilSubmissionSessionManagerTest {
         NilSubmissionSessionManager.isNilSubmissionSessionStateValid(
             form, NilSubmissionPage.SUBMISSION_PERIOD));
 
-    form.setAreaOfLaw("MEDIATION");
+    form.setAreaOfLaw(MEDIATION);
     assertFalse(
         NilSubmissionSessionManager.isNilSubmissionSessionStateValid(
             form, NilSubmissionPage.SUBMISSION_PERIOD));
@@ -55,7 +56,7 @@ class NilSubmissionSessionManagerTest {
         NilSubmissionSessionManager.isNilSubmissionSessionStateValid(
             form, NilSubmissionPage.SUBMISSION_PERIOD));
 
-    form.setAreaOfLaw("MEDIATION");
+    form.setAreaOfLaw(MEDIATION);
     assertFalse(
         NilSubmissionSessionManager.isNilSubmissionSessionStateValid(
             form, NilSubmissionPage.SUBMISSION_PERIOD));
@@ -149,7 +150,7 @@ class NilSubmissionSessionManagerTest {
   private NilSubmissionForm createPopulatedForm() {
     NilSubmissionForm form = new NilSubmissionForm();
     form.setOffice("A123BC");
-    form.setAreaOfLaw("MEDIATION");
+    form.setAreaOfLaw(MEDIATION);
     form.setSubmissionPeriod("JAN-2026");
     form.setScheduleReference("REF123");
     return form;

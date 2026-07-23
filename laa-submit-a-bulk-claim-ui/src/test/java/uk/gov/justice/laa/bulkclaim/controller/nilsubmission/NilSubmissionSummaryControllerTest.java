@@ -7,6 +7,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 import static uk.gov.justice.laa.bulkclaim.constants.SessionConstants.SUBMISSION_ID;
+import static uk.gov.justice.laa.dstew.payments.claimsdata.model.AreaOfLaw.MEDIATION;
 
 import java.util.List;
 import java.util.UUID;
@@ -26,7 +27,6 @@ import uk.gov.justice.laa.bulkclaim.controller.ControllerTestHelper;
 import uk.gov.justice.laa.bulkclaim.dto.submission.NilSubmissionForm;
 import uk.gov.justice.laa.bulkclaim.dto.submission.SubmissionValidationErrorResponse;
 import uk.gov.justice.laa.bulkclaim.dto.submission.messages.NilSubmissionMessagesSummary;
-import uk.gov.justice.laa.dstew.payments.claimsdata.model.AreaOfLaw;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.CreateSubmission201Response;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionPost;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionStatus;
@@ -96,7 +96,7 @@ class NilSubmissionSummaryControllerTest {
     assertEquals("12345", submissionPost.getOfficeAccountNumber());
     assertEquals(0, submissionPost.getNumberOfClaims());
     assertEquals(SubmissionStatus.READY_FOR_VALIDATION, submissionPost.getStatus());
-    assertEquals(AreaOfLaw.MEDIATION, submissionPost.getAreaOfLaw());
+    assertEquals(MEDIATION, submissionPost.getAreaOfLaw());
     assertEquals("OCT-2025", submissionPost.getSubmissionPeriod());
 
     verify(model).addAttribute(eq(SUBMISSION_ID), eq(submissionId));
@@ -158,7 +158,7 @@ class NilSubmissionSummaryControllerTest {
                 "Mediation submission reference must be a maximum of 20 characters and contain only letters, numbers and forward slashes"));
 
     assertEquals(2, summary.totalMessageCount());
-    assertEquals(AreaOfLaw.MEDIATION, summary.areaOfLaw());
+    assertEquals(MEDIATION, summary.areaOfLaw());
     assertEquals("12345", summary.officeAccount());
     assertEquals("OCT-2025", summary.submissionPeriod());
     assertEquals("REF-123", summary.submissionReference());
@@ -172,7 +172,7 @@ class NilSubmissionSummaryControllerTest {
   private static NilSubmissionForm buildSessionForm() {
     NilSubmissionForm form = new NilSubmissionForm();
     form.setOffice("12345");
-    form.setAreaOfLaw("MEDIATION");
+    form.setAreaOfLaw(MEDIATION);
     form.setSubmissionPeriod("OCT-2025");
     form.setScheduleReference("REF-123");
     return form;
