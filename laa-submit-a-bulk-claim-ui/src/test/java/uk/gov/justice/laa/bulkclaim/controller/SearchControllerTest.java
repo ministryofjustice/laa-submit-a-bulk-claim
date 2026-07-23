@@ -8,6 +8,7 @@ import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.justice.laa.bulkclaim.controller.ControllerTestHelper.getOidcUser;
+import static uk.gov.justice.laa.dstew.payments.claimsdata.model.AreaOfLaw.CRIME_LOWER;
 
 import jakarta.servlet.http.HttpSession;
 import java.util.Collections;
@@ -32,7 +33,6 @@ import uk.gov.justice.laa.bulkclaim.util.OidcAttributeUtils;
 import uk.gov.justice.laa.bulkclaim.util.PaginationLinksBuilder;
 import uk.gov.justice.laa.bulkclaim.util.PaginationUtil;
 import uk.gov.justice.laa.bulkclaim.validation.SubmissionSearchValidator;
-import uk.gov.justice.laa.dstew.payments.claimsdata.model.AreaOfLaw;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.Page;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionsResultSet;
 
@@ -89,7 +89,7 @@ class SearchControllerTest {
     final SubmissionSearchQuery query =
         SubmissionSearchQuery.builder()
             .submissionPeriod("JAN-2024")
-            .areaOfLaw(AreaOfLaw.CRIME_LOWER.getValue())
+            .areaOfLaw(CRIME_LOWER)
             .offices(List.of("12345"))
             .submissionStatuses(SubmissionOutcomeFilter.SUCCEEDED)
             .build();
@@ -124,7 +124,7 @@ class SearchControllerTest {
             null,
             null,
             "JAN-2024",
-            AreaOfLaw.CRIME_LOWER.name(),
+            CRIME_LOWER,
             List.of(),
             SubmissionOutcomeFilter.SUCCEEDED);
 

@@ -7,6 +7,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
+import static uk.gov.justice.laa.dstew.payments.claimsdata.model.AreaOfLaw.MEDIATION;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -51,7 +52,7 @@ public class NilSubmissionScheduleReferenceControllerTest {
   void whenFeatureFlagEnabled_getAreasOfLaw_addsAreasAndReturnsView() {
 
     NilSubmissionForm form = new NilSubmissionForm();
-    form.setAreaOfLaw("MEDIATION");
+    form.setAreaOfLaw(MEDIATION);
     String view = controller.getReference(form, model);
 
     assertEquals("pages/nil-submission/reference", view);
@@ -61,7 +62,7 @@ public class NilSubmissionScheduleReferenceControllerTest {
   void postAreaOfLaw_setsFormAndRedirects() {
     NilSubmissionForm form = new NilSubmissionForm();
     form.setOffice("office1");
-    form.setAreaOfLaw("MEDIATION");
+    form.setAreaOfLaw(MEDIATION);
     form.setSubmissionPeriod("OCT-2025");
 
     String view = controller.postReference(form, "reference");
@@ -75,7 +76,7 @@ public class NilSubmissionScheduleReferenceControllerTest {
 
     NilSubmissionForm form = new NilSubmissionForm();
     form.setOffice("office1");
-    form.setAreaOfLaw("areaOfLaw1");
+    form.setAreaOfLaw(MEDIATION);
     form.setSubmissionPeriod("submissionPeriod1");
     form.setScheduleReference("scheduleReference1");
 

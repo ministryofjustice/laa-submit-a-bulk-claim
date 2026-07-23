@@ -4,7 +4,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.when;
-import static uk.gov.justice.laa.bulkclaim.validation.SubmissionSearchValidator.AREA_OF_LAW;
 import static uk.gov.justice.laa.bulkclaim.validation.SubmissionSearchValidator.OFFICES;
 import static uk.gov.justice.laa.bulkclaim.validation.SubmissionSearchValidator.SUBMISSION_PERIOD;
 import static uk.gov.justice.laa.bulkclaim.validation.SubmissionSearchValidator.SUBMISSION_STATUS;
@@ -20,7 +19,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
-import org.junit.jupiter.params.provider.NullAndEmptySource;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.validation.BeanPropertyBindingResult;
@@ -28,7 +26,6 @@ import org.springframework.validation.BindingResult;
 import uk.gov.justice.laa.bulkclaim.dto.SubmissionOutcomeFilter;
 import uk.gov.justice.laa.bulkclaim.dto.submission.search.SubmissionSearchQuery;
 import uk.gov.justice.laa.bulkclaim.util.SubmissionPeriodUtil;
-import uk.gov.justice.laa.dstew.payments.claimsdata.model.AreaOfLaw;
 
 @ExtendWith(MockitoExtension.class)
 @DisplayName("Submission search validator test")
@@ -92,56 +89,6 @@ class SubmissionSearchValidatorTest {
       validator.validate(query, errors);
 
       assertFalse(errors.hasFieldErrors(SUBMISSION_PERIOD));
-    }
-  }
-
-  @Nested
-  @DisplayName("Validate areaOfLaw")
-  class ValidateAreaOfLaw {
-
-    @ParameterizedTest
-    @EnumSource(AreaOfLaw.class)
-    @DisplayName("Should have no errors when valid areaOfLaw")
-    void shouldHaveNoErrorsWhenValidAreaOfLaw(AreaOfLaw areaOfLaw) {
-      // Given
-      SubmissionSearchQuery query =
-          SubmissionSearchQuery.builder().areaOfLaw(areaOfLaw.getValue()).build();
-      final BindingResult errors = new BeanPropertyBindingResult(query, "submissionSearchQuery");
-
-      // When
-      validator.validate(query, errors);
-      // Then
-      assertFalse(errors.hasFieldErrors(AREA_OF_LAW));
-    }
-
-    @ParameterizedTest
-    @NullAndEmptySource
-    @DisplayName("Should have no errors when areaOfLaw empty")
-    void shouldHaveNoErrorsWhenAreaOfLawEmpty(String areaOfLaw) {
-      // Given
-      SubmissionSearchQuery query = SubmissionSearchQuery.builder().areaOfLaw(areaOfLaw).build();
-      final BindingResult errors = new BeanPropertyBindingResult(query, "submissionSearchQuery");
-
-      // When
-      validator.validate(query, errors);
-
-      // Then
-      assertFalse(errors.hasFieldErrors(AREA_OF_LAW));
-    }
-
-    @Test
-    @DisplayName("Should have error when invalid value")
-    void shouldHaveErrorWhenInvalidValue() {
-      // Given
-      SubmissionSearchQuery query = SubmissionSearchQuery.builder().areaOfLaw("ABC").build();
-      final BindingResult errors = new BeanPropertyBindingResult(query, "submissionSearchQuery");
-
-      // When
-      validator.validate(query, errors);
-
-      // Then
-      assertTrue(errors.hasFieldErrors(AREA_OF_LAW));
-      assertEquals("search.error.areaOfLaw.invalid", errors.getFieldError(AREA_OF_LAW).getCode());
     }
   }
 

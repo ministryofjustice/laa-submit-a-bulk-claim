@@ -24,8 +24,7 @@ public class NilSubmissionSessionManager {
   }
 
   static boolean sessionValidForSubmissionPeriod(NilSubmissionForm nilSubmissionForm) {
-    return StringUtils.hasText(nilSubmissionForm.getAreaOfLaw())
-        && sessionValidForAreaOfLaw(nilSubmissionForm);
+    return nilSubmissionForm.getAreaOfLaw() != null && sessionValidForAreaOfLaw(nilSubmissionForm);
   }
 
   static boolean sessionValidForAreaOfLaw(NilSubmissionForm nilSubmissionForm) {
