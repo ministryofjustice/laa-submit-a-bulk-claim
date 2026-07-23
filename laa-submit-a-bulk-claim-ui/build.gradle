@@ -44,7 +44,7 @@ ext['tomcat.version'] = '11.0.23'
 // Upgrade to fix SNYK-JAVA-ORGAPACHELOGGINGLOG4J-17954276 and related vulnerabilities
 ext['log4j2.version'] = '2.25.5'
 // Upgrade to fix HTTP Request Smuggling (SNYK-JAVA-IONETTY-16425695)
-ext['netty.version'] = '4.2.15.Final'
+ext['netty.version'] = '4.2.16.Final'
 
 dependencyManagement {
     dependencies {
