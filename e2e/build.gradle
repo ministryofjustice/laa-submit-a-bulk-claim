@@ -8,14 +8,8 @@ repositories {
 }
 
 
-// Force netty upgrade to fix multiple CVEs (SNYK-JAVA-IONETTY-*)
-configurations.all {
-    resolutionStrategy.eachDependency { DependencyResolveDetails details ->
-        if (details.requested.group == 'io.netty') {
-            details.useVersion '4.2.16.Final'
-        }
-    }
-}
+// Upgrade to fix HTTP Request Smuggling (SNYK-JAVA-IONETTY-16425695)
+ext['netty.version'] = '4.2.16.Final'
 
 dependencies {
     implementation 'com.microsoft.playwright:playwright:1.60.0'

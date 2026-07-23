@@ -19,17 +19,6 @@ repositories {
 }
 
 
-// Upgrade to fix snyk vulnerabilities in 1.5.34
-ext['logback.version'] = '1.5.36'
-// Force netty upgrade to fix multiple CVEs (SNYK-JAVA-IONETTY-*)
-configurations.all {
-    resolutionStrategy.eachDependency { DependencyResolveDetails details ->
-        if (details.requested.group == 'io.netty') {
-            details.useVersion '4.2.16.Final'
-        }
-    }
-}
-
 dependencyManagement {
     dependencies {
         // === INSERT YOUR OVERRIDES HERE ===
@@ -48,6 +37,8 @@ dependencyManagement {
     }
 }
 
+// Upgrade to fix snyk vulnerabilities in 1.5.34
+ext['logback.version'] = '1.5.36'
 // Upgrade to fix remaining Apache Tomcat vulnerabilities reported against 11.0.22
 ext['tomcat.version'] = '11.0.23'
 // Upgrade to fix SNYK-JAVA-ORGAPACHELOGGINGLOG4J-17954276 and related vulnerabilities
