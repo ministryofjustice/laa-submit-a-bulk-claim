@@ -187,6 +187,8 @@ jobs:
     with:
       jar_subproject: 'laa-submit-a-bulk-claim-ui'
       image_version: ${{ format('{0}-{1}', vars.IMAGE_PREFIX, needs.build-and-test.outputs.published_artifact_version) }}
+      image_scan_severity: 'critical'
+      image_scan_fail_on: 'all'
       java_version: 25
     secrets:
       gh_token: ${{ secrets.GITHUB_TOKEN }}
