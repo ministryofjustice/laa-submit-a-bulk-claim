@@ -29,7 +29,6 @@ import uk.gov.justice.laa.bulkclaim.dto.submission.SubmissionValidationErrorResp
 import uk.gov.justice.laa.bulkclaim.dto.submission.messages.NilSubmissionMessagesSummary;
 import uk.gov.justice.laa.bulkclaim.util.NilSubmissionPage;
 import uk.gov.justice.laa.bulkclaim.util.NilSubmissionSessionManager;
-import uk.gov.justice.laa.dstew.payments.claimsdata.model.AreaOfLaw;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.CreateSubmission201Response;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionPost;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionStatus;
@@ -116,7 +115,7 @@ public class NilSubmissionsSummaryController {
         .totalMessageCount(errorMessages.size())
         .submitted(OffsetDateTime.now(ZoneId.of("Europe/London")))
         .officeAccount(form.getOffice())
-        .areaOfLaw(AreaOfLaw.valueOf(form.getAreaOfLaw()))
+        .areaOfLaw(form.getAreaOfLaw())
         .submissionPeriod(form.getSubmissionPeriod())
         .submissionReference(form.getScheduleReference())
         .messages(errorMessages)
@@ -129,7 +128,7 @@ public class NilSubmissionsSummaryController {
             .officeAccountNumber(form.getOffice())
             .numberOfClaims(0)
             .status(SubmissionStatus.READY_FOR_VALIDATION)
-            .areaOfLaw(AreaOfLaw.valueOf(form.getAreaOfLaw()))
+            .areaOfLaw(form.getAreaOfLaw())
             .isNilSubmission(true)
             .submissionId(UUID.randomUUID())
             .submissionPeriod(form.getSubmissionPeriod())
@@ -142,12 +141,12 @@ public class NilSubmissionsSummaryController {
   }
 
   void setSubmissionReferenceByAreaOfLaw(NilSubmissionForm form, SubmissionPost submissionPost) {
-    switch (AreaOfLaw.valueOf(form.getAreaOfLaw())) {
-      case AreaOfLaw.LEGAL_HELP ->
+    switch (form.getAreaOfLaw()) {
+      case LEGAL_HELP ->
           submissionPost.setLegalHelpSubmissionReference(form.getScheduleReference());
-      case AreaOfLaw.MEDIATION ->
+      case MEDIATION ->
           submissionPost.setMediationSubmissionReference(form.getScheduleReference());
-      case AreaOfLaw.CRIME_LOWER ->
+      case CRIME_LOWER ->
           submissionPost.setCrimeLowerScheduleNumber(form.getScheduleReference());
       default -> log.error("Area of law {} is not valid", form.getAreaOfLaw());
     }

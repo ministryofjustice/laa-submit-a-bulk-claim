@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.ArgumentMatchers.eq;
@@ -19,9 +20,11 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.http.HttpStatus;
 import org.springframework.ui.Model;
+import org.springframework.validation.BeanPropertyBindingResult;
 import org.springframework.web.server.ResponseStatusException;
 import uk.gov.justice.laa.bulkclaim.config.FeatureFlagsConfig;
 import uk.gov.justice.laa.bulkclaim.dto.submission.NilSubmissionForm;
+import uk.gov.justice.laa.dstew.payments.claimsdata.model.AreaOfLaw;
 
 class NilSubmissionAreaOfLawControllerTest {
 
@@ -45,7 +48,10 @@ class NilSubmissionAreaOfLawControllerTest {
     assertThrows(ResponseStatusException.class, () -> controller.getAreasOfLaw(form, model));
     verify(model, never()).addAttribute(eq("areasOfLaw"), any());
 
-    assertThrows(ResponseStatusException.class, () -> controller.postAreaOfLaw(form, "SOME_AREA"));
+    BeanPropertyBindingResult bindingResult =
+        new BeanPropertyBindingResult(form, "nilSubmissionForm");
+    assertThrows(
+        ResponseStatusException.class, () -> controller.postAreaOfLaw(form, bindingResult, model));
     assertNull(form.getAreaOfLaw());
   }
 
@@ -65,11 +71,53 @@ class NilSubmissionAreaOfLawControllerTest {
     when(featureFlagsConfig.getIsNilSubmissionEnabled()).thenReturn(true);
     NilSubmissionForm form = new NilSubmissionForm();
     form.setOffice("office1");
+    form.setAreaOfLaw(AreaOfLaw.CRIME_LOWER);
 
-    String view = controller.postAreaOfLaw(form, "SOME_AREA");
+    BeanPropertyBindingResult bindingResult =
+        new BeanPropertyBindingResult(form, "nilSubmissionForm");
+
+    String view = controller.postAreaOfLaw(form, bindingResult, model);
 
     assertEquals("redirect:/nil-submission/period", view);
-    assertEquals("SOME_AREA", form.getAreaOfLaw());
+    assertEquals(AreaOfLaw.CRIME_LOWER, form.getAreaOfLaw());
+  }
+
+  @Test
+  void postAreaOfLaw_whenBindingFails_returnsPageAndClearsSelection() {
+    when(featureFlagsConfig.getIsNilSubmissionEnabled()).thenReturn(true);
+    NilSubmissionForm form = new NilSubmissionForm();
+    form.setOffice("office1");
+    form.setAreaOfLaw(AreaOfLaw.CRIME_LOWER);
+
+    BeanPropertyBindingResult bindingResult =
+        new BeanPropertyBindingResult(form, "nilSubmissionForm");
+    bindingResult.rejectValue("areaOfLaw", "typeMismatch.nilSubmissionForm.areaOfLaw");
+
+    String view = controller.postAreaOfLaw(form, bindingResult, model);
+
+    assertEquals("pages/nil-submission/areaoflaw", view);
+    assertNull(form.getAreaOfLaw());
+    verify(model).addAttribute(eq("areasOfLaw"), anyMap());
+    assertTrue(bindingResult.hasFieldErrors("areaOfLaw"));
+    assertEquals(1, bindingResult.getFieldErrors("areaOfLaw").size());
+  }
+
+  @Test
+  void postAreaOfLaw_whenAreaOfLawNotSelected_returnsPageAndAddsRequiredError() {
+    when(featureFlagsConfig.getIsNilSubmissionEnabled()).thenReturn(true);
+    NilSubmissionForm form = new NilSubmissionForm();
+    form.setOffice("office1");
+
+    BeanPropertyBindingResult bindingResult =
+        new BeanPropertyBindingResult(form, "nilSubmissionForm");
+
+    String view = controller.postAreaOfLaw(form, bindingResult, model);
+
+    assertEquals("pages/nil-submission/areaoflaw", view);
+    assertNull(form.getAreaOfLaw());
+    verify(model).addAttribute(eq("areasOfLaw"), anyMap());
+    assertEquals(
+        "nilSubmission.areaOfLaw.heading", bindingResult.getFieldError("areaOfLaw").getCode());
   }
 
   @Test
@@ -78,7 +126,7 @@ class NilSubmissionAreaOfLawControllerTest {
 
     NilSubmissionForm form = new NilSubmissionForm();
     form.setOffice("office1");
-    form.setAreaOfLaw("areaOfLaw1");
+    form.setAreaOfLaw(AreaOfLaw.CRIME_LOWER);
     form.setSubmissionPeriod("submissionPeriod1");
     form.setScheduleReference("scheduleReference1");
 

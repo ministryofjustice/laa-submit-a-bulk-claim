@@ -33,7 +33,6 @@ import uk.gov.justice.laa.bulkclaim.util.PaginationLinksBuilder;
 import uk.gov.justice.laa.bulkclaim.util.PaginationUtil;
 import uk.gov.justice.laa.bulkclaim.util.SubmissionPeriodUtil;
 import uk.gov.justice.laa.bulkclaim.validation.SubmissionSearchValidator;
-import uk.gov.justice.laa.dstew.payments.claimsdata.model.AreaOfLaw;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.Page;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionBase;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionStatus;
@@ -136,7 +135,7 @@ public class SearchController {
               .search(
                   officesToSearchFor,
                   trimToNull(submissionSearchQuery.getSubmissionPeriod()),
-                  getAreaOfLaw(submissionSearchQuery),
+                  submissionSearchQuery.getAreaOfLaw(),
                   getSubmissionStatus(submissionSearchQuery),
                   submissionSearchQuery.getPage(),
                   submissionSearchQuery.getSize(),
@@ -174,17 +173,6 @@ public class SearchController {
     } catch (Exception e) {
       log.error("Error connecting to Claims API with message: {} ", e.getMessage());
       return "error";
-    }
-  }
-
-  private static AreaOfLaw getAreaOfLaw(SubmissionSearchQuery submissionSearchQuery) {
-    try {
-      return Objects.isNull(submissionSearchQuery.getAreaOfLaw())
-          ? null
-          : AreaOfLaw.fromValue(
-              submissionSearchQuery.getAreaOfLaw().replace("_", " ").toUpperCase());
-    } catch (IllegalArgumentException e) {
-      return null;
     }
   }
 
