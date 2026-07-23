@@ -1,0 +1,46 @@
+name: Daily Snyk scan
+
+on:
+  schedule:
+    - cron: '0 8 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  snyk-scan:
+    permissions:
+      contents: read
+      id-token: write
+      security-events: write
+    uses: ministryofjustice/laa-ccms-common-workflows/.github/workflows/ecr-publish-image.yml@4daa796eff475c7a107e17daf4e4882b8a1b949b # v2.3.0
+    with:
+      jar_subproject: 'laa-submit-a-bulk-claim-ui'
+      image_version: daily-snyk-${{ github.run_id }}
+      publish: 'false'
+      image_scan_severity: 'medium'
+      image_scan_fail_on: 'all'
+      java_version: 25
+    secrets:
+      gh_token: ${{ secrets.GITHUB_TOKEN }}
+      ecr_repository: ${{ vars.LAA_SUBMIT_A_BULK_CLAIM_ECR_REPOSITORY }}
+      ecr_region: ${{ vars.LAA_SUBMIT_A_BULK_CLAIM_ECR_REGION }}
+      ecr_role_to_assume: ${{ secrets.LAA_SUBMIT_A_BULK_CLAIM_ECR_ROLE_TO_ASSUME }}
+      snyk_client_id: ${{ secrets.SNYK_CLIENT_ID }}
+      snyk_client_secret: ${{ secrets.SNYK_CLIENT_SECRET }}
+
+  notify-slack:
+    needs: [ snyk-scan ]
+    if: ${{ always() && needs.snyk-scan.result == 'failure' }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Notify Slack on failure
+        uses: slackapi/slack-github-action@fc46ded2fc4d7f11bfa62864526f920cf1a1167d # v3.0.4
+        with:
+          webhook: ${{ secrets.SLACK_WEBHOOK_URL }}
+          webhook-type: incoming-webhook
+          payload: |
+            text: >
+              :x: Daily Snyk scan failed for `${{ github.repository }}`.
+              Review the workflow run: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}
