@@ -52,8 +52,7 @@ public class InquestDetailsFormValidator {
         form.getInterestedDepartmentCodes(),
         errors);
     if (mandatoryFields.contains(Field.INTERESTED_PUBLIC_AUTHORITY)
-        && (form.getInterestedPublicAuthorities() == null
-            || form.getInterestedPublicAuthorities().stream().allMatch(String::isBlank))) {
+        && hasNoEnteredValue(form.getInterestedPublicAuthorities())) {
       errors.rejectValue("interestedPublicAuthorities", "inquest.mandatory", "Enter a value");
     }
   }
@@ -71,9 +70,13 @@ public class InquestDetailsFormValidator {
   }
 
   private void rejectEmpty(
-      Field policyField, String formField, java.util.Collection<?> value, Errors errors) {
-    if (mandatoryFields.contains(policyField) && (value == null || value.isEmpty())) {
+      Field policyField, String formField, java.util.Collection<String> value, Errors errors) {
+    if (mandatoryFields.contains(policyField) && hasNoEnteredValue(value)) {
       errors.rejectValue(formField, "inquest.mandatory", "Enter a value");
     }
+  }
+
+  private boolean hasNoEnteredValue(java.util.Collection<String> values) {
+    return values == null || values.stream().allMatch(value -> value == null || value.isBlank());
   }
 }

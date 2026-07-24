@@ -135,6 +135,32 @@ class InquestDetailsControllerTest {
   }
 
   @Test
+  void persistsMoreThanThreeInterestedPublicAuthorities() {
+    UUID submissionId = UUID.randomUUID();
+    UUID claimId = UUID.randomUUID();
+    givenOpenInquestClaim(submissionId, claimId);
+    when(client.getClaimInquestData(claimId)).thenReturn(ResponseEntity.notFound().build());
+    InquestDetailsForm form = completeForm();
+    form.setInterestedPublicAuthorities(
+        List.of("NHS Trust", "Police force", "Local authority", "Health and Safety Executive"));
+
+    controller.save(
+        submissionId,
+        claimId,
+        form,
+        new BeanPropertyBindingResult(form, "inquestDetailsForm"),
+        new ConcurrentModel(),
+        new RedirectAttributesModelMap());
+
+    ArgumentCaptor<ClaimInquestDataWrite> request =
+        ArgumentCaptor.forClass(ClaimInquestDataWrite.class);
+    verify(client).createClaimInquestData(eq(claimId), request.capture());
+    assertThat(request.getValue().interestedPublicAuthorities())
+        .containsExactly(
+            "NHS Trust", "Police force", "Local authority", "Health and Safety Executive");
+  }
+
+  @Test
   void closedSubmissionCannotBeMutated() {
     UUID submissionId = UUID.randomUUID();
     UUID claimId = UUID.randomUUID();
@@ -199,7 +225,7 @@ class InquestDetailsControllerTest {
     form.setDeceasedDateOfBirth(LocalDate.of(1815, 12, 10));
     form.setDeceasedDateOfDeath(LocalDate.of(1852, 11, 27));
     form.setCoronersInquestReference("COR-1");
-    form.setInterestedDepartmentCodes(Set.of("MOJ", "DHSC"));
+    form.setInterestedDepartmentCodes(List.of("MOJ", "DHSC"));
     form.setInterestedPublicAuthorities(List.of("NHS Trust"));
     return form;
   }
