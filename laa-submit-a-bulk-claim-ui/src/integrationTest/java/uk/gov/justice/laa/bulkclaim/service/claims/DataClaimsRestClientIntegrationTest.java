@@ -33,9 +33,11 @@ import uk.gov.justice.laa.bulkclaim.config.WebMvcTestConfig;
 import uk.gov.justice.laa.bulkclaim.helper.MockServerIntegrationTest;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.AreaOfLaw;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.BulkSubmissionStatus;
+import uk.gov.justice.laa.dstew.payments.claimsdata.model.ClaimPost;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.ClaimResponse;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.ClaimResultSet;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.CreateBulkSubmission201Response;
+import uk.gov.justice.laa.dstew.payments.claimsdata.model.CreateClaim201Response;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.GetBulkSubmissionStatusById200Response;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.MatterStartGet;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionResponse;
@@ -55,6 +57,35 @@ class DataClaimsRestClientIntegrationTest extends MockServerIntegrationTest {
   @BeforeEach
   void setUp() {
     dataClaimsRestClient = createClient(DataClaimsRestClient.class);
+  }
+
+  @Nested
+  @DisplayName("POST: /api/v1/submissions/{submission-id}/claims")
+  class PostClaim {
+
+    @Test
+    @DisplayName("Should create a claim in the identified submission")
+    void shouldCreateClaimInSubmission() {
+      UUID submissionId = UUID.randomUUID();
+      UUID claimId = UUID.randomUUID();
+      mockServerClient
+          .when(
+              HttpRequest.request()
+                  .withMethod("POST")
+                  .withPath("/api/v1/submissions/" + submissionId + "/claims"))
+          .respond(
+              response()
+                  .withStatusCode(201)
+                  .withHeader("Content-Type", "application/json")
+                  .withBody("{\"id\":\"" + claimId + "\"}"));
+
+      ResponseEntity<CreateClaim201Response> response =
+          dataClaimsRestClient.createClaim(
+              submissionId, ClaimPost.builder().createdByUserId("Submit-a-bulk-claim").build());
+
+      assertThat(response.getStatusCode().value()).isEqualTo(201);
+      assertThat(response.getBody().getId()).isEqualTo(claimId);
+    }
   }
 
   @Nested
