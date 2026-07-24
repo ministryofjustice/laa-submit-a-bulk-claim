@@ -382,7 +382,9 @@ class SubmissionDetailControllerTest extends BaseControllerTest {
                               BigDecimal.ZERO,
                               BigDecimal.ZERO,
                               BigDecimal.ZERO),
-                          Boolean.FALSE)),
+                          Boolean.FALSE,
+                          false,
+                          false)),
                   pagination,
                   BigDecimal.ONE));
       when(submissionMessagesBuilder.build(any(), any(), any(), anyInt(), anyInt(), any()))

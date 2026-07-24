@@ -14,7 +14,11 @@ import org.springframework.web.service.annotation.GetExchange;
 import org.springframework.web.service.annotation.HttpExchange;
 import org.springframework.web.service.annotation.PatchExchange;
 import org.springframework.web.service.annotation.PostExchange;
+import org.springframework.web.service.annotation.PutExchange;
 import reactor.core.publisher.Mono;
+import uk.gov.justice.laa.bulkclaim.dto.inquest.ClaimInquestData;
+import uk.gov.justice.laa.bulkclaim.dto.inquest.ClaimInquestDataWrite;
+import uk.gov.justice.laa.bulkclaim.dto.inquest.InquestDepartment;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.AreaOfLaw;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.BulkSubmissionPatch;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.ClaimPost;
@@ -35,6 +39,20 @@ import uk.gov.justice.laa.dstew.payments.claimsdata.model.ValidationMessagesResp
 
 @HttpExchange("/api/v1")
 public interface DataClaimsRestClient {
+
+  @GetExchange("/system/references/inquest-departments")
+  List<InquestDepartment> getInquestDepartments();
+
+  @GetExchange("/claims/{claim-id}/inquest-data")
+  ResponseEntity<ClaimInquestData> getClaimInquestData(@PathVariable("claim-id") UUID claimId);
+
+  @PostExchange("/claims/{claim-id}/inquest-data")
+  ResponseEntity<ClaimInquestData> createClaimInquestData(
+      @PathVariable("claim-id") UUID claimId, @RequestBody ClaimInquestDataWrite inquestData);
+
+  @PutExchange("/claims/{claim-id}/inquest-data")
+  ResponseEntity<ClaimInquestData> replaceClaimInquestData(
+      @PathVariable("claim-id") UUID claimId, @RequestBody ClaimInquestDataWrite inquestData);
 
   @PostExchange(value = "/bulk-submissions", contentType = MediaType.MULTIPART_FORM_DATA_VALUE)
   Mono<ResponseEntity<CreateBulkSubmission201Response>> upload(

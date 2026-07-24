@@ -162,6 +162,15 @@
             <td class="govuk-table__cell">
               <th:block
                   th:replace="~{fragments/submission-details/claim-row-detail :: claim-row-detail(claimHref=@{/submission/claim/{id}(id=${claim.id}, page=${submissionViewQuery.page}, navTab=${claimDetailsTab})}, status=${claim.status})}"></th:block>
+              <div class="govuk-!-margin-top-1" th:if="${claim.inquestDetailsRequired}">
+                <a class="govuk-link"
+                   th:href="@{/submissions/{submissionId}/claims/{claimId}/inquest-details(submissionId=${submissionSummary.submissionReference}, claimId=${claim.id})}"
+                   th:text="#{viewSubmission.inquest.completeDetails}"></a>
+              </div>
+              <div class="govuk-!-margin-top-1" th:if="${claim.inquestDetailsComplete}">
+                <strong class="govuk-tag govuk-tag--green"
+                        th:text="#{viewSubmission.inquest.detailsComplete}"></strong>
+              </div>
             </td>
             <td class="govuk-table__cell"
                 th:text="${claim.clientSurname ?: '-'}"></td>

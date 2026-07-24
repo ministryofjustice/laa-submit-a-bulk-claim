@@ -25,6 +25,7 @@ import uk.gov.justice.laa.bulkclaim.dto.submission.claim.SubmissionClaimRow;
 import uk.gov.justice.laa.bulkclaim.dto.submission.claim.SubmissionClaimRowCostsDetails;
 import uk.gov.justice.laa.bulkclaim.dto.submission.claim.SubmissionClaimsDetails;
 import uk.gov.justice.laa.bulkclaim.mapper.SubmissionClaimRowMapper;
+import uk.gov.justice.laa.bulkclaim.service.InquestClaimService;
 import uk.gov.justice.laa.bulkclaim.util.PaginationUtil;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.*;
 
@@ -38,12 +39,17 @@ class SubmissionClaimsDetailsBuilderTest {
   @Mock DataClaimsRestClientV2 dataClaimsRestClientV2;
   @Mock SubmissionClaimRowMapper submissionClaimRowMapper;
   @Mock PaginationUtil paginationUtil;
+  @Mock InquestClaimService inquestClaimService;
 
   @BeforeEach
   void beforeEach() {
     builder =
         new SubmissionClaimDetailsBuilder(
-            dataClaimsRestClient, dataClaimsRestClientV2, submissionClaimRowMapper, paginationUtil);
+            dataClaimsRestClient,
+            dataClaimsRestClientV2,
+            submissionClaimRowMapper,
+            paginationUtil,
+            inquestClaimService);
   }
 
   @Test
@@ -158,6 +164,8 @@ class SubmissionClaimsDetailsBuilderTest {
             new BigDecimal("50.10"),
             new BigDecimal("60.10"),
             new BigDecimal("70.10")),
-        Boolean.TRUE);
+        Boolean.TRUE,
+        false,
+        false);
   }
 }
