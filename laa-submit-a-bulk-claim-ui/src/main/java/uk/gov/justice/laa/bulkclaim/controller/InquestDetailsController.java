@@ -1,8 +1,6 @@
 package uk.gov.justice.laa.bulkclaim.controller;
 
-import java.util.Set;
 import java.util.UUID;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -17,8 +15,9 @@ import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import uk.gov.justice.laa.bulkclaim.client.DataClaimsRestClient;
 import uk.gov.justice.laa.bulkclaim.dto.inquest.InquestDetailsForm;
+import uk.gov.justice.laa.bulkclaim.service.InquestClaimService;
 import uk.gov.justice.laa.bulkclaim.service.InquestDepartmentService;
-import uk.gov.justice.laa.dstew.payments.claimsdata.model.AreaOfLaw;
+import uk.gov.justice.laa.bulkclaim.validation.InquestDetailsFormValidator;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.ClaimResponse;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionResponse;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionStatus;
@@ -32,18 +31,18 @@ public class InquestDetailsController {
 
   private final DataClaimsRestClient dataClaimsRestClient;
   private final InquestDepartmentService inquestDepartmentService;
-  private final Set<String> inquestMatterTypeCodes;
-  private final Set<String> optionalFields;
+  private final InquestClaimService inquestClaimService;
+  private final InquestDetailsFormValidator formValidator;
 
   public InquestDetailsController(
       DataClaimsRestClient dataClaimsRestClient,
       InquestDepartmentService inquestDepartmentService,
-      @Value("${app.inquest.matter-type-codes:INQUEST}") Set<String> inquestMatterTypeCodes,
-      @Value("${app.inquest.optional-fields:}") Set<String> optionalFields) {
+      InquestClaimService inquestClaimService,
+      InquestDetailsFormValidator formValidator) {
     this.dataClaimsRestClient = dataClaimsRestClient;
     this.inquestDepartmentService = inquestDepartmentService;
-    this.inquestMatterTypeCodes = inquestMatterTypeCodes;
-    this.optionalFields = optionalFields;
+    this.inquestClaimService = inquestClaimService;
+    this.formValidator = formValidator;
   }
 
   @ModelAttribute
@@ -76,7 +75,7 @@ public class InquestDetailsController {
       return redirectToSubmission(submissionId);
     }
     requireOpenInquestClaim(submissionId, claimId);
-    validate(form, errors);
+    formValidator.validate(form, errors);
     if (errors.hasErrors()) {
       populateModel(model, submissionId, claimId);
       return VIEW;
@@ -102,8 +101,10 @@ public class InquestDetailsController {
             .getSubmissionClaim(submissionId, claimId)
             .blockOptional()
             .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
-    if (submission.getAreaOfLaw() != AreaOfLaw.LEGAL_HELP
-        || !inquestMatterTypeCodes.contains(claim.getMatterTypeCode())) {
+    var status =
+        inquestClaimService.status(
+            claimId, claim.getMatterTypeCode(), submission.getAreaOfLaw(), submission.getStatus());
+    if (status != InquestClaimService.Status.INCOMPLETE) {
       throw new ResponseStatusException(HttpStatus.NOT_FOUND);
     }
     return claim;
@@ -118,38 +119,6 @@ public class InquestDetailsController {
         .getSubmission(submissionId)
         .blockOptional()
         .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
-  }
-
-  private void validate(InquestDetailsForm form, BindingResult errors) {
-    rejectBlank("deceasedForename", form.getDeceasedForename(), errors);
-    rejectBlank("deceasedSurname", form.getDeceasedSurname(), errors);
-    rejectNull("deceasedDateOfBirth", form.getDeceasedDateOfBirth(), errors);
-    rejectNull("deceasedDateOfDeath", form.getDeceasedDateOfDeath(), errors);
-    rejectBlank("coronersInquestReference", form.getCoronersInquestReference(), errors);
-    rejectEmpty("interestedDepartmentCodes", form.getInterestedDepartmentCodes(), errors);
-    if (!optionalFields.contains("interestedPublicAuthorities")
-        && (form.getInterestedPublicAuthorities() == null
-            || form.getInterestedPublicAuthorities().stream().allMatch(String::isBlank))) {
-      errors.rejectValue("interestedPublicAuthorities", "inquest.mandatory", "Enter a value");
-    }
-  }
-
-  private void rejectBlank(String field, String value, BindingResult errors) {
-    if (!optionalFields.contains(field) && (value == null || value.isBlank())) {
-      errors.rejectValue(field, "inquest.mandatory", "Enter a value");
-    }
-  }
-
-  private void rejectNull(String field, Object value, BindingResult errors) {
-    if (!optionalFields.contains(field) && value == null) {
-      errors.rejectValue(field, "inquest.mandatory", "Enter a value");
-    }
-  }
-
-  private void rejectEmpty(String field, java.util.Collection<?> value, BindingResult errors) {
-    if (!optionalFields.contains(field) && (value == null || value.isEmpty())) {
-      errors.rejectValue(field, "inquest.mandatory", "Enter a value");
-    }
   }
 
   private void populateModel(Model model, UUID submissionId, UUID claimId) {

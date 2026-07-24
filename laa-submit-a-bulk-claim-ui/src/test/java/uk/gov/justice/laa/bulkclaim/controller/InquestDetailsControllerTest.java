@@ -1,6 +1,7 @@
 package uk.gov.justice.laa.bulkclaim.controller;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -16,6 +17,7 @@ import org.mockito.Mockito;
 import org.springframework.http.ResponseEntity;
 import org.springframework.ui.ConcurrentModel;
 import org.springframework.validation.BeanPropertyBindingResult;
+import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.servlet.mvc.support.RedirectAttributesModelMap;
 import reactor.core.publisher.Mono;
 import uk.gov.justice.laa.bulkclaim.client.DataClaimsRestClient;
@@ -23,7 +25,9 @@ import uk.gov.justice.laa.bulkclaim.dto.inquest.ClaimInquestData;
 import uk.gov.justice.laa.bulkclaim.dto.inquest.ClaimInquestDataWrite;
 import uk.gov.justice.laa.bulkclaim.dto.inquest.InquestDepartment;
 import uk.gov.justice.laa.bulkclaim.dto.inquest.InquestDetailsForm;
+import uk.gov.justice.laa.bulkclaim.service.InquestClaimService;
 import uk.gov.justice.laa.bulkclaim.service.InquestDepartmentService;
+import uk.gov.justice.laa.bulkclaim.validation.InquestDetailsFormValidator;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.AreaOfLaw;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.ClaimResponse;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionResponse;
@@ -33,8 +37,17 @@ class InquestDetailsControllerTest {
 
   private final DataClaimsRestClient client = Mockito.mock(DataClaimsRestClient.class);
   private final InquestDepartmentService departments = Mockito.mock(InquestDepartmentService.class);
+  private final InquestClaimService inquestClaims =
+      new InquestClaimService(client, Set.of("INQUEST"));
   private final InquestDetailsController controller =
-      new InquestDetailsController(client, departments, Set.of("INQUEST"), Set.of());
+      new InquestDetailsController(
+          client,
+          departments,
+          inquestClaims,
+          new InquestDetailsFormValidator(
+              "DECEASED_FORENAME,DECEASED_SURNAME,DECEASED_DATE_OF_BIRTH,"
+                  + "DECEASED_DATE_OF_DEATH,CORONERS_INQUEST_REFERENCE,"
+                  + "INTERESTED_GOVERNMENT_DEPARTMENT,INTERESTED_PUBLIC_AUTHORITY"));
 
   @Test
   void populatesReferencesAndExistingClaimData() {
@@ -55,7 +68,7 @@ class InquestDetailsControllerTest {
                     Set.of("MOJ"),
                     List.of("NHS Trust"),
                     "xml",
-                    true)));
+                    false)));
 
     ConcurrentModel model = new ConcurrentModel();
     InquestDetailsForm form = controller.inquestDetailsForm();
@@ -147,6 +160,24 @@ class InquestDetailsControllerTest {
     verify(client, never()).replaceClaimInquestData(eq(claimId), Mockito.any());
   }
 
+  @Test
+  void completeXmlClaimCannotOpenManualJourney() {
+    UUID submissionId = UUID.randomUUID();
+    UUID claimId = UUID.randomUUID();
+    givenOpenInquestClaim(submissionId, claimId);
+    when(client.getClaimInquestData(claimId))
+        .thenReturn(
+            ResponseEntity.ok(
+                new ClaimInquestData(null, null, null, null, null, null, null, "xml", true)));
+
+    assertThatThrownBy(
+            () ->
+                controller.show(
+                    submissionId, claimId, new InquestDetailsForm(), new ConcurrentModel()))
+        .isInstanceOf(ResponseStatusException.class)
+        .hasMessageContaining("404");
+  }
+
   private void givenOpenInquestClaim(UUID submissionId, UUID claimId) {
     when(client.getSubmission(submissionId))
         .thenReturn(
@@ -158,6 +189,7 @@ class InquestDetailsControllerTest {
     when(client.getSubmissionClaim(submissionId, claimId))
         .thenReturn(
             Mono.just(new ClaimResponse().id(claimId.toString()).matterTypeCode("INQUEST")));
+    when(client.getClaimInquestData(claimId)).thenReturn(ResponseEntity.notFound().build());
   }
 
   private InquestDetailsForm completeForm() {
