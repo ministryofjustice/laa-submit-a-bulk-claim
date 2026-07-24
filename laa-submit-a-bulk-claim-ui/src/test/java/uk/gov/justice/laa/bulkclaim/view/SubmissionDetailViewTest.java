@@ -53,19 +53,15 @@ class SubmissionDetailViewTest extends ViewTestBase {
   }
 
   @Test
-  void draftViewShowsAddClaimAction() {
-    mockClaims(AreaOfLaw.LEGAL_HELP, SubmissionStatus.READY_FOR_SUBMISSION, true);
+  void submittedViewDoesNotShowAddClaimAction() {
+    mockClaims(AreaOfLaw.LEGAL_HELP);
 
-    var action = renderDocument().selectFirst("form[action=/add-claim]");
-
-    Assertions.assertNotNull(action);
-    Assertions.assertEquals("post", action.attr("method"));
-    Assertions.assertEquals("Add a claim", action.selectFirst("button").text());
+    Assertions.assertNull(renderDocument().selectFirst("form[action=/add-claim]"));
   }
 
   @Test
-  void submittedViewDoesNotShowAddClaimAction() {
-    mockClaims(AreaOfLaw.LEGAL_HELP);
+  void draftViewDoesNotShowAddClaimAction() {
+    mockClaims(AreaOfLaw.LEGAL_HELP, SubmissionStatus.READY_FOR_SUBMISSION, true);
 
     Assertions.assertNull(renderDocument().selectFirst("form[action=/add-claim]"));
   }

@@ -21,11 +21,9 @@ import uk.gov.justice.laa.bulkclaim.dto.inquest.ClaimInquestDataWrite;
 import uk.gov.justice.laa.bulkclaim.dto.inquest.InquestDepartment;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.AreaOfLaw;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.BulkSubmissionPatch;
-import uk.gov.justice.laa.dstew.payments.claimsdata.model.ClaimPost;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.ClaimResponse;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.ClaimResultSet;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.CreateBulkSubmission201Response;
-import uk.gov.justice.laa.dstew.payments.claimsdata.model.CreateClaim201Response;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.CreateSubmission201Response;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.GetBulkSubmissionStatusById200Response;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.MatterStartGet;
@@ -99,10 +97,6 @@ public interface DataClaimsRestClient {
   @GetExchange(value = "/submissions/{submission-id}/claims/{claim-id}")
   Mono<ClaimResponse> getSubmissionClaim(
       @PathVariable("submission-id") UUID submissionId, @PathVariable("claim-id") UUID claimId);
-
-  @PostExchange(value = "/submissions/{submission-id}/claims")
-  ResponseEntity<CreateClaim201Response> createClaim(
-      @PathVariable("submission-id") UUID submissionId, @RequestBody ClaimPost claim);
 
   default ResponseEntity<ClaimResultSet> getClaims(
       @RequestParam(value = "office_code") String officeCode,
