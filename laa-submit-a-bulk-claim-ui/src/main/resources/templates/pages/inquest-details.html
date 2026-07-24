@@ -1,0 +1,96 @@
+<!DOCTYPE HTML>
+<html lang="en" class="govuk-template" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout/main-layout :: layout(#{inquestDetails.heading},~{::main},~{}, 'search-submissions')}">
+<main class="govuk-main-wrapper" id="main-content">
+  <div class="govuk-width-container">
+    <a class="govuk-back-link" th:href="@{/submission/{id}(id=${submissionId})}">Back</a>
+    <div class="govuk-grid-row">
+      <div class="govuk-grid-column-two-thirds">
+        <h1 class="govuk-heading-l" th:text="#{inquestDetails.heading}"></h1>
+
+        <form method="post" th:object="${inquestDetailsForm}"
+              th:action="@{/submissions/{submissionId}/claims/{claimId}/inquest-details(submissionId=${submissionId}, claimId=${claimId})}">
+          <div class="govuk-error-summary" data-module="govuk-error-summary"
+               th:if="${#fields.hasAnyErrors()}">
+            <div role="alert">
+              <h2 class="govuk-error-summary__title">There is a problem</h2>
+              <div class="govuk-error-summary__body">
+                <ul class="govuk-list govuk-error-summary__list">
+                  <li th:each="error : ${#fields.allErrors()}" th:text="${error}"></li>
+                </ul>
+              </div>
+            </div>
+          </div>
+          <div class="govuk-form-group">
+            <label class="govuk-label" for="deceasedForename">Deceased's first name</label>
+            <p class="govuk-error-message" th:if="${#fields.hasErrors('deceasedForename')}"
+               th:errors="*{deceasedForename}"></p>
+            <input class="govuk-input" id="deceasedForename" th:field="*{deceasedForename}">
+          </div>
+          <div class="govuk-form-group">
+            <label class="govuk-label" for="deceasedSurname">Deceased's last name</label>
+            <p class="govuk-error-message" th:if="${#fields.hasErrors('deceasedSurname')}"
+               th:errors="*{deceasedSurname}"></p>
+            <input class="govuk-input" id="deceasedSurname" th:field="*{deceasedSurname}">
+          </div>
+          <div class="govuk-form-group">
+            <label class="govuk-label" for="deceasedDateOfBirth">Deceased's date of birth</label>
+            <p class="govuk-error-message" th:if="${#fields.hasErrors('deceasedDateOfBirth')}"
+               th:errors="*{deceasedDateOfBirth}"></p>
+            <input class="govuk-input govuk-input--width-10" type="date"
+                   id="deceasedDateOfBirth" th:field="*{deceasedDateOfBirth}">
+          </div>
+          <div class="govuk-form-group">
+            <label class="govuk-label" for="deceasedDateOfDeath">Deceased's date of death</label>
+            <p class="govuk-error-message" th:if="${#fields.hasErrors('deceasedDateOfDeath')}"
+               th:errors="*{deceasedDateOfDeath}"></p>
+            <input class="govuk-input govuk-input--width-10" type="date"
+                   id="deceasedDateOfDeath" th:field="*{deceasedDateOfDeath}">
+          </div>
+          <div class="govuk-form-group">
+            <label class="govuk-label" for="coronersInquestReference">Coroner's inquest reference</label>
+            <p class="govuk-error-message" th:if="${#fields.hasErrors('coronersInquestReference')}"
+               th:errors="*{coronersInquestReference}"></p>
+            <input class="govuk-input" id="coronersInquestReference"
+                   th:field="*{coronersInquestReference}">
+          </div>
+
+          <fieldset class="govuk-fieldset">
+            <legend class="govuk-fieldset__legend">Interested government departments</legend>
+            <p class="govuk-error-message" th:if="${#fields.hasErrors('interestedDepartmentCodes')}"
+               th:errors="*{interestedDepartmentCodes}"></p>
+            <div class="govuk-checkboxes" data-module="govuk-checkboxes">
+              <div class="govuk-checkboxes__item" th:each="department : ${departments}">
+                <input class="govuk-checkboxes__input" type="checkbox"
+                       th:field="*{interestedDepartmentCodes}" th:value="${department.code}">
+                <label class="govuk-label govuk-checkboxes__label"
+                       th:for="${#ids.prev('interestedDepartmentCodes')}"
+                       th:text="${department.displayLabel}"></label>
+              </div>
+            </div>
+          </fieldset>
+
+          <div class="govuk-form-group govuk-!-margin-top-6">
+            <label class="govuk-label" for="interestedPublicAuthorities">
+              Interested public authorities
+            </label>
+            <div class="govuk-hint">Enter up to 3 authorities</div>
+            <p class="govuk-error-message" th:if="${#fields.hasErrors('interestedPublicAuthorities')}"
+               th:errors="*{interestedPublicAuthorities}"></p>
+            <input class="govuk-input govuk-!-margin-bottom-2" id="interestedPublicAuthorities"
+                   th:field="*{interestedPublicAuthorities[0]}">
+            <input class="govuk-input govuk-!-margin-bottom-2"
+                   aria-label="Second interested public authority"
+                   th:field="*{interestedPublicAuthorities[1]}">
+            <input class="govuk-input"
+                   aria-label="Third interested public authority"
+                   th:field="*{interestedPublicAuthorities[2]}">
+          </div>
+
+          <button class="govuk-button" data-module="govuk-button" type="submit">Save and continue</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</main>
+</html>

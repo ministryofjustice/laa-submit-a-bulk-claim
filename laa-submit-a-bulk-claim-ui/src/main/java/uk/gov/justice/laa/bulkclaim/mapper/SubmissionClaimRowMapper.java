@@ -33,6 +33,8 @@ public interface SubmissionClaimRowMapper {
   @Mapping(target = "costsDetails", source = "claimFields")
   @Mapping(target = "totalMessages", source = "totalMessages")
   @Mapping(target = "escapeCase", expression = "java(resolveEscapeCase(claimFields))")
+  @Mapping(target = "inquestDetailsRequired", ignore = true)
+  @Mapping(target = "inquestDetailsComplete", ignore = true)
   SubmissionClaimRow toSubmissionClaimRow(ClaimResponse claimFields, int totalMessages);
 
   @Mapping(target = "ufn", source = "claimFields.uniqueFileNumber")
@@ -54,6 +56,8 @@ public interface SubmissionClaimRowMapper {
   @Mapping(target = "costsDetails", source = "claimFields")
   @Mapping(target = "totalMessages", source = "claimFields.totalWarnings")
   @Mapping(target = "escapeCase", expression = "java(resolveEscapeCase(claimFields))")
+  @Mapping(target = "inquestDetailsRequired", ignore = true)
+  @Mapping(target = "inquestDetailsComplete", ignore = true)
   SubmissionClaimRow toSubmissionClaimRow(ClaimResponseV2 claimFields);
 
   @Named("toFeeType")

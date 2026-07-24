@@ -8,6 +8,7 @@ import uk.gov.justice.laa.bulkclaim.client.DataClaimsRestClientV2;
 import uk.gov.justice.laa.bulkclaim.dto.submission.claim.SubmissionClaimRow;
 import uk.gov.justice.laa.bulkclaim.dto.submission.claim.SubmissionClaimsDetails;
 import uk.gov.justice.laa.bulkclaim.mapper.SubmissionClaimRowMapper;
+import uk.gov.justice.laa.bulkclaim.service.InquestClaimService;
 import uk.gov.justice.laa.bulkclaim.util.PaginationUtil;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.ClaimResultSetV2;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionResponse;
@@ -20,6 +21,7 @@ public class SubmissionClaimDetailsBuilder {
   private final DataClaimsRestClientV2 dataClaimsRestClientV2;
   private final SubmissionClaimRowMapper submissionClaimRowMapper;
   private final PaginationUtil paginationUtil;
+  private final InquestClaimService inquestClaimService;
 
   public SubmissionClaimsDetails build(SubmissionResponse submissionResponse, int page, int size) {
     var submissionClaimData =
@@ -73,6 +75,7 @@ public class SubmissionClaimDetailsBuilder {
     List<SubmissionClaimRow> submissionClaimRows =
         claimResultSetV2.getContent().stream()
             .map(submissionClaimRowMapper::toSubmissionClaimRow)
+            .map(row -> addInquestStatus(row, submissionResponse))
             .toList();
     return new SubmissionClaimsDetails(
         submissionClaimRows,
@@ -81,5 +84,18 @@ public class SubmissionClaimDetailsBuilder {
             claimResultSetV2.getSize(),
             claimResultSetV2.getTotalElements()),
         submissionResponse.getCalculatedTotalAmount());
+  }
+
+  private SubmissionClaimRow addInquestStatus(
+      SubmissionClaimRow row, SubmissionResponse submissionResponse) {
+    var status =
+        inquestClaimService.status(
+            row.id(),
+            row.matter(),
+            submissionResponse.getAreaOfLaw(),
+            submissionResponse.getStatus());
+    return row.withInquestStatus(
+        status == InquestClaimService.Status.INCOMPLETE,
+        status == InquestClaimService.Status.COMPLETE);
   }
 }
