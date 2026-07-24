@@ -29,13 +29,13 @@
                                 <th:block th:each="areaOfLaw,idx : ${areasOfLaw}">
                                     <div class="govuk-radios__item">
                                         <input class="govuk-radios__input"
-                                               th:id="${idx.index > 0} ? |area-of-law-input-${idx.index}| : |area-of-law-input|"
+                                               th:id="${idx.index > 0} ? |areaOfLaw-input-${idx.index}| : |areaOfLaw-input|"
                                                type="radio"
                                                th:field="*{areaOfLaw}"
                                                th:value="${areaOfLaw.getKey()}"
                                                >
                                         <label class="govuk-label govuk-radios__label"
-                                               th:for="${idx.index > 0} ? |area-of-law-input-${idx.index}| : |area-of-law-input|"
+                                               th:for="${idx.index > 0} ? |areaOfLaw-input-${idx.index}| : |areaOfLaw-input|"
                                                th:text="#{__${areaOfLaw.getValue()}__}">
                                         </label>
                                     </div>
