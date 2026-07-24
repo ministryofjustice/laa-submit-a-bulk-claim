@@ -12,9 +12,11 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.SessionAttribute;
 import org.springframework.web.bind.annotation.SessionAttributes;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import uk.gov.justice.laa.bulkclaim.builder.SubmissionSummaryBuilder;
 import uk.gov.justice.laa.bulkclaim.client.DataClaimsRestClient;
 import uk.gov.justice.laa.bulkclaim.dto.submission.view.SubmissionViewQuery;
+import uk.gov.justice.laa.bulkclaim.exception.DraftConfirmationValidationException;
 import uk.gov.justice.laa.bulkclaim.exception.SubmitBulkClaimException;
 import uk.gov.justice.laa.bulkclaim.service.DraftSubmissionService;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionResponse;
@@ -47,8 +49,15 @@ public class SubmitDraftController {
   }
 
   @PostMapping("/submit-draft-submission")
-  public String postSubmitDraft(@SessionAttribute(value = SUBMISSION_ID) UUID submissionId) {
-    draftSubmissionService.submitDraftSubmission(submissionId);
-    return "redirect:/submission/%s".formatted(submissionId);
+  public String postSubmitDraft(
+      @SessionAttribute(value = SUBMISSION_ID) UUID submissionId,
+      RedirectAttributes redirectAttributes) {
+    try {
+      draftSubmissionService.submitDraftSubmission(submissionId);
+      return "redirect:/submission/%s".formatted(submissionId);
+    } catch (DraftConfirmationValidationException exception) {
+      redirectAttributes.addFlashAttribute("confirmationErrors", exception.getClaimReports());
+      return "redirect:/submit-draft-submission?submissionId=%s".formatted(submissionId);
+    }
   }
 }

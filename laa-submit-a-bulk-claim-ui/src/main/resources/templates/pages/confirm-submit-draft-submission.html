@@ -6,6 +6,23 @@
     <div class="govuk-grid-column-two-thirds-from-desktop">
       <h1 class="govuk-heading-xl" th:text="#{submitDraftSubmission.heading}"/>
 
+      <div class="govuk-error-summary" data-module="govuk-error-summary"
+           th:if="${confirmationErrors != null}">
+        <div role="alert">
+          <h2 class="govuk-error-summary__title">There is a problem</h2>
+          <div class="govuk-error-summary__body">
+            <ul class="govuk-list govuk-error-summary__list">
+              <th:block th:each="claimReport : ${confirmationErrors}">
+                <li th:each="message : ${claimReport.validationMessages}">
+                  <a th:href="@{/submission/claim/{claimId}(claimId=${claimReport.claimId})}"
+                     th:text="${message.displayMessage}"></a>
+                </li>
+              </th:block>
+            </ul>
+          </div>
+        </div>
+      </div>
+
       <p class="govuk-body govuk-body-lead" th:text="#{submitDraftSubmission.leadParagraph}"></p>
     </div>
       <div class="govuk-grid-column-two-thirds-from-desktop">
