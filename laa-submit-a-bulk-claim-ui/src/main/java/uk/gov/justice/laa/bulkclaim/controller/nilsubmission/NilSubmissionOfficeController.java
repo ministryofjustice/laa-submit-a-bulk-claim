@@ -3,6 +3,7 @@ package uk.gov.justice.laa.bulkclaim.controller.nilsubmission;
 import static uk.gov.justice.laa.bulkclaim.constants.NilSubmissionInfoMessageConstants.SUBMISSION_INFO_MESSAGE_PAGE_HEADING;
 import static uk.gov.justice.laa.bulkclaim.constants.NilSubmissionInfoMessageConstants.SUBMISSION_INFO_MESSAGE_TEXT;
 import static uk.gov.justice.laa.bulkclaim.constants.SessionConstants.NIL_SUBMISSION_FORM;
+import static uk.gov.justice.laa.bulkclaim.util.NilSubmissionSessionManager.cleanseSession;
 
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -18,7 +19,6 @@ import org.springframework.web.bind.annotation.SessionAttributes;
 import uk.gov.justice.laa.bulkclaim.config.FeatureFlagsConfig;
 import uk.gov.justice.laa.bulkclaim.dto.submission.NilSubmissionForm;
 import uk.gov.justice.laa.bulkclaim.util.NilSubmissionPage;
-import uk.gov.justice.laa.bulkclaim.util.NilSubmissionSessionManager;
 import uk.gov.justice.laa.bulkclaim.util.OidcAttributeUtils;
 
 @Controller
@@ -41,9 +41,9 @@ public class NilSubmissionOfficeController {
       Model model) {
 
     featureFlagsConfig.checkNilSubmissionEnabled();
+    cleanseSession(form, NilSubmissionPage.OFFICE);
 
     model.addAttribute("displayOffice", form.getOffice());
-    NilSubmissionSessionManager.nilSubmissionCleanseSession(form, NilSubmissionPage.OFFICE);
 
     List<String> userOffices = oidcAttributeUtils.getUserOffices(oidcUser);
     if (userOffices.isEmpty()) {

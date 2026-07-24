@@ -11,25 +11,31 @@
 <main class="govuk-main-wrapper" id="main-content">
     <div class="govuk-width-container">
         <div class="govuk-grid-row">
-            <div class="govuk-grid-column-full">
+            <div class="govuk-grid-column-full" th:object="${nilSubmissionForm}">
+                <div th:replace="~{fragments/error-components :: error-summary}"/>
                 <div id="nil-submission-hint" class="govuk-hint" th:text="#{nilSubmission.hint}"></div>
                 <h1 class="govuk-heading-l" th:text="#{nilSubmission.areaOfLaw.heading}"/>
                 <th:block th:replace="~{fragments/nil-submission-summary :: nil-submission-summary}"/>
                 <form class="form" th:action="@{/nil-submission/areaoflaw}" method="post">
-                    <div class="govuk-form-group">
+                    <div class="govuk-form-group"
+                         th:classappend="${#fields.hasErrors('areaOfLaw')} ? ' govuk-form-group--error'">
                         <fieldset class="govuk-fieldset">
+                            <legend class="govuk-fieldset__legend govuk-fieldset__legend--m"
+                                    th:text="#{nilSubmission.areaOfLaw.heading}">
+                            </legend>
+                            <th:block th:replace="~{fragments/error-components :: error-messages('areaOfLaw')}"/>
                             <div class="govuk-radios govuk-radios--small"
-                                 data-module="govuk-radios" id="arias-of-law-input-container">
+                                 data-module="govuk-radios" id="area-of-law-input-container">
                                 <th:block th:each="areaOfLaw,idx : ${areasOfLaw}">
                                     <div class="govuk-radios__item">
                                         <input class="govuk-radios__input"
-                                               th:id="${idx.index > 0} ? |areas-of-law-input-${idx.index}| : |areas-of-law-input|"
+                                               th:id="${idx.index > 0} ? |area-of-law-input-${idx.index}| : |area-of-law-input|"
                                                type="radio"
-                                               name="areaOfLaw"
+                                               th:field="*{areaOfLaw}"
                                                th:value="${areaOfLaw.getKey()}"
-                                               th:checked="${displayAreaOfLaw == areaOfLaw.getKey()}">
+                                               >
                                         <label class="govuk-label govuk-radios__label"
-                                               th:for="${idx.index > 0} ? |areas-of-law-input-${idx.index}| : |areas-of-law-input|"
+                                               th:for="${idx.index > 0} ? |area-of-law-input-${idx.index}| : |area-of-law-input|"
                                                th:text="#{__${areaOfLaw.getValue()}__}">
                                         </label>
                                     </div>
