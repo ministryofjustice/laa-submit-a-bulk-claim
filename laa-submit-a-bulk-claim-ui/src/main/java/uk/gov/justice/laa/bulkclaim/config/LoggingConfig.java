@@ -13,13 +13,11 @@ public class LoggingConfig {
             List.of(
                     "/actuator",
                     "/health",
-                    "/ping",
                     "/assets",
                     "/javascripts",
                     "/stylesheets",
                     "/static",
-                    "/public",
-                    "/webjars");
+                    "/public");
 
     @Bean
     public CommonsRequestLoggingFilter logFilter() {
