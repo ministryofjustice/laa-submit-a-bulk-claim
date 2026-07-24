@@ -22,7 +22,6 @@ import uk.gov.justice.laa.bulkclaim.dto.submission.NilSubmissionForm;
 import uk.gov.justice.laa.bulkclaim.dto.submission.search.SubmissionSearchQuery;
 import uk.gov.justice.laa.bulkclaim.util.DateWrapperUtil;
 import uk.gov.justice.laa.bulkclaim.util.SubmissionPeriodUtil;
-import uk.gov.justice.laa.dstew.payments.claimsdata.model.AreaOfLaw;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionBase;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionsResultSet;
 
@@ -45,7 +44,7 @@ public class SubmissionPeriodService {
         .search(
             submissionSearchQuery.getOffices(),
             null,
-            AreaOfLaw.valueOf(submissionSearchQuery.getAreaOfLaw()),
+            submissionSearchQuery.getAreaOfLaw(),
             submissionSearchQuery.getSubmissionStatuses().getStatuses(),
             submissionSearchQuery.getPage(),
             // 12 is used here as we can only expect to get a maximum of 12 periods back from the

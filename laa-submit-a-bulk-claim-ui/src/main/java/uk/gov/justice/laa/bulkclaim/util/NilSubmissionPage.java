@@ -5,5 +5,6 @@ public enum NilSubmissionPage {
   AREA_OF_LAW,
   SUBMISSION_PERIOD,
   SCHEDULE_REFERENCE,
+  SUMMARY_DETAILS,
   OTHER
 }

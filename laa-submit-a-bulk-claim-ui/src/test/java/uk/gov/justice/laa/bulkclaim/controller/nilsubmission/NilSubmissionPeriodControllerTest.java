@@ -12,6 +12,7 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static uk.gov.justice.laa.dstew.payments.claimsdata.model.AreaOfLaw.*;
 
 import java.time.LocalDate;
 import java.time.YearMonth;
@@ -30,7 +31,6 @@ import uk.gov.justice.laa.bulkclaim.dto.submission.NilSubmissionForm;
 import uk.gov.justice.laa.bulkclaim.helper.SubmissionsResultSetTestHelper;
 import uk.gov.justice.laa.bulkclaim.service.SubmissionPeriodService;
 import uk.gov.justice.laa.bulkclaim.util.DateWrapperUtil;
-import uk.gov.justice.laa.dstew.payments.claimsdata.model.AreaOfLaw;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionsResultSet;
 
 @AutoConfigureMockMvc(addFilters = false)
@@ -69,7 +69,7 @@ class NilSubmissionPeriodControllerTest extends BaseControllerTest {
   void getNilSubmission_SuccessView() {
     NilSubmissionForm form = new NilSubmissionForm();
     form.setOffice("officeA");
-    form.setAreaOfLaw(AreaOfLaw.MEDIATION.getValue());
+    form.setAreaOfLaw(MEDIATION);
 
     when(submissionPeriodService.sortSubmissionPeriods(any()))
         .thenReturn(Map.of("JAN-2024", "January 2024"));
@@ -85,7 +85,7 @@ class NilSubmissionPeriodControllerTest extends BaseControllerTest {
   void postNilSubmission_SuccessView() {
     NilSubmissionForm form = new NilSubmissionForm();
     form.setOffice("officeA");
-    form.setAreaOfLaw(AreaOfLaw.MEDIATION.getValue());
+    form.setAreaOfLaw(MEDIATION);
     doReturn(true).when(featureFlagsConfig).getIsNilSubmissionEnabled();
 
     final SubmissionsResultSet response = SubmissionsResultSetTestHelper.getSubmissionsResultSet(0);
@@ -106,7 +106,7 @@ class NilSubmissionPeriodControllerTest extends BaseControllerTest {
   void getNilSubmission_NoPeriods_ReturnsInfoMessageView() {
     NilSubmissionForm form = new NilSubmissionForm();
     form.setOffice("officeA");
-    form.setAreaOfLaw(AreaOfLaw.MEDIATION.getValue());
+    form.setAreaOfLaw(MEDIATION);
     doReturn(true).when(featureFlagsConfig).getIsNilSubmissionEnabled();
 
     final SubmissionsResultSet response =
@@ -127,7 +127,7 @@ class NilSubmissionPeriodControllerTest extends BaseControllerTest {
 
     NilSubmissionForm form = new NilSubmissionForm();
     form.setOffice("office1");
-    form.setAreaOfLaw("areaOfLaw1");
+    form.setAreaOfLaw(MEDIATION);
     form.setSubmissionPeriod("submissionPeriod1");
     form.setScheduleReference("scheduleReference1");
 
