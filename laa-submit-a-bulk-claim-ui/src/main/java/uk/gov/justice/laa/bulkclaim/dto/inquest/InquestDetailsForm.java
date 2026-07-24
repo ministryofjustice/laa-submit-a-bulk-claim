@@ -1,17 +1,17 @@
 package uk.gov.justice.laa.bulkclaim.dto.inquest;
 
+import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Set;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.format.annotation.DateTimeFormat;
 
 @Getter
 @Setter
-public class InquestDetailsForm {
+public class InquestDetailsForm implements Serializable {
 
   private String deceasedForename;
   private String deceasedSurname;
@@ -23,7 +23,7 @@ public class InquestDetailsForm {
   private LocalDate deceasedDateOfDeath;
 
   private String coronersInquestReference;
-  private Set<String> interestedDepartmentCodes = new LinkedHashSet<>();
+  private List<String> interestedDepartmentCodes = emptyInputs();
   private List<String> interestedPublicAuthorities = emptyAuthorityInputs();
 
   public void clear() {
@@ -32,7 +32,7 @@ public class InquestDetailsForm {
     deceasedDateOfBirth = null;
     deceasedDateOfDeath = null;
     coronersInquestReference = null;
-    interestedDepartmentCodes = new LinkedHashSet<>();
+    interestedDepartmentCodes = emptyInputs();
     interestedPublicAuthorities = emptyAuthorityInputs();
   }
 
@@ -44,13 +44,16 @@ public class InquestDetailsForm {
     coronersInquestReference = data.coronersInquestReference();
     interestedDepartmentCodes =
         data.interestedDepartmentCodes() == null
-            ? new LinkedHashSet<>()
-            : new LinkedHashSet<>(data.interestedDepartmentCodes());
+            ? emptyInputs()
+            : new ArrayList<>(data.interestedDepartmentCodes());
+    if (interestedDepartmentCodes.isEmpty()) {
+      interestedDepartmentCodes.add("");
+    }
     interestedPublicAuthorities =
         data.interestedPublicAuthorities() == null
             ? emptyAuthorityInputs()
             : new ArrayList<>(data.interestedPublicAuthorities());
-    while (interestedPublicAuthorities.size() < 3) {
+    if (interestedPublicAuthorities.isEmpty()) {
       interestedPublicAuthorities.add("");
     }
   }
@@ -62,12 +65,21 @@ public class InquestDetailsForm {
         deceasedDateOfBirth,
         deceasedDateOfDeath,
         coronersInquestReference,
-        interestedDepartmentCodes,
-        interestedPublicAuthorities.stream().filter(value -> !value.isBlank()).toList(),
+        new LinkedHashSet<>(
+            interestedDepartmentCodes.stream()
+                .filter(value -> value != null && !value.isBlank())
+                .toList()),
+        interestedPublicAuthorities.stream()
+            .filter(value -> value != null && !value.isBlank())
+            .toList(),
         actorUserId);
   }
 
   private static ArrayList<String> emptyAuthorityInputs() {
-    return new ArrayList<>(List.of("", "", ""));
+    return emptyInputs();
+  }
+
+  private static ArrayList<String> emptyInputs() {
+    return new ArrayList<>(List.of(""));
   }
 }
