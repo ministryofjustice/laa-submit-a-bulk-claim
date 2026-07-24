@@ -18,12 +18,33 @@ repositories {
     mavenCentral()
 }
 
+
+dependencyManagement {
+    dependencies {
+        // === INSERT YOUR OVERRIDES HERE ===
+        // Force jackson-core version to fix Snyk vulnerability
+        dependency "com.fasterxml.jackson.core:jackson-core:2.21.5"
+        dependency "com.fasterxml.jackson.core:jackson-databind:2.21.5"
+        // Force tools.jackson version to fix Snyk vulnerability
+        dependency "tools.jackson.core:jackson-core:3.1.5"
+        dependency "tools.jackson.core:jackson-databind:3.1.5"
+        // Force plexus-utils version to fix Snyk vulnerability
+        dependency "org.codehaus.plexus:plexus-utils:4.0.3"
+        // Force httpcore5-h2 version to fix Snyk vulnerability
+        dependency 'org.apache.httpcomponents.core5:httpcore5-h2:5.4.3'
+        // Force commons-beanutils version to fix Snyk vulnerability
+        dependency 'commons-beanutils:commons-beanutils:1.11.0'
+    }
+}
+
+// Upgrade to fix snyk vulnerabilities in 1.5.34
+ext['logback.version'] = '1.5.36'
 // Upgrade to fix remaining Apache Tomcat vulnerabilities reported against 11.0.22
 ext['tomcat.version'] = '11.0.23'
-// Upgrade to fix SNYK-JAVA-ORGAPACHELOGGINGLOG4J-15967727 and related vulnerabilities
-ext['log4j2.version'] = '2.25.4'
+// Upgrade to fix SNYK-JAVA-ORGAPACHELOGGINGLOG4J-17954276 and related vulnerabilities
+ext['log4j2.version'] = '2.25.5'
 // Upgrade to fix HTTP Request Smuggling (SNYK-JAVA-IONETTY-16425695)
-ext['netty.version'] = '4.2.15.Final'
+ext['netty.version'] = '4.2.16.Final'
 
 dependencyManagement {
     dependencies {
@@ -51,9 +72,6 @@ sourceSets {
 }
 
 dependencies {
-    // Fixes CWE-770
-    implementation 'tools.jackson.core:jackson-core:3.1.1'
-
     implementation 'uk.gov.justice.laa.datastewardship.payments:data-claims-api-models:1.4.2-b0532c5-SNAPSHOT'
     compileOnly 'io.swagger.core.v3:swagger-annotations:2.2.30'
 
@@ -107,7 +125,7 @@ dependencies {
     testImplementation 'org.springframework.security:spring-security-test'
 
     testImplementation 'org.testcontainers:mockserver:1.21.3'
-    testImplementation 'org.mock-server:mockserver-client-java:5.15.0'
+    testImplementation 'org.mock-server:mockserver-client-java:7.0.0'
 
     testImplementation 'au.com.dius.pact.consumer:junit5:4.6.19'
 

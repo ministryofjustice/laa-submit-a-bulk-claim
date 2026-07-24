@@ -35,7 +35,6 @@ import uk.gov.justice.laa.bulkclaim.builder.SubmissionMatterStartsDetailsBuilder
 import uk.gov.justice.laa.bulkclaim.builder.SubmissionMessagesBuilder;
 import uk.gov.justice.laa.bulkclaim.builder.SubmissionSummaryBuilder;
 import uk.gov.justice.laa.bulkclaim.client.DataClaimsRestClient;
-import uk.gov.justice.laa.bulkclaim.config.WebMvcTestConfig;
 import uk.gov.justice.laa.bulkclaim.dto.submission.SubmissionMatterStartsRow;
 import uk.gov.justice.laa.bulkclaim.dto.submission.SubmissionSummary;
 import uk.gov.justice.laa.bulkclaim.dto.submission.claim.SubmissionClaimRow;
@@ -56,9 +55,9 @@ import uk.gov.justice.laa.dstew.payments.claimsdata.model.ValidationMessageType;
 
 @WebMvcTest(SubmissionDetailController.class)
 @AutoConfigureMockMvc
-@Import({WebMvcTestConfig.class, PaginationLinksBuilder.class, ThymeleafHrefUtils.class})
+@Import({PaginationLinksBuilder.class, ThymeleafHrefUtils.class})
 @DisplayName("Submission detail controller test")
-class SubmissionDetailControllerTest {
+class SubmissionDetailControllerTest extends BaseControllerTest {
 
   @Autowired private MockMvcTester mockMvc;
 

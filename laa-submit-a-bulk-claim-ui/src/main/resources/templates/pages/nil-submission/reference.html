@@ -1,0 +1,49 @@
+<!DOCTYPE HTML>
+<html lang="en" class="govuk-template" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{ layout/main-layout :: layout(#{nilSubmission.heading}, ~{::main},
+       ~{::#back-link},'nil-submission')}">
+
+<th:block id="back-link">
+    <a th:href="@{/nil-submission/period}"
+       class="govuk-back-link"
+       th:text="#{common.back}"/>
+</th:block>
+
+<main class="govuk-main-wrapper" id="main-content">
+    <div class="govuk-width-container">
+        <div class="govuk-grid-row">
+            <div class="govuk-grid-column-full">
+                <div id="nil-submission-hint" class="govuk-hint" th:text="#{nilSubmission.hint}"></div>
+                <h1 class="govuk-heading-l" th:text="#{nilSubmission.reference.heading}"></h1>
+                <th:block th:replace="~{fragments/nil-submission-summary :: nil-submission-summary}"/>
+                <form class="form" th:object="${nilSubmissionForm}" th:action="@{/nil-submission/reference}"
+                      method="post">
+                    <div class="govuk-form-group">
+                        <fieldset class="govuk-fieldset">
+                            <div class="govuk-body"
+                                 data-module="govuk-radios" id="arias-of-law-input-container">
+                                <label class="govuk-label govuk-label--m"
+                                       for="schedule-reference"
+                                       th:text="#{__${'nilSubmission.summary.reference.' + nilSubmissionForm.areaOfLaw}__}">
+                                </label>
+                                <div id="nil-submission-example-hint" class="govuk-hint" th:text="#{__${'nilSubmission.summary.example.' + nilSubmissionForm.areaOfLaw}__}"></div>
+                                <input class="govuk-input govuk-input--width-10"
+                                       id="schedule-reference"
+                                       name="scheduleReference"
+                                       type="text"
+                                       th:value="${displayReference}"/>
+                            </div>
+                        </fieldset>
+                    </div>
+                    <div class="govuk-button-group">
+                        <button type="submit" data-prevent-double-click="true" class="govuk-button" data-module="govuk-button"
+                                th:text="#{nilSubmission.primaryButton}"/>
+                        <a th:href="@{/nil-submission/cancel(destination='UPLOAD')}" th:text="#{nilSubmission.cancel}"
+                           class="govuk-link govuk-link--no-visited-state"></a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</main>
+</html>

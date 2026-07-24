@@ -1,0 +1,52 @@
+<!DOCTYPE HTML>
+<html lang="en" class="govuk-template" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{ layout/main-layout :: layout(#{nilSubmission.heading}, ~{::main},
+       ~{::#back-link},'nil-submission')}">
+
+<th:block id="back-link">
+    <a th:href="@{/upload}"
+       class="govuk-back-link"
+       th:text="#{common.back}"/>
+</th:block>
+
+<main class="govuk-main-wrapper" id="main-content">
+    <div class="govuk-width-container">
+        <div class="govuk-grid-row">
+            <div class="govuk-grid-column-full">
+                <div id="nil-submission-hint" class="govuk-hint" th:text="#{nilSubmission.hint}"></div>
+                <h1 class="govuk-heading-l" th:text="#{nilSubmission.office.heading}"/>
+                <form class="form" th:action="@{/nil-submission/office}" method="post">
+                    <div class="govuk-form-group">
+                        <fieldset class="govuk-fieldset">
+                            <div class="govuk-radios govuk-radios--small"
+                                 data-module="govuk-radios" id="offices-input-container">
+                                <th:block th:each="office,idx : ${userOffices}">
+                                    <div class="govuk-radios__item">
+                                        <input class="govuk-radios__input"
+                                               th:id="${idx.index > 0} ? |offices-input-${idx.index}| : |offices-input|"
+                                               type="radio"
+                                               name="office"
+                                               th:value="${office}"
+                                               th:checked="${displayOffice == office}">
+                                        <label class="govuk-label govuk-radios__label"
+                                               th:for="${idx.index > 0} ? |offices-input-${idx.index}| : |offices-input|"
+                                               th:text="${office}">
+                                        </label>
+                                    </div>
+                                </th:block>
+
+                            </div>
+                        </fieldset>
+                    </div>
+                    <div class="govuk-button-group">
+                        <button type="submit" data-prevent-double-click="true" class="govuk-button" data-module="govuk-button"
+                                th:text="#{nilSubmission.primaryButton}"/>
+                        <a th:href="@{/nil-submission/cancel(destination='UPLOAD')}" th:text="#{nilSubmission.cancel}"
+                           class="govuk-link govuk-link--no-visited-state"></a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</main>
+</html>

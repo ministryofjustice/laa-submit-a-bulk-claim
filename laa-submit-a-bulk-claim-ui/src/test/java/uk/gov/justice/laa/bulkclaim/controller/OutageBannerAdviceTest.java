@@ -18,7 +18,7 @@ import uk.gov.justice.laa.bulkclaim.util.DateWrapperUtil;
 
 @ExtendWith(MockitoExtension.class)
 @DisplayName("Maintenance Banner Advice Test")
-class OutageBannerAdviceTest {
+class OutageBannerAdviceTest extends BaseControllerTest {
 
   @Mock DateWrapperUtil dateWrapperUtil;
 

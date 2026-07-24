@@ -34,6 +34,7 @@ import org.springframework.web.reactive.function.client.WebClientResponseExcepti
 import reactor.core.publisher.Mono;
 import tools.jackson.databind.ObjectMapper;
 import uk.gov.justice.laa.bulkclaim.client.DataClaimsRestClient;
+import uk.gov.justice.laa.bulkclaim.config.FeatureFlagsConfig;
 import uk.gov.justice.laa.bulkclaim.config.WebMvcTestConfig;
 import uk.gov.justice.laa.bulkclaim.dto.FileUploadForm;
 import uk.gov.justice.laa.bulkclaim.metrics.BulkClaimMetricService;
@@ -55,6 +56,7 @@ class BulkImportControllerTest {
   @MockitoBean private DataClaimsRestClient dataClaimsRestClient;
   @MockitoBean private OidcAttributeUtils oidcAttributeUtils;
   @MockitoBean private BulkClaimMetricService bulkClaimMetricService;
+  @MockitoBean private FeatureFlagsConfig featureFlagsConfig;
 
   @Nested
   @DisplayName("GET: /upload")
@@ -132,7 +134,7 @@ class BulkImportControllerTest {
           new MockMultipartFile("fileUpload", "test.csv", "text/csv", "text".getBytes());
       FileUploadForm input = new FileUploadForm(file, false);
 
-      when(dataClaimsRestClient.upload(any(), any(), any(), any()))
+      when(dataClaimsRestClient.upload(any(), any(), any(), anyBoolean()))
           .thenThrow(new RuntimeException("Unexpected error"));
 
       mockMvc
@@ -152,7 +154,7 @@ class BulkImportControllerTest {
           new MockMultipartFile("fileUpload", "test.csv", "text/csv", "text".getBytes());
       FileUploadForm input = new FileUploadForm(file, false);
 
-      when(dataClaimsRestClient.upload(any(), any(), any(), any()))
+      when(dataClaimsRestClient.upload(any(), any(), any(), anyBoolean()))
           .thenReturn(
               Mono.just(
                   ResponseEntity.of(
@@ -179,7 +181,7 @@ class BulkImportControllerTest {
               false);
       var errorDetails = "VAT Applicable must only include Y or N";
       var problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, errorDetails);
-      when(dataClaimsRestClient.upload(any(), any(), any(), any()))
+      when(dataClaimsRestClient.upload(any(), any(), any(), anyBoolean()))
           .thenThrow(
               new WebClientResponseException(
                   HttpStatus.BAD_REQUEST.value(),
@@ -218,7 +220,7 @@ class BulkImportControllerTest {
               false);
       var defaultErrorMessage = "An unknown error occurred during upload.";
       var problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, "");
-      when(dataClaimsRestClient.upload(any(), any(), any(), any()))
+      when(dataClaimsRestClient.upload(any(), any(), any(), anyBoolean()))
           .thenThrow(
               new WebClientResponseException(
                   HttpStatus.BAD_REQUEST.value(),
@@ -258,7 +260,7 @@ class BulkImportControllerTest {
               false);
       var defaultErrorMessage = "The selected file could not be uploaded - try again";
       var problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, "");
-      when(dataClaimsRestClient.upload(any(), any(), any(), any()))
+      when(dataClaimsRestClient.upload(any(), any(), any(), anyBoolean()))
           .thenThrow(
               new WebClientResponseException(
                   HttpStatus.BAD_REQUEST.value(),

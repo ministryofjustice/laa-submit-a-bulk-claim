@@ -19,7 +19,7 @@ jobs:
       contents: write
       packages: write
     with:
-      build_command: 'assemble'
+      build_command: ':laa-submit-a-bulk-claim-ui:assemble'
       junit_results: 'false'
       junit_report: 'false'
       checkstyle_report: 'false'

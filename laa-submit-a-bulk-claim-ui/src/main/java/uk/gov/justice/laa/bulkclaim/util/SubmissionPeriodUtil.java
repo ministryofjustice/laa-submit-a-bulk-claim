@@ -16,7 +16,7 @@ public class SubmissionPeriodUtil {
   private final DateWrapperUtil dateWrapperUtil;
   private final YearMonth earliestSubmissionPeriod;
 
-  private static final DateTimeFormatter IN_FMT =
+  public static final DateTimeFormatter IN_FMT =
       new DateTimeFormatterBuilder()
           .parseCaseInsensitive()
           .appendPattern("MMM-uuuu")

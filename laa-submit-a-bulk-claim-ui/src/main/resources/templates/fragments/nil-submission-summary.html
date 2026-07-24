@@ -1,0 +1,89 @@
+<th:block th:fragment="nil-submission-summary"
+          th:if="${nilSubmissionForm != null}" xmlns:th="http://www.w3.org/1999/xhtml">
+    <dl class="govuk-summary-list">
+        <div class="govuk-summary-list__row"
+             th:if="${nilSubmissionForm.office != null}">
+
+            <dt class="govuk-summary-list__key"
+                th:text="#{nilSubmission.office.changeValue}">
+            </dt>
+
+            <dd class="govuk-summary-list__value"
+                th:text="${nilSubmissionForm.office}">
+            </dd>
+            <dd class="govuk-summary-list__actions">
+                <a
+                        th:class="govuk-link"
+                        th:data-testid="nil-submission-office"
+                        th:if="${nilSubmissionForm.officeCount > 1}"
+                        th:href="@{/nil-submission/office}"
+                        th:text="#{nilSubmission.changeLink}">
+                </a>
+            </dd>
+
+        </div>
+
+        <div class="govuk-summary-list__row"
+             th:if="${nilSubmissionForm.areaOfLaw != null}">
+
+            <dt class="govuk-summary-list__key"
+                th:text="#{nilSubmission.areaOfLaw.changeValue}">
+            </dt>
+
+            <dd class="govuk-summary-list__value"
+                th:text="#{__${'areaOfLaw.' + nilSubmissionForm.areaOfLaw}__}">
+
+            </dd>
+            <dd class="govuk-summary-list__actions">
+                <a
+                        th:class="govuk-link"
+                        th:data-testid="nil-submission-areaoflaw"
+                        th:href="@{/nil-submission/areaoflaw}"
+                        th:text="#{nilSubmission.changeLink}">
+                </a>
+            </dd>
+
+        </div>
+
+        <div class="govuk-summary-list__row"
+             th:if="${nilSubmissionForm.submissionPeriod != null}">
+
+            <dt class="govuk-summary-list__key"
+                th:text="#{nilSubmission.period.changeValue}">
+            </dt>
+
+            <dd class="govuk-summary-list__value"
+                th:text="${nilSubmissionForm.submissionPeriod}">
+            </dd>
+            <dd class="govuk-summary-list__actions">
+                <a
+                        th:class="govuk-link"
+                        th:data-testid="nil-submission-period"
+                        th:href="@{/nil-submission/period}"
+                        th:text="#{nilSubmission.changeLink}">
+                </a>
+            </dd>
+
+        </div>
+        <div class="govuk-summary-list__row"
+             th:if="${nilSubmissionForm.scheduleReference != null}">
+
+            <dt class="govuk-summary-list__key"
+                th:text="#{__${'nilSubmission.summary.reference.' + nilSubmissionForm.areaOfLaw}__}">
+            </dt>
+
+            <dd class="govuk-summary-list__value"
+                th:text="${nilSubmissionForm.scheduleReference}">
+            </dd>
+            <dd class="govuk-summary-list__actions">
+                <a
+                        th:class="govuk-link"
+                        th:data-testid="nil-submission-reference"
+                        th:href="@{/nil-submission/reference}"
+                        th:text="#{nilSubmission.changeLink}">
+                </a>
+            </dd>
+
+        </div>
+    </dl>
+</th:block>

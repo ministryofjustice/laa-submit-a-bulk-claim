@@ -37,7 +37,7 @@ inputs:
     description: "Path to the wait-for-port script"
     required: false
     type: string
-    default: "./scripts/wait-for-port.sh"
+    default: "./.github/scripts/wait-for-port.sh"
 
 runs:
   using: "composite"
