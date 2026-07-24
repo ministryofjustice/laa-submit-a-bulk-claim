@@ -1,6 +1,7 @@
 package uk.gov.justice.laa.bulkclaim.controller.nilsubmission;
 
 import static uk.gov.justice.laa.bulkclaim.constants.SessionConstants.NIL_SUBMISSION_FORM;
+import static uk.gov.justice.laa.bulkclaim.util.NilSubmissionSessionManager.cleanseSession;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -15,7 +16,6 @@ import org.springframework.web.bind.annotation.SessionAttributes;
 import uk.gov.justice.laa.bulkclaim.config.FeatureFlagsConfig;
 import uk.gov.justice.laa.bulkclaim.dto.submission.NilSubmissionForm;
 import uk.gov.justice.laa.bulkclaim.util.NilSubmissionPage;
-import uk.gov.justice.laa.bulkclaim.util.NilSubmissionSessionManager;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.AreaOfLaw;
 
 @Controller
@@ -30,8 +30,7 @@ public class NilSubmissionAreaOfLawController {
       @ModelAttribute(NIL_SUBMISSION_FORM) NilSubmissionForm form, Model model) {
 
     featureFlagsConfig.checkNilSubmissionEnabled();
-
-    NilSubmissionSessionManager.nilSubmissionCleanseSession(form, NilSubmissionPage.AREA_OF_LAW);
+    cleanseSession(form, NilSubmissionPage.AREA_OF_LAW);
 
     model.addAttribute("areasOfLaw", getAreaOfLawOptions());
     return "pages/nil-submission/areaoflaw";

@@ -1,7 +1,9 @@
 package uk.gov.justice.laa.bulkclaim.util;
 
 import lombok.experimental.UtilityClass;
+import org.springframework.http.HttpStatus;
 import org.springframework.util.StringUtils;
+import org.springframework.web.server.ResponseStatusException;
 import uk.gov.justice.laa.bulkclaim.dto.submission.NilSubmissionForm;
 
 @UtilityClass
@@ -14,13 +16,19 @@ public class NilSubmissionSessionManager {
       case AREA_OF_LAW -> sessionValidForAreaOfLaw(nilSubmissionForm);
       case SUBMISSION_PERIOD -> sessionValidForSubmissionPeriod(nilSubmissionForm);
       case SCHEDULE_REFERENCE -> sessionValidForScheduleReference(nilSubmissionForm);
-      case OTHER -> false;
+      case SUMMARY_DETAILS -> sessionValidForSummaryDetails(nilSubmissionForm);
+      case OTHER -> true;
     };
   }
 
   static boolean sessionValidForScheduleReference(NilSubmissionForm nilSubmissionForm) {
     return StringUtils.hasText(nilSubmissionForm.getSubmissionPeriod())
         && sessionValidForSubmissionPeriod(nilSubmissionForm);
+  }
+
+  static boolean sessionValidForSummaryDetails(NilSubmissionForm nilSubmissionForm) {
+    return StringUtils.hasText(nilSubmissionForm.getScheduleReference())
+        && sessionValidForScheduleReference(nilSubmissionForm);
   }
 
   static boolean sessionValidForSubmissionPeriod(NilSubmissionForm nilSubmissionForm) {
@@ -36,40 +44,57 @@ public class NilSubmissionSessionManager {
     return true;
   }
 
-  public static NilSubmissionForm nilSubmissionCleanseSession(
+  public static NilSubmissionForm cleanseSession(
       NilSubmissionForm nilSubmissionForm, NilSubmissionPage page) {
 
-    switch (page) {
-      case OFFICE, OTHER -> cleanseAllNilSubmissionSessionValues(nilSubmissionForm);
-      case AREA_OF_LAW -> cleanseSessionValuesPriorToAreaOfLawSelection(nilSubmissionForm);
-      case SUBMISSION_PERIOD ->
-          cleanseSessionValuesPriorToSubmissionPeriodSelection(nilSubmissionForm);
-      case SCHEDULE_REFERENCE ->
-          cleanseSessionValuesPriorToScheduleReferenceEntry(nilSubmissionForm);
-      default -> nilSubmissionForm = null;
-    }
-    return nilSubmissionForm;
+    var form =
+        switch (page) {
+          case OFFICE, OTHER -> cleanseAllNilSubmissionSessionValues(nilSubmissionForm);
+          case AREA_OF_LAW -> cleanseSessionValuesPriorToAreaOfLawSelection(nilSubmissionForm);
+          case SUBMISSION_PERIOD ->
+              cleanseSessionValuesPriorToSubmissionPeriodSelection(nilSubmissionForm);
+          case SCHEDULE_REFERENCE ->
+              cleanseSessionValuesPriorToScheduleReferenceEntry(nilSubmissionForm);
+          case SUMMARY_DETAILS -> nilSubmissionForm;
+        };
+
+    validateSessionState(form, page);
+
+    return form;
   }
 
-  static void cleanseAllNilSubmissionSessionValues(NilSubmissionForm form) {
+  static NilSubmissionForm cleanseAllNilSubmissionSessionValues(NilSubmissionForm form) {
     form.setOffice(null);
     form.setAreaOfLaw(null);
     form.setSubmissionPeriod(null);
     form.setScheduleReference(null);
+    return form;
   }
 
-  static void cleanseSessionValuesPriorToAreaOfLawSelection(NilSubmissionForm form) {
+  static NilSubmissionForm cleanseSessionValuesPriorToAreaOfLawSelection(NilSubmissionForm form) {
     form.setAreaOfLaw(null);
     form.setSubmissionPeriod(null);
     form.setScheduleReference(null);
+    return form;
   }
 
-  static void cleanseSessionValuesPriorToSubmissionPeriodSelection(NilSubmissionForm form) {
+  static NilSubmissionForm cleanseSessionValuesPriorToSubmissionPeriodSelection(
+      NilSubmissionForm form) {
     form.setSubmissionPeriod(null);
     form.setScheduleReference(null);
+    return form;
   }
 
-  static void cleanseSessionValuesPriorToScheduleReferenceEntry(NilSubmissionForm form) {
+  static NilSubmissionForm cleanseSessionValuesPriorToScheduleReferenceEntry(
+      NilSubmissionForm form) {
     form.setScheduleReference(null);
+    return form;
+  }
+
+  private static void validateSessionState(
+      NilSubmissionForm nilSubmissionForm, NilSubmissionPage page) {
+    if (!isNilSubmissionSessionStateValid(nilSubmissionForm, page)) {
+      throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Invalid session state");
+    }
   }
 }

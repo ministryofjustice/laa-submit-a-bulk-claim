@@ -42,7 +42,7 @@ class NilSubmissionAreaOfLawViewTest {
         .contains("govuk-form-group--error");
     assertThat(document.select(".govuk-error-message")).hasSize(1);
     assertThat(document.selectFirst(".govuk-error-message").text())
-        .contains("Select a valid area of law.");
+        .contains("Select a valid area of law");
   }
 
   @Test

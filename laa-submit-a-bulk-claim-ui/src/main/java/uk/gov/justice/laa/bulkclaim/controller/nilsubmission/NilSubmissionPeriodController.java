@@ -1,6 +1,7 @@
 package uk.gov.justice.laa.bulkclaim.controller.nilsubmission;
 
 import static uk.gov.justice.laa.bulkclaim.constants.SessionConstants.NIL_SUBMISSION_FORM;
+import static uk.gov.justice.laa.bulkclaim.util.NilSubmissionSessionManager.cleanseSession;
 
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
@@ -15,7 +16,6 @@ import uk.gov.justice.laa.bulkclaim.config.FeatureFlagsConfig;
 import uk.gov.justice.laa.bulkclaim.dto.submission.NilSubmissionForm;
 import uk.gov.justice.laa.bulkclaim.service.SubmissionPeriodService;
 import uk.gov.justice.laa.bulkclaim.util.NilSubmissionPage;
-import uk.gov.justice.laa.bulkclaim.util.NilSubmissionSessionManager;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionsResultSet;
 
 @Controller
@@ -31,9 +31,7 @@ public class NilSubmissionPeriodController {
       @ModelAttribute(NIL_SUBMISSION_FORM) NilSubmissionForm selection, Model model) {
 
     featureFlagsConfig.checkNilSubmissionEnabled();
-
-    NilSubmissionSessionManager.nilSubmissionCleanseSession(
-        selection, NilSubmissionPage.SUBMISSION_PERIOD);
+    cleanseSession(selection, NilSubmissionPage.SUBMISSION_PERIOD);
 
     SubmissionsResultSet submissionsResults = submissionPeriodService.searchSubmissions(selection);
     Map<String, String> sortedSubmissionPeriods =

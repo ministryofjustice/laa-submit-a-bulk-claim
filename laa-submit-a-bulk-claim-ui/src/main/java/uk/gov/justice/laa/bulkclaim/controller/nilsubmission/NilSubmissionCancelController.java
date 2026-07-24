@@ -30,7 +30,7 @@ public class NilSubmissionCancelController {
       return "redirect:/submissions/search";
     }
 
-    NilSubmissionSessionManager.nilSubmissionCleanseSession(form, NilSubmissionPage.OTHER);
+    NilSubmissionSessionManager.cleanseSession(form, NilSubmissionPage.OTHER);
     return "redirect:/upload";
   }
 }

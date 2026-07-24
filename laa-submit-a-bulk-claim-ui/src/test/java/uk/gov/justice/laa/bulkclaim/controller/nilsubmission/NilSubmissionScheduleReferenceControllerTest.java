@@ -52,7 +52,9 @@ public class NilSubmissionScheduleReferenceControllerTest {
   void whenFeatureFlagEnabled_getAreasOfLaw_addsAreasAndReturnsView() {
 
     NilSubmissionForm form = new NilSubmissionForm();
+    form.setOffice("office1");
     form.setAreaOfLaw(MEDIATION);
+    form.setSubmissionPeriod("OCT-2025");
     String view = controller.getReference(form, model);
 
     assertEquals("pages/nil-submission/reference", view);

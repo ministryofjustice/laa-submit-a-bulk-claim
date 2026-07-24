@@ -60,6 +60,7 @@ class NilSubmissionAreaOfLawControllerTest {
     when(featureFlagsConfig.getIsNilSubmissionEnabled()).thenReturn(true);
 
     NilSubmissionForm form = new NilSubmissionForm();
+    form.setOffice("office1");
     String view = controller.getAreasOfLaw(form, model);
 
     assertEquals("pages/nil-submission/areaoflaw", view);
@@ -117,7 +118,7 @@ class NilSubmissionAreaOfLawControllerTest {
     assertNull(form.getAreaOfLaw());
     verify(model).addAttribute(eq("areasOfLaw"), anyMap());
     assertEquals(
-        "nilSubmission.areaOfLaw.heading", bindingResult.getFieldError("areaOfLaw").getCode());
+        "nilSubmission.areaOfLaw.required", bindingResult.getFieldError("areaOfLaw").getCode());
   }
 
   @Test
