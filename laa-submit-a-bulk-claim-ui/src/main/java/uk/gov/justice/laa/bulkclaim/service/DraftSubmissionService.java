@@ -50,6 +50,22 @@ public class DraftSubmissionService {
     dataClaimsRestClient.updateBulkSubmission(bulkSubmissionId, bulkSubmissionPatch);
   }
 
+  public void discardDraftSubmission(UUID submissionId) {
+    var submission =
+        dataClaimsRestClient
+            .getSubmission(submissionId)
+            .blockOptional()
+            .orElseThrow(
+                () -> new IllegalArgumentException("Submission does not exist: " + submissionId));
+    if (submission.getStatus() != SubmissionStatus.READY_FOR_SUBMISSION) {
+      throw new IllegalStateException("Only a draft submission can be discarded");
+    }
+
+    dataClaimsRestClient.updateSubmission(
+        submissionId,
+        new SubmissionPatch().submissionId(submissionId).status(SubmissionStatus.DISCARDED));
+  }
+
   private Optional<DraftConfirmationValidationException> parseConfirmationValidationException(
       WebClientResponseException exception) {
     try {

@@ -13,4 +13,8 @@ public record SubmissionSummary(
     BigDecimal submissionValue,
     String areaOfLaw,
     OffsetDateTime submitted,
-    boolean isDraft) {}
+    boolean isDraft) {
+  public boolean isDiscarded() {
+    return "Discarded".equals(status);
+  }
+}

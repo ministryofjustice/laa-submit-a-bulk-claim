@@ -10,9 +10,14 @@
           th:replace="~{fragments/submission-details/summary :: summary(' govuk-tag--blue', #{submission.summary.status.draft}, true, true)}"/>
       </th:block>
 
-      <th:block th:unless="${submissionSummary.isDraft()}">
-        <th:block th:unless="${submissionSummary.isDraft()}" th:replace="~{fragments/submission-details/success-banner :: success-banner}"></th:block>
-        <th:block th:unless="${submissionSummary.isDraft()}"
+      <th:block th:if="${submissionSummary.isDiscarded()}">
+        <th:block
+          th:replace="~{fragments/submission-details/summary :: summary(' govuk-tag--grey', #{submission.summary.status.discarded}, true, true)}"/>
+      </th:block>
+
+      <th:block th:if="${!submissionSummary.isDraft() && !submissionSummary.isDiscarded()}">
+        <th:block th:replace="~{fragments/submission-details/success-banner :: success-banner}"></th:block>
+        <th:block
                 th:replace="~{fragments/submission-details/summary :: summary(' govuk-tag--green', #{submission.summary.status.accepted}, true, true)}"></th:block>
       </th:block>
 
@@ -26,6 +31,9 @@
         <a type="submit" class="govuk-button" data-module="govuk-button"
            th:href="@{/submit-draft-submission(submissionId=${submissionSummary.submissionReference})}"
                 th:text="#{viewSubmission.draft.submit}"/>
+        <a class="govuk-button govuk-button--warning"
+           th:href="@{/discard-draft-submission(submissionId=${submissionSummary.submissionReference})}"
+           th:text="#{viewSubmission.draft.discard}"/>
       </div>
     </div>
   </div>

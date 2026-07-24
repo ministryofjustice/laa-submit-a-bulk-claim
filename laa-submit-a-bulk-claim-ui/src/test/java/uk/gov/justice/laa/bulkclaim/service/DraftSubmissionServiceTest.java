@@ -125,4 +125,42 @@ class DraftSubmissionServiceTest {
 
     verify(dataClaimsRestClient, never()).updateBulkSubmission(any(), any());
   }
+
+  @Test
+  void discardMovesBothRecordsToDiscarded() {
+    UUID submissionId = UUID.randomUUID();
+    UUID bulkSubmissionId = UUID.randomUUID();
+    when(dataClaimsRestClient.getSubmission(submissionId))
+        .thenReturn(
+            Mono.just(
+                new SubmissionResponse()
+                    .status(SubmissionStatus.READY_FOR_SUBMISSION)
+                    .bulkSubmissionId(bulkSubmissionId)));
+    DraftSubmissionService service =
+        new DraftSubmissionService(dataClaimsRestClient, JsonMapper.builder().build());
+
+    service.discardDraftSubmission(submissionId);
+
+    ArgumentCaptor<SubmissionPatch> submissionPatch =
+        ArgumentCaptor.forClass(SubmissionPatch.class);
+    verify(dataClaimsRestClient).updateSubmission(eq(submissionId), submissionPatch.capture());
+    assertThat(submissionPatch.getValue().getStatus()).isEqualTo(SubmissionStatus.DISCARDED);
+    verify(dataClaimsRestClient, never()).updateBulkSubmission(any(), any());
+  }
+
+  @Test
+  void nonDraftCannotBeDiscarded() {
+    UUID submissionId = UUID.randomUUID();
+    when(dataClaimsRestClient.getSubmission(submissionId))
+        .thenReturn(
+            Mono.just(new SubmissionResponse().status(SubmissionStatus.VALIDATION_SUCCEEDED)));
+    DraftSubmissionService service =
+        new DraftSubmissionService(dataClaimsRestClient, JsonMapper.builder().build());
+
+    assertThatThrownBy(() -> service.discardDraftSubmission(submissionId))
+        .isInstanceOf(IllegalStateException.class);
+
+    verify(dataClaimsRestClient, never()).updateSubmission(any(), any());
+    verify(dataClaimsRestClient, never()).updateBulkSubmission(any(), any());
+  }
 }
