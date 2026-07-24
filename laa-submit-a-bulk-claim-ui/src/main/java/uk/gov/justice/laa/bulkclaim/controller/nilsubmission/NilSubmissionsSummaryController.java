@@ -70,8 +70,7 @@ public class NilSubmissionsSummaryController {
           claimsRestService.createSubmission(submissionPost);
       CreateSubmission201Response submissionResponse = responseEntity.getBody();
       log.info(
-          "Nil submission created, claims API submission UUID: {}",
-          submissionResponse.getId());
+          "Nil submission created, claims API submission UUID: {}", submissionResponse.getId());
 
       model.addAttribute(SUBMISSION_ID, submissionResponse.getId());
       redirectAttributes.addFlashAttribute(SUBMISSION_ID, responseEntity.getBody().getId());

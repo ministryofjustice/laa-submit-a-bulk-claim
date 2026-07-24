@@ -16,7 +16,7 @@ public class NilSubmissionPeriodPage extends BasePage {
   public NilSubmissionPeriodPage(Page page) {
     super(page, "Select a submission period");
 
-    periodSelect = page.locator("#submission-period");
+    periodSelect = page.locator("#submissionPeriod-input");
     continueButton = page.getByRole(BUTTON, new Page.GetByRoleOptions().setName("Continue"));
   }
 
