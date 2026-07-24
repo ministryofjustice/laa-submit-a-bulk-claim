@@ -69,8 +69,9 @@ public class NilSubmissionsSummaryController {
       ResponseEntity<CreateSubmission201Response> responseEntity =
           claimsRestService.createSubmission(submissionPost);
       CreateSubmission201Response submissionResponse = responseEntity.getBody();
-
-      log.info("Claims API submission UUID: {}", submissionResponse.getId());
+      log.info(
+          "Nil submission created, claims API submission UUID: {}",
+          submissionResponse.getId());
 
       model.addAttribute(SUBMISSION_ID, submissionResponse.getId());
       redirectAttributes.addFlashAttribute(SUBMISSION_ID, responseEntity.getBody().getId());
@@ -99,14 +100,19 @@ public class NilSubmissionsSummaryController {
 
       } catch (Exception ex) {
         log.error(
-            "Failed to submit nil submission to Claims API with message: {}", ex.getMessage());
+            "Failed to submit nil submission {} to Claims API with message: {}",
+            submissionPost.getSubmissionId(),
+            ex.getMessage());
       }
 
       cleanseSession(form, NilSubmissionPage.OTHER);
       return "pages/nil-submission/detail-invalid";
 
     } catch (Exception e) {
-      log.error("Failed to submit nil submission API failure: {}", e.getMessage());
+      log.error(
+          "Failed to submit nil submission {} API failure: {}",
+          submissionPost.getSubmissionId(),
+          e.getMessage());
       return "error";
     }
   }
