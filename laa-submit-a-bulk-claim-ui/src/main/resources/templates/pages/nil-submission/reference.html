@@ -3,7 +3,7 @@
       th:replace="~{ layout/main-layout :: layout(#{nilSubmission.heading}, ~{::main},
        ~{},'nil-submission')}">
 
-<main class="govuk-main-wrapper" id="main-content" data-back-link-href="/nil-submission/period" th:attr="data-back-link-text=#{common.back}">
+<main class="govuk-main-wrapper" id="main-content" th:attr="data-back-link-href=@{/nil-submission/period}, data-back-link-text=#{common.back}">
     <div class="govuk-width-container">
         <div class="govuk-grid-row">
             <div class="govuk-grid-column-full" th:object="${nilSubmissionForm}">
