@@ -168,10 +168,10 @@ public class SearchController {
 
       return "pages/submissions-search-results";
     } catch (HttpClientErrorException e) {
-      log.error("HTTP client error fetching submissions: {} ", e.getMessage());
+      log.error("HTTP client error fetching submissions: {} ", e.getMessage(), e);
       return "error";
     } catch (Exception e) {
-      log.error("Error connecting to Claims API with message: {} ", e.getMessage());
+      log.error("Error connecting to Claims API with message: {} ", e.getMessage(), e);
       return "error";
     }
   }

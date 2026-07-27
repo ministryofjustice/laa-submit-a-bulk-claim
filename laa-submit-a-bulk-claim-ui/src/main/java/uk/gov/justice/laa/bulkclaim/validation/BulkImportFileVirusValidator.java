@@ -36,10 +36,10 @@ public class BulkImportFileVirusValidator implements FileFirusValidator {
       log.error("Virus check failed with message: {}", e.getMessage());
       errors.reject("bulkImport.validation.virusScanFailed");
     } catch (TokenProviderException tokenProviderException) {
-      log.error("Failed to obtain SDS API access token: {}", tokenProviderException.getMessage());
+      log.error("Failed to obtain SDS API access token: {}", tokenProviderException.getMessage(), tokenProviderException);
       errors.reject("bulkImport.validation.uploadFailed");
     } catch (HttpClientErrorException | ResourceAccessException e) {
-      log.error("Failed to perform virus check,SDS config may be incorrect");
+      log.error("Failed to perform virus check,SDS config may be incorrect", e);
       errors.reject("error.heading");
     }
   }

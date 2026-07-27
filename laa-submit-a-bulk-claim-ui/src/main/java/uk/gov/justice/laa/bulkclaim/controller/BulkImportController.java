@@ -110,19 +110,19 @@ public class BulkImportController {
         if (!StringUtils.hasText(errorMessage)) {
           errorMessage = "An unknown error occurred during upload.";
         }
-        log.error("API upload failed: {}", errorMessage);
+        log.error("API upload failed: {}", errorMessage, e);
         bulkClaimMetricService.recordFailedFileUploadSize(
             fileUploadForm.getFile().getSize(), errorMessage);
         bindingResult.rejectValue("file", "api.error", errorMessage);
       } catch (Exception parseEx) {
-        log.error("Failed to upload file to Claims API with message: {}", e.getMessage());
+        log.error("Failed to upload file to Claims API with message: {}", e.getMessage(), e);
         bindingResult.reject(UPLOAD_FAILED_CODE);
       }
 
       return showErrorOnUpload(fileUploadForm, bindingResult, model);
 
     } catch (Exception e) {
-      log.error("Failed to upload file to Claims API with message: {}", e.getMessage());
+      log.error("Failed to upload file to Claims API with message: {}", e.getMessage(), e);
       bindingResult.reject(UPLOAD_FAILED_CODE);
       return showErrorOnUpload(fileUploadForm, bindingResult, model);
     }
