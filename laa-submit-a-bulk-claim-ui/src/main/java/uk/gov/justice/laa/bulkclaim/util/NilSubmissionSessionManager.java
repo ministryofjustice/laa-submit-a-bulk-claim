@@ -54,7 +54,7 @@ public class NilSubmissionSessionManager {
           case SUBMISSION_PERIOD ->
               cleanseSessionValuesPriorToSubmissionPeriodSelection(nilSubmissionForm);
           case SUBMISSION_REFERENCE ->
-              cleanseSessionValuesPriorToScheduleReferenceEntry(nilSubmissionForm);
+              cleanseSessionValuesPriorToSubmissionReferenceEntry(nilSubmissionForm);
           case SUMMARY_DETAILS -> nilSubmissionForm;
         };
 
@@ -85,7 +85,7 @@ public class NilSubmissionSessionManager {
     return form;
   }
 
-  static NilSubmissionForm cleanseSessionValuesPriorToScheduleReferenceEntry(
+  static NilSubmissionForm cleanseSessionValuesPriorToSubmissionReferenceEntry(
       NilSubmissionForm form) {
     form.setSubmissionReference(null);
     return form;

@@ -1,162 +1,180 @@
 package uk.gov.justice.laa.bulkclaim.controller.nilsubmission;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static uk.gov.justice.laa.dstew.payments.claimsdata.model.AreaOfLaw.*;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.oidcLogin;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.model;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.redirectedUrl;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
+import static uk.gov.justice.laa.bulkclaim.constants.SessionConstants.NIL_SUBMISSION_FORM;
+import static uk.gov.justice.laa.dstew.payments.claimsdata.model.AreaOfLaw.MEDIATION;
 
-import java.time.LocalDate;
-import java.time.YearMonth;
+import java.util.LinkedHashMap;
 import java.util.Map;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
-import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
-import org.springframework.http.HttpStatus;
-import org.springframework.ui.Model;
-import org.springframework.validation.BindingResult;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
+import org.springframework.mock.web.MockHttpSession;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.web.server.ResponseStatusException;
 import uk.gov.justice.laa.bulkclaim.controller.BaseControllerTest;
+import uk.gov.justice.laa.bulkclaim.controller.ControllerTestHelper;
 import uk.gov.justice.laa.bulkclaim.dto.submission.NilSubmissionForm;
 import uk.gov.justice.laa.bulkclaim.helper.SubmissionsResultSetTestHelper;
 import uk.gov.justice.laa.bulkclaim.service.SubmissionPeriodService;
-import uk.gov.justice.laa.bulkclaim.util.DateWrapperUtil;
-import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionsResultSet;
 
-@AutoConfigureMockMvc(addFilters = false)
+@WebMvcTest(NilSubmissionPeriodController.class)
 class NilSubmissionPeriodControllerTest extends BaseControllerTest {
 
-  @Mock private Model model;
-  @Mock private SubmissionPeriodService submissionPeriodService;
-  @Mock private DateWrapperUtil dateWrapperUtil;
-  @Mock private BindingResult bindingResult;
+  @Autowired private MockMvc mockMvc;
 
-  @InjectMocks private NilSubmissionPeriodController nilSubmissionPeriodController;
-
-  @BeforeEach
-  void setUp() {
-    MockitoAnnotations.openMocks(this);
-  }
+  @MockitoBean private SubmissionPeriodService submissionPeriodService;
 
   @Test
-  void whenFeatureFlagDisabled_all_mappings_returnsErrorView() {
-    NilSubmissionForm form = new NilSubmissionForm();
-    doThrow(new ResponseStatusException(HttpStatus.NOT_FOUND, "isNilSubmissionEnabled is false"))
+  void whenFeatureFlagDisabled_allMappings_returnsErrorView() throws Exception {
+    doThrow(new ResponseStatusException(org.springframework.http.HttpStatus.NOT_FOUND))
         .when(featureFlagsConfig)
         .checkNilSubmissionEnabled();
 
-    assertThrows(
-        ResponseStatusException.class,
-        () -> nilSubmissionPeriodController.getSubmissionPeriods(form, model));
-    verify(model, never()).addAttribute(eq("submissionPeriods"), any());
+    mockMvc
+        .perform(
+            get("/nil-submission/period")
+                .with(oidcLogin().oidcUser(ControllerTestHelper.getOidcUser()))
+                .sessionAttr(NIL_SUBMISSION_FORM, buildSessionForm()))
+        .andExpect(status().isNotFound());
 
-    assertThrows(
-        ResponseStatusException.class,
-        () -> nilSubmissionPeriodController.postSubmissionPeriod(form, bindingResult, model));
+    mockMvc
+        .perform(
+            post("/nil-submission/period")
+                .with(csrf())
+                .with(oidcLogin().oidcUser(ControllerTestHelper.getOidcUser()))
+                .sessionAttr(NIL_SUBMISSION_FORM, buildSessionForm()))
+        .andExpect(status().isNotFound());
+  }
+
+  @Test
+  void postNilSubmission_successView() throws Exception {
+    stubPeriods(Map.of("JAN-2024", "January 2024"));
+    var session = sessionWithForm(buildSessionForm());
+
+    mockMvc
+        .perform(
+            post("/nil-submission/period")
+                .with(csrf())
+                .with(oidcLogin().oidcUser(ControllerTestHelper.getOidcUser()))
+                .param("submissionPeriod", "JAN-2024")
+                .session(session))
+        .andExpect(status().is3xxRedirection())
+        .andExpect(redirectedUrl("/nil-submission/reference"));
+
+    var form = (NilSubmissionForm) session.getAttribute(NIL_SUBMISSION_FORM);
+    org.junit.jupiter.api.Assertions.assertEquals("JAN-2024", form.getSubmissionPeriod());
+  }
+
+  @Test
+  void postNilSubmission_invalidPeriod_returnsErrorView() throws Exception {
+    stubPeriods(Map.of("JAN-2024", "January 2024"));
+    var session = sessionWithForm(buildSessionForm());
+
+    mockMvc
+        .perform(
+            post("/nil-submission/period")
+                .with(csrf())
+                .with(oidcLogin().oidcUser(ControllerTestHelper.getOidcUser()))
+                .param("submissionPeriod", "INVALID-2024")
+                .session(session))
+        .andExpect(status().isOk())
+        .andExpect(view().name("pages/nil-submission/period"))
+        .andExpect(model().attributeExists("submissionPeriods"))
+        .andExpect(
+            model()
+                .attributeHasFieldErrorCode(
+                    "nilSubmissionForm",
+                    "submissionPeriod",
+                    "nilSubmission.submissionPeriod.invalid"));
+
+    var form = (NilSubmissionForm) session.getAttribute(NIL_SUBMISSION_FORM);
     assertNull(form.getSubmissionPeriod());
   }
 
   @Test
-  void postNilSubmission_SuccessView() {
-    NilSubmissionForm form = new NilSubmissionForm();
-    form.setOffice("officeA");
-    form.setAreaOfLaw(MEDIATION);
-    doReturn(true).when(featureFlagsConfig).getIsNilSubmissionEnabled();
+  void getNilSubmission_successView() throws Exception {
+    stubPeriods(Map.of("JAN-2024", "January 2024"));
 
-    final SubmissionsResultSet response = SubmissionsResultSetTestHelper.getSubmissionsResultSet(0);
-
-    when(bindingResult.hasErrors()).thenReturn(false);
-    when(submissionPeriodService.searchSubmissions(any())).thenReturn(response);
-    when(submissionPeriodService.sortSubmissionPeriods(any()))
-        .thenReturn(Map.of("JAN-2024", "January 2024"));
-
-    form.setSubmissionPeriod("JAN-2024");
-    String view = nilSubmissionPeriodController.postSubmissionPeriod(form, bindingResult, model);
-    assertEquals("redirect:/nil-submission/reference", view);
-    assertEquals("JAN-2024", form.getSubmissionPeriod());
+    mockMvc
+        .perform(
+            get("/nil-submission/period")
+                .with(oidcLogin().oidcUser(ControllerTestHelper.getOidcUser()))
+                .sessionAttr(NIL_SUBMISSION_FORM, buildSessionForm()))
+        .andExpect(status().isOk())
+        .andExpect(view().name("pages/nil-submission/period"))
+        .andExpect(model().attributeExists("submissionPeriods"));
   }
 
   @Test
-  void postNilSubmission_InvalidPeriod_ReturnsErrorView() {
-    NilSubmissionForm form = new NilSubmissionForm();
-    form.setOffice("officeA");
-    form.setAreaOfLaw(MEDIATION);
-    doReturn(true).when(featureFlagsConfig).getIsNilSubmissionEnabled();
+  void getNilSubmission_noPeriods_returnsInfoMessageView() throws Exception {
+    stubPeriods(Map.of());
 
-    final SubmissionsResultSet response = SubmissionsResultSetTestHelper.getSubmissionsResultSet(0);
-
-    when(bindingResult.hasErrors()).thenReturn(true);
-    when(submissionPeriodService.searchSubmissions(any())).thenReturn(response);
-    when(submissionPeriodService.sortSubmissionPeriods(any()))
-        .thenReturn(Map.of("JAN-2024", "January 2024"));
-
-    form.setSubmissionPeriod("INVALID-2024");
-    String view = nilSubmissionPeriodController.postSubmissionPeriod(form, bindingResult, model);
-    assertEquals("pages/nil-submission/period", view);
-    assertNull(form.getSubmissionPeriod());
-    verify(model, times(1)).addAttribute(eq("submissionPeriods"), any(Map.class));
+    mockMvc
+        .perform(
+            get("/nil-submission/period")
+                .with(oidcLogin().oidcUser(ControllerTestHelper.getOidcUser()))
+                .sessionAttr(NIL_SUBMISSION_FORM, buildSessionForm()))
+        .andExpect(status().isOk())
+        .andExpect(view().name("pages/nil-submission/no-submission-periods"))
+        .andExpect(model().attributeDoesNotExist("submissionPeriods"));
   }
 
   @Test
-  void getNilSubmission_SuccessView() {
-    NilSubmissionForm form = new NilSubmissionForm();
-    form.setOffice("officeA");
-    form.setAreaOfLaw(MEDIATION);
+  void getSubmissionPeriod_sessionManagementCleansing() throws Exception {
+    stubPeriods(Map.of("JAN-2024", "January 2024"));
 
-    when(submissionPeriodService.sortSubmissionPeriods(any()))
-        .thenReturn(Map.of("JAN-2024", "January 2024"));
-    when(dateWrapperUtil.nowYearMonth()).thenReturn(YearMonth.now());
-    when(dateWrapperUtil.now()).thenReturn(LocalDate.now());
-
-    String view = nilSubmissionPeriodController.getSubmissionPeriods(form, model);
-    assertEquals("pages/nil-submission/period", view);
-    verify(model, times(1)).addAttribute(eq("submissionPeriods"), any(Map.class));
-  }
-
-  @Test
-  void getNilSubmission_NoPeriods_ReturnsInfoMessageView() {
-    NilSubmissionForm form = new NilSubmissionForm();
-    form.setOffice("officeA");
-    form.setAreaOfLaw(MEDIATION);
-    doReturn(true).when(featureFlagsConfig).getIsNilSubmissionEnabled();
-
-    final SubmissionsResultSet response =
-        SubmissionsResultSetTestHelper.getSubmissionsResultSet(12);
-
-    when(submissionPeriodService.searchSubmissions(any())).thenReturn(response);
-    when(dateWrapperUtil.nowYearMonth()).thenReturn(YearMonth.now());
-    when(dateWrapperUtil.now()).thenReturn(LocalDate.now());
-
-    String view = nilSubmissionPeriodController.getSubmissionPeriods(form, model);
-    assertEquals("pages/nil-submission/no-submission-periods", view);
-    verify(model, times(0)).addAttribute(eq("submissionPeriods"), any(Map.class));
-  }
-
-  @Test
-  void getSubmissionPeriod_session_management_cleansing() {
-    when(featureFlagsConfig.getIsNilSubmissionEnabled()).thenReturn(true);
-
-    NilSubmissionForm form = new NilSubmissionForm();
-    form.setOffice("office1");
-    form.setAreaOfLaw(MEDIATION);
+    NilSubmissionForm form = buildSessionForm();
     form.setSubmissionPeriod("submissionPeriod1");
     form.setSubmissionReference("submissionReference1");
+    var session = sessionWithForm(form);
 
-    nilSubmissionPeriodController.getSubmissionPeriods(form, model);
-    assertNotNull(form.getOffice());
-    assertNotNull(form.getAreaOfLaw());
-    assertNull(form.getSubmissionPeriod());
-    assertNull(form.getSubmissionReference());
+    mockMvc
+        .perform(
+            get("/nil-submission/period")
+                .with(oidcLogin().oidcUser(ControllerTestHelper.getOidcUser()))
+                .session(session))
+        .andExpect(status().isOk());
+
+    var updatedForm = (NilSubmissionForm) session.getAttribute(NIL_SUBMISSION_FORM);
+    assertNotNull(updatedForm.getOffice());
+    assertNotNull(updatedForm.getAreaOfLaw());
+    assertNull(updatedForm.getSubmissionPeriod());
+    assertNull(updatedForm.getSubmissionReference());
+  }
+
+  private void stubPeriods(Map<String, String> sortedPeriods) {
+    var resultSet = SubmissionsResultSetTestHelper.getSubmissionsResultSet(0);
+    when(submissionPeriodService.searchSubmissions(any())).thenReturn(resultSet);
+    when(submissionPeriodService.getMonthsWithOutSubmissions(resultSet))
+        .thenReturn(new LinkedHashMap<>(sortedPeriods));
+    when(submissionPeriodService.sortSubmissionPeriods(new LinkedHashMap<>(sortedPeriods)))
+        .thenReturn(new LinkedHashMap<>(sortedPeriods));
+  }
+
+  private NilSubmissionForm buildSessionForm() {
+    NilSubmissionForm form = new NilSubmissionForm();
+    form.setOffice("officeA");
+    form.setAreaOfLaw(MEDIATION);
+    return form;
+  }
+
+  private MockHttpSession sessionWithForm(NilSubmissionForm form) {
+    MockHttpSession session = new MockHttpSession();
+    session.setAttribute(NIL_SUBMISSION_FORM, form);
+    return session;
   }
 }

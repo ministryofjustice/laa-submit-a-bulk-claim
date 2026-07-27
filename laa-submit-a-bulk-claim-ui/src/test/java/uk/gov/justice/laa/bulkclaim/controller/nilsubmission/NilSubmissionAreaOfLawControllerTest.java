@@ -1,140 +1,167 @@
 package uk.gov.justice.laa.bulkclaim.controller.nilsubmission;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyMap;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.oidcLogin;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.model;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.redirectedUrl;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
+import static uk.gov.justice.laa.bulkclaim.constants.SessionConstants.NIL_SUBMISSION_FORM;
+import static uk.gov.justice.laa.dstew.payments.claimsdata.model.AreaOfLaw.CRIME_LOWER;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
-import org.springframework.http.HttpStatus;
-import org.springframework.ui.Model;
-import org.springframework.validation.BeanPropertyBindingResult;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
+import org.springframework.mock.web.MockHttpSession;
+import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.web.server.ResponseStatusException;
-import uk.gov.justice.laa.bulkclaim.config.FeatureFlagsConfig;
+import uk.gov.justice.laa.bulkclaim.controller.BaseControllerTest;
+import uk.gov.justice.laa.bulkclaim.controller.ControllerTestHelper;
 import uk.gov.justice.laa.bulkclaim.dto.submission.NilSubmissionForm;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.AreaOfLaw;
 
-class NilSubmissionAreaOfLawControllerTest {
+@WebMvcTest(NilSubmissionAreaOfLawController.class)
+class NilSubmissionAreaOfLawControllerTest extends BaseControllerTest {
 
-  @Mock private FeatureFlagsConfig featureFlagsConfig;
-  @Mock private Model model;
-
-  @InjectMocks private NilSubmissionAreaOfLawController controller;
-
-  @BeforeEach
-  void setUp() {
-    MockitoAnnotations.openMocks(this);
-  }
+  @Autowired private MockMvc mockMvc;
 
   @Test
-  void whenFeatureFlagDisabled_allMappings_returnsErrorView() {
-    doThrow(new ResponseStatusException(HttpStatus.NOT_FOUND, "isNilSubmissionEnabled is false"))
+  void whenFeatureFlagDisabled_allMappings_returnsErrorView() throws Exception {
+    doThrow(new ResponseStatusException(org.springframework.http.HttpStatus.NOT_FOUND))
         .when(featureFlagsConfig)
         .checkNilSubmissionEnabled();
 
-    NilSubmissionForm form = new NilSubmissionForm();
-    assertThrows(ResponseStatusException.class, () -> controller.getAreasOfLaw(form, model));
-    verify(model, never()).addAttribute(eq("areasOfLaw"), any());
+    mockMvc
+        .perform(
+            get("/nil-submission/areaoflaw")
+                .with(oidcLogin().oidcUser(ControllerTestHelper.getOidcUser()))
+                .sessionAttr(NIL_SUBMISSION_FORM, new NilSubmissionForm()))
+        .andExpect(status().isNotFound());
 
-    BeanPropertyBindingResult bindingResult =
-        new BeanPropertyBindingResult(form, "nilSubmissionForm");
-    assertThrows(
-        ResponseStatusException.class, () -> controller.postAreaOfLaw(form, bindingResult, model));
+    mockMvc
+        .perform(
+            post("/nil-submission/areaoflaw")
+                .with(csrf())
+                .with(oidcLogin().oidcUser(ControllerTestHelper.getOidcUser()))
+                .sessionAttr(NIL_SUBMISSION_FORM, new NilSubmissionForm()))
+        .andExpect(status().isNotFound());
+  }
+
+  @Test
+  void whenFeatureFlagEnabled_getAreasOfLaw_addsAreasAndReturnsView() throws Exception {
+    mockMvc
+        .perform(
+            get("/nil-submission/areaoflaw")
+                .with(oidcLogin().oidcUser(ControllerTestHelper.getOidcUser()))
+                .sessionAttr(NIL_SUBMISSION_FORM, formWithOffice()))
+        .andExpect(status().isOk())
+        .andExpect(view().name("pages/nil-submission/areaoflaw"))
+        .andExpect(model().attributeExists("areasOfLaw"));
+  }
+
+  @Test
+  void postAreaOfLaw_setsFormAndRedirects() throws Exception {
+    var session = sessionWithForm(formWithOffice());
+
+    mockMvc
+        .perform(
+            post("/nil-submission/areaoflaw")
+                .with(csrf())
+                .with(oidcLogin().oidcUser(ControllerTestHelper.getOidcUser()))
+                .param("areaOfLaw", "CRIME_LOWER")
+                .session(session))
+        .andExpect(status().is3xxRedirection())
+        .andExpect(redirectedUrl("/nil-submission/period"));
+
+    var form = (NilSubmissionForm) session.getAttribute(NIL_SUBMISSION_FORM);
+    org.junit.jupiter.api.Assertions.assertEquals(CRIME_LOWER, form.getAreaOfLaw());
+  }
+
+  @Test
+  void postAreaOfLaw_whenBindingFails_returnsPageAndClearsSelection() throws Exception {
+    var session = sessionWithForm(formWithSelectedAreaOfLaw());
+
+    mockMvc
+        .perform(
+            post("/nil-submission/areaoflaw")
+                .with(csrf())
+                .with(oidcLogin().oidcUser(ControllerTestHelper.getOidcUser()))
+                .param("areaOfLaw", "potato")
+                .session(session))
+        .andExpect(status().isOk())
+        .andExpect(view().name("pages/nil-submission/areaoflaw"))
+        .andExpect(model().attributeExists("areasOfLaw"))
+        .andExpect(model().attributeHasFieldErrors("nilSubmissionForm", "areaOfLaw"));
+
+    var form = (NilSubmissionForm) session.getAttribute(NIL_SUBMISSION_FORM);
     assertNull(form.getAreaOfLaw());
   }
 
   @Test
-  void whenFeatureFlagEnabled_getAreasOfLaw_addsAreasAndReturnsView() {
-    when(featureFlagsConfig.getIsNilSubmissionEnabled()).thenReturn(true);
+  void postAreaOfLaw_whenAreaOfLawNotSelected_returnsPageAndAddsRequiredError() throws Exception {
+    var session = sessionWithForm(formWithOffice());
 
-    NilSubmissionForm form = new NilSubmissionForm();
-    form.setOffice("office1");
-    String view = controller.getAreasOfLaw(form, model);
+    mockMvc
+        .perform(
+            post("/nil-submission/areaoflaw")
+                .with(csrf())
+                .with(oidcLogin().oidcUser(ControllerTestHelper.getOidcUser()))
+                .session(session))
+        .andExpect(status().isOk())
+        .andExpect(view().name("pages/nil-submission/areaoflaw"))
+        .andExpect(model().attributeExists("areasOfLaw"))
+        .andExpect(
+            model()
+                .attributeHasFieldErrorCode(
+                    "nilSubmissionForm", "areaOfLaw", "nilSubmission.areaOfLaw.required"));
 
-    assertEquals("pages/nil-submission/areaoflaw", view);
-    verify(model).addAttribute(eq("areasOfLaw"), anyMap());
-  }
-
-  @Test
-  void postAreaOfLaw_setsFormAndRedirects() {
-    when(featureFlagsConfig.getIsNilSubmissionEnabled()).thenReturn(true);
-    NilSubmissionForm form = new NilSubmissionForm();
-    form.setOffice("office1");
-    form.setAreaOfLaw(AreaOfLaw.CRIME_LOWER);
-
-    BeanPropertyBindingResult bindingResult =
-        new BeanPropertyBindingResult(form, "nilSubmissionForm");
-
-    String view = controller.postAreaOfLaw(form, bindingResult, model);
-
-    assertEquals("redirect:/nil-submission/period", view);
-    assertEquals(AreaOfLaw.CRIME_LOWER, form.getAreaOfLaw());
-  }
-
-  @Test
-  void postAreaOfLaw_whenBindingFails_returnsPageAndClearsSelection() {
-    when(featureFlagsConfig.getIsNilSubmissionEnabled()).thenReturn(true);
-    NilSubmissionForm form = new NilSubmissionForm();
-    form.setOffice("office1");
-    form.setAreaOfLaw(AreaOfLaw.CRIME_LOWER);
-
-    BeanPropertyBindingResult bindingResult =
-        new BeanPropertyBindingResult(form, "nilSubmissionForm");
-    bindingResult.rejectValue("areaOfLaw", "typeMismatch.nilSubmissionForm.areaOfLaw");
-
-    String view = controller.postAreaOfLaw(form, bindingResult, model);
-
-    assertEquals("pages/nil-submission/areaoflaw", view);
+    var form = (NilSubmissionForm) session.getAttribute(NIL_SUBMISSION_FORM);
     assertNull(form.getAreaOfLaw());
-    verify(model).addAttribute(eq("areasOfLaw"), anyMap());
-    assertTrue(bindingResult.hasFieldErrors("areaOfLaw"));
-    assertEquals(1, bindingResult.getFieldErrors("areaOfLaw").size());
   }
 
   @Test
-  void postAreaOfLaw_whenAreaOfLawNotSelected_returnsPageAndAddsRequiredError() {
-    when(featureFlagsConfig.getIsNilSubmissionEnabled()).thenReturn(true);
-    NilSubmissionForm form = new NilSubmissionForm();
-    form.setOffice("office1");
-
-    BeanPropertyBindingResult bindingResult =
-        new BeanPropertyBindingResult(form, "nilSubmissionForm");
-
-    String view = controller.postAreaOfLaw(form, bindingResult, model);
-
-    assertEquals("pages/nil-submission/areaoflaw", view);
-    assertNull(form.getAreaOfLaw());
-    verify(model).addAttribute(eq("areasOfLaw"), anyMap());
-    assertEquals(
-        "nilSubmission.areaOfLaw.required", bindingResult.getFieldError("areaOfLaw").getCode());
-  }
-
-  @Test
-  void getAreaOfLaw_session_management_cleansing() {
-    when(featureFlagsConfig.getIsNilSubmissionEnabled()).thenReturn(true);
-
+  void getAreaOfLaw_sessionManagementCleansing() throws Exception {
     NilSubmissionForm form = new NilSubmissionForm();
     form.setOffice("office1");
     form.setAreaOfLaw(AreaOfLaw.CRIME_LOWER);
     form.setSubmissionPeriod("submissionPeriod1");
     form.setSubmissionReference("submissionReference1");
+    var session = sessionWithForm(form);
 
-    controller.getAreasOfLaw(form, model);
-    assertNotNull(form.getOffice());
-    assertNull(form.getAreaOfLaw());
-    assertNull(form.getSubmissionPeriod());
-    assertNull(form.getSubmissionReference());
+    mockMvc
+        .perform(
+            get("/nil-submission/areaoflaw")
+                .with(oidcLogin().oidcUser(ControllerTestHelper.getOidcUser()))
+                .session(session))
+        .andExpect(status().isOk());
+
+    var updatedForm = (NilSubmissionForm) session.getAttribute(NIL_SUBMISSION_FORM);
+    assertNotNull(updatedForm.getOffice());
+    assertNull(updatedForm.getAreaOfLaw());
+    assertNull(updatedForm.getSubmissionPeriod());
+    assertNull(updatedForm.getSubmissionReference());
+  }
+
+  private NilSubmissionForm formWithOffice() {
+    NilSubmissionForm form = new NilSubmissionForm();
+    form.setOffice("office1");
+    return form;
+  }
+
+  private NilSubmissionForm formWithSelectedAreaOfLaw() {
+    NilSubmissionForm form = formWithOffice();
+    form.setAreaOfLaw(CRIME_LOWER);
+    return form;
+  }
+
+  private MockHttpSession sessionWithForm(NilSubmissionForm form) {
+    MockHttpSession session = new MockHttpSession();
+    session.setAttribute(NIL_SUBMISSION_FORM, form);
+    return session;
   }
 }

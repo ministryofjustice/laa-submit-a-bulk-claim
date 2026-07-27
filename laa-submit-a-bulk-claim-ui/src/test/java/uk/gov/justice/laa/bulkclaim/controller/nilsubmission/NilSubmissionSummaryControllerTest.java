@@ -2,27 +2,40 @@ package uk.gov.justice.laa.bulkclaim.controller.nilsubmission;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
+import static org.mockito.Mockito.when;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.oidcLogin;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.flash;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.model;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.redirectedUrl;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
+import static uk.gov.justice.laa.bulkclaim.constants.SessionConstants.NIL_SUBMISSION_FORM;
 import static uk.gov.justice.laa.bulkclaim.constants.SessionConstants.SUBMISSION_ID;
 import static uk.gov.justice.laa.dstew.payments.claimsdata.model.AreaOfLaw.MEDIATION;
 
 import java.util.List;
 import java.util.UUID;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.*;
-import org.springframework.http.HttpStatus;
+import org.mockito.ArgumentCaptor;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
 import org.springframework.http.ResponseEntity;
-import org.springframework.ui.Model;
+import org.springframework.mock.web.MockHttpSession;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
 import org.springframework.web.server.ResponseStatusException;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import tools.jackson.databind.ObjectMapper;
 import uk.gov.justice.laa.bulkclaim.client.DataClaimsRestClient;
-import uk.gov.justice.laa.bulkclaim.config.FeatureFlagsConfig;
+import uk.gov.justice.laa.bulkclaim.controller.BaseControllerTest;
 import uk.gov.justice.laa.bulkclaim.controller.ControllerTestHelper;
 import uk.gov.justice.laa.bulkclaim.dto.submission.NilSubmissionForm;
 import uk.gov.justice.laa.bulkclaim.dto.submission.SubmissionValidationErrorResponse;
@@ -31,63 +44,69 @@ import uk.gov.justice.laa.dstew.payments.claimsdata.model.CreateSubmission201Res
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionPost;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionStatus;
 
-class NilSubmissionSummaryControllerTest {
+@WebMvcTest(NilSubmissionsSummaryController.class)
+class NilSubmissionSummaryControllerTest extends BaseControllerTest {
 
-  @Mock private DataClaimsRestClient claimsRestService;
-  @Mock private FeatureFlagsConfig featureFlagsConfig;
-  @Mock private ObjectMapper objectMapper;
-  @Mock private Model model;
-  @Mock private RedirectAttributes redirectAttributes;
+  @Autowired private MockMvc mockMvc;
 
-  @InjectMocks private NilSubmissionsSummaryController controller;
-
-  @BeforeEach
-  void setUp() {
-    MockitoAnnotations.openMocks(this);
-  }
+  @MockitoBean private DataClaimsRestClient claimsRestService;
+  @MockitoBean private ObjectMapper objectMapper;
 
   @Test
-  void whenFeatureFlagDisabled_all_mappings_returnsErrorView() {
-    doThrow(new ResponseStatusException(HttpStatus.NOT_FOUND, "isNilSubmissionEnabled is false"))
+  void whenFeatureFlagDisabled_allMappings_returnsErrorView() throws Exception {
+    doThrow(new ResponseStatusException(org.springframework.http.HttpStatus.NOT_FOUND))
         .when(featureFlagsConfig)
         .checkNilSubmissionEnabled();
 
-    NilSubmissionForm form = buildSessionForm();
+    mockMvc
+        .perform(
+            get("/nil-submission/summary-details")
+                .with(oidcLogin().oidcUser(ControllerTestHelper.getOidcUser()))
+                .sessionAttr(NIL_SUBMISSION_FORM, buildSessionForm()))
+        .andExpect(status().isNotFound());
 
-    assertThrows(ResponseStatusException.class, () -> controller.getSummary(form, model));
-
-    assertThrows(
-        ResponseStatusException.class,
-        () ->
-            controller.postSummary(
-                form, redirectAttributes, model, ControllerTestHelper.getOidcUser()));
+    mockMvc
+        .perform(
+            post("/nil-submission/summary-details")
+                .with(csrf())
+                .with(oidcLogin().oidcUser(ControllerTestHelper.getOidcUser()))
+                .sessionAttr(NIL_SUBMISSION_FORM, buildSessionForm()))
+        .andExpect(status().isNotFound());
 
     verifyNoInteractions(claimsRestService);
   }
 
   @Test
-  void whenFeatureFlagEnabled_getSummary_returnsSummaryView() {
-
-    assertEquals(
-        "pages/nil-submission/summary-details", controller.getSummary(buildSessionForm(), model));
+  void whenFeatureFlagEnabled_getSummary_returnsSummaryView() throws Exception {
+    mockMvc
+        .perform(
+            get("/nil-submission/summary-details")
+                .with(oidcLogin().oidcUser(ControllerTestHelper.getOidcUser()))
+                .sessionAttr(NIL_SUBMISSION_FORM, buildSessionForm()))
+        .andExpect(status().isOk())
+        .andExpect(view().name("pages/nil-submission/summary-details"));
   }
 
   @Test
-  void postSummary_redirectsToSubmissionDetails() {
-    when(featureFlagsConfig.getIsNilSubmissionEnabled()).thenReturn(true);
-
+  void postSummary_redirectsToSubmissionDetails() throws Exception {
     UUID submissionId = UUID.fromString("00000000-0000-0000-0000-0000000000a1");
-    CreateSubmission201Response submissionResponse = mock(CreateSubmission201Response.class);
+    CreateSubmission201Response submissionResponse =
+        org.mockito.Mockito.mock(CreateSubmission201Response.class);
     when(submissionResponse.getId()).thenReturn(submissionId);
     when(claimsRestService.createSubmission(any()))
         .thenReturn(ResponseEntity.ok(submissionResponse));
 
-    NilSubmissionForm form = buildSessionForm();
+    var session = sessionWithForm(buildSessionForm());
 
-    assertEquals(
-        "redirect:/submission/" + submissionId,
-        controller.postSummary(
-            form, redirectAttributes, model, ControllerTestHelper.getOidcUser()));
+    mockMvc
+        .perform(
+            post("/nil-submission/summary-details")
+                .with(csrf())
+                .with(oidcLogin().oidcUser(ControllerTestHelper.getOidcUser()))
+                .session(session))
+        .andExpect(status().is3xxRedirection())
+        .andExpect(redirectedUrl("/submission/" + submissionId))
+        .andExpect(flash().attribute(SUBMISSION_ID, submissionId));
 
     ArgumentCaptor<SubmissionPost> submissionPostCaptor =
         ArgumentCaptor.forClass(SubmissionPost.class);
@@ -99,9 +118,7 @@ class NilSubmissionSummaryControllerTest {
     assertEquals(MEDIATION, submissionPost.getAreaOfLaw());
     assertEquals("OCT-2025", submissionPost.getSubmissionPeriod());
 
-    verify(model).addAttribute(eq(SUBMISSION_ID), eq(submissionId));
-    verify(redirectAttributes).addFlashAttribute(eq(SUBMISSION_ID), eq(submissionId));
-
+    var form = (NilSubmissionForm) session.getAttribute(NIL_SUBMISSION_FORM);
     assertNull(form.getOffice());
     assertNull(form.getAreaOfLaw());
     assertNull(form.getSubmissionPeriod());
@@ -110,8 +127,6 @@ class NilSubmissionSummaryControllerTest {
 
   @Test
   void postSummary_returnsInvalidViewWithMessagesSummary() throws Exception {
-    when(featureFlagsConfig.getIsNilSubmissionEnabled()).thenReturn(true);
-
     SubmissionValidationErrorResponse errorResponse =
         new SubmissionValidationErrorResponse(
             null,
@@ -132,15 +147,19 @@ class NilSubmissionSummaryControllerTest {
     when(claimsRestService.createSubmission(any()))
         .thenThrow(new WebClientResponseException(400, "", null, null, null, null));
 
-    NilSubmissionForm form = buildSessionForm();
+    var session = sessionWithForm(buildSessionForm());
 
-    assertEquals(
-        "pages/nil-submission/detail-invalid",
-        controller.postSummary(
-            form, redirectAttributes, model, ControllerTestHelper.getOidcUser()));
+    mockMvc
+        .perform(
+            post("/nil-submission/summary-details")
+                .with(csrf())
+                .with(oidcLogin().oidcUser(ControllerTestHelper.getOidcUser()))
+                .session(session))
+        .andExpect(status().isOk())
+        .andExpect(view().name("pages/nil-submission/detail-invalid"))
+        .andExpect(model().attributeExists("messagesSummary"));
 
-    verify(model).addAttribute(eq("messagesSummary"), any(NilSubmissionMessagesSummary.class));
-
+    var form = (NilSubmissionForm) session.getAttribute(NIL_SUBMISSION_FORM);
     assertNull(form.getOffice());
     assertNull(form.getAreaOfLaw());
     assertNull(form.getSubmissionPeriod());
@@ -176,5 +195,11 @@ class NilSubmissionSummaryControllerTest {
     form.setSubmissionPeriod("OCT-2025");
     form.setSubmissionReference("REF-123");
     return form;
+  }
+
+  private MockHttpSession sessionWithForm(NilSubmissionForm form) {
+    MockHttpSession session = new MockHttpSession();
+    session.setAttribute(NIL_SUBMISSION_FORM, form);
+    return session;
   }
 }
