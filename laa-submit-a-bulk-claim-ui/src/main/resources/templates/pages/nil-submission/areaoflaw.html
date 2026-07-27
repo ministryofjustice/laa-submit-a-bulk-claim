@@ -20,6 +20,8 @@
                     <div class="govuk-form-group"
                          th:classappend="${#fields.hasErrors('areaOfLaw')} ? ' govuk-form-group--error'">
                         <fieldset class="govuk-fieldset">
+                            <legend class="govuk-fieldset__legend govuk-fieldset__legend--s"
+                                   th:text="#{search.areaOfLaw}"></legend>
                             <th:block th:replace="~{fragments/error-components :: error-messages('areaOfLaw')}"/>
                             <div class="govuk-radios govuk-radios--small"
                                  data-module="govuk-radios" id="area-of-law-input-container">

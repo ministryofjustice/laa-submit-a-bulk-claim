@@ -25,6 +25,7 @@ public class NilSubmissionCancelController {
       @ModelAttribute(NIL_SUBMISSION_FORM) NilSubmissionForm form) {
 
     featureFlagsConfig.checkNilSubmissionEnabled();
+    NilSubmissionSessionManager.validateSessionState(form, NilSubmissionPage.OTHER);
 
     if ("SEARCH".equalsIgnoreCase(destination)) {
       return "redirect:/submissions/search";

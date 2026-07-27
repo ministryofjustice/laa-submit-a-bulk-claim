@@ -50,7 +50,7 @@ class NilSubmissionSessionManagerTest {
   }
 
   @Test
-  void submissionReferencePage_requiresSubmissionPeriodAndSubmissionReference() {
+  void submissionReferencePage_requiresSubmissionPeriod() {
     NilSubmissionForm form = new NilSubmissionForm();
     assertFalse(
         NilSubmissionSessionManager.isNilSubmissionSessionStateValid(
@@ -61,7 +61,7 @@ class NilSubmissionSessionManagerTest {
         NilSubmissionSessionManager.isNilSubmissionSessionStateValid(
             form, NilSubmissionPage.SUBMISSION_REFERENCE));
     form.setOffice("ABC123");
-    assertTrue(
+    assertFalse(
         NilSubmissionSessionManager.isNilSubmissionSessionStateValid(
             form, NilSubmissionPage.SUBMISSION_REFERENCE));
     form.setSubmissionPeriod("JAN-2026");
@@ -142,6 +142,28 @@ class NilSubmissionSessionManagerTest {
     assertNotNull(result.getSubmissionPeriod());
 
     assertNull(result.getSubmissionReference());
+  }
+
+  @Test
+  void cleanseSession_doesNotValidateSessionState() {
+    NilSubmissionForm form = new NilSubmissionForm();
+
+    assertDoesNotThrow(
+        () -> NilSubmissionSessionManager.cleanseSession(form, NilSubmissionPage.AREA_OF_LAW));
+  }
+
+  @Test
+  void validateSessionState_throwsWhenSessionStateIsInvalid() {
+    NilSubmissionForm form = new NilSubmissionForm();
+
+    var exception =
+        assertThrows(
+            org.springframework.web.server.ResponseStatusException.class,
+            () ->
+                NilSubmissionSessionManager.validateSessionState(
+                    form, NilSubmissionPage.AREA_OF_LAW));
+
+    assertEquals(org.springframework.http.HttpStatus.NOT_FOUND, exception.getStatusCode());
   }
 
   private NilSubmissionForm createPopulatedForm() {

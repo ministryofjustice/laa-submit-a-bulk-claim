@@ -182,6 +182,11 @@ public abstract class ViewTestBase {
     Assertions.assertEquals(expectedText, hint.text());
   }
 
+  protected void assertPageHasLegend(Document doc, String expectedText) {
+    Element legend = selectFirst(doc, "fieldset legend");
+    Assertions.assertEquals(expectedText, legend.text());
+  }
+
   protected void assertPageHasRadioButtons(Document doc, String... expectedLabels) {
     assertPageHasRadioButtons(doc);
     Elements radioLabels = doc.getElementsByClass("govuk-radios__label");

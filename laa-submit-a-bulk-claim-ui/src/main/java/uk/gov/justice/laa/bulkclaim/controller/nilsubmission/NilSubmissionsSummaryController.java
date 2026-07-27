@@ -3,6 +3,7 @@ package uk.gov.justice.laa.bulkclaim.controller.nilsubmission;
 import static uk.gov.justice.laa.bulkclaim.constants.SessionConstants.NIL_SUBMISSION_FORM;
 import static uk.gov.justice.laa.bulkclaim.constants.SessionConstants.SUBMISSION_ID;
 import static uk.gov.justice.laa.bulkclaim.util.NilSubmissionSessionManager.cleanseSession;
+import static uk.gov.justice.laa.bulkclaim.util.NilSubmissionSessionManager.validateSessionState;
 
 import java.time.OffsetDateTime;
 import java.time.ZoneId;
@@ -48,6 +49,7 @@ public class NilSubmissionsSummaryController {
       @ModelAttribute(NIL_SUBMISSION_FORM) NilSubmissionForm form, Model model) {
 
     featureFlagsConfig.checkNilSubmissionEnabled();
+    validateSessionState(form, NilSubmissionPage.SUMMARY_DETAILS);
     cleanseSession(form, NilSubmissionPage.SUMMARY_DETAILS);
 
     return "pages/nil-submission/summary-details";
@@ -61,6 +63,7 @@ public class NilSubmissionsSummaryController {
       @AuthenticationPrincipal OidcUser oidcUser) {
 
     featureFlagsConfig.checkNilSubmissionEnabled();
+    validateSessionState(form, NilSubmissionPage.SUMMARY_DETAILS);
     cleanseSession(form, NilSubmissionPage.SUMMARY_DETAILS);
 
     SubmissionPost submissionPost = buildSubmissionPost(form, oidcUser);
