@@ -49,7 +49,7 @@ class NilSubmissionCancelControllerTest {
     form.setOffice("office1");
     form.setAreaOfLaw(CRIME_LOWER);
     form.setSubmissionPeriod("submissionPeriod1");
-    form.setScheduleReference("scheduleReference1");
+    form.setSubmissionReference("submissionReference1");
 
     String result = nilSubmissionCancelController.getCancel("UPLOAD", form);
 
@@ -57,7 +57,7 @@ class NilSubmissionCancelControllerTest {
     assertNull(form.getOffice());
     assertNull(form.getAreaOfLaw());
     assertNull(form.getSubmissionPeriod());
-    assertNull(form.getScheduleReference());
+    assertNull(form.getSubmissionReference());
   }
 
   @Test
@@ -68,7 +68,7 @@ class NilSubmissionCancelControllerTest {
     form.setOffice("office1");
     form.setAreaOfLaw(CRIME_LOWER);
     form.setSubmissionPeriod("submissionPeriod1");
-    form.setScheduleReference("scheduleReference1");
+    form.setSubmissionReference("submissionReference1");
 
     String result = nilSubmissionCancelController.getCancel("SEARCH", form);
 
@@ -76,6 +76,6 @@ class NilSubmissionCancelControllerTest {
     assertNotNull(form.getOffice());
     assertNotNull(form.getAreaOfLaw());
     assertNotNull(form.getSubmissionPeriod());
-    assertNotNull(form.getScheduleReference());
+    assertNotNull(form.getSubmissionReference());
   }
 }

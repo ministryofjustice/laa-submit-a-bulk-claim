@@ -15,20 +15,20 @@ public class NilSubmissionSessionManager {
       case OFFICE -> sessionValidForOffice(nilSubmissionForm);
       case AREA_OF_LAW -> sessionValidForAreaOfLaw(nilSubmissionForm);
       case SUBMISSION_PERIOD -> sessionValidForSubmissionPeriod(nilSubmissionForm);
-      case SCHEDULE_REFERENCE -> sessionValidForScheduleReference(nilSubmissionForm);
+      case SUBMISSION_REFERENCE -> sessionValidForSubmissionReference(nilSubmissionForm);
       case SUMMARY_DETAILS -> sessionValidForSummaryDetails(nilSubmissionForm);
       case OTHER -> true;
     };
   }
 
-  static boolean sessionValidForScheduleReference(NilSubmissionForm nilSubmissionForm) {
+  static boolean sessionValidForSubmissionReference(NilSubmissionForm nilSubmissionForm) {
     return StringUtils.hasText(nilSubmissionForm.getSubmissionPeriod())
         && sessionValidForSubmissionPeriod(nilSubmissionForm);
   }
 
   static boolean sessionValidForSummaryDetails(NilSubmissionForm nilSubmissionForm) {
-    return StringUtils.hasText(nilSubmissionForm.getScheduleReference())
-        && sessionValidForScheduleReference(nilSubmissionForm);
+    return StringUtils.hasText(nilSubmissionForm.getSubmissionReference())
+        && sessionValidForSubmissionReference(nilSubmissionForm);
   }
 
   static boolean sessionValidForSubmissionPeriod(NilSubmissionForm nilSubmissionForm) {
@@ -53,8 +53,8 @@ public class NilSubmissionSessionManager {
           case AREA_OF_LAW -> cleanseSessionValuesPriorToAreaOfLawSelection(nilSubmissionForm);
           case SUBMISSION_PERIOD ->
               cleanseSessionValuesPriorToSubmissionPeriodSelection(nilSubmissionForm);
-          case SCHEDULE_REFERENCE ->
-              cleanseSessionValuesPriorToScheduleReferenceEntry(nilSubmissionForm);
+          case SUBMISSION_REFERENCE ->
+              cleanseSessionValuesPriorToSubmissionReferenceEntry(nilSubmissionForm);
           case SUMMARY_DETAILS -> nilSubmissionForm;
         };
 
@@ -67,27 +67,27 @@ public class NilSubmissionSessionManager {
     form.setOffice(null);
     form.setAreaOfLaw(null);
     form.setSubmissionPeriod(null);
-    form.setScheduleReference(null);
+    form.setSubmissionReference(null);
     return form;
   }
 
   static NilSubmissionForm cleanseSessionValuesPriorToAreaOfLawSelection(NilSubmissionForm form) {
     form.setAreaOfLaw(null);
     form.setSubmissionPeriod(null);
-    form.setScheduleReference(null);
+    form.setSubmissionReference(null);
     return form;
   }
 
   static NilSubmissionForm cleanseSessionValuesPriorToSubmissionPeriodSelection(
       NilSubmissionForm form) {
     form.setSubmissionPeriod(null);
-    form.setScheduleReference(null);
+    form.setSubmissionReference(null);
     return form;
   }
 
-  static NilSubmissionForm cleanseSessionValuesPriorToScheduleReferenceEntry(
+  static NilSubmissionForm cleanseSessionValuesPriorToSubmissionReferenceEntry(
       NilSubmissionForm form) {
-    form.setScheduleReference(null);
+    form.setSubmissionReference(null);
     return form;
   }
 

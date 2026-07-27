@@ -12,26 +12,26 @@
 <main class="govuk-main-wrapper" id="main-content">
     <div class="govuk-width-container">
         <div class="govuk-grid-row">
-            <div class="govuk-grid-column-full">
+            <div class="govuk-grid-column-full" th:object="${nilSubmissionForm}">
+                <div th:replace="~{fragments/error-components :: error-summary}"/>
                 <div id="nil-submission-hint" class="govuk-hint" th:text="#{nilSubmission.hint}"></div>
                 <h1 class="govuk-heading-l" th:text="#{nilSubmission.reference.heading}"></h1>
                 <th:block th:replace="~{fragments/nil-submission-summary :: nil-submission-summary}"/>
-                <form class="form" th:object="${nilSubmissionForm}" th:action="@{/nil-submission/reference}"
-                      method="post">
-                    <div class="govuk-form-group">
+                <form class="form" th:action="@{/nil-submission/reference}" method="post">
+                    <div class="govuk-form-group"
+                         th:classappend="${#fields.hasErrors('submissionReference')} ? ' govuk-form-group--error'">
                         <fieldset class="govuk-fieldset">
                             <div class="govuk-body"
                                  data-module="govuk-radios" id="arias-of-law-input-container">
                                 <label class="govuk-label govuk-label--m"
-                                       for="schedule-reference"
-                                       th:text="#{__${'nilSubmission.summary.reference.' + nilSubmissionForm.areaOfLaw.name()}__}">
+                                      for="submissionReference-input"
+                                      th:text="#{__${'nilSubmission.summary.reference.' + nilSubmissionForm.areaOfLaw.name()}__}">
                                 </label>
+                                <th:block th:replace="~{fragments/error-components :: error-messages('submissionReference')}"/>
                                 <div id="nil-submission-example-hint" class="govuk-hint" th:text="#{__${'nilSubmission.summary.example.' + nilSubmissionForm.areaOfLaw.name()}__}"></div>
                                 <input class="govuk-input govuk-input--width-10"
-                                       id="schedule-reference"
-                                       name="scheduleReference"
-                                       type="text"
-                                       th:value="${displayReference}"/>
+                                      id="submissionReference-input"
+                                      type="text" th:field="*{submissionReference}"/>
                             </div>
                         </fieldset>
                     </div>

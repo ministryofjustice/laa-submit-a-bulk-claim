@@ -50,24 +50,24 @@ class NilSubmissionSessionManagerTest {
   }
 
   @Test
-  void scheduleReferencePage_requiresSubmissionPeriodAndScheduleReference() {
+  void submissionReferencePage_requiresSubmissionPeriodAndSubmissionReference() {
     NilSubmissionForm form = new NilSubmissionForm();
     assertFalse(
         NilSubmissionSessionManager.isNilSubmissionSessionStateValid(
-            form, NilSubmissionPage.SUBMISSION_PERIOD));
+            form, NilSubmissionPage.SUBMISSION_REFERENCE));
 
     form.setAreaOfLaw(MEDIATION);
     assertFalse(
         NilSubmissionSessionManager.isNilSubmissionSessionStateValid(
-            form, NilSubmissionPage.SUBMISSION_PERIOD));
+            form, NilSubmissionPage.SUBMISSION_REFERENCE));
     form.setOffice("ABC123");
     assertTrue(
         NilSubmissionSessionManager.isNilSubmissionSessionStateValid(
-            form, NilSubmissionPage.SUBMISSION_PERIOD));
+            form, NilSubmissionPage.SUBMISSION_REFERENCE));
     form.setSubmissionPeriod("JAN-2026");
     assertTrue(
         NilSubmissionSessionManager.isNilSubmissionSessionStateValid(
-            form, NilSubmissionPage.SUBMISSION_PERIOD));
+            form, NilSubmissionPage.SUBMISSION_REFERENCE));
   }
 
   @Test
@@ -79,7 +79,7 @@ class NilSubmissionSessionManagerTest {
     assertNull(form.getOffice());
     assertNull(form.getAreaOfLaw());
     assertNull(form.getSubmissionPeriod());
-    assertNull(form.getScheduleReference());
+    assertNull(form.getSubmissionReference());
   }
 
   @Test
@@ -92,7 +92,7 @@ class NilSubmissionSessionManagerTest {
     assertSame(form, result);
     assertNull(result.getAreaOfLaw());
     assertNull(result.getSubmissionPeriod());
-    assertNull(result.getScheduleReference());
+    assertNull(result.getSubmissionReference());
     assertNull(result.getOffice());
   }
 
@@ -106,7 +106,7 @@ class NilSubmissionSessionManagerTest {
     assertSame(form, result);
 
     assertNull(result.getSubmissionPeriod());
-    assertNull(result.getScheduleReference());
+    assertNull(result.getSubmissionReference());
     assertNull(result.getAreaOfLaw());
 
     assertNotNull(result.getOffice());
@@ -125,15 +125,15 @@ class NilSubmissionSessionManagerTest {
     assertNotNull(result.getAreaOfLaw());
 
     assertNull(result.getSubmissionPeriod());
-    assertNull(result.getScheduleReference());
+    assertNull(result.getSubmissionReference());
   }
 
   @Test
-  void shouldCleanseSessionValuesPriorToScheduleReferenceEntryFields() {
+  void shouldCleanseSessionValuesPriorToSubmissionReferenceEntryFields() {
     NilSubmissionForm form = createPopulatedForm();
 
     NilSubmissionForm result =
-        NilSubmissionSessionManager.cleanseSession(form, NilSubmissionPage.SCHEDULE_REFERENCE);
+        NilSubmissionSessionManager.cleanseSession(form, NilSubmissionPage.SUBMISSION_REFERENCE);
 
     assertSame(form, result);
 
@@ -141,7 +141,7 @@ class NilSubmissionSessionManagerTest {
     assertNotNull(result.getAreaOfLaw());
     assertNotNull(result.getSubmissionPeriod());
 
-    assertNull(result.getScheduleReference());
+    assertNull(result.getSubmissionReference());
   }
 
   private NilSubmissionForm createPopulatedForm() {
@@ -149,7 +149,7 @@ class NilSubmissionSessionManagerTest {
     form.setOffice("A123BC");
     form.setAreaOfLaw(MEDIATION);
     form.setSubmissionPeriod("JAN-2026");
-    form.setScheduleReference("REF123");
+    form.setSubmissionReference("REF123");
     return form;
   }
 }

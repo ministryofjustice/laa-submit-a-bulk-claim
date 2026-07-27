@@ -16,15 +16,17 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.http.HttpStatus;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.server.ResponseStatusException;
 import uk.gov.justice.laa.bulkclaim.config.FeatureFlagsConfig;
 import uk.gov.justice.laa.bulkclaim.dto.submission.NilSubmissionForm;
 
-public class NilSubmissionScheduleReferenceControllerTest {
+public class NilSubmissionReferenceControllerTest {
   @Mock private FeatureFlagsConfig featureFlagsConfig;
   @Mock private Model model;
+  @Mock private BindingResult bindingResult;
 
-  @InjectMocks private NilSubmissionScheduleReferenceController controller;
+  @InjectMocks private NilSubmissionReferenceController controller;
 
   @BeforeEach
   void setUp() {
@@ -44,8 +46,9 @@ public class NilSubmissionScheduleReferenceControllerTest {
 
     verify(model, never()).addAttribute(eq("referenceLabel"), any());
 
-    assertThrows(ResponseStatusException.class, () -> controller.postReference(form, "Reference"));
-    assertNull(form.getScheduleReference());
+    assertThrows(
+        ResponseStatusException.class, () -> controller.postReference(form, bindingResult));
+    assertNull(form.getSubmissionReference());
   }
 
   @Test
@@ -61,31 +64,65 @@ public class NilSubmissionScheduleReferenceControllerTest {
   }
 
   @Test
-  void postAreaOfLaw_setsFormAndRedirects() {
+  void postReference_setsFormAndRedirects() {
     NilSubmissionForm form = new NilSubmissionForm();
     form.setOffice("office1");
     form.setAreaOfLaw(MEDIATION);
     form.setSubmissionPeriod("OCT-2025");
+    form.setSubmissionReference("reference");
+    when(bindingResult.hasErrors()).thenReturn(false);
 
-    String view = controller.postReference(form, "reference");
+    String view = controller.postReference(form, bindingResult);
 
     assertEquals("redirect:/nil-submission/summary-details", view);
-    assertEquals("reference", form.getScheduleReference());
+    assertEquals("reference", form.getSubmissionReference());
   }
 
   @Test
-  void getScheduleReference_session_management_cleansing() {
+  void postReference_whenNotEntered_returnsError() {
+    NilSubmissionForm form = new NilSubmissionForm();
+    form.setOffice("office1");
+    form.setAreaOfLaw(MEDIATION);
+    form.setSubmissionPeriod("OCT-2025");
+    form.setSubmissionReference("");
+    when(bindingResult.hasErrors()).thenReturn(true);
+
+    String view = controller.postReference(form, bindingResult);
+
+    assertEquals("pages/nil-submission/reference", view);
+    verify(bindingResult)
+        .rejectValue("submissionReference", "nilSubmission.submissionReference.required");
+  }
+
+  @Test
+  void postReference_whenInvalidFormat_returnsError() {
+    NilSubmissionForm form = new NilSubmissionForm();
+    form.setOffice("office1");
+    form.setAreaOfLaw(MEDIATION);
+    form.setSubmissionPeriod("OCT-2025");
+    form.setSubmissionReference("invalid-reference-with-hyphen");
+    when(bindingResult.hasErrors()).thenReturn(true);
+
+    String view = controller.postReference(form, bindingResult);
+
+    assertEquals("pages/nil-submission/reference", view);
+    verify(bindingResult)
+        .rejectValue("submissionReference", "nilSubmission.submissionReference.invalid");
+  }
+
+  @Test
+  void getSubmissionReference_session_management_cleansing() {
 
     NilSubmissionForm form = new NilSubmissionForm();
     form.setOffice("office1");
     form.setAreaOfLaw(MEDIATION);
     form.setSubmissionPeriod("submissionPeriod1");
-    form.setScheduleReference("scheduleReference1");
+    form.setSubmissionReference("submissionReference1");
 
     controller.getReference(form, model);
     assertNotNull(form.getOffice());
     assertNotNull(form.getAreaOfLaw());
     assertNotNull(form.getSubmissionPeriod());
-    assertNull(form.getScheduleReference());
+    assertNull(form.getSubmissionReference());
   }
 }
