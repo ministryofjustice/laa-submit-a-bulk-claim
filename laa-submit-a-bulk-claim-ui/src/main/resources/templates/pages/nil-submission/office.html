@@ -20,9 +20,6 @@
                     <div class="govuk-form-group"
                          th:classappend="${#fields.hasErrors('office')} ? ' govuk-form-group--error'">
                         <fieldset class="govuk-fieldset">
-                            <legend class="govuk-fieldset__legend govuk-fieldset__legend--m"
-                                    th:text="#{nilSubmission.office.heading}">
-                            </legend>
                             <th:block th:replace="~{fragments/error-components :: error-messages('office')}"/>
                             <div class="govuk-radios govuk-radios--small"
                                  data-module="govuk-radios" id="office-input-container">
