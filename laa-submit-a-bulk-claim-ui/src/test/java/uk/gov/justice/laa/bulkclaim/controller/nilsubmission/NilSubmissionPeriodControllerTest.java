@@ -106,6 +106,18 @@ class NilSubmissionPeriodControllerTest extends BaseControllerTest {
   }
 
   @Test
+  void postNilSubmission_withoutRequiredSessionState_returnsNotFound() throws Exception {
+    mockMvc
+        .perform(
+            post("/nil-submission/period")
+                .with(csrf())
+                .with(oidcLogin().oidcUser(ControllerTestHelper.getOidcUser()))
+                .param("submissionPeriod", "JAN-2024")
+                .sessionAttr(NIL_SUBMISSION_FORM, new NilSubmissionForm()))
+        .andExpect(status().isNotFound());
+  }
+
+  @Test
   void getNilSubmission_successView() throws Exception {
     stubPeriods(Map.of("JAN-2024", "January 2024"));
 

@@ -2,6 +2,7 @@ package uk.gov.justice.laa.bulkclaim.controller.nilsubmission;
 
 import static uk.gov.justice.laa.bulkclaim.constants.SessionConstants.NIL_SUBMISSION_FORM;
 import static uk.gov.justice.laa.bulkclaim.util.NilSubmissionSessionManager.cleanseSession;
+import static uk.gov.justice.laa.bulkclaim.util.NilSubmissionSessionManager.validateSessionState;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
@@ -30,6 +31,7 @@ public class NilSubmissionPeriodController {
       @ModelAttribute(NIL_SUBMISSION_FORM) NilSubmissionForm selection, Model model) {
 
     featureFlagsConfig.checkNilSubmissionEnabled();
+    validateSessionState(selection, NilSubmissionPage.SUBMISSION_PERIOD);
     cleanseSession(selection, NilSubmissionPage.SUBMISSION_PERIOD);
 
     var submissionsResults = submissionPeriodService.searchSubmissions(selection);
@@ -51,6 +53,7 @@ public class NilSubmissionPeriodController {
       Model model) {
 
     featureFlagsConfig.checkNilSubmissionEnabled();
+    validateSessionState(form, NilSubmissionPage.SUBMISSION_PERIOD);
 
     var submissionsResults = submissionPeriodService.searchSubmissions(form);
     var sortedSubmissionPeriods =

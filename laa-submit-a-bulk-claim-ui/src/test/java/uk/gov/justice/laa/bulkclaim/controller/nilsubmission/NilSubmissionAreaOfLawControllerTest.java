@@ -125,6 +125,18 @@ class NilSubmissionAreaOfLawControllerTest extends BaseControllerTest {
   }
 
   @Test
+  void postAreaOfLaw_withoutRequiredSessionState_returnsNotFound() throws Exception {
+    mockMvc
+        .perform(
+            post("/nil-submission/areaoflaw")
+                .with(csrf())
+                .with(oidcLogin().oidcUser(ControllerTestHelper.getOidcUser()))
+                .param("areaOfLaw", "CRIME_LOWER")
+                .sessionAttr(NIL_SUBMISSION_FORM, new NilSubmissionForm()))
+        .andExpect(status().isNotFound());
+  }
+
+  @Test
   void getAreaOfLaw_sessionManagementCleansing() throws Exception {
     NilSubmissionForm form = new NilSubmissionForm();
     form.setOffice("office1");

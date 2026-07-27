@@ -142,6 +142,22 @@ class NilSubmissionReferenceControllerTest extends BaseControllerTest {
   }
 
   @Test
+  void postReference_withoutRequiredSessionState_returnsNotFound() throws Exception {
+    NilSubmissionForm form = new NilSubmissionForm();
+    form.setOffice("office1");
+    form.setAreaOfLaw(MEDIATION);
+
+    mockMvc
+        .perform(
+            post("/nil-submission/reference")
+                .with(csrf())
+                .with(oidcLogin().oidcUser(ControllerTestHelper.getOidcUser()))
+                .param("submissionReference", "reference")
+                .sessionAttr(NIL_SUBMISSION_FORM, form))
+        .andExpect(status().isNotFound());
+  }
+
+  @Test
   void getSubmissionReference_sessionManagementCleansing() throws Exception {
     NilSubmissionForm form = buildSessionForm();
     form.setSubmissionReference("submissionReference1");

@@ -167,6 +167,24 @@ class NilSubmissionSummaryControllerTest extends BaseControllerTest {
   }
 
   @Test
+  void postSummary_withoutRequiredSessionState_returnsNotFound() throws Exception {
+    NilSubmissionForm form = new NilSubmissionForm();
+    form.setOffice("12345");
+    form.setAreaOfLaw(MEDIATION);
+    form.setSubmissionPeriod("OCT-2025");
+
+    mockMvc
+        .perform(
+            post("/nil-submission/summary-details")
+                .with(csrf())
+                .with(oidcLogin().oidcUser(ControllerTestHelper.getOidcUser()))
+                .sessionAttr(NIL_SUBMISSION_FORM, form))
+        .andExpect(status().isNotFound());
+
+    verifyNoInteractions(claimsRestService);
+  }
+
+  @Test
   void buildNilSubmissionMessagesSummary_mapsFieldsCorrectly() {
     NilSubmissionForm form = buildSessionForm();
     NilSubmissionMessagesSummary summary =

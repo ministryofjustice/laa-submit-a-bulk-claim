@@ -47,20 +47,15 @@ public class NilSubmissionSessionManager {
   public static NilSubmissionForm cleanseSession(
       NilSubmissionForm nilSubmissionForm, NilSubmissionPage page) {
 
-    var form =
-        switch (page) {
-          case OFFICE, OTHER -> cleanseAllNilSubmissionSessionValues(nilSubmissionForm);
-          case AREA_OF_LAW -> cleanseSessionValuesPriorToAreaOfLawSelection(nilSubmissionForm);
-          case SUBMISSION_PERIOD ->
-              cleanseSessionValuesPriorToSubmissionPeriodSelection(nilSubmissionForm);
-          case SUBMISSION_REFERENCE ->
-              cleanseSessionValuesPriorToSubmissionReferenceEntry(nilSubmissionForm);
-          case SUMMARY_DETAILS -> nilSubmissionForm;
-        };
-
-    validateSessionState(form, page);
-
-    return form;
+    return switch (page) {
+      case OFFICE, OTHER -> cleanseAllNilSubmissionSessionValues(nilSubmissionForm);
+      case AREA_OF_LAW -> cleanseSessionValuesPriorToAreaOfLawSelection(nilSubmissionForm);
+      case SUBMISSION_PERIOD ->
+          cleanseSessionValuesPriorToSubmissionPeriodSelection(nilSubmissionForm);
+      case SUBMISSION_REFERENCE ->
+          cleanseSessionValuesPriorToSubmissionReferenceEntry(nilSubmissionForm);
+      case SUMMARY_DETAILS -> nilSubmissionForm;
+    };
   }
 
   static NilSubmissionForm cleanseAllNilSubmissionSessionValues(NilSubmissionForm form) {
@@ -91,7 +86,7 @@ public class NilSubmissionSessionManager {
     return form;
   }
 
-  private static void validateSessionState(
+  public static void validateSessionState(
       NilSubmissionForm nilSubmissionForm, NilSubmissionPage page) {
     if (!isNilSubmissionSessionStateValid(nilSubmissionForm, page)) {
       throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Invalid session state");

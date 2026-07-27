@@ -2,6 +2,7 @@ package uk.gov.justice.laa.bulkclaim.controller.nilsubmission;
 
 import static uk.gov.justice.laa.bulkclaim.constants.SessionConstants.NIL_SUBMISSION_FORM;
 import static uk.gov.justice.laa.bulkclaim.util.NilSubmissionSessionManager.cleanseSession;
+import static uk.gov.justice.laa.bulkclaim.util.NilSubmissionSessionManager.validateSessionState;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -30,6 +31,7 @@ public class NilSubmissionAreaOfLawController {
       @ModelAttribute(NIL_SUBMISSION_FORM) NilSubmissionForm form, Model model) {
 
     featureFlagsConfig.checkNilSubmissionEnabled();
+    validateSessionState(form, NilSubmissionPage.AREA_OF_LAW);
     cleanseSession(form, NilSubmissionPage.AREA_OF_LAW);
 
     model.addAttribute("areasOfLaw", getAreaOfLawOptions());
@@ -43,6 +45,7 @@ public class NilSubmissionAreaOfLawController {
       Model model) {
 
     featureFlagsConfig.checkNilSubmissionEnabled();
+    validateSessionState(form, NilSubmissionPage.AREA_OF_LAW);
 
     if (form.getAreaOfLaw() == null && !bindingResult.hasFieldErrors("areaOfLaw")) {
       bindingResult.rejectValue("areaOfLaw", "nilSubmission.areaOfLaw.required");
