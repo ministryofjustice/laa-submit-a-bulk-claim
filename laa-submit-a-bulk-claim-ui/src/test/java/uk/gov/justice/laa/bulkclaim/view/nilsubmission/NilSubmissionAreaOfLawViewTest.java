@@ -1,5 +1,6 @@
 package uk.gov.justice.laa.bulkclaim.view.nilsubmission;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.oidcLogin;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -19,6 +20,32 @@ class NilSubmissionAreaOfLawViewTest extends ViewTestBase {
 
   NilSubmissionAreaOfLawViewTest() {
     this.mapping = "/nil-submission/areaoflaw";
+  }
+
+  @Test
+  void areaOfLawHappyPathShowsPageContent() {
+    NilSubmissionForm form = new NilSubmissionForm();
+    form.setOffice("0P322F");
+    form.setOfficeCount(2);
+    session.setAttribute("nilSubmissionForm", form);
+
+    var doc = renderDocument();
+
+    assertPageHasTitle(doc, "Create a nil submission");
+    assertPageHasBackLink(doc);
+
+    assertPageHasHint(doc, "nil-submission-hint", "Create a nil submission");
+    assertPageHasHeading(doc, "Select the area of law");
+
+    var summaryList = getFirstSummaryList(doc);
+    assertThat(summaryList).hasSize(1);
+    assertSummaryListRowContainsValues(summaryList.getFirst(), "Office account number", "0P322F");
+
+    assertPageHasRadioButtons(doc, "Crime lower", "Legal help", "Mediation");
+    assertNoRadioSelected(doc);
+
+    assertPageHasPrimaryButton(doc, "Continue");
+    assertPageHasSecondaryLink(doc, "Cancel");
   }
 
   @Test
