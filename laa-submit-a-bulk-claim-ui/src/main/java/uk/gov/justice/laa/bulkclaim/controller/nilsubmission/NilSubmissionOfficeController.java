@@ -52,6 +52,9 @@ public class NilSubmissionOfficeController {
       return "pages/nil-submission/info-message";
     }
     form.setOfficeCount(userOffices.size());
+    if (userOffices.size() == 1) {
+      form.setOffice(userOffices.getFirst());
+    }
     model.addAttribute("userOffices", userOffices);
 
     return "pages/nil-submission/office";

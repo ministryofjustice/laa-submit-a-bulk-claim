@@ -1,59 +1,59 @@
 package uk.gov.justice.laa.bulkclaim.controller.nilsubmission;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.doThrow;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.oidcLogin;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.redirectedUrl;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static uk.gov.justice.laa.bulkclaim.constants.SessionConstants.NIL_SUBMISSION_FORM;
 import static uk.gov.justice.laa.dstew.payments.claimsdata.model.AreaOfLaw.CRIME_LOWER;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
-import org.springframework.http.HttpStatus;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
+import org.springframework.mock.web.MockHttpSession;
+import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.web.server.ResponseStatusException;
-import uk.gov.justice.laa.bulkclaim.config.FeatureFlagsConfig;
+import uk.gov.justice.laa.bulkclaim.controller.BaseControllerTest;
+import uk.gov.justice.laa.bulkclaim.controller.ControllerTestHelper;
 import uk.gov.justice.laa.bulkclaim.dto.submission.NilSubmissionForm;
 
-class NilSubmissionCancelControllerTest {
+@WebMvcTest(NilSubmissionCancelController.class)
+class NilSubmissionCancelControllerTest extends BaseControllerTest {
 
-  @Mock private FeatureFlagsConfig featureFlagsConfig;
-
-  @InjectMocks private NilSubmissionCancelController nilSubmissionCancelController;
-
-  @BeforeEach
-  void setUp() {
-    MockitoAnnotations.openMocks(this);
-  }
+  @Autowired private MockMvc mockMvc;
 
   @Test
-  void whenFeatureFlagDisabled_shouldReturnErrorView() {
-    NilSubmissionForm form = new NilSubmissionForm();
-
-    doThrow(new ResponseStatusException(HttpStatus.NOT_FOUND, "isNilSubmissionEnabled is false"))
+  void whenFeatureFlagDisabled_shouldReturnErrorView() throws Exception {
+    doThrow(new ResponseStatusException(org.springframework.http.HttpStatus.NOT_FOUND))
         .when(featureFlagsConfig)
         .checkNilSubmissionEnabled();
 
-    assertThrows(
-        ResponseStatusException.class,
-        () -> nilSubmissionCancelController.getCancel("UPLOAD", form));
+    mockMvc
+        .perform(
+            get("/nil-submission/cancel")
+                .param("destination", "UPLOAD")
+                .with(oidcLogin().oidcUser(ControllerTestHelper.getOidcUser()))
+                .sessionAttr(NIL_SUBMISSION_FORM, new NilSubmissionForm()))
+        .andExpect(status().isNotFound());
   }
 
   @Test
-  void whenFeatureFlagEnabledAndDestinationUpload_shouldRedirectToUpload() {
-    when(featureFlagsConfig.getIsNilSubmissionEnabled()).thenReturn(true);
-    NilSubmissionForm form = new NilSubmissionForm();
+  void whenFeatureFlagEnabledAndDestinationUpload_shouldRedirectToUpload() throws Exception {
+    var session = sessionWithForm();
 
-    form.setOffice("office1");
-    form.setAreaOfLaw(CRIME_LOWER);
-    form.setSubmissionPeriod("submissionPeriod1");
-    form.setSubmissionReference("submissionReference1");
+    mockMvc
+        .perform(
+            get("/nil-submission/cancel")
+                .param("destination", "UPLOAD")
+                .with(oidcLogin().oidcUser(ControllerTestHelper.getOidcUser()))
+                .session(session))
+        .andExpect(status().is3xxRedirection())
+        .andExpect(redirectedUrl("/upload"));
 
-    String result = nilSubmissionCancelController.getCancel("UPLOAD", form);
-
-    assertEquals("redirect:/upload", result);
+    var form = (NilSubmissionForm) session.getAttribute(NIL_SUBMISSION_FORM);
     assertNull(form.getOffice());
     assertNull(form.getAreaOfLaw());
     assertNull(form.getSubmissionPeriod());
@@ -61,21 +61,35 @@ class NilSubmissionCancelControllerTest {
   }
 
   @Test
-  void whenFeatureFlagEnabledAndDestinationSearch_shouldRedirectToUpload_SessionRetained() {
-    when(featureFlagsConfig.getIsNilSubmissionEnabled()).thenReturn(true);
-    NilSubmissionForm form = new NilSubmissionForm();
+  void whenFeatureFlagEnabledAndDestinationSearch_shouldRedirectToSearchAndRetainSession()
+      throws Exception {
+    var session = sessionWithForm();
 
+    mockMvc
+        .perform(
+            get("/nil-submission/cancel")
+                .param("destination", "SEARCH")
+                .with(oidcLogin().oidcUser(ControllerTestHelper.getOidcUser()))
+                .session(session))
+        .andExpect(status().is3xxRedirection())
+        .andExpect(redirectedUrl("/submissions/search"));
+
+    var form = (NilSubmissionForm) session.getAttribute(NIL_SUBMISSION_FORM);
+    assertNotNull(form.getOffice());
+    assertNotNull(form.getAreaOfLaw());
+    assertNotNull(form.getSubmissionPeriod());
+    assertNotNull(form.getSubmissionReference());
+  }
+
+  private MockHttpSession sessionWithForm() {
+    NilSubmissionForm form = new NilSubmissionForm();
     form.setOffice("office1");
     form.setAreaOfLaw(CRIME_LOWER);
     form.setSubmissionPeriod("submissionPeriod1");
     form.setSubmissionReference("submissionReference1");
 
-    String result = nilSubmissionCancelController.getCancel("SEARCH", form);
-
-    assertEquals("redirect:/submissions/search", result);
-    assertNotNull(form.getOffice());
-    assertNotNull(form.getAreaOfLaw());
-    assertNotNull(form.getSubmissionPeriod());
-    assertNotNull(form.getSubmissionReference());
+    MockHttpSession session = new MockHttpSession();
+    session.setAttribute(NIL_SUBMISSION_FORM, form);
+    return session;
   }
 }

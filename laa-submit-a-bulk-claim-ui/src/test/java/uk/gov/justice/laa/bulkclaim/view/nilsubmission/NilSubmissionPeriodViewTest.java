@@ -8,6 +8,7 @@ import static org.springframework.security.test.web.servlet.request.SecurityMock
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static uk.gov.justice.laa.dstew.payments.claimsdata.model.AreaOfLaw.MEDIATION;
 
+import java.util.LinkedHashMap;
 import java.util.Map;
 import org.jsoup.Jsoup;
 import org.junit.jupiter.api.Test;
@@ -29,6 +30,84 @@ class NilSubmissionPeriodViewTest extends ViewTestBase {
 
   NilSubmissionPeriodViewTest() {
     this.mapping = "/nil-submission/period";
+  }
+
+  @Test
+  void multipleSubmissionPeriodsShowsDropdown() {
+    when(submissionPeriodService.searchSubmissions(any()))
+        .thenReturn(SubmissionsResultSetTestHelper.getSubmissionsResultSet(0));
+    when(submissionPeriodService.sortSubmissionPeriods(any()))
+        .thenReturn(
+            new LinkedHashMap<>(
+                Map.ofEntries(
+                    Map.entry("JAN-2024", "January 2024"),
+                    Map.entry("FEB-2024", "February 2024"))));
+
+    NilSubmissionForm form = new NilSubmissionForm();
+    form.setOffice("0P322F");
+    form.setOfficeCount(2);
+    form.setAreaOfLaw(MEDIATION);
+    session.setAttribute("nilSubmissionForm", form);
+
+    var doc = renderDocument();
+
+    assertPageHasTitle(doc, "Create a nil submission");
+    assertPageHasBackLink(doc);
+    assertPageHasHint(doc, "nil-submission-hint", "Create a nil submission");
+    assertPageHasHeading(doc, "Select a submission period");
+
+    var summaryList = getFirstSummaryList(doc);
+    assertThat(summaryList).hasSize(2);
+    assertSummaryListRowContainsValues(summaryList.get(0), "Office account number", "0P322F");
+    assertSummaryListRowContainsValues(summaryList.get(1), "Area of law", "Mediation");
+
+    assertPageHasLabel(doc, "submissionPeriod-input", "Submission period");
+    assertDropDownList(
+        doc, "Submission period", "Select a submission period", "January 2024", "February 2024");
+
+    assertPageHasPrimaryButton(doc, "Continue");
+    assertPageHasSecondaryLink(doc, "Cancel");
+  }
+
+  @Test
+  void noSubmissionPeriodsShowsMessage() {
+    when(submissionPeriodService.searchSubmissions(any()))
+        .thenReturn(SubmissionsResultSetTestHelper.getSubmissionsResultSet(0));
+    when(submissionPeriodService.sortSubmissionPeriods(any())).thenReturn(Map.of());
+
+    NilSubmissionForm form = new NilSubmissionForm();
+    form.setOffice("0P322F");
+    form.setOfficeCount(2);
+    form.setAreaOfLaw(MEDIATION);
+    session.setAttribute("nilSubmissionForm", form);
+
+    var doc = renderDocument();
+
+    assertPageHasTitle(doc, "Create a nil submission");
+    assertPageDoesNotHaveBackLink(doc);
+    assertPageHasHeading(doc, "You cannot submit a nil submission");
+
+    var summaryList = getFirstSummaryList(doc);
+    assertThat(summaryList).hasSize(2);
+    assertSummaryListRowContainsValues(summaryList.get(0), "Office account number", "0P322F");
+    assertSummaryListRowContainsValues(summaryList.get(1), "Area of law", "Mediation");
+
+    assertPageBodyText(
+        doc,
+        "No submission periods are available for the combination of office account number and"
+            + " area of law you selected. Go back to submit a bulk claim or search for a"
+            + " previous submission");
+
+    assertPageHasLink(
+        doc,
+        "submit-a-bulk-claim",
+        "submit a bulk claim",
+        "/nil-submission/cancel?destination=UPLOAD");
+    assertPageHasLink(
+        doc,
+        "search-for-previous-submission",
+        "search for a previous submission",
+        "/nil-submission/cancel?destination=SEARCH");
   }
 
   @Test

@@ -15,9 +15,8 @@
                     <div class="govuk-form-group"
                          th:classappend="${#fields.hasErrors('submissionPeriod')} ? ' govuk-form-group--error'">
                         <fieldset class="govuk-fieldset">
-                            <legend class="govuk-fieldset__legend govuk-fieldset__legend--m"
-                                    th:text="#{search.submissionPeriod}">
-                            </legend>
+                            <label class="govuk-label govuk-label--s" for="submissionPeriod-input"
+                                   th:text="#{search.submissionPeriod}"></label>
                             <th:block th:replace="~{fragments/error-components :: error-messages('submissionPeriod')}"/>
                             <div class="govuk-body govuk-input--width-15">
                                 <select class="govuk-select"
