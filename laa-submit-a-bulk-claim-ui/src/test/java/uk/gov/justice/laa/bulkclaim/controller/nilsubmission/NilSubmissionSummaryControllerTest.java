@@ -105,7 +105,7 @@ class NilSubmissionSummaryControllerTest {
     assertNull(form.getOffice());
     assertNull(form.getAreaOfLaw());
     assertNull(form.getSubmissionPeriod());
-    assertNull(form.getScheduleReference());
+    assertNull(form.getSubmissionReference());
   }
 
   @Test
@@ -144,7 +144,7 @@ class NilSubmissionSummaryControllerTest {
     assertNull(form.getOffice());
     assertNull(form.getAreaOfLaw());
     assertNull(form.getSubmissionPeriod());
-    assertNull(form.getScheduleReference());
+    assertNull(form.getSubmissionReference());
   }
 
   @Test
@@ -174,7 +174,7 @@ class NilSubmissionSummaryControllerTest {
     form.setOffice("12345");
     form.setAreaOfLaw(MEDIATION);
     form.setSubmissionPeriod("OCT-2025");
-    form.setScheduleReference("REF-123");
+    form.setSubmissionReference("REF-123");
     return form;
   }
 }

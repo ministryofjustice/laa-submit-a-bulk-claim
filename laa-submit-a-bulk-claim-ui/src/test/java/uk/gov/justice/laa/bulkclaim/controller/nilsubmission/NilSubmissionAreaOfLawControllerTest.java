@@ -129,12 +129,12 @@ class NilSubmissionAreaOfLawControllerTest {
     form.setOffice("office1");
     form.setAreaOfLaw(AreaOfLaw.CRIME_LOWER);
     form.setSubmissionPeriod("submissionPeriod1");
-    form.setScheduleReference("scheduleReference1");
+    form.setSubmissionReference("submissionReference1");
 
     controller.getAreasOfLaw(form, model);
     assertNotNull(form.getOffice());
     assertNull(form.getAreaOfLaw());
     assertNull(form.getSubmissionPeriod());
-    assertNull(form.getScheduleReference());
+    assertNull(form.getSubmissionReference());
   }
 }

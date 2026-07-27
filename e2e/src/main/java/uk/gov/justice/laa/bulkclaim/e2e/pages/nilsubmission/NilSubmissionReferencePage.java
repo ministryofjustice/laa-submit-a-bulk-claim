@@ -16,7 +16,7 @@ public class NilSubmissionReferencePage extends BasePage {
   public NilSubmissionReferencePage(Page page) {
     super(page, "Add your submission reference");
 
-    referenceInput = page.locator("#schedule-reference");
+    referenceInput = page.locator("#submissionReference-input");
     continueButton = page.getByRole(BUTTON, new Page.GetByRoleOptions().setName("Continue"));
   }
 }

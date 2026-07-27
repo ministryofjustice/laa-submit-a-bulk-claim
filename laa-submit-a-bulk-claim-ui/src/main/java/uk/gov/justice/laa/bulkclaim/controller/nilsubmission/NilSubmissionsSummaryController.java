@@ -124,7 +124,7 @@ public class NilSubmissionsSummaryController {
         .officeAccount(form.getOffice())
         .areaOfLaw(form.getAreaOfLaw())
         .submissionPeriod(form.getSubmissionPeriod())
-        .submissionReference(form.getScheduleReference())
+        .submissionReference(form.getSubmissionReference())
         .messages(errorMessages)
         .build();
   }
@@ -150,9 +150,10 @@ public class NilSubmissionsSummaryController {
   void setSubmissionReferenceByAreaOfLaw(NilSubmissionForm form, SubmissionPost submissionPost) {
     switch (form.getAreaOfLaw()) {
       case LEGAL_HELP ->
-          submissionPost.setLegalHelpSubmissionReference(form.getScheduleReference());
-      case MEDIATION -> submissionPost.setMediationSubmissionReference(form.getScheduleReference());
-      case CRIME_LOWER -> submissionPost.setCrimeLowerScheduleNumber(form.getScheduleReference());
+          submissionPost.setLegalHelpSubmissionReference(form.getSubmissionReference());
+      case MEDIATION ->
+          submissionPost.setMediationSubmissionReference(form.getSubmissionReference());
+      case CRIME_LOWER -> submissionPost.setCrimeLowerScheduleNumber(form.getSubmissionReference());
       default -> log.error("Area of law {} is not valid", form.getAreaOfLaw());
     }
   }
