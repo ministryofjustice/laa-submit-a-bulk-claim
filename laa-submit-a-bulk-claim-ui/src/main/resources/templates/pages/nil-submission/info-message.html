@@ -4,9 +4,8 @@
        ~{::#back-link},'nil-submission')}">
 
 <th:block id="back-link">
-    <a href="#"
-       data-module="default-back-link"
-       class="govuk-back-link"
+    <a th:href="@{/upload}"
+       class="govuk-back-link requires-js"
        th:text="#{common.back}"/>
 </th:block>
 
