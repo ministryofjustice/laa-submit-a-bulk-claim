@@ -43,10 +43,10 @@ public class NilSubmissionReferenceController {
     featureFlagsConfig.checkNilSubmissionEnabled();
 
     if (!StringUtils.hasText(form.getSubmissionReference())) {
-      bindingResult.rejectValue(
-          "submissionReference", "nilSubmission.submissionReference.required");
+      bindingResult.rejectValue("submissionReference", getRequiredMessageKey(form));
+      form.setSubmissionReference(null);
     } else if (!isValidSubmissionReference(form.getSubmissionReference())) {
-      bindingResult.rejectValue("submissionReference", "nilSubmission.submissionReference.invalid");
+      bindingResult.rejectValue("submissionReference", getInvalidMessageKey(form));
     }
 
     if (bindingResult.hasErrors()) {
@@ -59,5 +59,13 @@ public class NilSubmissionReferenceController {
   private boolean isValidSubmissionReference(String submissionReference) {
     return submissionReference.length() <= MAX_REFERENCE_LENGTH
         && REFERENCE_PATTERN.matcher(submissionReference).matches();
+  }
+
+  private String getRequiredMessageKey(NilSubmissionForm form) {
+    return "nilSubmission.submissionReference.required." + form.getAreaOfLaw().name();
+  }
+
+  private String getInvalidMessageKey(NilSubmissionForm form) {
+    return "nilSubmission.submissionReference.invalid." + form.getAreaOfLaw().name();
   }
 }

@@ -8,13 +8,13 @@ import lombok.Getter;
 import uk.gov.justice.laa.bulkclaim.e2e.pages.BasePage;
 
 @Getter
-public class NilSubmissionReferencePage extends BasePage {
+public class NilSubmissionCrimeScheduleNumberPage extends BasePage {
 
   private final Locator referenceInput;
   private final Locator continueButton;
 
-  public NilSubmissionReferencePage(Page page) {
-    super(page, "Add your submission reference");
+  public NilSubmissionCrimeScheduleNumberPage(Page page) {
+    super(page, "Add your crime schedule number");
 
     referenceInput = page.locator("#submissionReference-input");
     continueButton = page.getByRole(BUTTON, new Page.GetByRoleOptions().setName("Continue"));
