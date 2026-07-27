@@ -1,14 +1,9 @@
 <!DOCTYPE HTML>
 <html lang="en" class="govuk-template" xmlns:th="http://www.thymeleaf.org"
       th:replace="~{ layout/main-layout :: layout(#{nilSubmission.heading}, ~{::main},
-        ~{::#back-link},'nil-submission')}">
+        ~{},'nil-submission')}">
 
-<th:block id="back-link">
-    <a th:href="@{/nil-submission/areaoflaw}"
-       class="govuk-back-link"
-       th:text="#{common.back}"/>
-</th:block>
-<main class="govuk-main-wrapper" id="main-content">
+<main class="govuk-main-wrapper" id="main-content" data-back-link-href="/nil-submission/areaoflaw" th:attr="data-back-link-text=#{common.back}">
     <div class="govuk-width-container">
         <div class="govuk-grid-row">
             <div class="govuk-grid-column-full">
