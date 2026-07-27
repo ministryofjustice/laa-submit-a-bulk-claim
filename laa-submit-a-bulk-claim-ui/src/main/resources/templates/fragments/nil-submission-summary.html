@@ -66,14 +66,14 @@
 
         </div>
         <div class="govuk-summary-list__row"
-             th:if="${nilSubmissionForm.scheduleReference != null}">
+             th:if="${nilSubmissionForm.submissionReference != null}">
 
             <dt class="govuk-summary-list__key"
                 th:text="#{__${'nilSubmission.summary.reference.' + nilSubmissionForm.areaOfLaw}__}">
             </dt>
 
             <dd class="govuk-summary-list__value"
-                th:text="${nilSubmissionForm.scheduleReference}">
+                th:text="${nilSubmissionForm.submissionReference}">
             </dd>
             <dd class="govuk-summary-list__actions">
                 <a

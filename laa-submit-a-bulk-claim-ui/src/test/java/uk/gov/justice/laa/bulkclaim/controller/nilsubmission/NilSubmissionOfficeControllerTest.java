@@ -155,12 +155,12 @@ class NilSubmissionOfficeControllerTest extends BaseControllerTest {
     form.setOffice("office1");
     form.setAreaOfLaw(MEDIATION);
     form.setSubmissionPeriod("submissionPeriod1");
-    form.setScheduleReference("scheduleReference1");
+    form.setSubmissionReference("submissionReference1");
 
     controller.getNilSubmissionOffice(form, getOidcUser(), model);
     assertNull(form.getOffice());
     assertNull(form.getAreaOfLaw());
     assertNull(form.getSubmissionPeriod());
-    assertNull(form.getScheduleReference());
+    assertNull(form.getSubmissionReference());
   }
 }
