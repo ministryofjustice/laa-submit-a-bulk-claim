@@ -129,4 +129,34 @@ public abstract class ViewTestBase {
         result, String.format("Expected page to have element with CSS query '%s'", cssQuery));
     return result;
   }
+
+  protected void assertFormFieldHasErrorMessage(Document doc, String expectedErrorMessage) {
+    var formGroup = doc.selectFirst(".govuk-form-group");
+    Assertions.assertNotNull(formGroup, "Expected page to have a form group");
+    Assertions.assertTrue(
+        formGroup.className().contains("govuk-form-group--error"),
+        "Expected form group to have error styling");
+
+    var errorMessages = doc.select(".govuk-error-message");
+    Assertions.assertEquals(1, errorMessages.size(), "Expected exactly one error message");
+
+    var errorMessage = errorMessages.getFirst();
+    Assertions.assertTrue(
+        errorMessage.text().contains(expectedErrorMessage),
+        String.format(
+            "Expected error message to contain '%s' but got '%s'",
+            expectedErrorMessage, errorMessage.text()));
+  }
+
+  protected void assertFormFieldHasInlineErrorMessage(Document doc, String expectedErrorMessage) {
+    var errorMessages = doc.select(".govuk-error-message");
+    Assertions.assertEquals(1, errorMessages.size(), "Expected exactly one error message");
+
+    var errorMessage = errorMessages.getFirst();
+    Assertions.assertTrue(
+        errorMessage.text().contains(expectedErrorMessage),
+        String.format(
+            "Expected error message to contain '%s' but got '%s'",
+            expectedErrorMessage, errorMessage.text()));
+  }
 }

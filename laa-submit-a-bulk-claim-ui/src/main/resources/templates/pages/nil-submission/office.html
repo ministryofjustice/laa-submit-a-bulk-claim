@@ -12,24 +12,29 @@
 <main class="govuk-main-wrapper" id="main-content">
     <div class="govuk-width-container">
         <div class="govuk-grid-row">
-            <div class="govuk-grid-column-full">
+            <div class="govuk-grid-column-full" th:object="${nilSubmissionForm}">
+                <div th:replace="~{fragments/error-components :: error-summary}"/>
                 <div id="nil-submission-hint" class="govuk-hint" th:text="#{nilSubmission.hint}"></div>
                 <h1 class="govuk-heading-l" th:text="#{nilSubmission.office.heading}"/>
                 <form class="form" th:action="@{/nil-submission/office}" method="post">
-                    <div class="govuk-form-group">
+                    <div class="govuk-form-group"
+                         th:classappend="${#fields.hasErrors('office')} ? ' govuk-form-group--error'">
                         <fieldset class="govuk-fieldset">
+                            <legend class="govuk-fieldset__legend govuk-fieldset__legend--m"
+                                    th:text="#{nilSubmission.office.heading}">
+                            </legend>
+                            <th:block th:replace="~{fragments/error-components :: error-messages('office')}"/>
                             <div class="govuk-radios govuk-radios--small"
-                                 data-module="govuk-radios" id="offices-input-container">
+                                 data-module="govuk-radios" id="office-input-container">
                                 <th:block th:each="office,idx : ${userOffices}">
                                     <div class="govuk-radios__item">
                                         <input class="govuk-radios__input"
-                                               th:id="${idx.index > 0} ? |offices-input-${idx.index}| : |offices-input|"
+                                               th:id="${idx.index > 0} ? |office-input-${idx.index}| : |office-input|"
                                                type="radio"
-                                               name="office"
-                                               th:value="${office}"
-                                               th:checked="${displayOffice == office}">
+                                               th:field="*{office}"
+                                               th:value="${office}">
                                         <label class="govuk-label govuk-radios__label"
-                                               th:for="${idx.index > 0} ? |offices-input-${idx.index}| : |offices-input|"
+                                               th:for="${idx.index > 0} ? |office-input-${idx.index}| : |office-input|"
                                                th:text="${office}">
                                         </label>
                                     </div>

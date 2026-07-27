@@ -10,6 +10,7 @@ import static org.mockito.Mockito.anyList;
 import static org.mockito.Mockito.anyString;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static uk.gov.justice.laa.dstew.payments.claimsdata.model.AreaOfLaw.MEDIATION;
 
 import java.time.LocalDate;
 import java.time.YearMonth;
@@ -56,7 +57,7 @@ public class SubmissionPeriodServiceTest {
 
     NilSubmissionForm form = new NilSubmissionForm();
     form.setOffice("office1");
-    form.setAreaOfLaw(AreaOfLaw.MEDIATION.getValue());
+    form.setAreaOfLaw(MEDIATION);
 
     SubmissionsResultSet result = submissionPeriodService.searchSubmissions(form);
 
@@ -81,7 +82,7 @@ public class SubmissionPeriodServiceTest {
             toCaptor.capture(),
             anyString());
 
-    assertEquals(AreaOfLaw.MEDIATION, areaCaptor.getValue());
+    assertEquals(MEDIATION, areaCaptor.getValue());
     assertEquals("2023-07-31", fromCaptor.getValue());
     assertEquals("2024-07-03", toCaptor.getValue());
   }
@@ -90,7 +91,7 @@ public class SubmissionPeriodServiceTest {
   void monthsWithoutSubmission_removalOfPreviousSubmissionMonths_listWithReducedPeriods() {
     NilSubmissionForm form = new NilSubmissionForm();
     form.setOffice("officeA");
-    form.setAreaOfLaw(AreaOfLaw.MEDIATION.getValue());
+    form.setAreaOfLaw(MEDIATION);
     when(dateWrapperUtil.nowYearMonth()).thenReturn(YearMonth.now());
     when(dateWrapperUtil.now()).thenReturn(LocalDate.now());
 
@@ -108,7 +109,7 @@ public class SubmissionPeriodServiceTest {
   void monthsWithoutSubmission_noPreviousSubmissionMonth_fullListReturned() {
     NilSubmissionForm form = new NilSubmissionForm();
     form.setOffice("officeA");
-    form.setAreaOfLaw(AreaOfLaw.MEDIATION.getValue());
+    form.setAreaOfLaw(MEDIATION);
     when(dateWrapperUtil.nowYearMonth()).thenReturn(YearMonth.now());
     when(dateWrapperUtil.now()).thenReturn(LocalDate.now());
 

@@ -1,22 +1,21 @@
 package uk.gov.justice.laa.bulkclaim.controller.nilsubmission;
 
 import static uk.gov.justice.laa.bulkclaim.constants.SessionConstants.NIL_SUBMISSION_FORM;
+import static uk.gov.justice.laa.bulkclaim.util.NilSubmissionSessionManager.cleanseSession;
 
-import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.util.StringUtils;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.SessionAttributes;
 import uk.gov.justice.laa.bulkclaim.config.FeatureFlagsConfig;
 import uk.gov.justice.laa.bulkclaim.dto.submission.NilSubmissionForm;
 import uk.gov.justice.laa.bulkclaim.service.SubmissionPeriodService;
 import uk.gov.justice.laa.bulkclaim.util.NilSubmissionPage;
-import uk.gov.justice.laa.bulkclaim.util.NilSubmissionSessionManager;
-import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionsResultSet;
 
 @Controller
 @RequiredArgsConstructor
@@ -31,12 +30,10 @@ public class NilSubmissionPeriodController {
       @ModelAttribute(NIL_SUBMISSION_FORM) NilSubmissionForm selection, Model model) {
 
     featureFlagsConfig.checkNilSubmissionEnabled();
+    cleanseSession(selection, NilSubmissionPage.SUBMISSION_PERIOD);
 
-    NilSubmissionSessionManager.nilSubmissionCleanseSession(
-        selection, NilSubmissionPage.SUBMISSION_PERIOD);
-
-    SubmissionsResultSet submissionsResults = submissionPeriodService.searchSubmissions(selection);
-    Map<String, String> sortedSubmissionPeriods =
+    var submissionsResults = submissionPeriodService.searchSubmissions(selection);
+    var sortedSubmissionPeriods =
         submissionPeriodService.sortSubmissionPeriods(
             submissionPeriodService.getMonthsWithOutSubmissions(submissionsResults));
 
@@ -50,11 +47,27 @@ public class NilSubmissionPeriodController {
   @PostMapping("/nil-submission/period")
   public String postSubmissionPeriod(
       @ModelAttribute(NIL_SUBMISSION_FORM) NilSubmissionForm form,
-      @RequestParam String submissionPeriod) {
+      BindingResult bindingResult,
+      Model model) {
 
     featureFlagsConfig.checkNilSubmissionEnabled();
 
-    form.setSubmissionPeriod(submissionPeriod);
+    var submissionsResults = submissionPeriodService.searchSubmissions(form);
+    var sortedSubmissionPeriods =
+        submissionPeriodService.sortSubmissionPeriods(
+            submissionPeriodService.getMonthsWithOutSubmissions(submissionsResults));
+
+    if (!StringUtils.hasText(form.getSubmissionPeriod())) {
+      bindingResult.rejectValue("submissionPeriod", "nilSubmission.submissionPeriod.required");
+    } else if (!sortedSubmissionPeriods.containsKey(form.getSubmissionPeriod())) {
+      bindingResult.rejectValue("submissionPeriod", "nilSubmission.submissionPeriod.invalid");
+    }
+
+    if (bindingResult.hasErrors()) {
+      form.setSubmissionPeriod(null);
+      model.addAttribute("submissionPeriods", sortedSubmissionPeriods);
+      return "pages/nil-submission/period";
+    }
 
     return "redirect:/nil-submission/reference";
   }

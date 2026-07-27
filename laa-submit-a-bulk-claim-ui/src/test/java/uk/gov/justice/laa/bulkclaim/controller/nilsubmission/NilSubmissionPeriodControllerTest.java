@@ -12,6 +12,7 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static uk.gov.justice.laa.dstew.payments.claimsdata.model.AreaOfLaw.*;
 
 import java.time.LocalDate;
 import java.time.YearMonth;
@@ -24,13 +25,13 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.http.HttpStatus;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.server.ResponseStatusException;
 import uk.gov.justice.laa.bulkclaim.controller.BaseControllerTest;
 import uk.gov.justice.laa.bulkclaim.dto.submission.NilSubmissionForm;
 import uk.gov.justice.laa.bulkclaim.helper.SubmissionsResultSetTestHelper;
 import uk.gov.justice.laa.bulkclaim.service.SubmissionPeriodService;
 import uk.gov.justice.laa.bulkclaim.util.DateWrapperUtil;
-import uk.gov.justice.laa.dstew.payments.claimsdata.model.AreaOfLaw;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionsResultSet;
 
 @AutoConfigureMockMvc(addFilters = false)
@@ -39,6 +40,7 @@ class NilSubmissionPeriodControllerTest extends BaseControllerTest {
   @Mock private Model model;
   @Mock private SubmissionPeriodService submissionPeriodService;
   @Mock private DateWrapperUtil dateWrapperUtil;
+  @Mock private BindingResult bindingResult;
 
   @InjectMocks private NilSubmissionPeriodController nilSubmissionPeriodController;
 
@@ -61,15 +63,56 @@ class NilSubmissionPeriodControllerTest extends BaseControllerTest {
 
     assertThrows(
         ResponseStatusException.class,
-        () -> nilSubmissionPeriodController.postSubmissionPeriod(form, "JAN-2024"));
+        () -> nilSubmissionPeriodController.postSubmissionPeriod(form, bindingResult, model));
     assertNull(form.getSubmissionPeriod());
+  }
+
+  @Test
+  void postNilSubmission_SuccessView() {
+    NilSubmissionForm form = new NilSubmissionForm();
+    form.setOffice("officeA");
+    form.setAreaOfLaw(MEDIATION);
+    doReturn(true).when(featureFlagsConfig).getIsNilSubmissionEnabled();
+
+    final SubmissionsResultSet response = SubmissionsResultSetTestHelper.getSubmissionsResultSet(0);
+
+    when(bindingResult.hasErrors()).thenReturn(false);
+    when(submissionPeriodService.searchSubmissions(any())).thenReturn(response);
+    when(submissionPeriodService.sortSubmissionPeriods(any()))
+        .thenReturn(Map.of("JAN-2024", "January 2024"));
+
+    form.setSubmissionPeriod("JAN-2024");
+    String view = nilSubmissionPeriodController.postSubmissionPeriod(form, bindingResult, model);
+    assertEquals("redirect:/nil-submission/reference", view);
+    assertEquals("JAN-2024", form.getSubmissionPeriod());
+  }
+
+  @Test
+  void postNilSubmission_InvalidPeriod_ReturnsErrorView() {
+    NilSubmissionForm form = new NilSubmissionForm();
+    form.setOffice("officeA");
+    form.setAreaOfLaw(MEDIATION);
+    doReturn(true).when(featureFlagsConfig).getIsNilSubmissionEnabled();
+
+    final SubmissionsResultSet response = SubmissionsResultSetTestHelper.getSubmissionsResultSet(0);
+
+    when(bindingResult.hasErrors()).thenReturn(true);
+    when(submissionPeriodService.searchSubmissions(any())).thenReturn(response);
+    when(submissionPeriodService.sortSubmissionPeriods(any()))
+        .thenReturn(Map.of("JAN-2024", "January 2024"));
+
+    form.setSubmissionPeriod("INVALID-2024");
+    String view = nilSubmissionPeriodController.postSubmissionPeriod(form, bindingResult, model);
+    assertEquals("pages/nil-submission/period", view);
+    assertNull(form.getSubmissionPeriod());
+    verify(model, times(1)).addAttribute(eq("submissionPeriods"), any(Map.class));
   }
 
   @Test
   void getNilSubmission_SuccessView() {
     NilSubmissionForm form = new NilSubmissionForm();
     form.setOffice("officeA");
-    form.setAreaOfLaw(AreaOfLaw.MEDIATION.getValue());
+    form.setAreaOfLaw(MEDIATION);
 
     when(submissionPeriodService.sortSubmissionPeriods(any()))
         .thenReturn(Map.of("JAN-2024", "January 2024"));
@@ -82,31 +125,10 @@ class NilSubmissionPeriodControllerTest extends BaseControllerTest {
   }
 
   @Test
-  void postNilSubmission_SuccessView() {
-    NilSubmissionForm form = new NilSubmissionForm();
-    form.setOffice("officeA");
-    form.setAreaOfLaw(AreaOfLaw.MEDIATION.getValue());
-    doReturn(true).when(featureFlagsConfig).getIsNilSubmissionEnabled();
-
-    final SubmissionsResultSet response = SubmissionsResultSetTestHelper.getSubmissionsResultSet(0);
-
-    when(submissionPeriodService.searchSubmissions(any())).thenReturn(response);
-
-    String view = nilSubmissionPeriodController.postSubmissionPeriod(form, "JAN-2024");
-    assertEquals("redirect:/nil-submission/reference", view);
-    assertEquals("JAN-2024", form.getSubmissionPeriod());
-  }
-
-  @Test
-  void postNilSubmission_InvalidPeriod_ReturnsErrorView() {
-    // TODO
-  }
-
-  @Test
   void getNilSubmission_NoPeriods_ReturnsInfoMessageView() {
     NilSubmissionForm form = new NilSubmissionForm();
     form.setOffice("officeA");
-    form.setAreaOfLaw(AreaOfLaw.MEDIATION.getValue());
+    form.setAreaOfLaw(MEDIATION);
     doReturn(true).when(featureFlagsConfig).getIsNilSubmissionEnabled();
 
     final SubmissionsResultSet response =
@@ -127,7 +149,7 @@ class NilSubmissionPeriodControllerTest extends BaseControllerTest {
 
     NilSubmissionForm form = new NilSubmissionForm();
     form.setOffice("office1");
-    form.setAreaOfLaw("areaOfLaw1");
+    form.setAreaOfLaw(MEDIATION);
     form.setSubmissionPeriod("submissionPeriod1");
     form.setScheduleReference("scheduleReference1");
 

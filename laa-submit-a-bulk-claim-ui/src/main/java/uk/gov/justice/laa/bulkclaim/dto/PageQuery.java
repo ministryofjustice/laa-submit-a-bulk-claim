@@ -29,6 +29,9 @@ public interface PageQuery<T extends SortField, U extends Sort<T>> {
   }
 
   default void addQueryParam(UriComponentsBuilder builder, String key, Object value) {
+    if (value == null) {
+      return;
+    }
     if (value instanceof String valueString && !hasText(valueString)) {
       return;
     }

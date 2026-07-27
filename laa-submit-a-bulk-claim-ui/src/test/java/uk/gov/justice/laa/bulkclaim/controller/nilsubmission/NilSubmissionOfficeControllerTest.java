@@ -11,6 +11,7 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.justice.laa.bulkclaim.controller.ControllerTestHelper.getOidcUser;
+import static uk.gov.justice.laa.dstew.payments.claimsdata.model.AreaOfLaw.MEDIATION;
 
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
@@ -21,6 +22,7 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.oauth2.core.oidc.user.OidcUser;
 import org.springframework.ui.Model;
+import org.springframework.validation.BeanPropertyBindingResult;
 import org.springframework.web.server.ResponseStatusException;
 import uk.gov.justice.laa.bulkclaim.controller.BaseControllerTest;
 import uk.gov.justice.laa.bulkclaim.dto.submission.NilSubmissionForm;
@@ -52,9 +54,11 @@ class NilSubmissionOfficeControllerTest extends BaseControllerTest {
         () -> controller.getNilSubmissionOffice(form, getOidcUser(), model));
     verify(model, never()).addAttribute(eq("userOffices"), any());
 
+    BeanPropertyBindingResult bindingResult =
+        new BeanPropertyBindingResult(form, "nilSubmissionForm");
     assertThrows(
         ResponseStatusException.class,
-        () -> controller.postNilSubmissionOffice(form, model, "OfficeA"));
+        () -> controller.postNilSubmissionOffice(form, bindingResult, getOidcUser(), model));
     assertNull(form.getOffice());
   }
 
@@ -87,22 +91,69 @@ class NilSubmissionOfficeControllerTest extends BaseControllerTest {
   @Test
   void postOffice_setsFormAndRedirects() {
     when(featureFlagsConfig.getIsNilSubmissionEnabled()).thenReturn(true);
-    NilSubmissionForm form = new NilSubmissionForm();
-    form.setOffice("office1");
+    List<String> offices = List.of("OfficeA", "OfficeB");
+    doReturn(offices).when(oidcAttributeUtils).getUserOffices(any(OidcUser.class));
 
-    String view = controller.postNilSubmissionOffice(form, model, "OfficeA");
+    NilSubmissionForm form = new NilSubmissionForm();
+    form.setOffice("OfficeA");
+
+    BeanPropertyBindingResult bindingResult =
+        new BeanPropertyBindingResult(form, "nilSubmissionForm");
+
+    String view = controller.postNilSubmissionOffice(form, bindingResult, getOidcUser(), model);
 
     assertEquals("redirect:/nil-submission/areaoflaw", view);
     assertEquals("OfficeA", form.getOffice());
   }
 
   @Test
+  void postOffice_whenOfficeNotSelected_returnsPageAndAddsRequiredError() {
+    when(featureFlagsConfig.getIsNilSubmissionEnabled()).thenReturn(true);
+    List<String> offices = List.of("OfficeA", "OfficeB");
+    doReturn(offices).when(oidcAttributeUtils).getUserOffices(any(OidcUser.class));
+
+    NilSubmissionForm form = new NilSubmissionForm();
+
+    BeanPropertyBindingResult bindingResult =
+        new BeanPropertyBindingResult(form, "nilSubmissionForm");
+
+    String view = controller.postNilSubmissionOffice(form, bindingResult, getOidcUser(), model);
+
+    assertEquals("pages/nil-submission/office", view);
+    assertNull(form.getOffice());
+    verify(model).addAttribute("userOffices", offices);
+    assertEquals("nilSubmission.office.required", bindingResult.getFieldError("office").getCode());
+  }
+
+  @Test
+  void postOffice_whenOfficeNotAuthorized_returnsPageAndAddsInvalidError() {
+    when(featureFlagsConfig.getIsNilSubmissionEnabled()).thenReturn(true);
+    List<String> offices = List.of("OfficeA", "OfficeB");
+    doReturn(offices).when(oidcAttributeUtils).getUserOffices(any(OidcUser.class));
+
+    NilSubmissionForm form = new NilSubmissionForm();
+    form.setOffice("UnauthorizedOffice");
+
+    BeanPropertyBindingResult bindingResult =
+        new BeanPropertyBindingResult(form, "nilSubmissionForm");
+
+    String view = controller.postNilSubmissionOffice(form, bindingResult, getOidcUser(), model);
+
+    assertEquals("pages/nil-submission/office", view);
+    assertNull(form.getOffice());
+    verify(model).addAttribute("userOffices", offices);
+    assertEquals("nilSubmission.office.invalid", bindingResult.getFieldError("office").getCode());
+  }
+
+  @Test
   void getOffice_session_management_cleansing() {
     when(featureFlagsConfig.getIsNilSubmissionEnabled()).thenReturn(true);
+    List<String> offices = List.of("office1", "office2");
+    doReturn(offices).when(oidcAttributeUtils).getUserOffices(any(OidcUser.class));
 
     NilSubmissionForm form = new NilSubmissionForm();
     form.setOffice("office1");
-    form.setAreaOfLaw("areaOfLaw1");
+    form.setAreaOfLaw(MEDIATION);
     form.setSubmissionPeriod("submissionPeriod1");
     form.setScheduleReference("scheduleReference1");
 
