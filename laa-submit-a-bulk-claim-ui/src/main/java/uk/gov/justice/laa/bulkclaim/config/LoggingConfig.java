@@ -11,7 +11,14 @@ public class LoggingConfig {
 
   private static final List<String> IGNORED_URLS =
       List.of(
-          "/actuator", "/health", "/assets", "/javascripts", "/stylesheets", "/static", "/public", "/webjars");
+          "/actuator",
+          "/health",
+          "/assets",
+          "/javascripts",
+          "/stylesheets",
+          "/static",
+          "/public",
+          "/webjars");
 
   @Bean
   public CommonsRequestLoggingFilter logFilter() {
