@@ -35,19 +35,19 @@ class NilSubmissionReferenceViewTest extends ViewTestBase {
         of(
             CRIME_LOWER,
             "Crime lower",
-            "CRM/0P322F/2025",
+            "e.g. CRM/0P322F/2025",
             "Crime schedule number",
             "Add your crime schedule number"),
         of(
             LEGAL_HELP,
             "Legal help",
-            "0P322F/Civil/01",
+            "e.g. 0P322F/Civil/01",
             "Civil submission reference",
             "Add your civil submission reference"),
         of(
             MEDIATION,
             "Mediation",
-            "0P322F/MEDI2024/01",
+            "e.g. 0P322F/MEDI2024/01",
             "Mediation submission reference",
             "Add your mediation submission reference"));
   }
