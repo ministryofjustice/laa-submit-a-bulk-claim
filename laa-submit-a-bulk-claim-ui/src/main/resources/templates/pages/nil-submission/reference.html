@@ -15,7 +15,7 @@
             <div class="govuk-grid-column-full" th:object="${nilSubmissionForm}">
                 <div th:replace="~{fragments/error-components :: error-summary}"/>
                 <div id="nil-submission-hint" class="govuk-hint" th:text="#{nilSubmission.hint}"></div>
-                <h1 class="govuk-heading-l" th:text="#{nilSubmission.reference.heading}"></h1>
+                <h1 class="govuk-heading-l" th:text="#{__${'nilSubmission.reference.heading.' + nilSubmissionForm.areaOfLaw.name()}__}"></h1>
                 <th:block th:replace="~{fragments/nil-submission-summary :: nil-submission-summary}"/>
                 <form class="form" th:action="@{/nil-submission/reference}" method="post">
                     <div class="govuk-form-group"
@@ -23,7 +23,7 @@
                         <fieldset class="govuk-fieldset">
                             <div class="govuk-body"
                                  data-module="govuk-radios" id="arias-of-law-input-container">
-                                <label class="govuk-label govuk-label--m"
+                                <label class="govuk-label govuk-label--s"
                                       for="submissionReference-input"
                                       th:text="#{__${'nilSubmission.summary.reference.' + nilSubmissionForm.areaOfLaw.name()}__}">
                                 </label>

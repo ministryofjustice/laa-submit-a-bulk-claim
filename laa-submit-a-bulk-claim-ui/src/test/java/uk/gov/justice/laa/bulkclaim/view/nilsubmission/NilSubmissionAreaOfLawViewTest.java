@@ -41,6 +41,7 @@ class NilSubmissionAreaOfLawViewTest extends ViewTestBase {
     assertThat(summaryList).hasSize(1);
     assertSummaryListRowContainsValues(summaryList.getFirst(), "Office account number", "0P322F");
 
+    assertPageHasLegend(doc, "Area of law");
     assertPageHasRadioButtons(doc, "Crime lower", "Legal help", "Mediation");
     assertNoRadioSelected(doc);
 

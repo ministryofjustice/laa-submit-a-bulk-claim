@@ -11,7 +11,6 @@ import static uk.gov.justice.laa.dstew.payments.claimsdata.model.AreaOfLaw.MEDIA
 
 import java.util.stream.Stream;
 import org.jsoup.Jsoup;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -33,15 +32,34 @@ class NilSubmissionReferenceViewTest extends ViewTestBase {
 
   private static Stream<Arguments> referencePageContentArguments() {
     return Stream.of(
-        of(CRIME_LOWER, "Crime lower", "CRM/0P322F/2025", "Crime schedule number"),
-        of(LEGAL_HELP, "Legal help", "0P322F/Civil/01", "Civil submission reference"),
-        of(MEDIATION, "Mediation", "0P322F/MEDI2024/01", "Mediation submission reference"));
+        of(
+            CRIME_LOWER,
+            "Crime lower",
+            "CRM/0P322F/2025",
+            "Crime schedule number",
+            "Add your crime schedule number"),
+        of(
+            LEGAL_HELP,
+            "Legal help",
+            "0P322F/Civil/01",
+            "Civil submission reference",
+            "Add your civil submission reference"),
+        of(
+            MEDIATION,
+            "Mediation",
+            "0P322F/MEDI2024/01",
+            "Mediation submission reference",
+            "Add your mediation submission reference"));
   }
 
   @ParameterizedTest
   @MethodSource("referencePageContentArguments")
   void referencePageContent(
-      AreaOfLaw areaOfLaw, String areaOfLawText, String exampleText, String labelText) {
+      AreaOfLaw areaOfLaw,
+      String areaOfLawText,
+      String exampleText,
+      String labelText,
+      String headingText) {
     NilSubmissionForm form = new NilSubmissionForm();
     form.setOffice("0P322F");
     form.setOfficeCount(2);
@@ -55,7 +73,7 @@ class NilSubmissionReferenceViewTest extends ViewTestBase {
     assertPageHasBackLink(doc);
 
     assertPageHasHint(doc, "nil-submission-hint", "Create a nil submission");
-    assertPageHasHeading(doc, "Add your submission reference");
+    assertPageHasHeading(doc, headingText);
     assertPageHasHint(doc, "nil-submission-example-hint", exampleText);
 
     var summaryList = getFirstSummaryList(doc);
@@ -71,14 +89,16 @@ class NilSubmissionReferenceViewTest extends ViewTestBase {
     assertPageHasSecondaryLink(doc, "Cancel");
   }
 
-  @Test
-  void invalidSubmissionReferenceShowsInlineError() throws Exception {
+  @ParameterizedTest
+  @MethodSource("referenceInvalidArguments")
+  void invalidSubmissionReferenceShowsInlineError(AreaOfLaw areaOfLaw, String expectedErrorMessage)
+      throws Exception {
     MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
     params.add("submissionReference", "invalid-reference-with-hyphen");
 
     NilSubmissionForm form = new NilSubmissionForm();
     form.setOffice("office1");
-    form.setAreaOfLaw(MEDIATION);
+    form.setAreaOfLaw(areaOfLaw);
     form.setSubmissionPeriod("OCT-2025");
     session.setAttribute("nilSubmissionForm", form);
 
@@ -96,16 +116,16 @@ class NilSubmissionReferenceViewTest extends ViewTestBase {
     var document = Jsoup.parse(doc.getContentAsString());
 
     assertThat(doc.getStatus()).isEqualTo(200);
-    assertFormFieldHasErrorMessage(
-        document,
-        "Submission reference must be a maximum of 20 characters and contain only letters, numbers and forward slashes");
+    assertFormFieldHasErrorMessage(document, expectedErrorMessage);
   }
 
-  @Test
-  void submissionReferenceNotSelectedShowsInlineError() throws Exception {
+  @ParameterizedTest
+  @MethodSource("referenceRequiredArguments")
+  void submissionReferenceNotSelectedShowsInlineError(
+      AreaOfLaw areaOfLaw, String expectedErrorMessage) throws Exception {
     NilSubmissionForm form = new NilSubmissionForm();
     form.setOffice("office1");
-    form.setAreaOfLaw(MEDIATION);
+    form.setAreaOfLaw(areaOfLaw);
     form.setSubmissionPeriod("OCT-2025");
     session.setAttribute("nilSubmissionForm", form);
 
@@ -122,6 +142,26 @@ class NilSubmissionReferenceViewTest extends ViewTestBase {
     var document = Jsoup.parse(doc.getContentAsString());
 
     assertThat(doc.getStatus()).isEqualTo(200);
-    assertFormFieldHasInlineErrorMessage(document, "Enter a submission reference");
+    assertFormFieldHasInlineErrorMessage(document, expectedErrorMessage);
+  }
+
+  private static Stream<Arguments> referenceRequiredArguments() {
+    return Stream.of(
+        of(CRIME_LOWER, "Enter a crime schedule number"),
+        of(LEGAL_HELP, "Enter a civil submission reference"),
+        of(MEDIATION, "Enter a mediation submission reference"));
+  }
+
+  private static Stream<Arguments> referenceInvalidArguments() {
+    return Stream.of(
+        of(
+            CRIME_LOWER,
+            "Crime schedule number must be a maximum of 20 characters and contain only letters, numbers and forward slashes"),
+        of(
+            LEGAL_HELP,
+            "Civil submission reference must be a maximum of 20 characters and contain only letters, numbers and forward slashes"),
+        of(
+            MEDIATION,
+            "Mediation submission reference must be a maximum of 20 characters and contain only letters, numbers and forward slashes"));
   }
 }

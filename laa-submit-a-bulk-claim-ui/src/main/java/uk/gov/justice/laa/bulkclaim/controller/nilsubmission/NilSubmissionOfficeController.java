@@ -4,6 +4,7 @@ import static uk.gov.justice.laa.bulkclaim.constants.NilSubmissionInfoMessageCon
 import static uk.gov.justice.laa.bulkclaim.constants.NilSubmissionInfoMessageConstants.SUBMISSION_INFO_MESSAGE_TEXT;
 import static uk.gov.justice.laa.bulkclaim.constants.SessionConstants.NIL_SUBMISSION_FORM;
 import static uk.gov.justice.laa.bulkclaim.util.NilSubmissionSessionManager.cleanseSession;
+import static uk.gov.justice.laa.bulkclaim.util.NilSubmissionSessionManager.validateSessionState;
 
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -42,6 +43,7 @@ public class NilSubmissionOfficeController {
       Model model) {
 
     featureFlagsConfig.checkNilSubmissionEnabled();
+    validateSessionState(form, NilSubmissionPage.OFFICE);
     cleanseSession(form, NilSubmissionPage.OFFICE);
 
     List<String> userOffices = oidcAttributeUtils.getUserOffices(oidcUser);
@@ -68,6 +70,7 @@ public class NilSubmissionOfficeController {
       Model model) {
 
     featureFlagsConfig.checkNilSubmissionEnabled();
+    validateSessionState(form, NilSubmissionPage.OFFICE);
 
     List<String> userOffices = oidcAttributeUtils.getUserOffices(oidcUser);
     form.setOfficeCount(userOffices.size());

@@ -2,6 +2,7 @@ package uk.gov.justice.laa.bulkclaim.controller.nilsubmission;
 
 import static uk.gov.justice.laa.bulkclaim.constants.SessionConstants.NIL_SUBMISSION_FORM;
 import static uk.gov.justice.laa.bulkclaim.util.NilSubmissionSessionManager.cleanseSession;
+import static uk.gov.justice.laa.bulkclaim.util.NilSubmissionSessionManager.validateSessionState;
 
 import java.util.regex.Pattern;
 import lombok.RequiredArgsConstructor;
@@ -32,6 +33,7 @@ public class NilSubmissionReferenceController {
       @ModelAttribute(NIL_SUBMISSION_FORM) NilSubmissionForm form, Model model) {
 
     featureFlagsConfig.checkNilSubmissionEnabled();
+    validateSessionState(form, NilSubmissionPage.SUBMISSION_REFERENCE);
     cleanseSession(form, NilSubmissionPage.SUBMISSION_REFERENCE);
 
     return "pages/nil-submission/reference";
@@ -41,12 +43,13 @@ public class NilSubmissionReferenceController {
   public String postReference(
       @ModelAttribute(NIL_SUBMISSION_FORM) NilSubmissionForm form, BindingResult bindingResult) {
     featureFlagsConfig.checkNilSubmissionEnabled();
+    validateSessionState(form, NilSubmissionPage.SUBMISSION_REFERENCE);
 
     if (!StringUtils.hasText(form.getSubmissionReference())) {
-      bindingResult.rejectValue(
-          "submissionReference", "nilSubmission.submissionReference.required");
+      bindingResult.rejectValue("submissionReference", getRequiredMessageKey(form));
+      form.setSubmissionReference(null);
     } else if (!isValidSubmissionReference(form.getSubmissionReference())) {
-      bindingResult.rejectValue("submissionReference", "nilSubmission.submissionReference.invalid");
+      bindingResult.rejectValue("submissionReference", getInvalidMessageKey(form));
     }
 
     if (bindingResult.hasErrors()) {
@@ -59,5 +62,13 @@ public class NilSubmissionReferenceController {
   private boolean isValidSubmissionReference(String submissionReference) {
     return submissionReference.length() <= MAX_REFERENCE_LENGTH
         && REFERENCE_PATTERN.matcher(submissionReference).matches();
+  }
+
+  private String getRequiredMessageKey(NilSubmissionForm form) {
+    return "nilSubmission.submissionReference.required." + form.getAreaOfLaw().name();
+  }
+
+  private String getInvalidMessageKey(NilSubmissionForm form) {
+    return "nilSubmission.submissionReference.invalid." + form.getAreaOfLaw().name();
   }
 }

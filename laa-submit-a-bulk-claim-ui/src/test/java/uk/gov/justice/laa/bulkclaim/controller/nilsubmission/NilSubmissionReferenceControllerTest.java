@@ -2,6 +2,7 @@ package uk.gov.justice.laa.bulkclaim.controller.nilsubmission;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.params.provider.Arguments.of;
 import static org.mockito.Mockito.doThrow;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.oidcLogin;
@@ -12,9 +13,15 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
 import static uk.gov.justice.laa.bulkclaim.constants.SessionConstants.NIL_SUBMISSION_FORM;
+import static uk.gov.justice.laa.dstew.payments.claimsdata.model.AreaOfLaw.CRIME_LOWER;
+import static uk.gov.justice.laa.dstew.payments.claimsdata.model.AreaOfLaw.LEGAL_HELP;
 import static uk.gov.justice.laa.dstew.payments.claimsdata.model.AreaOfLaw.MEDIATION;
 
+import java.util.stream.Stream;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
 import org.springframework.mock.web.MockHttpSession;
@@ -28,6 +35,20 @@ import uk.gov.justice.laa.bulkclaim.dto.submission.NilSubmissionForm;
 class NilSubmissionReferenceControllerTest extends BaseControllerTest {
 
   @Autowired private MockMvc mockMvc;
+
+  private static Stream<Arguments> referenceRequiredCodes() {
+    return Stream.of(
+        of(CRIME_LOWER, "nilSubmission.submissionReference.required.CRIME_LOWER"),
+        of(LEGAL_HELP, "nilSubmission.submissionReference.required.LEGAL_HELP"),
+        of(MEDIATION, "nilSubmission.submissionReference.required.MEDIATION"));
+  }
+
+  private static Stream<Arguments> referenceInvalidCodes() {
+    return Stream.of(
+        of(CRIME_LOWER, "nilSubmission.submissionReference.invalid.CRIME_LOWER"),
+        of(LEGAL_HELP, "nilSubmission.submissionReference.invalid.LEGAL_HELP"),
+        of(MEDIATION, "nilSubmission.submissionReference.invalid.MEDIATION"));
+  }
 
   @Test
   void whenFeatureFlagDisabled_allMappings_returnsErrorView() throws Exception {
@@ -80,42 +101,60 @@ class NilSubmissionReferenceControllerTest extends BaseControllerTest {
     org.junit.jupiter.api.Assertions.assertEquals("reference", form.getSubmissionReference());
   }
 
-  @Test
-  void postReference_whenNotEntered_returnsError() throws Exception {
+  @ParameterizedTest
+  @MethodSource("referenceRequiredCodes")
+  void postReference_whenNotEntered_returnsError(
+      uk.gov.justice.laa.dstew.payments.claimsdata.model.AreaOfLaw areaOfLaw, String expectedCode)
+      throws Exception {
     mockMvc
         .perform(
             post("/nil-submission/reference")
                 .with(csrf())
                 .with(oidcLogin().oidcUser(ControllerTestHelper.getOidcUser()))
                 .param("submissionReference", "")
-                .sessionAttr(NIL_SUBMISSION_FORM, buildSessionForm()))
+                .sessionAttr(NIL_SUBMISSION_FORM, buildSessionForm(areaOfLaw)))
         .andExpect(status().isOk())
         .andExpect(view().name("pages/nil-submission/reference"))
         .andExpect(
             model()
                 .attributeHasFieldErrorCode(
-                    "nilSubmissionForm",
-                    "submissionReference",
-                    "nilSubmission.submissionReference.required"));
+                    "nilSubmissionForm", "submissionReference", expectedCode));
   }
 
-  @Test
-  void postReference_whenInvalidFormat_returnsError() throws Exception {
+  @ParameterizedTest
+  @MethodSource("referenceInvalidCodes")
+  void postReference_whenInvalidFormat_returnsError(
+      uk.gov.justice.laa.dstew.payments.claimsdata.model.AreaOfLaw areaOfLaw, String expectedCode)
+      throws Exception {
     mockMvc
         .perform(
             post("/nil-submission/reference")
                 .with(csrf())
                 .with(oidcLogin().oidcUser(ControllerTestHelper.getOidcUser()))
                 .param("submissionReference", "invalid-reference-with-hyphen")
-                .sessionAttr(NIL_SUBMISSION_FORM, buildSessionForm()))
+                .sessionAttr(NIL_SUBMISSION_FORM, buildSessionForm(areaOfLaw)))
         .andExpect(status().isOk())
         .andExpect(view().name("pages/nil-submission/reference"))
         .andExpect(
             model()
                 .attributeHasFieldErrorCode(
-                    "nilSubmissionForm",
-                    "submissionReference",
-                    "nilSubmission.submissionReference.invalid"));
+                    "nilSubmissionForm", "submissionReference", expectedCode));
+  }
+
+  @Test
+  void postReference_withoutRequiredSessionState_returnsNotFound() throws Exception {
+    NilSubmissionForm form = new NilSubmissionForm();
+    form.setOffice("office1");
+    form.setAreaOfLaw(MEDIATION);
+
+    mockMvc
+        .perform(
+            post("/nil-submission/reference")
+                .with(csrf())
+                .with(oidcLogin().oidcUser(ControllerTestHelper.getOidcUser()))
+                .param("submissionReference", "reference")
+                .sessionAttr(NIL_SUBMISSION_FORM, form))
+        .andExpect(status().isNotFound());
   }
 
   @Test
@@ -139,9 +178,14 @@ class NilSubmissionReferenceControllerTest extends BaseControllerTest {
   }
 
   private static NilSubmissionForm buildSessionForm() {
+    return buildSessionForm(MEDIATION);
+  }
+
+  private static NilSubmissionForm buildSessionForm(
+      uk.gov.justice.laa.dstew.payments.claimsdata.model.AreaOfLaw areaOfLaw) {
     NilSubmissionForm form = new NilSubmissionForm();
     form.setOffice("office1");
-    form.setAreaOfLaw(MEDIATION);
+    form.setAreaOfLaw(areaOfLaw);
     form.setSubmissionPeriod("OCT-2025");
     return form;
   }
