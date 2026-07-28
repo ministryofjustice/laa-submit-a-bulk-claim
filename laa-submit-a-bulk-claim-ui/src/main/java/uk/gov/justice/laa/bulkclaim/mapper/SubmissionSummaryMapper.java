@@ -1,7 +1,6 @@
 package uk.gov.justice.laa.bulkclaim.mapper;
 
 import java.time.LocalDate;
-import java.time.YearMonth;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Named;
@@ -45,7 +44,6 @@ public interface SubmissionSummaryMapper {
 
   @Named("toSubmissionPeriod")
   default LocalDate toSubmissionPeriod(final String submissionPeriod) {
-    YearMonth yearMonth = YearMonth.parse(submissionPeriod, SubmissionPeriodUtil.IN_FMT);
-    return yearMonth.atDay(1);
+    return SubmissionPeriodUtil.toSubmissionPeriodStart(submissionPeriod);
   }
 }

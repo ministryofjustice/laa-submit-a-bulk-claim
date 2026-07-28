@@ -1,5 +1,6 @@
 package uk.gov.justice.laa.bulkclaim.util;
 
+import java.time.LocalDate;
 import java.time.YearMonth;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeFormatterBuilder;
@@ -95,5 +96,17 @@ public class SubmissionPeriodUtil {
     // January 2020 = 202001
     // February 2020 = 202002
     return (yearMonth.getYear() * 100) + yearMonth.getMonthValue();
+  }
+
+  /**
+   * Parses a submission period in "MMM-uuuu" format (e.g., "Jan-2023") and returns the first day
+   * of that month.
+   *
+   * @param submissionPeriod the submission period string, expected in "MMM-uuuu" format.
+   * @return the first day of the parsed submission period month.
+   */
+  public static LocalDate toSubmissionPeriodStart(final String submissionPeriod) {
+    YearMonth yearMonth = YearMonth.parse(submissionPeriod, IN_FMT);
+    return yearMonth.atDay(1);
   }
 }

@@ -1,7 +1,6 @@
 package uk.gov.justice.laa.bulkclaim.mapper;
 
 import java.time.LocalDate;
-import java.time.YearMonth;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -39,8 +38,7 @@ public interface BulkClaimImportSummaryMapper {
 
   @Named("toSubmissionPeriod")
   default LocalDate toSubmissionPeriod(final String submissionPeriod) {
-    YearMonth yearMonth = YearMonth.parse(submissionPeriod, SubmissionPeriodUtil.IN_FMT);
-    return yearMonth.atDay(1);
+    return SubmissionPeriodUtil.toSubmissionPeriodStart(submissionPeriod);
   }
 
   @Mapping(target = "ufn", source = "claimResponse.uniqueFileNumber")
