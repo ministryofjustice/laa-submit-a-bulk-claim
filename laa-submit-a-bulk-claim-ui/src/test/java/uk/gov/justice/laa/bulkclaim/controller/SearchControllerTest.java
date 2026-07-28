@@ -121,12 +121,7 @@ class SearchControllerTest {
 
     var query =
         new SubmissionSearchQuery(
-            null,
-            null,
-            "JAN-2024",
-            CRIME_LOWER,
-            List.of(),
-            SubmissionOutcomeFilter.SUCCEEDED);
+            null, null, "JAN-2024", CRIME_LOWER, List.of(), SubmissionOutcomeFilter.SUCCEEDED);
 
     String view =
         searchController.submissionsSearchResults(

@@ -15,20 +15,20 @@ public class NilSubmissionSessionManager {
       case OFFICE -> sessionValidForOffice(nilSubmissionForm);
       case AREA_OF_LAW -> sessionValidForAreaOfLaw(nilSubmissionForm);
       case SUBMISSION_PERIOD -> sessionValidForSubmissionPeriod(nilSubmissionForm);
-      case SCHEDULE_REFERENCE -> sessionValidForScheduleReference(nilSubmissionForm);
+      case SUBMISSION_REFERENCE -> sessionValidForSubmissionReference(nilSubmissionForm);
       case SUMMARY_DETAILS -> sessionValidForSummaryDetails(nilSubmissionForm);
       case OTHER -> true;
     };
   }
 
-  static boolean sessionValidForScheduleReference(NilSubmissionForm nilSubmissionForm) {
+  static boolean sessionValidForSubmissionReference(NilSubmissionForm nilSubmissionForm) {
     return StringUtils.hasText(nilSubmissionForm.getSubmissionPeriod())
         && sessionValidForSubmissionPeriod(nilSubmissionForm);
   }
 
   static boolean sessionValidForSummaryDetails(NilSubmissionForm nilSubmissionForm) {
-    return StringUtils.hasText(nilSubmissionForm.getScheduleReference())
-        && sessionValidForScheduleReference(nilSubmissionForm);
+    return StringUtils.hasText(nilSubmissionForm.getSubmissionReference())
+        && sessionValidForSubmissionReference(nilSubmissionForm);
   }
 
   static boolean sessionValidForSubmissionPeriod(NilSubmissionForm nilSubmissionForm) {
@@ -47,51 +47,46 @@ public class NilSubmissionSessionManager {
   public static NilSubmissionForm cleanseSession(
       NilSubmissionForm nilSubmissionForm, NilSubmissionPage page) {
 
-    var form =
-        switch (page) {
-          case OFFICE, OTHER -> cleanseAllNilSubmissionSessionValues(nilSubmissionForm);
-          case AREA_OF_LAW -> cleanseSessionValuesPriorToAreaOfLawSelection(nilSubmissionForm);
-          case SUBMISSION_PERIOD ->
-              cleanseSessionValuesPriorToSubmissionPeriodSelection(nilSubmissionForm);
-          case SCHEDULE_REFERENCE ->
-              cleanseSessionValuesPriorToScheduleReferenceEntry(nilSubmissionForm);
-          case SUMMARY_DETAILS -> nilSubmissionForm;
-        };
-
-    validateSessionState(form, page);
-
-    return form;
+    return switch (page) {
+      case OFFICE, OTHER -> cleanseAllNilSubmissionSessionValues(nilSubmissionForm);
+      case AREA_OF_LAW -> cleanseSessionValuesPriorToAreaOfLawSelection(nilSubmissionForm);
+      case SUBMISSION_PERIOD ->
+          cleanseSessionValuesPriorToSubmissionPeriodSelection(nilSubmissionForm);
+      case SUBMISSION_REFERENCE ->
+          cleanseSessionValuesPriorToSubmissionReferenceEntry(nilSubmissionForm);
+      case SUMMARY_DETAILS -> nilSubmissionForm;
+    };
   }
 
   static NilSubmissionForm cleanseAllNilSubmissionSessionValues(NilSubmissionForm form) {
     form.setOffice(null);
     form.setAreaOfLaw(null);
     form.setSubmissionPeriod(null);
-    form.setScheduleReference(null);
+    form.setSubmissionReference(null);
     return form;
   }
 
   static NilSubmissionForm cleanseSessionValuesPriorToAreaOfLawSelection(NilSubmissionForm form) {
     form.setAreaOfLaw(null);
     form.setSubmissionPeriod(null);
-    form.setScheduleReference(null);
+    form.setSubmissionReference(null);
     return form;
   }
 
   static NilSubmissionForm cleanseSessionValuesPriorToSubmissionPeriodSelection(
       NilSubmissionForm form) {
     form.setSubmissionPeriod(null);
-    form.setScheduleReference(null);
+    form.setSubmissionReference(null);
     return form;
   }
 
-  static NilSubmissionForm cleanseSessionValuesPriorToScheduleReferenceEntry(
+  static NilSubmissionForm cleanseSessionValuesPriorToSubmissionReferenceEntry(
       NilSubmissionForm form) {
-    form.setScheduleReference(null);
+    form.setSubmissionReference(null);
     return form;
   }
 
-  private static void validateSessionState(
+  public static void validateSessionState(
       NilSubmissionForm nilSubmissionForm, NilSubmissionPage page) {
     if (!isNilSubmissionSessionStateValid(nilSubmissionForm, page)) {
       throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Invalid session state");

@@ -68,26 +68,26 @@ class SearchResultsViewTest extends ViewTestBase {
         headers.get(0),
         "descending",
         "Date submitted",
-        "/submissions/search/results?page=0&submissionPeriod&areaOfLaw&offices=12345&submissionStatuses=ALL&sort=createdOn,asc");
+        "/submissions/search/results?page=0&offices=12345&submissionStatuses=ALL&sort=createdOn,asc");
     assertTableHeaderIsSortable(
         headers.get(1),
         "none",
         "Office account",
-        "/submissions/search/results?page=0&submissionPeriod&areaOfLaw&offices=12345&submissionStatuses=ALL&sort=officeAccountNumber,asc");
+        "/submissions/search/results?page=0&offices=12345&submissionStatuses=ALL&sort=officeAccountNumber,asc");
     assertTableHeaderIsSortable(
         headers.get(2),
         "none",
         "Area of law",
-        "/submissions/search/results?page=0&submissionPeriod&areaOfLaw&offices=12345&submissionStatuses=ALL&sort=areaOfLaw,asc");
+        "/submissions/search/results?page=0&offices=12345&submissionStatuses=ALL&sort=areaOfLaw,asc");
     assertTableHeaderIsSortable(
         headers.get(3),
         "none",
         "Submission period",
-        "/submissions/search/results?page=0&submissionPeriod&areaOfLaw&offices=12345&submissionStatuses=ALL&sort=submissionPeriod,asc");
+        "/submissions/search/results?page=0&offices=12345&submissionStatuses=ALL&sort=submissionPeriod,asc");
     assertTableHeaderIsSortable(
         headers.get(4),
         "none",
         "Status",
-        "/submissions/search/results?page=0&submissionPeriod&areaOfLaw&offices=12345&submissionStatuses=ALL&sort=status,asc");
+        "/submissions/search/results?page=0&offices=12345&submissionStatuses=ALL&sort=status,asc");
   }
 }

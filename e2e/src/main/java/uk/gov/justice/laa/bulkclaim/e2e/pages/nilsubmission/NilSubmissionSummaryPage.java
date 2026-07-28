@@ -13,7 +13,7 @@ public class NilSubmissionSummaryPage extends BasePage {
   private final Locator submitButton;
 
   public NilSubmissionSummaryPage(Page page) {
-    super(page, "Select the area of law");
+    super(page, "Check your nil submission");
 
     submitButton = page.getByRole(BUTTON, new Page.GetByRoleOptions().setName("Submit"));
   }
