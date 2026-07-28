@@ -78,9 +78,12 @@ class NilSubmissionReferenceViewTest extends ViewTestBase {
 
     var summaryList = getFirstSummaryList(doc);
     assertThat(summaryList).hasSize(3);
-    assertSummaryListRowContainsValues(summaryList.get(0), "Office account number", "0P322F");
-    assertSummaryListRowContainsValues(summaryList.get(1), "Area of law", areaOfLawText);
-    assertSummaryListRowContainsValues(summaryList.get(2), "Submission period", "OCT-2025");
+    assertRowContainsValuesThenLink(
+        summaryList.get(0), "Office account number", "Change", "/nil-submission/office", "0P322F");
+    assertRowContainsValuesThenLink(
+        summaryList.get(1), "Area of law", "Change", "/nil-submission/areaoflaw", areaOfLawText);
+    assertRowContainsValuesThenLink(
+        summaryList.get(2), "Submission period", "Change", "/nil-submission/period", "OCT-2025");
 
     assertPageHasLabel(doc, "submissionReference-input", labelText);
     assertThat(selectFirst(doc, "#submissionReference-input").attr("value")).isEmpty();

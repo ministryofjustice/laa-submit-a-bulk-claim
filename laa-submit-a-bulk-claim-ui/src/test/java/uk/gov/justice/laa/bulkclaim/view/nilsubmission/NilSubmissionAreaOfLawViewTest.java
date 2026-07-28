@@ -1,6 +1,5 @@
 package uk.gov.justice.laa.bulkclaim.view.nilsubmission;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.oidcLogin;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -38,8 +37,9 @@ class NilSubmissionAreaOfLawViewTest extends ViewTestBase {
     assertPageHasHeading(doc, "Select the area of law");
 
     var summaryList = getFirstSummaryList(doc);
-    assertThat(summaryList).hasSize(1);
-    assertSummaryListRowContainsValues(summaryList.getFirst(), "Office account number", "0P322F");
+    var officeRow = summaryList.getFirst();
+    assertRowContainsValuesThenLink(
+        officeRow, "Office account number", "Change", "/nil-submission/office", "0P322F");
 
     assertPageHasLegend(doc, "Area of law");
     assertPageHasRadioButtons(doc, "Crime lower", "Legal help", "Mediation");

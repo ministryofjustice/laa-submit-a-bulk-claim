@@ -408,9 +408,11 @@ public abstract class ViewTestBase {
     for (Element row : summaryList.select(".govuk-summary-list__row")) {
       Element key = selectFirst(row, ".govuk-summary-list__key");
       List<Element> values = row.select(".govuk-summary-list__value").stream().toList();
+      List<Element> actions = row.select(".govuk-summary-list__actions").stream().toList();
       List<Element> cells = new ArrayList<>();
       cells.add(key);
       cells.addAll(values);
+      cells.addAll(actions);
       matrix.add(cells);
     }
     return matrix;
@@ -430,20 +432,6 @@ public abstract class ViewTestBase {
         expectedText, allText, "Cell does not contain expected text: " + expectedText);
   }
 
-  private void assertCellIsEmpty(Element cell) {
-    assertCellContainsText(cell, "");
-  }
-
-  private void assertCellContainsChangeLink(
-      Element cell, String expectedHref, String expectedHiddenText) {
-    assertCellContainsLink(cell, "Change", expectedHref, expectedHiddenText);
-  }
-
-  private void assertCellContainsAddLink(
-      Element cell, String expectedHref, String expectedHiddenText) {
-    assertCellContainsLink(cell, "Add", expectedHref, expectedHiddenText);
-  }
-
   private void assertCellContainsLink(
       Element cell, String expectedText, String expectedHref, String expectedHiddenText) {
     Element link = selectFirst(cell, "a.govuk-link");
@@ -453,51 +441,20 @@ public abstract class ViewTestBase {
     Assertions.assertEquals(String.format(" %s", expectedHiddenText), hiddenText.wholeOwnText());
   }
 
-  protected void assertTableRowContainsValuesWithNoChangeLink(
-      List<Element> row, String label, String requested, String calculated, String assessed) {
-    assertCellContainsText(row.getFirst(), label);
-    assertCellContainsText(row.get(1), requested);
-    assertCellContainsText(row.get(2), calculated);
-    assertCellContainsText(row.get(3), assessed);
-    assertCellIsEmpty(row.get(4));
-  }
-
-  protected void assertTableRowContainsValuesWithChangeLink(
-      List<Element> row,
-      String label,
-      String calculated,
-      String requested,
-      String assessed,
-      String changeUrl) {
-    assertCellContainsText(row.getFirst(), label);
-    assertCellContainsText(row.get(1), calculated);
-    assertCellContainsText(row.get(2), requested);
-    assertCellContainsText(row.get(3), assessed);
-    assertCellContainsChangeLink(row.get(4), changeUrl, label);
-  }
-
-  protected void assertTableRowContainsValuesWithChangeLink(
-      List<Element> row, String label, String value, String changeUrl) {
-    assertCellContainsText(row.getFirst(), label);
-    assertCellContainsText(row.get(1), value);
-    assertCellContainsChangeLink(row.get(2), changeUrl, label);
-  }
-
-  protected void assertTableRowContainsValuesWithAddLink(
-      List<Element> row, String label, String calculated, String requested, String addUrl) {
-    assertCellContainsText(row.getFirst(), label);
-    assertCellContainsText(row.get(1), calculated);
-    assertCellContainsText(row.get(2), requested);
-    assertCellContainsAddLink(row.get(3), addUrl, label);
-    assertCellIsEmpty(row.get(4));
-  }
-
-  protected void assertSummaryListRowContainsValues(
-      List<Element> row, String label, String... values) {
+  protected void assertRowContainsValues(List<Element> row, String label, String... values) {
+    assertThat(row.size()).isGreaterThanOrEqualTo(values.length + 1); // Plus label
     assertCellContainsText(row.getFirst(), label);
     for (int i = 0; i < values.length; i++) {
       assertCellContainsText(row.get(i + 1), values[i]);
     }
+  }
+
+  protected void assertRowContainsValuesThenLink(
+      List<Element> row, String label, String linkText, String linkUrl, String... values) {
+    assertThat(row.size()).isGreaterThanOrEqualTo(values.length + 2); // Plus label and link
+    assertRowContainsValues(row, label, values);
+    var linkCell = row.getLast();
+    assertCellContainsLink(linkCell, linkText, linkUrl, label);
   }
 
   protected Elements getTableHeaders(Document doc) {
