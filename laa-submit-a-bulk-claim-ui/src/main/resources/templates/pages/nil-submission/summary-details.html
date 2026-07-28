@@ -7,9 +7,13 @@
     <div class="govuk-width-container">
         <div class="govuk-grid-row">
             <div class="govuk-grid-column-full">
+                <th:block
+                        th:replace="~{fragments/submission-details/nil-submission-validation-error-banner :: nil-submission-validation-error-banner(${errorMessages})}"></th:block>
                 <div id="nil-submission-hint" class="govuk-hint" th:text="#{nilSubmission.hint}"></div>
                 <h1 class="govuk-heading-l" th:text="#{nilSubmission.check.heading}"/>
                 <th:block th:replace="~{fragments/nil-submission-summary :: nil-submission-summary}"/>
+                <th:block
+                        th:replace="~{fragments/submission-details/nil-submission-messages-errors :: nil-submission-messages-errors(${errorMessages})}"></th:block>
                 <form class="form" th:object="${nilSubmissionForm}" th:action="@{/nil-submission/summary-details}"
                       method="post">
                     <div class="govuk-button-group">

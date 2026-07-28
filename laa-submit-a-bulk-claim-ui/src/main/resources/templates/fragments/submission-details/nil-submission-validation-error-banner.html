@@ -1,9 +1,9 @@
-<th:block th:fragment="nil-submission-validation-error-banner(messagesSummary)">
+<th:block th:fragment="nil-submission-validation-error-banner(errorMessages)">
     <div role="region"
          class="moj-alert moj-alert--error moj-alert--with-heading"
          aria-label="error"
          data-module="moj-alert"
-         th:if="${messagesSummary != null}">
+         th:if="${not #lists.isEmpty(errorMessages)}">
         <div>
             <svg class="moj-alert__icon"
                  role="presentation"
@@ -20,7 +20,7 @@
         </div>
         <div class="moj-alert__content">
             <h2 class="moj-alert__heading"
-                th:text="#{submission.errors.banner.title(${messagesSummary.totalMessageCount})}">
+                th:text="#{submission.errors.banner.title(${errorMessages.size()})}">
             </h2>
             <p class="govuk-body"
                th:text="#{nilSubmission.errors.banner.body}">
