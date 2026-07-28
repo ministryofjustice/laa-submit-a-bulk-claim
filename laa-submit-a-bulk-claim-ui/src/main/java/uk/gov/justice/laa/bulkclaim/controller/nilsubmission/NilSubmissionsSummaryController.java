@@ -5,34 +5,21 @@ import static uk.gov.justice.laa.bulkclaim.constants.SessionConstants.SUBMISSION
 import static uk.gov.justice.laa.bulkclaim.util.NilSubmissionSessionManager.cleanseSession;
 import static uk.gov.justice.laa.bulkclaim.util.NilSubmissionSessionManager.validateSessionState;
 
-import java.time.OffsetDateTime;
-import java.time.ZoneId;
-import java.util.List;
-import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.core.oidc.user.OidcUser;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.SessionAttributes;
-import org.springframework.web.reactive.function.client.WebClientResponseException;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-import tools.jackson.databind.ObjectMapper;
-import uk.gov.justice.laa.bulkclaim.client.DataClaimsRestClient;
 import uk.gov.justice.laa.bulkclaim.config.FeatureFlagsConfig;
 import uk.gov.justice.laa.bulkclaim.dto.submission.NilSubmissionForm;
-import uk.gov.justice.laa.bulkclaim.dto.submission.SubmissionValidationErrorResponse;
-import uk.gov.justice.laa.bulkclaim.dto.submission.messages.NilSubmissionMessagesSummary;
+import uk.gov.justice.laa.bulkclaim.service.NilSubmissionService;
 import uk.gov.justice.laa.bulkclaim.util.NilSubmissionPage;
-import uk.gov.justice.laa.dstew.payments.claimsdata.model.CreateSubmission201Response;
-import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionPost;
-import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionStatus;
 
 @Controller
 @RequiredArgsConstructor
@@ -40,13 +27,11 @@ import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionStatus;
 @SessionAttributes({NIL_SUBMISSION_FORM, SUBMISSION_ID})
 public class NilSubmissionsSummaryController {
 
-  private final DataClaimsRestClient claimsRestService;
+  private final NilSubmissionService nilSubmissionService;
   private final FeatureFlagsConfig featureFlagsConfig;
-  private final ObjectMapper objectMapper;
 
   @GetMapping("/nil-submission/summary-details")
-  public String getSummary(
-      @ModelAttribute(NIL_SUBMISSION_FORM) NilSubmissionForm form, Model model) {
+  public String getSummary(@ModelAttribute(NIL_SUBMISSION_FORM) NilSubmissionForm form) {
 
     featureFlagsConfig.checkNilSubmissionEnabled();
     validateSessionState(form, NilSubmissionPage.SUMMARY_DETAILS);
@@ -66,98 +51,16 @@ public class NilSubmissionsSummaryController {
     validateSessionState(form, NilSubmissionPage.SUMMARY_DETAILS);
     cleanseSession(form, NilSubmissionPage.SUMMARY_DETAILS);
 
-    SubmissionPost submissionPost = buildSubmissionPost(form, oidcUser);
+    var result = nilSubmissionService.createSubmission(form, oidcUser);
 
-    try {
-      ResponseEntity<CreateSubmission201Response> responseEntity =
-          claimsRestService.createSubmission(submissionPost);
-      CreateSubmission201Response submissionResponse = responseEntity.getBody();
-      log.info(
-          "Nil submission created, claims API submission UUID: {}", submissionResponse.getId());
-
-      model.addAttribute(SUBMISSION_ID, submissionResponse.getId());
-      redirectAttributes.addFlashAttribute(SUBMISSION_ID, responseEntity.getBody().getId());
-
-      cleanseSession(form, NilSubmissionPage.OTHER);
-      return "redirect:/submission/" + responseEntity.getBody().getId();
-
-    } catch (WebClientResponseException e) {
-      try {
-        SubmissionValidationErrorResponse error =
-            objectMapper.readValue(
-                e.getResponseBodyAsString(), SubmissionValidationErrorResponse.class);
-
-        List<String> errorMessages =
-            error.issues().stream()
-                .map(SubmissionValidationErrorResponse.Issue::message)
-                .filter(StringUtils::hasText)
-                .toList();
-
-        log.error("API upload failed: {}", errorMessages.getFirst());
-
-        NilSubmissionMessagesSummary summary =
-            buildNilSubmissionMessagesSummary(form, errorMessages);
-
-        model.addAttribute("messagesSummary", summary);
-
-      } catch (Exception ex) {
-        log.error(
-            "Failed to submit nil submission {} to Claims API with message: {}",
-            submissionPost.getSubmissionId(),
-            ex.getMessage());
-      }
-
-      cleanseSession(form, NilSubmissionPage.OTHER);
-      return "pages/nil-submission/detail-invalid";
-
-    } catch (Exception e) {
-      log.error(
-          "Failed to submit nil submission {} API failure: {}",
-          submissionPost.getSubmissionId(),
-          e.getMessage());
-      return "error";
+    if (!result.errorMessages().isEmpty()) {
+      log.error("Failed to create nil submission: {}", result);
+      model.addAttribute("errorMessages", result.errorMessages());
+      return "pages/nil-submission/summary-details";
     }
-  }
 
-  static NilSubmissionMessagesSummary buildNilSubmissionMessagesSummary(
-      NilSubmissionForm form, List<String> errorMessages) {
-    return NilSubmissionMessagesSummary.builder()
-        .totalMessageCount(errorMessages.size())
-        .submitted(OffsetDateTime.now(ZoneId.of("Europe/London")))
-        .officeAccount(form.getOffice())
-        .areaOfLaw(form.getAreaOfLaw())
-        .submissionPeriod(form.getSubmissionPeriod())
-        .submissionReference(form.getSubmissionReference())
-        .messages(errorMessages)
-        .build();
-  }
-
-  SubmissionPost buildSubmissionPost(NilSubmissionForm form, OidcUser oidcUser) {
-    SubmissionPost submissionPost =
-        SubmissionPost.builder()
-            .officeAccountNumber(form.getOffice())
-            .numberOfClaims(0)
-            .status(SubmissionStatus.READY_FOR_VALIDATION)
-            .areaOfLaw(form.getAreaOfLaw())
-            .isNilSubmission(true)
-            .submissionId(UUID.randomUUID())
-            .submissionPeriod(form.getSubmissionPeriod())
-            .providerUserId(oidcUser.getPreferredUsername())
-            .createdByUserId("Submit-a-bulk-claim")
-            .build();
-
-    setSubmissionReferenceByAreaOfLaw(form, submissionPost);
-    return submissionPost;
-  }
-
-  void setSubmissionReferenceByAreaOfLaw(NilSubmissionForm form, SubmissionPost submissionPost) {
-    switch (form.getAreaOfLaw()) {
-      case LEGAL_HELP ->
-          submissionPost.setLegalHelpSubmissionReference(form.getSubmissionReference());
-      case MEDIATION ->
-          submissionPost.setMediationSubmissionReference(form.getSubmissionReference());
-      case CRIME_LOWER -> submissionPost.setCrimeLowerScheduleNumber(form.getSubmissionReference());
-      default -> log.error("Area of law {} is not valid", form.getAreaOfLaw());
-    }
+    model.addAttribute(SUBMISSION_ID, result.submissionId());
+    cleanseSession(form, NilSubmissionPage.OTHER);
+    return "redirect:/submission/" + result.submissionId();
   }
 }
