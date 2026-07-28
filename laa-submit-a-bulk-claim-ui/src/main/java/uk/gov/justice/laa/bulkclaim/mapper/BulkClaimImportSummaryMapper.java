@@ -2,10 +2,7 @@ package uk.gov.justice.laa.bulkclaim.mapper;
 
 import java.time.LocalDate;
 import java.time.YearMonth;
-import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeFormatterBuilder;
 import java.util.List;
-import java.util.Locale;
 import java.util.Optional;
 import java.util.UUID;
 import org.mapstruct.Mapper;
@@ -13,6 +10,7 @@ import org.mapstruct.Mapping;
 import org.mapstruct.Named;
 import uk.gov.justice.laa.bulkclaim.dto.submission.SubmissionSummaryRow;
 import uk.gov.justice.laa.bulkclaim.dto.submission.messages.MessageRow;
+import uk.gov.justice.laa.bulkclaim.util.SubmissionPeriodUtil;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.AreaOfLaw;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.ClaimResponse;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionResponse;
@@ -41,13 +39,7 @@ public interface BulkClaimImportSummaryMapper {
 
   @Named("toSubmissionPeriod")
   default LocalDate toSubmissionPeriod(final String submissionPeriod) {
-    DateTimeFormatter formatter =
-        new DateTimeFormatterBuilder()
-            .parseCaseInsensitive()
-            .appendPattern("MMM-yyyy")
-            .toFormatter(Locale.ENGLISH);
-
-    YearMonth yearMonth = YearMonth.parse(submissionPeriod, formatter);
+    YearMonth yearMonth = YearMonth.parse(submissionPeriod, SubmissionPeriodUtil.IN_FMT);
     return yearMonth.atDay(1);
   }
 
