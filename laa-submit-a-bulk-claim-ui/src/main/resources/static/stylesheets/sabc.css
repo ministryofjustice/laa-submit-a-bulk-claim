@@ -35,4 +35,7 @@
   outline: none;
 }
 
+.no-js .requires-js {
+  display: none;
+}
 
