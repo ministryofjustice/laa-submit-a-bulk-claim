@@ -17,7 +17,8 @@ public class LoggingConfig {
                     "/javascripts",
                     "/stylesheets",
                     "/static",
-                    "/public");
+                    "/public",
+                    "/webjars");
 
     @Bean
     public CommonsRequestLoggingFilter logFilter() {
