@@ -35,19 +35,19 @@ class NilSubmissionReferenceViewTest extends ViewTestBase {
         of(
             CRIME_LOWER,
             "Crime lower",
-            "CRM/0P322F/2025",
+            "e.g. CRM/0P322F/2025",
             "Crime schedule number",
             "Add your crime schedule number"),
         of(
             LEGAL_HELP,
             "Legal help",
-            "0P322F/Civil/01",
+            "e.g. 0P322F/Civil/01",
             "Civil submission reference",
             "Add your civil submission reference"),
         of(
             MEDIATION,
             "Mediation",
-            "0P322F/MEDI2024/01",
+            "e.g. 0P322F/MEDI2024/01",
             "Mediation submission reference",
             "Add your mediation submission reference"));
   }
@@ -78,9 +78,12 @@ class NilSubmissionReferenceViewTest extends ViewTestBase {
 
     var summaryList = getFirstSummaryList(doc);
     assertThat(summaryList).hasSize(3);
-    assertSummaryListRowContainsValues(summaryList.get(0), "Office account number", "0P322F");
-    assertSummaryListRowContainsValues(summaryList.get(1), "Area of law", areaOfLawText);
-    assertSummaryListRowContainsValues(summaryList.get(2), "Submission period", "OCT-2025");
+    assertRowContainsValuesThenLink(
+        summaryList.get(0), "Office account number", "Change", "/nil-submission/office", "0P322F");
+    assertRowContainsValuesThenLink(
+        summaryList.get(1), "Area of law", "Change", "/nil-submission/areaoflaw", areaOfLawText);
+    assertRowContainsValuesThenLink(
+        summaryList.get(2), "Submission period", "Change", "/nil-submission/period", "OCT-2025");
 
     assertPageHasLabel(doc, "submissionReference-input", labelText);
     assertThat(selectFirst(doc, "#submissionReference-input").attr("value")).isEmpty();

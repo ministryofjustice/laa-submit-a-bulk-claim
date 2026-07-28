@@ -16,8 +16,9 @@
                         th:class="govuk-link"
                         th:data-testid="nil-submission-office"
                         th:if="${nilSubmissionForm.officeCount > 1}"
-                        th:href="@{/nil-submission/office}"
-                        th:text="#{nilSubmission.changeLink}">
+                        th:href="@{/nil-submission/office}">
+                    <th:block th:text="#{nilSubmission.changeLink}"></th:block>
+                    <span class="govuk-visually-hidden" th:text="| #{nilSubmission.office.changeValue}|"></span>
                 </a>
             </dd>
 
@@ -38,8 +39,9 @@
                 <a
                         th:class="govuk-link"
                         th:data-testid="nil-submission-areaoflaw"
-                        th:href="@{/nil-submission/areaoflaw}"
-                        th:text="#{nilSubmission.changeLink}">
+                        th:href="@{/nil-submission/areaoflaw}">
+                    <th:block th:text="#{nilSubmission.changeLink}"></th:block>
+                    <span class="govuk-visually-hidden" th:text="| #{nilSubmission.areaOfLaw.changeValue}|"></span>
                 </a>
             </dd>
 
@@ -59,8 +61,9 @@
                 <a
                         th:class="govuk-link"
                         th:data-testid="nil-submission-period"
-                        th:href="@{/nil-submission/period}"
-                        th:text="#{nilSubmission.changeLink}">
+                        th:href="@{/nil-submission/period}">
+                    <th:block th:text="#{nilSubmission.changeLink}"></th:block>
+                    <span class="govuk-visually-hidden" th:text="| #{nilSubmission.period.changeValue}|"></span>
                 </a>
             </dd>
 
@@ -79,8 +82,9 @@
                 <a
                         th:class="govuk-link"
                         th:data-testid="nil-submission-reference"
-                        th:href="@{/nil-submission/reference}"
-                        th:text="#{nilSubmission.changeLink}">
+                        th:href="@{/nil-submission/reference}">
+                    <th:block th:text="#{nilSubmission.changeLink}"></th:block>
+                    <span class="govuk-visually-hidden" th:text="| #{__${'nilSubmission.summary.reference.' + nilSubmissionForm.areaOfLaw}__}|"></span>
                 </a>
             </dd>
 

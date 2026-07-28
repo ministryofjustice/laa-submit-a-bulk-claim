@@ -43,11 +43,18 @@ class NilSubmissionSummaryViewTest extends ViewTestBase {
 
     var summaryList = getFirstSummaryList(doc);
     assertThat(summaryList).hasSize(4);
-    assertSummaryListRowContainsValues(summaryList.get(0), "Office account number", "0P322F");
-    assertSummaryListRowContainsValues(summaryList.get(1), "Area of law", "Mediation");
-    assertSummaryListRowContainsValues(summaryList.get(2), "Submission period", "OCT-2025");
-    assertSummaryListRowContainsValues(
-        summaryList.get(3), "Mediation submission reference", "REF-123");
+    assertRowContainsValuesThenLink(
+        summaryList.get(0), "Office account number", "Change", "/nil-submission/office", "0P322F");
+    assertRowContainsValuesThenLink(
+        summaryList.get(1), "Area of law", "Change", "/nil-submission/areaoflaw", "Mediation");
+    assertRowContainsValuesThenLink(
+        summaryList.get(2), "Submission period", "Change", "/nil-submission/period", "OCT-2025");
+    assertRowContainsValuesThenLink(
+        summaryList.get(3),
+        "Mediation submission reference",
+        "Change",
+        "/nil-submission/reference",
+        "REF-123");
 
     assertThat(doc.select(".moj-alert--error")).isEmpty();
     assertThat(doc.select("#messages-errors-heading")).isEmpty();

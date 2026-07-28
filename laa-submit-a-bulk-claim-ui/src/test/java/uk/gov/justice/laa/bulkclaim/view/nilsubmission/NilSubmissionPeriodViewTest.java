@@ -58,8 +58,10 @@ class NilSubmissionPeriodViewTest extends ViewTestBase {
 
     var summaryList = getFirstSummaryList(doc);
     assertThat(summaryList).hasSize(2);
-    assertSummaryListRowContainsValues(summaryList.get(0), "Office account number", "0P322F");
-    assertSummaryListRowContainsValues(summaryList.get(1), "Area of law", "Mediation");
+    assertRowContainsValuesThenLink(
+        summaryList.get(0), "Office account number", "Change", "/nil-submission/office", "0P322F");
+    assertRowContainsValuesThenLink(
+        summaryList.get(1), "Area of law", "Change", "/nil-submission/areaoflaw", "Mediation");
 
     assertPageHasLabel(doc, "submissionPeriod-input", "Submission period");
     assertDropDownList(
@@ -89,8 +91,10 @@ class NilSubmissionPeriodViewTest extends ViewTestBase {
 
     var summaryList = getFirstSummaryList(doc);
     assertThat(summaryList).hasSize(2);
-    assertSummaryListRowContainsValues(summaryList.get(0), "Office account number", "0P322F");
-    assertSummaryListRowContainsValues(summaryList.get(1), "Area of law", "Mediation");
+    assertRowContainsValuesThenLink(
+        summaryList.get(0), "Office account number", "Change", "/nil-submission/office", "0P322F");
+    assertRowContainsValuesThenLink(
+        summaryList.get(1), "Area of law", "Change", "/nil-submission/areaoflaw", "Mediation");
 
     assertPageBodyText(
         doc,
