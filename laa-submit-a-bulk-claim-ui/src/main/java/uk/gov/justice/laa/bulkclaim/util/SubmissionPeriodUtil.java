@@ -24,7 +24,7 @@ public class SubmissionPeriodUtil {
           .appendPattern("MMM-uuuu")
           .toFormatter(Locale.ENGLISH);
 
-  private static final DateTimeFormatter OUT_FMT =
+  public static final DateTimeFormatter OUT_FMT =
       DateTimeFormatter.ofPattern("MMMM uuuu", Locale.ENGLISH);
 
   public SubmissionPeriodUtil(
@@ -44,8 +44,8 @@ public class SubmissionPeriodUtil {
    * the {@code earliestSubmissionPeriod} field. The method iterates backward month by month.
    *
    * @return a {@code Map<String, String>} containing all possible submission periods. The map uses
-   * keys in uppercase "MMM-uuuu" format and values in "MMMM uuuu" format, ordered from the latest
-   * available period to the earliest.
+   *     keys in uppercase "MMM-uuuu" format and values in "MMMM uuuu" format, ordered from the
+   *     latest available period to the earliest.
    */
   public Map<String, String> getAllPossibleSubmissionPeriods() {
     Map<String, String> periods = new LinkedHashMap<>();
@@ -65,9 +65,9 @@ public class SubmissionPeriodUtil {
    * parsed and reformatted to "MMMM uuuu" (e.g., "January 2023").
    *
    * @param submissionBase the {@code SubmissionBase} instance containing the submission period. It
-   *                       may return {@code null} or a blank value for the period.
-   * @return the formatted submission period string, or {@code null} if the input period is
-   * {@code null} or blank.
+   *     may return {@code null} or a blank value for the period.
+   * @return the formatted submission period string, or {@code null} if the input period is {@code
+   *     null} or blank.
    */
   public String getSubmissionPeriod(SubmissionBase submissionBase) {
     String submissionPeriod = submissionBase.getSubmissionPeriod();
@@ -79,15 +79,15 @@ public class SubmissionPeriodUtil {
   }
 
   /**
-   * Computes a numeric sort order value from the submission period of the provided
-   * {@code SubmissionBase} instance. The submission period is expected to be in the format
-   * "MMM-uuuu" (e.g., "Jan-2023"), and a sortable integer value is derived based on the year and
-   * month of the period.
+   * Computes a numeric sort order value from the submission period of the provided {@code
+   * SubmissionBase} instance. The submission period is expected to be in the format "MMM-uuuu"
+   * (e.g., "Jan-2023"), and a sortable integer value is derived based on the year and month of the
+   * period.
    *
    * @param submissionBase the {@code SubmissionBase} instance containing the submission period. The
-   *                       period must be a valid string in the format "MMM-uuuu".
+   *     period must be a valid string in the format "MMM-uuuu".
    * @return an integer representing the sortable order for the submission period, where the value
-   * is calculated as {@code year * 100 + month}.
+   *     is calculated as {@code year * 100 + month}.
    */
   public Integer getSortOrderFromSubmissionPeriod(SubmissionBase submissionBase) {
     String submissionPeriod = submissionBase.getSubmissionPeriod();
@@ -105,7 +105,7 @@ public class SubmissionPeriodUtil {
    *
    * @param submissionPeriod the submission period string, expected in "MMM-uuuu" format.
    * @return the first day of the parsed submission period month, or {@code null} if the input is
-   * {@code null} or blank.
+   *     {@code null} or blank.
    */
   public static LocalDate toSubmissionPeriodStart(final String submissionPeriod) {
     if (Strings.isEmpty(submissionPeriod)) {
