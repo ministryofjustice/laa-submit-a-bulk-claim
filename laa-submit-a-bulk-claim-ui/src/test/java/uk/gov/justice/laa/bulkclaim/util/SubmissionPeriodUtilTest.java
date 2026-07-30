@@ -79,6 +79,21 @@ class SubmissionPeriodUtilTest {
     assertThat(result).isEqualTo(expected);
   }
 
+  @ParameterizedTest
+  @CsvSource({
+    "JAN-2010, 2010-01-01",
+    "FEB-2011, 2011-02-01",
+    "DEC-2021, 2021-12-01",
+    "jan-2015, 2015-01-01"
+  })
+  @DisplayName("Should get submission period start date")
+  void shouldGetSubmissionPeriodStart(String input, LocalDate expected) {
+    // When
+    LocalDate result = SubmissionPeriodUtil.toSubmissionPeriodStart(input);
+    // Then
+    assertThat(result).isEqualTo(expected);
+  }
+
   @Nested
   @DisplayName("Get all possible submission periods")
   class GetAllPossibleSubmissionPeriods {

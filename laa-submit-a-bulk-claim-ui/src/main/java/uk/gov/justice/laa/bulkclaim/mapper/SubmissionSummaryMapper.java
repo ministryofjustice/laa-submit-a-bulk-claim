@@ -1,14 +1,11 @@
 package uk.gov.justice.laa.bulkclaim.mapper;
 
 import java.time.LocalDate;
-import java.time.YearMonth;
-import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeFormatterBuilder;
-import java.util.Locale;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Named;
 import uk.gov.justice.laa.bulkclaim.dto.submission.SubmissionSummary;
+import uk.gov.justice.laa.bulkclaim.util.SubmissionPeriodUtil;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.AreaOfLaw;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionResponse;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionStatus;
@@ -47,14 +44,6 @@ public interface SubmissionSummaryMapper {
 
   @Named("toSubmissionPeriod")
   default LocalDate toSubmissionPeriod(final String submissionPeriod) {
-    // Assumes that API returns MMM-yyyy format.
-    DateTimeFormatter dateFormat =
-        new DateTimeFormatterBuilder()
-            .parseCaseInsensitive()
-            .appendPattern("MMM-yyyy")
-            .toFormatter(Locale.ENGLISH);
-
-    YearMonth yearMonth = YearMonth.parse(submissionPeriod, dateFormat);
-    return yearMonth.atDay(1);
+    return SubmissionPeriodUtil.toSubmissionPeriodStart(submissionPeriod);
   }
 }
