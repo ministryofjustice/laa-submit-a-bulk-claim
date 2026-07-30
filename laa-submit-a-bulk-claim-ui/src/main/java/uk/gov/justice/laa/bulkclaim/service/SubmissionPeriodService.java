@@ -85,7 +85,8 @@ public class SubmissionPeriodService {
   public Map<String, String> sortSubmissionPeriods(Map<String, String> submissionPeriods) {
     return submissionPeriods.entrySet().stream()
         .sorted(
-            Comparator.comparing(e -> YearMonth.parse(e.getValue(), SubmissionPeriodUtil.OUT_FMT)))
+            Comparator.comparing(
+                e -> YearMonth.parse(e.getValue(), SubmissionPeriodUtil.FULL_PERIOD_FMT)))
         .collect(
             Collectors.toMap(
                 Map.Entry::getKey, Map.Entry::getValue, (a, b) -> a, LinkedHashMap::new));
@@ -95,7 +96,10 @@ public class SubmissionPeriodService {
     SubmissionPeriodUtil submissionPeriodUtil =
         new SubmissionPeriodUtil(
             dateWrapperUtil,
-            dateWrapperUtil.nowYearMonth().minusMonths(12).format(SubmissionPeriodUtil.IN_FMT));
+            dateWrapperUtil
+                .nowYearMonth()
+                .minusMonths(12)
+                .format(SubmissionPeriodUtil.ABBR_PERIOD_FMT));
     return submissionPeriodUtil.getAllPossibleSubmissionPeriods();
   }
 }

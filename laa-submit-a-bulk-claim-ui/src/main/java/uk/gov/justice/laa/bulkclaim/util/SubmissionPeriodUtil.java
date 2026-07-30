@@ -18,20 +18,20 @@ public class SubmissionPeriodUtil {
   private final DateWrapperUtil dateWrapperUtil;
   private final YearMonth earliestSubmissionPeriod;
 
-  public static final DateTimeFormatter IN_FMT =
+  public static final DateTimeFormatter ABBR_PERIOD_FMT =
       new DateTimeFormatterBuilder()
           .parseCaseInsensitive()
           .appendPattern("MMM-uuuu")
           .toFormatter(Locale.ENGLISH);
 
-  public static final DateTimeFormatter OUT_FMT =
+  public static final DateTimeFormatter FULL_PERIOD_FMT =
       DateTimeFormatter.ofPattern("MMMM uuuu", Locale.ENGLISH);
 
   public SubmissionPeriodUtil(
       DateWrapperUtil dateWrapperUtil,
       @Value("${app.submission.minimum-period}") String minimumSubmissionPeriod) {
     this.dateWrapperUtil = dateWrapperUtil;
-    this.earliestSubmissionPeriod = YearMonth.parse(minimumSubmissionPeriod, IN_FMT);
+    this.earliestSubmissionPeriod = YearMonth.parse(minimumSubmissionPeriod, ABBR_PERIOD_FMT);
   }
 
   /**
@@ -54,7 +54,7 @@ public class SubmissionPeriodUtil {
     for (YearMonth month = previousMonth;
         month.isAfter(earliestSubmissionPeriod) || month.equals(earliestSubmissionPeriod);
         month = month.minusMonths(1)) {
-      periods.put(month.format(IN_FMT).toUpperCase(), month.format(OUT_FMT));
+      periods.put(month.format(ABBR_PERIOD_FMT).toUpperCase(), month.format(FULL_PERIOD_FMT));
     }
     return periods;
   }
@@ -74,8 +74,8 @@ public class SubmissionPeriodUtil {
     if (submissionPeriod == null || submissionPeriod.isBlank()) {
       return null;
     }
-    YearMonth ym = YearMonth.parse(submissionPeriod.trim(), IN_FMT);
-    return ym.format(OUT_FMT);
+    YearMonth ym = YearMonth.parse(submissionPeriod.trim(), ABBR_PERIOD_FMT);
+    return ym.format(FULL_PERIOD_FMT);
   }
 
   /**
@@ -91,7 +91,7 @@ public class SubmissionPeriodUtil {
    */
   public Integer getSortOrderFromSubmissionPeriod(SubmissionBase submissionBase) {
     String submissionPeriod = submissionBase.getSubmissionPeriod();
-    YearMonth yearMonth = YearMonth.parse(submissionPeriod, IN_FMT);
+    YearMonth yearMonth = YearMonth.parse(submissionPeriod, ABBR_PERIOD_FMT);
     // Uses year than month to create a number to sort values by.
     // December 2015 = 201512
     // January 2020 = 202001
@@ -111,7 +111,7 @@ public class SubmissionPeriodUtil {
     if (Strings.isEmpty(submissionPeriod)) {
       return null;
     }
-    YearMonth yearMonth = YearMonth.parse(submissionPeriod, IN_FMT);
+    YearMonth yearMonth = YearMonth.parse(submissionPeriod, ABBR_PERIOD_FMT);
     return yearMonth.atDay(1);
   }
 }
