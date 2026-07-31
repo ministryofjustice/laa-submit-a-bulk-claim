@@ -6,7 +6,7 @@ plugins {
 }
 
 def versions = [sentry : '8.31.0']
-apply plugin: 'uk.gov.laa.springboot.laa-spring-boot-gradle-plugin'
+apply plugin: 'uk.gov.justice.service.laa.laa-spring-boot-gradle-plugin'
 
 
 checkstyle {
