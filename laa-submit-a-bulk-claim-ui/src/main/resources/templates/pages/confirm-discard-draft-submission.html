@@ -1,0 +1,28 @@
+<!DOCTYPE HTML>
+<html lang="en" class="govuk-template" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{ layout/main-layout :: layout(#{discardDraftSubmission.heading},~{::main},~{}, 'landing')}">
+<main class="govuk-main-wrapper" id="main-content">
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds-from-desktop">
+      <h1 class="govuk-heading-xl" th:text="#{discardDraftSubmission.heading}"></h1>
+      <div class="govuk-warning-text">
+        <span class="govuk-warning-text__icon" aria-hidden="true">!</span>
+        <strong class="govuk-warning-text__text">
+          <span class="govuk-visually-hidden">Warning</span>
+          Discarding this submission cannot be undone.
+        </strong>
+      </div>
+      <form th:action="@{/discard-draft-submission}" method="post">
+        <input type="hidden" name="_csrf" th:value="${_csrf.token}"/>
+        <button class="govuk-button govuk-button--warning" data-module="govuk-button"
+                type="submit" th:text="#{discardDraftSubmission.submit}"></button>
+      </form>
+      <p class="govuk-body">
+        <a class="govuk-link"
+           th:href="@{/submission/{id}(id=${submissionSummary.submissionReference})}"
+           th:text="#{discardDraftSubmission.cancel}"></a>
+      </p>
+    </div>
+  </div>
+</main>
+</html>

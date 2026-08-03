@@ -15,6 +15,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 import org.jsoup.select.Elements;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
@@ -49,6 +50,20 @@ class SubmissionDetailViewTest extends ViewTestBase {
 
   SubmissionDetailViewTest() {
     this.mapping = String.format("/view-submission-detail?submissionId=%s", submissionId);
+  }
+
+  @Test
+  void submittedViewDoesNotShowAddClaimAction() {
+    mockClaims(AreaOfLaw.LEGAL_HELP);
+
+    Assertions.assertNull(renderDocument().selectFirst("form[action=/add-claim]"));
+  }
+
+  @Test
+  void draftViewDoesNotShowAddClaimAction() {
+    mockClaims(AreaOfLaw.LEGAL_HELP, SubmissionStatus.READY_FOR_SUBMISSION, true);
+
+    Assertions.assertNull(renderDocument().selectFirst("form[action=/add-claim]"));
   }
 
   @Test
@@ -557,11 +572,15 @@ class SubmissionDetailViewTest extends ViewTestBase {
   }
 
   private void mockClaims(AreaOfLaw areaOfLaw) {
+    mockClaims(areaOfLaw, SubmissionStatus.VALIDATION_SUCCEEDED, false);
+  }
+
+  private void mockClaims(AreaOfLaw areaOfLaw, SubmissionStatus submissionStatus, boolean isDraft) {
     Page pagination = Page.builder().totalPages(1).totalElements(1).number(0).size(10).build();
     SubmissionResponse submissionResponse =
         SubmissionResponse.builder()
             .submissionId(submissionId)
-            .status(SubmissionStatus.VALIDATION_SUCCEEDED)
+            .status(submissionStatus)
             .areaOfLaw(areaOfLaw)
             .build();
     when(dataClaimsRestClient.getSubmission(submissionId))
@@ -575,7 +594,8 @@ class SubmissionDetailViewTest extends ViewTestBase {
                 "AQ2B3C",
                 BigDecimal.ONE,
                 areaOfLaw.getValue(),
-                OffsetDateTime.of(2025, 1, 1, 10, 10, 10, 0, ZoneOffset.UTC)));
+                OffsetDateTime.of(2025, 1, 1, 10, 10, 10, 0, ZoneOffset.UTC),
+                isDraft));
 
     when(submissionClaimDetailsBuilder.build(any(), anyInt(), anyInt(), anyString()))
         .thenReturn(
@@ -606,7 +626,8 @@ class SubmissionDetailViewTest extends ViewTestBase {
                 "AQ2B3C",
                 BigDecimal.ONE,
                 areaOfLaw.getValue(),
-                OffsetDateTime.of(2025, 1, 1, 10, 10, 10, 0, ZoneOffset.UTC)));
+                OffsetDateTime.of(2025, 1, 1, 10, 10, 10, 0, ZoneOffset.UTC),
+                false));
 
     when(submissionClaimDetailsBuilder.build(any(), anyInt(), anyInt(), anyString()))
         .thenReturn(
@@ -643,7 +664,8 @@ class SubmissionDetailViewTest extends ViewTestBase {
                 "AQ2B3C",
                 BigDecimal.ONE,
                 areaOfLaw.getValue(),
-                OffsetDateTime.of(2025, 1, 1, 10, 10, 10, 0, ZoneOffset.UTC)));
+                OffsetDateTime.of(2025, 1, 1, 10, 10, 10, 0, ZoneOffset.UTC),
+                false));
 
     when(submissionMessagesBuilder.buildErrors(any(), anyInt(), anyInt(), any()))
         .thenReturn(

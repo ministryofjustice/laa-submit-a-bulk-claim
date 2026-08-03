@@ -12,4 +12,9 @@ public record SubmissionSummary(
     String officeAccount,
     BigDecimal submissionValue,
     String areaOfLaw,
-    OffsetDateTime submitted) {}
+    OffsetDateTime submitted,
+    boolean isDraft) {
+  public boolean isDiscarded() {
+    return "Discarded".equals(status);
+  }
+}

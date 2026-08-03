@@ -33,6 +33,7 @@ class SubmissionSummaryMapperTest {
     return Stream.of(
         Arguments.of(SubmissionStatus.VALIDATION_SUCCEEDED, "Submitted"),
         Arguments.of(SubmissionStatus.VALIDATION_FAILED, "Invalid"),
+        Arguments.of(SubmissionStatus.DISCARDED, "Discarded"),
         Arguments.of(SubmissionStatus.CREATED, "In progress"),
         Arguments.of(SubmissionStatus.READY_FOR_VALIDATION, "In progress"),
         Arguments.of(SubmissionStatus.VALIDATION_IN_PROGRESS, "In progress"));

@@ -1,0 +1,160 @@
+<!DOCTYPE HTML>
+<html lang="en" class="govuk-template" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout/main-layout :: layout(#{inquestDetails.heading},~{::main},~{}, 'search-submissions')}">
+<main class="govuk-main-wrapper" id="main-content">
+  <div class="govuk-width-container">
+    <a class="govuk-back-link" th:href="@{/submission/{id}(id=${submissionId})}">Back</a>
+    <div class="govuk-grid-row">
+      <div class="govuk-grid-column-two-thirds">
+        <h1 class="govuk-heading-l" th:text="#{inquestDetails.heading}"></h1>
+
+        <form method="post" th:object="${inquestDetailsForm}"
+              th:action="@{/submissions/{submissionId}/claims/{claimId}/inquest-details(submissionId=${submissionId}, claimId=${claimId})}">
+          <div class="govuk-error-summary" data-module="govuk-error-summary"
+               th:if="${#fields.hasAnyErrors()}">
+            <div role="alert">
+              <h2 class="govuk-error-summary__title">There is a problem</h2>
+              <div class="govuk-error-summary__body">
+                <ul class="govuk-list govuk-error-summary__list">
+                  <li th:each="error : ${#fields.allErrors()}" th:text="${error}"></li>
+                </ul>
+              </div>
+            </div>
+          </div>
+          <div class="govuk-form-group">
+            <label class="govuk-label" for="deceasedForename">Deceased's first name</label>
+            <p class="govuk-error-message" th:if="${#fields.hasErrors('deceasedForename')}"
+               th:errors="*{deceasedForename}"></p>
+            <input class="govuk-input" id="deceasedForename" th:field="*{deceasedForename}">
+          </div>
+          <div class="govuk-form-group">
+            <label class="govuk-label" for="deceasedSurname">Deceased's last name</label>
+            <p class="govuk-error-message" th:if="${#fields.hasErrors('deceasedSurname')}"
+               th:errors="*{deceasedSurname}"></p>
+            <input class="govuk-input" id="deceasedSurname" th:field="*{deceasedSurname}">
+          </div>
+          <div class="govuk-form-group">
+            <label class="govuk-label" for="deceasedDateOfBirth">Deceased's date of birth</label>
+            <p class="govuk-error-message" th:if="${#fields.hasErrors('deceasedDateOfBirth')}"
+               th:errors="*{deceasedDateOfBirth}"></p>
+            <input class="govuk-input govuk-input--width-10" type="date"
+                   id="deceasedDateOfBirth" th:field="*{deceasedDateOfBirth}">
+          </div>
+          <div class="govuk-form-group">
+            <label class="govuk-label" for="deceasedDateOfDeath">Deceased's date of death</label>
+            <p class="govuk-error-message" th:if="${#fields.hasErrors('deceasedDateOfDeath')}"
+               th:errors="*{deceasedDateOfDeath}"></p>
+            <input class="govuk-input govuk-input--width-10" type="date"
+                   id="deceasedDateOfDeath" th:field="*{deceasedDateOfDeath}">
+          </div>
+          <div class="govuk-form-group">
+            <label class="govuk-label" for="coronersInquestReference">Coroner's inquest reference</label>
+            <p class="govuk-error-message" th:if="${#fields.hasErrors('coronersInquestReference')}"
+               th:errors="*{coronersInquestReference}"></p>
+            <input class="govuk-input" id="coronersInquestReference"
+                   th:field="*{coronersInquestReference}">
+          </div>
+
+          <div class="moj-add-another govuk-!-margin-top-6"
+               id="interested-government-departments"
+               data-module="moj-add-another"
+               data-item-label="Interested government department">
+            <h2 class="govuk-heading-m moj-add-another__heading" tabindex="-1">
+              Interested government departments
+            </h2>
+            <p class="govuk-error-message" th:if="${#fields.hasErrors('interestedDepartmentCodes')}"
+               th:errors="*{interestedDepartmentCodes}"></p>
+            <div class="moj-add-another__items">
+              <div class="moj-add-another__item"
+                   th:each="departmentCode, item : *{interestedDepartmentCodes}">
+                <fieldset class="govuk-fieldset moj-add-another__fieldset">
+                  <legend class="govuk-fieldset__legend moj-add-another__item-title govuk-fieldset__legend--s"
+                          th:text="|Interested government department ${item.count}|">
+                  </legend>
+                  <div class="moj-add-another__item-container">
+                    <div class="govuk-form-group">
+                      <label class="govuk-label"
+                             th:for="|interestedDepartmentCodes${item.index}|">
+                        Department
+                        <span class="govuk-visually-hidden moj-add-another__label-suffix"
+                              th:text="|for interested government department ${item.count}|"></span>
+                      </label>
+                      <select class="govuk-select"
+                              data-module="make-autocomplete"
+                              th:id="|interestedDepartmentCodes${item.index}|"
+                              th:field="*{interestedDepartmentCodes[__${item.index}__]}"
+                              data-name="interestedDepartmentCodes[%index%]"
+                              data-id="interestedDepartmentCodes%index%"
+                              data-label="Department">
+                        <option value=""></option>
+                        <option th:each="department : ${departments}"
+                                th:value="${department.code}"
+                                th:text="${department.displayLabel}"></option>
+                      </select>
+                    </div>
+                    <div class="moj-add-another__remove-button-container"></div>
+                  </div>
+                </fieldset>
+              </div>
+            </div>
+            <div class="moj-add-another__add-button-container">
+              <button type="button"
+                      class="govuk-button govuk-button--secondary moj-add-another__add-button"
+                      data-module="govuk-button">
+                Add another interested government department
+              </button>
+            </div>
+          </div>
+
+          <div class="moj-add-another govuk-!-margin-top-6"
+               id="interested-public-authorities"
+               data-module="moj-add-another"
+               data-item-label="Interested public authority">
+            <h2 class="govuk-heading-m moj-add-another__heading" tabindex="-1">
+              Interested public authorities
+            </h2>
+            <p class="govuk-error-message" th:if="${#fields.hasErrors('interestedPublicAuthorities')}"
+               th:errors="*{interestedPublicAuthorities}"></p>
+            <div class="moj-add-another__items">
+              <div class="moj-add-another__item"
+                   th:each="authority, item : *{interestedPublicAuthorities}">
+                <fieldset class="govuk-fieldset moj-add-another__fieldset">
+                  <legend class="govuk-fieldset__legend moj-add-another__item-title govuk-fieldset__legend--s"
+                          th:text="|Interested public authority ${item.count}|">
+                  </legend>
+                  <div class="moj-add-another__item-container">
+                    <div class="govuk-form-group">
+                      <label class="govuk-label"
+                             th:for="|interestedPublicAuthorities${item.index}|">
+                        Public authority
+                        <span class="govuk-visually-hidden moj-add-another__label-suffix"
+                              th:text="|for interested public authority ${item.count}|"></span>
+                      </label>
+                      <input class="govuk-input"
+                             th:id="|interestedPublicAuthorities${item.index}|"
+                             th:field="*{interestedPublicAuthorities[__${item.index}__]}"
+                             data-name="interestedPublicAuthorities[%index%]"
+                             data-id="interestedPublicAuthorities%index%"
+                             data-label="Public authority">
+                    </div>
+                    <div class="moj-add-another__remove-button-container"></div>
+                  </div>
+                </fieldset>
+              </div>
+            </div>
+            <div class="moj-add-another__add-button-container">
+              <button type="button"
+                      class="govuk-button govuk-button--secondary moj-add-another__add-button"
+                      data-module="govuk-button">
+                Add another interested public authority
+              </button>
+            </div>
+          </div>
+
+          <button class="govuk-button" data-module="govuk-button" type="submit">Save and continue</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</main>
+</html>

@@ -1,5 +1,7 @@
 package uk.gov.justice.laa.bulkclaim.controller;
 
+import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.not;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
@@ -7,6 +9,7 @@ import static org.springframework.security.test.web.servlet.request.SecurityMock
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.oidcLogin;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
 import static uk.gov.justice.laa.bulkclaim.controller.ControllerTestHelper.getOidcUser;
@@ -68,7 +71,9 @@ class BulkImportControllerTest {
       mockMvc
           .perform(get("/upload").with(oidcLogin().oidcUser(getOidcUser())))
           .andExpect(status().isOk())
-          .andExpect(view().name("pages/upload"));
+          .andExpect(view().name("pages/upload"))
+          .andExpect(content().string(not(containsString("Save as draft?"))))
+          .andExpect(content().string(not(containsString("save-as-draft-radio"))));
     }
   }
 

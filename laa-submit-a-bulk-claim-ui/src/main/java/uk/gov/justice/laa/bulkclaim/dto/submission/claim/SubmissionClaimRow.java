@@ -23,4 +23,31 @@ public record SubmissionClaimRow(
     String feeType,
     String feeCode,
     SubmissionClaimRowCostsDetails costsDetails,
-    Boolean escapeCase) {}
+    Boolean escapeCase,
+    boolean inquestDetailsRequired,
+    boolean inquestDetailsComplete) {
+
+  public SubmissionClaimRow withInquestStatus(boolean required, boolean complete) {
+    return new SubmissionClaimRow(
+        id,
+        lineNumber,
+        ufn,
+        ucn,
+        clientForename,
+        clientSurname,
+        client2Forename,
+        client2Surname,
+        client2Ucn,
+        category,
+        matter,
+        concludedOrClaimedDate,
+        totalMessages,
+        status,
+        feeType,
+        feeCode,
+        costsDetails,
+        escapeCase,
+        required,
+        complete);
+  }
+}
