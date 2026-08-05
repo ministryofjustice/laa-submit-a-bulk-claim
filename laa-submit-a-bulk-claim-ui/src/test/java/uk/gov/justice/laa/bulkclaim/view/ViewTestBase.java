@@ -1,6 +1,7 @@
 package uk.gov.justice.laa.bulkclaim.view;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.params.provider.Arguments.of;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.oidcLogin;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -15,6 +16,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
 import java.util.regex.Pattern;
+import java.util.stream.Stream;
 import org.assertj.core.api.ThrowingConsumer;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -22,6 +24,7 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.params.provider.Arguments;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Import;
 import org.springframework.mock.web.MockHttpSession;
@@ -300,6 +303,55 @@ public abstract class ViewTestBase {
     Assertions.assertFalse(elements.isEmpty());
   }
 
+  protected void assertPaginationRenders(
+      Document doc,
+      String pageParamName,
+      int currentPage,
+      List<Integer> expectedVisiblePages,
+      boolean expectedPreviousLink,
+      boolean expectedNextLink,
+      int expectedEllipsesCount) {
+    Element pagination = selectFirst(doc, "nav.govuk-pagination");
+
+    List<Integer> visiblePages =
+        pagination
+            .select(
+                ".govuk-pagination__list .govuk-pagination__item:not(.govuk-pagination__item--ellipses) span")
+            .stream()
+            .map(Element::text)
+            .map(Integer::parseInt)
+            .toList();
+    Assertions.assertEquals(expectedVisiblePages, visiblePages);
+
+    Element currentPageLink =
+        selectFirst(pagination, ".govuk-pagination__item--current a[aria-current=page]");
+    Assertions.assertEquals("#", currentPageLink.attr("href"));
+    Assertions.assertEquals(String.valueOf(currentPage + 1), currentPageLink.text());
+
+    Elements previousLinks = pagination.select(".govuk-pagination__prev a.govuk-pagination__link");
+    Assertions.assertEquals(expectedPreviousLink ? 1 : 0, previousLinks.size());
+    if (expectedPreviousLink) {
+      Assertions.assertTrue(
+          previousLinks
+              .getFirst()
+              .attr("href")
+              .contains("%s=%s".formatted(pageParamName, currentPage - 1)));
+    }
+
+    Elements nextLinks = pagination.select(".govuk-pagination__next a.govuk-pagination__link");
+    Assertions.assertEquals(expectedNextLink ? 1 : 0, nextLinks.size());
+    if (expectedNextLink) {
+      Assertions.assertTrue(
+          nextLinks
+              .getFirst()
+              .attr("href")
+              .contains("%s=%s".formatted(pageParamName, currentPage + 1)));
+    }
+
+    Elements ellipses = pagination.select(".govuk-pagination__item--ellipses");
+    Assertions.assertEquals(expectedEllipsesCount, ellipses.size());
+  }
+
   protected void assertPageHasSuccessBanner(Document doc, String expectedText) {
     Element banner = selectFirst(doc, ".govuk-notification-banner--success");
     Element title = selectFirst(banner, ".govuk-notification-banner__title");
@@ -523,5 +575,24 @@ public abstract class ViewTestBase {
   public static Element getButtonByLabel(Document doc, String label) {
     // Matches the button's own text, ignoring surrounding whitespace
     return doc.selectFirst("button:matchesOwn(^\\s*" + Pattern.quote(label) + "\\s*$)");
+  }
+
+  protected static Stream<Arguments> detailFieldIsSortableArgs() {
+    return Stream.of(
+        // currentDirection, currentPage, expectedAriaDirection, expectedLinkDirection
+        of("desc", 0, "descending", "asc"),
+        of("asc", 0, "ascending", "desc"),
+        of("asc", 5, "ascending", "desc"));
+  }
+
+  protected static Stream<Arguments> paginationRendersArgs() {
+
+    return Stream.of(
+        // currentPage, totalPages, expectedVisiblePages, expectedPreviousLink, expectedNextLink,
+        // expectedEllipsesCount
+        of(0, 2, List.of(1, 2), false, true, 0),
+        of(1, 2, List.of(1, 2), true, false, 0),
+        of(5, 10, List.of(1, 5, 6, 7, 10), true, true, 2),
+        of(9, 10, List.of(1, 9, 10), true, false, 1));
   }
 }
