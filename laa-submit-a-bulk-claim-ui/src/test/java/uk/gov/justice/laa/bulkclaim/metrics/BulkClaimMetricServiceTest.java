@@ -118,7 +118,7 @@ class BulkClaimMetricServiceTest {
     // Given
     MockMultipartFile file =
         new MockMultipartFile("fileUpload", "empty.txt", "text/plain", "12345".getBytes());
-    Errors errors = new SimpleErrors(new FileUploadForm(file, false));
+    Errors errors = new SimpleErrors(new FileUploadForm(file));
     errors.rejectValue("file", "bulkImport.validation.empty", "File is empty");
     errors.rejectValue("file", "bulkImport.validation.size", "File size is too large");
     // When
@@ -156,7 +156,7 @@ class BulkClaimMetricServiceTest {
   @DisplayName("Should not record failed file if file is null")
   void shouldNotRecordFailedFileIfFileIsNull() {
     // Given
-    Errors errors = new SimpleErrors(new FileUploadForm(null, false));
+    Errors errors = new SimpleErrors(new FileUploadForm(null));
     errors.rejectValue("file", "bulkImport.validation.empty", "File is empty");
     errors.rejectValue("file", "bulkImport.validation.size", "File size is too large");
     // When

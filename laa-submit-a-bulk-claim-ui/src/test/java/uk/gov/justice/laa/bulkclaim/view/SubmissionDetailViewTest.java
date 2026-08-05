@@ -575,8 +575,7 @@ class SubmissionDetailViewTest extends ViewTestBase {
                 "AQ2B3C",
                 BigDecimal.ONE,
                 areaOfLaw.getValue(),
-                OffsetDateTime.of(2025, 1, 1, 10, 10, 10, 0, ZoneOffset.UTC),
-                false));
+                OffsetDateTime.of(2025, 1, 1, 10, 10, 10, 0, ZoneOffset.UTC)));
 
     when(submissionClaimDetailsBuilder.build(any(), anyInt(), anyInt(), anyString()))
         .thenReturn(
@@ -607,8 +606,7 @@ class SubmissionDetailViewTest extends ViewTestBase {
                 "AQ2B3C",
                 BigDecimal.ONE,
                 areaOfLaw.getValue(),
-                OffsetDateTime.of(2025, 1, 1, 10, 10, 10, 0, ZoneOffset.UTC),
-                false));
+                OffsetDateTime.of(2025, 1, 1, 10, 10, 10, 0, ZoneOffset.UTC)));
 
     when(submissionClaimDetailsBuilder.build(any(), anyInt(), anyInt(), anyString()))
         .thenReturn(
@@ -645,8 +643,7 @@ class SubmissionDetailViewTest extends ViewTestBase {
                 "AQ2B3C",
                 BigDecimal.ONE,
                 areaOfLaw.getValue(),
-                OffsetDateTime.of(2025, 1, 1, 10, 10, 10, 0, ZoneOffset.UTC),
-                false));
+                OffsetDateTime.of(2025, 1, 1, 10, 10, 10, 0, ZoneOffset.UTC)));
 
     when(submissionMessagesBuilder.buildErrors(any(), anyInt(), anyInt(), any()))
         .thenReturn(
