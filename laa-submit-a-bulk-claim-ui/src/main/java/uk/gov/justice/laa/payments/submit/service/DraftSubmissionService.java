@@ -18,12 +18,15 @@ public class DraftSubmissionService {
   public void submitDraftSubmission(UUID submissionId) {
     // Get submission TODO: Perhaps have event service do this step through a message?
     var submission = dataClaimsRestClient.getSubmission(submissionId);
-    SubmissionPatch submissionPatch = new SubmissionPatch().submissionId(submissionId)
-        .status(SubmissionStatus.VALIDATION_SUCCEEDED);
+    SubmissionPatch submissionPatch =
+        new SubmissionPatch()
+            .submissionId(submissionId)
+            .status(SubmissionStatus.VALIDATION_SUCCEEDED);
     UUID bulkSubmissionId = submission.block().getBulkSubmissionId();
-    BulkSubmissionPatch bulkSubmissionPatch = new BulkSubmissionPatch()
-        .bulkSubmissionId(bulkSubmissionId)
-        .status(BulkSubmissionStatus.READY_FOR_SUBMISSION);
+    BulkSubmissionPatch bulkSubmissionPatch =
+        new BulkSubmissionPatch()
+            .bulkSubmissionId(bulkSubmissionId)
+            .status(BulkSubmissionStatus.READY_FOR_SUBMISSION);
 
     dataClaimsRestClient.updateSubmission(submissionId, submissionPatch);
     dataClaimsRestClient.updateBulkSubmission(bulkSubmissionId, bulkSubmissionPatch);
