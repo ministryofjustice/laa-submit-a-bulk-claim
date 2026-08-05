@@ -30,8 +30,8 @@ public class SubmitDraftController {
   private final DraftSubmissionService draftSubmissionService;
 
   @GetMapping("/submit-draft-submission")
-  public String getSubmitSubmissionDraft(Model model,
-      @Valid SubmissionViewQuery submissionViewQuery) {
+  public String getSubmitSubmissionDraft(
+      Model model, @Valid SubmissionViewQuery submissionViewQuery) {
     final SubmissionResponse submissionResponse =
         dataClaimsRestClient
             .getSubmission(submissionViewQuery.getSubmissionId())
@@ -47,8 +47,7 @@ public class SubmitDraftController {
   }
 
   @PostMapping("/submit-draft-submission")
-  public String postSubmitDraft(
-      @SessionAttribute(value = SUBMISSION_ID) UUID submissionId) {
+  public String postSubmitDraft(@SessionAttribute(value = SUBMISSION_ID) UUID submissionId) {
     draftSubmissionService.submitDraftSubmission(submissionId);
     return "redirect:/submission/%s".formatted(submissionId);
   }
