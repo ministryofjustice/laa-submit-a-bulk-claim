@@ -1,5 +1,7 @@
 package uk.gov.justice.laa.bulkclaim.mapper;
 
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
@@ -8,6 +10,8 @@ import java.util.stream.Stream;
 import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -75,5 +79,64 @@ class SubmissionSummaryMapperTest {
               .assertThat(result.submitted())
               .isEqualTo(OffsetDateTime.of(2025, 7, 1, 11, 0, 0, 0, ZoneOffset.ofHours(1)));
         });
+  }
+
+  @Nested
+  @DisplayName("Submitted date mapping")
+  class SubmittedDateTimeMapping {
+
+    @Test
+    @DisplayName("Should map UTC submitted time to London BST")
+    void shouldMapUtcSubmittedToLondonBstInSummer() {
+      SubmissionResponse submissionResponse =
+          buildSubmissionResponse(
+              OffsetDateTime.of(2025, 7, 15, 10, 0, 0, 0, ZoneOffset.UTC),
+              SubmissionStatus.VALIDATION_SUCCEEDED,
+              AreaOfLaw.LEGAL_HELP);
+
+      SubmissionSummary result = mapper.toSubmissionSummary(submissionResponse);
+
+      assertThat(result.submitted())
+          .isEqualTo(OffsetDateTime.of(2025, 7, 15, 11, 0, 0, 0, ZoneOffset.ofHours(1)));
+    }
+
+    @Test
+    @DisplayName("Should map submitted time to London GMT")
+    void shouldMapSubmittedToLondonGmtInWinter() {
+      SubmissionResponse submissionResponse =
+          buildSubmissionResponse(
+              OffsetDateTime.of(2025, 1, 15, 10, 0, 0, 0, ZoneOffset.UTC),
+              SubmissionStatus.VALIDATION_SUCCEEDED,
+              AreaOfLaw.LEGAL_HELP);
+
+      SubmissionSummary result = mapper.toSubmissionSummary(submissionResponse);
+
+      assertThat(result.submitted())
+          .isEqualTo(OffsetDateTime.of(2025, 1, 15, 10, 0, 0, 0, ZoneOffset.UTC));
+    }
+
+    @Test
+    @DisplayName("Should map null submitted to null")
+    void shouldMapNullSubmittedToNull() {
+      SubmissionResponse submissionResponse =
+          buildSubmissionResponse(
+              null, SubmissionStatus.VALIDATION_SUCCEEDED, AreaOfLaw.LEGAL_HELP);
+
+      SubmissionSummary result = mapper.toSubmissionSummary(submissionResponse);
+
+      assertThat(result.submitted()).isNull();
+    }
+  }
+
+  private SubmissionResponse buildSubmissionResponse(
+      OffsetDateTime submitted, SubmissionStatus status, AreaOfLaw areaOfLaw) {
+    return SubmissionResponse.builder()
+        .submissionId(UUID.fromString("e20ca04b-09a4-4754-8e88-aea8820d1208"))
+        .submissionPeriod("MAY-2025")
+        .officeAccountNumber("1234567890")
+        .status(status)
+        .areaOfLaw(areaOfLaw)
+        .submitted(submitted)
+        .build();
   }
 }
