@@ -25,7 +25,7 @@
         <dt class="govuk-summary-list__key"
             th:text="#{submission.summary.properties.dateTime}"></dt>
         <dd class="govuk-summary-list__value"
-           th:with="submittedLondonTime=${T(uk.gov.justice.laa.bulkclaim.util.DateTimeUtil).toLondonLocalDateTime(submissionSummary.submitted())}"
+            th:with="submittedLondonTime=${@dateTimeUtil.toLondonLocalDateTime(submissionSummary.submitted())}"
             th:text="|${#temporals.format(submittedLondonTime,'d MMM yyyy')} at ${#temporals.format(submittedLondonTime,'h:mma')}|"></dd>
       </div>
       <div class="govuk-summary-list__row">

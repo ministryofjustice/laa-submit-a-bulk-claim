@@ -11,12 +11,14 @@ import org.junit.jupiter.api.Test;
 @DisplayName("Date time util tests")
 class DateTimeUtilTest {
 
+  private final DateTimeUtil dateTimeUtil = new DateTimeUtil();
+
   @Test
   @DisplayName("Should convert UTC submitted time to London time during BST")
   void shouldConvertUtcToLondonLocalDateTime() {
     OffsetDateTime utcDateTime = OffsetDateTime.of(2025, 7, 1, 10, 10, 10, 0, ZoneOffset.UTC);
 
-    LocalDateTime result = DateTimeUtil.toLondonLocalDateTime(utcDateTime);
+    LocalDateTime result = dateTimeUtil.toLondonLocalDateTime(utcDateTime);
 
     assertThat(result).isEqualTo(LocalDateTime.of(2025, 7, 1, 11, 10, 10));
   }
@@ -26,7 +28,7 @@ class DateTimeUtilTest {
   void shouldConvertUtcToLondonLocalDateTimeInWinter() {
     OffsetDateTime utcDateTime = OffsetDateTime.of(2025, 1, 15, 10, 0, 0, 0, ZoneOffset.UTC);
 
-    LocalDateTime result = DateTimeUtil.toLondonLocalDateTime(utcDateTime);
+    LocalDateTime result = dateTimeUtil.toLondonLocalDateTime(utcDateTime);
 
     assertThat(result).isEqualTo(LocalDateTime.of(2025, 1, 15, 10, 0, 0));
   }
