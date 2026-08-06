@@ -56,7 +56,7 @@ class SubmissionSummaryMapperTest {
             .officeAccountNumber("1234567890")
             .status(inputStatus)
             .areaOfLaw(AreaOfLaw.LEGAL_HELP)
-            .submitted(OffsetDateTime.of(2025, 1, 1, 0, 0, 0, 0, ZoneOffset.UTC))
+            .submitted(OffsetDateTime.of(2025, 7, 1, 10, 0, 0, 0, ZoneOffset.UTC))
             .build();
 
     // When
@@ -73,7 +73,7 @@ class SubmissionSummaryMapperTest {
           softAssertions.assertThat(result.areaOfLaw()).isEqualTo("LEGAL HELP");
           softAssertions
               .assertThat(result.submitted())
-              .isEqualTo(OffsetDateTime.of(2025, 1, 1, 0, 0, 0, 0, ZoneOffset.UTC));
+              .isEqualTo(OffsetDateTime.of(2025, 7, 1, 11, 0, 0, 0, ZoneOffset.ofHours(1)));
         });
   }
 }

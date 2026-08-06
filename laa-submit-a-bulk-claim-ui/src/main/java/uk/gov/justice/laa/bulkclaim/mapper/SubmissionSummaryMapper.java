@@ -1,10 +1,12 @@
 package uk.gov.justice.laa.bulkclaim.mapper;
 
 import java.time.LocalDate;
+import java.time.OffsetDateTime;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Named;
 import uk.gov.justice.laa.bulkclaim.dto.submission.SubmissionSummary;
+import uk.gov.justice.laa.bulkclaim.util.DateUtil;
 import uk.gov.justice.laa.bulkclaim.util.SubmissionPeriodUtil;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.AreaOfLaw;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionResponse;
@@ -21,7 +23,7 @@ public interface SubmissionSummaryMapper {
       source = "submissionPeriod",
       qualifiedByName = "toSubmissionPeriod")
   @Mapping(target = "status", source = "status", qualifiedByName = "mapStatus")
-  @Mapping(target = "submitted", source = "submitted")
+  @Mapping(target = "submitted", source = "submitted", qualifiedByName = "toLondonOffsetDateTime")
   @Mapping(target = "submissionValue", ignore = true)
   SubmissionSummary toSubmissionSummary(SubmissionResponse submissionResponse);
 
@@ -45,5 +47,10 @@ public interface SubmissionSummaryMapper {
   @Named("toSubmissionPeriod")
   default LocalDate toSubmissionPeriod(final String submissionPeriod) {
     return SubmissionPeriodUtil.toSubmissionPeriodStart(submissionPeriod);
+  }
+
+  @Named("toLondonOffsetDateTime")
+  default OffsetDateTime toLondonOffsetDateTime(final OffsetDateTime submitted) {
+    return DateUtil.toLondonOffsetDateTime(submitted);
   }
 }
