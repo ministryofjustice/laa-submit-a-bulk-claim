@@ -3,9 +3,10 @@ package uk.gov.justice.laa.bulkclaim.util;
 import java.math.BigDecimal;
 import java.text.NumberFormat;
 import java.util.Locale;
-import org.springframework.stereotype.Service;
 
-@Service
+import org.springframework.stereotype.Component;
+
+@Component
 public class CurrencyUtil {
 
   /** Formats a BigDecimal value to a currency string. */
