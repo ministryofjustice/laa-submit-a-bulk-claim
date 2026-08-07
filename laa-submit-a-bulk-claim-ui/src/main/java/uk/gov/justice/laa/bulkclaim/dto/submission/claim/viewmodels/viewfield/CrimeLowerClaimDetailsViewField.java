@@ -46,9 +46,10 @@ public enum CrimeLowerClaimDetailsViewField implements ClaimViewField<CrimeLower
           DISBURSEMENTS_VAT,
           TRAVEL_COSTS,
           WAITING_COSTS,
-          VAT,
-          TOTAL_VAT,
-          TOTAL_INCLUDING_VAT);
+          VAT);
+
+  public static final List<CrimeLowerClaimDetailsViewField> TOTAL_ROWS =
+      List.of(TOTAL_VAT, TOTAL_INCLUDING_VAT);
 
   private final Function<CrimeLowerClaimDetails, Object> accessor;
 

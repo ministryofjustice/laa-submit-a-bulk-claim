@@ -1,0 +1,36 @@
+<th:block xmlns:th="http://www.thymeleaf.org"
+          th:fragment="claim-value-table(title, rows, showCurrentCalculated)">
+  <!--/*@thymesVar id="rows" type="java.util.List<uk.gov.justice.laa.bulkclaim.dto.submission.claim.viewmodels.ClaimValueRow>"*/-->
+
+  <div class="govuk-grid-column-full">
+    <div class="govuk-summary-card">
+      <div class="govuk-summary-card__title-wrapper">
+        <h2 class="govuk-summary-card__title" th:text="${title}"/>
+      </div>
+      <div class="govuk-summary-card__content">
+        <dl class="govuk-summary-list">
+          <div class="govuk-summary-list__row">
+            <dt class="govuk-summary-list__key" th:text="#{viewClaim.values.item}"/>
+            <dd class="govuk-summary-list__value govuk-!-font-weight-bold govuk-!-text-align-left"
+                th:text="#{viewClaim.values.reported}"/>
+            <dd class="govuk-summary-list__value govuk-!-font-weight-bold govuk-!-text-align-left"
+                th:text="#{viewClaim.values.initialCalculated}"/>
+            <dd class="govuk-summary-list__value govuk-!-font-weight-bold govuk-!-text-align-left"
+                th:if="${showCurrentCalculated}"
+                th:text="#{viewClaim.values.currentCalculated}"/>
+          </div>
+          <div class="govuk-summary-list__row" th:each="valueRow : ${rows}">
+            <dt class="govuk-summary-list__key" th:text="${valueRow.label()}"/>
+            <dd class="govuk-summary-list__value govuk-!-text-align-left"
+                th:text="${valueRow.row().getReportedDisplay()}"/>
+            <dd class="govuk-summary-list__value govuk-!-text-align-left"
+                th:text="${valueRow.row().getInitialCalculatedDisplay()}"/>
+            <dd class="govuk-summary-list__value govuk-!-text-align-left"
+                th:if="${showCurrentCalculated}"
+                th:text="${valueRow.row().getCurrentCalculatedDisplay()}"/>
+          </div>
+        </dl>
+      </div>
+    </div>
+  </div>
+</th:block>

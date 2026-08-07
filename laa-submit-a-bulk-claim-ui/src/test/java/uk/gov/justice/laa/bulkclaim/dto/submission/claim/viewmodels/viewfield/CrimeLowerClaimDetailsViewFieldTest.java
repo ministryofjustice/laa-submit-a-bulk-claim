@@ -55,7 +55,7 @@ class CrimeLowerClaimDetailsViewFieldTest {
   }
 
   @Test
-  @DisplayName("Value rows list should contain every values/total-table field, in order")
+  @DisplayName("Value rows list should contain every values-table field, in order")
   void valueRowsShouldBeOrdered() {
     assertThat(CrimeLowerClaimDetailsViewField.VALUE_ROWS)
         .containsExactly(
@@ -65,7 +65,14 @@ class CrimeLowerClaimDetailsViewFieldTest {
             CrimeLowerClaimDetailsViewField.DISBURSEMENTS_VAT,
             CrimeLowerClaimDetailsViewField.TRAVEL_COSTS,
             CrimeLowerClaimDetailsViewField.WAITING_COSTS,
-            CrimeLowerClaimDetailsViewField.VAT,
+            CrimeLowerClaimDetailsViewField.VAT);
+  }
+
+  @Test
+  @DisplayName("Total rows list should contain every total-table field, in order")
+  void totalRowsShouldBeOrdered() {
+    assertThat(CrimeLowerClaimDetailsViewField.TOTAL_ROWS)
+        .containsExactly(
             CrimeLowerClaimDetailsViewField.TOTAL_VAT,
             CrimeLowerClaimDetailsViewField.TOTAL_INCLUDING_VAT);
   }
