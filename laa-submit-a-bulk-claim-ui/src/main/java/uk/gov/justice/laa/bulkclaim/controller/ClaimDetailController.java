@@ -19,6 +19,7 @@ import uk.gov.justice.laa.bulkclaim.builder.SubmissionMessagesBuilder;
 import uk.gov.justice.laa.bulkclaim.client.DataClaimsRestClient;
 import uk.gov.justice.laa.bulkclaim.config.FeatureFlagsConfig;
 import uk.gov.justice.laa.bulkclaim.constants.ViewSubmissionNavigationTab;
+import uk.gov.justice.laa.bulkclaim.dto.submission.claim.ClaimSummary;
 import uk.gov.justice.laa.bulkclaim.dto.submission.messages.MessagesSummary;
 import uk.gov.justice.laa.bulkclaim.exception.SubmitBulkClaimException;
 import uk.gov.justice.laa.bulkclaim.mapper.ClaimFeeCalculationBreakdownMapper;
@@ -111,7 +112,7 @@ public final class ClaimDetailController {
         submissionMessagesBuilder.buildAllWarnings(submissionId, claimId);
     model.addAttribute("claimMessages", messagesSummary);
 
-    return "pages/view-claim-detail";
+    return "pages/view-claim-detail-old";
   }
 
   @GetMapping("/view-claim-detail")
@@ -145,23 +146,22 @@ public final class ClaimDetailController {
                     new SubmitBulkClaimException(
                         "Claim %s does not exist for submission %s"
                             .formatted(claimId.toString(), submissionId.toString())));
-    model.addAttribute("ufn", claimResponse.getUniqueFileNumber());
     model.addAttribute(
         "claimStatus",
         claimResponse.getStatus() == null ? null : claimResponse.getStatus().getValue());
 
     Assert.notNull(claimResponse.getFeeCalculationResponse(), "Fee calculation response is null");
-    model.addAttribute(
+    /*model.addAttribute(
         "feeDetails",
-        claimFeeCalculationBreakdownMapper.toClaimFeeCalculationBreakdown(claimResponse));
+        claimFeeCalculationBreakdownMapper.toClaimFeeCalculationBreakdown(claimResponse));*/
     SubmissionResponse submissionResponse =
         dataClaimsRestClient.getSubmission(submissionId).block();
     String areaOfLaw = submissionResponse.getAreaOfLaw().getValue();
-    model.addAttribute("claimSummary", claimSummaryMapper.toClaimSummary(claimResponse, areaOfLaw));
 
-    final MessagesSummary messagesSummary =
-        submissionMessagesBuilder.buildAllWarnings(submissionId, claimId);
-    model.addAttribute("claimMessages", messagesSummary);
+    ClaimSummary claimSummary = claimSummaryMapper.toClaimSummary(claimResponse, areaOfLaw);
+    model.addAttribute("claimSummary", claimSummary);
+
+
 
     return "pages/view-claim-detail";
   }
