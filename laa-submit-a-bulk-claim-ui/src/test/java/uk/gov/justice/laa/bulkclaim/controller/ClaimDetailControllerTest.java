@@ -21,8 +21,10 @@ import org.springframework.context.annotation.Import;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.assertj.MockMvcTester;
 import reactor.core.publisher.Mono;
+import uk.gov.justice.laa.bulkclaim.builder.ClaimStatusBannerBuilder;
 import uk.gov.justice.laa.bulkclaim.builder.SubmissionMessagesBuilder;
 import uk.gov.justice.laa.bulkclaim.client.DataClaimsRestClient;
+import uk.gov.justice.laa.bulkclaim.client.DataClaimsRestClientV2;
 import uk.gov.justice.laa.bulkclaim.dto.submission.claim.ClaimFeeCalculationBreakdown;
 import uk.gov.justice.laa.bulkclaim.dto.submission.claim.ClaimSummary;
 import uk.gov.justice.laa.bulkclaim.dto.submission.messages.MessageRow;
@@ -30,6 +32,7 @@ import uk.gov.justice.laa.bulkclaim.dto.submission.messages.MessagesSummary;
 import uk.gov.justice.laa.bulkclaim.helper.TestObjectCreator;
 import uk.gov.justice.laa.bulkclaim.mapper.ClaimFeeCalculationBreakdownMapper;
 import uk.gov.justice.laa.bulkclaim.mapper.ClaimSummaryMapper;
+import uk.gov.justice.laa.bulkclaim.service.claimdetail.ClaimDetailViewFactory;
 import uk.gov.justice.laa.bulkclaim.util.ThymeleafHrefUtils;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.AreaOfLaw;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.ClaimResponse;
@@ -44,9 +47,12 @@ class ClaimDetailControllerTest extends BaseControllerTest {
   @Autowired private MockMvcTester mockMvc;
 
   @MockitoBean private DataClaimsRestClient dataClaimsRestClient;
+  @MockitoBean private DataClaimsRestClientV2 dataClaimsRestClientV2;
   @MockitoBean private ClaimSummaryMapper claimSummaryMapper;
   @MockitoBean private ClaimFeeCalculationBreakdownMapper claimFeeCalculationBreakdownMapper;
   @MockitoBean private SubmissionMessagesBuilder submissionMessagesBuilder;
+  @MockitoBean private ClaimDetailViewFactory claimDetailViewFactory;
+  @MockitoBean private ClaimStatusBannerBuilder claimStatusBannerBuilder;
 
   @Nested
   @DisplayName("GET: /submission/claim/{claimReference}")
@@ -62,12 +68,12 @@ class ClaimDetailControllerTest extends BaseControllerTest {
                   get("/submission/claim/" + claimId)
                       .with(oidcLogin().oidcUser(ControllerTestHelper.getOidcUser()))))
           .hasStatus3xxRedirection()
-          .hasRedirectedUrl("/view-claim-detail?page=0&messagesPage=0&navTab=CLAIM_DETAILS");
+          .hasRedirectedUrl("/view-claim-detail-old?page=0&messagesPage=0&navTab=CLAIM_DETAILS");
     }
   }
 
   @Nested
-  @DisplayName("GET: /view-claim-detail")
+  @DisplayName("GET: /view-claim-detail-old")
   class GetClaimDetail {
 
     @Test
@@ -97,12 +103,12 @@ class ClaimDetailControllerTest extends BaseControllerTest {
 
       assertThat(
               mockMvc.perform(
-                  get("/view-claim-detail")
+                  get("/view-claim-detail-old")
                       .with(oidcLogin().oidcUser(ControllerTestHelper.getOidcUser()))
                       .sessionAttr(SUBMISSION_ID, submissionId)
                       .sessionAttr(CLAIM_ID, claimId)))
           .hasStatusOk()
-          .hasViewName("pages/view-claim-detail");
+          .hasViewName("pages/view-claim-detail-old");
 
       verify(claimSummaryMapper, times(1))
           .toClaimSummary(claimResponse, AreaOfLaw.LEGAL_HELP.getValue());
@@ -115,7 +121,7 @@ class ClaimDetailControllerTest extends BaseControllerTest {
 
       assertThat(
               mockMvc.perform(
-                  get("/view-claim-detail")
+                  get("/view-claim-detail-old")
                       .with(oidcLogin().oidcUser(ControllerTestHelper.getOidcUser()))
                       .sessionAttr(CLAIM_ID, claimId)))
           .failure()
@@ -129,7 +135,7 @@ class ClaimDetailControllerTest extends BaseControllerTest {
 
       assertThat(
               mockMvc.perform(
-                  get("/view-claim-detail")
+                  get("/view-claim-detail-old")
                       .with(oidcLogin().oidcUser(ControllerTestHelper.getOidcUser()))
                       .sessionAttr(SUBMISSION_ID, submissionId)))
           .failure()
@@ -146,7 +152,7 @@ class ClaimDetailControllerTest extends BaseControllerTest {
 
       assertThat(
               mockMvc.perform(
-                  get("/view-claim-detail")
+                  get("/view-claim-detail-old")
                       .with(oidcLogin().oidcUser(ControllerTestHelper.getOidcUser()))
                       .sessionAttr(SUBMISSION_ID, submissionId)
                       .sessionAttr(CLAIM_ID, claimId)))

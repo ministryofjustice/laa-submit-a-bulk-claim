@@ -15,6 +15,8 @@ import org.springframework.web.service.annotation.HttpExchange;
 import org.springframework.web.service.annotation.PostExchange;
 import reactor.core.publisher.Mono;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.AreaOfLaw;
+import uk.gov.justice.laa.dstew.payments.claimsdata.model.AssessmentResultSet;
+import uk.gov.justice.laa.dstew.payments.claimsdata.model.ClaimHistoryResultSet;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.ClaimResponse;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.ClaimResultSet;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.CreateBulkSubmission201Response;
@@ -114,4 +116,16 @@ public interface DataClaimsRestClient {
   @PostExchange("/submissions")
   ResponseEntity<CreateSubmission201Response> createSubmission(
       @RequestBody SubmissionPost submission);
+
+  @GetExchange(value = "/claims/{claim-id}/history")
+  Mono<ClaimHistoryResultSet> getClaimHistory(
+      @PathVariable("claim-id") UUID claimId,
+      @RequestParam(value = "limit", required = false) Integer limit);
+
+  @GetExchange(value = "/claims/{claim-id}/assessments")
+  Mono<AssessmentResultSet> getClaimAssessments(
+      @PathVariable("claim-id") UUID claimId,
+      @RequestParam(value = "page", required = false) Integer page,
+      @RequestParam(value = "size", required = false) Integer size,
+      @RequestParam(value = "sort", required = false) String sort);
 }
