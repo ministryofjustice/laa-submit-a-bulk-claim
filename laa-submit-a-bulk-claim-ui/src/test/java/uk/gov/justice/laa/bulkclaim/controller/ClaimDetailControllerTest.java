@@ -62,12 +62,12 @@ class ClaimDetailControllerTest extends BaseControllerTest {
                   get("/submission/claim/" + claimId)
                       .with(oidcLogin().oidcUser(ControllerTestHelper.getOidcUser()))))
           .hasStatus3xxRedirection()
-          .hasRedirectedUrl("/view-claim-detail?page=0&messagesPage=0&navTab=CLAIM_DETAILS");
+          .hasRedirectedUrl("/view-claim-detail-old?page=0&messagesPage=0&navTab=CLAIM_DETAILS");
     }
   }
 
   @Nested
-  @DisplayName("GET: /view-claim-detail")
+  @DisplayName("GET: /view-claim-detail-old")
   class GetClaimDetail {
 
     @Test
@@ -97,12 +97,12 @@ class ClaimDetailControllerTest extends BaseControllerTest {
 
       assertThat(
               mockMvc.perform(
-                  get("/view-claim-detail")
+                  get("/view-claim-detail-old")
                       .with(oidcLogin().oidcUser(ControllerTestHelper.getOidcUser()))
                       .sessionAttr(SUBMISSION_ID, submissionId)
                       .sessionAttr(CLAIM_ID, claimId)))
           .hasStatusOk()
-          .hasViewName("pages/view-claim-detail");
+          .hasViewName("pages/view-claim-detail-old");
 
       verify(claimSummaryMapper, times(1))
           .toClaimSummary(claimResponse, AreaOfLaw.LEGAL_HELP.getValue());
@@ -115,7 +115,7 @@ class ClaimDetailControllerTest extends BaseControllerTest {
 
       assertThat(
               mockMvc.perform(
-                  get("/view-claim-detail")
+                  get("/view-claim-detail-old")
                       .with(oidcLogin().oidcUser(ControllerTestHelper.getOidcUser()))
                       .sessionAttr(CLAIM_ID, claimId)))
           .failure()
@@ -129,7 +129,7 @@ class ClaimDetailControllerTest extends BaseControllerTest {
 
       assertThat(
               mockMvc.perform(
-                  get("/view-claim-detail")
+                  get("/view-claim-detail-old")
                       .with(oidcLogin().oidcUser(ControllerTestHelper.getOidcUser()))
                       .sessionAttr(SUBMISSION_ID, submissionId)))
           .failure()
@@ -146,7 +146,7 @@ class ClaimDetailControllerTest extends BaseControllerTest {
 
       assertThat(
               mockMvc.perform(
-                  get("/view-claim-detail")
+                  get("/view-claim-detail-old")
                       .with(oidcLogin().oidcUser(ControllerTestHelper.getOidcUser()))
                       .sessionAttr(SUBMISSION_ID, submissionId)
                       .sessionAttr(CLAIM_ID, claimId)))
