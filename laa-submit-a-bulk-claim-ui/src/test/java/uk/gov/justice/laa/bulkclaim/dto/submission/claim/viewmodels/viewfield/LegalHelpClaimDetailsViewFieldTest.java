@@ -54,7 +54,7 @@ class LegalHelpClaimDetailsViewFieldTest {
   }
 
   @Test
-  @DisplayName("Value rows list should contain every values/total-table field, in order")
+  @DisplayName("Value rows list should contain every values-table field, in order")
   void valueRowsShouldBeOrdered() {
     assertThat(LegalHelpClaimDetailsViewField.VALUE_ROWS)
         .containsExactly(
@@ -71,7 +71,14 @@ class LegalHelpClaimDetailsViewFieldTest {
             LegalHelpClaimDetailsViewField.CMRH_TELEPHONE,
             LegalHelpClaimDetailsViewField.HOME_OFFICE_INTERVIEW,
             LegalHelpClaimDetailsViewField.SUBSTANTIVE_HEARING,
-            LegalHelpClaimDetailsViewField.VAT_INDICATOR,
+            LegalHelpClaimDetailsViewField.VAT_INDICATOR);
+  }
+
+  @Test
+  @DisplayName("Total rows list should contain every total-table field, in order")
+  void totalRowsShouldBeOrdered() {
+    assertThat(LegalHelpClaimDetailsViewField.TOTAL_ROWS)
+        .containsExactly(
             LegalHelpClaimDetailsViewField.TOTAL_VAT,
             LegalHelpClaimDetailsViewField.TOTAL_INCLUDING_VAT);
   }

@@ -1,7 +1,7 @@
 package uk.gov.justice.laa.bulkclaim.service.claimdetail;
 
 import java.util.List;
-import uk.gov.justice.laa.bulkclaim.dto.submission.claim.viewmodels.ClaimFieldRow;
+import uk.gov.justice.laa.bulkclaim.dto.submission.claim.viewmodels.ClaimValueRow;
 import uk.gov.justice.laa.bulkclaim.dto.submission.claim.viewmodels.CrimeLowerClaimDetails;
 import uk.gov.justice.laa.bulkclaim.dto.submission.claim.viewmodels.LegalHelpClaimDetails;
 import uk.gov.justice.laa.bulkclaim.dto.submission.claim.viewmodels.MediationClaimDetails;
@@ -10,9 +10,12 @@ public sealed interface ClaimDetailView {
 
   String template();
 
-  List<ClaimFieldRow> valueRows();
+  List<ClaimValueRow> valueRows();
 
-  record CrimeLower(CrimeLowerClaimDetails details, List<ClaimFieldRow> valueRows)
+  List<ClaimValueRow> totalRows();
+
+  record CrimeLower(
+      CrimeLowerClaimDetails details, List<ClaimValueRow> valueRows, List<ClaimValueRow> totalRows)
       implements ClaimDetailView {
 
     @Override
@@ -21,7 +24,8 @@ public sealed interface ClaimDetailView {
     }
   }
 
-  record LegalHelp(LegalHelpClaimDetails details, List<ClaimFieldRow> valueRows)
+  record LegalHelp(
+      LegalHelpClaimDetails details, List<ClaimValueRow> valueRows, List<ClaimValueRow> totalRows)
       implements ClaimDetailView {
 
     @Override
@@ -30,7 +34,8 @@ public sealed interface ClaimDetailView {
     }
   }
 
-  record Mediation(MediationClaimDetails details, List<ClaimFieldRow> valueRows)
+  record Mediation(
+      MediationClaimDetails details, List<ClaimValueRow> valueRows, List<ClaimValueRow> totalRows)
       implements ClaimDetailView {
 
     @Override

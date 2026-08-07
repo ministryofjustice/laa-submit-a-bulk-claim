@@ -32,13 +32,10 @@ public enum MediationClaimDetailsViewField implements ClaimViewField<MediationCl
   TOTAL_INCLUDING_VAT(d -> new ClaimFieldRow(null, d.initialCalculatedTotalIncludingVat()));
 
   public static final List<MediationClaimDetailsViewField> VALUE_ROWS =
-      List.of(
-          FIXED_FEE,
-          DISBURSEMENTS,
-          DISBURSEMENTS_VAT,
-          VAT_INDICATOR,
-          TOTAL_VAT,
-          TOTAL_INCLUDING_VAT);
+      List.of(FIXED_FEE, DISBURSEMENTS, DISBURSEMENTS_VAT, VAT_INDICATOR);
+
+  public static final List<MediationClaimDetailsViewField> TOTAL_ROWS =
+      List.of(TOTAL_VAT, TOTAL_INCLUDING_VAT);
 
   private final Function<MediationClaimDetails, Object> accessor;
 
