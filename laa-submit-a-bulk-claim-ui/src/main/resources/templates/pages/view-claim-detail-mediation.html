@@ -1,0 +1,134 @@
+<!DOCTYPE HTML>
+<html lang="en" class="govuk-template" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{ layout/main-layout :: layout(${ufn} ? #{viewClaim.heading(${ufn})} : #{viewClaim.heading.noUfn},~{::main},~{::#back-link},'search-submissions')}">
+
+<!--/*@thymesVar id="claimDetailView" type="uk.gov.justice.laa.bulkclaim.service.claimdetail.ClaimDetailView$Mediation"*/-->
+<!--/*@thymesVar id="banner" type="uk.gov.justice.laa.bulkclaim.dto.submission.claim.viewmodels.ClaimStatusBanner"*/-->
+<!--/*@thymesVar id="claimMessages" type="uk.gov.justice.laa.bulkclaim.dto.submission.messages.MessagesSummary"*/-->
+
+<th:block id="back-link">
+  <a th:href="${viewSubmissionBackLink}"
+     class="govuk-back-link"
+     th:text="#{common.back}"/>
+</th:block>
+<main class="govuk-main-wrapper" id="main-content">
+
+  <div class="govuk-width-container"
+       th:with="client1Name=|${claimDetailView.details().client1Forename()} ${claimDetailView.details().client1Surname()}|,
+                client2Forename=${claimDetailView.details().client2Forename()},
+                client2Surname=${claimDetailView.details().client2Surname()},
+                client2Name=${client2Forename != null or client2Surname != null} ? |${client2Forename} ${client2Surname}| : null">
+    <div class="govuk-grid-row">
+
+      <div class="govuk-grid-column-full">
+        <h1 class="govuk-heading-l" th:text="${client1Name}"/>
+        <p class="govuk-body">
+          <span class="govuk-!-font-weight-bold" th:text="|#{viewClaim.summary.clientName1}:|"></span>
+          <th:block th:text="${client1Name}"></th:block>
+          <br/>
+          <span class="govuk-!-font-weight-bold" th:text="|#{viewClaim.summary.ucn1}:|"></span>
+          <th:block th:text="${claimDetailView.details().client1UniqueClientNumber()}"></th:block>
+        </p>
+        <p class="govuk-body">
+          <span class="govuk-!-font-weight-bold" th:text="|#{viewClaim.summary.clientName2}:|"></span>
+          <th:block th:text="${client2Name} ?: #{viewClaim.summary.notApplicable}"></th:block>
+          <br/>
+          <span class="govuk-!-font-weight-bold" th:text="|#{viewClaim.summary.ucn2}:|"></span>
+          <th:block
+              th:text="${claimDetailView.details().client2UniqueClientNumber()} ?: #{viewClaim.summary.notApplicable}"></th:block>
+        </p>
+        <p class="govuk-body">
+          <span class="govuk-!-font-weight-bold" th:text="|#{viewClaim.summary.feeCode}:|"></span>
+          <th:block th:text="${claimDetailView.details().feeCode()}"></th:block>
+        </p>
+      </div>
+
+      <div class="govuk-grid-column-full govuk-!-margin-bottom-4"
+           id="print-button-container"
+           data-module="laa-print-button"
+           data-print-action-container="print-button-container"></div>
+
+      <th:block
+          th:replace="~{fragments/claim-status-banner :: claim-status-banner(${banner}, ${claimMessages})}"/>
+
+      <div class="govuk-grid-column-full">
+        <div class="govuk-summary-card">
+          <div class="govuk-summary-card__title-wrapper">
+            <h2 class="govuk-summary-card__title" th:text="#{viewClaim.summary.title}"/>
+          </div>
+          <div class="govuk-summary-card__content">
+            <dl class="govuk-summary-list">
+              <div class="govuk-summary-list__row">
+                <dt class="govuk-summary-list__key" th:text="#{viewClaim.summary.clientName1}"/>
+                <dd class="govuk-summary-list__value" th:text="${client1Name}"/>
+              </div>
+              <div class="govuk-summary-list__row">
+                <dt class="govuk-summary-list__key" th:text="#{viewClaim.summary.ucn1}"/>
+                <dd class="govuk-summary-list__value"
+                    th:text="${claimDetailView.details().client1UniqueClientNumber()} ?: #{viewClaim.summary.notApplicable}"/>
+              </div>
+              <div class="govuk-summary-list__row">
+                <dt class="govuk-summary-list__key" th:text="#{viewClaim.summary.clientName2}"/>
+                <dd class="govuk-summary-list__value"
+                    th:text="${client2Name} ?: #{viewClaim.summary.notApplicable}"/>
+              </div>
+              <div class="govuk-summary-list__row">
+                <dt class="govuk-summary-list__key" th:text="#{viewClaim.summary.ucn2}"/>
+                <dd class="govuk-summary-list__value"
+                    th:text="${claimDetailView.details().client2UniqueClientNumber()} ?: #{viewClaim.summary.notApplicable}"/>
+              </div>
+              <div class="govuk-summary-list__row">
+                <dt class="govuk-summary-list__key" th:text="#{viewClaim.summary.officeAccountNumber}"/>
+                <dd class="govuk-summary-list__value"
+                    th:text="${claimDetailView.details().officeCode()} ?: #{viewClaim.summary.notApplicable}"/>
+              </div>
+              <div class="govuk-summary-list__row">
+                <dt class="govuk-summary-list__key" th:text="#{viewClaim.summary.dateSubmitted}"/>
+                <dd class="govuk-summary-list__value"
+                    th:text="${claimDetailView.details().dateSubmitted() != null} ? |${#temporals.format(claimDetailView.details().dateSubmitted(),'d MMMM yyyy')} at ${#temporals.format(claimDetailView.details().dateSubmitted(),'h:mma')}| : #{viewClaim.summary.notApplicable}"/>
+              </div>
+              <div class="govuk-summary-list__row">
+                <dt class="govuk-summary-list__key" th:text="#{viewClaim.summary.areaOfLaw}"/>
+                <dd class="govuk-summary-list__value"
+                    th:text="${claimDetailView.details().areaOfLaw()?.value} ?: #{viewClaim.summary.notApplicable}"/>
+              </div>
+              <div class="govuk-summary-list__row">
+                <dt class="govuk-summary-list__key" th:text="#{viewClaim.summary.feeCode}"/>
+                <dd class="govuk-summary-list__value"
+                    th:text="${claimDetailView.details().feeCode()} ?: #{viewClaim.summary.notApplicable}"/>
+              </div>
+              <div class="govuk-summary-list__row">
+                <dt class="govuk-summary-list__key" th:text="#{viewClaim.summary.feeCodeDescription}"/>
+                <dd class="govuk-summary-list__value"
+                    th:text="${claimDetailView.details().feeCodeDescription()} ?: #{viewClaim.summary.notApplicable}"/>
+              </div>
+              <div class="govuk-summary-list__row">
+                <dt class="govuk-summary-list__key" th:text="#{viewClaim.summary.matterType}"/>
+                <dd class="govuk-summary-list__value"
+                    th:text="${claimDetailView.details().matterTypeCode()} ?: #{viewClaim.summary.notApplicable}"/>
+              </div>
+              <div class="govuk-summary-list__row">
+                <dt class="govuk-summary-list__key" th:text="#{viewClaim.summary.caseStartDate}"/>
+                <dd class="govuk-summary-list__value"
+                    th:text="${claimDetailView.details().caseStartDate()} ?: #{viewClaim.summary.notApplicable}"/>
+              </div>
+              <div class="govuk-summary-list__row">
+                <dt class="govuk-summary-list__key" th:text="#{viewClaim.summary.dateOfWorkConcluded}"/>
+                <dd class="govuk-summary-list__value"
+                    th:text="${claimDetailView.details().caseConcludedDate()} ?: #{viewClaim.summary.notApplicable}"/>
+              </div>
+            </dl>
+          </div>
+        </div>
+      </div>
+
+      <th:block
+          th:replace="~{fragments/claim-value-table :: claim-value-table(#{viewClaim.values.title}, ${claimDetailView.valueRows()}, ${showCurrentCalculated})}"/>
+
+      <th:block
+          th:replace="~{fragments/claim-value-table :: claim-value-table(#{viewClaim.totalAllowedValue.title}, ${claimDetailView.totalRows()}, ${showCurrentCalculated})}"/>
+
+    </div>
+  </div>
+</main>
+</html>

@@ -16,6 +16,9 @@ public interface MediationClaimDetailsMapper {
   @Mapping(target = "client2Surname", source = "claimResponse.client2Surname")
   @Mapping(target = "client2UniqueClientNumber", source = "claimResponse.client2Ucn")
   @Mapping(target = "officeCode", source = "claimResponse.officeCode")
+  @Mapping(
+      target = "feeCodeDescription",
+      source = "claimResponse.feeCalculationResponse.feeCodeDescription")
   @Mapping(target = "reportedDisbursements", source = "claimResponse.netDisbursementAmount")
   @Mapping(target = "reportedDisbursementsVat", source = "claimResponse.disbursementsVatAmount")
   @Mapping(target = "reportedVatApplicable", source = "claimResponse.isVatApplicable")
