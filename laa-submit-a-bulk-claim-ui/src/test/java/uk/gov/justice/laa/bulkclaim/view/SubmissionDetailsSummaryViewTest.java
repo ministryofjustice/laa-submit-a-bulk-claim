@@ -106,11 +106,11 @@ class SubmissionDetailsSummaryViewTest extends SubmissionDetailsViewTestBase {
     assertThat(doc.select(".govuk-table__header").eachText())
         .containsExactly("Client surname", "Client initial", "UFN", "Messages");
 
-    assertThat(selectFirst(doc, "#claim-message-error-0 td:nth-child(1)").text()).isEqualTo("Smith");
-    assertThat(selectFirst(doc, "#claim-message-error-0 td:nth-child(2)").text()).isEqualTo("J");
+    assertThat(selectFirst(doc, "#claim-message-error-0 td:nth-child(1)").text()).isEqualTo("Doe");
+    assertThat(selectFirst(doc, "#claim-message-error-0 td:nth-child(2)").text()).isEqualTo("John");
     assertThat(selectFirst(doc, "#claim-message-error-0 td:nth-child(3)").text()).isEqualTo("UFN-001");
     assertThat(selectFirst(doc, "#claim-message-error-0 td:nth-child(4)").text())
-        .isEqualTo("Missing client surname");
+        .isEqualTo("The provider is not contracted for the category of law associated with the fee code");
   }
 
   private void assertCommonSummaryFields(List<List<Element>> summaryList) {
@@ -157,6 +157,7 @@ class SubmissionDetailsSummaryViewTest extends SubmissionDetailsViewTestBase {
   }
 
   private void mockRejectedSubmissionSummaryWithClaimErrors() {
+    Optional<UUID> claimReference = Optional.of(UUID.randomUUID());
     Page pagination = Page.builder().totalPages(1).totalElements(2).number(0).size(10).build();
     SubmissionResponse submissionResponse =
         SubmissionResponse.builder()
@@ -180,18 +181,18 @@ class SubmissionDetailsSummaryViewTest extends SubmissionDetailsViewTestBase {
             new MessagesSummary(
                 List.of(
                     MessageRow.builder()
-                        .claimReference(Optional.of(UUID.randomUUID()))
-                        .clientSurname("Smith")
-                        .clientForename("J")
+                        .claimReference(claimReference)
+                        .clientSurname("Doe")
+                        .clientForename("John")
                         .ufn("UFN-001")
-                        .message("Missing client surname")
+                        .message("The provider is not contracted for the category of law associated with the fee code")
                         .build(),
                     MessageRow.builder()
-                        .claimReference(Optional.of(UUID.randomUUID()))
-                        .clientSurname("Jones")
-                        .clientForename("M")
-                        .ufn("UFN-002")
-                        .message("Invalid UFN format")
+                        .claimReference(claimReference)
+                        .clientSurname("Doe")
+                        .clientForename("John")
+                        .ufn("UFN-001")
+                        .message("A duplicate claim was found within the same submission")
                         .build()),
                 2,
                 2,
