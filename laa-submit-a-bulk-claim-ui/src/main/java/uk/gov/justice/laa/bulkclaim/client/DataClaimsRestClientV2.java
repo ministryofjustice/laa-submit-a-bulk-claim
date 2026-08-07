@@ -2,9 +2,12 @@ package uk.gov.justice.laa.bulkclaim.client;
 
 import java.util.UUID;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.service.annotation.GetExchange;
 import org.springframework.web.service.annotation.HttpExchange;
+import reactor.core.publisher.Mono;
+import uk.gov.justice.laa.dstew.payments.claimsdata.model.ClaimResponseV2;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.ClaimResultSetV2;
 
 @HttpExchange("/api/v2")
@@ -17,4 +20,12 @@ public interface DataClaimsRestClientV2 {
       @RequestParam(value = "page") Integer page,
       @RequestParam(value = "size") Integer size,
       @RequestParam(value = "sort", required = false) String sort);
+
+  /**
+   * V2 equivalent of {@link DataClaimsRestClient#getSubmissionClaim}, returning {@link
+   * ClaimResponseV2} instead of the plain {@code ClaimResponse}.
+   */
+  @GetExchange(value = "/submissions/{submission-id}/claims/{claim-id}")
+  Mono<ClaimResponseV2> getSubmissionClaim(
+      @PathVariable("submission-id") UUID submissionId, @PathVariable("claim-id") UUID claimId);
 }

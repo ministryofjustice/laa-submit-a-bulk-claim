@@ -6,7 +6,15 @@
       "claim_id": "6ed32748-64af-4d95-94ea-a78b6397033c",
       "type": "ERROR",
       "source": "string",
-      "display_message": "string"
+      "display_message": "string",
+      "message_code": null,
+      "client_forename": null,
+      "client_surname": null,
+      "unique_client_number": null,
+      "client_2_forename": null,
+      "client_2_surname": null,
+      "client_2_ucn": null,
+      "unique_file_number": null
     }
   ],
   "total_claims": 1,
