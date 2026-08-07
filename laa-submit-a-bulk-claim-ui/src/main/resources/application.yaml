@@ -82,6 +82,7 @@ sentry:
 
 feature-flags:
   is-nil-submission-enabled: ${IS_NIL_SUBMISSION_ENABLED:false}
+  is-alternative-claim-view-enabled: ${IS_ALTERNATIVE_CLAIM_VIEW_ENABLED:false}
 
 management:
   server:

@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.SessionAttributes;
 import org.springframework.web.util.UriComponentsBuilder;
 import uk.gov.justice.laa.bulkclaim.builder.SubmissionMessagesBuilder;
 import uk.gov.justice.laa.bulkclaim.client.DataClaimsRestClient;
+import uk.gov.justice.laa.bulkclaim.config.FeatureFlagsConfig;
 import uk.gov.justice.laa.bulkclaim.constants.ViewSubmissionNavigationTab;
 import uk.gov.justice.laa.bulkclaim.dto.submission.messages.MessagesSummary;
 import uk.gov.justice.laa.bulkclaim.exception.SubmitBulkClaimException;
@@ -35,6 +36,7 @@ public final class ClaimDetailController {
   private final ClaimSummaryMapper claimSummaryMapper;
   private final ClaimFeeCalculationBreakdownMapper claimFeeCalculationBreakdownMapper;
   private final SubmissionMessagesBuilder submissionMessagesBuilder;
+  private final FeatureFlagsConfig featureFlagsConfig;
 
   @GetMapping("/submission/claim/{claimReference}")
   public String getClaimDetail(
@@ -46,14 +48,70 @@ public final class ClaimDetailController {
           final ViewSubmissionNavigationTab navigationTab) {
 
     model.addAttribute(CLAIM_ID, claimReference);
+    String path =
+        Boolean.TRUE.equals(featureFlagsConfig.getIsAlternativeClaimViewEnabled())
+            ? "/view-claim-detail"
+            : "/view-claim-detail-old";
     String uri =
-        UriComponentsBuilder.fromPath("/view-claim-detail")
+        UriComponentsBuilder.fromPath(path)
             .queryParam("page", page)
             .queryParam("messagesPage", messagesPage)
             .queryParam("navTab", navigationTab.toString())
             .toUriString();
 
     return "redirect:" + uri;
+  }
+
+  @GetMapping("/view-claim-detail-old")
+  public String getClaimDetailOld(
+      Model model,
+      @ModelAttribute(SUBMISSION_ID) final UUID submissionId,
+      @ModelAttribute(CLAIM_ID) final UUID claimId,
+      @RequestParam(value = "page", defaultValue = "0") final int page,
+      @RequestParam(value = "messagesPage", defaultValue = "0") final int messagesPage,
+      @RequestParam(value = "navTab", required = false, defaultValue = "CLAIM_DETAILS")
+          final ViewSubmissionNavigationTab navigationTab) {
+
+    model.addAttribute("page", page);
+    model.addAttribute("messagesPage", messagesPage);
+    model.addAttribute("navigationTab", navigationTab.toString());
+    model.addAttribute(
+        "viewSubmissionBackLink",
+        UriComponentsBuilder.fromPath("/submission/{submissionId}")
+            .queryParam("page", page)
+            .queryParam("navTab", navigationTab.toString())
+            .queryParam("messagesPage", messagesPage)
+            .buildAndExpand(submissionId)
+            .toUriString());
+
+    ClaimResponse claimResponse =
+        dataClaimsRestClient
+            .getSubmissionClaim(submissionId, claimId)
+            .blockOptional()
+            .orElseThrow(
+                () ->
+                    new SubmitBulkClaimException(
+                        "Claim %s does not exist for submission %s"
+                            .formatted(claimId.toString(), submissionId.toString())));
+    model.addAttribute("ufn", claimResponse.getUniqueFileNumber());
+    model.addAttribute(
+        "claimStatus",
+        claimResponse.getStatus() == null ? null : claimResponse.getStatus().getValue());
+
+    Assert.notNull(claimResponse.getFeeCalculationResponse(), "Fee calculation response is null");
+    model.addAttribute(
+        "feeDetails",
+        claimFeeCalculationBreakdownMapper.toClaimFeeCalculationBreakdown(claimResponse));
+    SubmissionResponse submissionResponse =
+        dataClaimsRestClient.getSubmission(submissionId).block();
+    String areaOfLaw = submissionResponse.getAreaOfLaw().getValue();
+    model.addAttribute("claimSummary", claimSummaryMapper.toClaimSummary(claimResponse, areaOfLaw));
+
+    final MessagesSummary messagesSummary =
+        submissionMessagesBuilder.buildAllWarnings(submissionId, claimId);
+    model.addAttribute("claimMessages", messagesSummary);
+
+    return "pages/view-claim-detail";
   }
 
   @GetMapping("/view-claim-detail")
