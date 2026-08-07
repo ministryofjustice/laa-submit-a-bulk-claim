@@ -24,6 +24,7 @@ import org.thymeleaf.templatemode.TemplateMode;
 import uk.gov.justice.laa.bulkclaim.builder.ClaimStatusBannerBuilder;
 import uk.gov.justice.laa.bulkclaim.builder.SubmissionMessagesBuilder;
 import uk.gov.justice.laa.bulkclaim.client.DataClaimsRestClient;
+import uk.gov.justice.laa.bulkclaim.client.DataClaimsRestClientV2;
 import uk.gov.justice.laa.bulkclaim.config.FeatureFlagsConfig;
 import uk.gov.justice.laa.bulkclaim.config.WebMvcTestConfig;
 import uk.gov.justice.laa.bulkclaim.controller.ClaimDetailController;
@@ -32,11 +33,12 @@ import uk.gov.justice.laa.bulkclaim.dto.submission.messages.MessageRow;
 import uk.gov.justice.laa.bulkclaim.dto.submission.messages.MessagesSummary;
 import uk.gov.justice.laa.bulkclaim.mapper.ClaimFeeCalculationBreakdownMapper;
 import uk.gov.justice.laa.bulkclaim.mapper.ClaimSummaryMapper;
+import uk.gov.justice.laa.bulkclaim.service.claimdetail.ClaimDetailViewFactory;
 import uk.gov.justice.laa.bulkclaim.util.ThymeleafHrefUtils;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.DerivedClaimStatus;
 
 @WebMvcTest(ClaimDetailController.class)
-@Import({WebMvcTestConfig.class, ThymeleafHrefUtils.class})
+@Import({WebMvcTestConfig.class, ThymeleafHrefUtils.class, ClaimStatusBannerBuilder.class})
 @DisplayName("Shared claim status banner fragment")
 class ClaimStatusBannerFragmentTest {
 
@@ -44,14 +46,15 @@ class ClaimStatusBannerFragmentTest {
   private static final Set<String> SELECTOR = Set.of("claim-status-banner");
 
   @Autowired private SpringTemplateEngine templateEngine;
+  @Autowired private ClaimStatusBannerBuilder claimStatusBannerBuilder;
 
   @MockitoBean private FeatureFlagsConfig featureFlagsConfig;
   @MockitoBean private DataClaimsRestClient dataClaimsRestClient;
+  @MockitoBean private DataClaimsRestClientV2 dataClaimsRestClientV2;
   @MockitoBean private ClaimSummaryMapper claimSummaryMapper;
   @MockitoBean private ClaimFeeCalculationBreakdownMapper claimFeeCalculationBreakdownMapper;
   @MockitoBean private SubmissionMessagesBuilder submissionMessagesBuilder;
-
-  private final ClaimStatusBannerBuilder claimStatusBannerBuilder = new ClaimStatusBannerBuilder();
+  @MockitoBean private ClaimDetailViewFactory claimDetailViewFactory;
 
   @Test
   @DisplayName("Renders the Voided wording with an error-style alert")

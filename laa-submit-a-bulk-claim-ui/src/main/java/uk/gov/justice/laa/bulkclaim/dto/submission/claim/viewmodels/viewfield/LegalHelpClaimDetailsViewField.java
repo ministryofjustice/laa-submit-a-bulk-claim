@@ -62,9 +62,10 @@ public enum LegalHelpClaimDetailsViewField implements ClaimViewField<LegalHelpCl
           CMRH_TELEPHONE,
           HOME_OFFICE_INTERVIEW,
           SUBSTANTIVE_HEARING,
-          VAT_INDICATOR,
-          TOTAL_VAT,
-          TOTAL_INCLUDING_VAT);
+          VAT_INDICATOR);
+
+  public static final List<LegalHelpClaimDetailsViewField> TOTAL_ROWS =
+      List.of(TOTAL_VAT, TOTAL_INCLUDING_VAT);
 
   private final Function<LegalHelpClaimDetails, Object> accessor;
 

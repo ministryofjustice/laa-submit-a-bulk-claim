@@ -21,14 +21,18 @@ public record ClaimFieldRow(Object reported, Object initialCalculated, Object cu
   }
 
   public Object getReportedDisplay() {
-    return hasReportedValue() ? reported : NOT_APPLICABLE;
+    return hasReportedValue() ? display(reported) : NOT_APPLICABLE;
   }
 
   public Object getInitialCalculatedDisplay() {
-    return hasInitialCalculatedValue() ? initialCalculated : NOT_APPLICABLE;
+    return hasInitialCalculatedValue() ? display(initialCalculated) : NOT_APPLICABLE;
   }
 
   public Object getCurrentCalculatedDisplay() {
-    return hasCurrentCalculatedValue() ? currentCalculated : NOT_APPLICABLE;
+    return hasCurrentCalculatedValue() ? display(currentCalculated) : NOT_APPLICABLE;
+  }
+
+  private static Object display(Object value) {
+    return value instanceof Boolean bool ? (bool ? "Yes" : "No") : value;
   }
 }

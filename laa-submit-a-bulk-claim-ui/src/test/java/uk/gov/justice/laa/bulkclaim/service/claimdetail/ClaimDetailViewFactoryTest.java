@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.context.support.StaticMessageSource;
 import uk.gov.justice.laa.bulkclaim.dto.submission.claim.viewmodels.ClaimFieldRow;
 import uk.gov.justice.laa.bulkclaim.dto.submission.claim.viewmodels.CrimeLowerClaimDetails;
 import uk.gov.justice.laa.bulkclaim.dto.submission.claim.viewmodels.viewfield.CrimeLowerClaimDetailsViewField;
@@ -22,7 +23,8 @@ class ClaimDetailViewFactoryTest {
       new ClaimDetailViewFactory(
           new CrimeLowerClaimDetailsMapperImpl(),
           new LegalHelpClaimDetailsMapperImpl(),
-          new MediationClaimDetailsMapperImpl());
+          new MediationClaimDetailsMapperImpl(),
+          new StaticMessageSource());
 
   @Test
   @DisplayName("Should dispatch a CRIME_LOWER claim to the crime lower view")
@@ -34,6 +36,8 @@ class ClaimDetailViewFactoryTest {
     assertThat(result).isInstanceOf(ClaimDetailView.CrimeLower.class);
     assertThat(result.template()).isEqualTo("pages/view-claim-detail-crime-lower");
     assertThat(result.valueRows()).hasSize(CrimeLowerClaimDetailsViewField.VALUE_ROWS.size());
+    assertThat(result.totalRows()).hasSize(CrimeLowerClaimDetailsViewField.TOTAL_ROWS.size());
+    assertThat(result.valueRows().getFirst().label()).isEqualTo("FIXED_FEE");
   }
 
   @Test

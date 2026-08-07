@@ -54,14 +54,21 @@ class MediationClaimDetailsViewFieldTest {
   }
 
   @Test
-  @DisplayName("Value rows list should contain every values/total-table field, in order")
+  @DisplayName("Value rows list should contain every values-table field, in order")
   void valueRowsShouldBeOrdered() {
     assertThat(MediationClaimDetailsViewField.VALUE_ROWS)
         .containsExactly(
             MediationClaimDetailsViewField.FIXED_FEE,
             MediationClaimDetailsViewField.DISBURSEMENTS,
             MediationClaimDetailsViewField.DISBURSEMENTS_VAT,
-            MediationClaimDetailsViewField.VAT_INDICATOR,
+            MediationClaimDetailsViewField.VAT_INDICATOR);
+  }
+
+  @Test
+  @DisplayName("Total rows list should contain every total-table field, in order")
+  void totalRowsShouldBeOrdered() {
+    assertThat(MediationClaimDetailsViewField.TOTAL_ROWS)
+        .containsExactly(
             MediationClaimDetailsViewField.TOTAL_VAT,
             MediationClaimDetailsViewField.TOTAL_INCLUDING_VAT);
   }
