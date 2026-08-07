@@ -68,5 +68,4 @@ class BulkUploadBeingCheckedPageViewTest extends ViewTestBase {
     when(dataClaimsRestClient.getBulkSubmissionSummary(bulkSubmissionId))
         .thenReturn(Mono.just(bulkSubmissionStatus));
   }
-
 }

@@ -12,13 +12,13 @@ import org.jsoup.Jsoup;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
 import org.springframework.context.annotation.Import;
-import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.web.client.ResourceAccessException;
-import uk.gov.justice.laa.bulkclaim.controller.ControllerTestHelper;
 import tools.jackson.databind.ObjectMapper;
 import uk.gov.justice.laa.bulkclaim.client.DataClaimsRestClient;
 import uk.gov.justice.laa.bulkclaim.controller.BulkImportController;
+import uk.gov.justice.laa.bulkclaim.controller.ControllerTestHelper;
 import uk.gov.justice.laa.bulkclaim.metrics.BulkClaimMetricService;
 import uk.gov.justice.laa.bulkclaim.service.VirusCheckService;
 import uk.gov.justice.laa.bulkclaim.util.OidcAttributeUtils;
@@ -109,7 +109,8 @@ class BulkUploadPageViewTest extends ViewTestBase {
 
     assertThat(response.getStatus()).isEqualTo(200);
     var doc = Jsoup.parse(response.getContentAsString());
-    assertThat(selectFirst(doc, ".govuk-error-summary__title").text()).isEqualTo("There is a problem");
+    assertThat(selectFirst(doc, ".govuk-error-summary__title").text())
+        .isEqualTo("There is a problem");
     assertPageHasContent(doc, "Something went wrong. The error has been logged. Please try again.");
   }
 }

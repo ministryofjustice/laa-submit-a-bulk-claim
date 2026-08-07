@@ -63,7 +63,8 @@ class SubmissionDetailsSummaryViewTest extends SubmissionDetailsViewTestBase {
         .contains("office=0P322F")
         .contains("areaOfLaw=");
 
-    assertThat(selectFirst(doc, "[data-module=laa-print-button]").attr("data-print-action-container"))
+    assertThat(
+            selectFirst(doc, "[data-module=laa-print-button]").attr("data-print-action-container"))
         .isEqualTo("secondary-action-container");
   }
 
@@ -94,7 +95,8 @@ class SubmissionDetailsSummaryViewTest extends SubmissionDetailsViewTestBase {
   void rejectedSubmissionPageShowsPrintActionAndNoDownloadAction() {
     var doc = renderRejectedPage();
 
-    assertThat(selectFirst(doc, "[data-module=laa-print-button]").attr("data-print-action-container"))
+    assertThat(
+            selectFirst(doc, "[data-module=laa-print-button]").attr("data-print-action-container"))
         .isEqualTo("secondary-action-container");
     assertThat(doc.select(".govuk-button--secondary").eachText()).doesNotContain("Download claims");
   }
@@ -108,13 +110,16 @@ class SubmissionDetailsSummaryViewTest extends SubmissionDetailsViewTestBase {
 
     assertThat(selectFirst(doc, "#claim-message-error-0 td:nth-child(1)").text()).isEqualTo("Doe");
     assertThat(selectFirst(doc, "#claim-message-error-0 td:nth-child(2)").text()).isEqualTo("John");
-    assertThat(selectFirst(doc, "#claim-message-error-0 td:nth-child(3)").text()).isEqualTo("UFN-001");
+    assertThat(selectFirst(doc, "#claim-message-error-0 td:nth-child(3)").text())
+        .isEqualTo("UFN-001");
     assertThat(selectFirst(doc, "#claim-message-error-0 td:nth-child(4)").text())
-        .isEqualTo("The provider is not contracted for the category of law associated with the fee code");
+        .isEqualTo(
+            "The provider is not contracted for the category of law associated with the fee code");
   }
 
   private void assertCommonSummaryFields(List<List<Element>> summaryList) {
-    assertRowContainsValues(summaryList.get(0), "Submission date and time", "1 Jan 2025 at 10:10AM");
+    assertRowContainsValues(
+        summaryList.get(0), "Submission date and time", "1 Jan 2025 at 10:10AM");
     assertRowContainsValues(summaryList.get(1), "Account", "0P322F");
     assertRowContainsValues(summaryList.get(2), "Area of law", "Crime lower");
     assertRowContainsValues(summaryList.get(3), "Submission period", "MAY-2025");
@@ -139,7 +144,8 @@ class SubmissionDetailsSummaryViewTest extends SubmissionDetailsViewTestBase {
             .status(SubmissionStatus.VALIDATION_SUCCEEDED)
             .areaOfLaw(CRIME_LOWER)
             .build();
-    when(dataClaimsRestClient.getSubmission(submissionId)).thenReturn(Mono.just(submissionResponse));
+    when(dataClaimsRestClient.getSubmission(submissionId))
+        .thenReturn(Mono.just(submissionResponse));
     when(submissionSummaryBuilder.build(any()))
         .thenReturn(
             new SubmissionSummary(
@@ -165,7 +171,8 @@ class SubmissionDetailsSummaryViewTest extends SubmissionDetailsViewTestBase {
             .status(SubmissionStatus.VALIDATION_FAILED)
             .areaOfLaw(CRIME_LOWER)
             .build();
-    when(dataClaimsRestClient.getSubmission(submissionId)).thenReturn(Mono.just(submissionResponse));
+    when(dataClaimsRestClient.getSubmission(submissionId))
+        .thenReturn(Mono.just(submissionResponse));
     when(submissionSummaryBuilder.build(any()))
         .thenReturn(
             new SubmissionSummary(
@@ -185,7 +192,8 @@ class SubmissionDetailsSummaryViewTest extends SubmissionDetailsViewTestBase {
                         .clientSurname("Doe")
                         .clientForename("John")
                         .ufn("UFN-001")
-                        .message("The provider is not contracted for the category of law associated with the fee code")
+                        .message(
+                            "The provider is not contracted for the category of law associated with the fee code")
                         .build(),
                     MessageRow.builder()
                         .claimReference(claimReference)
