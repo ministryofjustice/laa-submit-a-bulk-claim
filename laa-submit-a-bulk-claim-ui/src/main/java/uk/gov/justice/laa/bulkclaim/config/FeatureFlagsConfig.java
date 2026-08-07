@@ -13,10 +13,18 @@ import org.springframework.web.server.ResponseStatusException;
 @ConfigurationProperties(prefix = "feature-flags")
 public class FeatureFlagsConfig {
   private Boolean isNilSubmissionEnabled;
+  private Boolean isAlternativeClaimViewEnabled;
 
   public void checkNilSubmissionEnabled() {
     if (!TRUE.equals(getIsNilSubmissionEnabled())) {
       throw new ResponseStatusException(HttpStatus.NOT_FOUND, "isNilSubmissionEnabled is false");
+    }
+  }
+
+  public void checkAlternativeClaimViewEnabled() {
+    if (!TRUE.equals(getIsAlternativeClaimViewEnabled())) {
+      throw new ResponseStatusException(
+          HttpStatus.NOT_FOUND, "isAlternativeClaimViewEnabled is false");
     }
   }
 }
