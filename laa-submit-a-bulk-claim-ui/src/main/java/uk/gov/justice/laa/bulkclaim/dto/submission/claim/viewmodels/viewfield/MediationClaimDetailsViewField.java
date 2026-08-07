@@ -1,0 +1,60 @@
+package uk.gov.justice.laa.bulkclaim.dto.submission.claim.viewmodels.viewfield;
+
+import java.util.List;
+import java.util.function.Function;
+import lombok.Getter;
+import uk.gov.justice.laa.bulkclaim.dto.submission.claim.viewmodels.ClaimFieldRow;
+import uk.gov.justice.laa.bulkclaim.dto.submission.claim.viewmodels.MediationClaimDetails;
+
+@Getter
+public enum MediationClaimDetailsViewField implements ClaimViewField<MediationClaimDetails> {
+
+  // Page header / Summary
+  CLIENT_1_FORENAME(MediationClaimDetails::client1Forename),
+  CLIENT_1_SURNAME(MediationClaimDetails::client1Surname),
+  CLIENT_1_UCN(MediationClaimDetails::client1UniqueClientNumber),
+  CLIENT_2_FORENAME(MediationClaimDetails::client2Forename),
+  CLIENT_2_SURNAME(MediationClaimDetails::client2Surname),
+  CLIENT_2_UCN(MediationClaimDetails::client2UniqueClientNumber),
+  FEE_CODE(MediationClaimDetails::feeCode),
+  OFFICE_ACCOUNT_NUMBER(MediationClaimDetails::officeCode),
+  DATE_SUBMITTED(MediationClaimDetails::dateSubmitted),
+  AREA_OF_LAW(MediationClaimDetails::areaOfLaw),
+
+  // Values
+  FIXED_FEE(d -> new ClaimFieldRow(null, d.initialCalculatedFixedFee())),
+  DISBURSEMENTS(MediationClaimDetailsViewField::disbursementsRow),
+  DISBURSEMENTS_VAT(MediationClaimDetailsViewField::disbursementsVatRow),
+  VAT_INDICATOR(MediationClaimDetailsViewField::vatIndicatorRow),
+
+  // Total allowed value
+  TOTAL_VAT(d -> new ClaimFieldRow(null, d.initialCalculatedTotalVat())),
+  TOTAL_INCLUDING_VAT(d -> new ClaimFieldRow(null, d.initialCalculatedTotalIncludingVat()));
+
+  public static final List<MediationClaimDetailsViewField> VALUE_ROWS =
+      List.of(
+          FIXED_FEE,
+          DISBURSEMENTS,
+          DISBURSEMENTS_VAT,
+          VAT_INDICATOR,
+          TOTAL_VAT,
+          TOTAL_INCLUDING_VAT);
+
+  private final Function<MediationClaimDetails, Object> accessor;
+
+  MediationClaimDetailsViewField(Function<MediationClaimDetails, Object> accessor) {
+    this.accessor = accessor;
+  }
+
+  private static ClaimFieldRow disbursementsRow(MediationClaimDetails d) {
+    return new ClaimFieldRow(d.reportedDisbursements(), d.initialCalculatedDisbursements());
+  }
+
+  private static ClaimFieldRow disbursementsVatRow(MediationClaimDetails d) {
+    return new ClaimFieldRow(d.reportedDisbursementsVat(), d.initialCalculatedDisbursementsVat());
+  }
+
+  private static ClaimFieldRow vatIndicatorRow(MediationClaimDetails d) {
+    return new ClaimFieldRow(d.reportedVatApplicable(), d.initialCalculatedVatIndicator());
+  }
+}

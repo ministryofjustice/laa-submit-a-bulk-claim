@@ -1,12 +1,77 @@
 package uk.gov.justice.laa.bulkclaim.helper;
 
 import java.math.BigDecimal;
+import java.time.OffsetDateTime;
+import uk.gov.justice.laa.dstew.payments.claimsdata.model.AreaOfLaw;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.BoltOnPatch;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.ClaimResponse;
+import uk.gov.justice.laa.dstew.payments.claimsdata.model.ClaimResponseV2;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.ClaimStatus;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.FeeCalculationPatch;
 
 public final class TestObjectCreator {
+
+  public static ClaimResponseV2 buildClaimResponseV2(AreaOfLaw areaOfLaw) {
+    return ClaimResponseV2.builder()
+        .id("6d10189b-b020-4cc5-891b-e53bbefa501a")
+        .status(ClaimStatus.READY_TO_PROCESS)
+        .areaOfLaw(areaOfLaw)
+        .officeCode("0P322F")
+        .dateSubmitted(OffsetDateTime.parse("2026-01-15T10:15:30+00:00"))
+        .uniqueFileNumber("unique-file-number")
+        .caseStartDate("2025-09-19")
+        .caseConcludedDate("2026-10-20")
+        .matterTypeCode("matter-type-code")
+        .crimeMatterTypeCode("crime-matter-type-code")
+        .feeCode("fee-code")
+        .representationOrderDate("2027-11-21")
+        .clientForename("client-forename")
+        .clientSurname("client-surname")
+        .uniqueClientNumber("unique-client-number")
+        .client2Forename("client-2-forename")
+        .client2Surname("client-2-surname")
+        .client2Ucn("client-2-ucn")
+        .stageReachedCode("stage-reached-code")
+        .outcomeCode("outcome-code")
+        .netProfitCostsAmount(new BigDecimal("100.10"))
+        .netDisbursementAmount(new BigDecimal("200.20"))
+        .netCounselCostsAmount(new BigDecimal("300.30"))
+        .disbursementsVatAmount(new BigDecimal("17.50"))
+        .travelWaitingCostsAmount(new BigDecimal("500.50"))
+        .netWaitingCostsAmount(new BigDecimal("400.40"))
+        .isVatApplicable(true)
+        .detentionTravelWaitingCostsAmount(new BigDecimal("700.70"))
+        .jrFormFillingAmount(new BigDecimal("800.80"))
+        .feeCalculationResponse(
+            FeeCalculationPatch.builder()
+                .feeCodeDescription("fee-code-description")
+                .categoryOfLaw("category-of-law")
+                .fixedFeeAmount(new BigDecimal("50.00"))
+                .netProfitCostsAmount(new BigDecimal("110.10"))
+                .disbursementAmount(new BigDecimal("210.20"))
+                .disbursementVatAmount(new BigDecimal("18.50"))
+                .netCostOfCounselAmount(new BigDecimal("310.30"))
+                .netTravelCostsAmount(new BigDecimal("510.50"))
+                .netWaitingCostsAmount(new BigDecimal("410.40"))
+                .travelAndWaitingCostsAmount(new BigDecimal("920.90"))
+                .detentionTravelAndWaitingCostsAmount(new BigDecimal("710.70"))
+                .jrFormFillingAmount(new BigDecimal("810.80"))
+                .vatIndicator(true)
+                .calculatedVatAmount(new BigDecimal("25.00"))
+                .totalAmount(new BigDecimal("1250.00"))
+                .boltOnDetails(
+                    BoltOnPatch.builder()
+                        .escapeCaseFlag(true)
+                        .boltOnAdjournedHearingFee(new BigDecimal("11.00"))
+                        .boltOnCmrhOralFee(new BigDecimal("12.00"))
+                        .boltOnCmrhTelephoneFee(new BigDecimal("13.00"))
+                        .boltOnHomeOfficeInterviewFee(new BigDecimal("14.00"))
+                        .boltOnSubstantiveHearingFee(new BigDecimal("15.00"))
+                        .build())
+                .build())
+        .build();
+  }
+
   public static ClaimResponse buildClaimResponse() {
 
     return ClaimResponse.builder()
