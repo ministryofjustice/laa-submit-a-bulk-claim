@@ -28,9 +28,14 @@ class MediationClaimDetailsMapperTest {
     assertThat(result.client2Surname()).isEqualTo(claimResponse.getClient2Surname());
     assertThat(result.client2UniqueClientNumber()).isEqualTo(claimResponse.getClient2Ucn());
     assertThat(result.feeCode()).isEqualTo(claimResponse.getFeeCode());
+    assertThat(result.feeCodeDescription())
+        .isEqualTo(claimResponse.getFeeCalculationResponse().getFeeCodeDescription());
     assertThat(result.officeCode()).isEqualTo(claimResponse.getOfficeCode());
     assertThat(result.dateSubmitted()).isEqualTo(claimResponse.getDateSubmitted());
     assertThat(result.areaOfLaw()).isEqualTo(AreaOfLaw.MEDIATION);
+    assertThat(result.matterTypeCode()).isEqualTo(claimResponse.getMatterTypeCode());
+    assertThat(result.caseStartDate()).isEqualTo(claimResponse.getCaseStartDate());
+    assertThat(result.caseConcludedDate()).isEqualTo(claimResponse.getCaseConcludedDate());
   }
 
   @Test
