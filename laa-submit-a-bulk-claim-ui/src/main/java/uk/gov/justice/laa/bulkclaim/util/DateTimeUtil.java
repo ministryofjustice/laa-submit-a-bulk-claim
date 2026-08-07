@@ -3,9 +3,9 @@ package uk.gov.justice.laa.bulkclaim.util;
 import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.time.ZoneId;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 
-@Service
+@Component
 public class DateTimeUtil {
 
   private static final ZoneId LONDON_TIMEZONE = ZoneId.of("Europe/London");
