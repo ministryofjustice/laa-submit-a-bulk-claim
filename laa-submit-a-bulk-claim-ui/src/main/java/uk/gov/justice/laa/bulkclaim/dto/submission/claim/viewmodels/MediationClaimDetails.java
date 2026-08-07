@@ -15,9 +15,13 @@ public record MediationClaimDetails(
     String client2Surname,
     String client2UniqueClientNumber,
     String feeCode,
+    String feeCodeDescription,
     String officeCode,
     OffsetDateTime dateSubmitted,
     AreaOfLaw areaOfLaw,
+    String matterTypeCode,
+    String caseStartDate,
+    String caseConcludedDate,
 
     // Values - Reported column
     BigDecimal reportedDisbursements,
