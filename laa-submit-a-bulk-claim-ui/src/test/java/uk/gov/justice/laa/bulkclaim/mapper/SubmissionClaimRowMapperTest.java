@@ -197,11 +197,12 @@ class SubmissionClaimRowMapperTest {
               .disbursementsVatAmount(new BigDecimal("17.50"))
               .netWaitingCostsAmount(new BigDecimal("400.40"))
               .travelWaitingCostsAmount(new BigDecimal("500.50"))
-              .status(ClaimStatus.VOID)
+              .derivedClaimStatus(DerivedClaimStatus.VOIDED)
               .feeCalculationResponse(
                   FeeCalculationPatch.builder()
                       .feeType(FeeCalculationType.DISB_ONLY)
                       .feeCode("FC123")
+                      .totalAmount(new BigDecimal("1500.50"))
                       .build())
               .totalWarnings(3)
               .build();
@@ -244,9 +245,13 @@ class SubmissionClaimRowMapperTest {
                 .isEqualTo(new BigDecimal("500.50"));
             softAssertion.assertThat(actualResponse.totalMessages()).isEqualTo(3);
             softAssertion.assertThat(actualResponse.escapeCase()).isNull();
+            softAssertion.assertThat(actualResponse.status()).isEqualTo("Voided");
             softAssertion
-                .assertThat(actualResponse.status())
-                .isEqualTo(ClaimStatus.VOID.toString());
+                .assertThat(actualResponse.calculatedValue())
+                .isEqualTo(new BigDecimal("1500.50"));
+            softAssertion
+                .assertThat(actualResponse.updatedCalculatedValue())
+                .isEqualTo(new BigDecimal("1500.50"));
           });
     }
 

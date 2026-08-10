@@ -271,11 +271,11 @@
                 ${submissionViewQuery}, ${SubmissionViewSortField.FEE_CODE}, 'submission.summary.claims.table.feeCode')}"></th:block>
 
             <th:block th:replace="~{fragments/sortable-header :: sortableHeader(
-                ${submissionViewQuery}, ${SubmissionViewSortField.INITIAL_CALCULATED_VALUE}, 'submission.summary.claims.table.initialCalculatedValue')}"></th:block>
+                ${submissionViewQuery}, ${SubmissionViewSortField.TOTAL_AMOUNT}, 'submission.summary.claims.table.initialCalculatedValue')}"></th:block>
 
             <th:block th:if="${showUpdatedCalculatedValueColumn}">
               <th:block th:replace="~{fragments/sortable-header :: sortableHeader(
-                ${submissionViewQuery}, ${SubmissionViewSortField.UPDATED_CALCULATED_VALUE}, 'submission.summary.claims.table.updatedCalculatedValue')}"></th:block>
+                ${submissionViewQuery}, ${SubmissionViewSortField.TOTAL_AMOUNT}, 'submission.summary.claims.table.updatedCalculatedValue')}"></th:block>
             </th:block>
 
             <th:block th:unless="${isCrime}" th:insert="~{fragments/sortable-header :: sortableHeader(
@@ -308,11 +308,12 @@
                 ${submissionViewQuery}, ${SubmissionViewSortField.FEE_CODE}, 'submission.summary.claims.table.feeCode')}"></th:block>
 
             <th:block th:replace="~{fragments/sortable-header :: sortableHeader(
-                ${submissionViewQuery}, ${SubmissionViewSortField.INITIAL_CALCULATED_VALUE}, 'submission.summary.claims.table.initialCalculatedValue')}"></th:block>
+                ${submissionViewQuery}, ${SubmissionViewSortField.TOTAL_AMOUNT}, 'submission.summary.claims.table.initialCalculatedValue')}"></th:block>
 
-            <th:block th:replace="~{fragments/sortable-header :: sortableHeader(
-                ${submissionViewQuery}, ${SubmissionViewSortField.UPDATED_CALCULATED_VALUE}, 'submission.summary.claims.table.updatedCalculatedValue')}"></th:block>
-
+            <th:block th:if="${showUpdatedCalculatedValueColumn}">
+              <th:block th:replace="~{fragments/sortable-header :: sortableHeader(
+                ${submissionViewQuery}, ${SubmissionViewSortField.TOTAL_AMOUNT}, 'submission.summary.claims.table.updatedCalculatedValue')}"></th:block>
+            </th:block>
             <th:block th:replace="~{fragments/sortable-header :: sortableHeader(
                 ${submissionViewQuery}, ${SubmissionViewSortField.ESCAPE_CASE_FLAG}, 'submission.summary.claims.table.escapeCase')}"></th:block>
 
