@@ -190,7 +190,7 @@ class SubmissionDetailControllerTest extends BaseControllerTest {
           .hasViewName("pages/view-submission-detail-accepted");
       verify(submissionClaimDetailsBuilder, times(1)).build(any(), anyInt(), anyInt(), any());
       verify(submissionMessagesBuilder, times(1))
-          .build(submissionReference, null, ValidationMessageType.WARNING, 0, 10, null);
+          .build(submissionReference, null, ValidationMessageType.WARNING, 0, 50, null);
       verify(submissionMatterStartsDetailsBuilder, times(1)).build(any());
     }
 
@@ -230,7 +230,7 @@ class SubmissionDetailControllerTest extends BaseControllerTest {
           .hasStatusOk()
           .hasViewName("pages/view-submission-detail-invalid");
 
-      verify(submissionMessagesBuilder, times(1)).buildErrors(submissionReference, 0, 10, null);
+      verify(submissionMessagesBuilder, times(1)).buildErrors(submissionReference, 0, 50, null);
       verify(submissionMatterStartsDetailsBuilder, times(1)).build(any());
     }
 
@@ -322,7 +322,7 @@ class SubmissionDetailControllerTest extends BaseControllerTest {
       assertThat(response).hasStatusOk().hasViewName("pages/view-submission-detail-accepted");
       verify(submissionClaimDetailsBuilder).build(any(), anyInt(), anyInt(), any());
       verify(submissionMessagesBuilder)
-          .build(submissionReference, null, ValidationMessageType.WARNING, 0, 10, null);
+          .build(submissionReference, null, ValidationMessageType.WARNING, 0, 50, null);
     }
 
     @Test
@@ -377,7 +377,9 @@ class SubmissionDetailControllerTest extends BaseControllerTest {
                               BigDecimal.ZERO,
                               BigDecimal.ZERO,
                               BigDecimal.ZERO),
-                          Boolean.FALSE)),
+                          Boolean.FALSE,
+                          BigDecimal.ONE,
+                          BigDecimal.ONE)),
                   pagination,
                   BigDecimal.ONE));
       when(submissionMessagesBuilder.build(any(), any(), any(), anyInt(), anyInt(), any()))

@@ -22,9 +22,7 @@ public enum SubmissionViewSortField implements SortField {
   /** New Claim table additional * */
   CLIENT_NAME("client_forename"),
   CLIENT_2_NAME("client_2_forename"),
-  INITIAL_CALCULATED_VALUE("calculated_total_amount"),
-  UPDATED_CALCULATED_VALUE("assessed_total_amount"),
-  STATUS(""),
+  STATUS("derived_claim_status"),
   ;
 
   private final String value;

@@ -110,13 +110,13 @@ class SearchControllerTest {
     response.setContent(Collections.emptyList());
     response.setTotalElements(1);
     response.setNumber(0);
-    response.setSize(10);
+    response.setSize(50);
     response.setTotalPages(1);
 
     when(oidcAttributeUtils.getUserOffices(any())).thenReturn(List.of("1"));
     when(claimsRestService.search(anyList(), any(), any(), any(), anyInt(), anyInt(), any()))
         .thenReturn(Mono.just(response));
-    when(paginationUtil.fromSubmissionsResultSet(response, 0, 10))
+    when(paginationUtil.fromSubmissionsResultSet(response, 0, 50))
         .thenReturn(new Page().totalElements(1));
 
     var query =

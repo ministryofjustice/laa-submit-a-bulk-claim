@@ -158,6 +158,8 @@ class SubmissionClaimsDetailsBuilderTest {
             new BigDecimal("50.10"),
             new BigDecimal("60.10"),
             new BigDecimal("70.10")),
-        Boolean.TRUE);
+        Boolean.TRUE,
+        BigDecimal.ONE,
+        BigDecimal.ONE);
   }
 }
