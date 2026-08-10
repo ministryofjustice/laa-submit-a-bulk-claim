@@ -83,6 +83,8 @@ sentry:
 feature-flags:
   is-nil-submission-enabled: ${IS_NIL_SUBMISSION_ENABLED:false}
   is-alternative-claim-view-enabled: ${IS_ALTERNATIVE_CLAIM_VIEW_ENABLED:false}
+  # This updated calculated value is not available via API yet, will need to be enabled once available
+  is-updated-calculated-value-available: ${IS_UPDATED_CALCULATED_VALUE_AVAILABLE:false}
 
 management:
   server:

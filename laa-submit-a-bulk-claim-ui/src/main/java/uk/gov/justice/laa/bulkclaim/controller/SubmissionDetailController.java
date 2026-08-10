@@ -127,6 +127,9 @@ public class SubmissionDetailController {
 
     model.addAttribute(
         "showOldClaimsTable", !featureFlagsConfig.getIsAlternativeClaimViewEnabled());
+    model.addAttribute(
+        "showUpdatedCalculatedValueColumn",
+        featureFlagsConfig.getIsUpdatedCalculatedValueAvailable());
 
     final SubmissionResponse submissionResponse =
         dataClaimsRestClient

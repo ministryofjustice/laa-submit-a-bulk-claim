@@ -14,6 +14,7 @@ import org.springframework.web.server.ResponseStatusException;
 public class FeatureFlagsConfig {
   private Boolean isNilSubmissionEnabled;
   private Boolean isAlternativeClaimViewEnabled;
+  private Boolean isUpdatedCalculatedValueAvailable;
 
   public void checkNilSubmissionEnabled() {
     if (!TRUE.equals(getIsNilSubmissionEnabled())) {
@@ -25,6 +26,13 @@ public class FeatureFlagsConfig {
     if (!TRUE.equals(getIsAlternativeClaimViewEnabled())) {
       throw new ResponseStatusException(
           HttpStatus.NOT_FOUND, "isAlternativeClaimViewEnabled is false");
+    }
+  }
+
+  public void checkUpdatedCalculatedValueAvailable() {
+    if (!TRUE.equals(getIsUpdatedCalculatedValueAvailable())) {
+      throw new ResponseStatusException(
+          HttpStatus.NOT_FOUND, "isUpdatedCalculatedValueAvailable is false");
     }
   }
 }

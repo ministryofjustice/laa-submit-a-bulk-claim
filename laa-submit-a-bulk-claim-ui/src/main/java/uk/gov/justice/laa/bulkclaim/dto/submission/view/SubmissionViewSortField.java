@@ -21,8 +21,9 @@ public enum SubmissionViewSortField implements SortField {
   LINE_NUMBER("line_number"),
   /** New Claim table additional * */
   CLIENT_NAME("client_forename"),
-  INITIAL_CALCULATED_VALUE(""),
-  UPDATED_CALCULATED_VALUE(""),
+  CLIENT_2_NAME("client_2_forename"),
+  INITIAL_CALCULATED_VALUE("calculated_total_amount"),
+  UPDATED_CALCULATED_VALUE("assessed_total_amount"),
   STATUS(""),
   ;
 

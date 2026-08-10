@@ -232,6 +232,7 @@
 
 
 <th:block th:fragment="claim-details">
+  <!--/*@thymesVar id="claim" type="uk.gov.justice.laa.bulkclaim.dto.submission.claim.SubmissionClaimRow"*/-->
   <!--/*@thymesVar id="submissionViewQuery" type="uk.gov.justice.laa.bulkclaim.dto.submission.view.SubmissionViewQuery"*/-->
   <!--/*@thymesVar id="SubmissionViewSortField" type="uk.gov.justice.laa.bulkclaim.dto.submission.view.SubmissionViewSortField"*/-->
 
@@ -272,8 +273,10 @@
             <th:block th:replace="~{fragments/sortable-header :: sortableHeader(
                 ${submissionViewQuery}, ${SubmissionViewSortField.INITIAL_CALCULATED_VALUE}, 'submission.summary.claims.table.initialCalculatedValue')}"></th:block>
 
-            <th:block th:replace="~{fragments/sortable-header :: sortableHeader(
+            <th:block th:if="${showUpdatedCalculatedValueColumn}">
+              <th:block th:replace="~{fragments/sortable-header :: sortableHeader(
                 ${submissionViewQuery}, ${SubmissionViewSortField.UPDATED_CALCULATED_VALUE}, 'submission.summary.claims.table.updatedCalculatedValue')}"></th:block>
+            </th:block>
 
             <th:block th:unless="${isCrime}" th:insert="~{fragments/sortable-header :: sortableHeader(
                 ${submissionViewQuery}, ${SubmissionViewSortField.UNIQUE_CLIENT_NUMBER}, 'submission.summary.claims.table.ucn')}"></th:block>
@@ -288,23 +291,33 @@
 
           <thead class="govuk-table__head" th:if="${isMediation}">
           <tr class="govuk-table__row">
-            <th scope="col" class="govuk-table__header"
-                th:text="#{submission.summary.claims.table.claim}"></th>
 
             <th:block th:replace="~{fragments/sortable-header :: sortableHeader(
-                ${submissionViewQuery}, ${SubmissionViewSortField.CLIENT_SURNAME}, 'submission.summary.claims.table.client1Surname')}"></th:block>
+                ${submissionViewQuery}, ${SubmissionViewSortField.CLIENT_NAME}, 'submission.summary.claims.table.client1Name')}"></th:block>
 
-            <th:block th:replace="~{fragments/sortable-header :: sortableHeader(
+            <th:block th:insert="~{fragments/sortable-header :: sortableHeader(
                 ${submissionViewQuery}, ${SubmissionViewSortField.UNIQUE_CLIENT_NUMBER}, 'submission.summary.claims.table.client1Ucn')}"></th:block>
 
             <th:block th:replace="~{fragments/sortable-header :: sortableHeader(
+                ${submissionViewQuery}, ${SubmissionViewSortField.CLIENT_2_NAME}, 'submission.summary.claims.table.client2Name')}"></th:block>
+
+            <th:block th:insert="~{fragments/sortable-header :: sortableHeader(
                 ${submissionViewQuery}, ${SubmissionViewSortField.CLIENT_2_UCN}, 'submission.summary.claims.table.client2Ucn')}"></th:block>
 
             <th:block th:replace="~{fragments/sortable-header :: sortableHeader(
                 ${submissionViewQuery}, ${SubmissionViewSortField.FEE_CODE}, 'submission.summary.claims.table.feeCode')}"></th:block>
 
             <th:block th:replace="~{fragments/sortable-header :: sortableHeader(
-                ${submissionViewQuery}, ${SubmissionViewSortField.TOTAL_AMOUNT}, 'submission.summary.claims.table.calculatedValue')}"></th:block>
+                ${submissionViewQuery}, ${SubmissionViewSortField.INITIAL_CALCULATED_VALUE}, 'submission.summary.claims.table.initialCalculatedValue')}"></th:block>
+
+            <th:block th:replace="~{fragments/sortable-header :: sortableHeader(
+                ${submissionViewQuery}, ${SubmissionViewSortField.UPDATED_CALCULATED_VALUE}, 'submission.summary.claims.table.updatedCalculatedValue')}"></th:block>
+
+            <th:block th:replace="~{fragments/sortable-header :: sortableHeader(
+                ${submissionViewQuery}, ${SubmissionViewSortField.ESCAPE_CASE_FLAG}, 'submission.summary.claims.table.escapeCase')}"></th:block>
+
+            <th:block th:replace="~{fragments/sortable-header :: sortableHeader(
+                ${submissionViewQuery}, ${SubmissionViewSortField.STATUS}, 'submission.summary.claims.table.status')}"></th:block>
           </tr>
           </thead>
 
@@ -313,7 +326,8 @@
           <tr class="govuk-table__row"
               th:each="claim, idx : ${claimDetails.submissionClaims}">
             <td class="govuk-table__cell">
-              <a class="govuk-link--no-visited-state" th:href="@{/submission/claim/{id}(id=${claim.id}, page=${submissionViewQuery.page}, navTab=${claimDetailsTab})}"
+              <a class="govuk-link--no-visited-state"
+                 th:href="@{/submission/claim/{id}(id=${claim.id}, page=${submissionViewQuery.page}, navTab=${claimDetailsTab})}"
                  th:text="|${claim.clientForename ?: '-'} ${claim.clientSurname ?: '-'}|"></a>
             </td>
             <td class="govuk-table__cell"
@@ -322,8 +336,10 @@
                 th:text="${claim.feeCode ?: '-'}"></td>
             <td class="govuk-table__cell govuk-table__cell--numeric"
                 th:text="${@currencyUtil.toString(claim.calculatedValue) }"></td>
-            <td class="govuk-table__cell govuk-table__cell--numeric"
-                th:text="${@currencyUtil.toString(claim.updatedCalculatedValue)}"></td>
+            <th:block th:if="${showUpdatedCalculatedValueColumn}">
+              <td class="govuk-table__cell govuk-table__cell--numeric"
+                  th:text="${@currencyUtil.toString(claim.updatedCalculatedValue)}"></td>
+            </th:block>
             <td class="govuk-table__cell" th:unless="${isCrime}"
                 th:text="${claim.ucn ?: '-'}"></td>
             <td class="govuk-table__cell">
@@ -350,25 +366,41 @@
           <tr class="govuk-table__row"
               th:each="claim, idx : ${claimDetails.submissionClaims}">
             <td class="govuk-table__cell">
-              <th:block
-                  th:replace="~{fragments/submission-details/claim-row-detail :: claim-row-detail(claimHref=@{/submission/claim/{id}(id=${claim.id}, page=${submissionViewQuery.page})}, status=${claim.status})}"></th:block>
+              <a class="govuk-link--no-visited-state"
+                 th:href="@{/submission/claim/{id}(id=${claim.id}, page=${submissionViewQuery.page}, navTab=${claimDetailsTab})}"
+                 th:text="|${claim.clientForename ?: '-'} ${claim.clientSurname ?: '-'}|"></a>
             </td>
-            <td class="govuk-table__cell"
-                th:text="${claim.clientSurname ?: '-'}"></td>
-            <td class="govuk-table__cell"
-                th:text="${claim.clientForename ?: '-'}"></td>
             <td class="govuk-table__cell"
                 th:text="${claim.ucn ?: '-'}"></td>
             <td class="govuk-table__cell"
-                th:text="${claim.client2Surname ?: '-'}"></td>
+                th:text="|${claim.client2Forename ?: '-'} ${claim.client2Surname ?: '-'}|">
+            </td>
             <td class="govuk-table__cell"
-                th:text="${claim.client2Forename ?: '-'}"></td>
-            <td class="govuk-table__cell"
-                th:text="${claim.client2Ucn ?: '-'}"></td>
+                th:text="${claim.client2Ucn() ?: '-'}"></td>
             <td class="govuk-table__cell"
                 th:text="${claim.feeCode ?: '-'}"></td>
             <td class="govuk-table__cell govuk-table__cell--numeric"
-                th:text="${claim.costsDetails != null && claim.costsDetails.claimValue != null ? @currencyUtil.toString(claim.costsDetails.claimValue) : '-'}"></td>
+                th:text="${@currencyUtil.toString(claim.calculatedValue) }"></td>
+            <th:block th:if="${showUpdatedCalculatedValueColumn}">
+              <td class="govuk-table__cell govuk-table__cell--numeric"
+                  th:text="${@currencyUtil.toString(claim.updatedCalculatedValue)}"></td>
+            </th:block>
+            <td class="govuk-table__cell">
+              <span th:if="${claim.escapeCase}"
+                    th:text="#{submission.summary.claims.escapeCase.yes}"></span>
+              <span th:if="${claim.escapeCase == null or !claim.escapeCase}"
+                    th:text="#{submission.summary.claims.escapeCase.no}"></span>
+            </td>
+            <td class="govuk-table__cell">
+              <strong th:if="${claim?.status == 'Accepted'}" class="govuk-tag govuk-tag--green"
+                      th:text="${claim.status ?: '-'}"></strong>
+              <strong th:if="${claim?.status == 'Assessed'}" class="govuk-tag govuk-tag--blue"
+                      th:text="${claim.status ?: '-'}"></strong>
+              <strong th:if="${claim?.status == 'Ammended'}" class="govuk-tag govuk-tag--yellow"
+                      th:text="${claim.status ?: '-'}"></strong>
+              <strong th:if="${claim?.status == 'Voided'}" class="govuk-tag govuk-tag--red"
+                      th:text="${claim.status ?: '-'}"></strong>
+            </td>
           </tr>
           </tbody>
 

@@ -20,7 +20,7 @@ import uk.gov.justice.laa.dstew.payments.claimsdata.model.Page;
 @WebMvcTest(SubmissionDetailController.class)
 public abstract class SubmissionDetailsViewTestBase extends ViewTestBase {
 
-  protected static final int PAGE_SIZE = 10;
+  protected static final int PAGE_SIZE = 50;
 
   @MockitoBean protected SubmissionSummaryBuilder submissionSummaryBuilder;
   @MockitoBean protected SubmissionClaimDetailsBuilder submissionClaimDetailsBuilder;

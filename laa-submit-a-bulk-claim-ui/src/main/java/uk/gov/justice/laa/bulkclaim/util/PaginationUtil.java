@@ -11,7 +11,7 @@ import uk.gov.justice.laa.dstew.payments.claimsdata.model.ValidationMessagesResp
 public class PaginationUtil {
 
   private static final int DEFAULT_PAGE = 0;
-  private static final int DEFAULT_PAGE_SIZE = 10;
+  private static final int DEFAULT_PAGE_SIZE = 50;
 
   public Page fromSubmissionsResultSet(
       SubmissionsResultSet resultSet, Integer requestedPage, Integer requestedSize) {

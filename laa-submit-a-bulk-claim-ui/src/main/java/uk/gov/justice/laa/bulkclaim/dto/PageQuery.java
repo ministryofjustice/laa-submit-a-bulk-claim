@@ -10,7 +10,7 @@ import uk.gov.justice.laa.bulkclaim.dto.sorting.SortField;
 public interface PageQuery<T extends SortField, U extends Sort<T>> {
 
   int DEFAULT_PAGE = 0;
-  int DEFAULT_PAGE_SIZE = 10;
+  int DEFAULT_PAGE_SIZE = 50;
 
   Integer getPage();
 
