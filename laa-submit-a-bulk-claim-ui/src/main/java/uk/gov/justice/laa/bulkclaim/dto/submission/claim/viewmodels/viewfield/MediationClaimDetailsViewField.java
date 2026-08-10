@@ -5,6 +5,7 @@ import java.util.function.Function;
 import lombok.Getter;
 import uk.gov.justice.laa.bulkclaim.dto.submission.claim.viewmodels.ClaimFieldRow;
 import uk.gov.justice.laa.bulkclaim.dto.submission.claim.viewmodels.MediationClaimDetails;
+import uk.gov.justice.laa.dstew.payments.claimsdata.model.AssessmentGet;
 
 @Getter
 public enum MediationClaimDetailsViewField implements ClaimViewField<MediationClaimDetails> {
@@ -22,14 +23,22 @@ public enum MediationClaimDetailsViewField implements ClaimViewField<MediationCl
   AREA_OF_LAW(MediationClaimDetails::areaOfLaw),
 
   // Values
-  FIXED_FEE(d -> new ClaimFieldRow(null, d.initialCalculatedFixedFee())),
-  DISBURSEMENTS(MediationClaimDetailsViewField::disbursementsRow),
-  DISBURSEMENTS_VAT(MediationClaimDetailsViewField::disbursementsVatRow),
-  VAT_INDICATOR(MediationClaimDetailsViewField::vatIndicatorRow),
+  FIXED_FEE(
+      d -> new ClaimFieldRow(null, d.initialCalculatedFixedFee()),
+      AssessmentGet::getFixedFeeAmount),
+  DISBURSEMENTS(
+      MediationClaimDetailsViewField::disbursementsRow, AssessmentGet::getDisbursementAmount),
+  DISBURSEMENTS_VAT(
+      MediationClaimDetailsViewField::disbursementsVatRow, AssessmentGet::getDisbursementVatAmount),
+  VAT_INDICATOR(MediationClaimDetailsViewField::vatIndicatorRow, AssessmentGet::getIsVatApplicable),
 
   // Total allowed value
-  TOTAL_VAT(d -> new ClaimFieldRow(null, d.initialCalculatedTotalVat())),
-  TOTAL_INCLUDING_VAT(d -> new ClaimFieldRow(null, d.initialCalculatedTotalIncludingVat()));
+  TOTAL_VAT(
+      d -> new ClaimFieldRow(null, d.initialCalculatedTotalVat()),
+      AssessmentGet::getAllowedTotalVat),
+  TOTAL_INCLUDING_VAT(
+      d -> new ClaimFieldRow(null, d.initialCalculatedTotalIncludingVat()),
+      AssessmentGet::getAllowedTotalInclVat);
 
   public static final List<MediationClaimDetailsViewField> VALUE_ROWS =
       List.of(FIXED_FEE, DISBURSEMENTS, DISBURSEMENTS_VAT, VAT_INDICATOR);
@@ -38,9 +47,17 @@ public enum MediationClaimDetailsViewField implements ClaimViewField<MediationCl
       List.of(TOTAL_VAT, TOTAL_INCLUDING_VAT);
 
   private final Function<MediationClaimDetails, Object> accessor;
+  private final Function<AssessmentGet, Object> assessmentAccessor;
 
   MediationClaimDetailsViewField(Function<MediationClaimDetails, Object> accessor) {
+    this(accessor, null);
+  }
+
+  MediationClaimDetailsViewField(
+      Function<MediationClaimDetails, Object> accessor,
+      Function<AssessmentGet, Object> assessmentAccessor) {
     this.accessor = accessor;
+    this.assessmentAccessor = assessmentAccessor;
   }
 
   private static ClaimFieldRow disbursementsRow(MediationClaimDetails d) {

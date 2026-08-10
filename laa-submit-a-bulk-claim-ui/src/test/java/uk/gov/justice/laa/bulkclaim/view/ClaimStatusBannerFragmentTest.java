@@ -22,6 +22,7 @@ import org.thymeleaf.context.Context;
 import org.thymeleaf.spring6.SpringTemplateEngine;
 import org.thymeleaf.templatemode.TemplateMode;
 import uk.gov.justice.laa.bulkclaim.builder.ClaimStatusBannerBuilder;
+import uk.gov.justice.laa.bulkclaim.builder.LatestAssessmentResolver;
 import uk.gov.justice.laa.bulkclaim.builder.SubmissionMessagesBuilder;
 import uk.gov.justice.laa.bulkclaim.client.DataClaimsRestClient;
 import uk.gov.justice.laa.bulkclaim.client.DataClaimsRestClientV2;
@@ -55,6 +56,7 @@ class ClaimStatusBannerFragmentTest {
   @MockitoBean private ClaimFeeCalculationBreakdownMapper claimFeeCalculationBreakdownMapper;
   @MockitoBean private SubmissionMessagesBuilder submissionMessagesBuilder;
   @MockitoBean private ClaimDetailViewFactory claimDetailViewFactory;
+  @MockitoBean private LatestAssessmentResolver latestAssessmentResolver;
 
   @Test
   @DisplayName("Renders the Voided wording with an error-style alert")

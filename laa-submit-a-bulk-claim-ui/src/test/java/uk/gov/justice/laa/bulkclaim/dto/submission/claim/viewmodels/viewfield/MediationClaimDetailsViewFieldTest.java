@@ -7,6 +7,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import uk.gov.justice.laa.bulkclaim.dto.submission.claim.viewmodels.ClaimFieldRow;
 import uk.gov.justice.laa.bulkclaim.dto.submission.claim.viewmodels.MediationClaimDetails;
+import uk.gov.justice.laa.dstew.payments.claimsdata.model.AssessmentGet;
 
 @DisplayName("Mediation claim details view field test")
 class MediationClaimDetailsViewFieldTest {
@@ -71,5 +72,23 @@ class MediationClaimDetailsViewFieldTest {
         .containsExactly(
             MediationClaimDetailsViewField.TOTAL_VAT,
             MediationClaimDetailsViewField.TOTAL_INCLUDING_VAT);
+  }
+
+  @Test
+  @DisplayName(
+      "Should read the Current Calculated value for a values-table field from the assessment")
+  void shouldReadCurrentCalculatedFromAssessment() {
+    AssessmentGet assessment = new AssessmentGet().disbursementAmount(new BigDecimal("220.20"));
+
+    Object value =
+        MediationClaimDetailsViewField.DISBURSEMENTS.getAssessmentAccessor().apply(assessment);
+
+    assertThat(value).isEqualTo(new BigDecimal("220.20"));
+  }
+
+  @Test
+  @DisplayName("A header field has no assessment accessor")
+  void headerFieldHasNoAssessmentAccessor() {
+    assertThat(MediationClaimDetailsViewField.CLIENT_1_FORENAME.getAssessmentAccessor()).isNull();
   }
 }

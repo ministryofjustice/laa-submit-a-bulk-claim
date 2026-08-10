@@ -1,10 +1,12 @@
 package uk.gov.justice.laa.bulkclaim.dto.submission.claim.viewmodels.viewfield;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.function.Function;
 import lombok.Getter;
 import uk.gov.justice.laa.bulkclaim.dto.submission.claim.viewmodels.ClaimFieldRow;
 import uk.gov.justice.laa.bulkclaim.dto.submission.claim.viewmodels.LegalHelpClaimDetails;
+import uk.gov.justice.laa.dstew.payments.claimsdata.model.AssessmentGet;
 
 @Getter
 public enum LegalHelpClaimDetailsViewField implements ClaimViewField<LegalHelpClaimDetails> {
@@ -25,25 +27,55 @@ public enum LegalHelpClaimDetailsViewField implements ClaimViewField<LegalHelpCl
   ESCAPE_CASE(LegalHelpClaimDetails::escapeCase),
 
   // Values
-  FIXED_FEE(d -> new ClaimFieldRow(null, d.initialCalculatedFixedFee())),
-  PROFIT_COSTS(d -> new ClaimFieldRow(d.reportedProfitCosts(), d.initialCalculatedProfitCosts())),
-  DISBURSEMENTS(LegalHelpClaimDetailsViewField::disbursementsRow),
-  DISBURSEMENTS_VAT(LegalHelpClaimDetailsViewField::disbursementsVatRow),
-  COUNSELS_COSTS(d -> new ClaimFieldRow(null, d.initialCalculatedCounselsCosts())),
-  TRAVEL_AND_WAITING_COSTS(LegalHelpClaimDetailsViewField::travelAndWaitingCostsRow),
-  DETENTION_TRAVEL_WAITING_COSTS(LegalHelpClaimDetailsViewField::detentionTravelWaitingCostsRow),
-  JR_FORM_FILLING(d -> new ClaimFieldRow(null, d.initialCalculatedJrFormFilling())),
-  ADJOURNED_HEARING_FEE(d -> new ClaimFieldRow(null, d.initialCalculatedAdjournedHearingFee())),
-  CMRH_ORAL(d -> new ClaimFieldRow(null, d.initialCalculatedCmrhOral())),
-  CMRH_TELEPHONE(d -> new ClaimFieldRow(null, d.initialCalculatedCmrhTelephone())),
+  FIXED_FEE(
+      d -> new ClaimFieldRow(null, d.initialCalculatedFixedFee()),
+      AssessmentGet::getFixedFeeAmount),
+  PROFIT_COSTS(
+      d -> new ClaimFieldRow(d.reportedProfitCosts(), d.initialCalculatedProfitCosts()),
+      AssessmentGet::getNetProfitCostsAmount),
+  DISBURSEMENTS(
+      LegalHelpClaimDetailsViewField::disbursementsRow, AssessmentGet::getDisbursementAmount),
+  DISBURSEMENTS_VAT(
+      LegalHelpClaimDetailsViewField::disbursementsVatRow, AssessmentGet::getDisbursementVatAmount),
+  COUNSELS_COSTS(
+      d -> new ClaimFieldRow(null, d.initialCalculatedCounselsCosts()),
+      AssessmentGet::getNetCostOfCounselAmount),
+  TRAVEL_AND_WAITING_COSTS(
+      LegalHelpClaimDetailsViewField::travelAndWaitingCostsRow,
+      LegalHelpClaimDetailsViewField::travelAndWaitingCostsFromAssessment),
+  DETENTION_TRAVEL_WAITING_COSTS(
+      LegalHelpClaimDetailsViewField::detentionTravelWaitingCostsRow,
+      AssessmentGet::getDetentionTravelAndWaitingCostsAmount),
+  JR_FORM_FILLING(
+      d -> new ClaimFieldRow(null, d.initialCalculatedJrFormFilling()),
+      AssessmentGet::getJrFormFillingAmount),
+  ADJOURNED_HEARING_FEE(
+      d -> new ClaimFieldRow(null, d.initialCalculatedAdjournedHearingFee()),
+      AssessmentGet::getBoltOnAdjournedHearingFee),
+  CMRH_ORAL(
+      d -> new ClaimFieldRow(null, d.initialCalculatedCmrhOral()),
+      AssessmentGet::getBoltOnCmrhOralFee),
+  CMRH_TELEPHONE(
+      d -> new ClaimFieldRow(null, d.initialCalculatedCmrhTelephone()),
+      AssessmentGet::getBoltOnCmrhTelephoneFee),
+  // No accessor exists anywhere on AssessmentGet for London rate - see the "Not applicable" note
+  // on VALUE_ROWS below, the same reasoning applies to Current Calculated.
   LONDON_RATE(d -> new ClaimFieldRow(null, d.initialLondonRateIndicator())),
-  HOME_OFFICE_INTERVIEW(d -> new ClaimFieldRow(null, d.initialCalculatedHomeOfficeInterview())),
-  SUBSTANTIVE_HEARING(d -> new ClaimFieldRow(null, d.initialCalculatedSubstantiveHearing())),
-  VAT_INDICATOR(LegalHelpClaimDetailsViewField::vatIndicatorRow),
+  HOME_OFFICE_INTERVIEW(
+      d -> new ClaimFieldRow(null, d.initialCalculatedHomeOfficeInterview()),
+      AssessmentGet::getBoltOnHomeOfficeInterviewFee),
+  SUBSTANTIVE_HEARING(
+      d -> new ClaimFieldRow(null, d.initialCalculatedSubstantiveHearing()),
+      AssessmentGet::getBoltOnSubstantiveHearingFee),
+  VAT_INDICATOR(LegalHelpClaimDetailsViewField::vatIndicatorRow, AssessmentGet::getIsVatApplicable),
 
   // Total allowed value
-  TOTAL_VAT(d -> new ClaimFieldRow(null, d.initialCalculatedTotalVat())),
-  TOTAL_INCLUDING_VAT(d -> new ClaimFieldRow(null, d.initialCalculatedTotalIncludingVat()));
+  TOTAL_VAT(
+      d -> new ClaimFieldRow(null, d.initialCalculatedTotalVat()),
+      AssessmentGet::getAllowedTotalVat),
+  TOTAL_INCLUDING_VAT(
+      d -> new ClaimFieldRow(null, d.initialCalculatedTotalIncludingVat()),
+      AssessmentGet::getAllowedTotalInclVat);
 
   // "London rate" is omitted entirely - BC-523 marks it "Not applicable" for both Reported and
   // Initial calculated, and no accessor exists anywhere in ClaimResponseV2/FeeCalculationPatch/
@@ -70,9 +102,17 @@ public enum LegalHelpClaimDetailsViewField implements ClaimViewField<LegalHelpCl
       List.of(TOTAL_VAT, TOTAL_INCLUDING_VAT);
 
   private final Function<LegalHelpClaimDetails, Object> accessor;
+  private final Function<AssessmentGet, Object> assessmentAccessor;
 
   LegalHelpClaimDetailsViewField(Function<LegalHelpClaimDetails, Object> accessor) {
+    this(accessor, null);
+  }
+
+  LegalHelpClaimDetailsViewField(
+      Function<LegalHelpClaimDetails, Object> accessor,
+      Function<AssessmentGet, Object> assessmentAccessor) {
     this.accessor = accessor;
+    this.assessmentAccessor = assessmentAccessor;
   }
 
   private static ClaimFieldRow disbursementsRow(LegalHelpClaimDetails d) {
@@ -94,5 +134,19 @@ public enum LegalHelpClaimDetailsViewField implements ClaimViewField<LegalHelpCl
 
   private static ClaimFieldRow vatIndicatorRow(LegalHelpClaimDetails d) {
     return new ClaimFieldRow(d.reportedVatApplicable(), d.initialCalculatedVatIndicator());
+  }
+
+  /**
+   * AssessmentGet has no combined travel-and-waiting field (unlike FeeCalculationPatch) - sum its
+   * separate net_travel_costs_amount and net_waiting_costs_amount to match this row's shape.
+   */
+  private static Object travelAndWaitingCostsFromAssessment(AssessmentGet assessment) {
+    BigDecimal travel = assessment.getNetTravelCostsAmount();
+    BigDecimal waiting = assessment.getNetWaitingCostsAmount();
+    if (travel == null && waiting == null) {
+      return null;
+    }
+    return (travel == null ? BigDecimal.ZERO : travel)
+        .add(waiting == null ? BigDecimal.ZERO : waiting);
   }
 }

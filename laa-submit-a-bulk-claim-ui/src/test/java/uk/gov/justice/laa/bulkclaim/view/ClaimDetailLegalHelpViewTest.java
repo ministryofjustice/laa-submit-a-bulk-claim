@@ -18,6 +18,7 @@ import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import reactor.core.publisher.Mono;
 import uk.gov.justice.laa.bulkclaim.builder.ClaimStatusBannerBuilder;
+import uk.gov.justice.laa.bulkclaim.builder.LatestAssessmentResolver;
 import uk.gov.justice.laa.bulkclaim.builder.SubmissionMessagesBuilder;
 import uk.gov.justice.laa.bulkclaim.client.DataClaimsRestClient;
 import uk.gov.justice.laa.bulkclaim.client.DataClaimsRestClientV2;
@@ -49,6 +50,7 @@ class ClaimDetailLegalHelpViewTest extends ViewTestBase {
   @MockitoBean private SubmissionMessagesBuilder submissionMessagesBuilder;
   @MockitoBean private ClaimDetailViewFactory claimDetailViewFactory;
   @MockitoBean private ClaimStatusBannerBuilder claimStatusBannerBuilder;
+  @MockitoBean private LatestAssessmentResolver latestAssessmentResolver;
 
   private LegalHelpClaimDetails details;
 
@@ -97,7 +99,7 @@ class ClaimDetailLegalHelpViewTest extends ViewTestBase {
         List.of(
             new ClaimValueRow(
                 "Total including VAT", new ClaimFieldRow(null, new BigDecimal("12.00"))));
-    when(claimDetailViewFactory.build(claimResponse))
+    when(claimDetailViewFactory.build(eq(claimResponse), any()))
         .thenReturn(new ClaimDetailView.LegalHelp(details, valueRows, totalRows));
 
     when(claimStatusBannerBuilder.build(derivedClaimStatus, List.of())).thenReturn(banner);

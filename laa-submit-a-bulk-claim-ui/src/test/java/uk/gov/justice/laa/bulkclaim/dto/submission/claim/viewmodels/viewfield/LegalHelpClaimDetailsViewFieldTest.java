@@ -7,6 +7,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import uk.gov.justice.laa.bulkclaim.dto.submission.claim.viewmodels.ClaimFieldRow;
 import uk.gov.justice.laa.bulkclaim.dto.submission.claim.viewmodels.LegalHelpClaimDetails;
+import uk.gov.justice.laa.dstew.payments.claimsdata.model.AssessmentGet;
 
 @DisplayName("Legal help claim details view field test")
 class LegalHelpClaimDetailsViewFieldTest {
@@ -82,5 +83,40 @@ class LegalHelpClaimDetailsViewFieldTest {
         .containsExactly(
             LegalHelpClaimDetailsViewField.TOTAL_VAT,
             LegalHelpClaimDetailsViewField.TOTAL_INCLUDING_VAT);
+  }
+
+  @Test
+  @DisplayName(
+      "Travel and waiting costs' Current Calculated value sums the assessment's separate travel"
+          + " and waiting fields")
+  void travelAndWaitingCostsSumsAssessmentFields() {
+    AssessmentGet assessment =
+        new AssessmentGet()
+            .netTravelCostsAmount(new BigDecimal("100.00"))
+            .netWaitingCostsAmount(new BigDecimal("25.50"));
+
+    Object value =
+        LegalHelpClaimDetailsViewField.TRAVEL_AND_WAITING_COSTS
+            .getAssessmentAccessor()
+            .apply(assessment);
+
+    assertThat(value).isEqualTo(new BigDecimal("125.50"));
+  }
+
+  @Test
+  @DisplayName("Travel and waiting costs' Current Calculated value is absent when both are absent")
+  void travelAndWaitingCostsIsNullWhenBothAssessmentFieldsAreAbsent() {
+    Object value =
+        LegalHelpClaimDetailsViewField.TRAVEL_AND_WAITING_COSTS
+            .getAssessmentAccessor()
+            .apply(new AssessmentGet());
+
+    assertThat(value).isNull();
+  }
+
+  @Test
+  @DisplayName("London rate has no assessment accessor - AssessmentGet has no equivalent field")
+  void londonRateHasNoAssessmentAccessor() {
+    assertThat(LegalHelpClaimDetailsViewField.LONDON_RATE.getAssessmentAccessor()).isNull();
   }
 }

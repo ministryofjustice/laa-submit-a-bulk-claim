@@ -7,6 +7,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import uk.gov.justice.laa.bulkclaim.dto.submission.claim.viewmodels.ClaimFieldRow;
 import uk.gov.justice.laa.bulkclaim.dto.submission.claim.viewmodels.CrimeLowerClaimDetails;
+import uk.gov.justice.laa.dstew.payments.claimsdata.model.AssessmentGet;
 
 @DisplayName("Crime lower claim details view field test")
 class CrimeLowerClaimDetailsViewFieldTest {
@@ -75,5 +76,39 @@ class CrimeLowerClaimDetailsViewFieldTest {
         .containsExactly(
             CrimeLowerClaimDetailsViewField.TOTAL_VAT,
             CrimeLowerClaimDetailsViewField.TOTAL_INCLUDING_VAT);
+  }
+
+  @Test
+  @DisplayName(
+      "Should read the Current Calculated value for a values-table field from the assessment")
+  void shouldReadCurrentCalculatedFromAssessment() {
+    AssessmentGet assessment = new AssessmentGet().netProfitCostsAmount(new BigDecimal("120.00"));
+
+    Object value =
+        CrimeLowerClaimDetailsViewField.PROFIT_COSTS.getAssessmentAccessor().apply(assessment);
+
+    assertThat(value).isEqualTo(new BigDecimal("120.00"));
+  }
+
+  @Test
+  @DisplayName("Should read the Current Calculated total from allowed_total_incl_vat, not assessed")
+  void totalIncludingVatReadsAllowedNotAssessed() {
+    AssessmentGet assessment =
+        new AssessmentGet()
+            .allowedTotalInclVat(new BigDecimal("242.00"))
+            .assessedTotalInclVat(new BigDecimal("999.99"));
+
+    Object value =
+        CrimeLowerClaimDetailsViewField.TOTAL_INCLUDING_VAT
+            .getAssessmentAccessor()
+            .apply(assessment);
+
+    assertThat(value).isEqualTo(new BigDecimal("242.00"));
+  }
+
+  @Test
+  @DisplayName("A header field has no assessment accessor")
+  void headerFieldHasNoAssessmentAccessor() {
+    assertThat(CrimeLowerClaimDetailsViewField.CLIENT_FORENAME.getAssessmentAccessor()).isNull();
   }
 }

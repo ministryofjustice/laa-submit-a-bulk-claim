@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.SessionAttributes;
 import org.springframework.web.util.UriComponentsBuilder;
 import uk.gov.justice.laa.bulkclaim.builder.ClaimStatusBannerBuilder;
+import uk.gov.justice.laa.bulkclaim.builder.LatestAssessmentResolver;
 import uk.gov.justice.laa.bulkclaim.builder.SubmissionMessagesBuilder;
 import uk.gov.justice.laa.bulkclaim.client.DataClaimsRestClient;
 import uk.gov.justice.laa.bulkclaim.client.DataClaimsRestClientV2;
@@ -28,6 +29,7 @@ import uk.gov.justice.laa.bulkclaim.mapper.ClaimFeeCalculationBreakdownMapper;
 import uk.gov.justice.laa.bulkclaim.mapper.ClaimSummaryMapper;
 import uk.gov.justice.laa.bulkclaim.service.claimdetail.ClaimDetailView;
 import uk.gov.justice.laa.bulkclaim.service.claimdetail.ClaimDetailViewFactory;
+import uk.gov.justice.laa.dstew.payments.claimsdata.model.AssessmentGet;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.ClaimHistoryEvent;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.ClaimHistoryResultSet;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.ClaimResponse;
@@ -49,6 +51,7 @@ public final class ClaimDetailController {
   private final FeatureFlagsConfig featureFlagsConfig;
   private final ClaimDetailViewFactory claimDetailViewFactory;
   private final ClaimStatusBannerBuilder claimStatusBannerBuilder;
+  private final LatestAssessmentResolver latestAssessmentResolver;
 
   @GetMapping("/submission/claim/{claimReference}")
   public String getClaimDetail(
@@ -157,14 +160,20 @@ public final class ClaimDetailController {
 
     model.addAttribute("ufn", claimResponse.getUniqueFileNumber());
 
-    ClaimDetailView claimDetailView = claimDetailViewFactory.build(claimResponse);
-    model.addAttribute("claimDetailView", claimDetailView);
-
     DerivedClaimStatus derivedClaimStatus = claimResponse.getDerivedClaimStatus();
-    model.addAttribute(
-        "showCurrentCalculated",
+    boolean showCurrentCalculated =
         derivedClaimStatus == DerivedClaimStatus.AMENDED
-            || derivedClaimStatus == DerivedClaimStatus.ASSESSED);
+            || derivedClaimStatus == DerivedClaimStatus.ASSESSED;
+    model.addAttribute("showCurrentCalculated", showCurrentCalculated);
+
+    AssessmentGet currentAssessment =
+        showCurrentCalculated
+            ? latestAssessmentResolver.resolveLatestNonVoid(claimId).orElse(null)
+            : null;
+
+    ClaimDetailView claimDetailView =
+        claimDetailViewFactory.build(claimResponse, currentAssessment);
+    model.addAttribute("claimDetailView", claimDetailView);
 
     List<ClaimHistoryEvent> historyEvents =
         dataClaimsRestClient
