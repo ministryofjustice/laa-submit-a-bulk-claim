@@ -107,6 +107,7 @@
   "version": 2,
   "area_of_law": "LEGAL HELP",
   "office_code": "0P322F",
+  "derived_claim_status":null,
   "total_warnings": 0,
   "fee_calculation_response": null,
   "date_submitted": "2025-08-14T09:30:00Z"

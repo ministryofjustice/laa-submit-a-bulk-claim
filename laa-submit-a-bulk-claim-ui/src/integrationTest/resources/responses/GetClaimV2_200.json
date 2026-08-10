@@ -108,6 +108,7 @@
     "version" : null,
     "area_of_law" : null,
     "office_code" : "0P322F",
+    "derived_claim_status": null,
     "total_warnings" : 0,
     "fee_calculation_response" : null,
     "date_submitted" : null
@@ -220,6 +221,7 @@
     "version" : null,
     "area_of_law" : null,
     "office_code" : "0P322F",
+    "derived_claim_status": null,
     "total_warnings" : 0,
     "fee_calculation_response" : null,
     "date_submitted" : null
