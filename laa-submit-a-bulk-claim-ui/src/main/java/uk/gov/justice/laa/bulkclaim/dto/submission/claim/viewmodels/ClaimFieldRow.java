@@ -2,7 +2,9 @@ package uk.gov.justice.laa.bulkclaim.dto.submission.claim.viewmodels;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 public record ClaimFieldRow(Object reported, Object initialCalculated, Object currentCalculated) {
 
   public static final String NOT_APPLICABLE = "Not applicable";
@@ -36,9 +38,15 @@ public record ClaimFieldRow(Object reported, Object initialCalculated, Object cu
   }
 
   private static Object display(Object value) {
+    try{
+
     return value instanceof Boolean bool
         ? (bool ? "Yes" : "No")
         : "£"
             + BigDecimal.valueOf(((Number) value).doubleValue()).setScale(2, RoundingMode.HALF_UP);
+    }catch (Exception e){
+      log.error("Error displaying value", e);
+      return NOT_APPLICABLE;
+    }
   }
 }
