@@ -185,6 +185,6 @@ class ClaimDetailLegalHelpViewTest extends ViewTestBase {
     Document doc = renderDocument();
 
     assertThat(doc.getElementById("claim-status-banner")).isNotNull();
-    assertThat(doc.getElementsByClass("moj-alert--warning")).hasSize(1);
+    assertThat(doc.getElementsByClass("moj-alert--information")).hasSize(1);
   }
 }

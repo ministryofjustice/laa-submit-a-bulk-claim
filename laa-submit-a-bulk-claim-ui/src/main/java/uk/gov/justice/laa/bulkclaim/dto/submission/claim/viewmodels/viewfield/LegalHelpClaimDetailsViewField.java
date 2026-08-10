@@ -36,6 +36,7 @@ public enum LegalHelpClaimDetailsViewField implements ClaimViewField<LegalHelpCl
   ADJOURNED_HEARING_FEE(d -> new ClaimFieldRow(null, d.initialCalculatedAdjournedHearingFee())),
   CMRH_ORAL(d -> new ClaimFieldRow(null, d.initialCalculatedCmrhOral())),
   CMRH_TELEPHONE(d -> new ClaimFieldRow(null, d.initialCalculatedCmrhTelephone())),
+  LONDON_RATE(d -> new ClaimFieldRow(null, d.initialLondonRateIndicator())),
   HOME_OFFICE_INTERVIEW(d -> new ClaimFieldRow(null, d.initialCalculatedHomeOfficeInterview())),
   SUBSTANTIVE_HEARING(d -> new ClaimFieldRow(null, d.initialCalculatedSubstantiveHearing())),
   VAT_INDICATOR(LegalHelpClaimDetailsViewField::vatIndicatorRow),
@@ -60,6 +61,7 @@ public enum LegalHelpClaimDetailsViewField implements ClaimViewField<LegalHelpCl
           ADJOURNED_HEARING_FEE,
           CMRH_ORAL,
           CMRH_TELEPHONE,
+          LONDON_RATE,
           HOME_OFFICE_INTERVIEW,
           SUBSTANTIVE_HEARING,
           VAT_INDICATOR);

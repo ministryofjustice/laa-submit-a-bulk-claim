@@ -36,8 +36,9 @@ public record ClaimFieldRow(Object reported, Object initialCalculated, Object cu
   }
 
   private static Object display(Object value) {
-    return value instanceof Boolean bool ? (bool ? "Yes" : "No")
-        : "£" + BigDecimal.valueOf(((Number) value).doubleValue())
-            .setScale(2, RoundingMode.HALF_UP);
+    return value instanceof Boolean bool
+        ? (bool ? "Yes" : "No")
+        : "£"
+            + BigDecimal.valueOf(((Number) value).doubleValue()).setScale(2, RoundingMode.HALF_UP);
   }
 }

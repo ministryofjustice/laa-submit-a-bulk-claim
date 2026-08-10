@@ -69,6 +69,7 @@ class LegalHelpClaimDetailsViewFieldTest {
             LegalHelpClaimDetailsViewField.ADJOURNED_HEARING_FEE,
             LegalHelpClaimDetailsViewField.CMRH_ORAL,
             LegalHelpClaimDetailsViewField.CMRH_TELEPHONE,
+            LegalHelpClaimDetailsViewField.LONDON_RATE,
             LegalHelpClaimDetailsViewField.HOME_OFFICE_INTERVIEW,
             LegalHelpClaimDetailsViewField.SUBSTANTIVE_HEARING,
             LegalHelpClaimDetailsViewField.VAT_INDICATOR);
