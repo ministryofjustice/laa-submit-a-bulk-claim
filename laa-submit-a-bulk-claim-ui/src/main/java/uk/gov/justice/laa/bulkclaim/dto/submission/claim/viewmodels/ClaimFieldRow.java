@@ -1,5 +1,8 @@
 package uk.gov.justice.laa.bulkclaim.dto.submission.claim.viewmodels;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+
 public record ClaimFieldRow(Object reported, Object initialCalculated, Object currentCalculated) {
 
   public static final String NOT_APPLICABLE = "Not applicable";
@@ -33,6 +36,8 @@ public record ClaimFieldRow(Object reported, Object initialCalculated, Object cu
   }
 
   private static Object display(Object value) {
-    return value instanceof Boolean bool ? (bool ? "Yes" : "No") : value;
+    return value instanceof Boolean bool ? (bool ? "Yes" : "No")
+        : "£" + BigDecimal.valueOf(((Number) value).doubleValue())
+            .setScale(2, RoundingMode.HALF_UP);
   }
 }
