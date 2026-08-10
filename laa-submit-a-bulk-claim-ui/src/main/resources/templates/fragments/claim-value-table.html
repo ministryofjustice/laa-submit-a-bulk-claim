@@ -25,10 +25,10 @@
             <dd class="govuk-summary-list__value govuk-!-text-align-left"
                 th:text="${row.getReportedDisplay()}"/>
             <dd class="govuk-summary-list__value govuk-!-text-align-left"
-                th:text="${row.getInitialCalculatedDisplay()}"/>
+                th:text="${row?.getInitialCalculatedDisplay()}"/>
             <dd class="govuk-summary-list__value govuk-!-text-align-left"
                 th:if="${showCurrentCalculated}"
-                th:text="${row.getCurrentCalculatedDisplay()}"/>
+                th:text="${row?.getCurrentCalculatedDisplay()}"/>
           </div>
         </dl>
       </div>
