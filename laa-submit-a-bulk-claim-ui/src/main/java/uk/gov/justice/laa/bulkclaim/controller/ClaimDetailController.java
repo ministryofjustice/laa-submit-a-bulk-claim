@@ -184,6 +184,10 @@ public final class ClaimDetailController {
     model.addAttribute(
         "banner", claimStatusBannerBuilder.build(derivedClaimStatus, historyEvents).orElse(null));
 
+    final MessagesSummary messagesSummary =
+        submissionMessagesBuilder.buildAllWarnings(submissionId, claimId);
+    model.addAttribute("claimMessages", messagesSummary);
+
     return claimDetailView.template();
   }
 }

@@ -8,7 +8,7 @@ import uk.gov.justice.laa.bulkclaim.dto.submission.claim.SubmissionClaimRow;
 import uk.gov.justice.laa.bulkclaim.dto.submission.claim.SubmissionClaimRowCostsDetails;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.ClaimResponse;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.ClaimResponseV2;
-import uk.gov.justice.laa.dstew.payments.claimsdata.model.ClaimStatus;
+import uk.gov.justice.laa.dstew.payments.claimsdata.model.DerivedClaimStatus;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.FeeCalculationType;
 
 @Mapper(componentModel = "spring")
@@ -24,7 +24,6 @@ public interface SubmissionClaimRowMapper {
   @Mapping(target = "category", source = "claimFields.standardFeeCategoryCode")
   @Mapping(target = "matter", source = "claimFields.matterTypeCode")
   @Mapping(target = "concludedOrClaimedDate", source = "claimFields.caseConcludedDate")
-  @Mapping(target = "status", source = "claimFields.status", qualifiedByName = "toClaimStatus")
   @Mapping(
       target = "feeType",
       source = "claimFields.feeCalculationResponse.feeType",
@@ -45,7 +44,10 @@ public interface SubmissionClaimRowMapper {
   @Mapping(target = "category", source = "claimFields.standardFeeCategoryCode")
   @Mapping(target = "matter", source = "claimFields.matterTypeCode")
   @Mapping(target = "concludedOrClaimedDate", source = "claimFields.caseConcludedDate")
-  @Mapping(target = "status", source = "claimFields.status", qualifiedByName = "toClaimStatus")
+  @Mapping(
+      target = "status",
+      source = "claimFields.derivedClaimStatus",
+      qualifiedByName = "toClaimStatus")
   @Mapping(
       target = "feeType",
       source = "claimFields.feeCalculationResponse.feeType",
@@ -54,6 +56,10 @@ public interface SubmissionClaimRowMapper {
   @Mapping(target = "costsDetails", source = "claimFields")
   @Mapping(target = "totalMessages", source = "claimFields.totalWarnings")
   @Mapping(target = "escapeCase", expression = "java(resolveEscapeCase(claimFields))")
+  @Mapping(target = "calculatedValue", source = "claimFields.feeCalculationResponse.totalAmount")
+  @Mapping(
+      target = "updatedCalculatedValue",
+      source = "claimFields.feeCalculationResponse.totalAmount")
   SubmissionClaimRow toSubmissionClaimRow(ClaimResponseV2 claimFields);
 
   @Named("toFeeType")
@@ -67,8 +73,12 @@ public interface SubmissionClaimRowMapper {
   }
 
   @Named("toClaimStatus")
-  default String toClaimStatus(final ClaimStatus claimStatus) {
-    return claimStatus == null ? null : claimStatus.getValue();
+  default String toClaimStatus(final DerivedClaimStatus claimStatus) {
+    if (claimStatus == null || claimStatus.getValue() == null) {
+      return null;
+    }
+    String value = claimStatus.getValue().replace("_", " ");
+    return value.substring(0, 1).toUpperCase() + value.substring(1).toLowerCase();
   }
 
   @Mapping(target = "claimValue", source = "claimFields.feeCalculationResponse.totalAmount")
