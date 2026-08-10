@@ -36,7 +36,7 @@ import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionsResultSet;
 @WebMvcTest(SearchController.class)
 class SearchResultsViewTest extends ViewTestBase {
 
-  private static final int PAGE_SIZE = 10;
+  private static final int PAGE_SIZE = 50;
   private static final String OFFICE = "12345";
   private static final String SUBMISSION_STATUSES = SubmissionOutcomeFilter.ALL.name();
 
