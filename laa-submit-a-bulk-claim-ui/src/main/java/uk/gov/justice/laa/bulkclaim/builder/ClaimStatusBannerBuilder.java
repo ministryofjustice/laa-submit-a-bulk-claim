@@ -12,11 +12,6 @@ import uk.gov.justice.laa.dstew.payments.claimsdata.model.ClaimHistoryEvent;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.ClaimHistoryEventType;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.DerivedClaimStatus;
 
-/**
- * Builds the {@link ClaimStatusBanner} shown above the claim details Summary table, switching
- * directly on {@code derived_claim_status} rather than re-deriving voided/assessed/amended
- * precedence from the underlying booleans.
- */
 @Component
 public class ClaimStatusBannerBuilder {
 
@@ -29,11 +24,6 @@ public class ClaimStatusBannerBuilder {
           DerivedClaimStatus.ASSESSED, ClaimHistoryEventType.ASSESSMENT,
           DerivedClaimStatus.AMENDED, ClaimHistoryEventType.AMENDMENT);
 
-  /**
-   * Builds a status banner for the given derived claim status, sourcing the "last edited" timestamp
-   * from the most recent history event matching that status's action. Returns empty when the
-   * derived status is not one of Voided/Assessed/Amended.
-   */
   public Optional<ClaimStatusBanner> build(
       DerivedClaimStatus derivedClaimStatus, List<ClaimHistoryEvent> historyEvents) {
     ClaimHistoryEventType matchingEventType = BANNER_EVENT_TYPES.get(derivedClaimStatus);
