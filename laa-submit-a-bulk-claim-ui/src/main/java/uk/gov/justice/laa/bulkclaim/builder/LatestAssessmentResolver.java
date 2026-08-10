@@ -12,7 +12,6 @@ import uk.gov.justice.laa.dstew.payments.claimsdata.model.AssessmentGet;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.AssessmentResultSet;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.AssessmentType;
 
-
 @Slf4j
 @Component
 @RequiredArgsConstructor
