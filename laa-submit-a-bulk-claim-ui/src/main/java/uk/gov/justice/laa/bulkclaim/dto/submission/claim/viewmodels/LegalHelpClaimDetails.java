@@ -41,6 +41,7 @@ public record LegalHelpClaimDetails(
     BigDecimal initialCalculatedAdjournedHearingFee,
     BigDecimal initialCalculatedCmrhOral,
     BigDecimal initialCalculatedCmrhTelephone,
+    Boolean initialLondonRateIndicator,
     BigDecimal initialCalculatedHomeOfficeInterview,
     BigDecimal initialCalculatedSubstantiveHearing,
     Boolean initialCalculatedVatIndicator,
