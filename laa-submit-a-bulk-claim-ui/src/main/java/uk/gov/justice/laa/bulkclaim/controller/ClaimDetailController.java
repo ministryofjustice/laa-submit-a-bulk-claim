@@ -132,19 +132,16 @@ public final class ClaimDetailController {
       @ModelAttribute(SUBMISSION_ID) final UUID submissionId,
       @ModelAttribute(CLAIM_ID) final UUID claimId,
       @RequestParam(value = "page", defaultValue = "0") final int page,
-      @RequestParam(value = "messagesPage", defaultValue = "0") final int messagesPage,
       @RequestParam(value = "navTab", required = false, defaultValue = "CLAIM_DETAILS")
           final ViewSubmissionNavigationTab navigationTab) {
 
     model.addAttribute("page", page);
-    model.addAttribute("messagesPage", messagesPage);
     model.addAttribute("navigationTab", navigationTab.toString());
     model.addAttribute(
         "viewSubmissionBackLink",
         UriComponentsBuilder.fromPath("/submission/{submissionId}")
             .queryParam("page", page)
             .queryParam("navTab", navigationTab.toString())
-            .queryParam("messagesPage", messagesPage)
             .buildAndExpand(submissionId)
             .toUriString());
 
@@ -177,10 +174,6 @@ public final class ClaimDetailController {
             .orElseGet(List::of);
     model.addAttribute(
         "banner", claimStatusBannerBuilder.build(derivedClaimStatus, historyEvents).orElse(null));
-
-    final MessagesSummary messagesSummary =
-        submissionMessagesBuilder.buildAllWarnings(submissionId, claimId);
-    model.addAttribute("claimMessages", messagesSummary);
 
     return claimDetailView.template();
   }
