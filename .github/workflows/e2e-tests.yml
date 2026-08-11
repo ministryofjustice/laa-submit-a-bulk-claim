@@ -57,11 +57,21 @@ jobs:
         working-directory: laa-data-claims-parent
         env:
           SUBMIT_REF: ${{ github.head_ref || github.ref_name }}
+          CLAIMS_API_BRANCH: feature/BC-680-e2e
+          EVENT_SERVICE_BRANCH: feature/BC-680-e2e
         run: |
           ./update-bulk-claim-repos.sh
           cd laa-submit-a-bulk-claim          
           git fetch origin "$SUBMIT_REF"
           git checkout -B "$SUBMIT_REF" FETCH_HEAD
+
+          cd ../laa-data-claims-api
+          git fetch origin "$CLAIMS_API_BRANCH"
+          git checkout "$CLAIMS_API_BRANCH" "origin/$CLAIMS_API_BRANCH"
+
+          cd ../laa-data-claims-event-service
+          git fetch origin "$EVENT_SERVICE_BRANCH"
+          git checkout "$EVENT_SERVICE_BRANCH" "origin/$EVENT_SERVICE_BRANCH"
 
       - name: Install kubectl
         uses: azure/setup-kubectl@829323503d1be3d00ca8346e5391ca0b07a9ab0d # v5.1.0
