@@ -137,7 +137,7 @@ jobs:
           AUTH_CLIENT_SECRET: ${{ secrets.auth_client_secret }}
           AUTH_SCOPE: ${{ secrets.auth_scope }}
           AUTH_TENANT_ID: ${{ secrets.auth_tenant_id }}
-          SDS_API_URL: ${SDS_API_URL}
+          SDS_API_URL: ${{ secrets.sds_api_url }}
           FEE_SCHEME_PLATFORM_API_URL: 'http://localhost:8095'
           FEE_SCHEME_PLATFORM_API_ACCESS_TOKEN: ${{ secrets.fsp_api_token }}
           PROVIDER_DETAILS_API_URL: 'http://localhost:8186'
