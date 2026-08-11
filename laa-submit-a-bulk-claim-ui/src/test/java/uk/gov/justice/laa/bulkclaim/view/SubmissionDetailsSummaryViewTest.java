@@ -15,7 +15,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
 import org.junit.jupiter.api.Test;
 import reactor.core.publisher.Mono;
 import uk.gov.justice.laa.bulkclaim.dto.submission.SubmissionSummary;
@@ -47,7 +46,12 @@ class SubmissionDetailsSummaryViewTest extends SubmissionDetailsViewTestBase {
 
     var summaryList = getFirstSummaryList(doc);
     assertThat(summaryList).hasSize(6);
-    assertCommonSummaryFields(summaryList);
+    assertRowContainsValues(
+        summaryList.get(0), "Submission date and time", "1 Jan 2025 at 10:10AM");
+    assertRowContainsValues(summaryList.get(1), "Account", "0P322F");
+    assertRowContainsValues(summaryList.get(2), "Area of law", "Crime lower");
+    assertRowContainsValues(summaryList.get(3), "Submission period", "MAY-2025");
+    assertRowContainsValues(summaryList.get(4), "Submission reference", submissionId.toString());
     assertRowContainsValues(summaryList.get(5), "Calculated bulk claim value", "£123.45");
   }
 
@@ -80,15 +84,17 @@ class SubmissionDetailsSummaryViewTest extends SubmissionDetailsViewTestBase {
   }
 
   @Test
-  void rejectedSubmissionPageShowsSummaryFieldsWithoutCalculatedValueOrDownload() {
+  void rejectedSubmissionPageShowsSummaryFieldsWithoutCalculatedValue() {
     var doc = renderRejectedPage();
 
     var summaryList = getFirstSummaryList(doc);
     assertThat(summaryList).hasSize(5);
-    assertCommonSummaryFields(summaryList);
-
-    assertThat(doc.select("#export-button")).isEmpty();
-    assertThat(doc.text()).doesNotContain("Calculated bulk claim value");
+    assertRowContainsValues(
+        summaryList.get(0), "Submission date and time", "1 Jan 2025 at 10:10AM");
+    assertRowContainsValues(summaryList.get(1), "Account", "0P322F");
+    assertRowContainsValues(summaryList.get(2), "Area of law", "Crime lower");
+    assertRowContainsValues(summaryList.get(3), "Submission period", "MAY-2025");
+    assertRowContainsValues(summaryList.get(4), "Submission reference", submissionId.toString());
   }
 
   @Test
@@ -98,6 +104,8 @@ class SubmissionDetailsSummaryViewTest extends SubmissionDetailsViewTestBase {
     assertThat(
             selectFirst(doc, "[data-module=laa-print-button]").attr("data-print-action-container"))
         .isEqualTo("secondary-action-container");
+
+    assertThat(doc.select("#export-button")).isEmpty();
     assertThat(doc.select(".govuk-button--secondary").eachText()).doesNotContain("Download claims");
   }
 
@@ -117,26 +125,7 @@ class SubmissionDetailsSummaryViewTest extends SubmissionDetailsViewTestBase {
             "The provider is not contracted for the category of law associated with the fee code");
   }
 
-  private void assertCommonSummaryFields(List<List<Element>> summaryList) {
-    assertRowContainsValues(
-        summaryList.get(0), "Submission date and time", "1 Jan 2025 at 10:10AM");
-    assertRowContainsValues(summaryList.get(1), "Account", "0P322F");
-    assertRowContainsValues(summaryList.get(2), "Area of law", "Crime lower");
-    assertRowContainsValues(summaryList.get(3), "Submission period", "MAY-2025");
-    assertRowContainsValues(summaryList.get(4), "Submission reference", submissionId.toString());
-  }
-
   private Document renderAcceptedPage() {
-    mockAcceptedSubmissionSummary();
-    return renderDocument();
-  }
-
-  private Document renderRejectedPage() {
-    mockRejectedSubmissionSummaryWithClaimErrors();
-    return renderDocument();
-  }
-
-  private void mockAcceptedSubmissionSummary() {
     Page pagination = Page.builder().totalPages(1).totalElements(0).number(0).size(10).build();
     SubmissionResponse submissionResponse =
         SubmissionResponse.builder()
@@ -160,9 +149,10 @@ class SubmissionDetailsSummaryViewTest extends SubmissionDetailsViewTestBase {
         .thenReturn(new SubmissionClaimsDetails(List.of(), pagination, new BigDecimal("123.45")));
     when(submissionMessagesBuilder.build(any(), any(), any(), anyInt(), anyInt(), any()))
         .thenReturn(new MessagesSummary(List.of(), 0, 0, pagination, MessagesSource.CLAIM));
+    return renderDocument();
   }
 
-  private void mockRejectedSubmissionSummaryWithClaimErrors() {
+  private Document renderRejectedPage() {
     Optional<UUID> claimReference = Optional.of(UUID.randomUUID());
     Page pagination = Page.builder().totalPages(1).totalElements(2).number(0).size(10).build();
     SubmissionResponse submissionResponse =
@@ -206,5 +196,6 @@ class SubmissionDetailsSummaryViewTest extends SubmissionDetailsViewTestBase {
                 2,
                 pagination,
                 MessagesSource.CLAIM));
+    return renderDocument();
   }
 }

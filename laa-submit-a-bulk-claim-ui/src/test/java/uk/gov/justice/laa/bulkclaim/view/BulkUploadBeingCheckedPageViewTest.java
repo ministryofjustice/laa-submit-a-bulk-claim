@@ -26,7 +26,7 @@ class BulkUploadBeingCheckedPageViewTest extends ViewTestBase {
 
   @Test
   void uploadBeingCheckedPageShowsExpectedContent() {
-    stubPendingBulkSubmissionStatus(BulkSubmissionStatus.READY_FOR_PARSING);
+    stubBulkSubmissionStatus(BulkSubmissionStatus.READY_FOR_PARSING);
 
     var doc = renderDocument();
 
@@ -39,7 +39,7 @@ class BulkUploadBeingCheckedPageViewTest extends ViewTestBase {
 
   @Test
   void uploadBeingCheckedPageShowsRefreshMetaTag() {
-    stubPendingBulkSubmissionStatus(BulkSubmissionStatus.PARSING_COMPLETED);
+    stubBulkSubmissionStatus(BulkSubmissionStatus.PARSING_COMPLETED);
 
     var doc = renderDocument();
 
@@ -49,14 +49,14 @@ class BulkUploadBeingCheckedPageViewTest extends ViewTestBase {
 
   @Test
   void uploadBeingCheckedPageShowsGoToSearchButton() {
-    stubPendingBulkSubmissionStatus(BulkSubmissionStatus.READY_FOR_PARSING);
+    stubBulkSubmissionStatus(BulkSubmissionStatus.READY_FOR_PARSING);
 
     var doc = renderDocument();
 
     assertPageHasLink(doc, "go-to-search-button", "Go to search", "/submissions/search");
   }
 
-  private void stubPendingBulkSubmissionStatus(BulkSubmissionStatus status) {
+  private void stubBulkSubmissionStatus(BulkSubmissionStatus status) {
     UUID bulkSubmissionId = UUID.randomUUID();
     session.setAttribute(SUBMISSION_ID, submissionId);
     session.setAttribute(BULK_SUBMISSION_ID, bulkSubmissionId);

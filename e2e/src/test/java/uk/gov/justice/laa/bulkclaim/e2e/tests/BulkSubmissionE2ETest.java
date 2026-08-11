@@ -1,5 +1,7 @@
 package uk.gov.justice.laa.bulkclaim.e2e.tests;
 
+import static com.microsoft.playwright.assertions.PlaywrightAssertions.assertThat;
+
 import java.nio.file.Paths;
 import java.util.stream.Stream;
 
@@ -44,7 +46,9 @@ public class BulkSubmissionE2ETest extends BaseTest {
         var uploadBeingChecked = new UploadBeingCheckedPage(page);
 
         var submissionErrorsPage = new SubmissionErrorsPage(page);
-        submissionErrorsPage.assertSubmissionErrors();
+        assertThat(submissionErrorsPage.getFailureBanner()).isVisible();
+        assertThat(submissionErrorsPage.getFailureBanner())
+            .containsText("Resolve the errors and upload the file again.");
     }
 
   private static Stream<Arguments> csvFiles() {
