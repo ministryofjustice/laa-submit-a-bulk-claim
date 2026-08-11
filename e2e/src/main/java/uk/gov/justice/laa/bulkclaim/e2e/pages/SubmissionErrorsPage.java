@@ -4,14 +4,14 @@ import com.microsoft.playwright.Locator;
 import com.microsoft.playwright.Page;
 import lombok.Getter;
 
-
 @Getter
 public class SubmissionErrorsPage extends BasePage {
-    private final Locator failureBanner;
 
-    public SubmissionErrorsPage(Page page) {
-        super(page, "Submission summary");
+  private final Locator failureBanner;
 
-        failureBanner = page.locator(".moj-alert--error");
-    }
+  public SubmissionErrorsPage(Page page) {
+    super(page, "Submission summary");
+
+    failureBanner = page.locator(".moj-alert--error");
+  }
 }
