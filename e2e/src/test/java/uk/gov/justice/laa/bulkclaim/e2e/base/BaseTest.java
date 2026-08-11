@@ -57,7 +57,6 @@ public abstract class BaseTest {
       } catch (Exception ignored) {
       }
     }
-
     if (dqe != null) {
       try {
         dqe.close();
