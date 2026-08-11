@@ -13,6 +13,7 @@ import uk.gov.justice.laa.bulkclaim.e2e.base.BaseTest;
 import uk.gov.justice.laa.bulkclaim.e2e.pages.LandingPagePage;
 import uk.gov.justice.laa.bulkclaim.e2e.pages.SubmissionDetailPage;
 import uk.gov.justice.laa.bulkclaim.e2e.pages.SubmissionErrorsPage;
+import uk.gov.justice.laa.bulkclaim.e2e.pages.UploadBeingCheckedPage;
 import uk.gov.justice.laa.bulkclaim.e2e.pages.UploadPage;
 
 public class BulkSubmissionE2ETest extends BaseTest {
@@ -29,6 +30,8 @@ public class BulkSubmissionE2ETest extends BaseTest {
 
     upload.getContinueButton().click();
 
+    new UploadBeingCheckedPage(page);
+
     var submissionDetailPage = new SubmissionDetailPage(page);
     submissionDetailPage.assertSubmissionAccepted();
   }
@@ -44,6 +47,8 @@ public class BulkSubmissionE2ETest extends BaseTest {
     upload.uploadFile(csvPath);
 
     upload.getContinueButton().click();
+
+    new UploadBeingCheckedPage(page);
 
     var submissionErrorsPage = new SubmissionErrorsPage(page);
     assertThat(submissionErrorsPage.getFailureBanner()).isVisible();

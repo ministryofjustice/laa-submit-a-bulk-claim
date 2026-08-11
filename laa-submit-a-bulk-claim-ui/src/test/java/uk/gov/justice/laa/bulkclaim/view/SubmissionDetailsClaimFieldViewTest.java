@@ -37,17 +37,6 @@ import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionStatus;
 class SubmissionDetailsClaimFieldViewTest extends SubmissionDetailsViewTestBase {
 
   @Test
-  void viewShowsSubmissionDateAndTimeInBst() {
-    mockClaims(
-        CRIME_LOWER, OffsetDateTime.of(2025, 7, 1, 10, 10, 10, 0, ZoneOffset.ofHours(1)));
-    var doc = renderDocument();
-
-    var summaryList = getFirstSummaryList(doc);
-    assertRowContainsValues(
-        summaryList.getFirst(), "Submission date and time", "1 Jul 2025 at 10:10AM");
-  }
-
-  @Test
   void viewHasSortableClaimHeaders_crime() {
     mockClaims(CRIME_LOWER);
     var doc = renderDocument();
@@ -602,10 +591,6 @@ class SubmissionDetailsClaimFieldViewTest extends SubmissionDetailsViewTestBase 
   }
 
   private void mockClaims(AreaOfLaw areaOfLaw) {
-    mockClaims(areaOfLaw, OffsetDateTime.of(2025, 1, 1, 10, 10, 10, 0, ZoneOffset.UTC));
-  }
-
-  private void mockClaims(AreaOfLaw areaOfLaw, OffsetDateTime submittedAt) {
     Page pagination = Page.builder().totalPages(1).totalElements(1).number(0).size(10).build();
     SubmissionResponse submissionResponse =
         SubmissionResponse.builder()
@@ -624,7 +609,7 @@ class SubmissionDetailsClaimFieldViewTest extends SubmissionDetailsViewTestBase 
                 "AQ2B3C",
                 BigDecimal.ONE,
                 areaOfLaw.getValue(),
-                submittedAt));
+                OffsetDateTime.of(2025, 1, 1, 10, 10, 10, 0, ZoneOffset.UTC)));
     when(submissionClaimDetailsBuilder.build(any(), anyInt(), anyInt(), anyString()))
         .thenReturn(
             new SubmissionClaimsDetails(

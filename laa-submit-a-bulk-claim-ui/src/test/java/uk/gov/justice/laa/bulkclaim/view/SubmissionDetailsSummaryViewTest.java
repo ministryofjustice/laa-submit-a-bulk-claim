@@ -35,7 +35,8 @@ class SubmissionDetailsSummaryViewTest extends SubmissionDetailsViewTestBase {
     assertPageHasHeading(doc, "Submission summary");
     assertThat(selectFirst(doc, ".govuk-tag--green").text()).isEqualTo("Accepted");
     var banner = selectFirst(doc, ".govuk-notification-banner--success");
-    assertThat(selectFirst(banner, ".govuk-notification-banner__title").text()).isEqualTo("Success");
+    assertThat(selectFirst(banner, ".govuk-notification-banner__title").text())
+        .isEqualTo("Success");
     assertThat(selectFirst(banner, ".govuk-notification-banner__content").text())
         .contains("Your submission has been accepted.")
         .contains("You cannot make changes.")
