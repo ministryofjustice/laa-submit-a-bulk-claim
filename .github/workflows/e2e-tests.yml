@@ -67,11 +67,11 @@ jobs:
 
           cd ../laa-data-claims-api
           git fetch origin "$CLAIMS_API_BRANCH"
-          git checkout "$CLAIMS_API_BRANCH" "origin/$CLAIMS_API_BRANCH"
+          git checkout -B "$CLAIMS_API_BRANCH" FETCH_HEAD
 
           cd ../laa-data-claims-event-service
           git fetch origin "$EVENT_SERVICE_BRANCH"
-          git checkout "$EVENT_SERVICE_BRANCH" "origin/$EVENT_SERVICE_BRANCH"
+          git checkout -B "$EVENT_SERVICE_BRANCH" FETCH_HEAD
 
       - name: Install kubectl
         uses: azure/setup-kubectl@829323503d1be3d00ca8346e5391ca0b07a9ab0d # v5.1.0
