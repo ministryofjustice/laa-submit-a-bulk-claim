@@ -68,11 +68,4 @@ public abstract class BaseTest {
   protected void assertUrlEndsWith(String expectedUrl) {
     assertThat(page).hasURL(compile(".*%s$".formatted(expectedUrl)));
   }
-
-  protected void pollUntilRedirectedFrom(String urlFragment) {
-    page.waitForLoadState();
-    while (page.url().contains(urlFragment)) {
-      page.reload();
-    }
-  }
 }
