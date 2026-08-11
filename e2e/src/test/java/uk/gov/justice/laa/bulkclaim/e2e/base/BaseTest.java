@@ -68,4 +68,15 @@ public abstract class BaseTest {
   protected void assertUrlEndsWith(String expectedUrl) {
     assertThat(page).hasURL(compile(".*%s$".formatted(expectedUrl)));
   }
+
+  /**
+   * Reloads the current page in a loop until the server redirects away from it. Each reload is a
+   * fast status check — no Playwright navigation timeouts are involved in the polling itself.
+   * Use this when an intermediate page auto-refreshes while background processing completes.
+   */
+  protected void pollUntilRedirectedFrom(String urlFragment) {
+    while (page.url().contains(urlFragment)) {
+      page.reload();
+    }
+  }
 }

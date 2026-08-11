@@ -29,7 +29,7 @@ public class BulkSubmissionE2ETest extends BaseTest {
 
     upload.getContinueButton().click();
 
-    page.waitForURL("**/submission/**");
+    pollUntilRedirectedFrom("upload-is-being-checked");
 
     var submissionDetailPage = new SubmissionDetailPage(page);
     submissionDetailPage.assertSubmissionAccepted();
@@ -47,7 +47,7 @@ public class BulkSubmissionE2ETest extends BaseTest {
 
     upload.getContinueButton().click();
 
-    page.waitForURL("**/submission/**");
+    pollUntilRedirectedFrom("upload-is-being-checked");
 
     var submissionErrorsPage = new SubmissionErrorsPage(page);
     assertThat(submissionErrorsPage.getFailureBanner()).isVisible();
