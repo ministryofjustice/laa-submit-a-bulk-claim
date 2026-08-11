@@ -335,10 +335,10 @@
                 th:text="${claim.ufn ?: '-'}"></td>
             <td class="govuk-table__cell"
                 th:text="${claim.feeCode ?: '-'}"></td>
-            <td class="govuk-table__cell govuk-table__cell--numeric"
+            <td class="govuk-table__cell"
                 th:text="${@currencyUtil.toString(claim.calculatedValue) }"></td>
             <th:block th:if="${showUpdatedCalculatedValueColumn}">
-              <td class="govuk-table__cell govuk-table__cell--numeric"
+              <td class="govuk-table__cell"
                   th:text="${@currencyUtil.toString(claim.updatedCalculatedValue)}"></td>
             </th:block>
             <td class="govuk-table__cell" th:unless="${isCrime}"
@@ -380,10 +380,10 @@
                 th:text="${claim.client2Ucn() ?: '-'}"></td>
             <td class="govuk-table__cell"
                 th:text="${claim.feeCode ?: '-'}"></td>
-            <td class="govuk-table__cell govuk-table__cell--numeric"
+            <td class="govuk-table__cell"
                 th:text="${@currencyUtil.toString(claim.calculatedValue) }"></td>
             <th:block th:if="${showUpdatedCalculatedValueColumn}">
-              <td class="govuk-table__cell govuk-table__cell--numeric"
+              <td class="govuk-table__cell"
                   th:text="${@currencyUtil.toString(claim.updatedCalculatedValue)}"></td>
             </th:block>
             <td class="govuk-table__cell">
