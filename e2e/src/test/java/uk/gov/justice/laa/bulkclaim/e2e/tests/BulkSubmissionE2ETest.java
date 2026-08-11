@@ -10,7 +10,11 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import uk.gov.justice.laa.bulkclaim.e2e.base.BaseTest;
-import uk.gov.justice.laa.bulkclaim.e2e.pages.*;
+import uk.gov.justice.laa.bulkclaim.e2e.pages.LandingPagePage;
+import uk.gov.justice.laa.bulkclaim.e2e.pages.SubmissionDetailPage;
+import uk.gov.justice.laa.bulkclaim.e2e.pages.SubmissionErrorsPage;
+import uk.gov.justice.laa.bulkclaim.e2e.pages.UploadBeingCheckedPage;
+import uk.gov.justice.laa.bulkclaim.e2e.pages.UploadPage;
 
 public class BulkSubmissionE2ETest extends BaseTest {
 
