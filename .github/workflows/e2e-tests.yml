@@ -174,7 +174,6 @@ jobs:
           docker logs oidc > logs/oidc.log 2>&1 || true
           cat pf-8095.log > logs/pf-fsp.log 2>&1 || true
           cat pf-8186.log > logs/pf-pda.log 2>&1 || true
-          echo "sds_value=${{ vars.SDS_API_URL }}"
 
       - name: Upload logs
         if: always()
