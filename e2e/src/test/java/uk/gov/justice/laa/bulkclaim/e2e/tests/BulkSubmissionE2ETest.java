@@ -30,7 +30,7 @@ public class BulkSubmissionE2ETest extends BaseTest {
 
     upload.getContinueButton().click();
 
-    var uploadBeingChecked = new UploadBeingCheckedPage(page);
+    new UploadBeingCheckedPage(page);
 
     var submissionDetailPage = new SubmissionDetailPage(page);
     submissionDetailPage.assertSubmissionAccepted();
