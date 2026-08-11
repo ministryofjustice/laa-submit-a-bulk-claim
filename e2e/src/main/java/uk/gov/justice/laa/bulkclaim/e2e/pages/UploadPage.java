@@ -28,7 +28,6 @@ public class UploadPage extends BasePage {
   }
 
   public void uploadFile(Path filePath) {
-    page.onFileChooser(fileChooser -> fileChooser.setFiles(filePath));
-    page.locator(".govuk-drop-zone").click();
+    fileInput.setInputFiles(filePath);
   }
 }
