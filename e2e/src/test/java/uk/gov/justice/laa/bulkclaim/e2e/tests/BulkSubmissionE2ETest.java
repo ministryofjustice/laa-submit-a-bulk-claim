@@ -30,8 +30,6 @@ public class BulkSubmissionE2ETest extends BaseTest {
 
     upload.getContinueButton().click();
 
-    new UploadBeingCheckedPage(page);
-
     var submissionDetailPage = new SubmissionDetailPage(page);
     submissionDetailPage.assertSubmissionAccepted();
   }
@@ -47,8 +45,6 @@ public class BulkSubmissionE2ETest extends BaseTest {
     upload.uploadFile(csvPath);
 
     upload.getContinueButton().click();
-
-    new UploadBeingCheckedPage(page);
 
     var submissionErrorsPage = new SubmissionErrorsPage(page);
     assertThat(submissionErrorsPage.getFailureBanner()).isVisible();
