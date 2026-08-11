@@ -152,6 +152,7 @@ class SubmissionDetailsSummaryViewTest extends SubmissionDetailsViewTestBase {
         .thenReturn(new SubmissionClaimsDetails(List.of(), pagination, new BigDecimal("123.45")));
     when(submissionMessagesBuilder.build(any(), any(), any(), anyInt(), anyInt(), any()))
         .thenReturn(new MessagesSummary(List.of(), 0, 0, pagination, MessagesSource.CLAIM));
+    when(submissionMatterStartsDetailsBuilder.build(any())).thenReturn(List.of());
     return renderDocument();
   }
 
@@ -199,6 +200,7 @@ class SubmissionDetailsSummaryViewTest extends SubmissionDetailsViewTestBase {
                 2,
                 pagination,
                 MessagesSource.CLAIM));
+    when(submissionMatterStartsDetailsBuilder.build(any())).thenReturn(List.of());
     return renderDocument();
   }
 }

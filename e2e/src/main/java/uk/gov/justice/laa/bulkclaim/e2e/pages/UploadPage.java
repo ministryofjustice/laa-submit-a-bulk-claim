@@ -3,6 +3,7 @@ package uk.gov.justice.laa.bulkclaim.e2e.pages;
 import static com.microsoft.playwright.options.AriaRole.BUTTON;
 import static com.microsoft.playwright.options.AriaRole.LINK;
 
+import com.microsoft.playwright.FileChooser;
 import com.microsoft.playwright.Locator;
 import com.microsoft.playwright.Page;
 import java.nio.file.Path;
@@ -28,6 +29,7 @@ public class UploadPage extends BasePage {
   }
 
   public void uploadFile(Path filePath) {
-    fileInput.setInputFiles(filePath);
+    FileChooser fileChooser = page.waitForFileChooser(() -> page.locator(".govuk-drop-zone").click());
+    fileChooser.setFiles(filePath);
   }
 }
