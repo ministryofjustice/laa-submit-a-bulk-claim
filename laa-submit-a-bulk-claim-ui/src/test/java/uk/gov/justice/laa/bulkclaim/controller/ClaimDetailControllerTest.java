@@ -2,9 +2,6 @@ package uk.gov.justice.laa.bulkclaim.controller;
 
 import static java.util.Collections.singletonList;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -13,9 +10,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static uk.gov.justice.laa.bulkclaim.constants.SessionConstants.CLAIM_ID;
 import static uk.gov.justice.laa.bulkclaim.constants.SessionConstants.SUBMISSION_ID;
 
-import java.math.BigDecimal;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -40,15 +35,13 @@ import uk.gov.justice.laa.bulkclaim.dto.submission.messages.MessagesSummary;
 import uk.gov.justice.laa.bulkclaim.helper.TestObjectCreator;
 import uk.gov.justice.laa.bulkclaim.mapper.ClaimFeeCalculationBreakdownMapper;
 import uk.gov.justice.laa.bulkclaim.mapper.ClaimSummaryMapper;
+import uk.gov.justice.laa.bulkclaim.service.ClaimService;
+import uk.gov.justice.laa.bulkclaim.service.claimdetail.ClaimDetailPageData;
 import uk.gov.justice.laa.bulkclaim.service.claimdetail.ClaimDetailView;
 import uk.gov.justice.laa.bulkclaim.service.claimdetail.ClaimDetailViewFactory;
 import uk.gov.justice.laa.bulkclaim.util.ThymeleafHrefUtils;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.AreaOfLaw;
-import uk.gov.justice.laa.dstew.payments.claimsdata.model.AssessmentGet;
-import uk.gov.justice.laa.dstew.payments.claimsdata.model.ClaimHistoryResultSet;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.ClaimResponse;
-import uk.gov.justice.laa.dstew.payments.claimsdata.model.ClaimResponseV2;
-import uk.gov.justice.laa.dstew.payments.claimsdata.model.DerivedClaimStatus;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionResponse;
 
 @WebMvcTest(ClaimDetailController.class)
@@ -64,6 +57,7 @@ class ClaimDetailControllerTest extends BaseControllerTest {
   @MockitoBean private ClaimSummaryMapper claimSummaryMapper;
   @MockitoBean private ClaimFeeCalculationBreakdownMapper claimFeeCalculationBreakdownMapper;
   @MockitoBean private SubmissionMessagesBuilder submissionMessagesBuilder;
+  @MockitoBean private ClaimService claimService;
   @MockitoBean private ClaimDetailViewFactory claimDetailViewFactory;
   @MockitoBean private ClaimStatusBannerBuilder claimStatusBannerBuilder;
   @MockitoBean private LatestAssessmentResolver latestAssessmentResolver;
@@ -185,28 +179,20 @@ class ClaimDetailControllerTest extends BaseControllerTest {
     private final UUID submissionId = UUID.fromString("244fcb9f-50ab-4af8-b635-76bd30e0e97d");
 
     private void stubCommonDependencies() {
-      when(dataClaimsRestClient.getClaimHistory(eq(claimId), any()))
-          .thenReturn(Mono.just(ClaimHistoryResultSet.builder().events(List.of()).build()));
-      when(claimStatusBannerBuilder.build(any(), any())).thenReturn(Optional.empty());
-      when(claimDetailViewFactory.build(any(), any()))
+      when(claimService.getClaimDetailPageData(submissionId, claimId))
           .thenReturn(
-              new ClaimDetailView.CrimeLower(
-                  CrimeLowerClaimDetails.builder().build(), List.of(), List.of()));
+              new ClaimDetailPageData(
+                  "271219/000",
+                  false,
+                  new ClaimDetailView.CrimeLower(
+                      CrimeLowerClaimDetails.builder().build(), List.of(), List.of()),
+                  null));
     }
 
     @Test
-    @DisplayName(
-        "Should resolve and pass the latest assessment when the claim is AMENDED or ASSESSED")
-    void shouldResolveAssessmentWhenCurrentCalculatedIsShown() {
+    @DisplayName("Should return the template provided by claim service")
+    void shouldReturnTemplateFromClaimService() {
       stubCommonDependencies();
-      ClaimResponseV2 claimResponse = TestObjectCreator.buildClaimResponseV2(AreaOfLaw.CRIME_LOWER);
-      claimResponse.setDerivedClaimStatus(DerivedClaimStatus.ASSESSED);
-      when(dataClaimsRestClientV2.getSubmissionClaim(submissionId, claimId))
-          .thenReturn(Mono.just(claimResponse));
-
-      AssessmentGet assessment = new AssessmentGet().fixedFeeAmount(new BigDecimal("50.00"));
-      when(latestAssessmentResolver.resolveLatestNonVoid(claimId))
-          .thenReturn(Optional.of(assessment));
 
       assertThat(
               mockMvc.perform(
@@ -214,20 +200,21 @@ class ClaimDetailControllerTest extends BaseControllerTest {
                       .with(oidcLogin().oidcUser(ControllerTestHelper.getOidcUser()))
                       .sessionAttr(SUBMISSION_ID, submissionId)
                       .sessionAttr(CLAIM_ID, claimId)))
-          .hasStatusOk();
+          .hasStatusOk()
+          .hasViewName("pages/view-claim-detail-crime-lower");
 
-      verify(latestAssessmentResolver, times(1)).resolveLatestNonVoid(claimId);
-      verify(claimDetailViewFactory, times(1)).build(claimResponse, assessment);
+      verify(claimService, times(1)).getClaimDetailPageData(submissionId, claimId);
     }
 
     @Test
-    @DisplayName("Should not resolve an assessment when the claim is neither AMENDED nor ASSESSED")
-    void shouldNotResolveAssessmentWhenCurrentCalculatedIsHidden() {
+    @DisplayName("Should include warnings from the submission messages builder")
+    void shouldIncludeWarningsFromSubmissionMessagesBuilder() {
       stubCommonDependencies();
-      ClaimResponseV2 claimResponse = TestObjectCreator.buildClaimResponseV2(AreaOfLaw.CRIME_LOWER);
-      claimResponse.setDerivedClaimStatus(DerivedClaimStatus.READY_TO_PROCESS);
-      when(dataClaimsRestClientV2.getSubmissionClaim(submissionId, claimId))
-          .thenReturn(Mono.just(claimResponse));
+      when(submissionMessagesBuilder.buildAllWarnings(submissionId, claimId))
+          .thenReturn(
+              MessagesSummary.builder()
+                  .messages(singletonList(MessageRow.builder().message("A warning").build()))
+                  .build());
 
       assertThat(
               mockMvc.perform(
@@ -235,10 +222,8 @@ class ClaimDetailControllerTest extends BaseControllerTest {
                       .with(oidcLogin().oidcUser(ControllerTestHelper.getOidcUser()))
                       .sessionAttr(SUBMISSION_ID, submissionId)
                       .sessionAttr(CLAIM_ID, claimId)))
-          .hasStatusOk();
-
-      verify(latestAssessmentResolver, never()).resolveLatestNonVoid(any());
-      verify(claimDetailViewFactory, times(1)).build(claimResponse, null);
+          .hasStatusOk()
+          .hasViewName("pages/view-claim-detail-crime-lower");
     }
   }
 }

@@ -38,13 +38,14 @@ public record ClaimFieldRow(Object reported, Object initialCalculated, Object cu
   }
 
   private static Object display(Object value) {
-    try{
+    try {
 
-    return value instanceof Boolean bool
-        ? (bool ? "Yes" : "No")
-        : "£"
-            + BigDecimal.valueOf(((Number) value).doubleValue()).setScale(2, RoundingMode.HALF_UP);
-    }catch (Exception e){
+      return value instanceof Boolean bool
+          ? (bool ? "Yes" : "No")
+          : "£"
+              + BigDecimal.valueOf(((Number) value).doubleValue())
+                  .setScale(2, RoundingMode.HALF_UP);
+    } catch (Exception e) {
       log.error("Error displaying value for ({})", value, e);
       return NOT_APPLICABLE;
     }

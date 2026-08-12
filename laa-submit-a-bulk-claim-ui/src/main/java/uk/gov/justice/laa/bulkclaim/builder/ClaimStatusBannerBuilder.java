@@ -6,13 +6,13 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import org.springframework.stereotype.Component;
+import lombok.experimental.UtilityClass;
 import uk.gov.justice.laa.bulkclaim.dto.submission.claim.viewmodels.ClaimStatusBanner;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.ClaimHistoryEvent;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.ClaimHistoryEventType;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.DerivedClaimStatus;
 
-@Component
+@UtilityClass
 public class ClaimStatusBannerBuilder {
 
   private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("dd/MM/yyyy");
@@ -24,7 +24,7 @@ public class ClaimStatusBannerBuilder {
           DerivedClaimStatus.ASSESSED, ClaimHistoryEventType.ASSESSMENT,
           DerivedClaimStatus.AMENDED, ClaimHistoryEventType.AMENDMENT);
 
-  public Optional<ClaimStatusBanner> build(
+  public static Optional<ClaimStatusBanner> build(
       DerivedClaimStatus derivedClaimStatus, List<ClaimHistoryEvent> historyEvents) {
     ClaimHistoryEventType matchingEventType = BANNER_EVENT_TYPES.get(derivedClaimStatus);
     if (matchingEventType == null) {

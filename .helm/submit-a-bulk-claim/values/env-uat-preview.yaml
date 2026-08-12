@@ -121,6 +121,11 @@ env:
       configMapKeyRef:
         name: feature-flags
         key: is-alternative-claim-view-enabled
+  - name: IS_UPDATED_CALCULATED_VALUE_AVAILABLE
+    valueFrom:
+      configMapKeyRef:
+        name: feature-flags
+        key: is-updated-calculated-value-available
   - name: OUTAGE_BANNER_DISABLE_AT_TIMESTAMP
     valueFrom:
       configMapKeyRef:

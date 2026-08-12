@@ -58,8 +58,6 @@ public enum LegalHelpClaimDetailsViewField implements ClaimViewField<LegalHelpCl
   CMRH_TELEPHONE(
       d -> new ClaimFieldRow(null, d.initialCalculatedCmrhTelephone()),
       AssessmentGet::getBoltOnCmrhTelephoneFee),
-  // No accessor exists anywhere on AssessmentGet for London rate - see the "Not applicable" note
-  // on VALUE_ROWS below, the same reasoning applies to Current Calculated.
   LONDON_RATE(d -> new ClaimFieldRow(null, d.initialLondonRateIndicator())),
   HOME_OFFICE_INTERVIEW(
       d -> new ClaimFieldRow(null, d.initialCalculatedHomeOfficeInterview()),
@@ -77,9 +75,6 @@ public enum LegalHelpClaimDetailsViewField implements ClaimViewField<LegalHelpCl
       d -> new ClaimFieldRow(null, d.initialCalculatedTotalIncludingVat()),
       AssessmentGet::getAllowedTotalInclVat);
 
-  // "London rate" is omitted entirely - BC-523 marks it "Not applicable" for both Reported and
-  // Initial calculated, and no accessor exists anywhere in ClaimResponseV2/FeeCalculationPatch/
-  // BoltOnPatch to source it from. See ticket Comments.
   public static final List<LegalHelpClaimDetailsViewField> VALUE_ROWS =
       List.of(
           FIXED_FEE,

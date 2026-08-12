@@ -3,7 +3,6 @@ package uk.gov.justice.laa.bulkclaim.controller;
 import static uk.gov.justice.laa.bulkclaim.constants.SessionConstants.CLAIM_ID;
 import static uk.gov.justice.laa.bulkclaim.constants.SessionConstants.SUBMISSION_ID;
 
-import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -16,25 +15,17 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.SessionAttributes;
 import org.springframework.web.util.UriComponentsBuilder;
-import uk.gov.justice.laa.bulkclaim.builder.ClaimStatusBannerBuilder;
-import uk.gov.justice.laa.bulkclaim.builder.LatestAssessmentResolver;
 import uk.gov.justice.laa.bulkclaim.builder.SubmissionMessagesBuilder;
 import uk.gov.justice.laa.bulkclaim.client.DataClaimsRestClient;
-import uk.gov.justice.laa.bulkclaim.client.DataClaimsRestClientV2;
 import uk.gov.justice.laa.bulkclaim.config.FeatureFlagsConfig;
 import uk.gov.justice.laa.bulkclaim.constants.ViewSubmissionNavigationTab;
 import uk.gov.justice.laa.bulkclaim.dto.submission.messages.MessagesSummary;
 import uk.gov.justice.laa.bulkclaim.exception.SubmitBulkClaimException;
 import uk.gov.justice.laa.bulkclaim.mapper.ClaimFeeCalculationBreakdownMapper;
 import uk.gov.justice.laa.bulkclaim.mapper.ClaimSummaryMapper;
-import uk.gov.justice.laa.bulkclaim.service.claimdetail.ClaimDetailView;
-import uk.gov.justice.laa.bulkclaim.service.claimdetail.ClaimDetailViewFactory;
-import uk.gov.justice.laa.dstew.payments.claimsdata.model.AssessmentGet;
-import uk.gov.justice.laa.dstew.payments.claimsdata.model.ClaimHistoryEvent;
-import uk.gov.justice.laa.dstew.payments.claimsdata.model.ClaimHistoryResultSet;
+import uk.gov.justice.laa.bulkclaim.service.ClaimService;
+import uk.gov.justice.laa.bulkclaim.service.claimdetail.ClaimDetailPageData;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.ClaimResponse;
-import uk.gov.justice.laa.dstew.payments.claimsdata.model.ClaimResponseV2;
-import uk.gov.justice.laa.dstew.payments.claimsdata.model.DerivedClaimStatus;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionResponse;
 
 @Slf4j
@@ -44,14 +35,11 @@ import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionResponse;
 public final class ClaimDetailController {
 
   private final DataClaimsRestClient dataClaimsRestClient;
-  private final DataClaimsRestClientV2 dataClaimsRestClientV2;
   private final ClaimSummaryMapper claimSummaryMapper;
   private final ClaimFeeCalculationBreakdownMapper claimFeeCalculationBreakdownMapper;
   private final SubmissionMessagesBuilder submissionMessagesBuilder;
   private final FeatureFlagsConfig featureFlagsConfig;
-  private final ClaimDetailViewFactory claimDetailViewFactory;
-  private final ClaimStatusBannerBuilder claimStatusBannerBuilder;
-  private final LatestAssessmentResolver latestAssessmentResolver;
+  private final ClaimService claimService;
 
   @GetMapping("/submission/claim/{claimReference}")
   public String getClaimDetail(
@@ -148,46 +136,16 @@ public final class ClaimDetailController {
             .buildAndExpand(submissionId)
             .toUriString());
 
-    ClaimResponseV2 claimResponse =
-        dataClaimsRestClientV2
-            .getSubmissionClaim(submissionId, claimId)
-            .blockOptional()
-            .orElseThrow(
-                () ->
-                    new SubmitBulkClaimException(
-                        "Claim %s does not exist for submission %s"
-                            .formatted(claimId.toString(), submissionId.toString())));
-
-    model.addAttribute("ufn", claimResponse.getUniqueFileNumber());
-
-    DerivedClaimStatus derivedClaimStatus = claimResponse.getDerivedClaimStatus();
-    boolean showCurrentCalculated =
-        derivedClaimStatus == DerivedClaimStatus.AMENDED
-            || derivedClaimStatus == DerivedClaimStatus.ASSESSED;
-    model.addAttribute("showCurrentCalculated", showCurrentCalculated);
-
-    AssessmentGet currentAssessment =
-        showCurrentCalculated
-            ? latestAssessmentResolver.resolveLatestNonVoid(claimId).orElse(null)
-            : null;
-
-    ClaimDetailView claimDetailView =
-        claimDetailViewFactory.build(claimResponse, currentAssessment);
-    model.addAttribute("claimDetailView", claimDetailView);
-
-    List<ClaimHistoryEvent> historyEvents =
-        dataClaimsRestClient
-            .getClaimHistory(claimId, null)
-            .map(ClaimHistoryResultSet::getEvents)
-            .blockOptional()
-            .orElseGet(List::of);
-    model.addAttribute(
-        "banner", claimStatusBannerBuilder.build(derivedClaimStatus, historyEvents).orElse(null));
-
     final MessagesSummary messagesSummary =
         submissionMessagesBuilder.buildAllWarnings(submissionId, claimId);
     model.addAttribute("claimMessages", messagesSummary);
 
-    return claimDetailView.template();
+    ClaimDetailPageData pageData = claimService.getClaimDetailPageData(submissionId, claimId);
+    model.addAttribute("ufn", pageData.ufn());
+    model.addAttribute("showCurrentCalculated", pageData.showCurrentCalculated());
+    model.addAttribute("claimDetailView", pageData.claimDetailView());
+    model.addAttribute("banner", pageData.banner());
+
+    return pageData.claimDetailView().template();
   }
 }

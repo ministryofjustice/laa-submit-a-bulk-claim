@@ -32,6 +32,8 @@ import uk.gov.justice.laa.bulkclaim.dto.submission.messages.MessagesSummary;
 import uk.gov.justice.laa.bulkclaim.helper.TestObjectCreator;
 import uk.gov.justice.laa.bulkclaim.mapper.ClaimFeeCalculationBreakdownMapper;
 import uk.gov.justice.laa.bulkclaim.mapper.ClaimSummaryMapper;
+import uk.gov.justice.laa.bulkclaim.service.ClaimService;
+import uk.gov.justice.laa.bulkclaim.service.claimdetail.ClaimDetailPageData;
 import uk.gov.justice.laa.bulkclaim.service.claimdetail.ClaimDetailView;
 import uk.gov.justice.laa.bulkclaim.service.claimdetail.ClaimDetailViewFactory;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.AreaOfLaw;
@@ -48,6 +50,7 @@ class ClaimDetailLegalHelpViewTest extends ViewTestBase {
   @MockitoBean private ClaimSummaryMapper claimSummaryMapper;
   @MockitoBean private ClaimFeeCalculationBreakdownMapper claimFeeCalculationBreakdownMapper;
   @MockitoBean private SubmissionMessagesBuilder submissionMessagesBuilder;
+  @MockitoBean private ClaimService claimService;
   @MockitoBean private ClaimDetailViewFactory claimDetailViewFactory;
   @MockitoBean private ClaimStatusBannerBuilder claimStatusBannerBuilder;
   @MockitoBean private LatestAssessmentResolver latestAssessmentResolver;
@@ -90,19 +93,24 @@ class ClaimDetailLegalHelpViewTest extends ViewTestBase {
     ClaimResponseV2 claimResponse = TestObjectCreator.buildClaimResponseV2(AreaOfLaw.LEGAL_HELP);
     claimResponse.setDerivedClaimStatus(derivedClaimStatus);
 
-    when(dataClaimsRestClientV2.getSubmissionClaim(submissionId, claimId))
-        .thenReturn(Mono.just(claimResponse));
-
     List<ClaimValueRow> valueRows =
         List.of(new ClaimValueRow("Fixed fee", new ClaimFieldRow(null, new BigDecimal("239.00"))));
     List<ClaimValueRow> totalRows =
         List.of(
             new ClaimValueRow(
                 "Total including VAT", new ClaimFieldRow(null, new BigDecimal("12.00"))));
-    when(claimDetailViewFactory.build(eq(claimResponse), any()))
-        .thenReturn(new ClaimDetailView.LegalHelp(details, valueRows, totalRows));
-
-    when(claimStatusBannerBuilder.build(derivedClaimStatus, List.of())).thenReturn(banner);
+    ClaimDetailView.LegalHelp claimDetailView =
+        new ClaimDetailView.LegalHelp(details, valueRows, totalRows);
+    boolean showCurrentCalculated =
+        derivedClaimStatus == DerivedClaimStatus.AMENDED
+            || derivedClaimStatus == DerivedClaimStatus.ASSESSED;
+    when(claimService.getClaimDetailPageData(submissionId, claimId))
+        .thenReturn(
+            new ClaimDetailPageData(
+                claimResponse.getUniqueFileNumber(),
+                showCurrentCalculated,
+                claimDetailView,
+                banner.orElse(null)));
   }
 
   @Test
@@ -134,7 +142,7 @@ class ClaimDetailLegalHelpViewTest extends ViewTestBase {
 
     assertThat(doc.getElementById("claim-status-banner")).isNotNull();
     assertThat(doc.getElementById("claim-status-banner").text())
-        .contains("This claim has been Amended. Last edited on 01/02/2026 at 10:00");
+        .contains("This claim has been Amended Last edited on 01/02/2026 at 10:00");
 
     var values = getSummaryListInCard(doc, "Values");
     assertThat(values.getFirst()).hasSize(4);
@@ -150,7 +158,7 @@ class ClaimDetailLegalHelpViewTest extends ViewTestBase {
     Document doc = renderDocument();
 
     assertThat(doc.getElementById("claim-status-banner").text())
-        .contains("This claim has been Assessed. Last edited on 02/02/2026 at 11:00");
+        .contains("This claim has been Assessed Last edited on 02/02/2026 at 11:00");
 
     var totals = getSummaryListInCard(doc, "Total allowed value");
     assertThat(totals.getFirst()).hasSize(4);
@@ -166,7 +174,7 @@ class ClaimDetailLegalHelpViewTest extends ViewTestBase {
     Document doc = renderDocument();
 
     assertThat(doc.getElementById("claim-status-banner").text())
-        .contains("This claim has been Voided. Last edited on 03/02/2026 at 12:00");
+        .contains("This claim has been Voided Last edited on 03/02/2026 at 12:00");
 
     var values = getSummaryListInCard(doc, "Values");
     assertThat(values.getFirst()).hasSize(3);
