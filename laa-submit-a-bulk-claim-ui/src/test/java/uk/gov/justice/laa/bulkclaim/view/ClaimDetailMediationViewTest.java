@@ -1,7 +1,6 @@
 package uk.gov.justice.laa.bulkclaim.view;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 import static uk.gov.justice.laa.bulkclaim.constants.SessionConstants.CLAIM_ID;
@@ -80,7 +79,7 @@ class ClaimDetailMediationViewTest extends ViewTestBase {
             .caseConcludedDate("2025-02-01")
             .build();
 
-    when(dataClaimsRestClient.getClaimHistory(eq(claimId), any()))
+    when(dataClaimsRestClient.getClaimHistory(eq(claimId)))
         .thenReturn(Mono.just(ClaimHistoryResultSet.builder().events(List.of()).build()));
     when(submissionMessagesBuilder.buildAllWarnings(submissionId, claimId))
         .thenReturn(MessagesSummary.builder().messages(List.of()).build());

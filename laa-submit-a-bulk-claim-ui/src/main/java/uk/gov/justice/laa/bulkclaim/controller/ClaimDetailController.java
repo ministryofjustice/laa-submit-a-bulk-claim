@@ -136,15 +136,15 @@ public final class ClaimDetailController {
             .buildAndExpand(submissionId)
             .toUriString());
 
-    final MessagesSummary messagesSummary =
-        submissionMessagesBuilder.buildAllWarnings(submissionId, claimId);
-    model.addAttribute("claimMessages", messagesSummary);
-
-    ClaimDetailPageData pageData = claimService.getClaimDetailPageData(submissionId, claimId);
+    final ClaimDetailPageData pageData = claimService.getClaimDetailPageData(submissionId, claimId);
     model.addAttribute("ufn", pageData.ufn());
     model.addAttribute("showCurrentCalculated", pageData.showCurrentCalculated());
     model.addAttribute("claimDetailView", pageData.claimDetailView());
     model.addAttribute("banner", pageData.banner());
+
+    final MessagesSummary messagesSummary =
+        submissionMessagesBuilder.buildAllWarnings(submissionId, claimId);
+    model.addAttribute("claimMessages", messagesSummary);
 
     return pageData.claimDetailView().template();
   }

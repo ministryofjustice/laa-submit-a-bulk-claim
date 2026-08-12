@@ -118,9 +118,7 @@ public interface DataClaimsRestClient {
       @RequestBody SubmissionPost submission);
 
   @GetExchange(value = "/claims/{claim-id}/history")
-  Mono<ClaimHistoryResultSet> getClaimHistory(
-      @PathVariable("claim-id") UUID claimId,
-      @RequestParam(value = "limit", required = false) Integer limit);
+  Mono<ClaimHistoryResultSet> getClaimHistory(@PathVariable("claim-id") UUID claimId);
 
   @GetExchange(value = "/claims/{claim-id}/assessments")
   Mono<AssessmentResultSet> getClaimAssessments(

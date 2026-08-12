@@ -54,7 +54,7 @@ public class ClaimService {
 
     List<ClaimHistoryEvent> historyEvents =
         dataClaimsRestClient
-            .getClaimHistory(claimId, null)
+            .getClaimHistory(claimId)
             .map(ClaimHistoryResultSet::getEvents)
             .blockOptional()
             .orElseGet(List::of);

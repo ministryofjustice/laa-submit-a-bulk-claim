@@ -1041,7 +1041,7 @@ class DataClaimsRestClientIntegrationTest extends MockServerIntegrationTest {
                   .withBody(expectJson));
 
       // Then
-      ClaimHistoryResultSet block = dataClaimsRestClient.getClaimHistory(claimId, null).block();
+      ClaimHistoryResultSet block = dataClaimsRestClient.getClaimHistory(claimId).block();
       String result = objectMapper.writeValueAsString(block);
       assertThatJsonMatches(expectJson, result);
     }
@@ -1059,8 +1059,7 @@ class DataClaimsRestClientIntegrationTest extends MockServerIntegrationTest {
           .respond(response().withStatusCode(404).withHeader("Content-Type", "application/json"));
 
       // When
-      assertThrows(
-          NotFound.class, () -> dataClaimsRestClient.getClaimHistory(claimId, null).block());
+      assertThrows(NotFound.class, () -> dataClaimsRestClient.getClaimHistory(claimId).block());
     }
   }
 
