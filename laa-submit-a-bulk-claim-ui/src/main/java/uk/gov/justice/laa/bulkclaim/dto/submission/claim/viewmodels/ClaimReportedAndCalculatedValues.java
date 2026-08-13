@@ -10,6 +10,10 @@ public record ClaimReportedAndCalculatedValues(Object reported, Object initialCa
     this.initialCalculated = initialCalculated;
   }
 
+  public ClaimReportedAndCalculatedValues(Object initialCalculated) {
+    this(null, initialCalculated);
+  }
+
   public boolean hasReportedValue() {
     return reported != null;
   }

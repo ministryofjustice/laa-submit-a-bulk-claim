@@ -42,6 +42,9 @@ public final class TestObjectCreator {
         .isVatApplicable(true)
         .detentionTravelWaitingCostsAmount(new BigDecimal("700.70"))
         .jrFormFillingAmount(new BigDecimal("800.80"))
+        .adjournedHearingFeeAmount(12)
+        .cmrhOralCount(13)
+        .cmrhTelephoneCount(14)
         .feeCalculationResponse(
             FeeCalculationPatch.builder()
                 .feeCodeDescription("fee-code-description")

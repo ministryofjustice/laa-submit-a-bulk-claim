@@ -28,7 +28,13 @@ public record LegalHelpClaimDetails(
     BigDecimal reportedDisbursements,
     BigDecimal reportedDisbursementsVat,
     BigDecimal reportedTravelAndWaitingCosts,
+    BigDecimal reportedDetentionTravelWaitingCosts,
+    BigDecimal reportedJrFormFillingAmount,
+    int reportedAdjournedHearingFee,
+    int reportedCmrhOralCount,
+    int reportedCmrhTelephoneCount,
     Boolean reportedVatApplicable,
+    Boolean reportedLondonRateIndicator,
 
     // Values - Initial calculated column
     BigDecimal initialCalculatedFixedFee,
@@ -42,7 +48,6 @@ public record LegalHelpClaimDetails(
     BigDecimal initialCalculatedAdjournedHearingFee,
     BigDecimal initialCalculatedCmrhOral,
     BigDecimal initialCalculatedCmrhTelephone,
-    Boolean initialLondonRateIndicator,
     BigDecimal initialCalculatedHomeOfficeInterview,
     BigDecimal initialCalculatedSubstantiveHearing,
     Boolean initialCalculatedVatIndicator,

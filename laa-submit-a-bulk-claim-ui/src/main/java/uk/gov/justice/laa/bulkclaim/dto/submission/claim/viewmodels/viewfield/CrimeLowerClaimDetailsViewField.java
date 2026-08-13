@@ -26,45 +26,46 @@ public enum CrimeLowerClaimDetailsViewField implements ClaimViewField<CrimeLower
 
   // Values
   FIXED_FEE(
-      d -> new ClaimReportedAndCalculatedValues(null, d.initialCalculatedFixedFee()),
+      claim -> new ClaimReportedAndCalculatedValues(null, claim.initialCalculatedFixedFee()),
       AssessmentGet::getFixedFeeAmount),
   PROFIT_COSTS(
-      d ->
+      claim ->
           new ClaimReportedAndCalculatedValues(
-              d.reportedProfitCosts(), d.initialCalculatedProfitCosts()),
+              claim.reportedProfitCosts(), claim.initialCalculatedProfitCosts()),
       AssessmentGet::getNetProfitCostsAmount),
   DISBURSEMENTS(
-      d ->
+      claim ->
           new ClaimReportedAndCalculatedValues(
-              d.reportedDisbursements(), d.initialCalculatedDisbursements()),
+              claim.reportedDisbursements(), claim.initialCalculatedDisbursements()),
       AssessmentGet::getDisbursementAmount),
   DISBURSEMENTS_VAT(
-      d ->
+      claim ->
           new ClaimReportedAndCalculatedValues(
-              d.reportedDisbursementsVat(), d.initialCalculatedDisbursementsVat()),
+              claim.reportedDisbursementsVat(), claim.initialCalculatedDisbursementsVat()),
       AssessmentGet::getDisbursementVatAmount),
   TRAVEL_COSTS(
-      d ->
+      claim ->
           new ClaimReportedAndCalculatedValues(
-              d.reportedTravelCosts(), d.initialCalculatedTravelCosts()),
+              claim.reportedTravelCosts(), claim.initialCalculatedTravelCosts()),
       AssessmentGet::getNetTravelCostsAmount),
   WAITING_COSTS(
-      d ->
+      claim ->
           new ClaimReportedAndCalculatedValues(
-              d.reportedWaitingCosts(), d.initialCalculatedWaitingCosts()),
+              claim.reportedWaitingCosts(), claim.initialCalculatedWaitingCosts()),
       AssessmentGet::getNetWaitingCostsAmount),
   VAT(
-      d ->
+      claim ->
           new ClaimReportedAndCalculatedValues(
-              d.reportedVatApplicable(), d.initialCalculatedVatIndicator()),
+              claim.reportedVatApplicable(), claim.initialCalculatedVatIndicator()),
       AssessmentGet::getIsVatApplicable),
 
   // Total allowed value
   TOTAL_VAT(
-      d -> new ClaimReportedAndCalculatedValues(null, d.initialCalculatedTotalVat()),
+      claim -> new ClaimReportedAndCalculatedValues(claim.initialCalculatedTotalVat()),
       AssessmentGet::getAllowedTotalVat),
   TOTAL_INCLUDING_VAT(
-      d -> new ClaimReportedAndCalculatedValues(null, d.initialCalculatedTotalIncludingVat()),
+      claim ->
+          new ClaimReportedAndCalculatedValues(claim.initialCalculatedTotalIncludingVat()),
       AssessmentGet::getAllowedTotalInclVat);
 
   private final Function<CrimeLowerClaimDetails, Object> reportedAndCalculatedAccessor;
