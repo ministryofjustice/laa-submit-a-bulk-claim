@@ -5,6 +5,8 @@ import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.anyInt;
 import static org.mockito.Mockito.anyList;
 import static org.mockito.Mockito.eq;
+import static org.mockito.Mockito.isNull;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.justice.laa.bulkclaim.controller.ControllerTestHelper.getOidcUser;
@@ -15,6 +17,7 @@ import java.util.Collections;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -32,8 +35,11 @@ import uk.gov.justice.laa.bulkclaim.dto.submission.search.SubmissionSearchQuery;
 import uk.gov.justice.laa.bulkclaim.util.OidcAttributeUtils;
 import uk.gov.justice.laa.bulkclaim.util.PaginationLinksBuilder;
 import uk.gov.justice.laa.bulkclaim.util.PaginationUtil;
+import uk.gov.justice.laa.bulkclaim.util.SubmissionPeriodUtil;
 import uk.gov.justice.laa.bulkclaim.validation.SubmissionSearchValidator;
+import uk.gov.justice.laa.dstew.payments.claimsdata.model.AreaOfLaw;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.Page;
+import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionStatus;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionsResultSet;
 
 @AutoConfigureMockMvc(addFilters = false)
@@ -48,6 +54,7 @@ class SearchControllerTest {
   @Mock private PaginationLinksBuilder paginationLinksBuilder;
   @Mock private OidcAttributeUtils oidcAttributeUtils;
   @Mock private SessionStatus sessionStatus;
+  @Mock private SubmissionPeriodUtil submissionPeriodUtil;
 
   @InjectMocks private SearchController searchController;
 
@@ -165,5 +172,174 @@ class SearchControllerTest {
             query, model, getOidcUser(), sessionStatus, session);
 
     assertEquals("error", view);
+  }
+
+  @Test
+  @DisplayName("Search GET should not add query to model if already present")
+  void searchShouldNotOverrideQueryIfAlreadyPresent() {
+    when(model.containsAttribute("submissionSearchQuery")).thenReturn(true);
+
+    searchController.search(model, sessionStatus, getOidcUser());
+
+    verify(model, never()).addAttribute(eq("submissionSearchQuery"), any(SubmissionSearchQuery.class));
+  }
+
+  @Nested
+  @DisplayName("API parameter passing")
+  class ApiParameterPassing {
+
+    @Test
+    @DisplayName("Searches with no optional filters when only office is provided")
+    void submissionsSearchResultsPassesNoOptionalFiltersToApi() {
+      when(oidcAttributeUtils.getUserOffices(any())).thenReturn(List.of("1"));
+      mockApiSuccess();
+
+      var query = new SubmissionSearchQuery(0, null, null, null, List.of("1"), null);
+      searchController.submissionsSearchResults(query, model, getOidcUser(), sessionStatus, session);
+
+      verify(claimsRestService)
+          .search(any(), isNull(), isNull(), isNull(), anyInt(), anyInt(), any());
+    }
+
+    @Test
+    @DisplayName("Passes submission period to API")
+    void submissionsSearchResultsPassesSubmissionPeriodToApi() {
+      when(oidcAttributeUtils.getUserOffices(any())).thenReturn(List.of("1"));
+      mockApiSuccess();
+
+      var query = new SubmissionSearchQuery(0, null, "JAN-2024", null, List.of("1"), null);
+      searchController.submissionsSearchResults(query, model, getOidcUser(), sessionStatus, session);
+
+      verify(claimsRestService).search(any(), eq("JAN-2024"), any(), any(), anyInt(), anyInt(), any());
+    }
+
+    @Test
+    @DisplayName("Passes area of law to API")
+    void submissionsSearchResultsPassesAreaOfLawToApi() {
+      when(oidcAttributeUtils.getUserOffices(any())).thenReturn(List.of("1"));
+      mockApiSuccess();
+
+      var query = new SubmissionSearchQuery(0, null, null, CRIME_LOWER, List.of("1"), null);
+      searchController.submissionsSearchResults(query, model, getOidcUser(), sessionStatus, session);
+
+      verify(claimsRestService).search(any(), any(), eq(CRIME_LOWER), any(), anyInt(), anyInt(), any());
+    }
+
+    @Test
+    @DisplayName("Passes submission status to API")
+    void submissionsSearchResultsPassesSubmissionStatusToApi() {
+      when(oidcAttributeUtils.getUserOffices(any())).thenReturn(List.of("1"));
+      mockApiSuccess();
+
+      var query =
+          new SubmissionSearchQuery(0, null, null, null, List.of("1"), SubmissionOutcomeFilter.SUCCEEDED);
+      searchController.submissionsSearchResults(query, model, getOidcUser(), sessionStatus, session);
+
+      verify(claimsRestService)
+          .search(
+              any(),
+              any(),
+              any(),
+              eq(List.of(SubmissionStatus.VALIDATION_SUCCEEDED)),
+              anyInt(),
+              anyInt(),
+              any());
+    }
+
+    @Test
+    @DisplayName("Passes office accounts to API")
+    void submissionsSearchResultsPassesOfficeAccountsToApi() {
+      when(oidcAttributeUtils.getUserOffices(any())).thenReturn(List.of("12345"));
+      mockApiSuccess();
+
+      var query = new SubmissionSearchQuery(0, null, null, null, List.of("12345"), null);
+      searchController.submissionsSearchResults(query, model, getOidcUser(), sessionStatus, session);
+
+      verify(claimsRestService)
+          .search(eq(List.of("12345")), any(), any(), any(), anyInt(), anyInt(), any());
+    }
+
+    @Test
+    @DisplayName("Passes all criteria to API")
+    void submissionsSearchResultsPassesAllCriteriaToApi() {
+      when(oidcAttributeUtils.getUserOffices(any())).thenReturn(List.of("12345"));
+      mockApiSuccess();
+
+      var query =
+          new SubmissionSearchQuery(
+              0, null, "JAN-2024", CRIME_LOWER, List.of("12345"), SubmissionOutcomeFilter.SUCCEEDED);
+      searchController.submissionsSearchResults(query, model, getOidcUser(), sessionStatus, session);
+
+      verify(claimsRestService)
+          .search(
+              eq(List.of("12345")),
+              eq("JAN-2024"),
+              eq(CRIME_LOWER),
+              eq(List.of(SubmissionStatus.VALIDATION_SUCCEEDED)),
+              eq(0),
+              eq(10),
+              any());
+    }
+  }
+
+  @Nested
+  @DisplayName("Office security filtering")
+  class OfficeSecurityFiltering {
+
+    @Test
+    @DisplayName("Strips offices from the query that do not belong to the user")
+    void submissionsSearchResultsFiltersOfficesNotBelongingToUser() {
+      when(oidcAttributeUtils.getUserOffices(any())).thenReturn(List.of("12345", "67890"));
+      mockApiSuccess();
+
+      var query =
+          new SubmissionSearchQuery(
+              0, null, null, null, List.of("12345", "MANIPULATED"), null);
+      searchController.submissionsSearchResults(query, model, getOidcUser(), sessionStatus, session);
+
+      verify(claimsRestService)
+          .search(eq(List.of("12345")), any(), any(), any(), anyInt(), anyInt(), any());
+    }
+
+    @Test
+    @DisplayName("Searches only the offices the user selected, not all their offices")
+    void submissionsSearchResultsUsesOnlySelectedOfficesFromUserOffices() {
+      when(oidcAttributeUtils.getUserOffices(any())).thenReturn(List.of("12345", "67890"));
+      mockApiSuccess();
+
+      var query =
+          new SubmissionSearchQuery(0, null, null, null, List.of("12345"), null);
+      searchController.submissionsSearchResults(query, model, getOidcUser(), sessionStatus, session);
+
+      verify(claimsRestService)
+          .search(eq(List.of("12345")), any(), any(), any(), anyInt(), anyInt(), any());
+    }
+
+    @Test
+    @DisplayName("Searches with empty list when all query offices are not owned by the user")
+    void submissionsSearchResultsSearchesEmptyWhenAllOfficesManipulated() {
+      when(oidcAttributeUtils.getUserOffices(any())).thenReturn(List.of("12345"));
+      mockApiSuccess();
+
+      var query =
+          new SubmissionSearchQuery(0, null, null, null, List.of("MANIPULATED"), null);
+      searchController.submissionsSearchResults(query, model, getOidcUser(), sessionStatus, session);
+
+      verify(claimsRestService)
+          .search(eq(Collections.emptyList()), any(), any(), any(), anyInt(), anyInt(), any());
+    }
+  }
+
+  private void mockApiSuccess() {
+    var response = new SubmissionsResultSet();
+    response.setContent(Collections.emptyList());
+    response.setNumber(0);
+    response.setSize(10);
+    response.setTotalPages(1);
+    response.setTotalElements(0);
+    when(claimsRestService.search(anyList(), any(), any(), any(), anyInt(), anyInt(), any()))
+        .thenReturn(Mono.just(response));
+    when(paginationUtil.fromSubmissionsResultSet(any(), anyInt(), anyInt()))
+        .thenReturn(new Page().totalElements(0));
   }
 }
