@@ -1,6 +1,5 @@
 package uk.gov.justice.laa.bulkclaim.builder;
 
-import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
@@ -25,14 +24,10 @@ public class LatestAssessmentResolver {
     AssessmentResultSet resultSet =
         dataClaimsRestClient
             .getClaimAssessments(claimId, 0, ASSESSMENT_PAGE_SIZE, "createdOn,desc")
-            .blockOptional()
-            .orElse(null);
+            .block();
 
     Optional<AssessmentGet> latestNonVoid =
-        Optional.ofNullable(resultSet)
-            .map(AssessmentResultSet::getAssessments)
-            .orElseGet(List::of)
-            .stream()
+        resultSet.getAssessments().stream()
             .filter(Objects::nonNull)
             .filter(assessment -> assessment.getAssessmentType() != AssessmentType.VOID)
             .findFirst();
