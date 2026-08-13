@@ -50,7 +50,7 @@ restarts=0
 
 while true; do
   echo "[watchdog] starting port-forward for service/${SERVICE_NAME} (${LOCAL_PORT} -> ${REMOTE_PORT})"
-  kubectl port-forward -n "$NAMESPACE" "service/${SERVICE_NAME}" "${LOCAL_PORT}:${REMOTE_PORT}" >"$LOG_FILE" 2>&1 &
+  kubectl port-forward --address 0.0.0.0 -n "$NAMESPACE" "service/${SERVICE_NAME}" "${LOCAL_PORT}:${REMOTE_PORT}" >"$LOG_FILE" 2>&1 &
   PF_PID=$!
 
   if wait_for_local_port; then
