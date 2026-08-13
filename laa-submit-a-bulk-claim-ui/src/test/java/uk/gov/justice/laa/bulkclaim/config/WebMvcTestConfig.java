@@ -5,6 +5,7 @@ import org.mockito.Mockito;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.cache.CacheManager;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Primary;
 import org.springframework.web.client.RestClient;
 import uk.gov.justice.laa.bulkclaim.metrics.BulkClaimMetricService;
 import uk.gov.justice.laa.bulkclaim.util.CurrencyUtil;
@@ -46,6 +47,7 @@ public class WebMvcTestConfig {
     return new BulkClaimMetricService(prometheusRegistry);
   }
 
+  @Primary
   @Bean
   CacheManager cacheManager() {
     return Mockito.mock(CacheManager.class);
