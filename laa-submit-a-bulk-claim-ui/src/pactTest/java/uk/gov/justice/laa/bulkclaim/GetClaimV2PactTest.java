@@ -20,10 +20,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.HttpHeaders;
 import org.springframework.web.reactive.function.client.WebClientResponseException.NotFound;
-import uk.gov.justice.laa.bulkclaim.client.DataClaimsRestClient;
 import uk.gov.justice.laa.bulkclaim.client.DataClaimsRestClientV2;
 import uk.gov.justice.laa.bulkclaim.config.ClaimsApiPactTestConfig;
-import uk.gov.justice.laa.dstew.payments.claimsdata.model.ClaimResponse;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.ClaimResponseV2;
 
 /**
@@ -56,8 +54,7 @@ import uk.gov.justice.laa.dstew.payments.claimsdata.model.ClaimResponseV2;
 @DisplayName("GET: /api/v1/submissions/{}/claims/{} PACT tests")
 public final class GetClaimV2PactTest extends AbstractPactTest {
 
-  @Autowired
-  DataClaimsRestClientV2 dataClaimsRestClient;
+  @Autowired DataClaimsRestClientV2 dataClaimsRestClient;
 
   @SneakyThrows
   @Pact(consumer = CONSUMER)

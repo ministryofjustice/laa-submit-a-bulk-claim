@@ -7,15 +7,15 @@ import java.math.BigDecimal;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.context.support.StaticMessageSource;
 import uk.gov.justice.laa.bulkclaim.dto.submission.claim.viewmodels.ClaimFieldRow;
-import uk.gov.justice.laa.bulkclaim.dto.submission.claim.viewmodels.ClaimValueRow;
 import uk.gov.justice.laa.bulkclaim.dto.submission.claim.viewmodels.CrimeLowerClaimDetails;
 import uk.gov.justice.laa.bulkclaim.dto.submission.claim.viewmodels.viewfield.CrimeLowerClaimDetailsViewField;
 import uk.gov.justice.laa.bulkclaim.helper.TestObjectCreator;
 import uk.gov.justice.laa.bulkclaim.mapper.CrimeLowerClaimDetailsMapperImpl;
 import uk.gov.justice.laa.bulkclaim.mapper.LegalHelpClaimDetailsMapperImpl;
 import uk.gov.justice.laa.bulkclaim.mapper.MediationClaimDetailsMapperImpl;
+import uk.gov.justice.laa.bulkclaim.viewmodels.claimcase.ClaimDetailView;
+import uk.gov.justice.laa.bulkclaim.viewmodels.claimcase.ClaimDetailViewFactory;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.AreaOfLaw;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.AssessmentGet;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.ClaimResponseV2;
@@ -27,8 +27,7 @@ class ClaimDetailViewFactoryTest {
       new ClaimDetailViewFactory(
           new CrimeLowerClaimDetailsMapperImpl(),
           new LegalHelpClaimDetailsMapperImpl(),
-          new MediationClaimDetailsMapperImpl(),
-          new StaticMessageSource());
+          new MediationClaimDetailsMapperImpl());
 
   @Test
   @DisplayName("Should dispatch a CRIME_LOWER claim to the crime lower view")
@@ -86,7 +85,10 @@ class ClaimDetailViewFactoryTest {
     CrimeLowerClaimDetails details = result.details();
 
     ClaimFieldRow fixedFeeRow =
-        (ClaimFieldRow) CrimeLowerClaimDetailsViewField.FIXED_FEE.getAccessor().apply(details);
+        (ClaimFieldRow)
+            CrimeLowerClaimDetailsViewField.FIXED_FEE
+                .getReportedAndCalculatedAccessor()
+                .apply(details);
 
     assertThat(fixedFeeRow.hasReportedValue()).isFalse();
     assertThat(fixedFeeRow.getReportedDisplay()).isEqualTo(ClaimFieldRow.NOT_APPLICABLE);

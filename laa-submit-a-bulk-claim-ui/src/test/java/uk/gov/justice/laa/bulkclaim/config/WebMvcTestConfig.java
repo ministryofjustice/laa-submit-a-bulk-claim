@@ -8,8 +8,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Primary;
 import org.springframework.web.client.RestClient;
 import uk.gov.justice.laa.bulkclaim.metrics.BulkClaimMetricService;
-import uk.gov.justice.laa.bulkclaim.util.CurrencyUtil;
-import uk.gov.justice.laa.bulkclaim.util.DateTimeUtil;
 import uk.gov.justice.laa.bulkclaim.util.DateWrapperUtil;
 import uk.gov.justice.laa.bulkclaim.util.ThymeleafHrefUtils;
 
@@ -19,22 +17,6 @@ public class WebMvcTestConfig {
   @Bean
   RestClient.Builder restClientBuilder() {
     return RestClient.builder();
-  }
-
-  /**
-   * Creates a CurrencyUtil bean. Ensuring bean is named correctly due to its usage in thymeleaf.
-   */
-  @Bean(name = "currencyUtil")
-  CurrencyUtil currencyUtil() {
-    return new CurrencyUtil();
-  }
-
-  /**
-   * Creates a DateTimeUtil bean. Ensuring bean is named correctly due to its usage in thymeleaf.
-   */
-  @Bean(name = "dateTimeUtil")
-  DateTimeUtil dateTimeUtil() {
-    return new DateTimeUtil();
   }
 
   @Bean

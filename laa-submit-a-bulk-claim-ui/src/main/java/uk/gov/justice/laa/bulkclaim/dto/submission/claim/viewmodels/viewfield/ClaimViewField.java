@@ -11,10 +11,10 @@ public interface ClaimViewField<T> {
 
   String name();
 
-  Function<T, Object> getAccessor();
+  Function<T, Object> getReportedAndCalculatedAccessor();
 
   /** Reads this field's Current Calculated value from the latest assessment, where applicable. */
-  default Function<AssessmentGet, Object> getAssessmentAccessor() {
+  default Function<AssessmentGet, Object> getCurrentCalculatedAccessor() {
     return null;
   }
 

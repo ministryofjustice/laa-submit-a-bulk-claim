@@ -17,7 +17,10 @@ class LegalHelpClaimDetailsViewFieldTest {
   void shouldReadSummaryValue() {
     LegalHelpClaimDetails details = LegalHelpClaimDetails.builder().clientForename("Jane").build();
 
-    Object value = LegalHelpClaimDetailsViewField.CLIENT_FORENAME.getAccessor().apply(details);
+    Object value =
+        LegalHelpClaimDetailsViewField.CLIENT_FORENAME
+            .getReportedAndCalculatedAccessor()
+            .apply(details);
 
     assertThat(value).isEqualTo("Jane");
   }
@@ -31,7 +34,10 @@ class LegalHelpClaimDetailsViewFieldTest {
             .initialCalculatedProfitCosts(new BigDecimal("110.00"))
             .build();
 
-    Object value = LegalHelpClaimDetailsViewField.PROFIT_COSTS.getAccessor().apply(details);
+    Object value =
+        LegalHelpClaimDetailsViewField.PROFIT_COSTS
+            .getReportedAndCalculatedAccessor()
+            .apply(details);
 
     assertThat(value).isInstanceOf(ClaimFieldRow.class);
     ClaimFieldRow row = (ClaimFieldRow) value;
@@ -47,7 +53,10 @@ class LegalHelpClaimDetailsViewFieldTest {
         LegalHelpClaimDetails.builder().initialCalculatedFixedFee(new BigDecimal("50.00")).build();
 
     ClaimFieldRow row =
-        (ClaimFieldRow) LegalHelpClaimDetailsViewField.FIXED_FEE.getAccessor().apply(details);
+        (ClaimFieldRow)
+            LegalHelpClaimDetailsViewField.FIXED_FEE
+                .getReportedAndCalculatedAccessor()
+                .apply(details);
 
     assertThat(row.hasReportedValue()).isFalse();
     assertThat(row.getReportedDisplay()).isEqualTo(ClaimFieldRow.NOT_APPLICABLE);
@@ -97,7 +106,7 @@ class LegalHelpClaimDetailsViewFieldTest {
 
     Object value =
         LegalHelpClaimDetailsViewField.TRAVEL_AND_WAITING_COSTS
-            .getAssessmentAccessor()
+            .getCurrentCalculatedAccessor()
             .apply(assessment);
 
     assertThat(value).isEqualTo(new BigDecimal("125.50"));
@@ -108,7 +117,7 @@ class LegalHelpClaimDetailsViewFieldTest {
   void travelAndWaitingCostsIsNullWhenBothAssessmentFieldsAreAbsent() {
     Object value =
         LegalHelpClaimDetailsViewField.TRAVEL_AND_WAITING_COSTS
-            .getAssessmentAccessor()
+            .getCurrentCalculatedAccessor()
             .apply(new AssessmentGet());
 
     assertThat(value).isNull();
@@ -117,6 +126,6 @@ class LegalHelpClaimDetailsViewFieldTest {
   @Test
   @DisplayName("London rate has no assessment accessor - AssessmentGet has no equivalent field")
   void londonRateHasNoAssessmentAccessor() {
-    assertThat(LegalHelpClaimDetailsViewField.LONDON_RATE.getAssessmentAccessor()).isNull();
+    assertThat(LegalHelpClaimDetailsViewField.LONDON_RATE.getCurrentCalculatedAccessor()).isNull();
   }
 }

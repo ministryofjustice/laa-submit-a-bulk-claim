@@ -1,9 +1,10 @@
-package uk.gov.justice.laa.bulkclaim.service.claimdetail;
+package uk.gov.justice.laa.bulkclaim.viewmodels.claimcase;
 
 import uk.gov.justice.laa.bulkclaim.dto.submission.claim.viewmodels.ClaimStatusBanner;
+import uk.gov.justice.laa.dstew.payments.claimsdata.model.AreaOfLaw;
 
 public record ClaimDetailPageData(
-    String ufn,
+    AreaOfLaw areaOfLaw,
     boolean showCurrentCalculated,
     ClaimDetailView claimDetailView,
     ClaimStatusBanner banner) {}

@@ -42,4 +42,8 @@ public record CrimeLowerClaimDetails(
 
     // Total allowed value
     BigDecimal initialCalculatedTotalVat,
-    BigDecimal initialCalculatedTotalIncludingVat) {}
+    BigDecimal initialCalculatedTotalIncludingVat) {
+  public String clientName() {
+    return "%s %s".formatted(clientForename, clientSurname);
+  }
+}

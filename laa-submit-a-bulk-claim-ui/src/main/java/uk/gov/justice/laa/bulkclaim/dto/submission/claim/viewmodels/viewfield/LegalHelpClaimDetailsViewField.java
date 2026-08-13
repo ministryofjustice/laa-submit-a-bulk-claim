@@ -1,10 +1,9 @@
 package uk.gov.justice.laa.bulkclaim.dto.submission.claim.viewmodels.viewfield;
 
 import java.math.BigDecimal;
-import java.util.List;
 import java.util.function.Function;
 import lombok.Getter;
-import uk.gov.justice.laa.bulkclaim.dto.submission.claim.viewmodels.ClaimFieldRow;
+import uk.gov.justice.laa.bulkclaim.dto.submission.claim.viewmodels.ClaimReportedAndCalculatedValues;
 import uk.gov.justice.laa.bulkclaim.dto.submission.claim.viewmodels.LegalHelpClaimDetails;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.AssessmentGet;
 
@@ -14,6 +13,7 @@ public enum LegalHelpClaimDetailsViewField implements ClaimViewField<LegalHelpCl
   // Page header / Summary
   CLIENT_FORENAME(LegalHelpClaimDetails::clientForename),
   CLIENT_SURNAME(LegalHelpClaimDetails::clientSurname),
+  CLIENT_NAME(LegalHelpClaimDetails::clientName),
   UNIQUE_FILE_NUMBER(LegalHelpClaimDetails::uniqueFileNumber),
   OFFICE_ACCOUNT_NUMBER(LegalHelpClaimDetails::officeCode),
   DATE_SUBMITTED(LegalHelpClaimDetails::dateSubmitted),
@@ -21,24 +21,27 @@ public enum LegalHelpClaimDetailsViewField implements ClaimViewField<LegalHelpCl
   CATEGORY_OF_LAW(LegalHelpClaimDetails::categoryOfLaw),
   FEE_CODE(LegalHelpClaimDetails::feeCode),
   FEE_CODE_DESCRIPTION(LegalHelpClaimDetails::feeCodeDescription),
-  MATTER_TYPE(LegalHelpClaimDetails::matterTypeCode),
+  MATTER_TYPE_1(LegalHelpClaimDetails::matterTypeCodeOne),
+  MATTER_TYPE_2(LegalHelpClaimDetails::matterTypeCodeTwo),
   CASE_START_DATE(LegalHelpClaimDetails::caseStartDate),
   DATE_OF_WORK_CONCLUDED(LegalHelpClaimDetails::caseConcludedDate),
   ESCAPE_CASE(LegalHelpClaimDetails::escapeCase),
 
   // Values
   FIXED_FEE(
-      d -> new ClaimFieldRow(null, d.initialCalculatedFixedFee()),
+      d -> new ClaimReportedAndCalculatedValues(null, d.initialCalculatedFixedFee()),
       AssessmentGet::getFixedFeeAmount),
   PROFIT_COSTS(
-      d -> new ClaimFieldRow(d.reportedProfitCosts(), d.initialCalculatedProfitCosts()),
+      d ->
+          new ClaimReportedAndCalculatedValues(
+              d.reportedProfitCosts(), d.initialCalculatedProfitCosts()),
       AssessmentGet::getNetProfitCostsAmount),
   DISBURSEMENTS(
       LegalHelpClaimDetailsViewField::disbursementsRow, AssessmentGet::getDisbursementAmount),
   DISBURSEMENTS_VAT(
       LegalHelpClaimDetailsViewField::disbursementsVatRow, AssessmentGet::getDisbursementVatAmount),
   COUNSELS_COSTS(
-      d -> new ClaimFieldRow(null, d.initialCalculatedCounselsCosts()),
+      d -> new ClaimReportedAndCalculatedValues(null, d.initialCalculatedCounselsCosts()),
       AssessmentGet::getNetCostOfCounselAmount),
   TRAVEL_AND_WAITING_COSTS(
       LegalHelpClaimDetailsViewField::travelAndWaitingCostsRow,
@@ -47,88 +50,74 @@ public enum LegalHelpClaimDetailsViewField implements ClaimViewField<LegalHelpCl
       LegalHelpClaimDetailsViewField::detentionTravelWaitingCostsRow,
       AssessmentGet::getDetentionTravelAndWaitingCostsAmount),
   JR_FORM_FILLING(
-      d -> new ClaimFieldRow(null, d.initialCalculatedJrFormFilling()),
+      d -> new ClaimReportedAndCalculatedValues(null, d.initialCalculatedJrFormFilling()),
       AssessmentGet::getJrFormFillingAmount),
   ADJOURNED_HEARING_FEE(
-      d -> new ClaimFieldRow(null, d.initialCalculatedAdjournedHearingFee()),
+      d -> new ClaimReportedAndCalculatedValues(null, d.initialCalculatedAdjournedHearingFee()),
       AssessmentGet::getBoltOnAdjournedHearingFee),
   CMRH_ORAL(
-      d -> new ClaimFieldRow(null, d.initialCalculatedCmrhOral()),
+      d -> new ClaimReportedAndCalculatedValues(null, d.initialCalculatedCmrhOral()),
       AssessmentGet::getBoltOnCmrhOralFee),
   CMRH_TELEPHONE(
-      d -> new ClaimFieldRow(null, d.initialCalculatedCmrhTelephone()),
+      d -> new ClaimReportedAndCalculatedValues(null, d.initialCalculatedCmrhTelephone()),
       AssessmentGet::getBoltOnCmrhTelephoneFee),
-  LONDON_RATE(d -> new ClaimFieldRow(null, d.initialLondonRateIndicator())),
+  LONDON_RATE(d -> new ClaimReportedAndCalculatedValues(null, d.initialLondonRateIndicator())),
   HOME_OFFICE_INTERVIEW(
-      d -> new ClaimFieldRow(null, d.initialCalculatedHomeOfficeInterview()),
+      d -> new ClaimReportedAndCalculatedValues(null, d.initialCalculatedHomeOfficeInterview()),
       AssessmentGet::getBoltOnHomeOfficeInterviewFee),
   SUBSTANTIVE_HEARING(
-      d -> new ClaimFieldRow(null, d.initialCalculatedSubstantiveHearing()),
+      d -> new ClaimReportedAndCalculatedValues(null, d.initialCalculatedSubstantiveHearing()),
       AssessmentGet::getBoltOnSubstantiveHearingFee),
   VAT_INDICATOR(LegalHelpClaimDetailsViewField::vatIndicatorRow, AssessmentGet::getIsVatApplicable),
 
   // Total allowed value
   TOTAL_VAT(
-      d -> new ClaimFieldRow(null, d.initialCalculatedTotalVat()),
+      d -> new ClaimReportedAndCalculatedValues(null, d.initialCalculatedTotalVat()),
       AssessmentGet::getAllowedTotalVat),
   TOTAL_INCLUDING_VAT(
-      d -> new ClaimFieldRow(null, d.initialCalculatedTotalIncludingVat()),
+      d -> new ClaimReportedAndCalculatedValues(null, d.initialCalculatedTotalIncludingVat()),
       AssessmentGet::getAllowedTotalInclVat);
 
-  public static final List<LegalHelpClaimDetailsViewField> VALUE_ROWS =
-      List.of(
-          FIXED_FEE,
-          PROFIT_COSTS,
-          DISBURSEMENTS,
-          DISBURSEMENTS_VAT,
-          COUNSELS_COSTS,
-          TRAVEL_AND_WAITING_COSTS,
-          DETENTION_TRAVEL_WAITING_COSTS,
-          JR_FORM_FILLING,
-          ADJOURNED_HEARING_FEE,
-          CMRH_ORAL,
-          CMRH_TELEPHONE,
-          LONDON_RATE,
-          HOME_OFFICE_INTERVIEW,
-          SUBSTANTIVE_HEARING,
-          VAT_INDICATOR);
+  private final Function<LegalHelpClaimDetails, Object> reportedAndCalculatedAccessor;
+  private final Function<AssessmentGet, Object> assessedAccessor;
 
-  public static final List<LegalHelpClaimDetailsViewField> TOTAL_ROWS =
-      List.of(TOTAL_VAT, TOTAL_INCLUDING_VAT);
-
-  private final Function<LegalHelpClaimDetails, Object> accessor;
-  private final Function<AssessmentGet, Object> assessmentAccessor;
-
-  LegalHelpClaimDetailsViewField(Function<LegalHelpClaimDetails, Object> accessor) {
-    this(accessor, null);
+  LegalHelpClaimDetailsViewField(
+      Function<LegalHelpClaimDetails, Object> reportedAndCalculatedAccessor) {
+    this(reportedAndCalculatedAccessor, null);
   }
 
   LegalHelpClaimDetailsViewField(
-      Function<LegalHelpClaimDetails, Object> accessor,
-      Function<AssessmentGet, Object> assessmentAccessor) {
-    this.accessor = accessor;
-    this.assessmentAccessor = assessmentAccessor;
+      Function<LegalHelpClaimDetails, Object> reportedAndCalculatedAccessor,
+      Function<AssessmentGet, Object> latestAssessedAccessor) {
+    this.reportedAndCalculatedAccessor = reportedAndCalculatedAccessor;
+    this.assessedAccessor = latestAssessedAccessor;
   }
 
-  private static ClaimFieldRow disbursementsRow(LegalHelpClaimDetails d) {
-    return new ClaimFieldRow(d.reportedDisbursements(), d.initialCalculatedDisbursements());
+  private static ClaimReportedAndCalculatedValues disbursementsRow(LegalHelpClaimDetails d) {
+    return new ClaimReportedAndCalculatedValues(
+        d.reportedDisbursements(), d.initialCalculatedDisbursements());
   }
 
-  private static ClaimFieldRow disbursementsVatRow(LegalHelpClaimDetails d) {
-    return new ClaimFieldRow(d.reportedDisbursementsVat(), d.initialCalculatedDisbursementsVat());
+  private static ClaimReportedAndCalculatedValues disbursementsVatRow(LegalHelpClaimDetails d) {
+    return new ClaimReportedAndCalculatedValues(
+        d.reportedDisbursementsVat(), d.initialCalculatedDisbursementsVat());
   }
 
-  private static ClaimFieldRow travelAndWaitingCostsRow(LegalHelpClaimDetails d) {
-    return new ClaimFieldRow(
+  private static ClaimReportedAndCalculatedValues travelAndWaitingCostsRow(
+      LegalHelpClaimDetails d) {
+    return new ClaimReportedAndCalculatedValues(
         d.reportedTravelAndWaitingCosts(), d.initialCalculatedTravelAndWaitingCosts());
   }
 
-  private static ClaimFieldRow detentionTravelWaitingCostsRow(LegalHelpClaimDetails d) {
-    return new ClaimFieldRow(null, d.initialCalculatedDetentionTravelWaitingCosts());
+  private static ClaimReportedAndCalculatedValues detentionTravelWaitingCostsRow(
+      LegalHelpClaimDetails d) {
+    return new ClaimReportedAndCalculatedValues(
+        null, d.initialCalculatedDetentionTravelWaitingCosts());
   }
 
-  private static ClaimFieldRow vatIndicatorRow(LegalHelpClaimDetails d) {
-    return new ClaimFieldRow(d.reportedVatApplicable(), d.initialCalculatedVatIndicator());
+  private static ClaimReportedAndCalculatedValues vatIndicatorRow(LegalHelpClaimDetails d) {
+    return new ClaimReportedAndCalculatedValues(
+        d.reportedVatApplicable(), d.initialCalculatedVatIndicator());
   }
 
   /**

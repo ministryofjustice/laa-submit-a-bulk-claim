@@ -9,8 +9,12 @@ public record ClaimFieldRow(Object reported, Object initialCalculated, Object cu
 
   public static final String NOT_APPLICABLE = "Not applicable";
 
-  public ClaimFieldRow(Object reported, Object initialCalculated) {
-    this(reported, initialCalculated, null);
+  public ClaimFieldRow(ClaimReportedAndCalculatedValues initialValues, Object initialCalculated) {
+    // Some values are not passed via the user, this handles such cases
+    this(
+        initialValues != null ? initialValues.reported() : null,
+        initialValues != null ? initialValues.initialCalculated() : null,
+        initialCalculated);
   }
 
   public boolean hasReportedValue() {

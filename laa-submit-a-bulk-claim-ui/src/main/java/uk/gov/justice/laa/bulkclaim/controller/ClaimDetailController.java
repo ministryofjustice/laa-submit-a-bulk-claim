@@ -24,7 +24,7 @@ import uk.gov.justice.laa.bulkclaim.exception.SubmitBulkClaimException;
 import uk.gov.justice.laa.bulkclaim.mapper.ClaimFeeCalculationBreakdownMapper;
 import uk.gov.justice.laa.bulkclaim.mapper.ClaimSummaryMapper;
 import uk.gov.justice.laa.bulkclaim.service.ClaimService;
-import uk.gov.justice.laa.bulkclaim.service.claimdetail.ClaimDetailPageData;
+import uk.gov.justice.laa.bulkclaim.viewmodels.claimcase.ClaimDetailPageData;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.ClaimResponse;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionResponse;
 
@@ -137,7 +137,7 @@ public final class ClaimDetailController {
             .toUriString());
 
     final ClaimDetailPageData pageData = claimService.getClaimDetailPageData(submissionId, claimId);
-    model.addAttribute("ufn", pageData.ufn());
+    model.addAttribute("areaOfLaw", pageData.areaOfLaw().getValue());
     model.addAttribute("showCurrentCalculated", pageData.showCurrentCalculated());
     model.addAttribute("claimDetailView", pageData.claimDetailView());
     model.addAttribute("banner", pageData.banner());
@@ -146,6 +146,6 @@ public final class ClaimDetailController {
         submissionMessagesBuilder.buildAllWarnings(submissionId, claimId);
     model.addAttribute("claimMessages", messagesSummary);
 
-    return pageData.claimDetailView().template();
+    return "pages/view-claim-detail";
   }
 }

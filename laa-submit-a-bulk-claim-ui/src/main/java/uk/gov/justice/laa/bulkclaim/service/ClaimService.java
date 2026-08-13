@@ -9,9 +9,9 @@ import uk.gov.justice.laa.bulkclaim.builder.LatestAssessmentResolver;
 import uk.gov.justice.laa.bulkclaim.client.DataClaimsRestClient;
 import uk.gov.justice.laa.bulkclaim.client.DataClaimsRestClientV2;
 import uk.gov.justice.laa.bulkclaim.exception.SubmitBulkClaimException;
-import uk.gov.justice.laa.bulkclaim.service.claimdetail.ClaimDetailPageData;
-import uk.gov.justice.laa.bulkclaim.service.claimdetail.ClaimDetailView;
-import uk.gov.justice.laa.bulkclaim.service.claimdetail.ClaimDetailViewFactory;
+import uk.gov.justice.laa.bulkclaim.viewmodels.claimcase.ClaimDetailPageData;
+import uk.gov.justice.laa.bulkclaim.viewmodels.claimcase.ClaimDetailView;
+import uk.gov.justice.laa.bulkclaim.viewmodels.claimcase.ClaimDetailViewFactory;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.AssessmentGet;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.ClaimHistoryEvent;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.ClaimHistoryResultSet;
@@ -50,7 +50,7 @@ public class ClaimService {
             : null;
 
     ClaimDetailView claimDetailView =
-        claimDetailViewFactory.build(claimResponse, currentAssessment);
+        claimDetailViewFactory.create(claimResponse, currentAssessment);
 
     List<ClaimHistoryEvent> historyEvents =
         dataClaimsRestClient
@@ -59,7 +59,7 @@ public class ClaimService {
             .blockOptional()
             .orElseGet(List::of);
     return new ClaimDetailPageData(
-        claimResponse.getUniqueFileNumber(),
+        claimResponse.getAreaOfLaw(),
         showCurrentCalculated,
         claimDetailView,
         ClaimStatusBannerBuilder.build(derivedClaimStatus, historyEvents).orElse(null));

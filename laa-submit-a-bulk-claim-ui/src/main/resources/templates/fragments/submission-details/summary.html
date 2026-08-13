@@ -57,7 +57,7 @@
         <dt class="govuk-summary-list__key"
             th:text="#{submission.summary.properties.calculatedBulkValue}"></dt>
         <dd class="govuk-summary-list__value"
-            th:text="${@currencyUtil.toString(submissionSummary.submissionValue())}"></dd>
+            th:text="${@currencyUtil.formatCurrency(submissionSummary.submissionValue())}"></dd>
       </div>
     </dl>
 

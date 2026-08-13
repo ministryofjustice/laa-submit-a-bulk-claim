@@ -136,7 +136,7 @@
             <td class="govuk-table__cell"
                 th:text="${claim.concludedOrClaimedDate != null ? #temporals.format(claim.concludedOrClaimedDate, 'dd MMM yyyy') : '-'}"></td>
             <td class="govuk-table__cell govuk-table__cell--numeric"
-                th:text="${claim.costsDetails != null && claim.costsDetails.claimValue != null ? @currencyUtil.toString(claim.costsDetails.claimValue) : '-'}"></td>
+                th:text="${claim.costsDetails != null && claim.costsDetails.claimValue != null ? @currencyUtil.formatCurrency(claim.costsDetails.claimValue) : '-'}"></td>
             <td class="govuk-table__cell">
               <strong class="govuk-tag govuk-tag--pink"
                       th:if="${claim.escapeCase}"
@@ -174,7 +174,7 @@
             <td class="govuk-table__cell"
                 th:text="${claim.feeCode ?: '-'}"></td>
             <td class="govuk-table__cell govuk-table__cell--numeric"
-                th:text="${claim.costsDetails != null && claim.costsDetails.claimValue != null ? @currencyUtil.toString(claim.costsDetails.claimValue) : '-'}"></td>
+                th:text="${claim.costsDetails != null && claim.costsDetails.claimValue != null ? @currencyUtil.formatCurrency(claim.costsDetails.claimValue) : '-'}"></td>
             <td class="govuk-table__cell">
               <strong class="govuk-tag govuk-tag--pink"
                       th:if="${claim.escapeCase}"
@@ -216,7 +216,7 @@
             <td class="govuk-table__cell"
                 th:text="${claim.feeCode ?: '-'}"></td>
             <td class="govuk-table__cell govuk-table__cell--numeric"
-                th:text="${claim.costsDetails != null && claim.costsDetails.claimValue != null ? @currencyUtil.toString(claim.costsDetails.claimValue) : '-'}"></td>
+                th:text="${claim.costsDetails != null && claim.costsDetails.claimValue != null ? @currencyUtil.formatCurrency(claim.costsDetails.claimValue) : '-'}"></td>
           </tr>
           </tbody>
 
@@ -336,10 +336,10 @@
             <td class="govuk-table__cell"
                 th:text="${claim.feeCode ?: '-'}"></td>
             <td class="govuk-table__cell"
-                th:text="${@currencyUtil.toString(claim.calculatedValue) }"></td>
+                th:text="${@currencyUtil.formatCurrency(claim.calculatedValue) }"></td>
             <th:block th:if="${showUpdatedCalculatedValueColumn}">
               <td class="govuk-table__cell"
-                  th:text="${@currencyUtil.toString(claim.updatedCalculatedValue)}"></td>
+                  th:text="${@currencyUtil.formatCurrency(claim.updatedCalculatedValue)}"></td>
             </th:block>
             <td class="govuk-table__cell" th:unless="${isCrime}"
                 th:text="${claim.ucn ?: '-'}"></td>
@@ -381,10 +381,10 @@
             <td class="govuk-table__cell"
                 th:text="${claim.feeCode ?: '-'}"></td>
             <td class="govuk-table__cell"
-                th:text="${@currencyUtil.toString(claim.calculatedValue) }"></td>
+                th:text="${@currencyUtil.formatCurrency(claim.calculatedValue) }"></td>
             <th:block th:if="${showUpdatedCalculatedValueColumn}">
               <td class="govuk-table__cell"
-                  th:text="${@currencyUtil.toString(claim.updatedCalculatedValue)}"></td>
+                  th:text="${@currencyUtil.formatCurrency(claim.updatedCalculatedValue)}"></td>
             </th:block>
             <td class="govuk-table__cell">
               <span th:if="${claim.escapeCase}"

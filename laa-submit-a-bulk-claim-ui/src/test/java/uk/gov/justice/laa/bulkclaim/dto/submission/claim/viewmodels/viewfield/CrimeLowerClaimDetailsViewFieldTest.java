@@ -18,7 +18,10 @@ class CrimeLowerClaimDetailsViewFieldTest {
     CrimeLowerClaimDetails details =
         CrimeLowerClaimDetails.builder().clientForename("Jane").build();
 
-    Object value = CrimeLowerClaimDetailsViewField.CLIENT_FORENAME.getAccessor().apply(details);
+    Object value =
+        CrimeLowerClaimDetailsViewField.CLIENT_FORENAME
+            .getReportedAndCalculatedAccessor()
+            .apply(details);
 
     assertThat(value).isEqualTo("Jane");
   }
@@ -32,7 +35,10 @@ class CrimeLowerClaimDetailsViewFieldTest {
             .initialCalculatedProfitCosts(new BigDecimal("110.00"))
             .build();
 
-    Object value = CrimeLowerClaimDetailsViewField.PROFIT_COSTS.getAccessor().apply(details);
+    Object value =
+        CrimeLowerClaimDetailsViewField.PROFIT_COSTS
+            .getReportedAndCalculatedAccessor()
+            .apply(details);
 
     assertThat(value).isInstanceOf(ClaimFieldRow.class);
     ClaimFieldRow row = (ClaimFieldRow) value;
@@ -48,7 +54,10 @@ class CrimeLowerClaimDetailsViewFieldTest {
         CrimeLowerClaimDetails.builder().initialCalculatedFixedFee(new BigDecimal("50.00")).build();
 
     ClaimFieldRow row =
-        (ClaimFieldRow) CrimeLowerClaimDetailsViewField.FIXED_FEE.getAccessor().apply(details);
+        (ClaimFieldRow)
+            CrimeLowerClaimDetailsViewField.FIXED_FEE
+                .getReportedAndCalculatedAccessor()
+                .apply(details);
 
     assertThat(row.hasReportedValue()).isFalse();
     assertThat(row.getReportedDisplay()).isEqualTo(ClaimFieldRow.NOT_APPLICABLE);
@@ -85,7 +94,9 @@ class CrimeLowerClaimDetailsViewFieldTest {
     AssessmentGet assessment = new AssessmentGet().netProfitCostsAmount(new BigDecimal("120.00"));
 
     Object value =
-        CrimeLowerClaimDetailsViewField.PROFIT_COSTS.getAssessmentAccessor().apply(assessment);
+        CrimeLowerClaimDetailsViewField.PROFIT_COSTS
+            .getCurrentCalculatedAccessor()
+            .apply(assessment);
 
     assertThat(value).isEqualTo(new BigDecimal("120.00"));
   }
@@ -100,7 +111,7 @@ class CrimeLowerClaimDetailsViewFieldTest {
 
     Object value =
         CrimeLowerClaimDetailsViewField.TOTAL_INCLUDING_VAT
-            .getAssessmentAccessor()
+            .getCurrentCalculatedAccessor()
             .apply(assessment);
 
     assertThat(value).isEqualTo(new BigDecimal("242.00"));
@@ -109,6 +120,7 @@ class CrimeLowerClaimDetailsViewFieldTest {
   @Test
   @DisplayName("A header field has no assessment accessor")
   void headerFieldHasNoAssessmentAccessor() {
-    assertThat(CrimeLowerClaimDetailsViewField.CLIENT_FORENAME.getAssessmentAccessor()).isNull();
+    assertThat(CrimeLowerClaimDetailsViewField.CLIENT_FORENAME.getCurrentCalculatedAccessor())
+        .isNull();
   }
 }

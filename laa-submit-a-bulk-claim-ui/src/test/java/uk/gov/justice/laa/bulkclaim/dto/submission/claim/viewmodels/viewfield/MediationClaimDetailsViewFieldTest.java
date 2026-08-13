@@ -17,7 +17,10 @@ class MediationClaimDetailsViewFieldTest {
   void shouldReadSummaryValue() {
     MediationClaimDetails details = MediationClaimDetails.builder().client1Forename("Jane").build();
 
-    Object value = MediationClaimDetailsViewField.CLIENT_1_FORENAME.getAccessor().apply(details);
+    Object value =
+        MediationClaimDetailsViewField.CLIENT_1_FORENAME
+            .getReportedAndCalculatedAccessor()
+            .apply(details);
 
     assertThat(value).isEqualTo("Jane");
   }
@@ -31,7 +34,10 @@ class MediationClaimDetailsViewFieldTest {
             .initialCalculatedDisbursements(new BigDecimal("110.00"))
             .build();
 
-    Object value = MediationClaimDetailsViewField.DISBURSEMENTS.getAccessor().apply(details);
+    Object value =
+        MediationClaimDetailsViewField.DISBURSEMENTS
+            .getReportedAndCalculatedAccessor()
+            .apply(details);
 
     assertThat(value).isInstanceOf(ClaimFieldRow.class);
     ClaimFieldRow row = (ClaimFieldRow) value;
@@ -47,7 +53,10 @@ class MediationClaimDetailsViewFieldTest {
         MediationClaimDetails.builder().initialCalculatedFixedFee(new BigDecimal("50.00")).build();
 
     ClaimFieldRow row =
-        (ClaimFieldRow) MediationClaimDetailsViewField.FIXED_FEE.getAccessor().apply(details);
+        (ClaimFieldRow)
+            MediationClaimDetailsViewField.FIXED_FEE
+                .getReportedAndCalculatedAccessor()
+                .apply(details);
 
     assertThat(row.hasReportedValue()).isFalse();
     assertThat(row.getReportedDisplay()).isEqualTo(ClaimFieldRow.NOT_APPLICABLE);
@@ -81,7 +90,9 @@ class MediationClaimDetailsViewFieldTest {
     AssessmentGet assessment = new AssessmentGet().disbursementAmount(new BigDecimal("220.20"));
 
     Object value =
-        MediationClaimDetailsViewField.DISBURSEMENTS.getAssessmentAccessor().apply(assessment);
+        MediationClaimDetailsViewField.DISBURSEMENTS
+            .getCurrentCalculatedAccessor()
+            .apply(assessment);
 
     assertThat(value).isEqualTo(new BigDecimal("220.20"));
   }
@@ -89,6 +100,7 @@ class MediationClaimDetailsViewFieldTest {
   @Test
   @DisplayName("A header field has no assessment accessor")
   void headerFieldHasNoAssessmentAccessor() {
-    assertThat(MediationClaimDetailsViewField.CLIENT_1_FORENAME.getAssessmentAccessor()).isNull();
+    assertThat(MediationClaimDetailsViewField.CLIENT_1_FORENAME.getCurrentCalculatedAccessor())
+        .isNull();
   }
 }

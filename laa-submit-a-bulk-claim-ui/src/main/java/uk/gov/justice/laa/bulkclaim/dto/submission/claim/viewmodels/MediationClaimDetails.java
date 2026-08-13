@@ -36,4 +36,13 @@ public record MediationClaimDetails(
 
     // Total allowed value
     BigDecimal initialCalculatedTotalVat,
-    BigDecimal initialCalculatedTotalIncludingVat) {}
+    BigDecimal initialCalculatedTotalIncludingVat) {
+
+  public String client1Name() {
+    return client1Forename + " " + client1Surname;
+  }
+
+  public String client2Name() {
+    return client2Forename + " " + client2Surname;
+  }
+}

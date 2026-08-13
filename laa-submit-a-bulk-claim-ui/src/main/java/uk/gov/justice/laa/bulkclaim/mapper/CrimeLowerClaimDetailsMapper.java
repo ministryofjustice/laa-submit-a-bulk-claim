@@ -15,7 +15,8 @@ public interface CrimeLowerClaimDetailsMapper {
       source = "claimResponse.feeCalculationResponse.feeCodeDescription")
   @Mapping(
       target = "escapeCase",
-      source = "claimResponse.feeCalculationResponse.boltOnDetails.escapeCaseFlag")
+      source = "claimResponse.feeCalculationResponse.boltOnDetails.escapeCaseFlag",
+      defaultValue = "false")
   @Mapping(target = "reportedProfitCosts", source = "claimResponse.netProfitCostsAmount")
   @Mapping(target = "reportedDisbursements", source = "claimResponse.netDisbursementAmount")
   @Mapping(target = "reportedDisbursementsVat", source = "claimResponse.disbursementsVatAmount")

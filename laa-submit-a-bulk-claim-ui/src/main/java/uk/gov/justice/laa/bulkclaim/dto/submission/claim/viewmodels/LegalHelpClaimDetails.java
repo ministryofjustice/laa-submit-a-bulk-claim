@@ -17,7 +17,8 @@ public record LegalHelpClaimDetails(
     String categoryOfLaw,
     String feeCode,
     String feeCodeDescription,
-    String matterTypeCode,
+    String matterTypeCodeOne,
+    String matterTypeCodeTwo,
     String caseStartDate,
     String caseConcludedDate,
     Boolean escapeCase,
@@ -48,4 +49,9 @@ public record LegalHelpClaimDetails(
 
     // Total allowed value
     BigDecimal initialCalculatedTotalVat,
-    BigDecimal initialCalculatedTotalIncludingVat) {}
+    BigDecimal initialCalculatedTotalIncludingVat) {
+
+  public String clientName() {
+    return "%s %s".formatted(clientForename, clientSurname);
+  }
+}

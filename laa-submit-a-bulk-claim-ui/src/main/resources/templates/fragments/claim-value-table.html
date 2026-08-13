@@ -19,16 +19,16 @@
                 th:if="${showCurrentCalculated}"
                 th:text="|#{viewClaim.values.currentCalculated}|"/>
           </div>
-          <div class="govuk-summary-list__row" th:each="valueRow : ${rows}" th:with="row=${valueRow.row()}">
-            <dt class="govuk-summary-list__key" th:text="${valueRow.label()}"/>
+          <div class="govuk-summary-list__row" th:each="rowEntry : ${rows}" th:with="row=${rowEntry.value}">
+            <dt class="govuk-summary-list__key" th:text="#{${'claimDetail.rows.' + rowEntry.key}}"/>
             <!--/*@thymesVar id="row" type="uk.gov.justice.laa.bulkclaim.dto.submission.claim.viewmodels.ClaimFieldRow"*/-->
             <dd class="govuk-summary-list__value govuk-!-text-align-left"
-                th:text="${row.getReportedDisplay()}"/>
+                th:text="${@thymeleafUtils.getFormattedValue(row.getReportedDisplay()).resolve(#messages)}"/>
             <dd class="govuk-summary-list__value govuk-!-text-align-left"
-                th:text="${row?.getInitialCalculatedDisplay()}"/>
+                th:text="${@thymeleafUtils.getFormattedValue(row.getInitialCalculatedDisplay()).resolve(#messages)}"/>
             <dd class="govuk-summary-list__value govuk-!-text-align-left"
                 th:if="${showCurrentCalculated}"
-                th:text="${row?.getCurrentCalculatedDisplay()}"/>
+                th:text="${@thymeleafUtils.getFormattedValue(row.getCurrentCalculatedDisplay()).resolve(#messages)}"/>
           </div>
         </dl>
       </div>

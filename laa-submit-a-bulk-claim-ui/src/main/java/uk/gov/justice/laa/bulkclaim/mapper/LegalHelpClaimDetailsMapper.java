@@ -2,6 +2,7 @@ package uk.gov.justice.laa.bulkclaim.mapper;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.mapstruct.Named;
 import uk.gov.justice.laa.bulkclaim.dto.submission.claim.viewmodels.LegalHelpClaimDetails;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.ClaimResponseV2;
 
@@ -16,7 +17,8 @@ public interface LegalHelpClaimDetailsMapper {
       source = "claimResponse.feeCalculationResponse.feeCodeDescription")
   @Mapping(
       target = "escapeCase",
-      source = "claimResponse.feeCalculationResponse.boltOnDetails.escapeCaseFlag")
+      source = "claimResponse.feeCalculationResponse.boltOnDetails.escapeCaseFlag",
+      defaultValue = "false")
   @Mapping(target = "reportedProfitCosts", source = "claimResponse.netProfitCostsAmount")
   @Mapping(target = "reportedDisbursements", source = "claimResponse.netDisbursementAmount")
   @Mapping(target = "reportedDisbursementsVat", source = "claimResponse.disbursementsVatAmount")
@@ -72,5 +74,29 @@ public interface LegalHelpClaimDetailsMapper {
   @Mapping(
       target = "initialCalculatedTotalIncludingVat",
       source = "claimResponse.feeCalculationResponse.totalAmount")
+  @Mapping(
+      target = "matterTypeCodeOne",
+      source = "matterTypeCode",
+      qualifiedByName = "matterTypeCodeOne")
+  @Mapping(
+      target = "matterTypeCodeTwo",
+      source = "matterTypeCode",
+      qualifiedByName = "matterTypeCodeTwo")
   LegalHelpClaimDetails toLegalHelpClaimDetails(ClaimResponseV2 claimResponse);
+
+  @Named("matterTypeCodeOne")
+  static String matterTypeCodeOne(String matterTypeCode) {
+    if (matterTypeCode == null) {
+      return null;
+    }
+    return matterTypeCode.split(":")[0];
+  }
+
+  @Named("matterTypeCodeTwo")
+  static String matterTypeCodeTwo(String matterTypeCode) {
+    if (matterTypeCode == null) {
+      return null;
+    }
+    return matterTypeCode.split(":")[1];
+  }
 }
