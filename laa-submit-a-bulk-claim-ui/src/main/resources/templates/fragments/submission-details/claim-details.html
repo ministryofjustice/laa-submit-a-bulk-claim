@@ -350,14 +350,14 @@
                     th:text="#{submission.summary.claims.escapeCase.no}"></span>
             </td>
             <td class="govuk-table__cell">
-              <strong th:if="${claim.status == 'Accepted'}" class="govuk-tag govuk-tag--green"
-                      th:text="${claim.status ?: '-'}"></strong>
-              <strong th:if="${claim.status == 'Assessed'}" class="govuk-tag govuk-tag--blue"
-                      th:text="${claim.status ?: '-'}"></strong>
-              <strong th:if="${claim.status == 'Amended'}" class="govuk-tag govuk-tag--yellow"
-                      th:text="${claim.status ?: '-'}"></strong>
-              <strong th:if="${claim.status == 'Voided'}" class="govuk-tag govuk-tag--red"
-                      th:text="${claim.status ?: '-'}"></strong>
+              <strong th:if="${claim.status == 'ACCEPTED'}" class="govuk-tag govuk-tag--green"
+                      th:text="${#messages.msg('submission.summary.claims.status.' + #strings.toLowerCase(claim.status))}"></strong>
+              <strong th:if="${claim.status == 'ASSESSED'}" class="govuk-tag govuk-tag--blue"
+                      th:text="${#messages.msg('submission.summary.claims.status.' + #strings.toLowerCase(claim.status))}"></strong>
+              <strong th:if="${claim.status == 'AMENDED'}" class="govuk-tag govuk-tag--yellow"
+                      th:text="${#messages.msg('submission.summary.claims.status.' + #strings.toLowerCase(claim.status))}"></strong>
+              <strong th:if="${claim.status == 'VOIDED'}" class="govuk-tag govuk-tag--red"
+                      th:text="${#messages.msg('submission.summary.claims.status.' + #strings.toLowerCase(claim.status))}"></strong>
             </td>
           </tr>
           </tbody>
@@ -393,14 +393,14 @@
                     th:text="#{submission.summary.claims.escapeCase.no}"></span>
             </td>
             <td class="govuk-table__cell">
-              <strong th:if="${claim.status == 'Accepted'}" class="govuk-tag govuk-tag--green"
-                      th:text="${claim.status ?: '-'}"></strong>
-              <strong th:if="${claim.status == 'Assessed'}" class="govuk-tag govuk-tag--blue"
-                      th:text="${claim.status ?: '-'}"></strong>
-              <strong th:if="${claim.status == 'Amended'}" class="govuk-tag govuk-tag--yellow"
-                      th:text="${claim.status ?: '-'}"></strong>
-              <strong th:if="${claim.status == 'Voided'}" class="govuk-tag govuk-tag--red"
-                      th:text="${claim.status ?: '-'}"></strong>
+              <strong th:if="${claim.status == 'ACCEPTED'}" class="govuk-tag govuk-tag--green"
+                      th:text="${#messages.msg('submission.summary.claims.status.' + #strings.toLowerCase(claim.status))}"></strong>
+              <strong th:if="${claim.status == 'ASSESSED'}" class="govuk-tag govuk-tag--blue"
+                      th:text="${#messages.msg('submission.summary.claims.status.' + #strings.toLowerCase(claim.status))}"></strong>
+              <strong th:if="${claim.status == 'AMENDED'}" class="govuk-tag govuk-tag--yellow"
+                      th:text="${#messages.msg('submission.summary.claims.status.' + #strings.toLowerCase(claim.status))}"></strong>
+              <strong th:if="${claim.status == 'VOIDED'}" class="govuk-tag govuk-tag--red"
+                      th:text="${#messages.msg('submission.summary.claims.status.' + #strings.toLowerCase(claim.status))}"></strong>
             </td>
           </tr>
           </tbody>

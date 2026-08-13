@@ -74,11 +74,10 @@ public interface SubmissionClaimRowMapper {
 
   @Named("toClaimStatus")
   default String toClaimStatus(final DerivedClaimStatus claimStatus) {
-    if (claimStatus == null || claimStatus.getValue() == null) {
+    if (claimStatus == null) {
       return null;
     }
-    String value = claimStatus.getValue().replace("_", " ");
-    return value.substring(0, 1).toUpperCase() + value.substring(1).toLowerCase();
+    return claimStatus.name();
   }
 
   @Mapping(target = "claimValue", source = "claimFields.feeCalculationResponse.totalAmount")

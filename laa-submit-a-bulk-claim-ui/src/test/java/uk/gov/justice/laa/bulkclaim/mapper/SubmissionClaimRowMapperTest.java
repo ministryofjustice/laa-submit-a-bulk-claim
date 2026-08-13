@@ -245,7 +245,7 @@ class SubmissionClaimRowMapperTest {
                 .isEqualTo(new BigDecimal("500.50"));
             softAssertion.assertThat(actualResponse.totalMessages()).isEqualTo(3);
             softAssertion.assertThat(actualResponse.escapeCase()).isNull();
-            softAssertion.assertThat(actualResponse.status()).isEqualTo("Voided");
+            softAssertion.assertThat(actualResponse.status()).isEqualTo("VOIDED");
             softAssertion
                 .assertThat(actualResponse.calculatedValue())
                 .isEqualTo(new BigDecimal("1500.50"));
