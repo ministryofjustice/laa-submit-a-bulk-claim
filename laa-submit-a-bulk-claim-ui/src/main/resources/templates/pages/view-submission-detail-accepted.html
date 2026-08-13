@@ -5,16 +5,10 @@
   <div class="govuk-width-container">
     <div class="govuk-grid-row">
       <th:block th:replace="~{fragments/submission-details/success-banner :: success-banner}"></th:block>
-      <th:block
-          th:replace="~{fragments/submission-details/summary :: summary(' govuk-tag--green', #{submission.summary.status.accepted}, true, true)}"></th:block>
-      <th:block
-          th:replace="~{fragments/submission-details/navigation :: navigation(${claimCount}, ${messageCount}, ${matterStartsCount})}"></th:block>
-      <th:block th:if="${showOldClaimsTable}">
-        <th:block th:insert="~{fragments/submission-details/claim-details :: old-claim-details}"></th:block>
-      </th:block>
-      <th:block th:unless="${showOldClaimsTable}">
-      <th:block th:insert="~{fragments/submission-details/claim-details :: claim-details}"></th:block>
-      </th:block>
+      <th:block th:replace="~{fragments/submission-details/summary :: summary(' govuk-tag--green', #{submission.summary.status.accepted}, true, true)}"></th:block>
+      <th:block th:replace="~{fragments/submission-details/navigation :: navigation(${claimCount}, ${messageCount}, ${matterStartsCount})}"></th:block>
+      <th:block th:if="${showOldClaimsTable}" th:insert="~{fragments/submission-details/claim-details :: old-claim-details}"></th:block>
+      <th:block th:unless="${showOldClaimsTable}" th:insert="~{fragments/submission-details/claim-details :: claim-details}"></th:block>
       <th:block th:replace="~{fragments/submission-details/matter-starts :: matter-starts}"></th:block>
       <th:block th:replace="~{fragments/submission-details/claim-messages-warnings :: claim-messages-warnings(pageVarName='messagesPage')}"></th:block>
     </div>
