@@ -3,7 +3,6 @@ package uk.gov.justice.laa.bulkclaim.util;
 import java.math.BigDecimal;
 import java.text.NumberFormat;
 import java.util.Locale;
-
 import org.springframework.stereotype.Component;
 
 @Component
