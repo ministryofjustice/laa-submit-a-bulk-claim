@@ -1,21 +1,18 @@
-package uk.gov.justice.laa.bulkclaim.service.claimdetail;
+package uk.gov.justice.laa.bulkclaim.viewmodels.claimcase;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.math.BigDecimal;
-import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import uk.gov.justice.laa.bulkclaim.dto.submission.claim.viewmodels.ClaimFieldRow;
-import uk.gov.justice.laa.bulkclaim.dto.submission.claim.viewmodels.CrimeLowerClaimDetails;
 import uk.gov.justice.laa.bulkclaim.dto.submission.claim.viewmodels.viewfield.CrimeLowerClaimDetailsViewField;
+import uk.gov.justice.laa.bulkclaim.dto.submission.claim.viewmodels.viewfield.LegalHelpClaimDetailsViewField;
 import uk.gov.justice.laa.bulkclaim.helper.TestObjectCreator;
 import uk.gov.justice.laa.bulkclaim.mapper.CrimeLowerClaimDetailsMapperImpl;
 import uk.gov.justice.laa.bulkclaim.mapper.LegalHelpClaimDetailsMapperImpl;
 import uk.gov.justice.laa.bulkclaim.mapper.MediationClaimDetailsMapperImpl;
-import uk.gov.justice.laa.bulkclaim.viewmodels.claimcase.ClaimDetailView;
-import uk.gov.justice.laa.bulkclaim.viewmodels.claimcase.ClaimDetailViewFactory;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.AreaOfLaw;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.AssessmentGet;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.ClaimResponseV2;
@@ -34,13 +31,13 @@ class ClaimDetailViewFactoryTest {
   void shouldDispatchCrimeLower() {
     ClaimResponseV2 claimResponse = TestObjectCreator.buildClaimResponseV2(AreaOfLaw.CRIME_LOWER);
 
-    ClaimDetailView result = factory.build(claimResponse, null);
+    ClaimDetailView<?> result = factory.create(claimResponse, null);
 
-    assertThat(result).isInstanceOf(ClaimDetailView.CrimeLower.class);
-    assertThat(result.template()).isEqualTo("pages/view-claim-detail-crime-lower");
-    assertThat(result.valueRows()).hasSize(CrimeLowerClaimDetailsViewField.VALUE_ROWS.size());
-    assertThat(result.totalRows()).hasSize(CrimeLowerClaimDetailsViewField.TOTAL_ROWS.size());
-    assertThat(result.valueRows().getFirst().label()).isEqualTo("FIXED_FEE");
+    assertThat(result).isInstanceOf(CrimeClaimCaseView.class);
+    assertThat(result.valueRows()).hasSize(CrimeClaimCaseView.VALUE_ROWS.size());
+    assertThat(result.totalRows()).hasSize(CrimeClaimCaseView.TOTAL_ROWS.size());
+    assertThat(result.valueRows().keySet().iterator().next())
+        .isEqualTo(CrimeLowerClaimDetailsViewField.FIXED_FEE);
   }
 
   @Test
@@ -48,10 +45,9 @@ class ClaimDetailViewFactoryTest {
   void shouldDispatchLegalHelp() {
     ClaimResponseV2 claimResponse = TestObjectCreator.buildClaimResponseV2(AreaOfLaw.LEGAL_HELP);
 
-    ClaimDetailView result = factory.build(claimResponse, null);
+    ClaimDetailView<?> result = factory.create(claimResponse, null);
 
-    assertThat(result).isInstanceOf(ClaimDetailView.LegalHelp.class);
-    assertThat(result.template()).isEqualTo("pages/view-claim-detail-legal-help");
+    assertThat(result).isInstanceOf(LegalHelpClaimCaseView.class);
   }
 
   @Test
@@ -59,10 +55,9 @@ class ClaimDetailViewFactoryTest {
   void shouldDispatchMediation() {
     ClaimResponseV2 claimResponse = TestObjectCreator.buildClaimResponseV2(AreaOfLaw.MEDIATION);
 
-    ClaimDetailView result = factory.build(claimResponse, null);
+    ClaimDetailView<?> result = factory.create(claimResponse, null);
 
-    assertThat(result).isInstanceOf(ClaimDetailView.Mediation.class);
-    assertThat(result.template()).isEqualTo("pages/view-claim-detail-mediation");
+    assertThat(result).isInstanceOf(MediationClaimCaseView.class);
   }
 
   @Test
@@ -71,8 +66,8 @@ class ClaimDetailViewFactoryTest {
     ClaimResponseV2 claimResponse = TestObjectCreator.buildClaimResponseV2(AreaOfLaw.CRIME_LOWER);
     claimResponse.setAreaOfLaw(null);
 
-    assertThatThrownBy(() -> factory.build(claimResponse, null))
-        .isInstanceOf(IllegalArgumentException.class);
+    assertThatThrownBy(() -> factory.create(claimResponse, null))
+        .isInstanceOf(NullPointerException.class);
   }
 
   @Test
@@ -80,15 +75,9 @@ class ClaimDetailViewFactoryTest {
   void shouldFallBackToNotApplicableForMissingValues() {
     ClaimResponseV2 claimResponse = TestObjectCreator.buildClaimResponseV2(AreaOfLaw.CRIME_LOWER);
 
-    ClaimDetailView.CrimeLower result =
-        (ClaimDetailView.CrimeLower) factory.build(claimResponse, null);
-    CrimeLowerClaimDetails details = result.details();
+    CrimeClaimCaseView result = (CrimeClaimCaseView) factory.create(claimResponse, null);
 
-    ClaimFieldRow fixedFeeRow =
-        (ClaimFieldRow)
-            CrimeLowerClaimDetailsViewField.FIXED_FEE
-                .getReportedAndCalculatedAccessor()
-                .apply(details);
+    ClaimFieldRow fixedFeeRow = result.valueRows().get(CrimeLowerClaimDetailsViewField.FIXED_FEE);
 
     assertThat(fixedFeeRow.hasReportedValue()).isFalse();
     assertThat(fixedFeeRow.getReportedDisplay()).isEqualTo(ClaimFieldRow.NOT_APPLICABLE);
@@ -106,17 +95,18 @@ class ClaimDetailViewFactoryTest {
             .allowedTotalVat(new BigDecimal("42.00"))
             .allowedTotalInclVat(new BigDecimal("242.00"));
 
-    ClaimDetailView.CrimeLower result =
-        (ClaimDetailView.CrimeLower) factory.build(claimResponse, assessment);
+    CrimeClaimCaseView result = (CrimeClaimCaseView) factory.create(claimResponse, assessment);
 
-    ClaimValueRow fixedFeeValueRow = findRow(result.valueRows(), "FIXED_FEE");
-    assertThat(fixedFeeValueRow.row().currentCalculated()).isEqualTo(new BigDecimal("999.99"));
-    assertThat(fixedFeeValueRow.row().initialCalculated()).isNotNull();
+    ClaimFieldRow fixedFeeValueRow =
+        result.valueRows().get(CrimeLowerClaimDetailsViewField.FIXED_FEE);
+    assertThat(fixedFeeValueRow.currentCalculated()).isEqualTo(new BigDecimal("999.99"));
+    assertThat(fixedFeeValueRow.initialCalculated()).isNotNull();
 
-    ClaimValueRow totalVatRow = findRow(result.totalRows(), "TOTAL_VAT");
-    assertThat(totalVatRow.row().currentCalculated()).isEqualTo(new BigDecimal("42.00"));
-    ClaimValueRow totalInclVatRow = findRow(result.totalRows(), "TOTAL_INCLUDING_VAT");
-    assertThat(totalInclVatRow.row().currentCalculated()).isEqualTo(new BigDecimal("242.00"));
+    ClaimFieldRow totalVatRow = result.totalRows().get(CrimeLowerClaimDetailsViewField.TOTAL_VAT);
+    assertThat(totalVatRow.currentCalculated()).isEqualTo(new BigDecimal("42.00"));
+    ClaimFieldRow totalInclVatRow =
+        result.totalRows().get(CrimeLowerClaimDetailsViewField.TOTAL_INCLUDING_VAT);
+    assertThat(totalInclVatRow.currentCalculated()).isEqualTo(new BigDecimal("242.00"));
   }
 
   @Test
@@ -126,14 +116,11 @@ class ClaimDetailViewFactoryTest {
     ClaimResponseV2 claimResponse = TestObjectCreator.buildClaimResponseV2(AreaOfLaw.LEGAL_HELP);
     AssessmentGet assessment = new AssessmentGet().fixedFeeAmount(new BigDecimal("1.00"));
 
-    ClaimDetailView.LegalHelp result =
-        (ClaimDetailView.LegalHelp) factory.build(claimResponse, assessment);
+    LegalHelpClaimCaseView result =
+        (LegalHelpClaimCaseView) factory.create(claimResponse, assessment);
 
-    ClaimValueRow londonRateRow = findRow(result.valueRows(), "LONDON_RATE");
-    assertThat(londonRateRow.row().hasCurrentCalculatedValue()).isFalse();
-  }
-
-  private static ClaimValueRow findRow(List<ClaimValueRow> rows, String expectedLabel) {
-    return rows.stream().filter(row -> row.label().equals(expectedLabel)).findFirst().orElseThrow();
+    ClaimFieldRow londonRateRow =
+        result.valueRows().get(LegalHelpClaimDetailsViewField.LONDON_RATE);
+    assertThat(londonRateRow.hasCurrentCalculatedValue()).isFalse();
   }
 }

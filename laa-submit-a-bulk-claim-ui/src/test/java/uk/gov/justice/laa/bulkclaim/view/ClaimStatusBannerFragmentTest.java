@@ -34,12 +34,13 @@ import uk.gov.justice.laa.bulkclaim.dto.submission.messages.MessageRow;
 import uk.gov.justice.laa.bulkclaim.dto.submission.messages.MessagesSummary;
 import uk.gov.justice.laa.bulkclaim.mapper.ClaimFeeCalculationBreakdownMapper;
 import uk.gov.justice.laa.bulkclaim.mapper.ClaimSummaryMapper;
+import uk.gov.justice.laa.bulkclaim.service.ClaimService;
 import uk.gov.justice.laa.bulkclaim.util.ThymeleafHrefUtils;
 import uk.gov.justice.laa.bulkclaim.viewmodels.claimcase.ClaimDetailViewFactory;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.DerivedClaimStatus;
 
 @WebMvcTest(ClaimDetailController.class)
-@Import({WebMvcTestConfig.class, ThymeleafHrefUtils.class, ClaimStatusBannerBuilder.class})
+@Import({WebMvcTestConfig.class, ThymeleafHrefUtils.class})
 @DisplayName("Shared claim status banner fragment")
 class ClaimStatusBannerFragmentTest {
 
@@ -47,7 +48,6 @@ class ClaimStatusBannerFragmentTest {
   private static final Set<String> SELECTOR = Set.of("claim-status-banner");
 
   @Autowired private SpringTemplateEngine templateEngine;
-  @Autowired private ClaimStatusBannerBuilder claimStatusBannerBuilder;
 
   @MockitoBean private FeatureFlagsConfig featureFlagsConfig;
   @MockitoBean private DataClaimsRestClient dataClaimsRestClient;
@@ -57,6 +57,7 @@ class ClaimStatusBannerFragmentTest {
   @MockitoBean private SubmissionMessagesBuilder submissionMessagesBuilder;
   @MockitoBean private ClaimDetailViewFactory claimDetailViewFactory;
   @MockitoBean private LatestAssessmentResolver latestAssessmentResolver;
+  @MockitoBean private ClaimService claimService;
 
   @Test
   @DisplayName("Renders the Voided wording with an error-style alert")
@@ -70,8 +71,8 @@ class ClaimStatusBannerFragmentTest {
     assertThat(alert).isNotNull();
     assertThat(alert.hasClass("moj-alert--error")).isTrue();
     assertThat(alert.hasClass("moj-alert--information")).isFalse();
-    assertThat(alert.selectFirst(".moj-alert__heading").text())
-        .isEqualTo("This claim has been Voided. Last edited on 17/03/2026 at 14:32");
+    assertThat(alert.text())
+        .contains("This claim has been Voided Last edited on 17/03/2026 at 14:32");
   }
 
   @Test
@@ -86,8 +87,8 @@ class ClaimStatusBannerFragmentTest {
     assertThat(alert).isNotNull();
     assertThat(alert.hasClass("moj-alert--information")).isTrue();
     assertThat(alert.hasClass("moj-alert--error")).isFalse();
-    assertThat(alert.selectFirst(".moj-alert__heading").text())
-        .isEqualTo("This claim has been Assessed. Last edited on 05/02/2026 at 08:00");
+    assertThat(alert.text())
+        .contains("This claim has been Assessed Last edited on 05/02/2026 at 08:00");
   }
 
   @Test
@@ -101,15 +102,15 @@ class ClaimStatusBannerFragmentTest {
     Element alert = doc.getElementById("claim-status-banner");
     assertThat(alert).isNotNull();
     assertThat(alert.hasClass("moj-alert--information")).isTrue();
-    assertThat(alert.selectFirst(".moj-alert__heading").text())
-        .isEqualTo("This claim has been Amended. Last edited on 30/06/2026 at 23:59");
+    assertThat(alert.text())
+        .contains("This claim has been Amended Last edited on 30/06/2026 at 23:59");
   }
 
   @Test
   @DisplayName("Renders no status banner for a derived status without one")
   void shouldRenderNoBannerForAcceptedStatus() {
     Optional<ClaimStatusBanner> banner =
-        claimStatusBannerBuilder.build(DerivedClaimStatus.ACCEPTED, List.of());
+        ClaimStatusBannerBuilder.build(DerivedClaimStatus.ACCEPTED, List.of());
 
     Document doc = render(banner.orElse(null), null);
 

@@ -20,6 +20,7 @@ public interface ClaimDetailView<K extends ClaimViewField<?>> {
     if (Objects.isNull(currentAssessment)) {
       return null;
     }
-    return ((ClaimViewField<?>) field).getCurrentCalculatedAccessor().apply(currentAssessment);
+    var accessor = ((ClaimViewField<?>) field).getCurrentCalculatedAccessor();
+    return accessor == null ? null : accessor.apply(currentAssessment);
   }
 }

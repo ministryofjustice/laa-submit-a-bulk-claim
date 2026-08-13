@@ -42,9 +42,12 @@ import uk.gov.justice.laa.bulkclaim.dto.submission.claim.SubmissionClaimRowCosts
 import uk.gov.justice.laa.bulkclaim.dto.submission.claim.SubmissionClaimsDetails;
 import uk.gov.justice.laa.bulkclaim.dto.submission.messages.MessagesSource;
 import uk.gov.justice.laa.bulkclaim.dto.submission.messages.MessagesSummary;
+import uk.gov.justice.laa.bulkclaim.util.CurrencyUtil;
+import uk.gov.justice.laa.bulkclaim.util.DateTimeUtil;
 import uk.gov.justice.laa.bulkclaim.util.PaginationLinksBuilder;
 import uk.gov.justice.laa.bulkclaim.util.PaginationUtil;
 import uk.gov.justice.laa.bulkclaim.util.ThymeleafHrefUtils;
+import uk.gov.justice.laa.bulkclaim.util.ThymeleafUtils;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.AreaOfLaw;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.Page;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionBase;
@@ -55,7 +58,13 @@ import uk.gov.justice.laa.dstew.payments.claimsdata.model.ValidationMessageType;
 
 @WebMvcTest(SubmissionDetailController.class)
 @AutoConfigureMockMvc
-@Import({PaginationLinksBuilder.class, ThymeleafHrefUtils.class})
+@Import({
+  PaginationLinksBuilder.class,
+  ThymeleafHrefUtils.class,
+  CurrencyUtil.class,
+  DateTimeUtil.class,
+  ThymeleafUtils.class
+})
 @DisplayName("Submission detail controller test")
 class SubmissionDetailControllerTest extends BaseControllerTest {
 

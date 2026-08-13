@@ -80,4 +80,9 @@ public enum CrimeLowerClaimDetailsViewField implements ClaimViewField<CrimeLower
     this.reportedAndCalculatedAccessor = reportedAndCalculatedAccessor;
     this.assessedAccessor = assessedAccessor;
   }
+
+  @Override
+  public Function<AssessmentGet, Object> getCurrentCalculatedAccessor() {
+    return assessedAccessor;
+  }
 }

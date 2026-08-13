@@ -43,6 +43,8 @@ public record MediationClaimDetails(
   }
 
   public String client2Name() {
-    return client2Forename + " " + client2Surname;
+    return client2Forename == null && client2Surname == null
+        ? null
+        : client2Forename + " " + client2Surname;
   }
 }

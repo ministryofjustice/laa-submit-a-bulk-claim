@@ -6,7 +6,6 @@ import static org.mockito.Mockito.when;
 import static uk.gov.justice.laa.bulkclaim.constants.SessionConstants.CLAIM_ID;
 import static uk.gov.justice.laa.bulkclaim.constants.SessionConstants.SUBMISSION_ID;
 
-import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 import org.jsoup.nodes.Document;
@@ -22,7 +21,6 @@ import uk.gov.justice.laa.bulkclaim.builder.SubmissionMessagesBuilder;
 import uk.gov.justice.laa.bulkclaim.client.DataClaimsRestClient;
 import uk.gov.justice.laa.bulkclaim.client.DataClaimsRestClientV2;
 import uk.gov.justice.laa.bulkclaim.controller.ClaimDetailController;
-import uk.gov.justice.laa.bulkclaim.dto.submission.claim.viewmodels.ClaimFieldRow;
 import uk.gov.justice.laa.bulkclaim.dto.submission.claim.viewmodels.ClaimStatusBanner;
 import uk.gov.justice.laa.bulkclaim.dto.submission.claim.viewmodels.LegalHelpClaimDetails;
 import uk.gov.justice.laa.bulkclaim.dto.submission.messages.MessageRow;
@@ -32,8 +30,8 @@ import uk.gov.justice.laa.bulkclaim.mapper.ClaimFeeCalculationBreakdownMapper;
 import uk.gov.justice.laa.bulkclaim.mapper.ClaimSummaryMapper;
 import uk.gov.justice.laa.bulkclaim.service.ClaimService;
 import uk.gov.justice.laa.bulkclaim.viewmodels.claimcase.ClaimDetailPageData;
-import uk.gov.justice.laa.bulkclaim.viewmodels.claimcase.ClaimDetailView;
 import uk.gov.justice.laa.bulkclaim.viewmodels.claimcase.ClaimDetailViewFactory;
+import uk.gov.justice.laa.bulkclaim.viewmodels.claimcase.LegalHelpClaimCaseView;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.AreaOfLaw;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.ClaimHistoryResultSet;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.ClaimResponseV2;
@@ -73,7 +71,7 @@ class ClaimDetailLegalHelpViewTest extends ViewTestBase {
             .categoryOfLaw("IMMIGRATION")
             .feeCode("IMCA")
             .feeCodeDescription("Immigration: application")
-            .matterTypeCode("IACE")
+            .matterTypeCodeOne("IACE")
             .caseStartDate("2025-01-15")
             .caseConcludedDate("2025-02-01")
             .escapeCase(true)
@@ -91,24 +89,14 @@ class ClaimDetailLegalHelpViewTest extends ViewTestBase {
     ClaimResponseV2 claimResponse = TestObjectCreator.buildClaimResponseV2(AreaOfLaw.LEGAL_HELP);
     claimResponse.setDerivedClaimStatus(derivedClaimStatus);
 
-    List<ClaimValueRow> valueRows =
-        List.of(new ClaimValueRow("Fixed fee", new ClaimFieldRow(null, new BigDecimal("239.00"))));
-    List<ClaimValueRow> totalRows =
-        List.of(
-            new ClaimValueRow(
-                "Total including VAT", new ClaimFieldRow(null, new BigDecimal("12.00"))));
-    ClaimDetailView.LegalHelp claimDetailView =
-        new ClaimDetailView.LegalHelp(details, valueRows, totalRows);
+    LegalHelpClaimCaseView claimDetailView = new LegalHelpClaimCaseView(details, null);
     boolean showCurrentCalculated =
         derivedClaimStatus == DerivedClaimStatus.AMENDED
             || derivedClaimStatus == DerivedClaimStatus.ASSESSED;
     when(claimService.getClaimDetailPageData(submissionId, claimId))
         .thenReturn(
             new ClaimDetailPageData(
-                claimResponse.getUniqueFileNumber(),
-                showCurrentCalculated,
-                claimDetailView,
-                banner.orElse(null)));
+                AreaOfLaw.LEGAL_HELP, showCurrentCalculated, claimDetailView, banner.orElse(null)));
   }
 
   @Test

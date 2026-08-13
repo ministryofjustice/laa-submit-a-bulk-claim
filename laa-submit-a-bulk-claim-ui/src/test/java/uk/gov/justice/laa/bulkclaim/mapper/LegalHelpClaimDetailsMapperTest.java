@@ -32,7 +32,10 @@ class LegalHelpClaimDetailsMapperTest {
     assertThat(result.feeCode()).isEqualTo(claimResponse.getFeeCode());
     assertThat(result.feeCodeDescription())
         .isEqualTo(claimResponse.getFeeCalculationResponse().getFeeCodeDescription());
-    assertThat(result.matterTypeCode()).isEqualTo(claimResponse.getMatterTypeCode());
+    assertThat(result.matterTypeCodeOne())
+        .isEqualTo(claimResponse.getMatterTypeCode().split(":")[0]);
+    assertThat(result.matterTypeCodeTwo())
+        .isEqualTo(claimResponse.getMatterTypeCode().split(":")[1]);
     assertThat(result.caseStartDate()).isEqualTo(claimResponse.getCaseStartDate());
     assertThat(result.caseConcludedDate()).isEqualTo(claimResponse.getCaseConcludedDate());
     assertThat(result.escapeCase()).isTrue();

@@ -21,7 +21,7 @@ public final class TestObjectCreator {
         .uniqueFileNumber("unique-file-number")
         .caseStartDate("2025-09-19")
         .caseConcludedDate("2026-10-20")
-        .matterTypeCode("matter-type-code")
+        .matterTypeCode("matter-type-code-one:matter-type-code-two")
         .crimeMatterTypeCode("crime-matter-type-code")
         .feeCode("fee-code")
         .representationOrderDate("2027-11-21")

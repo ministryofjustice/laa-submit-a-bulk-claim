@@ -68,4 +68,9 @@ public enum MediationClaimDetailsViewField implements ClaimViewField<MediationCl
     this.reportedAndCalculatedAccessor = reportedAndCalculatedAccessor;
     this.assessedAccessor = assessedAccessor;
   }
+
+  @Override
+  public Function<AssessmentGet, Object> getCurrentCalculatedAccessor() {
+    return assessedAccessor;
+  }
 }

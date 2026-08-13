@@ -6,7 +6,9 @@ import java.math.BigDecimal;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import uk.gov.justice.laa.bulkclaim.dto.submission.claim.viewmodels.ClaimFieldRow;
+import uk.gov.justice.laa.bulkclaim.dto.submission.claim.viewmodels.ClaimReportedAndCalculatedValues;
 import uk.gov.justice.laa.bulkclaim.dto.submission.claim.viewmodels.LegalHelpClaimDetails;
+import uk.gov.justice.laa.bulkclaim.viewmodels.claimcase.LegalHelpClaimCaseView;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.AssessmentGet;
 
 @DisplayName("Legal help claim details view field test")
@@ -39,11 +41,10 @@ class LegalHelpClaimDetailsViewFieldTest {
             .getReportedAndCalculatedAccessor()
             .apply(details);
 
-    assertThat(value).isInstanceOf(ClaimFieldRow.class);
-    ClaimFieldRow row = (ClaimFieldRow) value;
+    assertThat(value).isInstanceOf(ClaimReportedAndCalculatedValues.class);
+    ClaimReportedAndCalculatedValues row = (ClaimReportedAndCalculatedValues) value;
     assertThat(row.reported()).isEqualTo(new BigDecimal("100.00"));
     assertThat(row.initialCalculated()).isEqualTo(new BigDecimal("110.00"));
-    assertThat(row.currentCalculated()).isNull();
   }
 
   @Test
@@ -52,21 +53,23 @@ class LegalHelpClaimDetailsViewFieldTest {
     LegalHelpClaimDetails details =
         LegalHelpClaimDetails.builder().initialCalculatedFixedFee(new BigDecimal("50.00")).build();
 
-    ClaimFieldRow row =
-        (ClaimFieldRow)
+    ClaimReportedAndCalculatedValues row =
+        (ClaimReportedAndCalculatedValues)
             LegalHelpClaimDetailsViewField.FIXED_FEE
                 .getReportedAndCalculatedAccessor()
                 .apply(details);
 
     assertThat(row.hasReportedValue()).isFalse();
-    assertThat(row.getReportedDisplay()).isEqualTo(ClaimFieldRow.NOT_APPLICABLE);
     assertThat(row.initialCalculated()).isEqualTo(new BigDecimal("50.00"));
+
+    ClaimFieldRow fieldRow = new ClaimFieldRow(row, null);
+    assertThat(fieldRow.getReportedDisplay()).isEqualTo(ClaimFieldRow.NOT_APPLICABLE);
   }
 
   @Test
   @DisplayName("Value rows list should contain every values-table field, in order")
   void valueRowsShouldBeOrdered() {
-    assertThat(LegalHelpClaimDetailsViewField.VALUE_ROWS)
+    assertThat(LegalHelpClaimCaseView.VALUE_ROWS)
         .containsExactly(
             LegalHelpClaimDetailsViewField.FIXED_FEE,
             LegalHelpClaimDetailsViewField.PROFIT_COSTS,
@@ -88,7 +91,7 @@ class LegalHelpClaimDetailsViewFieldTest {
   @Test
   @DisplayName("Total rows list should contain every total-table field, in order")
   void totalRowsShouldBeOrdered() {
-    assertThat(LegalHelpClaimDetailsViewField.TOTAL_ROWS)
+    assertThat(LegalHelpClaimCaseView.TOTAL_ROWS)
         .containsExactly(
             LegalHelpClaimDetailsViewField.TOTAL_VAT,
             LegalHelpClaimDetailsViewField.TOTAL_INCLUDING_VAT);

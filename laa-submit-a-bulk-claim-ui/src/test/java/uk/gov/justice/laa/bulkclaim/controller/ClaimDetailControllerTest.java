@@ -10,7 +10,6 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static uk.gov.justice.laa.bulkclaim.constants.SessionConstants.CLAIM_ID;
 import static uk.gov.justice.laa.bulkclaim.constants.SessionConstants.SUBMISSION_ID;
 
-import java.util.List;
 import java.util.UUID;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -38,8 +37,8 @@ import uk.gov.justice.laa.bulkclaim.mapper.ClaimSummaryMapper;
 import uk.gov.justice.laa.bulkclaim.service.ClaimService;
 import uk.gov.justice.laa.bulkclaim.util.ThymeleafHrefUtils;
 import uk.gov.justice.laa.bulkclaim.viewmodels.claimcase.ClaimDetailPageData;
-import uk.gov.justice.laa.bulkclaim.viewmodels.claimcase.ClaimDetailView;
 import uk.gov.justice.laa.bulkclaim.viewmodels.claimcase.ClaimDetailViewFactory;
+import uk.gov.justice.laa.bulkclaim.viewmodels.claimcase.CrimeClaimCaseView;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.AreaOfLaw;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.ClaimResponse;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionResponse;
@@ -182,10 +181,9 @@ class ClaimDetailControllerTest extends BaseControllerTest {
       when(claimService.getClaimDetailPageData(submissionId, claimId))
           .thenReturn(
               new ClaimDetailPageData(
-                  "271219/000",
+                  AreaOfLaw.CRIME_LOWER,
                   false,
-                  new ClaimDetailView.CrimeLower(
-                      CrimeLowerClaimDetails.builder().build(), List.of(), List.of()),
+                  new CrimeClaimCaseView(CrimeLowerClaimDetails.builder().build(), null),
                   null));
     }
 
@@ -201,7 +199,7 @@ class ClaimDetailControllerTest extends BaseControllerTest {
                       .sessionAttr(SUBMISSION_ID, submissionId)
                       .sessionAttr(CLAIM_ID, claimId)))
           .hasStatusOk()
-          .hasViewName("pages/view-claim-detail-crime-lower");
+          .hasViewName("pages/view-claim-detail");
 
       verify(claimService, times(1)).getClaimDetailPageData(submissionId, claimId);
     }
@@ -223,7 +221,7 @@ class ClaimDetailControllerTest extends BaseControllerTest {
                       .sessionAttr(SUBMISSION_ID, submissionId)
                       .sessionAttr(CLAIM_ID, claimId)))
           .hasStatusOk()
-          .hasViewName("pages/view-claim-detail-crime-lower");
+          .hasViewName("pages/view-claim-detail");
     }
   }
 }

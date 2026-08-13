@@ -93,6 +93,11 @@ public enum LegalHelpClaimDetailsViewField implements ClaimViewField<LegalHelpCl
     this.assessedAccessor = latestAssessedAccessor;
   }
 
+  @Override
+  public Function<AssessmentGet, Object> getCurrentCalculatedAccessor() {
+    return assessedAccessor;
+  }
+
   private static ClaimReportedAndCalculatedValues disbursementsRow(LegalHelpClaimDetails d) {
     return new ClaimReportedAndCalculatedValues(
         d.reportedDisbursements(), d.initialCalculatedDisbursements());
