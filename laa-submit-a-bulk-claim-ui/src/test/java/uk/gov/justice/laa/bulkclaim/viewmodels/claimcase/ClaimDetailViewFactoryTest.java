@@ -79,8 +79,7 @@ class ClaimDetailViewFactoryTest {
 
     ClaimFieldRow fixedFeeRow = result.valueRows().get(CrimeLowerClaimDetailsViewField.FIXED_FEE);
 
-    assertThat(fixedFeeRow.hasReportedValue()).isFalse();
-    assertThat(fixedFeeRow.getReportedDisplay()).isEqualTo(ClaimFieldRow.NOT_APPLICABLE);
+    assertThat(fixedFeeRow.reported()).isNull();
   }
 
   @Test

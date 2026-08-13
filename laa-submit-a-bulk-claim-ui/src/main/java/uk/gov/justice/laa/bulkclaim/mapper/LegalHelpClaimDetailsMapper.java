@@ -33,7 +33,9 @@ public interface LegalHelpClaimDetailsMapper {
   @Mapping(target = "reportedCmrhOralCount", source = "claimResponse.cmrhOralCount")
   @Mapping(target = "reportedCmrhTelephoneCount", source = "claimResponse.cmrhTelephoneCount")
   @Mapping(target = "reportedJrFormFillingAmount", source = "claimResponse.jrFormFillingAmount")
-  @Mapping(target = "reportedAdjournedHearingFee", source = "claimResponse.adjournedHearingFeeAmount")
+  @Mapping(
+      target = "reportedAdjournedHearingFee",
+      source = "claimResponse.adjournedHearingFeeAmount")
   @Mapping(
       target = "initialCalculatedFixedFee",
       source = "claimResponse.feeCalculationResponse.fixedFeeAmount")

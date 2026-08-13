@@ -52,8 +52,7 @@ public enum MediationClaimDetailsViewField implements ClaimViewField<MediationCl
       claim -> new ClaimReportedAndCalculatedValues(claim.initialCalculatedTotalVat()),
       AssessmentGet::getAllowedTotalVat),
   TOTAL_INCLUDING_VAT(
-      claim ->
-          new ClaimReportedAndCalculatedValues(claim.initialCalculatedTotalIncludingVat()),
+      claim -> new ClaimReportedAndCalculatedValues(claim.initialCalculatedTotalIncludingVat()),
       AssessmentGet::getAllowedTotalInclVat);
 
   private final Function<MediationClaimDetails, Object> reportedAndCalculatedAccessor;

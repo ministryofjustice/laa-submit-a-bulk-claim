@@ -61,12 +61,10 @@ class LegalHelpClaimDetailsMapperTest {
         .isEqualTo(claimResponse.getJrFormFillingAmount());
     assertThat(result.reportedAdjournedHearingFee())
         .isEqualTo(claimResponse.getAdjournedHearingFeeAmount());
-    assertThat(result.reportedCmrhOralCount())
-        .isEqualTo(claimResponse.getCmrhOralCount());
+    assertThat(result.reportedCmrhOralCount()).isEqualTo(claimResponse.getCmrhOralCount());
     assertThat(result.reportedCmrhTelephoneCount())
         .isEqualTo(claimResponse.getCmrhTelephoneCount());
-    assertThat(result.reportedLondonRateIndicator())
-        .isEqualTo(claimResponse.getIsLondonRate());
+    assertThat(result.reportedLondonRateIndicator()).isEqualTo(claimResponse.getIsLondonRate());
   }
 
   @Test

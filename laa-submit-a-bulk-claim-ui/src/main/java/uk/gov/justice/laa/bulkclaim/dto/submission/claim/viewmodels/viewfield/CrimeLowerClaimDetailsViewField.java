@@ -64,8 +64,7 @@ public enum CrimeLowerClaimDetailsViewField implements ClaimViewField<CrimeLower
       claim -> new ClaimReportedAndCalculatedValues(claim.initialCalculatedTotalVat()),
       AssessmentGet::getAllowedTotalVat),
   TOTAL_INCLUDING_VAT(
-      claim ->
-          new ClaimReportedAndCalculatedValues(claim.initialCalculatedTotalIncludingVat()),
+      claim -> new ClaimReportedAndCalculatedValues(claim.initialCalculatedTotalIncludingVat()),
       AssessmentGet::getAllowedTotalInclVat);
 
   private final Function<CrimeLowerClaimDetails, Object> reportedAndCalculatedAccessor;

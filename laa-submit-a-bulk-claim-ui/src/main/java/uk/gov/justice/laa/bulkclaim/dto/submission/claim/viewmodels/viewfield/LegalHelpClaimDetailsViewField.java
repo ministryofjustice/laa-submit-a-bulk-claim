@@ -61,8 +61,9 @@ public enum LegalHelpClaimDetailsViewField implements ClaimViewField<LegalHelpCl
               claim.initialCalculatedDetentionTravelWaitingCosts()),
       AssessmentGet::getDetentionTravelAndWaitingCostsAmount),
   JR_FORM_FILLING(
-      claim -> new ClaimReportedAndCalculatedValues(
-          claim.reportedJrFormFillingAmount(), claim.initialCalculatedJrFormFilling()),
+      claim ->
+          new ClaimReportedAndCalculatedValues(
+              claim.reportedJrFormFillingAmount(), claim.initialCalculatedJrFormFilling()),
       AssessmentGet::getJrFormFillingAmount),
   ADJOURNED_HEARING_FEE(
       claim ->
@@ -70,25 +71,26 @@ public enum LegalHelpClaimDetailsViewField implements ClaimViewField<LegalHelpCl
               claim.reportedAdjournedHearingFee(), claim.initialCalculatedAdjournedHearingFee()),
       AssessmentGet::getBoltOnAdjournedHearingFee),
   CMRH_ORAL(
-      claim -> new ClaimReportedAndCalculatedValues(
-          claim.reportedCmrhOralCount(), claim.initialCalculatedCmrhOral()),
+      claim ->
+          new ClaimReportedAndCalculatedValues(
+              claim.reportedCmrhOralCount(), claim.initialCalculatedCmrhOral()),
       AssessmentGet::getBoltOnCmrhOralFee),
   CMRH_TELEPHONE(
-      claim -> new ClaimReportedAndCalculatedValues(
-          claim.reportedCmrhTelephoneCount(), claim.initialCalculatedCmrhTelephone()),
+      claim ->
+          new ClaimReportedAndCalculatedValues(
+              claim.reportedCmrhTelephoneCount(), claim.initialCalculatedCmrhTelephone()),
       AssessmentGet::getBoltOnCmrhTelephoneFee),
   // London rate not stored from fee calculation, reusing users entered value as it cannot be
   // modified.
   LONDON_RATE(
-      claim -> new ClaimReportedAndCalculatedValues(
-          claim.reportedLondonRateIndicator(), claim.reportedLondonRateIndicator())),
-  HOME_OFFICE_INTERVIEW(
       claim ->
-          new ClaimReportedAndCalculatedValues(claim.initialCalculatedHomeOfficeInterview()),
+          new ClaimReportedAndCalculatedValues(
+              claim.reportedLondonRateIndicator(), claim.reportedLondonRateIndicator())),
+  HOME_OFFICE_INTERVIEW(
+      claim -> new ClaimReportedAndCalculatedValues(claim.initialCalculatedHomeOfficeInterview()),
       AssessmentGet::getBoltOnHomeOfficeInterviewFee),
   SUBSTANTIVE_HEARING(
-      claim ->
-          new ClaimReportedAndCalculatedValues(claim.initialCalculatedSubstantiveHearing()),
+      claim -> new ClaimReportedAndCalculatedValues(claim.initialCalculatedSubstantiveHearing()),
       AssessmentGet::getBoltOnSubstantiveHearingFee),
   VAT_INDICATOR(
       claim ->
@@ -101,8 +103,7 @@ public enum LegalHelpClaimDetailsViewField implements ClaimViewField<LegalHelpCl
       claim -> new ClaimReportedAndCalculatedValues(claim.initialCalculatedTotalVat()),
       AssessmentGet::getAllowedTotalVat),
   TOTAL_INCLUDING_VAT(
-      claim ->
-          new ClaimReportedAndCalculatedValues(claim.initialCalculatedTotalIncludingVat()),
+      claim -> new ClaimReportedAndCalculatedValues(claim.initialCalculatedTotalIncludingVat()),
       AssessmentGet::getAllowedTotalInclVat);
 
   private final Function<LegalHelpClaimDetails, Object> reportedAndCalculatedAccessor;
