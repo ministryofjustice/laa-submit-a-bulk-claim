@@ -63,7 +63,7 @@ class MediationClaimDetailsViewFieldTest {
     assertThat(row.initialCalculated()).isEqualTo(new BigDecimal("50.00"));
 
     ClaimFieldRow fieldRow = new ClaimFieldRow(row, null);
-    assertThat(fieldRow.getReportedDisplay()).isEqualTo(ClaimFieldRow.NOT_APPLICABLE);
+    assertThat(fieldRow.reported()).isNull();
   }
 
   @Test
