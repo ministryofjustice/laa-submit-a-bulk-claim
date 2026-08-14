@@ -36,8 +36,8 @@ public class SearchE2ETest extends BaseTest {
 
     assertThat(searchPage.getResultsTable()).isVisible();
 
-    assertTableContainsHeaders("Date submitted", "Office account", "Area of law", "Submission period", "Status"
-    );
+    assertTableContainsHeaders(
+        "Date submitted", "Office account", "Area of law", "Submission period", "Status");
 
   }
 }
