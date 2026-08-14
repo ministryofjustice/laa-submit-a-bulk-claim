@@ -31,9 +31,7 @@ public enum LegalHelpClaimDetailsViewField implements ClaimViewField<LegalHelpCl
       AssessmentGet::getFixedFeeAmount),
   // Profit costs doesn't show an initial calculated value, so null here is intentional.
   PROFIT_COSTS(
-      claim ->
-          new ClaimReportedAndCalculatedValues(
-              claim.reportedProfitCosts(), null),
+      claim -> new ClaimReportedAndCalculatedValues(claim.reportedProfitCosts(), null),
       AssessmentGet::getNetProfitCostsAmount),
   DISBURSEMENTS(
       claim ->
@@ -60,26 +58,20 @@ public enum LegalHelpClaimDetailsViewField implements ClaimViewField<LegalHelpCl
               claim.initialCalculatedDetentionTravelWaitingCosts()),
       AssessmentGet::getDetentionTravelAndWaitingCostsAmount),
   JR_FORM_FILLING(
-      claim ->
-          new ClaimReportedAndCalculatedValues(claim.initialCalculatedJrFormFilling()),
+      claim -> new ClaimReportedAndCalculatedValues(claim.initialCalculatedJrFormFilling()),
       AssessmentGet::getJrFormFillingAmount),
   ADJOURNED_HEARING_FEE(
-      claim ->
-          new ClaimReportedAndCalculatedValues(claim.initialCalculatedAdjournedHearingFee()),
+      claim -> new ClaimReportedAndCalculatedValues(claim.initialCalculatedAdjournedHearingFee()),
       AssessmentGet::getBoltOnAdjournedHearingFee),
   CMRH_ORAL(
-      claim ->
-          new ClaimReportedAndCalculatedValues(claim.initialCalculatedCmrhOral()),
+      claim -> new ClaimReportedAndCalculatedValues(claim.initialCalculatedCmrhOral()),
       AssessmentGet::getBoltOnCmrhOralFee),
   CMRH_TELEPHONE(
-      claim ->
-          new ClaimReportedAndCalculatedValues(claim.initialCalculatedCmrhTelephone()),
+      claim -> new ClaimReportedAndCalculatedValues(claim.initialCalculatedCmrhTelephone()),
       AssessmentGet::getBoltOnCmrhTelephoneFee),
   // London rate not stored from fee calculation, reusing users entered value as it cannot be
   // modified anyways.
-  LONDON_RATE(
-      claim ->
-          new ClaimReportedAndCalculatedValues(claim.reportedLondonRateIndicator())),
+  LONDON_RATE(claim -> new ClaimReportedAndCalculatedValues(claim.reportedLondonRateIndicator())),
   HOME_OFFICE_INTERVIEW(
       claim -> new ClaimReportedAndCalculatedValues(claim.initialCalculatedHomeOfficeInterview()),
       AssessmentGet::getBoltOnHomeOfficeInterviewFee),

@@ -30,9 +30,7 @@ public enum CrimeLowerClaimDetailsViewField implements ClaimViewField<CrimeLower
       AssessmentGet::getFixedFeeAmount),
   // Profit costs doesn't show an initial calculated value, so null here is intentional.
   PROFIT_COSTS(
-      claim ->
-          new ClaimReportedAndCalculatedValues(
-              claim.reportedProfitCosts(), null),
+      claim -> new ClaimReportedAndCalculatedValues(claim.reportedProfitCosts(), null),
       AssessmentGet::getNetProfitCostsAmount),
   DISBURSEMENTS(
       claim ->

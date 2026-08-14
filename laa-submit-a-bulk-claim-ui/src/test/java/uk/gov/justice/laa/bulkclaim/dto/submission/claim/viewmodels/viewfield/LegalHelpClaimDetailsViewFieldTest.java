@@ -17,7 +17,8 @@ class LegalHelpClaimDetailsViewFieldTest {
   @Test
   @DisplayName("Should read plain summary values via the accessor")
   void shouldReadSummaryValue() {
-    LegalHelpClaimDetails details = LegalHelpClaimDetails.builder().clientForename("Jane").clientSurname("Surname").build();
+    LegalHelpClaimDetails details =
+        LegalHelpClaimDetails.builder().clientForename("Jane").clientSurname("Surname").build();
 
     Object value =
         LegalHelpClaimDetailsViewField.CLIENT_NAME
