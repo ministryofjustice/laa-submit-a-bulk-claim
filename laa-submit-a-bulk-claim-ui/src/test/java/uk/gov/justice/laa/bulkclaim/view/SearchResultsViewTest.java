@@ -1,5 +1,6 @@
 package uk.gov.justice.laa.bulkclaim.view;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.params.provider.Arguments.of;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
@@ -10,7 +11,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import java.util.stream.Stream;
+import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -29,8 +32,10 @@ import uk.gov.justice.laa.bulkclaim.util.PaginationLinksBuilder;
 import uk.gov.justice.laa.bulkclaim.util.PaginationUtil;
 import uk.gov.justice.laa.bulkclaim.util.SubmissionPeriodUtil;
 import uk.gov.justice.laa.bulkclaim.validation.SubmissionSearchValidator;
+import uk.gov.justice.laa.dstew.payments.claimsdata.model.AreaOfLaw;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.Page;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionBase;
+import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionStatus;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionsResultSet;
 
 @WebMvcTest(SearchController.class)
@@ -57,7 +62,6 @@ class SearchResultsViewTest extends ViewTestBase {
   void searchResultsHasDefaultSortableHeaders() {
     mockSearchResults(0, 1, 1);
     var doc = renderDocumentWithParams(baseSearchResultsParams());
-
     Elements headers = getTableHeaders(doc);
 
     assertTableHeaderIsSortable(
@@ -291,5 +295,101 @@ class SearchResultsViewTest extends ViewTestBase {
 
   private org.jsoup.nodes.Document renderSearchResultsWithSort(int page, String sort) {
     return renderDocumentWithParams(searchResultsParams(page, sort));
+  }
+
+  @Test
+  void searchResultsDisplaysNoResultsMessage() {
+    mockEmptySearchResults();
+    var doc = renderDocumentWithParams(baseSearchResultsParams());
+    assertPageHasContent(doc, "No submissions were found.");
+  }
+
+  @Test
+  void searchResultsDisplaysResultCount() {
+    mockSearchResults(0, 1, 3);
+    var doc = renderDocumentWithParams(baseSearchResultsParams());
+    assertPageHasContent(doc, "3 Search results");
+  }
+
+  @Test
+  void searchResultsDisplaysSingularResultCount() {
+    mockSearchResults(0, 1, 1);
+    var doc = renderDocumentWithParams(baseSearchResultsParams());
+    assertPageHasContent(doc, "1 Search result");
+  }
+
+  @Test
+  void searchResultsDisplaysSubmissionRowData() {
+    var submission1 =
+        SubmissionBase.builder()
+            .submissionId(submissionId)
+            .officeAccountNumber("12345")
+            .areaOfLaw(AreaOfLaw.CRIME_LOWER)
+            .status(SubmissionStatus.VALIDATION_SUCCEEDED)
+            .build();
+    var submission2 =
+        SubmissionBase.builder()
+            .submissionId(UUID.randomUUID())
+            .officeAccountNumber("12345")
+            .areaOfLaw(AreaOfLaw.MEDIATION)
+            .status(SubmissionStatus.VALIDATION_SUCCEEDED)
+            .build();
+
+    when(submissionPeriodUtil.getSubmissionPeriod(any())).thenReturn("January 2024");
+    mockSearchResultsWithSubmissions(List.of(submission1, submission2), 1);
+
+    var doc = renderDocumentWithParams(baseSearchResultsParams());
+
+    Elements rows = doc.select("table.govuk-table tbody tr");
+
+    List<Element> cells1 = rows.get(0).select("td").stream().toList();
+    assertCellContainsText(cells1.get(1), "12345");
+    assertCellContainsText(cells1.get(2), "Crime lower");
+    assertCellContainsText(cells1.get(3), "January 2024");
+    assertCellContainsText(cells1.get(4), "Validation succeeded");
+
+    List<Element> cells2 = rows.get(1).select("td").stream().toList();
+    assertCellContainsText(cells2.get(1), "12345");
+    assertCellContainsText(cells2.get(2), "Mediation");
+    assertCellContainsText(cells2.get(3), "January 2024");
+    assertCellContainsText(cells2.get(4), "Validation succeeded");
+
+    assertEquals(2, rows.size());
+  }
+
+  private void mockEmptySearchResults() {
+    var response =
+        SubmissionsResultSet.builder()
+            .content(List.of())
+            .totalElements(0)
+            .number(0)
+            .size(PAGE_SIZE)
+            .totalPages(0)
+            .build();
+    var pagination = buildPagination(0, 0, 0);
+    when(oidcAttributeUtils.getUserOffices(any())).thenReturn(List.of("1"));
+    when(claimsRestService.search(anyList(), any(), any(), any(), anyInt(), anyInt(), any()))
+        .thenReturn(Mono.just(response));
+    when(paginationUtil.fromSubmissionsResultSet(response, 0, PAGE_SIZE)).thenReturn(pagination);
+    when(paginationLinksBuilder.build(any(), any(), any(), any(Object[].class)))
+        .thenReturn(buildSearchPaginationLinks(0, 0));
+  }
+
+  private void mockSearchResultsWithSubmissions(List<SubmissionBase> submissions, int totalPages) {
+    var response =
+        SubmissionsResultSet.builder()
+            .content(submissions)
+            .totalElements(submissions.size())
+            .number(0)
+            .size(PAGE_SIZE)
+            .totalPages(totalPages)
+            .build();
+    var pagination = buildPagination(0, totalPages, submissions.size());
+    when(oidcAttributeUtils.getUserOffices(any())).thenReturn(List.of("1"));
+    when(claimsRestService.search(anyList(), any(), any(), any(), anyInt(), anyInt(), any()))
+        .thenReturn(Mono.just(response));
+    when(paginationUtil.fromSubmissionsResultSet(response, 0, PAGE_SIZE)).thenReturn(pagination);
+    when(paginationLinksBuilder.build(any(), any(), any(), any(Object[].class)))
+        .thenReturn(buildSearchPaginationLinks(0, totalPages));
   }
 }

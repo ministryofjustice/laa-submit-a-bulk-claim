@@ -15,6 +15,7 @@ public class UploadPage extends BasePage {
   private final Locator createNilSubmissionButton;
   private final Locator continueButton;
   private final Locator fileInput;
+  private final Locator searchLink;
 
   public UploadPage(Page page) {
     super(page, "Upload a bulk claim file");
@@ -26,6 +27,7 @@ public class UploadPage extends BasePage {
         page.getByRole(BUTTON, new Page.GetByRoleOptions().setName("Continue"));
 
     fileInput = page.locator("#file-input");
+    searchLink = page.locator("#search-link");
   }
 
   public void uploadFile(Path filePath) {
