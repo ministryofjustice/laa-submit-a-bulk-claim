@@ -75,7 +75,7 @@ public final class GetClaimV2PactTest extends AbstractPactTest {
                     body -> {
                       body.uuid("id", CLAIM_ID);
                       body.uuid("submission_id", SUBMISSION_ID);
-                      body.stringType("area_of_law", "LEGAL_HELP");
+                      body.stringType("area_of_law", "LEGAL HELP");
                       body.stringType("derived_claim_status", "READY_TO_PROCESS");
                       body.stringType("office_code", "string");
                       body.datetime("date_submitted", "yyyy-MM-dd'T'HH:mm:ssXXX");
@@ -83,6 +83,7 @@ public final class GetClaimV2PactTest extends AbstractPactTest {
                       body.stringType("case_start_date", "string");
                       body.stringType("case_concluded_date", "string");
                       body.stringType("matter_type_code", "string");
+                      body.stringType("crime_matter_type_code", "string");
                       body.stringType("fee_code", "string");
                       body.stringType("representation_order_date", "string");
                       body.stringType("stage_reached_code", "string");
@@ -95,9 +96,12 @@ public final class GetClaimV2PactTest extends AbstractPactTest {
                       body.stringType("client_2_ucn", "string");
                       body.numberType("net_profit_costs_amount", 0);
                       body.numberType("net_disbursement_amount", 0);
+                      body.numberType("net_counsel_costs_amount", 0);
                       body.numberType("disbursements_vat_amount", 0);
                       body.numberType("travel_waiting_costs_amount", 0);
                       body.numberType("net_waiting_costs_amount", 0);
+                      body.numberType("detention_travel_waiting_costs_amount", 0);
+                      body.numberType("jr_form_filling_amount", 0);
                       body.booleanType("is_vat_applicable", true);
                       body.booleanType("is_london_rate", true);
                       body.object(
