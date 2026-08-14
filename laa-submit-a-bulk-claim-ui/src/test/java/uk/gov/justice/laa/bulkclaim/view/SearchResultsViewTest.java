@@ -62,7 +62,6 @@ class SearchResultsViewTest extends ViewTestBase {
   void searchResultsHasDefaultSortableHeaders() {
     mockSearchResults(0, 1, 1);
     var doc = renderDocumentWithParams(baseSearchResultsParams());
-
     Elements headers = getTableHeaders(doc);
 
     assertTableHeaderIsSortable(
