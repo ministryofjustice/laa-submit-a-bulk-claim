@@ -3,9 +3,13 @@ package uk.gov.justice.laa.bulkclaim.e2e.base;
 import static com.microsoft.playwright.assertions.PlaywrightAssertions.assertThat;
 import static java.util.regex.Pattern.compile;
 
+import com.microsoft.playwright.Locator;
 import com.microsoft.playwright.Page;
 import java.sql.SQLException;
+import java.util.List;
+
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import uk.gov.justice.laa.bulkclaim.e2e.config.EnvConfig;
 import uk.gov.justice.laa.bulkclaim.e2e.persistence.DatabaseQueryExecutor;
@@ -68,4 +72,17 @@ public abstract class BaseTest {
   protected void assertUrlEndsWith(String expectedUrl) {
     assertThat(page).hasURL(compile(".*%s$".formatted(expectedUrl)));
   }
+
+protected void assertTableContainsHeaders(String... expectedHeaders) {
+    var actualHeaders = page.locator(".govuk-table thead th")
+            .allTextContents()
+            .stream()
+            .map(String::trim)
+            .toList();
+
+    Assertions.assertIterableEquals(
+            List.of(expectedHeaders),
+            actualHeaders,
+            "Table headers do not match");
+}
 }
