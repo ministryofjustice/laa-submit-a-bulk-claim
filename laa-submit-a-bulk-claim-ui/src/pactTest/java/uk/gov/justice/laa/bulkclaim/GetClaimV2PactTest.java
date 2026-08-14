@@ -70,9 +70,8 @@ public final class GetClaimV2PactTest extends AbstractPactTest {
         .headers(Map.of("Content-Type", "application/json"))
         .body(
             LambdaDsl.newJsonBody(
-                    // Only fields actually consumed by ClaimService / the area-of-law detail
-                    // mappers (CrimeLowerClaimDetailsMapper, LegalHelpClaimDetailsMapper,
-                    // MediationClaimDetailsMapper) are included here, to keep this pact flexible.
+                    // Only fields actually consumed by ClaimService / the ClaimDetailsMapper
+                    // are included here, to keep this pact flexible.
                     body -> {
                       body.uuid("id", CLAIM_ID);
                       body.uuid("submission_id", SUBMISSION_ID);

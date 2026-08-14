@@ -12,10 +12,8 @@ import uk.gov.justice.laa.bulkclaim.dto.submission.claim.viewmodels.viewfield.Cl
 import uk.gov.justice.laa.bulkclaim.dto.submission.claim.viewmodels.viewfield.CrimeLowerClaimDetailsViewField;
 import uk.gov.justice.laa.bulkclaim.dto.submission.claim.viewmodels.viewfield.LegalHelpClaimDetailsViewField;
 import uk.gov.justice.laa.bulkclaim.helper.TestObjectCreator;
+import uk.gov.justice.laa.bulkclaim.mapper.ClaimDetailsMapperImpl;
 import uk.gov.justice.laa.bulkclaim.mapper.ClaimMapperHelper;
-import uk.gov.justice.laa.bulkclaim.mapper.CrimeLowerClaimDetailsMapperImpl;
-import uk.gov.justice.laa.bulkclaim.mapper.LegalHelpClaimDetailsMapperImpl;
-import uk.gov.justice.laa.bulkclaim.mapper.MediationClaimDetailsMapperImpl;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.AreaOfLaw;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.AssessmentGet;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.ClaimResponseV2;
@@ -24,25 +22,13 @@ import uk.gov.justice.laa.dstew.payments.claimsdata.model.ClaimResponseV2;
 class ClaimDetailViewFactoryTest {
 
   private final ClaimDetailViewFactory factory =
-      new ClaimDetailViewFactory(
-          new CrimeLowerClaimDetailsMapperImpl(),
-          new LegalHelpClaimDetailsMapperImpl(),
-          new MediationClaimDetailsMapperImpl());
+      new ClaimDetailViewFactory(new ClaimDetailsMapperImpl());
 
   {
-    ClaimMapperHelper claimMapperHelper = new ClaimMapperHelper();
     ReflectionTestUtils.setField(
-        ReflectionTestUtils.getField(factory, "crimeLowerClaimDetailsMapper"),
+        ReflectionTestUtils.getField(factory, "claimDetailsMapper"),
         "claimMapperHelper",
-        claimMapperHelper);
-    ReflectionTestUtils.setField(
-        ReflectionTestUtils.getField(factory, "legalHelpClaimDetailsMapper"),
-        "claimMapperHelper",
-        claimMapperHelper);
-    ReflectionTestUtils.setField(
-        ReflectionTestUtils.getField(factory, "mediationClaimDetailsMapper"),
-        "claimMapperHelper",
-        claimMapperHelper);
+        new ClaimMapperHelper());
   }
 
   @Test

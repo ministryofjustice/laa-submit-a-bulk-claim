@@ -1,30 +1,27 @@
 package uk.gov.justice.laa.bulkclaim.mapper;
 
 import org.mapstruct.Context;
+import org.mapstruct.InheritConfiguration;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Named;
+import org.mapstruct.ObjectFactory;
+import uk.gov.justice.laa.bulkclaim.dto.submission.claim.viewmodels.ClaimDetails;
+import uk.gov.justice.laa.bulkclaim.dto.submission.claim.viewmodels.CrimeLowerClaimDetails;
 import uk.gov.justice.laa.bulkclaim.dto.submission.claim.viewmodels.LegalHelpClaimDetails;
+import uk.gov.justice.laa.bulkclaim.dto.submission.claim.viewmodels.MediationClaimDetails;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.AssessmentGet;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.ClaimResponseV2;
 
 @Mapper(componentModel = "spring", uses = ClaimMapperHelper.class)
-public interface LegalHelpClaimDetailsMapper {
+public interface ClaimDetailsMapper {
 
   @Mapping(target = ".", source = "claimResponse")
   @Mapping(target = "officeCode", source = "claimResponse.officeCode")
-  @Mapping(target = "categoryOfLaw", source = "claimResponse.feeCalculationResponse.categoryOfLaw")
   @Mapping(
       target = "feeCodeDescription",
       source = "claimResponse.feeCalculationResponse.feeCodeDescription")
-  @Mapping(
-      target = "escapeCase",
-      source = "claimResponse.feeCalculationResponse.boltOnDetails.escapeCaseFlag",
-      defaultValue = "false")
-  @Mapping(target = "reportedLondonRateIndicator", source = "claimResponse.isLondonRate")
-  @Mapping(target = "matterTypeCode", ignore = true)
   @Mapping(target = "fixedFee", source = "claimResponse", qualifiedByName = "fixedFee")
-  @Mapping(target = "profitCosts", source = "claimResponse", qualifiedByName = "profitCosts")
   @Mapping(target = "disbursements", source = "claimResponse", qualifiedByName = "disbursements")
   @Mapping(
       target = "disbursementsVat",
@@ -36,6 +33,30 @@ public interface LegalHelpClaimDetailsMapper {
       target = "totalIncludingVat",
       source = "claimResponse",
       qualifiedByName = "totalIncludingVat")
+  ClaimDetails toCommonClaimDetails(
+      ClaimResponseV2 claimResponse, @Context AssessmentGet currentAssessment);
+
+  @InheritConfiguration(name = "toCommonClaimDetails")
+  @Mapping(
+      target = "escapeCase",
+      source = "claimResponse.feeCalculationResponse.boltOnDetails.escapeCaseFlag",
+      defaultValue = "false")
+  @Mapping(target = "caseStartDate", ignore = true)
+  @Mapping(target = "profitCosts", source = "claimResponse", qualifiedByName = "profitCosts")
+  @Mapping(target = "travelCosts", source = "claimResponse", qualifiedByName = "travelCosts")
+  @Mapping(target = "waitingCosts", source = "claimResponse", qualifiedByName = "waitingCosts")
+  CrimeLowerClaimDetails toCrimeLowerClaimDetails(
+      ClaimResponseV2 claimResponse, @Context AssessmentGet currentAssessment);
+
+  @InheritConfiguration(name = "toCommonClaimDetails")
+  @Mapping(target = "categoryOfLaw", source = "claimResponse.feeCalculationResponse.categoryOfLaw")
+  @Mapping(
+      target = "escapeCase",
+      source = "claimResponse.feeCalculationResponse.boltOnDetails.escapeCaseFlag",
+      defaultValue = "false")
+  @Mapping(target = "reportedLondonRateIndicator", source = "claimResponse.isLondonRate")
+  @Mapping(target = "matterTypeCode", ignore = true)
+  @Mapping(target = "profitCosts", source = "claimResponse", qualifiedByName = "profitCosts")
   @Mapping(target = "counselsCosts", source = "claimResponse", qualifiedByName = "counselsCosts")
   @Mapping(
       target = "travelAndWaitingCosts",
@@ -71,6 +92,17 @@ public interface LegalHelpClaimDetailsMapper {
   LegalHelpClaimDetails toLegalHelpClaimDetails(
       ClaimResponseV2 claimResponse, @Context AssessmentGet currentAssessment);
 
+  @InheritConfiguration(name = "toCommonClaimDetails")
+  @Mapping(target = "clientForename", source = "claimResponse.clientForename")
+  @Mapping(target = "clientSurname", source = "claimResponse.clientSurname")
+  @Mapping(target = "uniqueClientNumber", source = "claimResponse.uniqueClientNumber")
+  @Mapping(target = "client2Forename", source = "claimResponse.client2Forename")
+  @Mapping(target = "client2Surname", source = "claimResponse.client2Surname")
+  @Mapping(target = "client2UniqueClientNumber", source = "claimResponse.client2Ucn")
+  @Mapping(target = "uniqueFileNumber", ignore = true)
+  MediationClaimDetails toMediationClaimDetails(
+      ClaimResponseV2 claimResponse, @Context AssessmentGet currentAssessment);
+
   @Named("matterTypeCodeOne")
   static String matterTypeCodeOne(String matterTypeCode) {
     if (matterTypeCode == null) {
@@ -85,5 +117,14 @@ public interface LegalHelpClaimDetailsMapper {
       return null;
     }
     return matterTypeCode.split(":")[1];
+  }
+
+  @ObjectFactory
+  default ClaimDetails createClaimDetails(ClaimResponseV2 claimResponse) {
+    return switch (claimResponse.getAreaOfLaw()) {
+      case CRIME_LOWER -> new CrimeLowerClaimDetails();
+      case LEGAL_HELP -> new LegalHelpClaimDetails();
+      case MEDIATION -> new MediationClaimDetails();
+    };
   }
 }
