@@ -72,16 +72,15 @@ public abstract class BaseTest {
     assertThat(page).hasURL(compile(".*%s$".formatted(expectedUrl)));
   }
 
-protected void assertTableContainsHeaders(String... expectedHeaders) {
-    var actualHeaders = page.locator(".govuk-table thead th")
-            .allTextContents()
-            .stream()
+  protected void assertTableContainsHeaders(String... expectedHeaders) {
+    var actualHeaders =
+        page.locator(".govuk-table thead th").allTextContents().stream()
             .map(String::trim)
             .toList();
 
     Assertions.assertIterableEquals(
-            List.of(expectedHeaders),
-            actualHeaders,
-            "Table headers do not match");
-}
+        List.of(expectedHeaders),
+        actualHeaders,
+        "Table headers do not match");
+  }
 }
