@@ -1,60 +1,24 @@
 package uk.gov.justice.laa.bulkclaim.dto.submission.claim.viewmodels;
 
-import java.math.BigDecimal;
-import java.time.OffsetDateTime;
-import lombok.Builder;
-import uk.gov.justice.laa.dstew.payments.claimsdata.model.AreaOfLaw;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
 
-@Builder
-public record LegalHelpClaimDetails(
-    // Page header / summary fields
-    String clientForename,
-    String clientSurname,
-    String uniqueFileNumber,
-    String officeCode,
-    OffsetDateTime dateSubmitted,
-    AreaOfLaw areaOfLaw,
-    String categoryOfLaw,
-    String feeCode,
-    String feeCodeDescription,
-    String matterTypeCodeOne,
-    String matterTypeCodeTwo,
-    String caseStartDate,
-    String caseConcludedDate,
-    Boolean escapeCase,
+@EqualsAndHashCode(callSuper = true)
+@Data
+public class LegalHelpClaimDetails extends ClaimDetails {
 
-    // Values - Reported column
-    BigDecimal reportedProfitCosts,
-    BigDecimal reportedDisbursements,
-    BigDecimal reportedDisbursementsVat,
-    BigDecimal reportedCounselsCosts,
-    BigDecimal reportedTravelAndWaitingCosts,
-    BigDecimal reportedDetentionTravelWaitingCosts,
-    BigDecimal reportedJrFormFilling,
-    Boolean reportedVatApplicable,
-    Boolean reportedLondonRateIndicator,
+  private String categoryOfLaw;
+  private String matterTypeCodeOne;
+  private String matterTypeCodeTwo;
+  private Boolean reportedLondonRateIndicator;
 
-    // Values - Initial calculated column
-    BigDecimal initialCalculatedFixedFee,
-    BigDecimal initialCalculatedProfitCosts,
-    BigDecimal initialCalculatedDisbursements,
-    BigDecimal initialCalculatedDisbursementsVat,
-    BigDecimal initialCalculatedCounselsCosts,
-    BigDecimal initialCalculatedTravelAndWaitingCosts,
-    BigDecimal initialCalculatedDetentionTravelWaitingCosts,
-    BigDecimal initialCalculatedJrFormFilling,
-    BigDecimal initialCalculatedAdjournedHearingFee,
-    BigDecimal initialCalculatedCmrhOral,
-    BigDecimal initialCalculatedCmrhTelephone,
-    BigDecimal initialCalculatedHomeOfficeInterview,
-    BigDecimal initialCalculatedSubstantiveHearing,
-    Boolean initialCalculatedVatIndicator,
-
-    // Total allowed value
-    BigDecimal initialCalculatedTotalVat,
-    BigDecimal initialCalculatedTotalIncludingVat) {
-
-  public String clientName() {
-    return "%s %s".formatted(clientForename, clientSurname);
-  }
+  private ClaimField counselsCosts;
+  private ClaimField travelAndWaitingCosts;
+  private ClaimField detentionTravelWaitingCosts;
+  private ClaimField jrFormFilling;
+  private ClaimField adjournedHearingFee;
+  private ClaimField cmrhOral;
+  private ClaimField cmrhTelephone;
+  private ClaimField homeOfficeInterview;
+  private ClaimField substantiveHearing;
 }

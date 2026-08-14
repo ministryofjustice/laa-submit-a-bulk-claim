@@ -21,6 +21,7 @@ import uk.gov.justice.laa.bulkclaim.builder.SubmissionMessagesBuilder;
 import uk.gov.justice.laa.bulkclaim.client.DataClaimsRestClient;
 import uk.gov.justice.laa.bulkclaim.client.DataClaimsRestClientV2;
 import uk.gov.justice.laa.bulkclaim.controller.ClaimDetailController;
+import uk.gov.justice.laa.bulkclaim.dto.submission.claim.viewmodels.ClaimField;
 import uk.gov.justice.laa.bulkclaim.dto.submission.claim.viewmodels.ClaimStatusBanner;
 import uk.gov.justice.laa.bulkclaim.dto.submission.claim.viewmodels.CrimeLowerClaimDetails;
 import uk.gov.justice.laa.bulkclaim.dto.submission.messages.MessageRow;
@@ -62,22 +63,30 @@ class ClaimDetailCrimeLowerViewTest extends ViewTestBase {
     session.setAttribute(SUBMISSION_ID, submissionId);
     session.setAttribute(CLAIM_ID, claimId);
 
-    details =
-        CrimeLowerClaimDetails.builder()
-            .clientForename("K")
-            .clientSurname("Will")
-            .uniqueFileNumber("271219/000")
-            .officeCode("ABC123")
-            .feeCode("INVC")
-            .feeCodeDescription("Police station: attendance")
-            .matterTypeCode("INVC")
-            .representationOrderDate("2025-02-10")
-            .stageReachedCode("INVC")
-            .outcomeCode("CN01")
-            .caseConcludedDate("2025-02-01")
-            .escapeCase(true)
-            .areaOfLaw(AreaOfLaw.CRIME_LOWER)
-            .build();
+    details = new CrimeLowerClaimDetails();
+    details.setClientForename("K");
+    details.setClientSurname("Will");
+    details.setUniqueFileNumber("271219/000");
+    details.setOfficeCode("ABC123");
+    details.setFeeCode("INVC");
+    details.setFeeCodeDescription("Police station: attendance");
+    details.setCrimeMatterTypeCode("INVC");
+    details.setRepresentationOrderDate("2025-02-10");
+    details.setStageReachedCode("INVC");
+    details.setOutcomeCode("CN01");
+    details.setCaseConcludedDate("2025-02-01");
+    details.setEscapeCase(true);
+    details.setAreaOfLaw(AreaOfLaw.CRIME_LOWER);
+    ClaimField emptyField = new ClaimField(null, null, null);
+    details.setFixedFee(emptyField);
+    details.setProfitCosts(emptyField);
+    details.setDisbursements(emptyField);
+    details.setDisbursementsVat(emptyField);
+    details.setVat(emptyField);
+    details.setTotalVat(emptyField);
+    details.setTotalIncludingVat(emptyField);
+    details.setTravelCosts(emptyField);
+    details.setWaitingCosts(emptyField);
 
     when(dataClaimsRestClient.getClaimHistory(eq(claimId)))
         .thenReturn(Mono.just(ClaimHistoryResultSet.builder().events(List.of()).build()));

@@ -21,6 +21,7 @@ import uk.gov.justice.laa.bulkclaim.builder.SubmissionMessagesBuilder;
 import uk.gov.justice.laa.bulkclaim.client.DataClaimsRestClient;
 import uk.gov.justice.laa.bulkclaim.client.DataClaimsRestClientV2;
 import uk.gov.justice.laa.bulkclaim.controller.ClaimDetailController;
+import uk.gov.justice.laa.bulkclaim.dto.submission.claim.viewmodels.ClaimField;
 import uk.gov.justice.laa.bulkclaim.dto.submission.claim.viewmodels.ClaimStatusBanner;
 import uk.gov.justice.laa.bulkclaim.dto.submission.claim.viewmodels.MediationClaimDetails;
 import uk.gov.justice.laa.bulkclaim.dto.submission.messages.MessageRow;
@@ -62,24 +63,33 @@ class ClaimDetailMediationViewTest extends ViewTestBase {
     session.setAttribute(SUBMISSION_ID, submissionId);
     session.setAttribute(CLAIM_ID, claimId);
 
-    details =
-        MediationClaimDetails.builder()
-            .client1Forename("Sally")
-            .client1Surname("Jenkins")
-            .client1UniqueClientNumber("02122002/S/JENK")
-            .feeCode("ASST")
-            .feeCodeDescription("Assessment Together")
-            .officeCode("ABC123")
-            .areaOfLaw(AreaOfLaw.MEDIATION)
-            .matterTypeCode("ASST-ASST")
-            .caseStartDate("2025-01-15")
-            .caseConcludedDate("2025-02-01")
-            .build();
+    details = new MediationClaimDetails();
+    details.setClientForename("Sally");
+    details.setClientSurname("Jenkins");
+    details.setUniqueClientNumber("02122002/S/JENK");
+    details.setFeeCode("ASST");
+    details.setFeeCodeDescription("Assessment Together");
+    details.setOfficeCode("ABC123");
+    details.setAreaOfLaw(AreaOfLaw.MEDIATION);
+    details.setMatterTypeCode("ASST-ASST");
+    details.setCaseStartDate("2025-01-15");
+    details.setCaseConcludedDate("2025-02-01");
+    setEmptyValueFields(details);
 
     when(dataClaimsRestClient.getClaimHistory(eq(claimId)))
         .thenReturn(Mono.just(ClaimHistoryResultSet.builder().events(List.of()).build()));
     when(submissionMessagesBuilder.buildAllWarnings(submissionId, claimId))
         .thenReturn(MessagesSummary.builder().messages(List.of()).build());
+  }
+
+  private void setEmptyValueFields(MediationClaimDetails details) {
+    ClaimField emptyField = new ClaimField(null, null, null);
+    details.setFixedFee(emptyField);
+    details.setDisbursements(emptyField);
+    details.setDisbursementsVat(emptyField);
+    details.setVat(emptyField);
+    details.setTotalVat(emptyField);
+    details.setTotalIncludingVat(emptyField);
   }
 
   private void stubClaim(
@@ -121,22 +131,21 @@ class ClaimDetailMediationViewTest extends ViewTestBase {
   @Test
   @DisplayName("Renders Client 2 details in the header and summary table when present")
   void shouldRenderClient2WhenPresent() {
-    details =
-        MediationClaimDetails.builder()
-            .client1Forename("Sally")
-            .client1Surname("Jenkins")
-            .client1UniqueClientNumber("02122002/S/JENK")
-            .client2Forename("John")
-            .client2Surname("Smith")
-            .client2UniqueClientNumber("02122002/J/SMIT")
-            .feeCode("ASST")
-            .feeCodeDescription("Assessment Together")
-            .officeCode("ABC123")
-            .areaOfLaw(AreaOfLaw.MEDIATION)
-            .matterTypeCode("ASST-ASST")
-            .caseStartDate("2025-01-15")
-            .caseConcludedDate("2025-02-01")
-            .build();
+    details = new MediationClaimDetails();
+    details.setClientForename("Sally");
+    details.setClientSurname("Jenkins");
+    details.setUniqueClientNumber("02122002/S/JENK");
+    details.setClient2Forename("John");
+    details.setClient2Surname("Smith");
+    details.setClient2UniqueClientNumber("02122002/J/SMIT");
+    details.setFeeCode("ASST");
+    details.setFeeCodeDescription("Assessment Together");
+    details.setOfficeCode("ABC123");
+    details.setAreaOfLaw(AreaOfLaw.MEDIATION);
+    details.setMatterTypeCode("ASST-ASST");
+    details.setCaseStartDate("2025-01-15");
+    details.setCaseConcludedDate("2025-02-01");
+    setEmptyValueFields(details);
     stubClaim(DerivedClaimStatus.READY_TO_PROCESS, Optional.empty());
 
     Document doc = renderDocument();

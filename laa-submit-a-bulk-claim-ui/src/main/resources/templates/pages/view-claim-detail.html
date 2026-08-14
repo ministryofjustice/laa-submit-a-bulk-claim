@@ -21,29 +21,35 @@
             th:text="${claimDetailView.pageTitle()}"/>
         <th:block th:unless="${areaOfLaw == 'MEDIATION'}">
           <p class="govuk-body">
-            <span class="govuk-!-font-weight-bold" th:text="|#{viewClaim.summary.ufn}:|"></span>
-            <th:block th:text="${claimDetailView.summaryRows()['UNIQUE_FILE_NUMBER']}"></th:block>
+            <span class="govuk-!-font-weight-bold" th:text="#{viewClaim.summary.ufn}"></span>
+            <th:block
+                th:text="${@thymeleafUtils.getFormattedValue(claimDetailView.getUFN()).resolve(#messages)}"></th:block>
             <br/>
-            <span class="govuk-!-font-weight-bold" th:text="|#{viewClaim.summary.feeCode}:|"></span>
-            <th:block th:text="${claimDetailView.summaryRows()['FEE_CODE']}"></th:block>
+            <span class="govuk-!-font-weight-bold" th:text="#{viewClaim.summary.feeCode}"></span>
+            <th:block
+                th:text="${@thymeleafUtils.getFormattedValue(claimDetailView.getFeeCode()).resolve(#messages)}"></th:block>
           </p>
         </th:block>
         <th:block th:if="${areaOfLaw == 'MEDIATION'}">
           <p class="govuk-body">
             <span class="govuk-!-font-weight-bold"
-                  th:text="|#{viewClaim.summary.clientName1}:|"></span>
-            <th:block th:text="${claimDetailView.summaryRows()['CLIENT_1_NAME']}"></th:block>
+                  th:text="#{viewClaim.summary.clientName1}"></span>
+            <th:block
+                th:text="${@thymeleafUtils.getFormattedValue(claimDetailView.getClient1Name()).resolve(#messages)}"></th:block>
             <br/>
-            <span class="govuk-!-font-weight-bold" th:text="|#{viewClaim.summary.ucn1}:|"></span>
-            <th:block th:text="${claimDetailView.summaryRows()['CLIENT_1_UCN']}"></th:block>
+            <span class="govuk-!-font-weight-bold" th:text="#{viewClaim.summary.ucn1}"></span>
+            <th:block
+                th:text="${@thymeleafUtils.getFormattedValue(claimDetailView.getClient1UCN()).resolve(#messages)}"></th:block>
           </p>
           <p class="govuk-body">
             <span class="govuk-!-font-weight-bold"
-                  th:text="|#{viewClaim.summary.clientName2}:|"></span>
-            <th:block th:text="${claimDetailView.summaryRows()['CLIENT_2_NAME']}"></th:block>
+                  th:text="#{viewClaim.summary.clientName2}"></span>
+            <th:block
+                th:text="${@thymeleafUtils.getFormattedValue(claimDetailView.getClient2Name()).resolve(#messages)}"></th:block>
             <br/>
-            <span class="govuk-!-font-weight-bold" th:text="|#{viewClaim.summary.ucn2}:|"></span>
-            <th:block th:text="${claimDetailView.summaryRows()['CLIENT_2_UCN']}"></th:block>
+            <span class="govuk-!-font-weight-bold" th:text="#{viewClaim.summary.ucn2}"></span>
+            <th:block
+                th:text="${@thymeleafUtils.getFormattedValue(claimDetailView.getClient2UCN()).resolve(#messages)}"></th:block>
           </p>
         </th:block>
       </div>

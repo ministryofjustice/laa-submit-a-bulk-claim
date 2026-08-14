@@ -2,11 +2,14 @@ package uk.gov.justice.laa.bulkclaim.mapper;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.math.BigDecimal;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.test.util.ReflectionTestUtils;
 import uk.gov.justice.laa.bulkclaim.dto.submission.claim.viewmodels.LegalHelpClaimDetails;
 import uk.gov.justice.laa.bulkclaim.helper.TestObjectCreator;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.AreaOfLaw;
+import uk.gov.justice.laa.dstew.payments.claimsdata.model.AssessmentGet;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.ClaimResponseV2;
 
 @DisplayName("Legal help claim details mapper test")
@@ -14,92 +17,94 @@ class LegalHelpClaimDetailsMapperTest {
 
   LegalHelpClaimDetailsMapper mapper = new LegalHelpClaimDetailsMapperImpl();
 
+  {
+    ReflectionTestUtils.setField(mapper, "claimMapperHelper", new ClaimMapperHelper());
+  }
+
   @Test
   @DisplayName("Should map summary fields from the claim")
   void shouldMapSummaryFields() {
     ClaimResponseV2 claimResponse = TestObjectCreator.buildClaimResponseV2(AreaOfLaw.LEGAL_HELP);
 
-    LegalHelpClaimDetails result = mapper.toLegalHelpClaimDetails(claimResponse);
+    LegalHelpClaimDetails result = mapper.toLegalHelpClaimDetails(claimResponse, null);
 
-    assertThat(result.clientForename()).isEqualTo(claimResponse.getClientForename());
-    assertThat(result.clientSurname()).isEqualTo(claimResponse.getClientSurname());
-    assertThat(result.uniqueFileNumber()).isEqualTo(claimResponse.getUniqueFileNumber());
-    assertThat(result.officeCode()).isEqualTo(claimResponse.getOfficeCode());
-    assertThat(result.dateSubmitted()).isEqualTo(claimResponse.getDateSubmitted());
-    assertThat(result.areaOfLaw()).isEqualTo(AreaOfLaw.LEGAL_HELP);
-    assertThat(result.categoryOfLaw())
+    assertThat(result.getClientForename()).isEqualTo(claimResponse.getClientForename());
+    assertThat(result.getClientSurname()).isEqualTo(claimResponse.getClientSurname());
+    assertThat(result.getUniqueFileNumber()).isEqualTo(claimResponse.getUniqueFileNumber());
+    assertThat(result.getOfficeCode()).isEqualTo(claimResponse.getOfficeCode());
+    assertThat(result.getDateSubmitted()).isEqualTo(claimResponse.getDateSubmitted());
+    assertThat(result.getAreaOfLaw()).isEqualTo(AreaOfLaw.LEGAL_HELP);
+    assertThat(result.getCategoryOfLaw())
         .isEqualTo(claimResponse.getFeeCalculationResponse().getCategoryOfLaw());
-    assertThat(result.feeCode()).isEqualTo(claimResponse.getFeeCode());
-    assertThat(result.feeCodeDescription())
+    assertThat(result.getFeeCode()).isEqualTo(claimResponse.getFeeCode());
+    assertThat(result.getFeeCodeDescription())
         .isEqualTo(claimResponse.getFeeCalculationResponse().getFeeCodeDescription());
-    assertThat(result.matterTypeCodeOne())
+    assertThat(result.getMatterTypeCode()).isNull();
+    assertThat(result.getMatterTypeCodeOne())
         .isEqualTo(claimResponse.getMatterTypeCode().split(":")[0]);
-    assertThat(result.matterTypeCodeTwo())
+    assertThat(result.getMatterTypeCodeTwo())
         .isEqualTo(claimResponse.getMatterTypeCode().split(":")[1]);
-    assertThat(result.caseStartDate()).isEqualTo(claimResponse.getCaseStartDate());
-    assertThat(result.caseConcludedDate()).isEqualTo(claimResponse.getCaseConcludedDate());
-    assertThat(result.escapeCase()).isTrue();
+    assertThat(result.getCaseStartDate()).isEqualTo(claimResponse.getCaseStartDate());
+    assertThat(result.getCaseConcludedDate()).isEqualTo(claimResponse.getCaseConcludedDate());
+    assertThat(result.getEscapeCase()).isTrue();
+    assertThat(result.getReportedLondonRateIndicator()).isEqualTo(claimResponse.getIsLondonRate());
   }
 
   @Test
-  @DisplayName("Should map reported values from the claim")
-  void shouldMapReportedValues() {
-    ClaimResponseV2 claimResponse = TestObjectCreator.buildClaimResponseV2(AreaOfLaw.LEGAL_HELP);
-
-    LegalHelpClaimDetails result = mapper.toLegalHelpClaimDetails(claimResponse);
-
-    assertThat(result.reportedProfitCosts()).isEqualTo(claimResponse.getNetProfitCostsAmount());
-    assertThat(result.reportedDisbursements()).isEqualTo(claimResponse.getNetDisbursementAmount());
-    assertThat(result.reportedDisbursementsVat())
-        .isEqualTo(claimResponse.getDisbursementsVatAmount());
-    assertThat(result.reportedTravelAndWaitingCosts())
-        .isEqualTo(claimResponse.getTravelWaitingCostsAmount());
-    assertThat(result.reportedDetentionTravelWaitingCosts())
-        .isEqualTo(claimResponse.getDetentionTravelWaitingCostsAmount());
-    assertThat(result.reportedJrFormFilling())
-        .isEqualTo(claimResponse.getJrFormFillingAmount());
-    assertThat(result.reportedVatApplicable()).isEqualTo(claimResponse.getIsVatApplicable());
-    assertThat(result.reportedCounselsCosts()).isEqualTo(claimResponse.getNetCounselCostsAmount());
-    assertThat(result.reportedLondonRateIndicator()).isEqualTo(claimResponse.getIsLondonRate());
-  }
-
-  @Test
-  @DisplayName("Should map initial calculated values from the fee calculation response")
-  void shouldMapInitialCalculatedValues() {
+  @DisplayName(
+      "Should populate value fields from the claim, fee calculation response and current"
+          + " assessment")
+  void shouldMapValueFields() {
     ClaimResponseV2 claimResponse = TestObjectCreator.buildClaimResponseV2(AreaOfLaw.LEGAL_HELP);
     var feeCalculation = claimResponse.getFeeCalculationResponse();
     var boltOns = feeCalculation.getBoltOnDetails();
+    AssessmentGet currentAssessment =
+        new AssessmentGet()
+            .netTravelCostsAmount(new BigDecimal("100.00"))
+            .netWaitingCostsAmount(new BigDecimal("25.50"));
 
-    LegalHelpClaimDetails result = mapper.toLegalHelpClaimDetails(claimResponse);
+    LegalHelpClaimDetails result = mapper.toLegalHelpClaimDetails(claimResponse, currentAssessment);
 
-    assertThat(result.initialCalculatedFixedFee()).isEqualTo(feeCalculation.getFixedFeeAmount());
-    assertThat(result.initialCalculatedProfitCosts())
-        .isEqualTo(feeCalculation.getNetProfitCostsAmount());
-    assertThat(result.initialCalculatedDisbursements())
-        .isEqualTo(feeCalculation.getDisbursementAmount());
-    assertThat(result.initialCalculatedDisbursementsVat())
-        .isEqualTo(feeCalculation.getDisbursementVatAmount());
-    assertThat(result.initialCalculatedCounselsCosts())
-        .isEqualTo(feeCalculation.getNetCostOfCounselAmount());
-    assertThat(result.initialCalculatedTravelAndWaitingCosts())
-        .isEqualTo(feeCalculation.getTravelAndWaitingCostsAmount());
-    assertThat(result.initialCalculatedDetentionTravelWaitingCosts())
-        .isEqualTo(feeCalculation.getDetentionTravelAndWaitingCostsAmount());
-    assertThat(result.initialCalculatedJrFormFilling())
-        .isEqualTo(feeCalculation.getJrFormFillingAmount());
-    assertThat(result.initialCalculatedAdjournedHearingFee())
-        .isEqualTo(boltOns.getBoltOnAdjournedHearingFee());
-    assertThat(result.initialCalculatedCmrhOral()).isEqualTo(boltOns.getBoltOnCmrhOralFee());
-    assertThat(result.initialCalculatedCmrhTelephone())
-        .isEqualTo(boltOns.getBoltOnCmrhTelephoneFee());
-    assertThat(result.initialCalculatedHomeOfficeInterview())
-        .isEqualTo(boltOns.getBoltOnHomeOfficeInterviewFee());
-    assertThat(result.initialCalculatedSubstantiveHearing())
-        .isEqualTo(boltOns.getBoltOnSubstantiveHearingFee());
-    assertThat(result.initialCalculatedVatIndicator()).isEqualTo(feeCalculation.getVatIndicator());
-    assertThat(result.initialCalculatedTotalVat())
+    assertThat(result.getFixedFee().initialCalculated())
+        .isEqualTo(feeCalculation.getFixedFeeAmount());
+    assertThat(result.getProfitCosts().reported())
+        .isEqualTo(claimResponse.getNetProfitCostsAmount());
+    assertThat(result.getProfitCosts().initialCalculated()).isNull();
+    assertThat(result.getDisbursements().reported())
+        .isEqualTo(claimResponse.getNetDisbursementAmount());
+    assertThat(result.getDisbursementsVat().reported())
+        .isEqualTo(claimResponse.getDisbursementsVatAmount());
+    assertThat(result.getVat().reported()).isEqualTo(claimResponse.getIsVatApplicable());
+    assertThat(result.getTotalVat().initialCalculated())
         .isEqualTo(feeCalculation.getCalculatedVatAmount());
-    assertThat(result.initialCalculatedTotalIncludingVat())
+    assertThat(result.getTotalIncludingVat().initialCalculated())
         .isEqualTo(feeCalculation.getTotalAmount());
+    assertThat(result.getCounselsCosts().reported())
+        .isEqualTo(claimResponse.getNetCounselCostsAmount());
+    assertThat(result.getCounselsCosts().initialCalculated())
+        .isEqualTo(feeCalculation.getNetCostOfCounselAmount());
+    assertThat(result.getTravelAndWaitingCosts().reported())
+        .isEqualTo(claimResponse.getTravelWaitingCostsAmount());
+    assertThat(result.getTravelAndWaitingCosts().initialCalculated())
+        .isEqualTo(feeCalculation.getTravelAndWaitingCostsAmount());
+    assertThat(result.getTravelAndWaitingCosts().assessed()).isEqualTo(new BigDecimal("125.50"));
+    assertThat(result.getDetentionTravelWaitingCosts().reported())
+        .isEqualTo(claimResponse.getDetentionTravelWaitingCostsAmount());
+    assertThat(result.getDetentionTravelWaitingCosts().initialCalculated())
+        .isEqualTo(feeCalculation.getDetentionTravelAndWaitingCostsAmount());
+    assertThat(result.getJrFormFilling().reported())
+        .isEqualTo(claimResponse.getJrFormFillingAmount());
+    assertThat(result.getJrFormFilling().initialCalculated())
+        .isEqualTo(feeCalculation.getJrFormFillingAmount());
+    assertThat(result.getAdjournedHearingFee().reported()).isNull();
+    assertThat(result.getAdjournedHearingFee().initialCalculated())
+        .isEqualTo(boltOns.getBoltOnAdjournedHearingFee());
+    assertThat(result.getCmrhOral().initialCalculated()).isEqualTo(boltOns.getBoltOnCmrhOralFee());
+    assertThat(result.getCmrhTelephone().initialCalculated())
+        .isEqualTo(boltOns.getBoltOnCmrhTelephoneFee());
+    assertThat(result.getHomeOfficeInterview().initialCalculated())
+        .isEqualTo(boltOns.getBoltOnHomeOfficeInterviewFee());
+    assertThat(result.getSubstantiveHearing().initialCalculated())
+        .isEqualTo(boltOns.getBoltOnSubstantiveHearingFee());
   }
 }

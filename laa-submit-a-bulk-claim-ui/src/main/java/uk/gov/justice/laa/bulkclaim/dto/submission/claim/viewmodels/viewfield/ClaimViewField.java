@@ -9,7 +9,6 @@ import uk.gov.justice.laa.bulkclaim.dto.submission.claim.viewmodels.ClaimDetails
 import uk.gov.justice.laa.bulkclaim.dto.submission.claim.viewmodels.CrimeLowerClaimDetails;
 import uk.gov.justice.laa.bulkclaim.dto.submission.claim.viewmodels.LegalHelpClaimDetails;
 import uk.gov.justice.laa.bulkclaim.dto.submission.claim.viewmodels.MediationClaimDetails;
-import uk.gov.justice.laa.dstew.payments.claimsdata.model.AssessmentGet;
 
 public interface ClaimViewField<T> {
 
@@ -17,18 +16,7 @@ public interface ClaimViewField<T> {
 
   String name();
 
-  default Function<T, Object> getReportedAndCalculatedAccessor() {
-    return null;
-  }
-
-  /** Reads this field's Current Calculated value from the latest assessment, where applicable. */
-  default Function<AssessmentGet, Object> getCurrentCalculatedAccessor() {
-    return null;
-  }
-
-  default Function<T, Object> getAccessor() {
-    return getReportedAndCalculatedAccessor();
-  }
+  Function<T, Object> getAccessor();
 
   default String label(MessageSource messageSource) {
     return messageSource.getMessage(LABEL_KEY_PREFIX + name(), null, name(), Locale.UK);

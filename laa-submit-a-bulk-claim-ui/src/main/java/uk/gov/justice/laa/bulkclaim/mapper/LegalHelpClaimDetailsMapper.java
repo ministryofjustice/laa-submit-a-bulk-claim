@@ -1,12 +1,14 @@
 package uk.gov.justice.laa.bulkclaim.mapper;
 
+import org.mapstruct.Context;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Named;
 import uk.gov.justice.laa.bulkclaim.dto.submission.claim.viewmodels.LegalHelpClaimDetails;
+import uk.gov.justice.laa.dstew.payments.claimsdata.model.AssessmentGet;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.ClaimResponseV2;
 
-@Mapper(componentModel = "spring")
+@Mapper(componentModel = "spring", uses = ClaimMapperHelper.class)
 public interface LegalHelpClaimDetailsMapper {
 
   @Mapping(target = ".", source = "claimResponse")
@@ -19,71 +21,55 @@ public interface LegalHelpClaimDetailsMapper {
       target = "escapeCase",
       source = "claimResponse.feeCalculationResponse.boltOnDetails.escapeCaseFlag",
       defaultValue = "false")
-  @Mapping(target = "reportedProfitCosts", source = "claimResponse.netProfitCostsAmount")
-  @Mapping(target = "reportedDisbursements", source = "claimResponse.netDisbursementAmount")
-  @Mapping(target = "reportedDisbursementsVat", source = "claimResponse.disbursementsVatAmount")
-  @Mapping(
-      target = "reportedTravelAndWaitingCosts",
-      source = "claimResponse.travelWaitingCostsAmount")
-  @Mapping(target = "reportedVatApplicable", source = "claimResponse.isVatApplicable")
   @Mapping(target = "reportedLondonRateIndicator", source = "claimResponse.isLondonRate")
+  @Mapping(target = "matterTypeCode", ignore = true)
+  @Mapping(target = "fixedFee", source = "claimResponse", qualifiedByName = "fixedFee")
+  @Mapping(target = "profitCosts", source = "claimResponse", qualifiedByName = "profitCosts")
+  @Mapping(target = "disbursements", source = "claimResponse", qualifiedByName = "disbursements")
   @Mapping(
-      target = "initialCalculatedFixedFee",
-      source = "claimResponse.feeCalculationResponse.fixedFeeAmount")
+      target = "disbursementsVat",
+      source = "claimResponse",
+      qualifiedByName = "disbursementsVat")
+  @Mapping(target = "vat", source = "claimResponse", qualifiedByName = "vat")
+  @Mapping(target = "totalVat", source = "claimResponse", qualifiedByName = "totalVat")
   @Mapping(
-      target = "initialCalculatedProfitCosts",
-      source = "claimResponse.feeCalculationResponse.netProfitCostsAmount")
+      target = "totalIncludingVat",
+      source = "claimResponse",
+      qualifiedByName = "totalIncludingVat")
+  @Mapping(target = "counselsCosts", source = "claimResponse", qualifiedByName = "counselsCosts")
   @Mapping(
-      target = "initialCalculatedDisbursements",
-      source = "claimResponse.feeCalculationResponse.disbursementAmount")
+      target = "travelAndWaitingCosts",
+      source = "claimResponse",
+      qualifiedByName = "travelAndWaitingCosts")
   @Mapping(
-      target = "initialCalculatedDisbursementsVat",
-      source = "claimResponse.feeCalculationResponse.disbursementVatAmount")
+      target = "detentionTravelWaitingCosts",
+      source = "claimResponse",
+      qualifiedByName = "detentionTravelWaitingCosts")
+  @Mapping(target = "jrFormFilling", source = "claimResponse", qualifiedByName = "jrFormFilling")
   @Mapping(
-      target = "initialCalculatedCounselsCosts",
-      source = "claimResponse.feeCalculationResponse.netCostOfCounselAmount")
+      target = "adjournedHearingFee",
+      source = "claimResponse",
+      qualifiedByName = "adjournedHearingFee")
+  @Mapping(target = "cmrhOral", source = "claimResponse", qualifiedByName = "cmrhOral")
+  @Mapping(target = "cmrhTelephone", source = "claimResponse", qualifiedByName = "cmrhTelephone")
   @Mapping(
-      target = "initialCalculatedTravelAndWaitingCosts",
-      source = "claimResponse.feeCalculationResponse.travelAndWaitingCostsAmount")
+      target = "homeOfficeInterview",
+      source = "claimResponse",
+      qualifiedByName = "homeOfficeInterview")
   @Mapping(
-      target = "initialCalculatedDetentionTravelWaitingCosts",
-      source = "claimResponse.feeCalculationResponse.detentionTravelAndWaitingCostsAmount")
-  @Mapping(
-      target = "initialCalculatedJrFormFilling",
-      source = "claimResponse.feeCalculationResponse.jrFormFillingAmount")
-  @Mapping(
-      target = "initialCalculatedAdjournedHearingFee",
-      source = "claimResponse.feeCalculationResponse.boltOnDetails.boltOnAdjournedHearingFee")
-  @Mapping(
-      target = "initialCalculatedCmrhOral",
-      source = "claimResponse.feeCalculationResponse.boltOnDetails.boltOnCmrhOralFee")
-  @Mapping(
-      target = "initialCalculatedCmrhTelephone",
-      source = "claimResponse.feeCalculationResponse.boltOnDetails.boltOnCmrhTelephoneFee")
-  @Mapping(
-      target = "initialCalculatedHomeOfficeInterview",
-      source = "claimResponse.feeCalculationResponse.boltOnDetails.boltOnHomeOfficeInterviewFee")
-  @Mapping(
-      target = "initialCalculatedSubstantiveHearing",
-      source = "claimResponse.feeCalculationResponse.boltOnDetails.boltOnSubstantiveHearingFee")
-  @Mapping(
-      target = "initialCalculatedVatIndicator",
-      source = "claimResponse.feeCalculationResponse.vatIndicator")
-  @Mapping(
-      target = "initialCalculatedTotalVat",
-      source = "claimResponse.feeCalculationResponse.calculatedVatAmount")
-  @Mapping(
-      target = "initialCalculatedTotalIncludingVat",
-      source = "claimResponse.feeCalculationResponse.totalAmount")
+      target = "substantiveHearing",
+      source = "claimResponse",
+      qualifiedByName = "substantiveHearing")
   @Mapping(
       target = "matterTypeCodeOne",
-      source = "matterTypeCode",
+      source = "claimResponse.matterTypeCode",
       qualifiedByName = "matterTypeCodeOne")
   @Mapping(
       target = "matterTypeCodeTwo",
-      source = "matterTypeCode",
+      source = "claimResponse.matterTypeCode",
       qualifiedByName = "matterTypeCodeTwo")
-  LegalHelpClaimDetails toLegalHelpClaimDetails(ClaimResponseV2 claimResponse);
+  LegalHelpClaimDetails toLegalHelpClaimDetails(
+      ClaimResponseV2 claimResponse, @Context AssessmentGet currentAssessment);
 
   @Named("matterTypeCodeOne")
   static String matterTypeCodeOne(String matterTypeCode) {

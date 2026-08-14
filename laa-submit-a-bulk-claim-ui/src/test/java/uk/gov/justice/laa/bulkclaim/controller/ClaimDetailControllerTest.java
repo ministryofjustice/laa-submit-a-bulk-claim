@@ -28,6 +28,7 @@ import uk.gov.justice.laa.bulkclaim.client.DataClaimsRestClient;
 import uk.gov.justice.laa.bulkclaim.client.DataClaimsRestClientV2;
 import uk.gov.justice.laa.bulkclaim.dto.submission.claim.ClaimFeeCalculationBreakdown;
 import uk.gov.justice.laa.bulkclaim.dto.submission.claim.ClaimSummary;
+import uk.gov.justice.laa.bulkclaim.dto.submission.claim.viewmodels.ClaimField;
 import uk.gov.justice.laa.bulkclaim.dto.submission.claim.viewmodels.CrimeLowerClaimDetails;
 import uk.gov.justice.laa.bulkclaim.dto.submission.messages.MessageRow;
 import uk.gov.justice.laa.bulkclaim.dto.submission.messages.MessagesSummary;
@@ -178,13 +179,22 @@ class ClaimDetailControllerTest extends BaseControllerTest {
     private final UUID submissionId = UUID.fromString("244fcb9f-50ab-4af8-b635-76bd30e0e97d");
 
     private void stubCommonDependencies() {
+      CrimeLowerClaimDetails details = new CrimeLowerClaimDetails();
+      ClaimField emptyField = new ClaimField(null, null, null);
+      details.setFixedFee(emptyField);
+      details.setProfitCosts(emptyField);
+      details.setDisbursements(emptyField);
+      details.setDisbursementsVat(emptyField);
+      details.setVat(emptyField);
+      details.setTotalVat(emptyField);
+      details.setTotalIncludingVat(emptyField);
+      details.setTravelCosts(emptyField);
+      details.setWaitingCosts(emptyField);
+
       when(claimService.getClaimDetailPageData(submissionId, claimId))
           .thenReturn(
               new ClaimDetailPageData(
-                  AreaOfLaw.CRIME_LOWER,
-                  false,
-                  new CrimeClaimCaseView(CrimeLowerClaimDetails.builder().build(), null),
-                  null));
+                  AreaOfLaw.CRIME_LOWER, false, new CrimeClaimCaseView(details, null), null));
     }
 
     @Test

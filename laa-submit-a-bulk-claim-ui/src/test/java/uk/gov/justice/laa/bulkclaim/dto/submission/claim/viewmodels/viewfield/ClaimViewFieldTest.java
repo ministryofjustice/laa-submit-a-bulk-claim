@@ -14,7 +14,7 @@ import uk.gov.justice.laa.bulkclaim.dto.submission.claim.viewmodels.CrimeLowerCl
 class ClaimViewFieldTest {
 
   private enum TestField implements ClaimViewField<CrimeLowerClaimDetails> {
-    UNIQUE_FILE_NUMBER(CrimeLowerClaimDetails::uniqueFileNumber);
+    UNIQUE_FILE_NUMBER(CrimeLowerClaimDetails::getUniqueFileNumber);
 
     private final Function<CrimeLowerClaimDetails, Object> accessor;
 
@@ -29,38 +29,10 @@ class ClaimViewFieldTest {
   }
 
   @Test
-  @DisplayName("Should default getReportedAndCalculatedAccessor and getCurrentCalculatedAccessor "
-      + "to null when unimplemented")
-  void shouldDefaultLegacyAccessorsToNull() {
-    assertThat(TestField.UNIQUE_FILE_NUMBER.getReportedAndCalculatedAccessor()).isNull();
-    assertThat(TestField.UNIQUE_FILE_NUMBER.getCurrentCalculatedAccessor()).isNull();
-  }
-
-  @Test
-  @DisplayName("Should default getAccessor to getReportedAndCalculatedAccessor when unimplemented")
-  void shouldDefaultGetAccessorToReportedAndCalculatedAccessor() {
-    ClaimViewField<CrimeLowerClaimDetails> field =
-        new ClaimViewField<>() {
-          @Override
-          public String name() {
-            return "FIELD";
-          }
-
-          @Override
-          public Function<CrimeLowerClaimDetails, Object> getReportedAndCalculatedAccessor() {
-            return CrimeLowerClaimDetails::uniqueFileNumber;
-          }
-        };
-
-    CrimeLowerClaimDetails claim = CrimeLowerClaimDetails.builder().uniqueFileNumber("ufn").build();
-
-    assertThat(field.getAccessor().apply(claim)).isEqualTo("ufn");
-  }
-
-  @Test
   @DisplayName("Should build an ordered field map using each field's accessor")
   void shouldBuildFieldMap() {
-    CrimeLowerClaimDetails claim = CrimeLowerClaimDetails.builder().uniqueFileNumber("ufn").build();
+    CrimeLowerClaimDetails claim = new CrimeLowerClaimDetails();
+    claim.setUniqueFileNumber("ufn");
 
     LinkedHashMap<TestField, Object> result =
         ClaimViewField.toFieldMap(List.of(TestField.UNIQUE_FILE_NUMBER).stream(), claim);

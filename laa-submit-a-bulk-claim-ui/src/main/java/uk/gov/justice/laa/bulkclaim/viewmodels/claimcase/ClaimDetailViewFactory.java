@@ -16,18 +16,21 @@ public class ClaimDetailViewFactory {
   private final LegalHelpClaimDetailsMapper legalHelpClaimDetailsMapper;
   private final MediationClaimDetailsMapper mediationClaimDetailsMapper;
 
-  public ClaimDetailView create(ClaimResponseV2 claimResponse, AssessmentGet currentAssessment) {
+  public ClaimDetailView<?> create(ClaimResponseV2 claimResponse, AssessmentGet currentAssessment) {
     return switch (claimResponse.getAreaOfLaw()) {
       case CRIME_LOWER -> {
-        var details = crimeLowerClaimDetailsMapper.toCrimeLowerClaimDetails(claimResponse);
+        var details =
+            crimeLowerClaimDetailsMapper.toCrimeLowerClaimDetails(claimResponse, currentAssessment);
         yield new CrimeClaimCaseView(details, currentAssessment);
       }
       case LEGAL_HELP -> {
-        var details = legalHelpClaimDetailsMapper.toLegalHelpClaimDetails(claimResponse);
+        var details =
+            legalHelpClaimDetailsMapper.toLegalHelpClaimDetails(claimResponse, currentAssessment);
         yield new LegalHelpClaimCaseView(details, currentAssessment);
       }
       case MEDIATION -> {
-        var details = mediationClaimDetailsMapper.toMediationClaimDetails(claimResponse);
+        var details =
+            mediationClaimDetailsMapper.toMediationClaimDetails(claimResponse, currentAssessment);
         yield new MediationClaimCaseView(details, currentAssessment);
       }
     };

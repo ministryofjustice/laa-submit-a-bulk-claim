@@ -6,10 +6,13 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import java.math.BigDecimal;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import uk.gov.justice.laa.bulkclaim.dto.submission.claim.viewmodels.ClaimFieldRow;
+import org.springframework.test.util.ReflectionTestUtils;
+import uk.gov.justice.laa.bulkclaim.dto.submission.claim.viewmodels.ClaimField;
+import uk.gov.justice.laa.bulkclaim.dto.submission.claim.viewmodels.viewfield.ClaimDetailsViewField;
 import uk.gov.justice.laa.bulkclaim.dto.submission.claim.viewmodels.viewfield.CrimeLowerClaimDetailsViewField;
 import uk.gov.justice.laa.bulkclaim.dto.submission.claim.viewmodels.viewfield.LegalHelpClaimDetailsViewField;
 import uk.gov.justice.laa.bulkclaim.helper.TestObjectCreator;
+import uk.gov.justice.laa.bulkclaim.mapper.ClaimMapperHelper;
 import uk.gov.justice.laa.bulkclaim.mapper.CrimeLowerClaimDetailsMapperImpl;
 import uk.gov.justice.laa.bulkclaim.mapper.LegalHelpClaimDetailsMapperImpl;
 import uk.gov.justice.laa.bulkclaim.mapper.MediationClaimDetailsMapperImpl;
@@ -26,6 +29,22 @@ class ClaimDetailViewFactoryTest {
           new LegalHelpClaimDetailsMapperImpl(),
           new MediationClaimDetailsMapperImpl());
 
+  {
+    ClaimMapperHelper claimMapperHelper = new ClaimMapperHelper();
+    ReflectionTestUtils.setField(
+        ReflectionTestUtils.getField(factory, "crimeLowerClaimDetailsMapper"),
+        "claimMapperHelper",
+        claimMapperHelper);
+    ReflectionTestUtils.setField(
+        ReflectionTestUtils.getField(factory, "legalHelpClaimDetailsMapper"),
+        "claimMapperHelper",
+        claimMapperHelper);
+    ReflectionTestUtils.setField(
+        ReflectionTestUtils.getField(factory, "mediationClaimDetailsMapper"),
+        "claimMapperHelper",
+        claimMapperHelper);
+  }
+
   @Test
   @DisplayName("Should dispatch a CRIME_LOWER claim to the crime lower view")
   void shouldDispatchCrimeLower() {
@@ -37,7 +56,7 @@ class ClaimDetailViewFactoryTest {
     assertThat(result.valueRows()).hasSize(CrimeClaimCaseView.VALUE_ROWS.size());
     assertThat(result.totalRows()).hasSize(CrimeClaimCaseView.TOTAL_ROWS.size());
     assertThat(result.valueRows().keySet().iterator().next())
-        .isEqualTo(CrimeLowerClaimDetailsViewField.FIXED_FEE);
+        .isEqualTo(ClaimDetailsViewField.FIXED_FEE);
   }
 
   @Test
@@ -71,20 +90,20 @@ class ClaimDetailViewFactoryTest {
   }
 
   @Test
-  @DisplayName("A field with no reported source shows 'Not applicable' rather than null")
+  @DisplayName("A field with no reported source shows null rather than a placeholder")
   void shouldFallBackToNotApplicableForMissingValues() {
     ClaimResponseV2 claimResponse = TestObjectCreator.buildClaimResponseV2(AreaOfLaw.CRIME_LOWER);
 
     CrimeClaimCaseView result = (CrimeClaimCaseView) factory.create(claimResponse, null);
 
-    ClaimFieldRow fixedFeeRow = result.valueRows().get(CrimeLowerClaimDetailsViewField.FIXED_FEE);
+    ClaimField fixedFeeField = (ClaimField) result.valueRows().get(ClaimDetailsViewField.FIXED_FEE);
 
-    assertThat(fixedFeeRow.reported()).isNull();
+    assertThat(fixedFeeField.reported()).isNull();
   }
 
   @Test
   @DisplayName(
-      "Should populate currentCalculated from the given assessment, preserving reported and"
+      "Should populate assessed from the given assessment, preserving reported and"
           + " initial calculated")
   void shouldMergeCurrentAssessmentIntoRows() {
     ClaimResponseV2 claimResponse = TestObjectCreator.buildClaimResponseV2(AreaOfLaw.CRIME_LOWER);
@@ -96,30 +115,45 @@ class ClaimDetailViewFactoryTest {
 
     CrimeClaimCaseView result = (CrimeClaimCaseView) factory.create(claimResponse, assessment);
 
-    ClaimFieldRow fixedFeeValueRow =
-        result.valueRows().get(CrimeLowerClaimDetailsViewField.FIXED_FEE);
-    assertThat(fixedFeeValueRow.currentCalculated()).isEqualTo(new BigDecimal("999.99"));
-    assertThat(fixedFeeValueRow.initialCalculated()).isNotNull();
+    ClaimField fixedFeeValueField =
+        (ClaimField) result.valueRows().get(ClaimDetailsViewField.FIXED_FEE);
+    assertThat(fixedFeeValueField.assessed()).isEqualTo(new BigDecimal("999.99"));
+    assertThat(fixedFeeValueField.initialCalculated()).isNotNull();
 
-    ClaimFieldRow totalVatRow = result.totalRows().get(CrimeLowerClaimDetailsViewField.TOTAL_VAT);
-    assertThat(totalVatRow.currentCalculated()).isEqualTo(new BigDecimal("42.00"));
-    ClaimFieldRow totalInclVatRow =
-        result.totalRows().get(CrimeLowerClaimDetailsViewField.TOTAL_INCLUDING_VAT);
-    assertThat(totalInclVatRow.currentCalculated()).isEqualTo(new BigDecimal("242.00"));
+    ClaimField totalVatField = (ClaimField) result.totalRows().get(ClaimDetailsViewField.TOTAL_VAT);
+    assertThat(totalVatField.assessed()).isEqualTo(new BigDecimal("42.00"));
+    ClaimField totalInclVatField =
+        (ClaimField) result.totalRows().get(ClaimDetailsViewField.TOTAL_INCLUDING_VAT);
+    assertThat(totalInclVatField.assessed()).isEqualTo(new BigDecimal("242.00"));
   }
 
   @Test
-  @DisplayName(
-      "A field with no assessment accessor stays absent even when an assessment is supplied")
-  void shouldLeaveCurrentCalculatedAbsentWithoutAnAssessmentAccessor() {
+  @DisplayName("A field with no assessment source stays absent even when an assessment is supplied")
+  void shouldLeaveAssessedAbsentWithoutAnAssessmentSource() {
     ClaimResponseV2 claimResponse = TestObjectCreator.buildClaimResponseV2(AreaOfLaw.LEGAL_HELP);
+    claimResponse.setIsLondonRate(true);
     AssessmentGet assessment = new AssessmentGet().fixedFeeAmount(new BigDecimal("1.00"));
 
     LegalHelpClaimCaseView result =
         (LegalHelpClaimCaseView) factory.create(claimResponse, assessment);
 
-    ClaimFieldRow londonRateRow =
-        result.valueRows().get(LegalHelpClaimDetailsViewField.LONDON_RATE);
-    assertThat(londonRateRow.hasCurrentCalculatedValue()).isFalse();
+    ClaimField londonRateField =
+        (ClaimField) result.valueRows().get(LegalHelpClaimDetailsViewField.LONDON_RATE);
+
+    assertThat(londonRateField.reported()).isEqualTo(true);
+    assertThat(londonRateField.assessed()).isNull();
+  }
+
+  @Test
+  @DisplayName("The crime-specific travel costs field is populated from the assessment")
+  void crimeLowerTravelCostsPopulatedFromAssessment() {
+    ClaimResponseV2 claimResponse = TestObjectCreator.buildClaimResponseV2(AreaOfLaw.CRIME_LOWER);
+    AssessmentGet assessment = new AssessmentGet().netTravelCostsAmount(new BigDecimal("321.00"));
+
+    CrimeClaimCaseView result = (CrimeClaimCaseView) factory.create(claimResponse, assessment);
+
+    ClaimField travelCostsField =
+        (ClaimField) result.valueRows().get(CrimeLowerClaimDetailsViewField.TRAVEL_COSTS);
+    assertThat(travelCostsField.assessed()).isEqualTo(new BigDecimal("321.00"));
   }
 }

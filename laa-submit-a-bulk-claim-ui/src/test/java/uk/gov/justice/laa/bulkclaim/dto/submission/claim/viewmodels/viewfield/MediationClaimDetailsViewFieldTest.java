@@ -2,68 +2,45 @@ package uk.gov.justice.laa.bulkclaim.dto.submission.claim.viewmodels.viewfield;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import java.math.BigDecimal;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import uk.gov.justice.laa.bulkclaim.dto.submission.claim.viewmodels.ClaimFieldRow;
-import uk.gov.justice.laa.bulkclaim.dto.submission.claim.viewmodels.ClaimReportedAndCalculatedValues;
 import uk.gov.justice.laa.bulkclaim.dto.submission.claim.viewmodels.MediationClaimDetails;
 import uk.gov.justice.laa.bulkclaim.viewmodels.claimcase.MediationClaimCaseView;
-import uk.gov.justice.laa.dstew.payments.claimsdata.model.AssessmentGet;
 
 @DisplayName("Mediation claim details view field test")
 class MediationClaimDetailsViewFieldTest {
 
   @Test
-  @DisplayName("Should read plain summary values via the accessor")
-  void shouldReadSummaryValue() {
-    MediationClaimDetails details = MediationClaimDetails.builder().client1Forename("Jane").build();
+  @DisplayName("Should read client 1's name via the shared clientName() accessor")
+  void shouldReadClient1Name() {
+    MediationClaimDetails details = new MediationClaimDetails();
+    details.setClientForename("Jane");
+    details.setClientSurname("Doe");
 
-    Object value =
-        MediationClaimDetailsViewField.CLIENT_1_FORENAME
-            .getReportedAndCalculatedAccessor()
-            .apply(details);
+    Object value = MediationClaimDetailsViewField.CLIENT_1_NAME.getAccessor().apply(details);
 
-    assertThat(value).isEqualTo("Jane");
+    assertThat(value).isEqualTo("Jane Doe");
   }
 
   @Test
-  @DisplayName("Should build a claim field row for a values-table field")
-  void shouldBuildClaimFieldRow() {
-    MediationClaimDetails details =
-        MediationClaimDetails.builder()
-            .reportedDisbursements(new BigDecimal("100.00"))
-            .initialCalculatedDisbursements(new BigDecimal("110.00"))
-            .build();
+  @DisplayName("Should read client 1's unique client number, which is mediation-specific")
+  void shouldReadClient1Ucn() {
+    MediationClaimDetails details = new MediationClaimDetails();
+    details.setUniqueClientNumber("02122002/S/JENK");
 
-    Object value =
-        MediationClaimDetailsViewField.DISBURSEMENTS
-            .getReportedAndCalculatedAccessor()
-            .apply(details);
+    Object value = MediationClaimDetailsViewField.CLIENT_1_UCN.getAccessor().apply(details);
 
-    assertThat(value).isInstanceOf(ClaimReportedAndCalculatedValues.class);
-    ClaimReportedAndCalculatedValues row = (ClaimReportedAndCalculatedValues) value;
-    assertThat(row.reported()).isEqualTo(new BigDecimal("100.00"));
-    assertThat(row.initialCalculated()).isEqualTo(new BigDecimal("110.00"));
+    assertThat(value).isEqualTo("02122002/S/JENK");
   }
 
   @Test
-  @DisplayName("Should have no reported source for fixed fee, matching the BC-523 tab")
-  void fixedFeeHasNoReportedSource() {
-    MediationClaimDetails details =
-        MediationClaimDetails.builder().initialCalculatedFixedFee(new BigDecimal("50.00")).build();
+  @DisplayName("Should return null for client 2's name when neither forename nor surname is set")
+  void shouldReturnNullClient2NameWhenAbsent() {
+    MediationClaimDetails details = new MediationClaimDetails();
 
-    ClaimReportedAndCalculatedValues row =
-        (ClaimReportedAndCalculatedValues)
-            MediationClaimDetailsViewField.FIXED_FEE
-                .getReportedAndCalculatedAccessor()
-                .apply(details);
+    Object value = MediationClaimDetailsViewField.CLIENT_2_NAME.getAccessor().apply(details);
 
-    assertThat(row.hasReportedValue()).isFalse();
-    assertThat(row.initialCalculated()).isEqualTo(new BigDecimal("50.00"));
-
-    ClaimFieldRow fieldRow = new ClaimFieldRow(row, null);
-    assertThat(fieldRow.reported()).isNull();
+    assertThat(value).isNull();
   }
 
   @Test
@@ -71,10 +48,10 @@ class MediationClaimDetailsViewFieldTest {
   void valueRowsShouldBeOrdered() {
     assertThat(MediationClaimCaseView.VALUE_ROWS)
         .containsExactly(
-            MediationClaimDetailsViewField.FIXED_FEE,
-            MediationClaimDetailsViewField.DISBURSEMENTS,
-            MediationClaimDetailsViewField.DISBURSEMENTS_VAT,
-            MediationClaimDetailsViewField.VAT_INDICATOR);
+            ClaimViewField.asMediationField(ClaimDetailsViewField.FIXED_FEE),
+            ClaimViewField.asMediationField(ClaimDetailsViewField.DISBURSEMENTS),
+            ClaimViewField.asMediationField(ClaimDetailsViewField.DISBURSEMENTS_VAT),
+            ClaimViewField.asMediationField(ClaimDetailsViewField.VAT));
   }
 
   @Test
@@ -82,28 +59,7 @@ class MediationClaimDetailsViewFieldTest {
   void totalRowsShouldBeOrdered() {
     assertThat(MediationClaimCaseView.TOTAL_ROWS)
         .containsExactly(
-            MediationClaimDetailsViewField.TOTAL_VAT,
-            MediationClaimDetailsViewField.TOTAL_INCLUDING_VAT);
-  }
-
-  @Test
-  @DisplayName(
-      "Should read the Current Calculated value for a values-table field from the assessment")
-  void shouldReadCurrentCalculatedFromAssessment() {
-    AssessmentGet assessment = new AssessmentGet().disbursementAmount(new BigDecimal("220.20"));
-
-    Object value =
-        MediationClaimDetailsViewField.DISBURSEMENTS
-            .getCurrentCalculatedAccessor()
-            .apply(assessment);
-
-    assertThat(value).isEqualTo(new BigDecimal("220.20"));
-  }
-
-  @Test
-  @DisplayName("A header field has no assessment accessor")
-  void headerFieldHasNoAssessmentAccessor() {
-    assertThat(MediationClaimDetailsViewField.CLIENT_1_FORENAME.getCurrentCalculatedAccessor())
-        .isNull();
+            ClaimViewField.asMediationField(ClaimDetailsViewField.TOTAL_VAT),
+            ClaimViewField.asMediationField(ClaimDetailsViewField.TOTAL_INCLUDING_VAT));
   }
 }

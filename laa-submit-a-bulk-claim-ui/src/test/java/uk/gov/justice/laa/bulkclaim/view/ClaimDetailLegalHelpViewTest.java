@@ -21,6 +21,7 @@ import uk.gov.justice.laa.bulkclaim.builder.SubmissionMessagesBuilder;
 import uk.gov.justice.laa.bulkclaim.client.DataClaimsRestClient;
 import uk.gov.justice.laa.bulkclaim.client.DataClaimsRestClientV2;
 import uk.gov.justice.laa.bulkclaim.controller.ClaimDetailController;
+import uk.gov.justice.laa.bulkclaim.dto.submission.claim.viewmodels.ClaimField;
 import uk.gov.justice.laa.bulkclaim.dto.submission.claim.viewmodels.ClaimStatusBanner;
 import uk.gov.justice.laa.bulkclaim.dto.submission.claim.viewmodels.LegalHelpClaimDetails;
 import uk.gov.justice.laa.bulkclaim.dto.submission.messages.MessageRow;
@@ -62,21 +63,36 @@ class ClaimDetailLegalHelpViewTest extends ViewTestBase {
     session.setAttribute(SUBMISSION_ID, submissionId);
     session.setAttribute(CLAIM_ID, claimId);
 
-    details =
-        LegalHelpClaimDetails.builder()
-            .clientForename("K")
-            .clientSurname("Will")
-            .uniqueFileNumber("271219/000")
-            .officeCode("ABC123")
-            .categoryOfLaw("IMMIGRATION")
-            .feeCode("IMCA")
-            .feeCodeDescription("Immigration: application")
-            .matterTypeCodeOne("IACE")
-            .caseStartDate("2025-01-15")
-            .caseConcludedDate("2025-02-01")
-            .escapeCase(true)
-            .areaOfLaw(AreaOfLaw.LEGAL_HELP)
-            .build();
+    details = new LegalHelpClaimDetails();
+    details.setClientForename("K");
+    details.setClientSurname("Will");
+    details.setUniqueFileNumber("271219/000");
+    details.setOfficeCode("ABC123");
+    details.setCategoryOfLaw("IMMIGRATION");
+    details.setFeeCode("IMCA");
+    details.setFeeCodeDescription("Immigration: application");
+    details.setMatterTypeCodeOne("IACE");
+    details.setCaseStartDate("2025-01-15");
+    details.setCaseConcludedDate("2025-02-01");
+    details.setEscapeCase(true);
+    details.setAreaOfLaw(AreaOfLaw.LEGAL_HELP);
+    ClaimField emptyField = new ClaimField(null, null, null);
+    details.setFixedFee(emptyField);
+    details.setProfitCosts(emptyField);
+    details.setDisbursements(emptyField);
+    details.setDisbursementsVat(emptyField);
+    details.setVat(emptyField);
+    details.setTotalVat(emptyField);
+    details.setTotalIncludingVat(emptyField);
+    details.setCounselsCosts(emptyField);
+    details.setTravelAndWaitingCosts(emptyField);
+    details.setDetentionTravelWaitingCosts(emptyField);
+    details.setJrFormFilling(emptyField);
+    details.setAdjournedHearingFee(emptyField);
+    details.setCmrhOral(emptyField);
+    details.setCmrhTelephone(emptyField);
+    details.setHomeOfficeInterview(emptyField);
+    details.setSubstantiveHearing(emptyField);
 
     when(dataClaimsRestClient.getClaimHistory(eq(claimId)))
         .thenReturn(Mono.just(ClaimHistoryResultSet.builder().events(List.of()).build()));

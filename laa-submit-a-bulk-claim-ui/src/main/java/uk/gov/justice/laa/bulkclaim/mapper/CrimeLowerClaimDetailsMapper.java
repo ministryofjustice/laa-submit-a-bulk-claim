@@ -1,11 +1,13 @@
 package uk.gov.justice.laa.bulkclaim.mapper;
 
+import org.mapstruct.Context;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import uk.gov.justice.laa.bulkclaim.dto.submission.claim.viewmodels.CrimeLowerClaimDetails;
+import uk.gov.justice.laa.dstew.payments.claimsdata.model.AssessmentGet;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.ClaimResponseV2;
 
-@Mapper(componentModel = "spring")
+@Mapper(componentModel = "spring", uses = ClaimMapperHelper.class)
 public interface CrimeLowerClaimDetailsMapper {
 
   @Mapping(target = ".", source = "claimResponse")
@@ -17,38 +19,22 @@ public interface CrimeLowerClaimDetailsMapper {
       target = "escapeCase",
       source = "claimResponse.feeCalculationResponse.boltOnDetails.escapeCaseFlag",
       defaultValue = "false")
-  @Mapping(target = "reportedProfitCosts", source = "claimResponse.netProfitCostsAmount")
-  @Mapping(target = "reportedDisbursements", source = "claimResponse.netDisbursementAmount")
-  @Mapping(target = "reportedDisbursementsVat", source = "claimResponse.disbursementsVatAmount")
-  @Mapping(target = "reportedTravelCosts", source = "claimResponse.travelWaitingCostsAmount")
-  @Mapping(target = "reportedWaitingCosts", source = "claimResponse.netWaitingCostsAmount")
-  @Mapping(target = "reportedVatApplicable", source = "claimResponse.isVatApplicable")
+  @Mapping(target = "caseStartDate", ignore = true)
+  @Mapping(target = "fixedFee", source = "claimResponse", qualifiedByName = "fixedFee")
+  @Mapping(target = "profitCosts", source = "claimResponse", qualifiedByName = "profitCosts")
+  @Mapping(target = "disbursements", source = "claimResponse", qualifiedByName = "disbursements")
   @Mapping(
-      target = "initialCalculatedFixedFee",
-      source = "claimResponse.feeCalculationResponse.fixedFeeAmount")
+      target = "disbursementsVat",
+      source = "claimResponse",
+      qualifiedByName = "disbursementsVat")
+  @Mapping(target = "vat", source = "claimResponse", qualifiedByName = "vat")
+  @Mapping(target = "totalVat", source = "claimResponse", qualifiedByName = "totalVat")
   @Mapping(
-      target = "initialCalculatedProfitCosts",
-      source = "claimResponse.feeCalculationResponse.netProfitCostsAmount")
-  @Mapping(
-      target = "initialCalculatedDisbursements",
-      source = "claimResponse.feeCalculationResponse.disbursementAmount")
-  @Mapping(
-      target = "initialCalculatedDisbursementsVat",
-      source = "claimResponse.feeCalculationResponse.disbursementVatAmount")
-  @Mapping(
-      target = "initialCalculatedTravelCosts",
-      source = "claimResponse.feeCalculationResponse.netTravelCostsAmount")
-  @Mapping(
-      target = "initialCalculatedWaitingCosts",
-      source = "claimResponse.feeCalculationResponse.netWaitingCostsAmount")
-  @Mapping(
-      target = "initialCalculatedVatIndicator",
-      source = "claimResponse.feeCalculationResponse.vatIndicator")
-  @Mapping(
-      target = "initialCalculatedTotalVat",
-      source = "claimResponse.feeCalculationResponse.calculatedVatAmount")
-  @Mapping(
-      target = "initialCalculatedTotalIncludingVat",
-      source = "claimResponse.feeCalculationResponse.totalAmount")
-  CrimeLowerClaimDetails toCrimeLowerClaimDetails(ClaimResponseV2 claimResponse);
+      target = "totalIncludingVat",
+      source = "claimResponse",
+      qualifiedByName = "totalIncludingVat")
+  @Mapping(target = "travelCosts", source = "claimResponse", qualifiedByName = "travelCosts")
+  @Mapping(target = "waitingCosts", source = "claimResponse", qualifiedByName = "waitingCosts")
+  CrimeLowerClaimDetails toCrimeLowerClaimDetails(
+      ClaimResponseV2 claimResponse, @Context AssessmentGet currentAssessment);
 }

@@ -39,8 +39,9 @@ class ClaimMapperHelperTest {
   }
 
   @Test
-  @DisplayName("Should leave the initial calculated profit costs value null even though an "
-      + "upstream calculated value exists")
+  @DisplayName(
+      "Should leave the initial calculated profit costs value null even though an "
+          + "upstream calculated value exists")
   void shouldPreserveProfitCostsNullCalculatedQuirk() {
     ClaimField result = helper.profitCosts(claimResponse, currentAssessment);
 

@@ -5,66 +5,36 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.math.BigDecimal;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import uk.gov.justice.laa.bulkclaim.dto.submission.claim.viewmodels.ClaimFieldRow;
-import uk.gov.justice.laa.bulkclaim.dto.submission.claim.viewmodels.ClaimReportedAndCalculatedValues;
+import uk.gov.justice.laa.bulkclaim.dto.submission.claim.viewmodels.ClaimField;
 import uk.gov.justice.laa.bulkclaim.dto.submission.claim.viewmodels.LegalHelpClaimDetails;
 import uk.gov.justice.laa.bulkclaim.viewmodels.claimcase.LegalHelpClaimCaseView;
-import uk.gov.justice.laa.dstew.payments.claimsdata.model.AssessmentGet;
 
 @DisplayName("Legal help claim details view field test")
 class LegalHelpClaimDetailsViewFieldTest {
 
   @Test
-  @DisplayName("Should read plain summary values via the accessor")
-  void shouldReadSummaryValue() {
-    LegalHelpClaimDetails details =
-        LegalHelpClaimDetails.builder().clientForename("Jane").clientSurname("Surname").build();
+  @DisplayName(
+      "Should wrap the legal-help-specific London rate scalar as a reported-only ClaimField")
+  void shouldReadLondonRate() {
+    LegalHelpClaimDetails details = new LegalHelpClaimDetails();
+    details.setReportedLondonRateIndicator(true);
 
-    Object value =
-        LegalHelpClaimDetailsViewField.CLIENT_NAME
-            .getReportedAndCalculatedAccessor()
-            .apply(details);
+    Object value = LegalHelpClaimDetailsViewField.LONDON_RATE.getAccessor().apply(details);
 
-    assertThat(value).isEqualTo("Jane Surname");
+    assertThat(value).isEqualTo(new ClaimField(true, null, null));
   }
 
   @Test
-  @DisplayName("Should build a claim field row for a values-table field")
-  void shouldBuildClaimFieldRow() {
-    LegalHelpClaimDetails details =
-        LegalHelpClaimDetails.builder()
-            .reportedProfitCosts(new BigDecimal("100.00"))
-            .initialCalculatedProfitCosts(new BigDecimal("110.00"))
-            .build();
+  @DisplayName("Should read a values-table field's ClaimField via the accessor")
+  void shouldReadClaimField() {
+    LegalHelpClaimDetails details = new LegalHelpClaimDetails();
+    ClaimField counselsCosts =
+        new ClaimField(new BigDecimal("100.00"), new BigDecimal("110.00"), null);
+    details.setCounselsCosts(counselsCosts);
 
-    Object value =
-        LegalHelpClaimDetailsViewField.PROFIT_COSTS
-            .getReportedAndCalculatedAccessor()
-            .apply(details);
+    Object value = LegalHelpClaimDetailsViewField.COUNSELS_COSTS.getAccessor().apply(details);
 
-    assertThat(value).isInstanceOf(ClaimReportedAndCalculatedValues.class);
-    ClaimReportedAndCalculatedValues row = (ClaimReportedAndCalculatedValues) value;
-    assertThat(row.reported()).isEqualTo(new BigDecimal("100.00"));
-    assertThat(row.initialCalculated()).isNull();
-  }
-
-  @Test
-  @DisplayName("Should have no reported source for fixed fee, matching the BC-523 tab")
-  void fixedFeeHasNoReportedSource() {
-    LegalHelpClaimDetails details =
-        LegalHelpClaimDetails.builder().initialCalculatedFixedFee(new BigDecimal("50.00")).build();
-
-    ClaimReportedAndCalculatedValues row =
-        (ClaimReportedAndCalculatedValues)
-            LegalHelpClaimDetailsViewField.FIXED_FEE
-                .getReportedAndCalculatedAccessor()
-                .apply(details);
-
-    assertThat(row.hasReportedValue()).isFalse();
-    assertThat(row.initialCalculated()).isEqualTo(new BigDecimal("50.00"));
-
-    ClaimFieldRow fieldRow = new ClaimFieldRow(row, null);
-    assertThat(fieldRow.reported()).isNull();
+    assertThat(value).isEqualTo(counselsCosts);
   }
 
   @Test
@@ -72,10 +42,10 @@ class LegalHelpClaimDetailsViewFieldTest {
   void valueRowsShouldBeOrdered() {
     assertThat(LegalHelpClaimCaseView.VALUE_ROWS)
         .containsExactly(
-            LegalHelpClaimDetailsViewField.FIXED_FEE,
-            LegalHelpClaimDetailsViewField.PROFIT_COSTS,
-            LegalHelpClaimDetailsViewField.DISBURSEMENTS,
-            LegalHelpClaimDetailsViewField.DISBURSEMENTS_VAT,
+            ClaimViewField.asLegalHelpField(ClaimDetailsViewField.FIXED_FEE),
+            ClaimViewField.asLegalHelpField(ClaimDetailsViewField.PROFIT_COSTS),
+            ClaimViewField.asLegalHelpField(ClaimDetailsViewField.DISBURSEMENTS),
+            ClaimViewField.asLegalHelpField(ClaimDetailsViewField.DISBURSEMENTS_VAT),
             LegalHelpClaimDetailsViewField.COUNSELS_COSTS,
             LegalHelpClaimDetailsViewField.TRAVEL_AND_WAITING_COSTS,
             LegalHelpClaimDetailsViewField.DETENTION_TRAVEL_WAITING_COSTS,
@@ -86,7 +56,7 @@ class LegalHelpClaimDetailsViewFieldTest {
             LegalHelpClaimDetailsViewField.LONDON_RATE,
             LegalHelpClaimDetailsViewField.HOME_OFFICE_INTERVIEW,
             LegalHelpClaimDetailsViewField.SUBSTANTIVE_HEARING,
-            LegalHelpClaimDetailsViewField.VAT_INDICATOR);
+            ClaimViewField.asLegalHelpField(ClaimDetailsViewField.VAT));
   }
 
   @Test
@@ -94,42 +64,7 @@ class LegalHelpClaimDetailsViewFieldTest {
   void totalRowsShouldBeOrdered() {
     assertThat(LegalHelpClaimCaseView.TOTAL_ROWS)
         .containsExactly(
-            LegalHelpClaimDetailsViewField.TOTAL_VAT,
-            LegalHelpClaimDetailsViewField.TOTAL_INCLUDING_VAT);
-  }
-
-  @Test
-  @DisplayName(
-      "Travel and waiting costs' Current Calculated value sums the assessment's separate travel"
-          + " and waiting fields")
-  void travelAndWaitingCostsSumsAssessmentFields() {
-    AssessmentGet assessment =
-        new AssessmentGet()
-            .netTravelCostsAmount(new BigDecimal("100.00"))
-            .netWaitingCostsAmount(new BigDecimal("25.50"));
-
-    Object value =
-        LegalHelpClaimDetailsViewField.TRAVEL_AND_WAITING_COSTS
-            .getCurrentCalculatedAccessor()
-            .apply(assessment);
-
-    assertThat(value).isEqualTo(new BigDecimal("125.50"));
-  }
-
-  @Test
-  @DisplayName("Travel and waiting costs' Current Calculated value is absent when both are absent")
-  void travelAndWaitingCostsIsNullWhenBothAssessmentFieldsAreAbsent() {
-    Object value =
-        LegalHelpClaimDetailsViewField.TRAVEL_AND_WAITING_COSTS
-            .getCurrentCalculatedAccessor()
-            .apply(new AssessmentGet());
-
-    assertThat(value).isNull();
-  }
-
-  @Test
-  @DisplayName("London rate has no assessment accessor - AssessmentGet has no equivalent field")
-  void londonRateHasNoAssessmentAccessor() {
-    assertThat(LegalHelpClaimDetailsViewField.LONDON_RATE.getCurrentCalculatedAccessor()).isNull();
+            ClaimViewField.asLegalHelpField(ClaimDetailsViewField.TOTAL_VAT),
+            ClaimViewField.asLegalHelpField(ClaimDetailsViewField.TOTAL_INCLUDING_VAT));
   }
 }

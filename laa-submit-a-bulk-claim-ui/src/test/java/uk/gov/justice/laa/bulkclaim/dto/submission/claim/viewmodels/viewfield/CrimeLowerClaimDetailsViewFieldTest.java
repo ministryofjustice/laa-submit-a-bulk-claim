@@ -5,66 +5,35 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.math.BigDecimal;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import uk.gov.justice.laa.bulkclaim.dto.submission.claim.viewmodels.ClaimFieldRow;
-import uk.gov.justice.laa.bulkclaim.dto.submission.claim.viewmodels.ClaimReportedAndCalculatedValues;
+import uk.gov.justice.laa.bulkclaim.dto.submission.claim.viewmodels.ClaimField;
 import uk.gov.justice.laa.bulkclaim.dto.submission.claim.viewmodels.CrimeLowerClaimDetails;
 import uk.gov.justice.laa.bulkclaim.viewmodels.claimcase.CrimeClaimCaseView;
-import uk.gov.justice.laa.dstew.payments.claimsdata.model.AssessmentGet;
 
 @DisplayName("Crime lower claim details view field test")
 class CrimeLowerClaimDetailsViewFieldTest {
 
   @Test
-  @DisplayName("Should read plain summary values via the accessor")
-  void shouldReadSummaryValue() {
-    CrimeLowerClaimDetails details =
-        CrimeLowerClaimDetails.builder().clientForename("Jane").clientSurname("Doe").build();
+  @DisplayName("Should read the crime-specific matter type via the accessor")
+  void shouldReadCrimeSpecificMatterType() {
+    CrimeLowerClaimDetails details = new CrimeLowerClaimDetails();
+    details.setCrimeMatterTypeCode("INVC");
 
-    Object value =
-        CrimeLowerClaimDetailsViewField.CLIENT_NAME
-            .getReportedAndCalculatedAccessor()
-            .apply(details);
+    Object value = CrimeLowerClaimDetailsViewField.MATTER_TYPE.getAccessor().apply(details);
 
-    assertThat(value).isEqualTo("Jane Doe");
+    assertThat(value).isEqualTo("INVC");
   }
 
   @Test
-  @DisplayName("Should build a claim field row for a values-table field")
-  void shouldBuildClaimFieldRow() {
-    CrimeLowerClaimDetails details =
-        CrimeLowerClaimDetails.builder()
-            .reportedProfitCosts(new BigDecimal("100.00"))
-            .initialCalculatedProfitCosts(new BigDecimal("110.00"))
-            .build();
+  @DisplayName("Should read a values-table field's ClaimField via the accessor")
+  void shouldReadClaimField() {
+    CrimeLowerClaimDetails details = new CrimeLowerClaimDetails();
+    ClaimField travelCosts =
+        new ClaimField(new BigDecimal("100.00"), new BigDecimal("110.00"), null);
+    details.setTravelCosts(travelCosts);
 
-    Object value =
-        CrimeLowerClaimDetailsViewField.PROFIT_COSTS
-            .getReportedAndCalculatedAccessor()
-            .apply(details);
+    Object value = CrimeLowerClaimDetailsViewField.TRAVEL_COSTS.getAccessor().apply(details);
 
-    assertThat(value).isInstanceOf(ClaimReportedAndCalculatedValues.class);
-    ClaimReportedAndCalculatedValues row = (ClaimReportedAndCalculatedValues) value;
-    assertThat(row.reported()).isEqualTo(new BigDecimal("100.00"));
-    assertThat(row.initialCalculated()).isNull();
-  }
-
-  @Test
-  @DisplayName("Should have no reported source for fixed fee, matching the BC-523 tab")
-  void fixedFeeHasNoReportedSource() {
-    CrimeLowerClaimDetails details =
-        CrimeLowerClaimDetails.builder().initialCalculatedFixedFee(new BigDecimal("50.00")).build();
-
-    ClaimReportedAndCalculatedValues row =
-        (ClaimReportedAndCalculatedValues)
-            CrimeLowerClaimDetailsViewField.FIXED_FEE
-                .getReportedAndCalculatedAccessor()
-                .apply(details);
-
-    assertThat(row.hasReportedValue()).isFalse();
-    assertThat(row.initialCalculated()).isEqualTo(new BigDecimal("50.00"));
-
-    ClaimFieldRow fieldRow = new ClaimFieldRow(row, null);
-    assertThat(fieldRow.reported()).isNull();
+    assertThat(value).isEqualTo(travelCosts);
   }
 
   @Test
@@ -72,13 +41,13 @@ class CrimeLowerClaimDetailsViewFieldTest {
   void valueRowsShouldBeOrdered() {
     assertThat(CrimeClaimCaseView.VALUE_ROWS)
         .containsExactly(
-            CrimeLowerClaimDetailsViewField.FIXED_FEE,
-            CrimeLowerClaimDetailsViewField.PROFIT_COSTS,
-            CrimeLowerClaimDetailsViewField.DISBURSEMENTS,
-            CrimeLowerClaimDetailsViewField.DISBURSEMENTS_VAT,
+            ClaimViewField.asCrimeLowerField(ClaimDetailsViewField.FIXED_FEE),
+            ClaimViewField.asCrimeLowerField(ClaimDetailsViewField.PROFIT_COSTS),
+            ClaimViewField.asCrimeLowerField(ClaimDetailsViewField.DISBURSEMENTS),
+            ClaimViewField.asCrimeLowerField(ClaimDetailsViewField.DISBURSEMENTS_VAT),
             CrimeLowerClaimDetailsViewField.TRAVEL_COSTS,
             CrimeLowerClaimDetailsViewField.WAITING_COSTS,
-            CrimeLowerClaimDetailsViewField.VAT);
+            ClaimViewField.asCrimeLowerField(ClaimDetailsViewField.VAT));
   }
 
   @Test
@@ -86,43 +55,7 @@ class CrimeLowerClaimDetailsViewFieldTest {
   void totalRowsShouldBeOrdered() {
     assertThat(CrimeClaimCaseView.TOTAL_ROWS)
         .containsExactly(
-            CrimeLowerClaimDetailsViewField.TOTAL_VAT,
-            CrimeLowerClaimDetailsViewField.TOTAL_INCLUDING_VAT);
-  }
-
-  @Test
-  @DisplayName(
-      "Should read the Current Calculated value for a values-table field from the assessment")
-  void shouldReadCurrentCalculatedFromAssessment() {
-    AssessmentGet assessment = new AssessmentGet().netProfitCostsAmount(new BigDecimal("120.00"));
-
-    Object value =
-        CrimeLowerClaimDetailsViewField.PROFIT_COSTS
-            .getCurrentCalculatedAccessor()
-            .apply(assessment);
-
-    assertThat(value).isEqualTo(new BigDecimal("120.00"));
-  }
-
-  @Test
-  @DisplayName("Should read the Current Calculated total from allowed_total_incl_vat, not assessed")
-  void totalIncludingVatReadsAllowedNotAssessed() {
-    AssessmentGet assessment =
-        new AssessmentGet()
-            .allowedTotalInclVat(new BigDecimal("242.00"))
-            .assessedTotalInclVat(new BigDecimal("999.99"));
-
-    Object value =
-        CrimeLowerClaimDetailsViewField.TOTAL_INCLUDING_VAT
-            .getCurrentCalculatedAccessor()
-            .apply(assessment);
-
-    assertThat(value).isEqualTo(new BigDecimal("242.00"));
-  }
-
-  @Test
-  @DisplayName("A header field has no assessment accessor")
-  void headerFieldHasNoAssessmentAccessor() {
-    assertThat(CrimeLowerClaimDetailsViewField.CLIENT_NAME.getCurrentCalculatedAccessor()).isNull();
+            ClaimViewField.asCrimeLowerField(ClaimDetailsViewField.TOTAL_VAT),
+            ClaimViewField.asCrimeLowerField(ClaimDetailsViewField.TOTAL_INCLUDING_VAT));
   }
 }
