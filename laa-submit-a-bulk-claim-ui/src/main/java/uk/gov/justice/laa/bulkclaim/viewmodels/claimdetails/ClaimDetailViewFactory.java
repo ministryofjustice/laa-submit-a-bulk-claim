@@ -1,4 +1,4 @@
-package uk.gov.justice.laa.bulkclaim.viewmodels.claimcase;
+package uk.gov.justice.laa.bulkclaim.viewmodels.claimdetails;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -16,15 +16,15 @@ public class ClaimDetailViewFactory {
     return switch (claimResponse.getAreaOfLaw()) {
       case CRIME_LOWER -> {
         var details = claimDetailsMapper.toCrimeLowerClaimDetails(claimResponse, currentAssessment);
-        yield new CrimeClaimCaseView(details, currentAssessment);
+        yield new CrimeClaimDetailsView(details);
       }
       case LEGAL_HELP -> {
         var details = claimDetailsMapper.toLegalHelpClaimDetails(claimResponse, currentAssessment);
-        yield new LegalHelpClaimCaseView(details, currentAssessment);
+        yield new LegalHelpClaimDetailsView(details);
       }
       case MEDIATION -> {
         var details = claimDetailsMapper.toMediationClaimDetails(claimResponse, currentAssessment);
-        yield new MediationClaimCaseView(details, currentAssessment);
+        yield new MediationClaimDetailsView(details);
       }
     };
   }

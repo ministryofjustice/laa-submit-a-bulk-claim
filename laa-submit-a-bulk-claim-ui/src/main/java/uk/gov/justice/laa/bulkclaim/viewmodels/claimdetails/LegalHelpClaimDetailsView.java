@@ -1,4 +1,4 @@
-package uk.gov.justice.laa.bulkclaim.viewmodels.claimcase;
+package uk.gov.justice.laa.bulkclaim.viewmodels.claimdetails;
 
 import static uk.gov.justice.laa.bulkclaim.dto.submission.claim.viewmodels.viewfield.ClaimViewField.asLegalHelpField;
 
@@ -8,16 +8,14 @@ import uk.gov.justice.laa.bulkclaim.dto.submission.claim.viewmodels.LegalHelpCla
 import uk.gov.justice.laa.bulkclaim.dto.submission.claim.viewmodels.viewfield.ClaimDetailsViewField;
 import uk.gov.justice.laa.bulkclaim.dto.submission.claim.viewmodels.viewfield.ClaimViewField;
 import uk.gov.justice.laa.bulkclaim.dto.submission.claim.viewmodels.viewfield.LegalHelpClaimDetailsViewField;
-import uk.gov.justice.laa.dstew.payments.claimsdata.model.AssessmentGet;
 
-public record LegalHelpClaimCaseView(
+public record LegalHelpClaimDetailsView(
     LinkedHashMap<ClaimViewField<LegalHelpClaimDetails>, Object> summaryRows,
     LinkedHashMap<ClaimViewField<LegalHelpClaimDetails>, Object> valueRows,
     LinkedHashMap<ClaimViewField<LegalHelpClaimDetails>, Object> totalRows)
     implements ClaimDetailView<ClaimViewField<LegalHelpClaimDetails>> {
 
-  public LegalHelpClaimCaseView(
-      LegalHelpClaimDetails legalHelpClaimDetails, AssessmentGet currentAssessment) {
+  public LegalHelpClaimDetailsView(LegalHelpClaimDetails legalHelpClaimDetails) {
     this(
         ClaimViewField.toFieldMap(SUMMARY_ROWS.stream(), legalHelpClaimDetails),
         ClaimViewField.toFieldMap(VALUE_ROWS.stream(), legalHelpClaimDetails),

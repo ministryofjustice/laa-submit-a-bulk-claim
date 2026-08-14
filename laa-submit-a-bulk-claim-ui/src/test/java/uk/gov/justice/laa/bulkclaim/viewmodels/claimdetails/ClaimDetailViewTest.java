@@ -1,4 +1,4 @@
-package uk.gov.justice.laa.bulkclaim.viewmodels.claimcase;
+package uk.gov.justice.laa.bulkclaim.viewmodels.claimdetails;
 
 import static org.assertj.core.api.Assertions.assertThat;
 

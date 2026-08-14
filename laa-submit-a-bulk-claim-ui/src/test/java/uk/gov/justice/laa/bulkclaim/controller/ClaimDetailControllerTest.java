@@ -37,9 +37,9 @@ import uk.gov.justice.laa.bulkclaim.mapper.ClaimFeeCalculationBreakdownMapper;
 import uk.gov.justice.laa.bulkclaim.mapper.ClaimSummaryMapper;
 import uk.gov.justice.laa.bulkclaim.service.ClaimService;
 import uk.gov.justice.laa.bulkclaim.util.ThymeleafHrefUtils;
-import uk.gov.justice.laa.bulkclaim.viewmodels.claimcase.ClaimDetailPageData;
-import uk.gov.justice.laa.bulkclaim.viewmodels.claimcase.ClaimDetailViewFactory;
-import uk.gov.justice.laa.bulkclaim.viewmodels.claimcase.CrimeClaimCaseView;
+import uk.gov.justice.laa.bulkclaim.viewmodels.claimdetails.ClaimDetailPageData;
+import uk.gov.justice.laa.bulkclaim.viewmodels.claimdetails.ClaimDetailViewFactory;
+import uk.gov.justice.laa.bulkclaim.viewmodels.claimdetails.CrimeClaimDetailsView;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.AreaOfLaw;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.ClaimResponse;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionResponse;
@@ -194,7 +194,7 @@ class ClaimDetailControllerTest extends BaseControllerTest {
       when(claimService.getClaimDetailPageData(submissionId, claimId))
           .thenReturn(
               new ClaimDetailPageData(
-                  AreaOfLaw.CRIME_LOWER, false, new CrimeClaimCaseView(details, null), null));
+                  AreaOfLaw.CRIME_LOWER, false, new CrimeClaimDetailsView(details), null));
     }
 
     @Test

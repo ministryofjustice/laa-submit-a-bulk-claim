@@ -5,7 +5,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import uk.gov.justice.laa.bulkclaim.dto.submission.claim.viewmodels.MediationClaimDetails;
-import uk.gov.justice.laa.bulkclaim.viewmodels.claimcase.MediationClaimCaseView;
+import uk.gov.justice.laa.bulkclaim.viewmodels.claimdetails.MediationClaimDetailsView;
 
 @DisplayName("Mediation claim details view field test")
 class MediationClaimDetailsViewFieldTest {
@@ -46,7 +46,7 @@ class MediationClaimDetailsViewFieldTest {
   @Test
   @DisplayName("Value rows list should contain every values-table field, in order")
   void valueRowsShouldBeOrdered() {
-    assertThat(MediationClaimCaseView.VALUE_ROWS)
+    assertThat(MediationClaimDetailsView.VALUE_ROWS)
         .containsExactly(
             ClaimViewField.asMediationField(ClaimDetailsViewField.FIXED_FEE),
             ClaimViewField.asMediationField(ClaimDetailsViewField.DISBURSEMENTS),
@@ -57,7 +57,7 @@ class MediationClaimDetailsViewFieldTest {
   @Test
   @DisplayName("Total rows list should contain every total-table field, in order")
   void totalRowsShouldBeOrdered() {
-    assertThat(MediationClaimCaseView.TOTAL_ROWS)
+    assertThat(MediationClaimDetailsView.TOTAL_ROWS)
         .containsExactly(
             ClaimViewField.asMediationField(ClaimDetailsViewField.TOTAL_VAT),
             ClaimViewField.asMediationField(ClaimDetailsViewField.TOTAL_INCLUDING_VAT));

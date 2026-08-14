@@ -30,9 +30,9 @@ import uk.gov.justice.laa.bulkclaim.helper.TestObjectCreator;
 import uk.gov.justice.laa.bulkclaim.mapper.ClaimFeeCalculationBreakdownMapper;
 import uk.gov.justice.laa.bulkclaim.mapper.ClaimSummaryMapper;
 import uk.gov.justice.laa.bulkclaim.service.ClaimService;
-import uk.gov.justice.laa.bulkclaim.viewmodels.claimcase.ClaimDetailPageData;
-import uk.gov.justice.laa.bulkclaim.viewmodels.claimcase.ClaimDetailViewFactory;
-import uk.gov.justice.laa.bulkclaim.viewmodels.claimcase.CrimeClaimCaseView;
+import uk.gov.justice.laa.bulkclaim.viewmodels.claimdetails.ClaimDetailPageData;
+import uk.gov.justice.laa.bulkclaim.viewmodels.claimdetails.ClaimDetailViewFactory;
+import uk.gov.justice.laa.bulkclaim.viewmodels.claimdetails.CrimeClaimDetailsView;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.AreaOfLaw;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.ClaimHistoryResultSet;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.ClaimResponseV2;
@@ -99,7 +99,7 @@ class ClaimDetailCrimeLowerViewTest extends ViewTestBase {
     ClaimResponseV2 claimResponse = TestObjectCreator.buildClaimResponseV2(AreaOfLaw.CRIME_LOWER);
     claimResponse.setDerivedClaimStatus(derivedClaimStatus);
 
-    CrimeClaimCaseView claimDetailView = new CrimeClaimCaseView(details, null);
+    CrimeClaimDetailsView claimDetailView = new CrimeClaimDetailsView(details);
     boolean showCurrentCalculated =
         derivedClaimStatus == DerivedClaimStatus.AMENDED
             || derivedClaimStatus == DerivedClaimStatus.ASSESSED;

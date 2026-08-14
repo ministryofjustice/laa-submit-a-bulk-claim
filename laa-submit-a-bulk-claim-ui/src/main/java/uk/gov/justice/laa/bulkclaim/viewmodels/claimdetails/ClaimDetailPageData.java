@@ -1,4 +1,4 @@
-package uk.gov.justice.laa.bulkclaim.viewmodels.claimcase;
+package uk.gov.justice.laa.bulkclaim.viewmodels.claimdetails;
 
 import uk.gov.justice.laa.bulkclaim.dto.submission.claim.viewmodels.ClaimStatusBanner;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.AreaOfLaw;

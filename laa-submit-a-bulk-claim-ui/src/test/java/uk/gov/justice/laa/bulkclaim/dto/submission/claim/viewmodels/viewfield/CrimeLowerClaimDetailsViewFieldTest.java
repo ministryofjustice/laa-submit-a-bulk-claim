@@ -7,7 +7,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import uk.gov.justice.laa.bulkclaim.dto.submission.claim.viewmodels.ClaimField;
 import uk.gov.justice.laa.bulkclaim.dto.submission.claim.viewmodels.CrimeLowerClaimDetails;
-import uk.gov.justice.laa.bulkclaim.viewmodels.claimcase.CrimeClaimCaseView;
+import uk.gov.justice.laa.bulkclaim.viewmodels.claimdetails.CrimeClaimDetailsView;
 
 @DisplayName("Crime lower claim details view field test")
 class CrimeLowerClaimDetailsViewFieldTest {
@@ -39,7 +39,7 @@ class CrimeLowerClaimDetailsViewFieldTest {
   @Test
   @DisplayName("Value rows list should contain every values-table field, in order")
   void valueRowsShouldBeOrdered() {
-    assertThat(CrimeClaimCaseView.VALUE_ROWS)
+    assertThat(CrimeClaimDetailsView.VALUE_ROWS)
         .containsExactly(
             ClaimViewField.asCrimeLowerField(ClaimDetailsViewField.FIXED_FEE),
             ClaimViewField.asCrimeLowerField(ClaimDetailsViewField.PROFIT_COSTS),
@@ -53,7 +53,7 @@ class CrimeLowerClaimDetailsViewFieldTest {
   @Test
   @DisplayName("Total rows list should contain every total-table field, in order")
   void totalRowsShouldBeOrdered() {
-    assertThat(CrimeClaimCaseView.TOTAL_ROWS)
+    assertThat(CrimeClaimDetailsView.TOTAL_ROWS)
         .containsExactly(
             ClaimViewField.asCrimeLowerField(ClaimDetailsViewField.TOTAL_VAT),
             ClaimViewField.asCrimeLowerField(ClaimDetailsViewField.TOTAL_INCLUDING_VAT));

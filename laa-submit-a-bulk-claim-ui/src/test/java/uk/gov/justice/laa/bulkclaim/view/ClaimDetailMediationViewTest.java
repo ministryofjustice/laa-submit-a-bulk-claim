@@ -30,9 +30,9 @@ import uk.gov.justice.laa.bulkclaim.helper.TestObjectCreator;
 import uk.gov.justice.laa.bulkclaim.mapper.ClaimFeeCalculationBreakdownMapper;
 import uk.gov.justice.laa.bulkclaim.mapper.ClaimSummaryMapper;
 import uk.gov.justice.laa.bulkclaim.service.ClaimService;
-import uk.gov.justice.laa.bulkclaim.viewmodels.claimcase.ClaimDetailPageData;
-import uk.gov.justice.laa.bulkclaim.viewmodels.claimcase.ClaimDetailViewFactory;
-import uk.gov.justice.laa.bulkclaim.viewmodels.claimcase.MediationClaimCaseView;
+import uk.gov.justice.laa.bulkclaim.viewmodels.claimdetails.ClaimDetailPageData;
+import uk.gov.justice.laa.bulkclaim.viewmodels.claimdetails.ClaimDetailViewFactory;
+import uk.gov.justice.laa.bulkclaim.viewmodels.claimdetails.MediationClaimDetailsView;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.AreaOfLaw;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.ClaimHistoryResultSet;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.ClaimResponseV2;
@@ -97,7 +97,7 @@ class ClaimDetailMediationViewTest extends ViewTestBase {
     ClaimResponseV2 claimResponse = TestObjectCreator.buildClaimResponseV2(AreaOfLaw.MEDIATION);
     claimResponse.setDerivedClaimStatus(derivedClaimStatus);
 
-    MediationClaimCaseView claimDetailView = new MediationClaimCaseView(details, null);
+    MediationClaimDetailsView claimDetailView = new MediationClaimDetailsView(details);
     boolean showCurrentCalculated =
         derivedClaimStatus == DerivedClaimStatus.AMENDED
             || derivedClaimStatus == DerivedClaimStatus.ASSESSED;

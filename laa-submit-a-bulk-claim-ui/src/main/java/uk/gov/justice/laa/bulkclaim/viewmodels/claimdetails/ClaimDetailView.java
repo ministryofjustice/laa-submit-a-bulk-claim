@@ -1,4 +1,4 @@
-package uk.gov.justice.laa.bulkclaim.viewmodels.claimcase;
+package uk.gov.justice.laa.bulkclaim.viewmodels.claimdetails;
 
 import java.util.LinkedHashMap;
 import uk.gov.justice.laa.bulkclaim.dto.submission.claim.viewmodels.viewfield.ClaimDetailsViewField;

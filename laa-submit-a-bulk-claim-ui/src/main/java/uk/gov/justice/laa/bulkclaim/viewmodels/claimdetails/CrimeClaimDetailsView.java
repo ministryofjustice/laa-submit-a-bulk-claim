@@ -1,4 +1,4 @@
-package uk.gov.justice.laa.bulkclaim.viewmodels.claimcase;
+package uk.gov.justice.laa.bulkclaim.viewmodels.claimdetails;
 
 import static uk.gov.justice.laa.bulkclaim.dto.submission.claim.viewmodels.viewfield.ClaimViewField.asCrimeLowerField;
 
@@ -8,16 +8,14 @@ import uk.gov.justice.laa.bulkclaim.dto.submission.claim.viewmodels.CrimeLowerCl
 import uk.gov.justice.laa.bulkclaim.dto.submission.claim.viewmodels.viewfield.ClaimDetailsViewField;
 import uk.gov.justice.laa.bulkclaim.dto.submission.claim.viewmodels.viewfield.ClaimViewField;
 import uk.gov.justice.laa.bulkclaim.dto.submission.claim.viewmodels.viewfield.CrimeLowerClaimDetailsViewField;
-import uk.gov.justice.laa.dstew.payments.claimsdata.model.AssessmentGet;
 
-public record CrimeClaimCaseView(
+public record CrimeClaimDetailsView(
     LinkedHashMap<ClaimViewField<CrimeLowerClaimDetails>, Object> summaryRows,
     LinkedHashMap<ClaimViewField<CrimeLowerClaimDetails>, Object> valueRows,
     LinkedHashMap<ClaimViewField<CrimeLowerClaimDetails>, Object> totalRows)
     implements ClaimDetailView<ClaimViewField<CrimeLowerClaimDetails>> {
 
-  public CrimeClaimCaseView(
-      CrimeLowerClaimDetails crimeLowerClaimDetails, AssessmentGet currentAssessment) {
+  public CrimeClaimDetailsView(CrimeLowerClaimDetails crimeLowerClaimDetails) {
     this(
         ClaimViewField.toFieldMap(SUMMARY_ROWS.stream(), crimeLowerClaimDetails),
         ClaimViewField.toFieldMap(VALUE_ROWS.stream(), crimeLowerClaimDetails),

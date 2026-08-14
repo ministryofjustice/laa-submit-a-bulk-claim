@@ -1,4 +1,4 @@
-package uk.gov.justice.laa.bulkclaim.viewmodels.claimcase;
+package uk.gov.justice.laa.bulkclaim.viewmodels.claimdetails;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -7,7 +7,7 @@ import org.junit.jupiter.api.Test;
 import uk.gov.justice.laa.bulkclaim.dto.submission.claim.viewmodels.MediationClaimDetails;
 
 @DisplayName("Mediation claim case view test")
-class MediationClaimCaseViewTest {
+class MediationClaimDetailsViewTest {
 
   @Test
   @DisplayName("getClient1Name()/getClient1UCN() should read client 1's details")
@@ -17,7 +17,7 @@ class MediationClaimCaseViewTest {
     details.setClientSurname("Jenkins");
     details.setUniqueClientNumber("02122002/S/JENK");
 
-    MediationClaimCaseView view = new MediationClaimCaseView(details, null);
+    MediationClaimDetailsView view = new MediationClaimDetailsView(details);
 
     assertThat(view.getClient1Name()).isEqualTo("Sally Jenkins");
     assertThat(view.getClient1UCN()).isEqualTo("02122002/S/JENK");
@@ -34,7 +34,7 @@ class MediationClaimCaseViewTest {
     details.setClient2Surname("Smith");
     details.setClient2UniqueClientNumber("02122002/J/SMIT");
 
-    MediationClaimCaseView view = new MediationClaimCaseView(details, null);
+    MediationClaimDetailsView view = new MediationClaimDetailsView(details);
 
     assertThat(view.getClient2Name()).isEqualTo("John Smith");
     assertThat(view.getClient2UCN()).isEqualTo("02122002/J/SMIT");
@@ -50,7 +50,7 @@ class MediationClaimCaseViewTest {
     details.setClientSurname("Jenkins");
     details.setUniqueClientNumber("02122002/S/JENK");
 
-    MediationClaimCaseView view = new MediationClaimCaseView(details, null);
+    MediationClaimDetailsView view = new MediationClaimDetailsView(details);
 
     assertThat(view.getClient2Name()).isNull();
     assertThat(view.getClient2UCN()).isNull();

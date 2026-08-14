@@ -1,4 +1,4 @@
-package uk.gov.justice.laa.bulkclaim.viewmodels.claimcase;
+package uk.gov.justice.laa.bulkclaim.viewmodels.claimdetails;
 
 import static uk.gov.justice.laa.bulkclaim.dto.submission.claim.viewmodels.viewfield.ClaimViewField.asMediationField;
 
@@ -8,16 +8,14 @@ import uk.gov.justice.laa.bulkclaim.dto.submission.claim.viewmodels.MediationCla
 import uk.gov.justice.laa.bulkclaim.dto.submission.claim.viewmodels.viewfield.ClaimDetailsViewField;
 import uk.gov.justice.laa.bulkclaim.dto.submission.claim.viewmodels.viewfield.ClaimViewField;
 import uk.gov.justice.laa.bulkclaim.dto.submission.claim.viewmodels.viewfield.MediationClaimDetailsViewField;
-import uk.gov.justice.laa.dstew.payments.claimsdata.model.AssessmentGet;
 
-public record MediationClaimCaseView(
+public record MediationClaimDetailsView(
     LinkedHashMap<ClaimViewField<MediationClaimDetails>, Object> summaryRows,
     LinkedHashMap<ClaimViewField<MediationClaimDetails>, Object> valueRows,
     LinkedHashMap<ClaimViewField<MediationClaimDetails>, Object> totalRows)
     implements ClaimDetailView<ClaimViewField<MediationClaimDetails>> {
 
-  public MediationClaimCaseView(
-      MediationClaimDetails mediationClaimDetails, AssessmentGet currentAssessment) {
+  public MediationClaimDetailsView(MediationClaimDetails mediationClaimDetails) {
     this(
         ClaimViewField.toFieldMap(SUMMARY_ROWS.stream(), mediationClaimDetails),
         ClaimViewField.toFieldMap(VALUE_ROWS.stream(), mediationClaimDetails),

@@ -1,4 +1,4 @@
-package uk.gov.justice.laa.bulkclaim.viewmodels.claimcase;
+package uk.gov.justice.laa.bulkclaim.viewmodels.claimdetails;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -38,9 +38,9 @@ class ClaimDetailViewFactoryTest {
 
     ClaimDetailView<?> result = factory.create(claimResponse, null);
 
-    assertThat(result).isInstanceOf(CrimeClaimCaseView.class);
-    assertThat(result.valueRows()).hasSize(CrimeClaimCaseView.VALUE_ROWS.size());
-    assertThat(result.totalRows()).hasSize(CrimeClaimCaseView.TOTAL_ROWS.size());
+    assertThat(result).isInstanceOf(CrimeClaimDetailsView.class);
+    assertThat(result.valueRows()).hasSize(CrimeClaimDetailsView.VALUE_ROWS.size());
+    assertThat(result.totalRows()).hasSize(CrimeClaimDetailsView.TOTAL_ROWS.size());
     assertThat(result.valueRows().keySet().iterator().next())
         .isEqualTo(ClaimDetailsViewField.FIXED_FEE);
   }
@@ -52,7 +52,7 @@ class ClaimDetailViewFactoryTest {
 
     ClaimDetailView<?> result = factory.create(claimResponse, null);
 
-    assertThat(result).isInstanceOf(LegalHelpClaimCaseView.class);
+    assertThat(result).isInstanceOf(LegalHelpClaimDetailsView.class);
   }
 
   @Test
@@ -62,7 +62,7 @@ class ClaimDetailViewFactoryTest {
 
     ClaimDetailView<?> result = factory.create(claimResponse, null);
 
-    assertThat(result).isInstanceOf(MediationClaimCaseView.class);
+    assertThat(result).isInstanceOf(MediationClaimDetailsView.class);
   }
 
   @Test
@@ -80,7 +80,7 @@ class ClaimDetailViewFactoryTest {
   void shouldFallBackToNotApplicableForMissingValues() {
     ClaimResponseV2 claimResponse = TestObjectCreator.buildClaimResponseV2(AreaOfLaw.CRIME_LOWER);
 
-    CrimeClaimCaseView result = (CrimeClaimCaseView) factory.create(claimResponse, null);
+    CrimeClaimDetailsView result = (CrimeClaimDetailsView) factory.create(claimResponse, null);
 
     ClaimField fixedFeeField = (ClaimField) result.valueRows().get(ClaimDetailsViewField.FIXED_FEE);
 
@@ -99,7 +99,8 @@ class ClaimDetailViewFactoryTest {
             .allowedTotalVat(new BigDecimal("42.00"))
             .allowedTotalInclVat(new BigDecimal("242.00"));
 
-    CrimeClaimCaseView result = (CrimeClaimCaseView) factory.create(claimResponse, assessment);
+    CrimeClaimDetailsView result =
+        (CrimeClaimDetailsView) factory.create(claimResponse, assessment);
 
     ClaimField fixedFeeValueField =
         (ClaimField) result.valueRows().get(ClaimDetailsViewField.FIXED_FEE);
@@ -120,8 +121,8 @@ class ClaimDetailViewFactoryTest {
     claimResponse.setIsLondonRate(true);
     AssessmentGet assessment = new AssessmentGet().fixedFeeAmount(new BigDecimal("1.00"));
 
-    LegalHelpClaimCaseView result =
-        (LegalHelpClaimCaseView) factory.create(claimResponse, assessment);
+    LegalHelpClaimDetailsView result =
+        (LegalHelpClaimDetailsView) factory.create(claimResponse, assessment);
 
     ClaimField londonRateField =
         (ClaimField) result.valueRows().get(LegalHelpClaimDetailsViewField.LONDON_RATE);
@@ -136,7 +137,8 @@ class ClaimDetailViewFactoryTest {
     ClaimResponseV2 claimResponse = TestObjectCreator.buildClaimResponseV2(AreaOfLaw.CRIME_LOWER);
     AssessmentGet assessment = new AssessmentGet().netTravelCostsAmount(new BigDecimal("321.00"));
 
-    CrimeClaimCaseView result = (CrimeClaimCaseView) factory.create(claimResponse, assessment);
+    CrimeClaimDetailsView result =
+        (CrimeClaimDetailsView) factory.create(claimResponse, assessment);
 
     ClaimField travelCostsField =
         (ClaimField) result.valueRows().get(CrimeLowerClaimDetailsViewField.TRAVEL_COSTS);
