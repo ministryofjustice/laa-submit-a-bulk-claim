@@ -30,14 +30,16 @@
         </th:block>
         <th:block th:if="${areaOfLaw == 'MEDIATION'}">
           <p class="govuk-body">
-            <span class="govuk-!-font-weight-bold" th:text="|#{viewClaim.summary.clientName1}:|"></span>
+            <span class="govuk-!-font-weight-bold"
+                  th:text="|#{viewClaim.summary.clientName1}:|"></span>
             <th:block th:text="${claimDetailView.summaryRows()['CLIENT_1_NAME']}"></th:block>
             <br/>
             <span class="govuk-!-font-weight-bold" th:text="|#{viewClaim.summary.ucn1}:|"></span>
             <th:block th:text="${claimDetailView.summaryRows()['CLIENT_1_UCN']}"></th:block>
           </p>
           <p class="govuk-body">
-            <span class="govuk-!-font-weight-bold" th:text="|#{viewClaim.summary.clientName2}:|"></span>
+            <span class="govuk-!-font-weight-bold"
+                  th:text="|#{viewClaim.summary.clientName2}:|"></span>
             <th:block th:text="${claimDetailView.summaryRows()['CLIENT_2_NAME']}"></th:block>
             <br/>
             <span class="govuk-!-font-weight-bold" th:text="|#{viewClaim.summary.ucn2}:|"></span>
@@ -76,8 +78,10 @@
       <th:block
           th:replace="~{fragments/claim-value-table :: claim-value-table(#{viewClaim.values.title}, ${claimDetailView.valueRows()}, ${showCurrentCalculated})}"/>
 
-      <th:block
-          th:replace="~{fragments/claim-value-table :: claim-value-table(#{viewClaim.totalAllowedValue.title}, ${claimDetailView.totalRows()}, ${showCurrentCalculated})}"/>
+      <th:block th:if="${isAssessedColumnEnabled}">
+        <th:block
+            th:replace="~{fragments/claim-value-table :: claim-value-table(#{viewClaim.totalAllowedValue.title}, ${claimDetailView.totalRows()}, ${showCurrentCalculated})}"/>
+      </th:block>
 
     </div>
   </div>

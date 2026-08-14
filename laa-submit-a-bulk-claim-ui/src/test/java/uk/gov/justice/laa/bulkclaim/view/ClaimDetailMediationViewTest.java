@@ -170,6 +170,8 @@ class ClaimDetailMediationViewTest extends ViewTestBase {
         new ClaimStatusBanner(DerivedClaimStatus.ASSESSED, "02/02/2026", "11:00");
     stubClaim(DerivedClaimStatus.ASSESSED, Optional.of(banner));
 
+    when(featureFlagsConfig.getIsAssessedColumnEnabled()).thenReturn(true);
+
     Document doc = renderDocument();
 
     assertThat(doc.getElementById("claim-status-banner").text())

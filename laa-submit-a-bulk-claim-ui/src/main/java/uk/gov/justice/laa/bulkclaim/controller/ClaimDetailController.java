@@ -48,7 +48,7 @@ public final class ClaimDetailController {
       @RequestParam(value = "page", defaultValue = "0") final int page,
       @RequestParam(value = "messagesPage", defaultValue = "0") final int messagesPage,
       @RequestParam(value = "navTab", required = false, defaultValue = "CLAIM_DETAILS")
-          final ViewSubmissionNavigationTab navigationTab) {
+      final ViewSubmissionNavigationTab navigationTab) {
 
     model.addAttribute(CLAIM_ID, claimReference);
     String path =
@@ -73,7 +73,7 @@ public final class ClaimDetailController {
       @RequestParam(value = "page", defaultValue = "0") final int page,
       @RequestParam(value = "messagesPage", defaultValue = "0") final int messagesPage,
       @RequestParam(value = "navTab", required = false, defaultValue = "CLAIM_DETAILS")
-          final ViewSubmissionNavigationTab navigationTab) {
+      final ViewSubmissionNavigationTab navigationTab) {
 
     model.addAttribute("page", page);
     model.addAttribute("messagesPage", messagesPage);
@@ -124,7 +124,7 @@ public final class ClaimDetailController {
       @ModelAttribute(CLAIM_ID) final UUID claimId,
       @RequestParam(value = "page", defaultValue = "0") final int page,
       @RequestParam(value = "navTab", required = false, defaultValue = "CLAIM_DETAILS")
-          final ViewSubmissionNavigationTab navigationTab) {
+      final ViewSubmissionNavigationTab navigationTab) {
 
     model.addAttribute("page", page);
     model.addAttribute("navigationTab", navigationTab.toString());
@@ -141,6 +141,9 @@ public final class ClaimDetailController {
     model.addAttribute("showCurrentCalculated", pageData.showCurrentCalculated());
     model.addAttribute("claimDetailView", pageData.claimDetailView());
     model.addAttribute("banner", pageData.banner());
+
+    model.addAttribute("isAssessedColumnEnabled",
+        featureFlagsConfig.getIsAssessedColumnEnabled());
 
     final MessagesSummary messagesSummary =
         submissionMessagesBuilder.buildAllWarnings(submissionId, claimId);
