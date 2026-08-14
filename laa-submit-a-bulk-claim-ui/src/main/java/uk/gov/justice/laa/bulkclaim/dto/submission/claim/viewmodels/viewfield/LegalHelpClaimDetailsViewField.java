@@ -2,7 +2,7 @@ package uk.gov.justice.laa.bulkclaim.dto.submission.claim.viewmodels.viewfield;
 
 import java.util.function.Function;
 import lombok.Getter;
-import uk.gov.justice.laa.bulkclaim.dto.submission.claim.viewmodels.ClaimField;
+import uk.gov.justice.laa.bulkclaim.dto.submission.claim.viewmodels.ClaimFieldRow;
 import uk.gov.justice.laa.bulkclaim.dto.submission.claim.viewmodels.LegalHelpClaimDetails;
 
 @Getter
@@ -13,8 +13,8 @@ public enum LegalHelpClaimDetailsViewField implements ClaimViewField<LegalHelpCl
   MATTER_TYPE_1(LegalHelpClaimDetails::getMatterTypeCodeOne),
   MATTER_TYPE_2(LegalHelpClaimDetails::getMatterTypeCodeTwo),
   // London rate not part of calculation - shown in the Values table with no calculated/assessed
-  // column, so it is wrapped as a ClaimField to match that table's row shape.
-  LONDON_RATE(claim -> new ClaimField(claim.getReportedLondonRateIndicator(), null, null)),
+  // column, so it is wrapped as a ClaimFieldRow to match that table's row shape.
+  LONDON_RATE(claim -> new ClaimFieldRow(claim.getReportedLondonRateIndicator(), null, null)),
 
   // Values
   COUNSELS_COSTS(LegalHelpClaimDetails::getCounselsCosts),

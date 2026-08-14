@@ -5,7 +5,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.math.BigDecimal;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import uk.gov.justice.laa.bulkclaim.dto.submission.claim.viewmodels.ClaimField;
+import uk.gov.justice.laa.bulkclaim.dto.submission.claim.viewmodels.ClaimFieldRow;
 import uk.gov.justice.laa.bulkclaim.dto.submission.claim.viewmodels.CrimeLowerClaimDetails;
 import uk.gov.justice.laa.bulkclaim.viewmodels.claimdetails.CrimeClaimDetailsView;
 
@@ -24,11 +24,11 @@ class CrimeLowerClaimDetailsViewFieldTest {
   }
 
   @Test
-  @DisplayName("Should read a values-table field's ClaimField via the accessor")
+  @DisplayName("Should read a values-table field's ClaimFieldRow via the accessor")
   void shouldReadClaimField() {
     CrimeLowerClaimDetails details = new CrimeLowerClaimDetails();
-    ClaimField travelCosts =
-        new ClaimField(new BigDecimal("100.00"), new BigDecimal("110.00"), null);
+    ClaimFieldRow travelCosts =
+        new ClaimFieldRow(new BigDecimal("100.00"), new BigDecimal("110.00"), null);
     details.setTravelCosts(travelCosts);
 
     Object value = CrimeLowerClaimDetailsViewField.TRAVEL_COSTS.getAccessor().apply(details);

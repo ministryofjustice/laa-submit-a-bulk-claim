@@ -1,6 +1,6 @@
 package uk.gov.justice.laa.bulkclaim.dto.submission.claim.viewmodels;
 
-public record ClaimField(Object reported, Object initialCalculated, Object assessed) {
+public record ClaimFieldRow(Object reported, Object initialCalculated, Object assessed) {
 
   public boolean hasReportedValue() {
     return reported != null;

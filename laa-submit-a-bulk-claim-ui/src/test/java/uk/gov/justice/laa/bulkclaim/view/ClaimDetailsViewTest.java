@@ -34,7 +34,7 @@ import uk.gov.justice.laa.dstew.payments.claimsdata.model.Page;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionResponse;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionStatus;
 
-class SubmissionDetailsClaimFieldViewTest extends SubmissionDetailsViewTestBase {
+class ClaimDetailsViewTest extends SubmissionDetailsViewTestBase {
 
   @Test
   void viewHasSortableClaimHeaders_crime() {

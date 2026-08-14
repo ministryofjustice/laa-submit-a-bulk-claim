@@ -7,7 +7,7 @@ import java.math.BigDecimal;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.test.util.ReflectionTestUtils;
-import uk.gov.justice.laa.bulkclaim.dto.submission.claim.viewmodels.ClaimField;
+import uk.gov.justice.laa.bulkclaim.dto.submission.claim.viewmodels.ClaimFieldRow;
 import uk.gov.justice.laa.bulkclaim.dto.submission.claim.viewmodels.viewfield.ClaimDetailsViewField;
 import uk.gov.justice.laa.bulkclaim.dto.submission.claim.viewmodels.viewfield.CrimeLowerClaimDetailsViewField;
 import uk.gov.justice.laa.bulkclaim.dto.submission.claim.viewmodels.viewfield.LegalHelpClaimDetailsViewField;
@@ -82,7 +82,8 @@ class ClaimDetailViewFactoryTest {
 
     CrimeClaimDetailsView result = (CrimeClaimDetailsView) factory.create(claimResponse, null);
 
-    ClaimField fixedFeeField = (ClaimField) result.valueRows().get(ClaimDetailsViewField.FIXED_FEE);
+    ClaimFieldRow fixedFeeField =
+        (ClaimFieldRow) result.valueRows().get(ClaimDetailsViewField.FIXED_FEE);
 
     assertThat(fixedFeeField.reported()).isNull();
   }
@@ -102,15 +103,16 @@ class ClaimDetailViewFactoryTest {
     CrimeClaimDetailsView result =
         (CrimeClaimDetailsView) factory.create(claimResponse, assessment);
 
-    ClaimField fixedFeeValueField =
-        (ClaimField) result.valueRows().get(ClaimDetailsViewField.FIXED_FEE);
+    ClaimFieldRow fixedFeeValueField =
+        (ClaimFieldRow) result.valueRows().get(ClaimDetailsViewField.FIXED_FEE);
     assertThat(fixedFeeValueField.assessed()).isEqualTo(new BigDecimal("999.99"));
     assertThat(fixedFeeValueField.initialCalculated()).isNotNull();
 
-    ClaimField totalVatField = (ClaimField) result.totalRows().get(ClaimDetailsViewField.TOTAL_VAT);
+    ClaimFieldRow totalVatField =
+        (ClaimFieldRow) result.totalRows().get(ClaimDetailsViewField.TOTAL_VAT);
     assertThat(totalVatField.assessed()).isEqualTo(new BigDecimal("42.00"));
-    ClaimField totalInclVatField =
-        (ClaimField) result.totalRows().get(ClaimDetailsViewField.TOTAL_INCLUDING_VAT);
+    ClaimFieldRow totalInclVatField =
+        (ClaimFieldRow) result.totalRows().get(ClaimDetailsViewField.TOTAL_INCLUDING_VAT);
     assertThat(totalInclVatField.assessed()).isEqualTo(new BigDecimal("242.00"));
   }
 
@@ -124,8 +126,8 @@ class ClaimDetailViewFactoryTest {
     LegalHelpClaimDetailsView result =
         (LegalHelpClaimDetailsView) factory.create(claimResponse, assessment);
 
-    ClaimField londonRateField =
-        (ClaimField) result.valueRows().get(LegalHelpClaimDetailsViewField.LONDON_RATE);
+    ClaimFieldRow londonRateField =
+        (ClaimFieldRow) result.valueRows().get(LegalHelpClaimDetailsViewField.LONDON_RATE);
 
     assertThat(londonRateField.reported()).isEqualTo(true);
     assertThat(londonRateField.assessed()).isNull();
@@ -140,8 +142,8 @@ class ClaimDetailViewFactoryTest {
     CrimeClaimDetailsView result =
         (CrimeClaimDetailsView) factory.create(claimResponse, assessment);
 
-    ClaimField travelCostsField =
-        (ClaimField) result.valueRows().get(CrimeLowerClaimDetailsViewField.TRAVEL_COSTS);
+    ClaimFieldRow travelCostsField =
+        (ClaimFieldRow) result.valueRows().get(CrimeLowerClaimDetailsViewField.TRAVEL_COSTS);
     assertThat(travelCostsField.assessed()).isEqualTo(new BigDecimal("321.00"));
   }
 }

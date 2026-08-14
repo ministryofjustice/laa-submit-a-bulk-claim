@@ -21,7 +21,7 @@ import uk.gov.justice.laa.bulkclaim.builder.SubmissionMessagesBuilder;
 import uk.gov.justice.laa.bulkclaim.client.DataClaimsRestClient;
 import uk.gov.justice.laa.bulkclaim.client.DataClaimsRestClientV2;
 import uk.gov.justice.laa.bulkclaim.controller.ClaimDetailController;
-import uk.gov.justice.laa.bulkclaim.dto.submission.claim.viewmodels.ClaimField;
+import uk.gov.justice.laa.bulkclaim.dto.submission.claim.viewmodels.ClaimFieldRow;
 import uk.gov.justice.laa.bulkclaim.dto.submission.claim.viewmodels.ClaimStatusBanner;
 import uk.gov.justice.laa.bulkclaim.dto.submission.claim.viewmodels.MediationClaimDetails;
 import uk.gov.justice.laa.bulkclaim.dto.submission.messages.MessageRow;
@@ -83,7 +83,7 @@ class ClaimDetailMediationViewTest extends ViewTestBase {
   }
 
   private void setEmptyValueFields(MediationClaimDetails details) {
-    ClaimField emptyField = new ClaimField(null, null, null);
+    ClaimFieldRow emptyField = new ClaimFieldRow(null, null, null);
     details.setFixedFee(emptyField);
     details.setDisbursements(emptyField);
     details.setDisbursementsVat(emptyField);

@@ -4,7 +4,7 @@ import java.math.BigDecimal;
 import org.mapstruct.Context;
 import org.mapstruct.Named;
 import org.springframework.stereotype.Component;
-import uk.gov.justice.laa.bulkclaim.dto.submission.claim.viewmodels.ClaimField;
+import uk.gov.justice.laa.bulkclaim.dto.submission.claim.viewmodels.ClaimFieldRow;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.AssessmentGet;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.BoltOnPatch;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.ClaimResponseV2;
@@ -14,110 +14,111 @@ import uk.gov.justice.laa.dstew.payments.claimsdata.model.FeeCalculationPatch;
 public class ClaimMapperHelper {
 
   @Named("fixedFee")
-  public ClaimField fixedFee(
+  public ClaimFieldRow fixedFee(
       ClaimResponseV2 claimResponse, @Context AssessmentGet currentAssessment) {
     FeeCalculationPatch feeCalculation = claimResponse.getFeeCalculationResponse();
-    return new ClaimField(
+    return new ClaimFieldRow(
         null,
         feeCalculation == null ? null : feeCalculation.getFixedFeeAmount(),
         currentAssessment == null ? null : currentAssessment.getFixedFeeAmount());
   }
 
   @Named("profitCosts")
-  public ClaimField profitCosts(
+  public ClaimFieldRow profitCosts(
       ClaimResponseV2 claimResponse, @Context AssessmentGet currentAssessment) {
     // Profit costs never shows an initial calculated value, even though an upstream
     // calculated value exists on the fee calculation response.
-    return new ClaimField(
+    return new ClaimFieldRow(
         claimResponse.getNetProfitCostsAmount(),
         null,
         currentAssessment == null ? null : currentAssessment.getNetProfitCostsAmount());
   }
 
   @Named("disbursements")
-  public ClaimField disbursements(
+  public ClaimFieldRow disbursements(
       ClaimResponseV2 claimResponse, @Context AssessmentGet currentAssessment) {
     FeeCalculationPatch feeCalculation = claimResponse.getFeeCalculationResponse();
-    return new ClaimField(
+    return new ClaimFieldRow(
         claimResponse.getNetDisbursementAmount(),
         feeCalculation == null ? null : feeCalculation.getDisbursementAmount(),
         currentAssessment == null ? null : currentAssessment.getDisbursementAmount());
   }
 
   @Named("disbursementsVat")
-  public ClaimField disbursementsVat(
+  public ClaimFieldRow disbursementsVat(
       ClaimResponseV2 claimResponse, @Context AssessmentGet currentAssessment) {
     FeeCalculationPatch feeCalculation = claimResponse.getFeeCalculationResponse();
-    return new ClaimField(
+    return new ClaimFieldRow(
         claimResponse.getDisbursementsVatAmount(),
         feeCalculation == null ? null : feeCalculation.getDisbursementVatAmount(),
         currentAssessment == null ? null : currentAssessment.getDisbursementVatAmount());
   }
 
   @Named("vat")
-  public ClaimField vat(ClaimResponseV2 claimResponse, @Context AssessmentGet currentAssessment) {
+  public ClaimFieldRow vat(
+      ClaimResponseV2 claimResponse, @Context AssessmentGet currentAssessment) {
     FeeCalculationPatch feeCalculation = claimResponse.getFeeCalculationResponse();
-    return new ClaimField(
+    return new ClaimFieldRow(
         claimResponse.getIsVatApplicable(),
         feeCalculation == null ? null : feeCalculation.getVatIndicator(),
         currentAssessment == null ? null : currentAssessment.getIsVatApplicable());
   }
 
   @Named("totalVat")
-  public ClaimField totalVat(
+  public ClaimFieldRow totalVat(
       ClaimResponseV2 claimResponse, @Context AssessmentGet currentAssessment) {
     FeeCalculationPatch feeCalculation = claimResponse.getFeeCalculationResponse();
-    return new ClaimField(
+    return new ClaimFieldRow(
         null,
         feeCalculation == null ? null : feeCalculation.getCalculatedVatAmount(),
         currentAssessment == null ? null : currentAssessment.getAllowedTotalVat());
   }
 
   @Named("totalIncludingVat")
-  public ClaimField totalIncludingVat(
+  public ClaimFieldRow totalIncludingVat(
       ClaimResponseV2 claimResponse, @Context AssessmentGet currentAssessment) {
     FeeCalculationPatch feeCalculation = claimResponse.getFeeCalculationResponse();
-    return new ClaimField(
+    return new ClaimFieldRow(
         null,
         feeCalculation == null ? null : feeCalculation.getTotalAmount(),
         currentAssessment == null ? null : currentAssessment.getAllowedTotalInclVat());
   }
 
   @Named("travelCosts")
-  public ClaimField travelCosts(
+  public ClaimFieldRow travelCosts(
       ClaimResponseV2 claimResponse, @Context AssessmentGet currentAssessment) {
     FeeCalculationPatch feeCalculation = claimResponse.getFeeCalculationResponse();
-    return new ClaimField(
+    return new ClaimFieldRow(
         claimResponse.getTravelWaitingCostsAmount(),
         feeCalculation == null ? null : feeCalculation.getNetTravelCostsAmount(),
         currentAssessment == null ? null : currentAssessment.getNetTravelCostsAmount());
   }
 
   @Named("waitingCosts")
-  public ClaimField waitingCosts(
+  public ClaimFieldRow waitingCosts(
       ClaimResponseV2 claimResponse, @Context AssessmentGet currentAssessment) {
     FeeCalculationPatch feeCalculation = claimResponse.getFeeCalculationResponse();
-    return new ClaimField(
+    return new ClaimFieldRow(
         claimResponse.getNetWaitingCostsAmount(),
         feeCalculation == null ? null : feeCalculation.getNetWaitingCostsAmount(),
         currentAssessment == null ? null : currentAssessment.getNetWaitingCostsAmount());
   }
 
   @Named("counselsCosts")
-  public ClaimField counselsCosts(
+  public ClaimFieldRow counselsCosts(
       ClaimResponseV2 claimResponse, @Context AssessmentGet currentAssessment) {
     FeeCalculationPatch feeCalculation = claimResponse.getFeeCalculationResponse();
-    return new ClaimField(
+    return new ClaimFieldRow(
         claimResponse.getNetCounselCostsAmount(),
         feeCalculation == null ? null : feeCalculation.getNetCostOfCounselAmount(),
         currentAssessment == null ? null : currentAssessment.getNetCostOfCounselAmount());
   }
 
   @Named("travelAndWaitingCosts")
-  public ClaimField travelAndWaitingCosts(
+  public ClaimFieldRow travelAndWaitingCosts(
       ClaimResponseV2 claimResponse, @Context AssessmentGet currentAssessment) {
     FeeCalculationPatch feeCalculation = claimResponse.getFeeCalculationResponse();
-    return new ClaimField(
+    return new ClaimFieldRow(
         claimResponse.getTravelWaitingCostsAmount(),
         feeCalculation == null ? null : feeCalculation.getTravelAndWaitingCostsAmount(),
         assessedTravelAndWaitingCosts(currentAssessment));
@@ -139,10 +140,10 @@ public class ClaimMapperHelper {
   }
 
   @Named("detentionTravelWaitingCosts")
-  public ClaimField detentionTravelWaitingCosts(
+  public ClaimFieldRow detentionTravelWaitingCosts(
       ClaimResponseV2 claimResponse, @Context AssessmentGet currentAssessment) {
     FeeCalculationPatch feeCalculation = claimResponse.getFeeCalculationResponse();
-    return new ClaimField(
+    return new ClaimFieldRow(
         claimResponse.getDetentionTravelWaitingCostsAmount(),
         feeCalculation == null ? null : feeCalculation.getDetentionTravelAndWaitingCostsAmount(),
         currentAssessment == null
@@ -151,60 +152,60 @@ public class ClaimMapperHelper {
   }
 
   @Named("jrFormFilling")
-  public ClaimField jrFormFilling(
+  public ClaimFieldRow jrFormFilling(
       ClaimResponseV2 claimResponse, @Context AssessmentGet currentAssessment) {
     FeeCalculationPatch feeCalculation = claimResponse.getFeeCalculationResponse();
-    return new ClaimField(
+    return new ClaimFieldRow(
         claimResponse.getJrFormFillingAmount(),
         feeCalculation == null ? null : feeCalculation.getJrFormFillingAmount(),
         currentAssessment == null ? null : currentAssessment.getJrFormFillingAmount());
   }
 
   @Named("adjournedHearingFee")
-  public ClaimField adjournedHearingFee(
+  public ClaimFieldRow adjournedHearingFee(
       ClaimResponseV2 claimResponse, @Context AssessmentGet currentAssessment) {
     BoltOnPatch boltOns = boltOnDetails(claimResponse);
-    return new ClaimField(
+    return new ClaimFieldRow(
         null,
         boltOns == null ? null : boltOns.getBoltOnAdjournedHearingFee(),
         currentAssessment == null ? null : currentAssessment.getBoltOnAdjournedHearingFee());
   }
 
   @Named("cmrhOral")
-  public ClaimField cmrhOral(
+  public ClaimFieldRow cmrhOral(
       ClaimResponseV2 claimResponse, @Context AssessmentGet currentAssessment) {
     BoltOnPatch boltOns = boltOnDetails(claimResponse);
-    return new ClaimField(
+    return new ClaimFieldRow(
         null,
         boltOns == null ? null : boltOns.getBoltOnCmrhOralFee(),
         currentAssessment == null ? null : currentAssessment.getBoltOnCmrhOralFee());
   }
 
   @Named("cmrhTelephone")
-  public ClaimField cmrhTelephone(
+  public ClaimFieldRow cmrhTelephone(
       ClaimResponseV2 claimResponse, @Context AssessmentGet currentAssessment) {
     BoltOnPatch boltOns = boltOnDetails(claimResponse);
-    return new ClaimField(
+    return new ClaimFieldRow(
         null,
         boltOns == null ? null : boltOns.getBoltOnCmrhTelephoneFee(),
         currentAssessment == null ? null : currentAssessment.getBoltOnCmrhTelephoneFee());
   }
 
   @Named("homeOfficeInterview")
-  public ClaimField homeOfficeInterview(
+  public ClaimFieldRow homeOfficeInterview(
       ClaimResponseV2 claimResponse, @Context AssessmentGet currentAssessment) {
     BoltOnPatch boltOns = boltOnDetails(claimResponse);
-    return new ClaimField(
+    return new ClaimFieldRow(
         null,
         boltOns == null ? null : boltOns.getBoltOnHomeOfficeInterviewFee(),
         currentAssessment == null ? null : currentAssessment.getBoltOnHomeOfficeInterviewFee());
   }
 
   @Named("substantiveHearing")
-  public ClaimField substantiveHearing(
+  public ClaimFieldRow substantiveHearing(
       ClaimResponseV2 claimResponse, @Context AssessmentGet currentAssessment) {
     BoltOnPatch boltOns = boltOnDetails(claimResponse);
-    return new ClaimField(
+    return new ClaimFieldRow(
         null,
         boltOns == null ? null : boltOns.getBoltOnSubstantiveHearingFee(),
         currentAssessment == null ? null : currentAssessment.getBoltOnSubstantiveHearingFee());

@@ -22,15 +22,15 @@ public abstract class ClaimDetails {
   private Boolean escapeCase;
 
   // Values
-  private ClaimField fixedFee;
-  private ClaimField profitCosts;
-  private ClaimField disbursements;
-  private ClaimField disbursementsVat;
-  private ClaimField vat;
+  private ClaimFieldRow fixedFee;
+  private ClaimFieldRow profitCosts;
+  private ClaimFieldRow disbursements;
+  private ClaimFieldRow disbursementsVat;
+  private ClaimFieldRow vat;
 
   // Total allowed value
-  private ClaimField totalVat;
-  private ClaimField totalIncludingVat;
+  private ClaimFieldRow totalVat;
+  private ClaimFieldRow totalIncludingVat;
 
   public String clientName() {
     return "%s %s".formatted(clientForename, clientSurname);

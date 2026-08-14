@@ -28,7 +28,7 @@ import uk.gov.justice.laa.bulkclaim.client.DataClaimsRestClient;
 import uk.gov.justice.laa.bulkclaim.client.DataClaimsRestClientV2;
 import uk.gov.justice.laa.bulkclaim.dto.submission.claim.ClaimFeeCalculationBreakdown;
 import uk.gov.justice.laa.bulkclaim.dto.submission.claim.ClaimSummary;
-import uk.gov.justice.laa.bulkclaim.dto.submission.claim.viewmodels.ClaimField;
+import uk.gov.justice.laa.bulkclaim.dto.submission.claim.viewmodels.ClaimFieldRow;
 import uk.gov.justice.laa.bulkclaim.dto.submission.claim.viewmodels.CrimeLowerClaimDetails;
 import uk.gov.justice.laa.bulkclaim.dto.submission.messages.MessageRow;
 import uk.gov.justice.laa.bulkclaim.dto.submission.messages.MessagesSummary;
@@ -180,7 +180,7 @@ class ClaimDetailControllerTest extends BaseControllerTest {
 
     private void stubCommonDependencies() {
       CrimeLowerClaimDetails details = new CrimeLowerClaimDetails();
-      ClaimField emptyField = new ClaimField(null, null, null);
+      ClaimFieldRow emptyField = new ClaimFieldRow(null, null, null);
       details.setFixedFee(emptyField);
       details.setProfitCosts(emptyField);
       details.setDisbursements(emptyField);

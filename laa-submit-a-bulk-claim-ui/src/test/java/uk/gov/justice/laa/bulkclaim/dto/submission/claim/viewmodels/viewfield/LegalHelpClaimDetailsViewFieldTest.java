@@ -5,7 +5,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.math.BigDecimal;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import uk.gov.justice.laa.bulkclaim.dto.submission.claim.viewmodels.ClaimField;
+import uk.gov.justice.laa.bulkclaim.dto.submission.claim.viewmodels.ClaimFieldRow;
 import uk.gov.justice.laa.bulkclaim.dto.submission.claim.viewmodels.LegalHelpClaimDetails;
 import uk.gov.justice.laa.bulkclaim.viewmodels.claimdetails.LegalHelpClaimDetailsView;
 
@@ -14,22 +14,22 @@ class LegalHelpClaimDetailsViewFieldTest {
 
   @Test
   @DisplayName(
-      "Should wrap the legal-help-specific London rate scalar as a reported-only ClaimField")
+      "Should wrap the legal-help-specific London rate scalar as a reported-only ClaimFieldRow")
   void shouldReadLondonRate() {
     LegalHelpClaimDetails details = new LegalHelpClaimDetails();
     details.setReportedLondonRateIndicator(true);
 
     Object value = LegalHelpClaimDetailsViewField.LONDON_RATE.getAccessor().apply(details);
 
-    assertThat(value).isEqualTo(new ClaimField(true, null, null));
+    assertThat(value).isEqualTo(new ClaimFieldRow(true, null, null));
   }
 
   @Test
-  @DisplayName("Should read a values-table field's ClaimField via the accessor")
+  @DisplayName("Should read a values-table field's ClaimFieldRow via the accessor")
   void shouldReadClaimField() {
     LegalHelpClaimDetails details = new LegalHelpClaimDetails();
-    ClaimField counselsCosts =
-        new ClaimField(new BigDecimal("100.00"), new BigDecimal("110.00"), null);
+    ClaimFieldRow counselsCosts =
+        new ClaimFieldRow(new BigDecimal("100.00"), new BigDecimal("110.00"), null);
     details.setCounselsCosts(counselsCosts);
 
     Object value = LegalHelpClaimDetailsViewField.COUNSELS_COSTS.getAccessor().apply(details);

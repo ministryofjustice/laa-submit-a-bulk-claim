@@ -12,13 +12,13 @@ public class LegalHelpClaimDetails extends ClaimDetails {
   private String matterTypeCodeTwo;
   private Boolean reportedLondonRateIndicator;
 
-  private ClaimField counselsCosts;
-  private ClaimField travelAndWaitingCosts;
-  private ClaimField detentionTravelWaitingCosts;
-  private ClaimField jrFormFilling;
-  private ClaimField adjournedHearingFee;
-  private ClaimField cmrhOral;
-  private ClaimField cmrhTelephone;
-  private ClaimField homeOfficeInterview;
-  private ClaimField substantiveHearing;
+  private ClaimFieldRow counselsCosts;
+  private ClaimFieldRow travelAndWaitingCosts;
+  private ClaimFieldRow detentionTravelWaitingCosts;
+  private ClaimFieldRow jrFormFilling;
+  private ClaimFieldRow adjournedHearingFee;
+  private ClaimFieldRow cmrhOral;
+  private ClaimFieldRow cmrhTelephone;
+  private ClaimFieldRow homeOfficeInterview;
+  private ClaimFieldRow substantiveHearing;
 }

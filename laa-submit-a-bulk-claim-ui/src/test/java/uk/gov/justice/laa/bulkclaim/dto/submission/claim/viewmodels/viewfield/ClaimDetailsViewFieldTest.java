@@ -6,7 +6,7 @@ import java.time.OffsetDateTime;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import uk.gov.justice.laa.bulkclaim.dto.submission.claim.viewmodels.ClaimDetails;
-import uk.gov.justice.laa.bulkclaim.dto.submission.claim.viewmodels.ClaimField;
+import uk.gov.justice.laa.bulkclaim.dto.submission.claim.viewmodels.ClaimFieldRow;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.AreaOfLaw;
 
 @DisplayName("Claim details view field test")
@@ -57,14 +57,15 @@ class ClaimDetailsViewFieldTest {
   @DisplayName("Should read every common value field via its accessor")
   void shouldReadValueFields() {
     ClaimDetails claim = new TestClaimDetails();
-    ClaimField fixedFee = new ClaimField(null, "fixed-fee", "assessed-fixed-fee");
-    ClaimField profitCosts = new ClaimField("profit-costs", null, "assessed-profit-costs");
-    ClaimField disbursements = new ClaimField("disbursements", "disb-calc", "assessed-disb");
-    ClaimField disbursementsVat = new ClaimField("disb-vat", "disb-vat-calc", "assessed-disb-vat");
-    ClaimField vat = new ClaimField(true, true, false);
-    ClaimField totalVat = new ClaimField(null, "total-vat-calc", "assessed-total-vat");
-    ClaimField totalIncludingVat =
-        new ClaimField(null, "total-incl-vat-calc", "assessed-total-incl-vat");
+    ClaimFieldRow fixedFee = new ClaimFieldRow(null, "fixed-fee", "assessed-fixed-fee");
+    ClaimFieldRow profitCosts = new ClaimFieldRow("profit-costs", null, "assessed-profit-costs");
+    ClaimFieldRow disbursements = new ClaimFieldRow("disbursements", "disb-calc", "assessed-disb");
+    ClaimFieldRow disbursementsVat =
+        new ClaimFieldRow("disb-vat", "disb-vat-calc", "assessed-disb-vat");
+    ClaimFieldRow vat = new ClaimFieldRow(true, true, false);
+    ClaimFieldRow totalVat = new ClaimFieldRow(null, "total-vat-calc", "assessed-total-vat");
+    ClaimFieldRow totalIncludingVat =
+        new ClaimFieldRow(null, "total-incl-vat-calc", "assessed-total-incl-vat");
     claim.setFixedFee(fixedFee);
     claim.setProfitCosts(profitCosts);
     claim.setDisbursements(disbursements);

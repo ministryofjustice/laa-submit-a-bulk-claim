@@ -12,6 +12,6 @@ public class CrimeLowerClaimDetails extends ClaimDetails {
   private String stageReachedCode;
   private String outcomeCode;
 
-  private ClaimField travelCosts;
-  private ClaimField waitingCosts;
+  private ClaimFieldRow travelCosts;
+  private ClaimFieldRow waitingCosts;
 }

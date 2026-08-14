@@ -5,7 +5,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.math.BigDecimal;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import uk.gov.justice.laa.bulkclaim.dto.submission.claim.viewmodels.ClaimField;
+import uk.gov.justice.laa.bulkclaim.dto.submission.claim.viewmodels.ClaimFieldRow;
 import uk.gov.justice.laa.bulkclaim.helper.TestObjectCreator;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.AreaOfLaw;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.AssessmentGet;
@@ -30,7 +30,7 @@ class ClaimMapperHelperTest {
   @Test
   @DisplayName("Should build fixed fee from the fee calculation response and assessment")
   void shouldBuildFixedFee() {
-    ClaimField result = helper.fixedFee(claimResponse, currentAssessment);
+    ClaimFieldRow result = helper.fixedFee(claimResponse, currentAssessment);
 
     assertThat(result.reported()).isNull();
     assertThat(result.initialCalculated())
@@ -43,7 +43,7 @@ class ClaimMapperHelperTest {
       "Should leave the initial calculated profit costs value null even though an "
           + "upstream calculated value exists")
   void shouldPreserveProfitCostsNullCalculatedQuirk() {
-    ClaimField result = helper.profitCosts(claimResponse, currentAssessment);
+    ClaimFieldRow result = helper.profitCosts(claimResponse, currentAssessment);
 
     assertThat(claimResponse.getFeeCalculationResponse().getNetProfitCostsAmount()).isNotNull();
     assertThat(result.reported()).isEqualTo(claimResponse.getNetProfitCostsAmount());
@@ -54,7 +54,7 @@ class ClaimMapperHelperTest {
   @Test
   @DisplayName("Should build disbursements from the claim, fee calculation response and assessment")
   void shouldBuildDisbursements() {
-    ClaimField result = helper.disbursements(claimResponse, currentAssessment);
+    ClaimFieldRow result = helper.disbursements(claimResponse, currentAssessment);
 
     assertThat(result.reported()).isEqualTo(claimResponse.getNetDisbursementAmount());
     assertThat(result.initialCalculated())
@@ -66,7 +66,7 @@ class ClaimMapperHelperTest {
   @DisplayName(
       "Should build disbursements VAT from the claim, fee calculation response and assessment")
   void shouldBuildDisbursementsVat() {
-    ClaimField result = helper.disbursementsVat(claimResponse, currentAssessment);
+    ClaimFieldRow result = helper.disbursementsVat(claimResponse, currentAssessment);
 
     assertThat(result.reported()).isEqualTo(claimResponse.getDisbursementsVatAmount());
     assertThat(result.initialCalculated())
@@ -77,7 +77,7 @@ class ClaimMapperHelperTest {
   @Test
   @DisplayName("Should build VAT from the claim, fee calculation response and assessment")
   void shouldBuildVat() {
-    ClaimField result = helper.vat(claimResponse, currentAssessment);
+    ClaimFieldRow result = helper.vat(claimResponse, currentAssessment);
 
     assertThat(result.reported()).isEqualTo(claimResponse.getIsVatApplicable());
     assertThat(result.initialCalculated())
@@ -88,7 +88,7 @@ class ClaimMapperHelperTest {
   @Test
   @DisplayName("Should build total VAT from the fee calculation response and assessment")
   void shouldBuildTotalVat() {
-    ClaimField result = helper.totalVat(claimResponse, currentAssessment);
+    ClaimFieldRow result = helper.totalVat(claimResponse, currentAssessment);
 
     assertThat(result.reported()).isNull();
     assertThat(result.initialCalculated())
@@ -99,7 +99,7 @@ class ClaimMapperHelperTest {
   @Test
   @DisplayName("Should build total including VAT from the fee calculation response and assessment")
   void shouldBuildTotalIncludingVat() {
-    ClaimField result = helper.totalIncludingVat(claimResponse, currentAssessment);
+    ClaimFieldRow result = helper.totalIncludingVat(claimResponse, currentAssessment);
 
     assertThat(result.reported()).isNull();
     assertThat(result.initialCalculated())
@@ -110,7 +110,7 @@ class ClaimMapperHelperTest {
   @Test
   @DisplayName("Should tolerate a null current assessment")
   void shouldTolerateNullAssessment() {
-    ClaimField result = helper.disbursements(claimResponse, null);
+    ClaimFieldRow result = helper.disbursements(claimResponse, null);
 
     assertThat(result.reported()).isEqualTo(claimResponse.getNetDisbursementAmount());
     assertThat(result.initialCalculated())
@@ -124,7 +124,7 @@ class ClaimMapperHelperTest {
     ClaimResponseV2 noFeeCalculation =
         TestObjectCreator.buildClaimResponseV2(AreaOfLaw.CRIME_LOWER).feeCalculationResponse(null);
 
-    ClaimField result = helper.disbursements(noFeeCalculation, currentAssessment);
+    ClaimFieldRow result = helper.disbursements(noFeeCalculation, currentAssessment);
 
     assertThat(result.reported()).isEqualTo(noFeeCalculation.getNetDisbursementAmount());
     assertThat(result.initialCalculated()).isNull();
