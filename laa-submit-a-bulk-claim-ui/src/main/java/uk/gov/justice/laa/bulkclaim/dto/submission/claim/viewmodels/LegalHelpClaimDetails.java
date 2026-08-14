@@ -28,11 +28,6 @@ public record LegalHelpClaimDetails(
     BigDecimal reportedDisbursements,
     BigDecimal reportedDisbursementsVat,
     BigDecimal reportedTravelAndWaitingCosts,
-    BigDecimal reportedDetentionTravelWaitingCosts,
-    BigDecimal reportedJrFormFillingAmount,
-    int reportedAdjournedHearingFee,
-    int reportedCmrhOralCount,
-    int reportedCmrhTelephoneCount,
     Boolean reportedVatApplicable,
     Boolean reportedLondonRateIndicator,
 

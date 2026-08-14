@@ -11,8 +11,6 @@ import uk.gov.justice.laa.dstew.payments.claimsdata.model.AssessmentGet;
 public enum LegalHelpClaimDetailsViewField implements ClaimViewField<LegalHelpClaimDetails> {
 
   // Page header / Summary
-  CLIENT_FORENAME(LegalHelpClaimDetails::clientForename),
-  CLIENT_SURNAME(LegalHelpClaimDetails::clientSurname),
   CLIENT_NAME(LegalHelpClaimDetails::clientName),
   UNIQUE_FILE_NUMBER(LegalHelpClaimDetails::uniqueFileNumber),
   OFFICE_ACCOUNT_NUMBER(LegalHelpClaimDetails::officeCode),
@@ -31,10 +29,11 @@ public enum LegalHelpClaimDetailsViewField implements ClaimViewField<LegalHelpCl
   FIXED_FEE(
       claim -> new ClaimReportedAndCalculatedValues(claim.initialCalculatedFixedFee()),
       AssessmentGet::getFixedFeeAmount),
+  // Profit costs doesn't show an initial calculated value, so null here is intentional.
   PROFIT_COSTS(
       claim ->
           new ClaimReportedAndCalculatedValues(
-              claim.reportedProfitCosts(), claim.initialCalculatedProfitCosts()),
+              claim.reportedProfitCosts(), null),
       AssessmentGet::getNetProfitCostsAmount),
   DISBURSEMENTS(
       claim ->
@@ -62,30 +61,25 @@ public enum LegalHelpClaimDetailsViewField implements ClaimViewField<LegalHelpCl
       AssessmentGet::getDetentionTravelAndWaitingCostsAmount),
   JR_FORM_FILLING(
       claim ->
-          new ClaimReportedAndCalculatedValues(
-              claim.reportedJrFormFillingAmount(), claim.initialCalculatedJrFormFilling()),
+          new ClaimReportedAndCalculatedValues(claim.initialCalculatedJrFormFilling()),
       AssessmentGet::getJrFormFillingAmount),
   ADJOURNED_HEARING_FEE(
       claim ->
-          new ClaimReportedAndCalculatedValues(
-              claim.reportedAdjournedHearingFee(), claim.initialCalculatedAdjournedHearingFee()),
+          new ClaimReportedAndCalculatedValues(claim.initialCalculatedAdjournedHearingFee()),
       AssessmentGet::getBoltOnAdjournedHearingFee),
   CMRH_ORAL(
       claim ->
-          new ClaimReportedAndCalculatedValues(
-              claim.reportedCmrhOralCount(), claim.initialCalculatedCmrhOral()),
+          new ClaimReportedAndCalculatedValues(claim.initialCalculatedCmrhOral()),
       AssessmentGet::getBoltOnCmrhOralFee),
   CMRH_TELEPHONE(
       claim ->
-          new ClaimReportedAndCalculatedValues(
-              claim.reportedCmrhTelephoneCount(), claim.initialCalculatedCmrhTelephone()),
+          new ClaimReportedAndCalculatedValues(claim.initialCalculatedCmrhTelephone()),
       AssessmentGet::getBoltOnCmrhTelephoneFee),
   // London rate not stored from fee calculation, reusing users entered value as it cannot be
-  // modified.
+  // modified anyways.
   LONDON_RATE(
       claim ->
-          new ClaimReportedAndCalculatedValues(
-              claim.reportedLondonRateIndicator(), claim.reportedLondonRateIndicator())),
+          new ClaimReportedAndCalculatedValues(claim.reportedLondonRateIndicator())),
   HOME_OFFICE_INTERVIEW(
       claim -> new ClaimReportedAndCalculatedValues(claim.initialCalculatedHomeOfficeInterview()),
       AssessmentGet::getBoltOnHomeOfficeInterviewFee),

@@ -55,15 +55,6 @@ class LegalHelpClaimDetailsMapperTest {
     assertThat(result.reportedTravelAndWaitingCosts())
         .isEqualTo(claimResponse.getTravelWaitingCostsAmount());
     assertThat(result.reportedVatApplicable()).isEqualTo(claimResponse.getIsVatApplicable());
-    assertThat(result.reportedDetentionTravelWaitingCosts())
-        .isEqualTo(claimResponse.getDetentionTravelWaitingCostsAmount());
-    assertThat(result.reportedJrFormFillingAmount())
-        .isEqualTo(claimResponse.getJrFormFillingAmount());
-    assertThat(result.reportedAdjournedHearingFee())
-        .isEqualTo(claimResponse.getAdjournedHearingFeeAmount());
-    assertThat(result.reportedCmrhOralCount()).isEqualTo(claimResponse.getCmrhOralCount());
-    assertThat(result.reportedCmrhTelephoneCount())
-        .isEqualTo(claimResponse.getCmrhTelephoneCount());
     assertThat(result.reportedLondonRateIndicator()).isEqualTo(claimResponse.getIsLondonRate());
   }
 

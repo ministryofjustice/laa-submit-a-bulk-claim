@@ -25,17 +25,8 @@ public interface LegalHelpClaimDetailsMapper {
   @Mapping(
       target = "reportedTravelAndWaitingCosts",
       source = "claimResponse.travelWaitingCostsAmount")
-  @Mapping(
-      target = "reportedDetentionTravelWaitingCosts",
-      source = "claimResponse.detentionTravelWaitingCostsAmount")
   @Mapping(target = "reportedVatApplicable", source = "claimResponse.isVatApplicable")
   @Mapping(target = "reportedLondonRateIndicator", source = "claimResponse.isLondonRate")
-  @Mapping(target = "reportedCmrhOralCount", source = "claimResponse.cmrhOralCount")
-  @Mapping(target = "reportedCmrhTelephoneCount", source = "claimResponse.cmrhTelephoneCount")
-  @Mapping(target = "reportedJrFormFillingAmount", source = "claimResponse.jrFormFillingAmount")
-  @Mapping(
-      target = "reportedAdjournedHearingFee",
-      source = "claimResponse.adjournedHearingFeeAmount")
   @Mapping(
       target = "initialCalculatedFixedFee",
       source = "claimResponse.feeCalculationResponse.fixedFeeAmount")

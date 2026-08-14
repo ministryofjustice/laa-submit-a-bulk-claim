@@ -17,14 +17,14 @@ class LegalHelpClaimDetailsViewFieldTest {
   @Test
   @DisplayName("Should read plain summary values via the accessor")
   void shouldReadSummaryValue() {
-    LegalHelpClaimDetails details = LegalHelpClaimDetails.builder().clientForename("Jane").build();
+    LegalHelpClaimDetails details = LegalHelpClaimDetails.builder().clientForename("Jane").clientSurname("Surname").build();
 
     Object value =
-        LegalHelpClaimDetailsViewField.CLIENT_FORENAME
+        LegalHelpClaimDetailsViewField.CLIENT_NAME
             .getReportedAndCalculatedAccessor()
             .apply(details);
 
-    assertThat(value).isEqualTo("Jane");
+    assertThat(value).isEqualTo("Jane Surname");
   }
 
   @Test
@@ -44,7 +44,7 @@ class LegalHelpClaimDetailsViewFieldTest {
     assertThat(value).isInstanceOf(ClaimReportedAndCalculatedValues.class);
     ClaimReportedAndCalculatedValues row = (ClaimReportedAndCalculatedValues) value;
     assertThat(row.reported()).isEqualTo(new BigDecimal("100.00"));
-    assertThat(row.initialCalculated()).isEqualTo(new BigDecimal("110.00"));
+    assertThat(row.initialCalculated()).isNull();
   }
 
   @Test

@@ -31,7 +31,7 @@ public class TokenProvider {
       OAuth2AuthorizedClient authorizedClient =
           authorizedClientManager.authorize(buildAuthorizeRequest());
 
-      if (Objects.isNull(authorizedClient)) {
+      if (Objects.isNull(authorizedClient) || Objects.isNull(authorizedClient.getAccessToken())) {
         throw new TokenProviderException("Failed to obtain SDS API access token");
       }
 

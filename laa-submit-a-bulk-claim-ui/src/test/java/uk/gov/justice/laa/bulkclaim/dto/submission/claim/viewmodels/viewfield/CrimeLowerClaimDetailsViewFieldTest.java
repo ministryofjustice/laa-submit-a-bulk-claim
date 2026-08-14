@@ -45,7 +45,7 @@ class CrimeLowerClaimDetailsViewFieldTest {
     assertThat(value).isInstanceOf(ClaimReportedAndCalculatedValues.class);
     ClaimReportedAndCalculatedValues row = (ClaimReportedAndCalculatedValues) value;
     assertThat(row.reported()).isEqualTo(new BigDecimal("100.00"));
-    assertThat(row.initialCalculated()).isEqualTo(new BigDecimal("110.00"));
+    assertThat(row.initialCalculated()).isNull();
   }
 
   @Test
