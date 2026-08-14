@@ -8,10 +8,12 @@ import lombok.Getter;
 public class SearchPage extends BasePage {
 
   private final Locator searchButton;
+  private final Locator resultsTable;
 
   public SearchPage(Page page) {
     super(page, "Search for a submission");
     searchButton = page.locator("#searchButton");
+    resultsTable = page.locator(".govuk-table");
   }
 
   public void clickSearch() {

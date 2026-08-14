@@ -30,11 +30,10 @@ public class SearchE2ETest extends BaseTest {
     var searchPage = new SearchPage(page);
     searchPage.clickSearch();
 
-    var resultsPage = new SearchResultsPage(page);
-    assertThat(resultsPage.getResultsTable()).isVisible();
+    assertThat(searchPage.getResultsTable()).isVisible();
 
-      assertTableContainsHeaders("Date submitted", "Office account", "Area of law", "Submission period", "Status"
-      );
+    assertTableContainsHeaders("Date submitted", "Office account", "Area of law", "Submission period", "Status"
+    );
 
   }
 }
