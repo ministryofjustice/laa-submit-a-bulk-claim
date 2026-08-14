@@ -367,9 +367,13 @@ class SearchResultsViewTest extends ViewTestBase {
             .size(PAGE_SIZE)
             .totalPages(0)
             .build();
+    var pagination = buildPagination(0, 0, 0);
     when(oidcAttributeUtils.getUserOffices(any())).thenReturn(List.of("1"));
     when(claimsRestService.search(anyList(), any(), any(), any(), anyInt(), anyInt(), any()))
         .thenReturn(Mono.just(response));
+    when(paginationUtil.fromSubmissionsResultSet(response, 0, PAGE_SIZE)).thenReturn(pagination);
+    when(paginationLinksBuilder.build(any(), any(), any(), any(Object[].class)))
+        .thenReturn(buildSearchPaginationLinks(0, 0));
   }
 
   private void mockSearchResultsWithSubmissions(List<SubmissionBase> submissions, int totalPages) {
