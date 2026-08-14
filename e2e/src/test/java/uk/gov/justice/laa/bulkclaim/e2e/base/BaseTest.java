@@ -3,7 +3,6 @@ package uk.gov.justice.laa.bulkclaim.e2e.base;
 import static com.microsoft.playwright.assertions.PlaywrightAssertions.assertThat;
 import static java.util.regex.Pattern.compile;
 
-import com.microsoft.playwright.Locator;
 import com.microsoft.playwright.Page;
 import java.sql.SQLException;
 import java.util.List;

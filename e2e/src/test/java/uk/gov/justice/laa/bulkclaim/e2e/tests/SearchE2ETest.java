@@ -6,7 +6,11 @@ import java.nio.file.Paths;
 
 import org.junit.jupiter.api.Test;
 import uk.gov.justice.laa.bulkclaim.e2e.base.BaseTest;
-import uk.gov.justice.laa.bulkclaim.e2e.pages.*;
+import uk.gov.justice.laa.bulkclaim.e2e.pages.LandingPagePage;
+import uk.gov.justice.laa.bulkclaim.e2e.pages.SearchPage;
+import uk.gov.justice.laa.bulkclaim.e2e.pages.SubmissionDetailPage;
+import uk.gov.justice.laa.bulkclaim.e2e.pages.UploadBeingCheckedPage;
+import uk.gov.justice.laa.bulkclaim.e2e.pages.UploadPage;
 
 public class SearchE2ETest extends BaseTest {
 
