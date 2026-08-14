@@ -44,7 +44,8 @@ public enum LegalHelpClaimDetailsViewField implements ClaimViewField<LegalHelpCl
               claim.reportedDisbursementsVat(), claim.initialCalculatedDisbursementsVat()),
       AssessmentGet::getDisbursementVatAmount),
   COUNSELS_COSTS(
-      claim -> new ClaimReportedAndCalculatedValues(claim.initialCalculatedCounselsCosts()),
+      claim -> new ClaimReportedAndCalculatedValues(
+          claim.reportedCounselsCosts(), claim.initialCalculatedCounselsCosts()),
       AssessmentGet::getNetCostOfCounselAmount),
   TRAVEL_AND_WAITING_COSTS(
       claim ->
@@ -58,7 +59,8 @@ public enum LegalHelpClaimDetailsViewField implements ClaimViewField<LegalHelpCl
               claim.initialCalculatedDetentionTravelWaitingCosts()),
       AssessmentGet::getDetentionTravelAndWaitingCostsAmount),
   JR_FORM_FILLING(
-      claim -> new ClaimReportedAndCalculatedValues(claim.initialCalculatedJrFormFilling()),
+      claim -> new ClaimReportedAndCalculatedValues(
+          claim.reportedJrFormFilling(), claim.initialCalculatedJrFormFilling()),
       AssessmentGet::getJrFormFillingAmount),
   ADJOURNED_HEARING_FEE(
       claim -> new ClaimReportedAndCalculatedValues(claim.initialCalculatedAdjournedHearingFee()),
@@ -69,9 +71,8 @@ public enum LegalHelpClaimDetailsViewField implements ClaimViewField<LegalHelpCl
   CMRH_TELEPHONE(
       claim -> new ClaimReportedAndCalculatedValues(claim.initialCalculatedCmrhTelephone()),
       AssessmentGet::getBoltOnCmrhTelephoneFee),
-  // London rate not stored from fee calculation, reusing users entered value as it cannot be
-  // modified anyways.
-  LONDON_RATE(claim -> new ClaimReportedAndCalculatedValues(claim.reportedLondonRateIndicator())),
+  // London rate not part of calculation
+  LONDON_RATE(claim -> new ClaimReportedAndCalculatedValues(claim.reportedLondonRateIndicator(), null)),
   HOME_OFFICE_INTERVIEW(
       claim -> new ClaimReportedAndCalculatedValues(claim.initialCalculatedHomeOfficeInterview()),
       AssessmentGet::getBoltOnHomeOfficeInterviewFee),

@@ -31,6 +31,7 @@ class CrimeLowerClaimDetailsMapperTest {
     assertThat(result.feeCodeDescription())
         .isEqualTo(claimResponse.getFeeCalculationResponse().getFeeCodeDescription());
     assertThat(result.matterTypeCode()).isEqualTo(claimResponse.getMatterTypeCode());
+    assertThat(result.crimeMatterTypeCode()).isEqualTo(claimResponse.getCrimeMatterTypeCode());
     assertThat(result.representationOrderDate())
         .isEqualTo(claimResponse.getRepresentationOrderDate());
     assertThat(result.stageReachedCode()).isEqualTo(claimResponse.getStageReachedCode());

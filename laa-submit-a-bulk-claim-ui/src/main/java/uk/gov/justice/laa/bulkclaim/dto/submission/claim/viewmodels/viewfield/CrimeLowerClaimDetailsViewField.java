@@ -17,7 +17,7 @@ public enum CrimeLowerClaimDetailsViewField implements ClaimViewField<CrimeLower
   AREA_OF_LAW(CrimeLowerClaimDetails::areaOfLaw),
   FEE_CODE(CrimeLowerClaimDetails::feeCode),
   FEE_CODE_DESCRIPTION(CrimeLowerClaimDetails::feeCodeDescription),
-  MATTER_TYPE(CrimeLowerClaimDetails::matterTypeCode),
+  MATTER_TYPE(CrimeLowerClaimDetails::crimeMatterTypeCode),
   REPRESENTATION_ORDER_DATE(CrimeLowerClaimDetails::representationOrderDate),
   STAGE_REACHED(CrimeLowerClaimDetails::stageReachedCode),
   OUTCOME_CODE(CrimeLowerClaimDetails::outcomeCode),
@@ -26,7 +26,7 @@ public enum CrimeLowerClaimDetailsViewField implements ClaimViewField<CrimeLower
 
   // Values
   FIXED_FEE(
-      claim -> new ClaimReportedAndCalculatedValues(null, claim.initialCalculatedFixedFee()),
+      claim -> new ClaimReportedAndCalculatedValues(claim.initialCalculatedFixedFee()),
       AssessmentGet::getFixedFeeAmount),
   // Profit costs doesn't show an initial calculated value, so null here is intentional.
   PROFIT_COSTS(

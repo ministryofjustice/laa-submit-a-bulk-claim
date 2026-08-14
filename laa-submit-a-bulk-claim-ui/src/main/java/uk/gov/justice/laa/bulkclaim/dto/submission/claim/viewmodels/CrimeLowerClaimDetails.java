@@ -16,6 +16,7 @@ public record CrimeLowerClaimDetails(
     AreaOfLaw areaOfLaw,
     String feeCode,
     String feeCodeDescription,
+    String crimeMatterTypeCode,
     String matterTypeCode,
     String representationOrderDate,
     String stageReachedCode,

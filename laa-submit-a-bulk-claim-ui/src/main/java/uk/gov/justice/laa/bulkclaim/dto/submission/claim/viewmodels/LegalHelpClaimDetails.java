@@ -27,7 +27,10 @@ public record LegalHelpClaimDetails(
     BigDecimal reportedProfitCosts,
     BigDecimal reportedDisbursements,
     BigDecimal reportedDisbursementsVat,
+    BigDecimal reportedCounselsCosts,
     BigDecimal reportedTravelAndWaitingCosts,
+    BigDecimal reportedDetentionTravelWaitingCosts,
+    BigDecimal reportedJrFormFilling,
     Boolean reportedVatApplicable,
     Boolean reportedLondonRateIndicator,
 
