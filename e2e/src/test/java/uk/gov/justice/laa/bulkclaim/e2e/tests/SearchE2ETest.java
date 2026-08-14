@@ -32,7 +32,7 @@ public class SearchE2ETest extends BaseTest {
     uploadPage.getSearchLink().click();
 
     var searchPage = new SearchPage(page);
-    searchPage.clickSearch();
+    searchPage.getSearchButton().click();
 
     assertThat(searchPage.getResultsTable()).isVisible();
 
