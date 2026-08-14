@@ -1,7 +1,6 @@
 package uk.gov.justice.laa.bulkclaim.view;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.when;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.oidcLogin;
@@ -9,19 +8,20 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.util.List;
+import java.util.Map;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
-import org.springframework.validation.Errors;
 import uk.gov.justice.laa.bulkclaim.client.DataClaimsRestClient;
 import uk.gov.justice.laa.bulkclaim.controller.ControllerTestHelper;
 import uk.gov.justice.laa.bulkclaim.controller.SearchController;
+import uk.gov.justice.laa.bulkclaim.dto.SubmissionOutcomeFilter;
 import uk.gov.justice.laa.bulkclaim.util.OidcAttributeUtils;
 import uk.gov.justice.laa.bulkclaim.util.PaginationLinksBuilder;
 import uk.gov.justice.laa.bulkclaim.util.PaginationUtil;
@@ -29,10 +29,10 @@ import uk.gov.justice.laa.bulkclaim.util.SubmissionPeriodUtil;
 import uk.gov.justice.laa.bulkclaim.validation.SubmissionSearchValidator;
 
 @WebMvcTest(SearchController.class)
+@Import(SubmissionSearchValidator.class)
 class SearchFormViewTest extends ViewTestBase {
 
   @MockitoBean DataClaimsRestClient claimsRestService;
-  @MockitoBean SubmissionSearchValidator submissionSearchValidator;
   @MockitoBean PaginationUtil paginationUtil;
   @MockitoBean OidcAttributeUtils oidcAttributeUtils;
   @MockitoBean PaginationLinksBuilder paginationLinksBuilder;
@@ -44,54 +44,73 @@ class SearchFormViewTest extends ViewTestBase {
     this.mapping = "/submissions/search";
   }
 
-  @BeforeEach
-  void setUpValidator() {
-    when(submissionSearchValidator.supports(any())).thenReturn(true);
-  }
-
   @Test
-  @DisplayName("Search form renders with page heading")
-  void searchFormRendersWithPageHeading() {
+  void searchFormRendersWithPageTitle() {
     when(oidcAttributeUtils.getUserOffices(any())).thenReturn(List.of("12345"));
 
     var doc = renderDocument();
 
-    assertPageHasHeading(doc, "Search for a submission");
+    assertPageHasTitle(doc, "Search for a submission");
   }
 
   @Test
-  @DisplayName("Search form renders with search button")
-  void searchFormRendersWithSearchButton() {
+  void searchFormRendersWithSearchAndClearAllButton() {
     when(oidcAttributeUtils.getUserOffices(any())).thenReturn(List.of("12345"));
 
     var doc = renderDocument();
 
     assertPageHasPrimaryButton(doc, "Search");
+    assertPageHasLink(doc, "clearAllLink", "Clear all", "/submissions/search");
   }
 
   @Test
-  @DisplayName("Search form shows office error summary when no office is selected")
-  void searchFormDisplaysOfficeValidationError() {
+  void searchFormRendersWithFilters() {
+    when(oidcAttributeUtils.getUserOffices(any())).thenReturn(List.of("12345", "67890"));
+    when(submissionPeriodUtil.getAllPossibleSubmissionPeriods())
+        .thenReturn(Map.of("JAN-2024", "January 2024"));
+
+    var doc = renderDocument();
+
+    assertPageHasContent(doc, "Filter");
+    assertPageHasLabel(doc, "submission-period", "Submission period");
+    assertAutocompleteDropDownList(doc, "Submission period", "January 2024");
+    assertDropDownList(doc, "Area of law", "All", "Legal help", "Crime lower", "Mediation");
+    assertPageHasInlineRadioButtons(doc);
+    assertPageHasRadioButtons(
+        doc, "Succeeded submissions", "Failed submissions", "All submissions");
+    assertPageHasContent(doc, "Choose office account");
+
+    Assertions.assertEquals("12345", doc.selectFirst("label[for=offices-input]").text());
+    Assertions.assertEquals("67890", doc.selectFirst("label[for=offices-input-1]").text());
+  }
+
+  @Test
+  void searchFormDisplaysOfficeValidationErrorIfNoAccountSelected() {
     when(oidcAttributeUtils.getUserOffices(any())).thenReturn(List.of("12345"));
-    doAnswer(
-            invocation -> {
-              Errors errors = invocation.getArgument(1);
-              errors.rejectValue("offices", "search.error.offices.empty", "Select an office code");
-              return null;
-            })
-        .when(submissionSearchValidator)
-        .validate(any(), any());
 
     var params = new LinkedMultiValueMap<String, String>();
-    params.add("submissionStatuses", "SUCCEEDED");
+    params.add("submissionStatuses", SubmissionOutcomeFilter.SUCCEEDED.name());
     var doc = renderSearchFormPost(params);
 
     assertPageHasErrorSummary(doc, "offices-input");
+    assertPageHasContent(doc, "There is a problem");
+    assertPageHasContent(doc, "Select an office code");
+  }
+
+  @Test
+  void searchFormOpensOfficeDetailsWhenValidationFails() {
+    when(oidcAttributeUtils.getUserOffices(any())).thenReturn(List.of("12345"));
+
+    var params = new LinkedMultiValueMap<String, String>();
+    params.add("submissionStatuses", SubmissionOutcomeFilter.SUCCEEDED.name());
+    var doc = renderSearchFormPost(params);
+
+    Assertions.assertTrue(doc.selectFirst("details.govuk-details").hasAttr("open"));
   }
 
   private Document renderSearchFormPost(MultiValueMap<String, String> params) {
     try {
-      String html =
+      String response =
           mockMvc
               .perform(
                   post(mapping)
@@ -103,7 +122,7 @@ class SearchFormViewTest extends ViewTestBase {
               .andReturn()
               .getResponse()
               .getContentAsString();
-      return Jsoup.parse(html);
+      return Jsoup.parse(response);
     } catch (Exception e) {
       throw new RuntimeException(e);
     }

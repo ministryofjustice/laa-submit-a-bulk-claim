@@ -7,10 +7,7 @@ import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.Mockito.when;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Stream;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
@@ -298,7 +295,6 @@ class SearchResultsViewTest extends ViewTestBase {
   }
 
   @Test
-  @org.junit.jupiter.api.DisplayName("Search results shows no results message when content is empty")
   void searchResultsDisplaysNoResultsMessage() {
     mockEmptySearchResults();
     var doc = renderDocumentWithParams(baseSearchResultsParams());
@@ -306,7 +302,6 @@ class SearchResultsViewTest extends ViewTestBase {
   }
 
   @Test
-  @org.junit.jupiter.api.DisplayName("Search results shows result count heading")
   void searchResultsDisplaysResultCount() {
     mockSearchResults(0, 1, 3);
     var doc = renderDocumentWithParams(baseSearchResultsParams());
@@ -314,27 +309,49 @@ class SearchResultsViewTest extends ViewTestBase {
   }
 
   @Test
-  @org.junit.jupiter.api.DisplayName("Search results table displays submission row data")
+  void searchResultsDisplaysSingularResultCount() {
+    mockSearchResults(0, 1, 1);
+    var doc = renderDocumentWithParams(baseSearchResultsParams());
+    assertPageHasContent(doc, "1 Search result");
+  }
+
+  @Test
   void searchResultsDisplaysSubmissionRowData() {
-    var submission =
+    var submission1 =
         SubmissionBase.builder()
             .submissionId(submissionId)
             .officeAccountNumber("12345")
             .areaOfLaw(AreaOfLaw.CRIME_LOWER)
             .status(SubmissionStatus.VALIDATION_SUCCEEDED)
             .build();
+    var submission2 =
+        SubmissionBase.builder()
+            .submissionId(UUID.randomUUID())
+            .officeAccountNumber("12345")
+            .areaOfLaw(AreaOfLaw.MEDIATION)
+            .status(SubmissionStatus.VALIDATION_SUCCEEDED)
+            .build();
+
     when(submissionPeriodUtil.getSubmissionPeriod(any())).thenReturn("January 2024");
-    mockSearchResultsWithSubmissions(List.of(submission), 1);
+    mockSearchResultsWithSubmissions(List.of(submission1, submission2), 1);
 
     var doc = renderDocumentWithParams(baseSearchResultsParams());
 
     Elements rows = doc.select("table.govuk-table tbody tr");
-    assertEquals(1, rows.size());
-    List<Element> cells = rows.get(0).select("td").stream().toList();
-    assertCellContainsText(cells.get(1), "12345");
-    assertCellContainsText(cells.get(2), "Crime lower");
-    assertCellContainsText(cells.get(3), "January 2024");
-    assertCellContainsText(cells.get(4), "Validation succeeded");
+
+    List<Element> cells1 = rows.get(0).select("td").stream().toList();
+    assertCellContainsText(cells1.get(1), "12345");
+    assertCellContainsText(cells1.get(2), "Crime lower");
+    assertCellContainsText(cells1.get(3), "January 2024");
+    assertCellContainsText(cells1.get(4), "Validation succeeded");
+
+    List<Element> cells2 = rows.get(1).select("td").stream().toList();
+    assertCellContainsText(cells2.get(1), "12345");
+    assertCellContainsText(cells2.get(2), "Mediation");
+    assertCellContainsText(cells2.get(3), "January 2024");
+    assertCellContainsText(cells2.get(4), "Validation succeeded");
+
+    assertEquals(2, rows.size());
   }
 
   private void mockEmptySearchResults() {
