@@ -17,10 +17,7 @@ import uk.gov.justice.laa.dstew.payments.claimsdata.model.ClaimResponseV2;
 public interface ClaimDetailsMapper {
 
   @Mapping(target = ".", source = "claimResponse")
-  @Mapping(target = "officeCode", source = "claimResponse.officeCode")
-  @Mapping(
-      target = "feeCodeDescription",
-      source = "claimResponse.feeCalculationResponse.feeCodeDescription")
+  @Mapping(target = "feeCodeDescription", source = "feeCalculationResponse.feeCodeDescription")
   @Mapping(target = "fixedFee", source = "claimResponse", qualifiedByName = "fixedFee")
   @Mapping(target = "disbursements", source = "claimResponse", qualifiedByName = "disbursements")
   @Mapping(
@@ -39,7 +36,7 @@ public interface ClaimDetailsMapper {
   @InheritConfiguration(name = "toCommonClaimDetails")
   @Mapping(
       target = "escapeCase",
-      source = "claimResponse.feeCalculationResponse.boltOnDetails.escapeCaseFlag",
+      source = "feeCalculationResponse.boltOnDetails.escapeCaseFlag",
       defaultValue = "false")
   @Mapping(target = "caseStartDate", ignore = true)
   @Mapping(target = "profitCosts", source = "claimResponse", qualifiedByName = "profitCosts")
@@ -49,12 +46,12 @@ public interface ClaimDetailsMapper {
       ClaimResponseV2 claimResponse, @Context AssessmentGet currentAssessment);
 
   @InheritConfiguration(name = "toCommonClaimDetails")
-  @Mapping(target = "categoryOfLaw", source = "claimResponse.feeCalculationResponse.categoryOfLaw")
+  @Mapping(target = "categoryOfLaw", source = "feeCalculationResponse.categoryOfLaw")
   @Mapping(
       target = "escapeCase",
-      source = "claimResponse.feeCalculationResponse.boltOnDetails.escapeCaseFlag",
+      source = "feeCalculationResponse.boltOnDetails.escapeCaseFlag",
       defaultValue = "false")
-  @Mapping(target = "reportedLondonRateIndicator", source = "claimResponse.isLondonRate")
+  @Mapping(target = "reportedLondonRateIndicator", source = "isLondonRate")
   @Mapping(target = "matterTypeCode", ignore = true)
   @Mapping(target = "profitCosts", source = "claimResponse", qualifiedByName = "profitCosts")
   @Mapping(target = "counselsCosts", source = "claimResponse", qualifiedByName = "counselsCosts")
@@ -83,22 +80,17 @@ public interface ClaimDetailsMapper {
       qualifiedByName = "substantiveHearing")
   @Mapping(
       target = "matterTypeCodeOne",
-      source = "claimResponse.matterTypeCode",
+      source = "matterTypeCode",
       qualifiedByName = "matterTypeCodeOne")
   @Mapping(
       target = "matterTypeCodeTwo",
-      source = "claimResponse.matterTypeCode",
+      source = "matterTypeCode",
       qualifiedByName = "matterTypeCodeTwo")
   LegalHelpClaimDetails toLegalHelpClaimDetails(
       ClaimResponseV2 claimResponse, @Context AssessmentGet currentAssessment);
 
   @InheritConfiguration(name = "toCommonClaimDetails")
-  @Mapping(target = "clientForename", source = "claimResponse.clientForename")
-  @Mapping(target = "clientSurname", source = "claimResponse.clientSurname")
-  @Mapping(target = "uniqueClientNumber", source = "claimResponse.uniqueClientNumber")
-  @Mapping(target = "client2Forename", source = "claimResponse.client2Forename")
-  @Mapping(target = "client2Surname", source = "claimResponse.client2Surname")
-  @Mapping(target = "client2UniqueClientNumber", source = "claimResponse.client2Ucn")
+  @Mapping(target = "client2UniqueClientNumber", source = "client2Ucn")
   @Mapping(target = "uniqueFileNumber", ignore = true)
   MediationClaimDetails toMediationClaimDetails(
       ClaimResponseV2 claimResponse, @Context AssessmentGet currentAssessment);

@@ -26,11 +26,10 @@ public class ClaimMapperHelper {
   @Named("profitCosts")
   public ClaimFieldRow profitCosts(
       ClaimResponseV2 claimResponse, @Context AssessmentGet currentAssessment) {
-    // Profit costs never shows an initial calculated value, even though an upstream
-    // calculated value exists on the fee calculation response.
+    FeeCalculationPatch feeCalculation = claimResponse.getFeeCalculationResponse();
     return new ClaimFieldRow(
         claimResponse.getNetProfitCostsAmount(),
-        null,
+        feeCalculation == null ? null : feeCalculation.getNetProfitCostsAmount(),
         currentAssessment == null ? null : currentAssessment.getNetProfitCostsAmount());
   }
 

@@ -71,7 +71,8 @@ class ClaimDetailsMapperTest {
           .isEqualTo(feeCalculation.getFixedFeeAmount());
       assertThat(result.getProfitCosts().reported())
           .isEqualTo(claimResponse.getNetProfitCostsAmount());
-      assertThat(result.getProfitCosts().initialCalculated()).isNull();
+      assertThat(result.getProfitCosts().initialCalculated())
+          .isEqualTo(claimResponse.getFeeCalculationResponse().getNetProfitCostsAmount());
       assertThat(result.getDisbursements().reported())
           .isEqualTo(claimResponse.getNetDisbursementAmount());
       assertThat(result.getDisbursementsVat().reported())
@@ -148,7 +149,8 @@ class ClaimDetailsMapperTest {
           .isEqualTo(feeCalculation.getFixedFeeAmount());
       assertThat(result.getProfitCosts().reported())
           .isEqualTo(claimResponse.getNetProfitCostsAmount());
-      assertThat(result.getProfitCosts().initialCalculated()).isNull();
+      assertThat(result.getProfitCosts().initialCalculated())
+          .isEqualTo(feeCalculation.getNetProfitCostsAmount());
       assertThat(result.getDisbursements().reported())
           .isEqualTo(claimResponse.getNetDisbursementAmount());
       assertThat(result.getDisbursementsVat().reported())
