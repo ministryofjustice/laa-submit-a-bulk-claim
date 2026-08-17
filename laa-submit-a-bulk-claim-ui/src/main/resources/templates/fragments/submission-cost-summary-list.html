@@ -21,35 +21,35 @@
             th:text="#{fragments.submissionCosts.profitCosts}"/>
         <td class="govuk-table__cell"
             id="profit-costs-value"
-            th:text="${@currencyUtil.toString(costSummaryTable.profitCosts)}"/>
+            th:text="${@currencyUtil.formatCurrency(costSummaryTable.profitCosts)}"/>
       </tr>
       <tr class="govuk-table__row">
         <th scope="row" class="govuk-table__header"
             th:text="#{fragments.submissionCosts.disbursements}"/>
         <td class="govuk-table__cell"
             id="disbursements-value"
-            th:text="${@currencyUtil.toString(costSummaryTable.disbursements)}"/>
+            th:text="${@currencyUtil.formatCurrency(costSummaryTable.disbursements)}"/>
       </tr>
       <tr class="govuk-table__row">
         <th scope="row" class="govuk-table__header"
             th:text="#{fragments.submissionCosts.additionalPayments}"/>
         <td class="govuk-table__cell"
             id="additional-payments-costs-value"
-            th:text="${@currencyUtil.toString(costSummaryTable.additionalPayments)}"/>
+            th:text="${@currencyUtil.formatCurrency(costSummaryTable.additionalPayments)}"/>
       </tr>
       <tr class="govuk-table__row">
         <th scope="row" class="govuk-table__header"
             th:text="#{fragments.submissionCosts.fixedFee}"/>
         <td class="govuk-table__cell"
             id="fixed-fee-value"
-            th:text="${@currencyUtil.toString(costSummaryTable.fixedFee)}"/>
+            th:text="${@currencyUtil.formatCurrency(costSummaryTable.fixedFee)}"/>
       </tr>
       <tr class="govuk-table__row">
         <th scope="row" class="govuk-table__header"
             th:text="#{fragments.submissionCosts.submissionValue}"/>
         <td class="govuk-table__cell"
             id="submission-value"
-            th:text="${@currencyUtil.toString(costSummaryTable.submissionValue)}"/>
+            th:text="${@currencyUtil.formatCurrency(costSummaryTable.submissionValue)}"/>
       </tr>
       </tbody>
     </table>

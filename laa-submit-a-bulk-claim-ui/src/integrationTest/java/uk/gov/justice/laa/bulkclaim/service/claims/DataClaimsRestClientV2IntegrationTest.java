@@ -77,4 +77,40 @@ public class DataClaimsRestClientV2IntegrationTest extends MockServerIntegration
       assertThatJsonMatches(expectJson, result);
     }
   }
+
+  @Nested
+  @DisplayName("GET: /api/v2/submissions/{submission-id}/claims/{claim-id}")
+  class GetSubmissionClaim {
+
+    private static final UUID CLAIM_ID_VALUE =
+        UUID.fromString("f75578dc-add2-4fe1-80c4-4b9e8c3c523b");
+
+    @Test
+    @DisplayName("Should handle a 200 response")
+    void shouldHandle200Response() throws Exception {
+      var expectJson = readJsonFromFile("/GetSubmissionClaimV2_200.json");
+
+      mockServerClient
+          .when(
+              HttpRequest.request()
+                  .withMethod(HttpMethod.GET.toString())
+                  .withPath(
+                      API_VERSION_V2
+                          + "submissions/"
+                          + SUBMISSION_ID_VALUE
+                          + "/claims/"
+                          + CLAIM_ID_VALUE))
+          .respond(
+              response()
+                  .withStatusCode(200)
+                  .withHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON.toString())
+                  .withBody(expectJson));
+
+      var actualResult =
+          dataClaimsRestClientV2.getSubmissionClaim(SUBMISSION_ID_VALUE, CLAIM_ID_VALUE).block();
+
+      var result = objectMapper.writeValueAsString(actualResult);
+      assertThatJsonMatches(expectJson, result);
+    }
+  }
 }

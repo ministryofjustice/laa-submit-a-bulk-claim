@@ -42,9 +42,12 @@ import uk.gov.justice.laa.bulkclaim.dto.submission.claim.SubmissionClaimRowCosts
 import uk.gov.justice.laa.bulkclaim.dto.submission.claim.SubmissionClaimsDetails;
 import uk.gov.justice.laa.bulkclaim.dto.submission.messages.MessagesSource;
 import uk.gov.justice.laa.bulkclaim.dto.submission.messages.MessagesSummary;
+import uk.gov.justice.laa.bulkclaim.util.CurrencyUtil;
+import uk.gov.justice.laa.bulkclaim.util.DateTimeUtil;
 import uk.gov.justice.laa.bulkclaim.util.PaginationLinksBuilder;
 import uk.gov.justice.laa.bulkclaim.util.PaginationUtil;
 import uk.gov.justice.laa.bulkclaim.util.ThymeleafHrefUtils;
+import uk.gov.justice.laa.bulkclaim.util.ThymeleafUtils;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.AreaOfLaw;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.Page;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionBase;
@@ -55,7 +58,13 @@ import uk.gov.justice.laa.dstew.payments.claimsdata.model.ValidationMessageType;
 
 @WebMvcTest(SubmissionDetailController.class)
 @AutoConfigureMockMvc
-@Import({PaginationLinksBuilder.class, ThymeleafHrefUtils.class})
+@Import({
+  PaginationLinksBuilder.class,
+  ThymeleafHrefUtils.class,
+  CurrencyUtil.class,
+  DateTimeUtil.class,
+  ThymeleafUtils.class
+})
 @DisplayName("Submission detail controller test")
 class SubmissionDetailControllerTest extends BaseControllerTest {
 
@@ -190,7 +199,7 @@ class SubmissionDetailControllerTest extends BaseControllerTest {
           .hasViewName("pages/view-submission-detail-accepted");
       verify(submissionClaimDetailsBuilder, times(1)).build(any(), anyInt(), anyInt(), any());
       verify(submissionMessagesBuilder, times(1))
-          .build(submissionReference, null, ValidationMessageType.WARNING, 0, 10, null);
+          .build(submissionReference, null, ValidationMessageType.WARNING, 0, 50, null);
       verify(submissionMatterStartsDetailsBuilder, times(1)).build(any());
     }
 
@@ -230,7 +239,7 @@ class SubmissionDetailControllerTest extends BaseControllerTest {
           .hasStatusOk()
           .hasViewName("pages/view-submission-detail-invalid");
 
-      verify(submissionMessagesBuilder, times(1)).buildErrors(submissionReference, 0, 10, null);
+      verify(submissionMessagesBuilder, times(1)).buildErrors(submissionReference, 0, 50, null);
       verify(submissionMatterStartsDetailsBuilder, times(1)).build(any());
     }
 
@@ -322,7 +331,7 @@ class SubmissionDetailControllerTest extends BaseControllerTest {
       assertThat(response).hasStatusOk().hasViewName("pages/view-submission-detail-accepted");
       verify(submissionClaimDetailsBuilder).build(any(), anyInt(), anyInt(), any());
       verify(submissionMessagesBuilder)
-          .build(submissionReference, null, ValidationMessageType.WARNING, 0, 10, null);
+          .build(submissionReference, null, ValidationMessageType.WARNING, 0, 50, null);
     }
 
     @Test
@@ -377,7 +386,9 @@ class SubmissionDetailControllerTest extends BaseControllerTest {
                               BigDecimal.ZERO,
                               BigDecimal.ZERO,
                               BigDecimal.ZERO),
-                          Boolean.FALSE)),
+                          Boolean.FALSE,
+                          BigDecimal.ONE,
+                          BigDecimal.ONE)),
                   pagination,
                   BigDecimal.ONE));
       when(submissionMessagesBuilder.build(any(), any(), any(), anyInt(), anyInt(), any()))

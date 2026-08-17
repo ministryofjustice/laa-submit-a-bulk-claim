@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
 public class CurrencyUtil {
 
   /** Formats a BigDecimal value to a currency string. */
-  public String toString(BigDecimal amount) {
+  public String formatCurrency(BigDecimal amount) {
     if (amount == null || amount.compareTo(BigDecimal.ZERO) == 0) {
       return "£0.00";
     }

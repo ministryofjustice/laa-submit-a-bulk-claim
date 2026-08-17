@@ -25,6 +25,7 @@ import uk.gov.justice.laa.bulkclaim.builder.SubmissionMatterStartsDetailsBuilder
 import uk.gov.justice.laa.bulkclaim.builder.SubmissionMessagesBuilder;
 import uk.gov.justice.laa.bulkclaim.builder.SubmissionSummaryBuilder;
 import uk.gov.justice.laa.bulkclaim.client.DataClaimsRestClient;
+import uk.gov.justice.laa.bulkclaim.config.FeatureFlagsConfig;
 import uk.gov.justice.laa.bulkclaim.constants.ViewSubmissionNavigationTab;
 import uk.gov.justice.laa.bulkclaim.dto.submission.SubmissionMatterStartsRow;
 import uk.gov.justice.laa.bulkclaim.dto.submission.SubmissionSummary;
@@ -56,6 +57,7 @@ public class SubmissionDetailController {
   private final SubmissionMatterStartsDetailsBuilder submissionMatterStartsDetailsBuilder;
   private final DataClaimsRestClient dataClaimsRestClient;
   private final PaginationLinksBuilder paginationLinksBuilder;
+  private final FeatureFlagsConfig featureFlagsConfig;
 
   @GetMapping("/submission/{submissionReference}")
   public String getSubmissionReference(
@@ -122,6 +124,12 @@ public class SubmissionDetailController {
     model.addAttribute("MessageSortField", MessageSortField.class);
 
     model.addAttribute("claimDetailsTab", ViewSubmissionNavigationTab.CLAIM_DETAILS);
+
+    model.addAttribute(
+        "showOldClaimsTable", !featureFlagsConfig.getIsAlternativeClaimViewEnabled());
+    model.addAttribute(
+        "showUpdatedCalculatedValueColumn",
+        featureFlagsConfig.getIsUpdatedCalculatedValueAvailable());
 
     final SubmissionResponse submissionResponse =
         dataClaimsRestClient
