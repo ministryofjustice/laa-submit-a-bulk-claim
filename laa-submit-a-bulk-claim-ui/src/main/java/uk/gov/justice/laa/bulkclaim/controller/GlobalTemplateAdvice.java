@@ -12,8 +12,14 @@ public class GlobalTemplateAdvice {
   @Value("${links.bulk-upload-amendments}")
   private String laaAmendmentsLink;
 
+  @Value("${links.bulk-upload-guidance-documents}")
+  private String laaBulkUploadGuidanceDocumentsLink;
+
   @Value("${links.bulk-upload-guidance}")
-  private String laaBulkUploadGuidanceText;
+  private String laaBulkUploadGuidanceLink;
+
+  @Value("${links.bulk-upload-spreadsheet}")
+  private String laaBulkUploadSpreadsheetLink;
 
   @ModelAttribute("laaHomepageLink")
   public String laaHomepageLink() {
@@ -25,8 +31,17 @@ public class GlobalTemplateAdvice {
     return laaAmendmentsLink;
   }
 
-  @ModelAttribute("laaBulkUploadGuidanceText")
-  public String laaBulkUploadGuidanceText() {
-    return laaBulkUploadGuidanceText;
+  @ModelAttribute("laaBulkUploadSpreadsheetLink")
+  public String getLaaBulkUploadGuidanceLink() {
+    return laaBulkUploadSpreadsheetLink;
+  }
+
+  @ModelAttribute("laaBulkUploadGuidanceLink")
+  public String laaBulkUploadGuidanceLink() {
+    return laaBulkUploadGuidanceLink;
+  }
+  @ModelAttribute("laaBulkUploadGuidanceDocumentsLink")
+  public String laaBulkUploadGuidanceDocumentsLink() {
+    return laaBulkUploadGuidanceDocumentsLink;
   }
 }
