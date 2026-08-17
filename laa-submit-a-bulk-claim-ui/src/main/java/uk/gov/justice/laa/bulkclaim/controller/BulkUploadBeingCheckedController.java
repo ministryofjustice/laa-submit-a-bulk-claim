@@ -85,18 +85,21 @@ public class BulkUploadBeingCheckedController {
   }
 
   @GetMapping("/submission/{submissionId}/status")
-  public ResponseEntity<Boolean> isSubmissionDone(
-      @PathVariable UUID submissionId) {
+  public ResponseEntity<Boolean> isSubmissionDone(@PathVariable UUID submissionId) {
     // TODO: Check office code to see if user is allowed to see this submission. Coming in future
     // PR via Controller Advice
     try {
       SubmissionStatus submissionStatus =
-          dataClaimsRestClient.getSubmission(submissionId).blockOptional()
-              .map(SubmissionResponse::getStatus).orElse(SubmissionStatus.CREATED);
+          dataClaimsRestClient
+              .getSubmission(submissionId)
+              .blockOptional()
+              .map(SubmissionResponse::getStatus)
+              .orElse(SubmissionStatus.CREATED);
       log.info("Submission status: {}", submissionStatus);
       return ResponseEntity.ok(
           List.of(
-                  SubmissionStatus.VALIDATION_SUCCEEDED, SubmissionStatus.VALIDATION_FAILED,
+                  SubmissionStatus.VALIDATION_SUCCEEDED,
+                  SubmissionStatus.VALIDATION_FAILED,
                   SubmissionStatus.READY_FOR_SUBMISSION)
               .contains(submissionStatus));
     } catch (WebClientResponseException e) {
@@ -107,4 +110,3 @@ public class BulkUploadBeingCheckedController {
     }
   }
 }
-
