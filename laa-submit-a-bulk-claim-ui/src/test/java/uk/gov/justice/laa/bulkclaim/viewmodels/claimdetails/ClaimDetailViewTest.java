@@ -37,7 +37,7 @@ class ClaimDetailViewTest {
     summaryRows.put(ClaimDetailsViewField.UNIQUE_FILE_NUMBER, "271219/000");
     ClaimDetailView<?> view = new TestClaimDetailView(summaryRows);
 
-    assertThat(view.getUFN()).isEqualTo("271219/000");
+    assertThat(view.getUfn()).isEqualTo("271219/000");
   }
 
   @Test
@@ -45,7 +45,7 @@ class ClaimDetailViewTest {
   void shouldReturnNullUniqueFileNumberWhenAbsent() {
     ClaimDetailView<?> view = new TestClaimDetailView(new LinkedHashMap<>());
 
-    assertThat(view.getUFN()).isNull();
+    assertThat(view.getUfn()).isNull();
   }
 
   @Test

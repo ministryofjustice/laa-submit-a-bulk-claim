@@ -72,7 +72,7 @@ public record MediationClaimDetailsView(
     return summaryRows().get(CLIENT_1_NAME);
   }
 
-  public Object getClient1UCN() {
+  public Object getClient1Ucn() {
     return summaryRows().get(CLIENT_1_UCN);
   }
 
@@ -80,7 +80,7 @@ public record MediationClaimDetailsView(
     return summaryRows().get(CLIENT_2_NAME);
   }
 
-  public Object getClient2UCN() {
+  public Object getClient2Ucn() {
     return summaryRows().get(CLIENT_2_UCN);
   }
 }

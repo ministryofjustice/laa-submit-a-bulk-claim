@@ -20,7 +20,7 @@ class MediationClaimDetailsViewTest {
     MediationClaimDetailsView view = new MediationClaimDetailsView(details);
 
     assertThat(view.getClient1Name()).isEqualTo("Sally Jenkins");
-    assertThat(view.getClient1UCN()).isEqualTo("02122002/S/JENK");
+    assertThat(view.getClient1Ucn()).isEqualTo("02122002/S/JENK");
   }
 
   @Test
@@ -37,7 +37,7 @@ class MediationClaimDetailsViewTest {
     MediationClaimDetailsView view = new MediationClaimDetailsView(details);
 
     assertThat(view.getClient2Name()).isEqualTo("John Smith");
-    assertThat(view.getClient2UCN()).isEqualTo("02122002/J/SMIT");
+    assertThat(view.getClient2Ucn()).isEqualTo("02122002/J/SMIT");
   }
 
   @Test
@@ -53,6 +53,6 @@ class MediationClaimDetailsViewTest {
     MediationClaimDetailsView view = new MediationClaimDetailsView(details);
 
     assertThat(view.getClient2Name()).isNull();
-    assertThat(view.getClient2UCN()).isNull();
+    assertThat(view.getClient2Ucn()).isNull();
   }
 }

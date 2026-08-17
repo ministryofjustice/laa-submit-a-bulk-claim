@@ -42,7 +42,7 @@ public final class ClaimDetailController {
   private final ClaimService claimService;
 
   @GetMapping("/submission/claim/{claimReference}")
-  public String getClaimDetail(
+  public String getClaimDetailRedirect(
       Model model,
       @PathVariable("claimReference") UUID claimReference,
       @RequestParam(value = "page", defaultValue = "0") final int page,

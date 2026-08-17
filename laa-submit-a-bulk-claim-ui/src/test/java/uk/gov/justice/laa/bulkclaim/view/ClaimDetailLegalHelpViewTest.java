@@ -217,7 +217,8 @@ class ClaimDetailLegalHelpViewTest extends ViewTestBase {
     assertRowContainsValues(
         values.get(3), "Disbursements (excluding VAT)", currency(120), currency(121));
     assertRowContainsValues(values.get(4), "Disbursement VAT", currency(130), currency(131));
-    assertRowContainsValues(values.get(5), "Counsel's costs (excluding VAT)", currency(140), currency(141));
+    assertRowContainsValues(
+        values.get(5), "Counsel's costs (excluding VAT)", currency(140), currency(141));
     assertRowContainsValues(
         values.get(6), "Travel and waiting costs", currency(150), currency(151));
     assertRowContainsValues(

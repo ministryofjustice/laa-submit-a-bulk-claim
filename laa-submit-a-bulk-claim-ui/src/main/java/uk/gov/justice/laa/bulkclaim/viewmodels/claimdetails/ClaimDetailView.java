@@ -14,7 +14,7 @@ public interface ClaimDetailView<K extends ClaimViewField<?>> {
 
   String pageTitle();
 
-  default Object getUFN() {
+  default Object getUfn() {
     return summaryRows().get(ClaimDetailsViewField.UNIQUE_FILE_NUMBER);
   }
 
