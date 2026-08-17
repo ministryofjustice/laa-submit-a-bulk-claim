@@ -4,7 +4,11 @@
       xmlns:th="http://www.thymeleaf.org">
 <head>
   <title th:text="|#{service.name} - ${title}|"/>
-  <meta id="meta-refresh" th:if="${shouldRefresh}" http-equiv="refresh" content="10">
+  <noscript th:if="${shouldRefresh}">
+    <meta http-equiv="refresh" content="10">
+  </noscript>
+  <meta th:if="${shouldRefresh}" id="meta-refresh"
+        data-module="page-refresh-on-submission-status" th:data-submission-id="${submissionId}">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta th:if="${submissionId}" id="submissionId" name="submissionId" th:content="${submissionId}">
   <meta th:if="${claimId}" id="claimId" name="claimId"  th:content="${claimId}">
