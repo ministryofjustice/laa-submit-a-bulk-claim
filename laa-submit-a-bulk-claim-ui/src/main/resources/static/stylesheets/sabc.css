@@ -39,3 +39,22 @@
   display: none;
 }
 
+
+/* Adapted from https://design.homeoffice.gov.uk/design-system/components?name=Loading%20spinner */
+.loading-spinner {
+  margin-left: auto;
+  margin-right: auto;
+  width: 80px;
+  height: 80px;
+  border-width: 12px;
+  border-style: solid;
+  border-color: #1d70b8 #cecece #cecece;
+  border-image: initial;
+  border-radius: 50%;
+  animation: 2s linear 0s infinite normal none running spin;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}

@@ -8,14 +8,18 @@ import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatusCode;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.Assert;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.SessionAttribute;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.BulkSubmissionStatus;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.GetBulkSubmissionStatusById200Response;
+import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionResponse;
+import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionStatus;
 import uk.gov.justice.laa.payments.submit.client.DataClaimsRestClient;
 import uk.gov.justice.laa.payments.submit.exception.SubmitBulkClaimException;
 
@@ -79,4 +83,26 @@ public class BulkUploadBeingCheckedController {
       throw new SubmitBulkClaimException("Claims API returned an error", e);
     }
   }
+
+  @GetMapping("/submission/{submissionId}/status")
+  public ResponseEntity<Boolean> isSubmissionDone(
+      @PathVariable UUID submissionId) {
+    try {
+      SubmissionStatus submissionStatus =
+          dataClaimsRestClient.getSubmission(submissionId).blockOptional()
+              .map(SubmissionResponse::getStatus).orElse(SubmissionStatus.CREATED);
+      log.info("Submission status: {}", submissionStatus);
+      return ResponseEntity.ok(
+          List.of(
+                  SubmissionStatus.VALIDATION_SUCCEEDED, SubmissionStatus.VALIDATION_FAILED,
+                  SubmissionStatus.READY_FOR_SUBMISSION)
+              .contains(submissionStatus));
+    } catch (WebClientResponseException e) {
+      return new ResponseEntity<>(false, e.getStatusCode());
+    } catch (Exception e) {
+      log.error("Unexpected error occurred while checking submission status", e);
+      return new ResponseEntity<>(false, HttpStatusCode.valueOf(404));
+    }
+  }
 }
+
