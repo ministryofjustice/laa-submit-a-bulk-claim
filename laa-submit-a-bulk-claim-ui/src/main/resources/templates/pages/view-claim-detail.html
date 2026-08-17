@@ -23,7 +23,7 @@
           <p class="govuk-body">
             <span class="govuk-!-font-weight-bold" th:text="#{viewClaim.summary.ufn}"></span>
             <th:block
-                th:text="${@thymeleafUtils.getFormattedValue(claimDetailView.getUFN()).resolve(#messages)}"></th:block>
+                th:text="${@thymeleafUtils.getFormattedValue(claimDetailView.getUfn()).resolve(#messages)}"></th:block>
             <br/>
             <span class="govuk-!-font-weight-bold" th:text="#{viewClaim.summary.feeCode}"></span>
             <th:block
@@ -39,7 +39,7 @@
             <br/>
             <span class="govuk-!-font-weight-bold" th:text="#{viewClaim.summary.ucn1}"></span>
             <th:block
-                th:text="${@thymeleafUtils.getFormattedValue(claimDetailView.getClient1UCN()).resolve(#messages)}"></th:block>
+                th:text="${@thymeleafUtils.getFormattedValue(claimDetailView.getClient1Ucn()).resolve(#messages)}"></th:block>
           </p>
           <p class="govuk-body">
             <span class="govuk-!-font-weight-bold"
@@ -49,7 +49,7 @@
             <br/>
             <span class="govuk-!-font-weight-bold" th:text="#{viewClaim.summary.ucn2}"></span>
             <th:block
-                th:text="${@thymeleafUtils.getFormattedValue(claimDetailView.getClient2UCN()).resolve(#messages)}"></th:block>
+                th:text="${@thymeleafUtils.getFormattedValue(claimDetailView.getClient2Ucn()).resolve(#messages)}"></th:block>
           </p>
         </th:block>
       </div>

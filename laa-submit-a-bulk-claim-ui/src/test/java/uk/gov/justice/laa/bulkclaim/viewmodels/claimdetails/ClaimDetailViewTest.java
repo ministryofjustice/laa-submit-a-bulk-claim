@@ -31,7 +31,7 @@ class ClaimDetailViewTest {
   }
 
   @Test
-  @DisplayName("getUFN() should read the unique file number from the shared summary row")
+  @DisplayName("getUfn() should read the unique file number from the shared summary row")
   void shouldReadUniqueFileNumber() {
     LinkedHashMap<ClaimViewField<?>, Object> summaryRows = new LinkedHashMap<>();
     summaryRows.put(ClaimDetailsViewField.UNIQUE_FILE_NUMBER, "271219/000");
@@ -41,7 +41,7 @@ class ClaimDetailViewTest {
   }
 
   @Test
-  @DisplayName("getUFN() should return null rather than throw when the row is absent")
+  @DisplayName("getUfn() should return null rather than throw when the row is absent")
   void shouldReturnNullUniqueFileNumberWhenAbsent() {
     ClaimDetailView<?> view = new TestClaimDetailView(new LinkedHashMap<>());
 

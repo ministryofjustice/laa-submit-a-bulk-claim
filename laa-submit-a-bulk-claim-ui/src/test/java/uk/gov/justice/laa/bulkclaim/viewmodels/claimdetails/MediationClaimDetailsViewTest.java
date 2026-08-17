@@ -10,7 +10,7 @@ import uk.gov.justice.laa.bulkclaim.dto.submission.claim.viewmodels.MediationCla
 class MediationClaimDetailsViewTest {
 
   @Test
-  @DisplayName("getClient1Name()/getClient1UCN() should read client 1's details")
+  @DisplayName("getClient1Name()/getClient1Ucn() should read client 1's details")
   void shouldReadClient1Details() {
     MediationClaimDetails details = new MediationClaimDetails();
     details.setClientForename("Sally");
@@ -24,7 +24,7 @@ class MediationClaimDetailsViewTest {
   }
 
   @Test
-  @DisplayName("getClient2Name()/getClient2UCN() should read client 2's details when present")
+  @DisplayName("getClient2Name()/getClient2Ucn() should read client 2's details when present")
   void shouldReadClient2DetailsWhenPresent() {
     MediationClaimDetails details = new MediationClaimDetails();
     details.setClientForename("Sally");
@@ -42,7 +42,7 @@ class MediationClaimDetailsViewTest {
 
   @Test
   @DisplayName(
-      "getClient2Name()/getClient2UCN() should return null rather than throw when"
+      "getClient2Name()/getClient2Ucn() should return null rather than throw when"
           + " client 2 is absent")
   void shouldReturnNullClient2DetailsWhenAbsent() {
     MediationClaimDetails details = new MediationClaimDetails();
