@@ -87,6 +87,8 @@ public class BulkUploadBeingCheckedController {
   @GetMapping("/submission/{submissionId}/status")
   public ResponseEntity<Boolean> isSubmissionDone(
       @PathVariable UUID submissionId) {
+    // TODO: Check office code to see if user is allowed to see this submission. Coming in future
+    // PR via Controller Advice
     try {
       SubmissionStatus submissionStatus =
           dataClaimsRestClient.getSubmission(submissionId).blockOptional()
