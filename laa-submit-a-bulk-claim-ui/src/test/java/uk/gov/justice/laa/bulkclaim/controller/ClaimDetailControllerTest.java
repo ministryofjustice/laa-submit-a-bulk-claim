@@ -24,7 +24,6 @@ import reactor.core.publisher.Mono;
 import uk.gov.justice.laa.bulkclaim.builder.ClaimStatusBannerBuilder;
 import uk.gov.justice.laa.bulkclaim.builder.LatestAssessmentResolver;
 import uk.gov.justice.laa.bulkclaim.builder.SubmissionMessagesBuilder;
-import uk.gov.justice.laa.bulkclaim.client.DataClaimsRestClient;
 import uk.gov.justice.laa.bulkclaim.client.DataClaimsRestClientV2;
 import uk.gov.justice.laa.bulkclaim.dto.submission.claim.ClaimFeeCalculationBreakdown;
 import uk.gov.justice.laa.bulkclaim.dto.submission.claim.ClaimSummary;
@@ -52,8 +51,8 @@ class ClaimDetailControllerTest extends BaseControllerTest {
 
   @Autowired private MockMvcTester mockMvc;
 
-  @MockitoBean private DataClaimsRestClient dataClaimsRestClient;
   @MockitoBean private DataClaimsRestClientV2 dataClaimsRestClientV2;
+
   @MockitoBean private ClaimSummaryMapper claimSummaryMapper;
   @MockitoBean private ClaimFeeCalculationBreakdownMapper claimFeeCalculationBreakdownMapper;
   @MockitoBean private SubmissionMessagesBuilder submissionMessagesBuilder;

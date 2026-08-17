@@ -16,12 +16,10 @@ import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.web.client.ResourceAccessException;
 import tools.jackson.databind.ObjectMapper;
-import uk.gov.justice.laa.bulkclaim.client.DataClaimsRestClient;
 import uk.gov.justice.laa.bulkclaim.controller.BulkImportController;
 import uk.gov.justice.laa.bulkclaim.controller.ControllerTestHelper;
 import uk.gov.justice.laa.bulkclaim.metrics.BulkClaimMetricService;
 import uk.gov.justice.laa.bulkclaim.service.VirusCheckService;
-import uk.gov.justice.laa.bulkclaim.util.OidcAttributeUtils;
 import uk.gov.justice.laa.bulkclaim.validation.BulkImportFileValidator;
 import uk.gov.justice.laa.bulkclaim.validation.BulkImportFileVirusValidator;
 
@@ -30,8 +28,6 @@ import uk.gov.justice.laa.bulkclaim.validation.BulkImportFileVirusValidator;
 class BulkUploadPageViewTest extends ViewTestBase {
 
   @MockitoBean private VirusCheckService virusCheckService;
-  @MockitoBean private DataClaimsRestClient dataClaimsRestClient;
-  @MockitoBean private OidcAttributeUtils oidcAttributeUtils;
   @MockitoBean private BulkClaimMetricService bulkClaimMetricService;
   @MockitoBean private ObjectMapper objectMapper;
 

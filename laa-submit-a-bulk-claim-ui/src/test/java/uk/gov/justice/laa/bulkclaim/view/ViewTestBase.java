@@ -28,21 +28,28 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Import;
 import org.springframework.mock.web.MockHttpSession;
+import org.springframework.security.oauth2.core.oidc.user.OidcUser;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.util.MultiValueMap;
+import uk.gov.justice.laa.bulkclaim.client.DataClaimsRestClient;
 import uk.gov.justice.laa.bulkclaim.config.FeatureFlagsConfig;
 import uk.gov.justice.laa.bulkclaim.config.WebMvcTestConfig;
 import uk.gov.justice.laa.bulkclaim.controller.ControllerTestHelper;
+import uk.gov.justice.laa.bulkclaim.util.OidcAttributeUtils;
 import uk.gov.justice.laa.bulkclaim.util.ThymeleafHrefUtils;
 
 @Import({WebMvcTestConfig.class, ThymeleafHrefUtils.class})
 public abstract class ViewTestBase {
 
+  protected static final OidcUser USER = ControllerTestHelper.getOidcUser();
+
   @Autowired protected MockMvc mockMvc;
 
+  @MockitoBean protected DataClaimsRestClient dataClaimsRestClient;
   @MockitoBean protected FeatureFlagsConfig featureFlagsConfig;
+  @MockitoBean protected OidcAttributeUtils oidcAttributeUtils;
 
   @BeforeEach
   public void setup() {
@@ -90,10 +97,7 @@ public abstract class ViewTestBase {
     try {
       String html =
           mockMvc
-              .perform(
-                  requestBuilder
-                      .session(session)
-                      .with(oidcLogin().oidcUser(ControllerTestHelper.getOidcUser())))
+              .perform(requestBuilder.session(session).with(oidcLogin().oidcUser(USER)))
               .andExpect(status().is(expectedStatus))
               .andReturn()
               .getResponse()

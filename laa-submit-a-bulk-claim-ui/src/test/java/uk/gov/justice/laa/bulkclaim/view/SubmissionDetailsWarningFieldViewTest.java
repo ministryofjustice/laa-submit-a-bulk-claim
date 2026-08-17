@@ -453,6 +453,7 @@ class SubmissionDetailsWarningFieldViewTest extends SubmissionDetailsViewTestBas
         SubmissionResponse.builder()
             .submissionId(submissionId)
             .status(SubmissionStatus.VALIDATION_SUCCEEDED)
+            .officeAccountNumber(OFFICE_CODE)
             .areaOfLaw(areaOfLaw)
             .build();
     when(dataClaimsRestClient.getSubmission(submissionId))
@@ -488,6 +489,7 @@ class SubmissionDetailsWarningFieldViewTest extends SubmissionDetailsViewTestBas
         SubmissionResponse.builder()
             .submissionId(submissionId)
             .status(SubmissionStatus.VALIDATION_SUCCEEDED)
+            .officeAccountNumber(OFFICE_CODE)
             .areaOfLaw(areaOfLaw)
             .build();
     when(dataClaimsRestClient.getSubmission(submissionId))

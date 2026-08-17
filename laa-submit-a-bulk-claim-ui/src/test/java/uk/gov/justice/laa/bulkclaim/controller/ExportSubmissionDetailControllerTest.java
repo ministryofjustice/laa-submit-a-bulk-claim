@@ -22,7 +22,6 @@ import org.springframework.test.web.servlet.assertj.MockMvcTester;
 import reactor.core.publisher.Mono;
 import uk.gov.justice.laa.bulkclaim.client.ExportDataClaimsRestClient;
 import uk.gov.justice.laa.bulkclaim.exception.SubmitBulkClaimException;
-import uk.gov.justice.laa.bulkclaim.util.OidcAttributeUtils;
 
 @WebMvcTest(ExportSubmissionDetailController.class)
 @AutoConfigureMockMvc
@@ -32,7 +31,6 @@ class ExportSubmissionDetailControllerTest extends BaseControllerTest {
   @Autowired private MockMvcTester mockMvc;
 
   @MockitoBean private ExportDataClaimsRestClient exportDataClaimsRestClient;
-  @MockitoBean private OidcAttributeUtils oidcAttributeUtils;
 
   @Nested
   @DisplayName("GET: /submission/{submissionId}/export")

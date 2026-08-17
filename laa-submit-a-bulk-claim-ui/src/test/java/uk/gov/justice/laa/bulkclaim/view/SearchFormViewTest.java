@@ -18,11 +18,9 @@ import org.springframework.context.annotation.Import;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
-import uk.gov.justice.laa.bulkclaim.client.DataClaimsRestClient;
 import uk.gov.justice.laa.bulkclaim.controller.ControllerTestHelper;
 import uk.gov.justice.laa.bulkclaim.controller.SearchController;
 import uk.gov.justice.laa.bulkclaim.dto.SubmissionOutcomeFilter;
-import uk.gov.justice.laa.bulkclaim.util.OidcAttributeUtils;
 import uk.gov.justice.laa.bulkclaim.util.PaginationLinksBuilder;
 import uk.gov.justice.laa.bulkclaim.util.PaginationUtil;
 import uk.gov.justice.laa.bulkclaim.util.SubmissionPeriodUtil;
@@ -32,9 +30,7 @@ import uk.gov.justice.laa.bulkclaim.validation.SubmissionSearchValidator;
 @Import(SubmissionSearchValidator.class)
 class SearchFormViewTest extends ViewTestBase {
 
-  @MockitoBean DataClaimsRestClient claimsRestService;
   @MockitoBean PaginationUtil paginationUtil;
-  @MockitoBean OidcAttributeUtils oidcAttributeUtils;
   @MockitoBean PaginationLinksBuilder paginationLinksBuilder;
 
   @MockitoBean("submissionPeriodUtil")

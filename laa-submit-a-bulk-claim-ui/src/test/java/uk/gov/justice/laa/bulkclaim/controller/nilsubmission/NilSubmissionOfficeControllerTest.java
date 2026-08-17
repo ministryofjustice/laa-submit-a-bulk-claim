@@ -21,20 +21,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
 import org.springframework.mock.web.MockHttpSession;
 import org.springframework.security.oauth2.core.oidc.user.OidcUser;
-import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.web.server.ResponseStatusException;
 import uk.gov.justice.laa.bulkclaim.controller.BaseControllerTest;
 import uk.gov.justice.laa.bulkclaim.controller.ControllerTestHelper;
 import uk.gov.justice.laa.bulkclaim.dto.submission.NilSubmissionForm;
-import uk.gov.justice.laa.bulkclaim.util.OidcAttributeUtils;
 
 @WebMvcTest(NilSubmissionOfficeController.class)
 class NilSubmissionOfficeControllerTest extends BaseControllerTest {
 
   @Autowired private MockMvc mockMvc;
-
-  @MockitoBean private OidcAttributeUtils oidcAttributeUtils;
 
   @Test
   void whenFeatureFlagDisabled_allMappings_returnsErrorView() throws Exception {

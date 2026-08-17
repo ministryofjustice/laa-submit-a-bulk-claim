@@ -595,6 +595,7 @@ class ClaimDetailsViewTest extends SubmissionDetailsViewTestBase {
     SubmissionResponse submissionResponse =
         SubmissionResponse.builder()
             .submissionId(submissionId)
+            .officeAccountNumber(OFFICE_CODE)
             .status(SubmissionStatus.VALIDATION_SUCCEEDED)
             .areaOfLaw(areaOfLaw)
             .build();
@@ -624,6 +625,7 @@ class ClaimDetailsViewTest extends SubmissionDetailsViewTestBase {
         SubmissionResponse.builder()
             .submissionId(submissionId)
             .status(SubmissionStatus.VALIDATION_SUCCEEDED)
+            .officeAccountNumber(OFFICE_CODE)
             .areaOfLaw(areaOfLaw)
             .build();
     when(dataClaimsRestClient.getSubmission(submissionId))

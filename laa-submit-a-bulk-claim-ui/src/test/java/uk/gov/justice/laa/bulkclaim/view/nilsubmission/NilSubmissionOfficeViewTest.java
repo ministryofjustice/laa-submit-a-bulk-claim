@@ -11,19 +11,15 @@ import java.util.List;
 import org.jsoup.Jsoup;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
-import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import uk.gov.justice.laa.bulkclaim.controller.ControllerTestHelper;
 import uk.gov.justice.laa.bulkclaim.controller.nilsubmission.NilSubmissionOfficeController;
 import uk.gov.justice.laa.bulkclaim.dto.submission.NilSubmissionForm;
-import uk.gov.justice.laa.bulkclaim.util.OidcAttributeUtils;
 import uk.gov.justice.laa.bulkclaim.view.ViewTestBase;
 
 @WebMvcTest(NilSubmissionOfficeController.class)
 class NilSubmissionOfficeViewTest extends ViewTestBase {
-
-  @MockitoBean private OidcAttributeUtils oidcAttributeUtils;
 
   NilSubmissionOfficeViewTest() {
     this.mapping = "/nil-submission/office";
