@@ -39,15 +39,14 @@ class ClaimMapperHelperTest {
   }
 
   @Test
-  @DisplayName(
-      "Should leave the initial calculated profit costs value null even though an "
-          + "upstream calculated value exists")
-  void shouldPreserveProfitCostsNullCalculatedQuirk() {
+  @DisplayName("Should build profit costs from the claim, fee calculation response and assessment")
+  void shouldBuildProfitCosts() {
     ClaimFieldRow result = helper.profitCosts(claimResponse, currentAssessment);
 
     assertThat(claimResponse.getFeeCalculationResponse().getNetProfitCostsAmount()).isNotNull();
     assertThat(result.reported()).isEqualTo(claimResponse.getNetProfitCostsAmount());
-    assertThat(result.initialCalculated()).isNull();
+    assertThat(result.initialCalculated()).isEqualTo(
+        claimResponse.getFeeCalculationResponse().getNetProfitCostsAmount());
     assertThat(result.assessed()).isEqualTo(currentAssessment.getNetProfitCostsAmount());
   }
 

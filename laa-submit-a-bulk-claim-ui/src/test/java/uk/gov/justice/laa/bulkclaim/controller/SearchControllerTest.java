@@ -309,7 +309,7 @@ class SearchControllerTest {
               eq(CRIME_LOWER),
               eq(List.of(SubmissionStatus.VALIDATION_SUCCEEDED)),
               eq(0),
-              eq(10),
+              eq(50),
               any());
     }
   }
