@@ -247,4 +247,32 @@ class ClaimDetailsMapperTest {
           .isEqualTo(feeCalculation.getTotalAmount());
     }
   }
+
+  @Nested
+  @DisplayName("Special Case")
+  class SpecialCase {
+
+    @Test
+    void shouldSplitMatterTypeCode() {
+      ClaimResponseV2 claimResponse = TestObjectCreator.buildClaimResponseV2(AreaOfLaw.LEGAL_HELP);
+
+      LegalHelpClaimDetails result = mapper.toLegalHelpClaimDetails(claimResponse, null);
+
+      assertThat(result.getMatterTypeCodeOne())
+          .isEqualTo(claimResponse.getMatterTypeCode().split(":")[0]);
+      assertThat(result.getMatterTypeCodeTwo())
+          .isEqualTo(claimResponse.getMatterTypeCode().split(":")[1]);
+    }
+
+    @Test
+    void shouldNotSplitCodeIfColonNonExistent() {
+      ClaimResponseV2 claimResponse = TestObjectCreator.buildClaimResponseV2(AreaOfLaw.LEGAL_HELP);
+      claimResponse.setMatterTypeCode("ABCD");
+
+      LegalHelpClaimDetails result = mapper.toLegalHelpClaimDetails(claimResponse, null);
+
+      assertThat(result.getMatterTypeCodeOne()).isEqualTo("ABCD");
+      assertThat(result.getMatterTypeCodeTwo()).isNull();
+    }
+  }
 }

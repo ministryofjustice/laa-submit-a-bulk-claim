@@ -108,7 +108,11 @@ public interface ClaimDetailsMapper {
     if (matterTypeCode == null) {
       return null;
     }
-    return matterTypeCode.split(":")[1];
+    String[] split = matterTypeCode.split(":");
+    if (split.length < 2) {
+      return null;
+    }
+    return split[1];
   }
 
   @ObjectFactory
