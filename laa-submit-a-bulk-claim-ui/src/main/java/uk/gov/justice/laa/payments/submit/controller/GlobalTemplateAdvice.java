@@ -40,6 +40,7 @@ public class GlobalTemplateAdvice {
   public String laaBulkUploadGuidanceLink() {
     return laaBulkUploadGuidanceLink;
   }
+
   @ModelAttribute("laaBulkUploadGuidanceDocumentsLink")
   public String laaBulkUploadGuidanceDocumentsLink() {
     return laaBulkUploadGuidanceDocumentsLink;
