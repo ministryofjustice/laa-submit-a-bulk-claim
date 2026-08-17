@@ -22,7 +22,6 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.assertj.MockMvcTester;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
 import reactor.core.publisher.Mono;
-import uk.gov.justice.laa.bulkclaim.client.DataClaimsRestClient;
 import uk.gov.justice.laa.bulkclaim.exception.SubmitBulkClaimException;
 import uk.gov.justice.laa.bulkclaim.metrics.BulkClaimMetricService;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.BulkSubmissionStatus;
@@ -33,8 +32,6 @@ import uk.gov.justice.laa.dstew.payments.claimsdata.model.GetBulkSubmissionStatu
 public class BulkUploadBeingCheckedControllerTest extends BaseControllerTest {
 
   @Autowired private MockMvcTester mockMvc;
-
-  @MockitoBean private DataClaimsRestClient dataClaimsRestClient;
 
   @MockitoBean private BulkClaimMetricService bulkClaimMetricService;
 

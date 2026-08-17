@@ -135,10 +135,12 @@ class SubmissionDetailsSummaryViewTest extends SubmissionDetailsViewTestBase {
         SubmissionResponse.builder()
             .submissionId(submissionId)
             .status(SubmissionStatus.VALIDATION_SUCCEEDED)
+            .officeAccountNumber(OFFICE_CODE)
             .areaOfLaw(CRIME_LOWER)
             .build();
     when(dataClaimsRestClient.getSubmission(submissionId))
         .thenReturn(Mono.just(submissionResponse));
+    when(oidcAttributeUtils.getUserOffices(USER)).thenReturn(List.of(OFFICE_CODE));
     when(submissionSummaryBuilder.build(any()))
         .thenReturn(
             new SubmissionSummary(
@@ -164,6 +166,7 @@ class SubmissionDetailsSummaryViewTest extends SubmissionDetailsViewTestBase {
         SubmissionResponse.builder()
             .submissionId(submissionId)
             .status(SubmissionStatus.VALIDATION_FAILED)
+            .officeAccountNumber(OFFICE_CODE)
             .areaOfLaw(CRIME_LOWER)
             .build();
     when(dataClaimsRestClient.getSubmission(submissionId))

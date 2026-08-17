@@ -22,12 +22,10 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import reactor.core.publisher.Mono;
-import uk.gov.justice.laa.bulkclaim.client.DataClaimsRestClient;
 import uk.gov.justice.laa.bulkclaim.controller.SearchController;
 import uk.gov.justice.laa.bulkclaim.dto.PaginationLinks;
 import uk.gov.justice.laa.bulkclaim.dto.PaginationPageLink;
 import uk.gov.justice.laa.bulkclaim.dto.SubmissionOutcomeFilter;
-import uk.gov.justice.laa.bulkclaim.util.OidcAttributeUtils;
 import uk.gov.justice.laa.bulkclaim.util.PaginationLinksBuilder;
 import uk.gov.justice.laa.bulkclaim.util.PaginationUtil;
 import uk.gov.justice.laa.bulkclaim.util.SubmissionPeriodUtil;
@@ -45,10 +43,8 @@ class SearchResultsViewTest extends ViewTestBase {
   private static final String OFFICE = "12345";
   private static final String SUBMISSION_STATUSES = SubmissionOutcomeFilter.ALL.name();
 
-  @MockitoBean DataClaimsRestClient claimsRestService;
   @MockitoBean SubmissionSearchValidator submissionSearchValidator;
   @MockitoBean PaginationUtil paginationUtil;
-  @MockitoBean OidcAttributeUtils oidcAttributeUtils;
   @MockitoBean PaginationLinksBuilder paginationLinksBuilder;
 
   @MockitoBean("submissionPeriodUtil") // Naming required as this bean is used in thymeleaf
@@ -253,7 +249,7 @@ class SearchResultsViewTest extends ViewTestBase {
     var response = buildSearchResultsResponse(currentPage, totalPages, totalElements);
     var pagination = buildPagination(currentPage, totalPages, totalElements);
     when(oidcAttributeUtils.getUserOffices(any())).thenReturn(List.of("1"));
-    when(claimsRestService.search(anyList(), any(), any(), any(), anyInt(), anyInt(), any()))
+    when(dataClaimsRestClient.search(anyList(), any(), any(), any(), anyInt(), anyInt(), any()))
         .thenReturn(Mono.just(response));
     when(paginationUtil.fromSubmissionsResultSet(response, currentPage, PAGE_SIZE))
         .thenReturn(pagination);
@@ -368,7 +364,7 @@ class SearchResultsViewTest extends ViewTestBase {
             .build();
     var pagination = buildPagination(0, 0, 0);
     when(oidcAttributeUtils.getUserOffices(any())).thenReturn(List.of("1"));
-    when(claimsRestService.search(anyList(), any(), any(), any(), anyInt(), anyInt(), any()))
+    when(dataClaimsRestClient.search(anyList(), any(), any(), any(), anyInt(), anyInt(), any()))
         .thenReturn(Mono.just(response));
     when(paginationUtil.fromSubmissionsResultSet(response, 0, PAGE_SIZE)).thenReturn(pagination);
     when(paginationLinksBuilder.build(any(), any(), any(), any(Object[].class)))
@@ -386,7 +382,7 @@ class SearchResultsViewTest extends ViewTestBase {
             .build();
     var pagination = buildPagination(0, totalPages, submissions.size());
     when(oidcAttributeUtils.getUserOffices(any())).thenReturn(List.of("1"));
-    when(claimsRestService.search(anyList(), any(), any(), any(), anyInt(), anyInt(), any()))
+    when(dataClaimsRestClient.search(anyList(), any(), any(), any(), anyInt(), anyInt(), any()))
         .thenReturn(Mono.just(response));
     when(paginationUtil.fromSubmissionsResultSet(response, 0, PAGE_SIZE)).thenReturn(pagination);
     when(paginationLinksBuilder.build(any(), any(), any(), any(Object[].class)))
