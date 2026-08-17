@@ -45,8 +45,8 @@ class ClaimMapperHelperTest {
 
     assertThat(claimResponse.getFeeCalculationResponse().getNetProfitCostsAmount()).isNotNull();
     assertThat(result.reported()).isEqualTo(claimResponse.getNetProfitCostsAmount());
-    assertThat(result.initialCalculated()).isEqualTo(
-        claimResponse.getFeeCalculationResponse().getNetProfitCostsAmount());
+    assertThat(result.initialCalculated())
+        .isEqualTo(claimResponse.getFeeCalculationResponse().getNetProfitCostsAmount());
     assertThat(result.assessed()).isEqualTo(currentAssessment.getNetProfitCostsAmount());
   }
 
