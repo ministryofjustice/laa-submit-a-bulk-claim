@@ -32,7 +32,7 @@ public class GlobalTemplateAdvice {
   }
 
   @ModelAttribute("laaBulkUploadSpreadsheetLink")
-  public String getLaaBulkUploadGuidanceLink() {
+  public String laaBulkUploadSpreadsheetLink() {
     return laaBulkUploadSpreadsheetLink;
   }
 
