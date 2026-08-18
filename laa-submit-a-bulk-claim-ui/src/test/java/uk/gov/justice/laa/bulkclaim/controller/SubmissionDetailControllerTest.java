@@ -123,8 +123,8 @@ class SubmissionDetailControllerTest extends BaseControllerTest {
     }
 
     @Test
-    @DisplayName("Should return forbidden when submission is not for allowed office code")
-    void shouldReturnForbiddenWhenOfficeCodeIsForbidden() {
+    @DisplayName("Should return not found when submission is not for allowed office code")
+    void shouldReturnNotFoundWhenOfficeCodeIsForbidden() {
       var submission =
           SubmissionResponse.builder()
               .submissionId(SUBMISSION_ID)
@@ -137,7 +137,7 @@ class SubmissionDetailControllerTest extends BaseControllerTest {
       assertThat(
               mockMvc.perform(get("/submission/" + SUBMISSION_ID).with(oidcLogin().oidcUser(USER))))
           .failure()
-          .hasMessageContaining("403 FORBIDDEN");
+          .hasMessage("404 NOT_FOUND \"User 1234567890 does not have access to office 123456\"");
     }
   }
 

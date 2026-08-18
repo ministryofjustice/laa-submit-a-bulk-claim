@@ -9,6 +9,7 @@ import java.lang.annotation.Target;
 import java.util.Optional;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.core.oidc.user.OidcUser;
@@ -23,6 +24,7 @@ import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionResponse;
 
 @RequiredArgsConstructor
 @ControllerAdvice(annotations = SubmissionControllerAdvice.Enabled.class)
+@Slf4j
 public class SubmissionControllerAdvice {
 
   private final DataClaimsRestClient dataClaimsRestClient;
@@ -57,8 +59,10 @@ public class SubmissionControllerAdvice {
     var offices = oidcAttributeUtils.getUserOffices(oidcUser);
     var office = submissionResponse.getOfficeAccountNumber();
     if (!offices.contains(office)) {
-      throw new ResponseStatusException(
-          HttpStatus.FORBIDDEN, "User does not have access to office %s".formatted(office));
+      var sub = oidcUser.getSubject();
+      var message = "User %s does not have access to office %s".formatted(sub, office);
+      log.error(message);
+      throw new ResponseStatusException(HttpStatus.NOT_FOUND, message);
     }
   }
 
