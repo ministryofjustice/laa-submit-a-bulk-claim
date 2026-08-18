@@ -23,7 +23,7 @@
 
       <div class="govuk-grid-column-full" th:if="${submissionSummary.isDraft()}">
         <a type="submit" class="govuk-button" data-module="govuk-button"
-           th:href="@{/submit-draft-submission(submissionId=${submissionSummary.submissionReference})}"
+           th:href="@{/submission/submit-draft(submissionId=${submissionSummary.submissionReference})}"
                 th:text="#{viewSubmission.draft.submit}"/>
       </div>
     </div>
