@@ -1,6 +1,6 @@
 <!DOCTYPE HTML>
 <html lang="en" class="govuk-template" xmlns:th="http://www.thymeleaf.org"
-      th:replace="~{ layout/main-layout :: layout(#{landing.heading},~{::main},~{}, 'landing')}">
+      th:replace="~{ layout/main-layout :: layout(#{submitDraftSubmission.heading},~{::main},~{}, 'landing')}">
 <main class="govuk-main-wrapper" id="main-content">
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds-from-desktop">
@@ -49,8 +49,9 @@
           </div>
         </dl>
 
-      <form th:action="@{/submit-draft-submission}" method="post">
+      <form th:action="@{/submission/submit-draft}" method="post">
         <input type="hidden" name="_csrf" th:value="${_csrf.token}"/>
+        <input type="hidden" name="submissionId" th:value="${submissionSummary.submissionReference}"/>
         <button class="govuk-button" data-module="govuk-button" type="submit"
                 th:text="#{submitDraftSubmission.submit}"></button>
       </form>
