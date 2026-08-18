@@ -1,6 +1,6 @@
 <!DOCTYPE HTML>
 <html lang="en" class="govuk-template" xmlns:th="http://www.thymeleaf.org"
-      th:replace="~{ layout/main-layout :: layout(${ufn} ? #{viewClaim.heading(${ufn})} : #{viewClaim.heading.noUfn},~{::main},~{::#back-link},'search-submissions')}">
+      th:replace="~{ main-layout :: layout(${ufn} ? #{viewClaim.heading(${ufn})} : #{viewClaim.heading.noUfn},~{::main},~{::#back-link},'search-submissions')}">
 
 
 <!--/*@thymesVar id="values" type="uk.gov.justice.laa.bulkclaim.viewmodels.claim.BulkClaimCostItem"*/-->
