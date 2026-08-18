@@ -8,6 +8,7 @@ import static uk.gov.justice.laa.bulkclaim.constants.SessionConstants.BULK_SUBMI
 import static uk.gov.justice.laa.bulkclaim.constants.SessionConstants.SUBMISSION_ID;
 import static uk.gov.justice.laa.bulkclaim.controller.ControllerTestHelper.OIDC_USER;
 
+import java.util.List;
 import java.util.UUID;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -20,6 +21,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
 import org.springframework.http.HttpStatusCode;
+import org.springframework.security.oauth2.core.oidc.user.OidcUser;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.assertj.MockMvcTester;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
@@ -38,6 +40,8 @@ public class BulkUploadBeingCheckedControllerTest extends BaseControllerTest {
   @Autowired private MockMvcTester mockMvc;
 
   @MockitoBean private BulkClaimMetricService bulkClaimMetricService;
+  private static final String OFFICE_CODE = "123456";
+  private static final OidcUser USER = OIDC_USER;
 
   @Nested
   @DisplayName("GET: /upload-is-being-checked")
@@ -195,12 +199,18 @@ public class BulkUploadBeingCheckedControllerTest extends BaseControllerTest {
     void shouldReturnTrueWhenSubmissionStatusReady(SubmissionStatus status) {
       UUID submissionId = UUID.fromString("5933fc67-bac7-4f48-81ed-61c8c463f054");
       SubmissionResponse response =
-          SubmissionResponse.builder().submissionId(submissionId).status(status).build();
+          SubmissionResponse.builder()
+              .submissionId(submissionId)
+              .status(status)
+              .officeAccountNumber(OFFICE_CODE)
+              .build();
       when(dataClaimsRestClient.getSubmission(submissionId)).thenReturn(Mono.just(response));
+      when(oidcAttributeUtils.getUserOffices(org.mockito.ArgumentMatchers.any()))
+          .thenReturn(List.of(OFFICE_CODE));
       assertThat(
               mockMvc.perform(
                   get("/submission/{submissionId}/status", submissionId)
-                      .with(oidcLogin().oidcUser(OIDC_USER))))
+                      .with(oidcLogin().oidcUser(USER))))
           .hasStatusOk()
           .hasBodyTextEqualTo("true");
     }
@@ -213,38 +223,62 @@ public class BulkUploadBeingCheckedControllerTest extends BaseControllerTest {
     void shouldReturnFalseWhenSubmissionStatusNotReady(SubmissionStatus status) {
       UUID submissionId = UUID.fromString("5933fc67-bac7-4f48-81ed-61c8c463f054");
       SubmissionResponse response =
-          SubmissionResponse.builder().submissionId(submissionId).status(status).build();
+          SubmissionResponse.builder()
+              .submissionId(submissionId)
+              .status(status)
+              .officeAccountNumber(OFFICE_CODE)
+              .build();
       when(dataClaimsRestClient.getSubmission(submissionId)).thenReturn(Mono.just(response));
+      when(oidcAttributeUtils.getUserOffices(USER)).thenReturn(List.of(OFFICE_CODE));
       assertThat(
               mockMvc.perform(
                   get("/submission/{submissionId}/status", submissionId)
-                      .with(oidcLogin().oidcUser(OIDC_USER))))
+                      .with(oidcLogin().oidcUser(USER))))
           .hasStatusOk()
           .hasBodyTextEqualTo("false");
     }
 
     @Test
-    void shouldReturnFalseWhenApiReturnsNull() {
+    void shouldReturn404WhenApiReturnsNull() {
       UUID submissionId = UUID.fromString("5933fc67-bac7-4f48-81ed-61c8c463f054");
       when(dataClaimsRestClient.getSubmission(submissionId))
           .thenThrow(new WebClientResponseException(404, "Not found", null, null, null));
       assertThat(
               mockMvc.perform(
                   get("/submission/{submissionId}/status", submissionId)
-                      .with(oidcLogin().oidcUser(OIDC_USER))))
+                      .with(oidcLogin().oidcUser(USER))))
           .hasStatus(404);
     }
 
     @Test
-    void shouldReturnFalseWhenUnknownException() {
+    void shouldReturn404WhenUnknownException() {
       UUID submissionId = UUID.fromString("5933fc67-bac7-4f48-81ed-61c8c463f054");
       when(dataClaimsRestClient.getSubmission(submissionId))
           .thenThrow(new RuntimeException("Something wrong"));
       assertThat(
               mockMvc.perform(
                   get("/submission/{submissionId}/status", submissionId)
-                      .with(oidcLogin().oidcUser(OIDC_USER))))
+                      .with(oidcLogin().oidcUser(USER))))
           .hasStatus(404);
+    }
+
+    @ParameterizedTest
+    @EnumSource(value = SubmissionStatus.class)
+    void shouldReturn403WhenOfficeCodeNotMatching(SubmissionStatus status) {
+      UUID submissionId = UUID.fromString("5933fc67-bac7-4f48-81ed-61c8c463f054");
+      SubmissionResponse response =
+          SubmissionResponse.builder()
+              .submissionId(submissionId)
+              .status(status)
+              .officeAccountNumber("54321")
+              .build();
+      when(dataClaimsRestClient.getSubmission(submissionId)).thenReturn(Mono.just(response));
+      when(oidcAttributeUtils.getUserOffices(USER)).thenReturn(List.of(OFFICE_CODE));
+      assertThat(
+              mockMvc.perform(
+                  get("/submission/{submissionId}/status", submissionId)
+                      .with(oidcLogin().oidcUser(USER))))
+          .hasStatus(403);
     }
   }
 }
