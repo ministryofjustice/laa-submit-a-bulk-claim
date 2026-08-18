@@ -582,6 +582,7 @@ class SubmissionDetailsErrorFieldViewTest extends SubmissionDetailsViewTestBase 
         SubmissionResponse.builder()
             .submissionId(submissionId)
             .status(SubmissionStatus.VALIDATION_FAILED)
+            .officeAccountNumber(OFFICE_CODE)
             .areaOfLaw(areaOfLaw)
             .build();
     when(dataClaimsRestClient.getSubmission(submissionId))

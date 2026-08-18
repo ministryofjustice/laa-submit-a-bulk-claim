@@ -1,5 +1,6 @@
 package uk.gov.justice.laa.bulkclaim.dto.submission.claim;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.UUID;
 import lombok.Builder;
@@ -23,4 +24,6 @@ public record SubmissionClaimRow(
     String feeType,
     String feeCode,
     SubmissionClaimRowCostsDetails costsDetails,
-    Boolean escapeCase) {}
+    Boolean escapeCase,
+    BigDecimal calculatedValue,
+    BigDecimal updatedCalculatedValue) {}

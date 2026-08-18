@@ -17,11 +17,14 @@ import org.springframework.web.bind.annotation.SessionAttributes;
 import org.springframework.web.util.UriComponentsBuilder;
 import uk.gov.justice.laa.bulkclaim.builder.SubmissionMessagesBuilder;
 import uk.gov.justice.laa.bulkclaim.client.DataClaimsRestClient;
+import uk.gov.justice.laa.bulkclaim.config.FeatureFlagsConfig;
 import uk.gov.justice.laa.bulkclaim.constants.ViewSubmissionNavigationTab;
 import uk.gov.justice.laa.bulkclaim.dto.submission.messages.MessagesSummary;
 import uk.gov.justice.laa.bulkclaim.exception.SubmitBulkClaimException;
 import uk.gov.justice.laa.bulkclaim.mapper.ClaimFeeCalculationBreakdownMapper;
 import uk.gov.justice.laa.bulkclaim.mapper.ClaimSummaryMapper;
+import uk.gov.justice.laa.bulkclaim.service.ClaimService;
+import uk.gov.justice.laa.bulkclaim.viewmodels.claimdetails.ClaimDetailPageData;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.ClaimResponse;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionResponse;
 
@@ -35,9 +38,11 @@ public final class ClaimDetailController {
   private final ClaimSummaryMapper claimSummaryMapper;
   private final ClaimFeeCalculationBreakdownMapper claimFeeCalculationBreakdownMapper;
   private final SubmissionMessagesBuilder submissionMessagesBuilder;
+  private final FeatureFlagsConfig featureFlagsConfig;
+  private final ClaimService claimService;
 
   @GetMapping("/submission/claim/{claimReference}")
-  public String getClaimDetail(
+  public String getClaimDetailRedirect(
       Model model,
       @PathVariable("claimReference") UUID claimReference,
       @RequestParam(value = "page", defaultValue = "0") final int page,
@@ -46,8 +51,12 @@ public final class ClaimDetailController {
           final ViewSubmissionNavigationTab navigationTab) {
 
     model.addAttribute(CLAIM_ID, claimReference);
+    String path =
+        Boolean.TRUE.equals(featureFlagsConfig.getIsAlternativeClaimViewEnabled())
+            ? "/view-claim-detail"
+            : "/view-claim-detail-old";
     String uri =
-        UriComponentsBuilder.fromPath("/view-claim-detail")
+        UriComponentsBuilder.fromPath(path)
             .queryParam("page", page)
             .queryParam("messagesPage", messagesPage)
             .queryParam("navTab", navigationTab.toString())
@@ -56,8 +65,8 @@ public final class ClaimDetailController {
     return "redirect:" + uri;
   }
 
-  @GetMapping("/view-claim-detail")
-  public String getClaimDetail(
+  @GetMapping("/view-claim-detail-old")
+  public String getClaimDetailOld(
       Model model,
       @ModelAttribute(SUBMISSION_ID) final UUID submissionId,
       @ModelAttribute(CLAIM_ID) final UUID claimId,
@@ -100,6 +109,40 @@ public final class ClaimDetailController {
         dataClaimsRestClient.getSubmission(submissionId).block();
     String areaOfLaw = submissionResponse.getAreaOfLaw().getValue();
     model.addAttribute("claimSummary", claimSummaryMapper.toClaimSummary(claimResponse, areaOfLaw));
+
+    final MessagesSummary messagesSummary =
+        submissionMessagesBuilder.buildAllWarnings(submissionId, claimId);
+    model.addAttribute("claimMessages", messagesSummary);
+
+    return "pages/view-claim-detail-old";
+  }
+
+  @GetMapping("/view-claim-detail")
+  public String getClaimDetail(
+      Model model,
+      @ModelAttribute(SUBMISSION_ID) final UUID submissionId,
+      @ModelAttribute(CLAIM_ID) final UUID claimId,
+      @RequestParam(value = "page", defaultValue = "0") final int page,
+      @RequestParam(value = "navTab", required = false, defaultValue = "CLAIM_DETAILS")
+          final ViewSubmissionNavigationTab navigationTab) {
+
+    model.addAttribute("page", page);
+    model.addAttribute("navigationTab", navigationTab.toString());
+    model.addAttribute(
+        "viewSubmissionBackLink",
+        UriComponentsBuilder.fromPath("/submission/{submissionId}")
+            .queryParam("page", page)
+            .queryParam("navTab", navigationTab.toString())
+            .buildAndExpand(submissionId)
+            .toUriString());
+
+    final ClaimDetailPageData pageData = claimService.getClaimDetailPageData(submissionId, claimId);
+    model.addAttribute("areaOfLaw", pageData.areaOfLaw().getValue());
+    model.addAttribute("showCurrentCalculated", pageData.showCurrentCalculated());
+    model.addAttribute("claimDetailView", pageData.claimDetailView());
+    model.addAttribute("banner", pageData.banner());
+
+    model.addAttribute("isAssessedColumnEnabled", featureFlagsConfig.getIsAssessedColumnEnabled());
 
     final MessagesSummary messagesSummary =
         submissionMessagesBuilder.buildAllWarnings(submissionId, claimId);

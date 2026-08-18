@@ -1,15 +1,17 @@
 package uk.gov.justice.laa.bulkclaim.view;
 
+import static org.mockito.Mockito.when;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import org.junit.jupiter.api.BeforeEach;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import uk.gov.justice.laa.bulkclaim.builder.SubmissionClaimDetailsBuilder;
 import uk.gov.justice.laa.bulkclaim.builder.SubmissionMatterStartsDetailsBuilder;
 import uk.gov.justice.laa.bulkclaim.builder.SubmissionMessagesBuilder;
 import uk.gov.justice.laa.bulkclaim.builder.SubmissionSummaryBuilder;
-import uk.gov.justice.laa.bulkclaim.client.DataClaimsRestClient;
 import uk.gov.justice.laa.bulkclaim.constants.ViewSubmissionNavigationTab;
 import uk.gov.justice.laa.bulkclaim.controller.SubmissionDetailController;
 import uk.gov.justice.laa.bulkclaim.dto.PaginationLinks;
@@ -20,17 +22,22 @@ import uk.gov.justice.laa.dstew.payments.claimsdata.model.Page;
 @WebMvcTest(SubmissionDetailController.class)
 public abstract class SubmissionDetailsViewTestBase extends ViewTestBase {
 
-  protected static final int PAGE_SIZE = 10;
+  protected static final int PAGE_SIZE = 50;
+  protected static final String OFFICE_CODE = "123456";
 
   @MockitoBean protected SubmissionSummaryBuilder submissionSummaryBuilder;
   @MockitoBean protected SubmissionClaimDetailsBuilder submissionClaimDetailsBuilder;
   @MockitoBean protected SubmissionMessagesBuilder submissionMessagesBuilder;
   @MockitoBean protected SubmissionMatterStartsDetailsBuilder submissionMatterStartsDetailsBuilder;
-  @MockitoBean protected DataClaimsRestClient dataClaimsRestClient;
   @MockitoBean protected PaginationLinksBuilder paginationLinksBuilder;
 
   protected SubmissionDetailsViewTestBase() {
     this.mapping = String.format("/view-submission-detail?submissionId=%s", submissionId);
+  }
+
+  @BeforeEach
+  void beforeEach() {
+    when(oidcAttributeUtils.getUserOffices(USER)).thenReturn(List.of(OFFICE_CODE));
   }
 
   protected static Page pagination(int currentPage, int totalPages) {

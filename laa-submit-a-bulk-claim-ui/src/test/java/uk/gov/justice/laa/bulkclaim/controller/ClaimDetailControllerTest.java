@@ -21,16 +21,24 @@ import org.springframework.context.annotation.Import;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.assertj.MockMvcTester;
 import reactor.core.publisher.Mono;
+import uk.gov.justice.laa.bulkclaim.builder.ClaimStatusBannerBuilder;
+import uk.gov.justice.laa.bulkclaim.builder.LatestAssessmentResolver;
 import uk.gov.justice.laa.bulkclaim.builder.SubmissionMessagesBuilder;
-import uk.gov.justice.laa.bulkclaim.client.DataClaimsRestClient;
+import uk.gov.justice.laa.bulkclaim.client.DataClaimsRestClientV2;
 import uk.gov.justice.laa.bulkclaim.dto.submission.claim.ClaimFeeCalculationBreakdown;
 import uk.gov.justice.laa.bulkclaim.dto.submission.claim.ClaimSummary;
+import uk.gov.justice.laa.bulkclaim.dto.submission.claim.viewmodels.ClaimFieldRow;
+import uk.gov.justice.laa.bulkclaim.dto.submission.claim.viewmodels.CrimeLowerClaimDetails;
 import uk.gov.justice.laa.bulkclaim.dto.submission.messages.MessageRow;
 import uk.gov.justice.laa.bulkclaim.dto.submission.messages.MessagesSummary;
 import uk.gov.justice.laa.bulkclaim.helper.TestObjectCreator;
 import uk.gov.justice.laa.bulkclaim.mapper.ClaimFeeCalculationBreakdownMapper;
 import uk.gov.justice.laa.bulkclaim.mapper.ClaimSummaryMapper;
+import uk.gov.justice.laa.bulkclaim.service.ClaimService;
 import uk.gov.justice.laa.bulkclaim.util.ThymeleafHrefUtils;
+import uk.gov.justice.laa.bulkclaim.viewmodels.claimdetails.ClaimDetailPageData;
+import uk.gov.justice.laa.bulkclaim.viewmodels.claimdetails.ClaimDetailViewFactory;
+import uk.gov.justice.laa.bulkclaim.viewmodels.claimdetails.CrimeClaimDetailsView;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.AreaOfLaw;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.ClaimResponse;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionResponse;
@@ -43,10 +51,15 @@ class ClaimDetailControllerTest extends BaseControllerTest {
 
   @Autowired private MockMvcTester mockMvc;
 
-  @MockitoBean private DataClaimsRestClient dataClaimsRestClient;
+  @MockitoBean private DataClaimsRestClientV2 dataClaimsRestClientV2;
+
   @MockitoBean private ClaimSummaryMapper claimSummaryMapper;
   @MockitoBean private ClaimFeeCalculationBreakdownMapper claimFeeCalculationBreakdownMapper;
   @MockitoBean private SubmissionMessagesBuilder submissionMessagesBuilder;
+  @MockitoBean private ClaimService claimService;
+  @MockitoBean private ClaimDetailViewFactory claimDetailViewFactory;
+  @MockitoBean private ClaimStatusBannerBuilder claimStatusBannerBuilder;
+  @MockitoBean private LatestAssessmentResolver latestAssessmentResolver;
 
   @Nested
   @DisplayName("GET: /submission/claim/{claimReference}")
@@ -62,12 +75,12 @@ class ClaimDetailControllerTest extends BaseControllerTest {
                   get("/submission/claim/" + claimId)
                       .with(oidcLogin().oidcUser(ControllerTestHelper.getOidcUser()))))
           .hasStatus3xxRedirection()
-          .hasRedirectedUrl("/view-claim-detail?page=0&messagesPage=0&navTab=CLAIM_DETAILS");
+          .hasRedirectedUrl("/view-claim-detail-old?page=0&messagesPage=0&navTab=CLAIM_DETAILS");
     }
   }
 
   @Nested
-  @DisplayName("GET: /view-claim-detail")
+  @DisplayName("GET: /view-claim-detail-old")
   class GetClaimDetail {
 
     @Test
@@ -97,12 +110,12 @@ class ClaimDetailControllerTest extends BaseControllerTest {
 
       assertThat(
               mockMvc.perform(
-                  get("/view-claim-detail")
+                  get("/view-claim-detail-old")
                       .with(oidcLogin().oidcUser(ControllerTestHelper.getOidcUser()))
                       .sessionAttr(SUBMISSION_ID, submissionId)
                       .sessionAttr(CLAIM_ID, claimId)))
           .hasStatusOk()
-          .hasViewName("pages/view-claim-detail");
+          .hasViewName("pages/view-claim-detail-old");
 
       verify(claimSummaryMapper, times(1))
           .toClaimSummary(claimResponse, AreaOfLaw.LEGAL_HELP.getValue());
@@ -115,7 +128,7 @@ class ClaimDetailControllerTest extends BaseControllerTest {
 
       assertThat(
               mockMvc.perform(
-                  get("/view-claim-detail")
+                  get("/view-claim-detail-old")
                       .with(oidcLogin().oidcUser(ControllerTestHelper.getOidcUser()))
                       .sessionAttr(CLAIM_ID, claimId)))
           .failure()
@@ -129,7 +142,7 @@ class ClaimDetailControllerTest extends BaseControllerTest {
 
       assertThat(
               mockMvc.perform(
-                  get("/view-claim-detail")
+                  get("/view-claim-detail-old")
                       .with(oidcLogin().oidcUser(ControllerTestHelper.getOidcUser()))
                       .sessionAttr(SUBMISSION_ID, submissionId)))
           .failure()
@@ -146,7 +159,7 @@ class ClaimDetailControllerTest extends BaseControllerTest {
 
       assertThat(
               mockMvc.perform(
-                  get("/view-claim-detail")
+                  get("/view-claim-detail-old")
                       .with(oidcLogin().oidcUser(ControllerTestHelper.getOidcUser()))
                       .sessionAttr(SUBMISSION_ID, submissionId)
                       .sessionAttr(CLAIM_ID, claimId)))
@@ -154,6 +167,70 @@ class ClaimDetailControllerTest extends BaseControllerTest {
           .hasMessageEndingWith(
               "Claim 59930faa-3f38-4ee1-b5bd-08dce5a4fdbc does not exist for submission "
                   + "244fcb9f-50ab-4af8-b635-76bd30e0e97d");
+    }
+  }
+
+  @Nested
+  @DisplayName("GET: /view-claim-detail")
+  class GetClaimDetailV2 {
+
+    private final UUID claimId = UUID.fromString("244fcb9f-50ab-4af8-b635-76bd30e0e97d");
+    private final UUID submissionId = UUID.fromString("244fcb9f-50ab-4af8-b635-76bd30e0e97d");
+
+    private void stubCommonDependencies() {
+      CrimeLowerClaimDetails details = new CrimeLowerClaimDetails();
+      ClaimFieldRow emptyField = new ClaimFieldRow(null, null, null);
+      details.setFixedFee(emptyField);
+      details.setProfitCosts(emptyField);
+      details.setDisbursements(emptyField);
+      details.setDisbursementsVat(emptyField);
+      details.setVat(emptyField);
+      details.setTotalVat(emptyField);
+      details.setTotalIncludingVat(emptyField);
+      details.setTravelCosts(emptyField);
+      details.setWaitingCosts(emptyField);
+
+      when(claimService.getClaimDetailPageData(submissionId, claimId))
+          .thenReturn(
+              new ClaimDetailPageData(
+                  AreaOfLaw.CRIME_LOWER, false, new CrimeClaimDetailsView(details), null));
+    }
+
+    @Test
+    @DisplayName("Should return the template provided by claim service")
+    void shouldReturnTemplateFromClaimService() {
+      stubCommonDependencies();
+
+      assertThat(
+              mockMvc.perform(
+                  get("/view-claim-detail")
+                      .with(oidcLogin().oidcUser(ControllerTestHelper.getOidcUser()))
+                      .sessionAttr(SUBMISSION_ID, submissionId)
+                      .sessionAttr(CLAIM_ID, claimId)))
+          .hasStatusOk()
+          .hasViewName("pages/view-claim-detail");
+
+      verify(claimService, times(1)).getClaimDetailPageData(submissionId, claimId);
+    }
+
+    @Test
+    @DisplayName("Should include warnings from the submission messages builder")
+    void shouldIncludeWarningsFromSubmissionMessagesBuilder() {
+      stubCommonDependencies();
+      when(submissionMessagesBuilder.buildAllWarnings(submissionId, claimId))
+          .thenReturn(
+              MessagesSummary.builder()
+                  .messages(singletonList(MessageRow.builder().message("A warning").build()))
+                  .build());
+
+      assertThat(
+              mockMvc.perform(
+                  get("/view-claim-detail")
+                      .with(oidcLogin().oidcUser(ControllerTestHelper.getOidcUser()))
+                      .sessionAttr(SUBMISSION_ID, submissionId)
+                      .sessionAttr(CLAIM_ID, claimId)))
+          .hasStatusOk()
+          .hasViewName("pages/view-claim-detail");
     }
   }
 }

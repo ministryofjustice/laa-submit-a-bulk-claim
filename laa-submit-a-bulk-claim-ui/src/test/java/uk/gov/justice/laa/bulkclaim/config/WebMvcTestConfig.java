@@ -12,6 +12,7 @@ import uk.gov.justice.laa.bulkclaim.util.CurrencyUtil;
 import uk.gov.justice.laa.bulkclaim.util.DateTimeUtil;
 import uk.gov.justice.laa.bulkclaim.util.DateWrapperUtil;
 import uk.gov.justice.laa.bulkclaim.util.ThymeleafHrefUtils;
+import uk.gov.justice.laa.bulkclaim.util.ThymeleafUtils;
 
 @TestConfiguration
 public class WebMvcTestConfig {
@@ -19,22 +20,6 @@ public class WebMvcTestConfig {
   @Bean
   RestClient.Builder restClientBuilder() {
     return RestClient.builder();
-  }
-
-  /**
-   * Creates a CurrencyUtil bean. Ensuring bean is named correctly due to its usage in thymeleaf.
-   */
-  @Bean(name = "currencyUtil")
-  CurrencyUtil currencyUtil() {
-    return new CurrencyUtil();
-  }
-
-  /**
-   * Creates a DateTimeUtil bean. Ensuring bean is named correctly due to its usage in thymeleaf.
-   */
-  @Bean(name = "dateTimeUtil")
-  DateTimeUtil dateTimeUtil() {
-    return new DateTimeUtil();
   }
 
   @Bean
@@ -61,6 +46,21 @@ public class WebMvcTestConfig {
   @Bean
   DateWrapperUtil dateWrapperUtil() {
     return new DateWrapperUtil();
+  }
+
+  @Bean
+  CurrencyUtil currencyUtil() {
+    return new CurrencyUtil();
+  }
+
+  @Bean
+  DateTimeUtil dateTimeUtil() {
+    return new DateTimeUtil();
+  }
+
+  @Bean
+  ThymeleafUtils thymeleafUtils(CurrencyUtil currencyUtil, DateTimeUtil dateTimeUtil) {
+    return new ThymeleafUtils(currencyUtil, dateTimeUtil);
   }
 
   /** This disables the host header handling filter for tests. */

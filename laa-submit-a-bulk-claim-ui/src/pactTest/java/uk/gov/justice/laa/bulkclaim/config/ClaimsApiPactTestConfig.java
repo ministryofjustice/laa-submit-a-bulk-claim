@@ -8,7 +8,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Primary;
 import org.springframework.web.client.RestClient;
 import uk.gov.justice.laa.bulkclaim.metrics.BulkClaimMetricService;
-import uk.gov.justice.laa.bulkclaim.util.CurrencyUtil;
 
 @TestConfiguration
 public class ClaimsApiPactTestConfig {
@@ -16,14 +15,6 @@ public class ClaimsApiPactTestConfig {
   @Bean
   RestClient.Builder restClientBuilder() {
     return RestClient.builder();
-  }
-
-  /**
-   * Creates a CurrencyUtil bean. Ensuring bean is named correctly due to its usage in thymeleaf.
-   */
-  @Bean(name = "currencyUtil")
-  CurrencyUtil currencyUtil() {
-    return new CurrencyUtil();
   }
 
   @Bean

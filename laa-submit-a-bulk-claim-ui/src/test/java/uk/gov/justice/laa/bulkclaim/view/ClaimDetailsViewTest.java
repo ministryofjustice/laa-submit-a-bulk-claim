@@ -34,7 +34,7 @@ import uk.gov.justice.laa.dstew.payments.claimsdata.model.Page;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionResponse;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionStatus;
 
-class SubmissionDetailsClaimFieldViewTest extends SubmissionDetailsViewTestBase {
+class ClaimDetailsViewTest extends SubmissionDetailsViewTestBase {
 
   @Test
   void viewHasSortableClaimHeaders_crime() {
@@ -595,6 +595,7 @@ class SubmissionDetailsClaimFieldViewTest extends SubmissionDetailsViewTestBase 
     SubmissionResponse submissionResponse =
         SubmissionResponse.builder()
             .submissionId(submissionId)
+            .officeAccountNumber(OFFICE_CODE)
             .status(SubmissionStatus.VALIDATION_SUCCEEDED)
             .areaOfLaw(areaOfLaw)
             .build();
@@ -624,6 +625,7 @@ class SubmissionDetailsClaimFieldViewTest extends SubmissionDetailsViewTestBase 
         SubmissionResponse.builder()
             .submissionId(submissionId)
             .status(SubmissionStatus.VALIDATION_SUCCEEDED)
+            .officeAccountNumber(OFFICE_CODE)
             .areaOfLaw(areaOfLaw)
             .build();
     when(dataClaimsRestClient.getSubmission(submissionId))

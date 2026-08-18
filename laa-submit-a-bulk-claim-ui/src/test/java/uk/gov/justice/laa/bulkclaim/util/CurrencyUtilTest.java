@@ -17,7 +17,7 @@ class CurrencyUtilTest {
     // Given
     BigDecimal zero = BigDecimal.ZERO;
     // Then
-    assertThat(currencyUtil.toString(zero)).isEqualTo("£0.00");
+    assertThat(currencyUtil.formatCurrency(zero)).isEqualTo("£0.00");
   }
 
   @Test
@@ -26,7 +26,7 @@ class CurrencyUtilTest {
     // Given
     BigDecimal input = new BigDecimal("0.05");
     // Then
-    assertThat(currencyUtil.toString(input)).isEqualTo("£0.05");
+    assertThat(currencyUtil.formatCurrency(input)).isEqualTo("£0.05");
   }
 
   @Test
@@ -35,7 +35,7 @@ class CurrencyUtilTest {
     // Given
     BigDecimal input = new BigDecimal("1000.50");
     // Then
-    assertThat(currencyUtil.toString(input)).isEqualTo("£1,000.50");
+    assertThat(currencyUtil.formatCurrency(input)).isEqualTo("£1,000.50");
   }
 
   @Test
@@ -44,6 +44,6 @@ class CurrencyUtilTest {
     // Given
     BigDecimal input = new BigDecimal("9876543210.99");
     // Then
-    assertThat(currencyUtil.toString(input)).isEqualTo("£9,876,543,210.99");
+    assertThat(currencyUtil.formatCurrency(input)).isEqualTo("£9,876,543,210.99");
   }
 }

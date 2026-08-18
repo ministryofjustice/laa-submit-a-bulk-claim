@@ -18,7 +18,11 @@ public enum SubmissionViewSortField implements SortField {
   CLIENT_2_SURNAME("client_2_surname"),
   CLIENT_2_FORENAME("client_2_forename"),
   CLIENT_2_UCN("client_2_ucn"),
-  LINE_NUMBER("line_number");
+  LINE_NUMBER("line_number"),
+  CLIENT_NAME("client_forename"),
+  CLIENT_2_NAME("client_2_forename"),
+  STATUS("derived_claim_status"),
+  ;
 
   private final String value;
 

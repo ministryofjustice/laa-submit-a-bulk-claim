@@ -9,22 +9,20 @@ import java.util.Optional;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.SessionAttribute;
 import org.springframework.web.bind.annotation.SessionAttributes;
-import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.springframework.web.util.UriComponentsBuilder;
 import uk.gov.justice.laa.bulkclaim.builder.SubmissionClaimDetailsBuilder;
 import uk.gov.justice.laa.bulkclaim.builder.SubmissionMatterStartsDetailsBuilder;
 import uk.gov.justice.laa.bulkclaim.builder.SubmissionMessagesBuilder;
 import uk.gov.justice.laa.bulkclaim.builder.SubmissionSummaryBuilder;
-import uk.gov.justice.laa.bulkclaim.client.DataClaimsRestClient;
+import uk.gov.justice.laa.bulkclaim.config.FeatureFlagsConfig;
 import uk.gov.justice.laa.bulkclaim.constants.ViewSubmissionNavigationTab;
 import uk.gov.justice.laa.bulkclaim.dto.submission.SubmissionMatterStartsRow;
 import uk.gov.justice.laa.bulkclaim.dto.submission.SubmissionSummary;
@@ -34,19 +32,17 @@ import uk.gov.justice.laa.bulkclaim.dto.submission.messages.MessageSortField;
 import uk.gov.justice.laa.bulkclaim.dto.submission.messages.MessagesSummary;
 import uk.gov.justice.laa.bulkclaim.dto.submission.view.SubmissionViewQuery;
 import uk.gov.justice.laa.bulkclaim.dto.submission.view.SubmissionViewSortField;
-import uk.gov.justice.laa.bulkclaim.exception.SubmitBulkClaimException;
 import uk.gov.justice.laa.bulkclaim.util.PaginationLinksBuilder;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.AreaOfLaw;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.Page;
-import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionBase;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionResponse;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionStatus;
-import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionsResultSet;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.ValidationMessageType;
 
 @Slf4j
 @Controller
 @RequiredArgsConstructor
+@SubmissionControllerAdvice.Enabled
 @SessionAttributes({SUBMISSION_ID})
 public class SubmissionDetailController {
 
@@ -54,52 +50,30 @@ public class SubmissionDetailController {
   private final SubmissionClaimDetailsBuilder submissionClaimDetailsBuilder;
   private final SubmissionMessagesBuilder submissionMessagesBuilder;
   private final SubmissionMatterStartsDetailsBuilder submissionMatterStartsDetailsBuilder;
-  private final DataClaimsRestClient dataClaimsRestClient;
   private final PaginationLinksBuilder paginationLinksBuilder;
+  private final FeatureFlagsConfig featureFlagsConfig;
 
-  @GetMapping("/submission/{submissionReference}")
+  @GetMapping("/submission/{submissionId}")
   public String getSubmissionReference(
-      @PathVariable UUID submissionReference,
-      @SessionAttribute(value = "submissions", required = false) SubmissionsResultSet submissions,
-      @SessionAttribute(value = SUBMISSION_ID, required = false) UUID submissionId,
+      @PathVariable UUID submissionId,
+      @ModelAttribute("submissionResponse") SubmissionResponse submission,
       @RequestParam(value = "page", defaultValue = "0") final int page,
       @RequestParam(value = "messagesPage", defaultValue = "0") final int messagesPage,
       @RequestParam(value = "navTab", required = false, defaultValue = "CLAIM_DETAILS")
           ViewSubmissionNavigationTab navigationTab,
       RedirectAttributes redirectAttributes) {
 
-    // Validate that either submissions or submissionId is available
-    if ((submissions == null || submissions.getContent() == null) && submissionId == null) {
-      throw new ResponseStatusException(HttpStatus.FORBIDDEN, "No submissions found in session");
-    }
-
-    // Try to locate submission by reference in session submissions
-    SubmissionBase submission = null;
-    if (submissions != null && submissions.getContent() != null) {
-      submission =
-          submissions.getContent().stream()
-              .filter(s -> submissionReference.equals(s.getSubmissionId()))
-              .findFirst()
-              .orElse(null);
-    }
-
-    // If not found, check if submissionId in session matches the path variable
-    boolean matchesSessionId = submissionId != null && submissionReference.equals(submissionId);
-    if (submission == null && !matchesSessionId) {
-      throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Submission not found for user");
-    }
-
     // Redirect based on submission status
     if (submission != null && submission.getStatus() == SubmissionStatus.VALIDATION_IN_PROGRESS) {
       redirectAttributes.addFlashAttribute("submission", submission);
-      redirectAttributes.addFlashAttribute(SUBMISSION_ID, submission.getSubmissionId());
+      redirectAttributes.addFlashAttribute(SUBMISSION_ID, submissionId);
       redirectAttributes.addFlashAttribute(BULK_SUBMISSION_ID, submission.getBulkSubmissionId());
       return "redirect:/upload-is-being-checked";
     }
 
     String uri =
         UriComponentsBuilder.fromPath("/view-submission-detail")
-            .queryParam(SUBMISSION_ID, submissionReference)
+            .queryParam(SUBMISSION_ID, submissionId)
             .queryParam("page", page)
             .queryParam("messagesPage", messagesPage)
             .queryParam("navTab", navigationTab.toString())
@@ -113,7 +87,8 @@ public class SubmissionDetailController {
   public String getSubmissionDetail(
       Model model,
       @Valid SubmissionViewQuery submissionViewQuery,
-      @Valid MessageQuery messageQuery) {
+      @Valid MessageQuery messageQuery,
+      @ModelAttribute("submissionResponse") SubmissionResponse submission) {
 
     model.addAttribute("submissionViewQuery", submissionViewQuery);
     model.addAttribute("SubmissionViewSortField", SubmissionViewSortField.class);
@@ -123,31 +98,24 @@ public class SubmissionDetailController {
 
     model.addAttribute("claimDetailsTab", ViewSubmissionNavigationTab.CLAIM_DETAILS);
 
-    final SubmissionResponse submissionResponse =
-        dataClaimsRestClient
-            .getSubmission(submissionViewQuery.getSubmissionId())
-            .blockOptional()
-            .orElseThrow(
-                () ->
-                    new SubmitBulkClaimException(
-                        "Submission %s does not exist"
-                            .formatted(submissionViewQuery.getSubmissionId().toString())));
+    model.addAttribute(
+        "showOldClaimsTable", !featureFlagsConfig.getIsAlternativeClaimViewEnabled());
+    model.addAttribute(
+        "showUpdatedCalculatedValueColumn",
+        featureFlagsConfig.getIsUpdatedCalculatedValueAvailable());
 
-    SubmissionSummary submissionSummary = submissionSummaryBuilder.build(submissionResponse);
-    boolean submissionAccepted =
-        submissionResponse.getStatus() == SubmissionStatus.VALIDATION_SUCCEEDED;
+    SubmissionSummary submissionSummary = submissionSummaryBuilder.build(submission);
+    boolean submissionAccepted = submission.getStatus() == SubmissionStatus.VALIDATION_SUCCEEDED;
 
     if (submissionAccepted) {
       submissionSummary =
           handleAcceptedSubmission(
-              model, submissionSummary, submissionResponse, submissionViewQuery, messageQuery);
-      addCommonSubmissionAttributes(
-          model, submissionSummary, submissionResponse, submissionViewQuery);
+              model, submissionSummary, submission, submissionViewQuery, messageQuery);
+      addCommonSubmissionAttributes(model, submissionSummary, submission, submissionViewQuery);
       return "pages/view-submission-detail-accepted";
     } else {
-      handleInvalidSubmission(model, submissionResponse, messageQuery);
-      addCommonSubmissionAttributes(
-          model, submissionSummary, submissionResponse, submissionViewQuery);
+      handleInvalidSubmission(model, submission, messageQuery);
+      addCommonSubmissionAttributes(model, submissionSummary, submission, submissionViewQuery);
       return "pages/view-submission-detail-invalid";
     }
   }
