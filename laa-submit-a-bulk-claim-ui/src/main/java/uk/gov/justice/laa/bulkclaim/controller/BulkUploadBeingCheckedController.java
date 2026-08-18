@@ -8,26 +8,19 @@ import java.util.Optional;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.oauth2.core.oidc.user.OidcUser;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.Assert;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.SessionAttribute;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
 import org.springframework.web.server.ResponseStatusException;
 import uk.gov.justice.laa.bulkclaim.client.DataClaimsRestClient;
 import uk.gov.justice.laa.bulkclaim.exception.SubmitBulkClaimException;
-import uk.gov.justice.laa.bulkclaim.util.OidcAttributeUtils;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.BulkSubmissionStatus;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.GetBulkSubmissionStatusById200Response;
-import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionResponse;
-import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionStatus;
 
 @Slf4j
 @Controller
@@ -35,7 +28,6 @@ import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionStatus;
 public class BulkUploadBeingCheckedController {
 
   private final DataClaimsRestClient dataClaimsRestClient;
-  private final OidcAttributeUtils oidcAttributeUtils;
 
   private final List<BulkSubmissionStatus> completedStatuses =
       List.of(
@@ -93,36 +85,20 @@ public class BulkUploadBeingCheckedController {
     }
   }
 
-  @GetMapping("/submission/{submissionId}/status")
+  @GetMapping("/upload-is-being-checked/status")
   public ResponseEntity<Boolean> isSubmissionDone(
-      @PathVariable UUID submissionId, @AuthenticationPrincipal OidcUser oidcUser) {
+      @SessionAttribute(name = SUBMISSION_ID, required = false) UUID submissionId,
+      @SessionAttribute(name = BULK_SUBMISSION_ID, required = false) UUID bulkSubmissionId) {
     try {
-      Optional<SubmissionResponse> submissionResponse =
-          dataClaimsRestClient.getSubmission(submissionId).blockOptional();
+      Optional<GetBulkSubmissionStatusById200Response> submissionResponse =
+          dataClaimsRestClient.getBulkSubmissionSummary(bulkSubmissionId).blockOptional();
 
-      // This specifically does not use the SubmissionControllerAdvice. This is due to the advice
-      //  expecting a submission to be found 100% of the time, however this may not be the case
-      //  initially for a submission that has not been created yet so doing the office code check
-      //  here instead so handle a 404 submission.
-      if (submissionResponse.isPresent()) {
-        var offices = oidcAttributeUtils.getUserOffices(oidcUser);
-        if (!offices.contains(submissionResponse.get().getOfficeAccountNumber())) {
-          throw new ResponseStatusException(
-              HttpStatus.FORBIDDEN,
-              "User does not have access to office %s"
-                  .formatted(submissionResponse.get().getOfficeAccountNumber()));
-        }
-      }
-
-      SubmissionStatus submissionStatus =
-          submissionResponse.map(SubmissionResponse::getStatus).orElse(SubmissionStatus.CREATED);
+      BulkSubmissionStatus submissionStatus =
+          submissionResponse
+              .map(GetBulkSubmissionStatusById200Response::getStatus)
+              .orElse(BulkSubmissionStatus.DISCARDED);
       log.debug("Submission status: {}", submissionStatus);
-      return ResponseEntity.ok(
-          List.of(
-                  SubmissionStatus.VALIDATION_SUCCEEDED,
-                  SubmissionStatus.VALIDATION_FAILED,
-                  SubmissionStatus.READY_FOR_SUBMISSION)
-              .contains(submissionStatus));
+      return ResponseEntity.ok(completedStatuses.contains(submissionStatus));
     } catch (WebClientResponseException e) {
       return new ResponseEntity<>(false, e.getStatusCode());
     } catch (ResponseStatusException e) {

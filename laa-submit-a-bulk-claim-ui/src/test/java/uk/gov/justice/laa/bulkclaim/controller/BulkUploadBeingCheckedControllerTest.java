@@ -30,8 +30,6 @@ import uk.gov.justice.laa.bulkclaim.exception.SubmitBulkClaimException;
 import uk.gov.justice.laa.bulkclaim.metrics.BulkClaimMetricService;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.BulkSubmissionStatus;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.GetBulkSubmissionStatusById200Response;
-import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionResponse;
-import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionStatus;
 
 @WebMvcTest(BulkUploadBeingCheckedController.class)
 @AutoConfigureMockMvc
@@ -116,7 +114,7 @@ public class BulkUploadBeingCheckedControllerTest extends BaseControllerTest {
                       .sessionAttr(SUBMISSION_ID, submissionId)
                       .sessionAttr(BULK_SUBMISSION_ID, bulkSubmissionId)))
           .hasStatus3xxRedirection()
-          .hasRedirectedUrl("/submission/5933fc67-bac7-4f48-81ed-61c8c463f054");
+          .hasRedirectedUrl("/submissions/5933fc67-bac7-4f48-81ed-61c8c463f054");
     }
 
     @ParameterizedTest
@@ -194,91 +192,76 @@ public class BulkUploadBeingCheckedControllerTest extends BaseControllerTest {
 
     @ParameterizedTest
     @EnumSource(
-        value = SubmissionStatus.class,
+        value = BulkSubmissionStatus.class,
         names = {"VALIDATION_SUCCEEDED", "VALIDATION_FAILED", "READY_FOR_SUBMISSION"})
-    void shouldReturnTrueWhenSubmissionStatusReady(SubmissionStatus status) {
-      UUID submissionId = UUID.fromString("5933fc67-bac7-4f48-81ed-61c8c463f054");
-      SubmissionResponse response =
-          SubmissionResponse.builder()
-              .submissionId(submissionId)
-              .status(status)
-              .officeAccountNumber(OFFICE_CODE)
-              .build();
-      when(dataClaimsRestClient.getSubmission(submissionId)).thenReturn(Mono.just(response));
-      when(oidcAttributeUtils.getUserOffices(org.mockito.ArgumentMatchers.any()))
-          .thenReturn(List.of(OFFICE_CODE));
+    void shouldReturnTrueWhenSubmissionStatusReady(BulkSubmissionStatus status) {
+      UUID submissionId = UUID.fromString("54dc87f7-aa33-4045-9f08-84b348519281");
+      UUID bulkSubmissionId = UUID.fromString("5933fc67-bac7-4f48-81ed-61c8c463f054");
+      GetBulkSubmissionStatusById200Response response =
+          GetBulkSubmissionStatusById200Response.builder().status(status).build();
+      when(dataClaimsRestClient.getBulkSubmissionSummary(bulkSubmissionId))
+          .thenReturn(Mono.just(response));
       assertThat(
               mockMvc.perform(
-                  get("/submission/{submissionId}/status", submissionId)
-                      .with(oidcLogin().oidcUser(USER))))
+                  get("/upload-is-being-checked/status")
+                      .with(oidcLogin().oidcUser(USER))
+                      .sessionAttr(SUBMISSION_ID, submissionId)
+                      .sessionAttr(BULK_SUBMISSION_ID, bulkSubmissionId)))
           .hasStatusOk()
           .hasBodyTextEqualTo("true");
     }
 
     @ParameterizedTest
     @EnumSource(
-        value = SubmissionStatus.class,
+        value = BulkSubmissionStatus.class,
         names = {"VALIDATION_SUCCEEDED", "VALIDATION_FAILED", "READY_FOR_SUBMISSION"},
         mode = Mode.EXCLUDE)
-    void shouldReturnFalseWhenSubmissionStatusNotReady(SubmissionStatus status) {
-      UUID submissionId = UUID.fromString("5933fc67-bac7-4f48-81ed-61c8c463f054");
-      SubmissionResponse response =
-          SubmissionResponse.builder()
-              .submissionId(submissionId)
-              .status(status)
-              .officeAccountNumber(OFFICE_CODE)
-              .build();
-      when(dataClaimsRestClient.getSubmission(submissionId)).thenReturn(Mono.just(response));
+    void shouldReturnFalseWhenSubmissionStatusNotReady(BulkSubmissionStatus status) {
+      UUID submissionId = UUID.fromString("54dc87f7-aa33-4045-9f08-84b348519281");
+      UUID bulkSubmissionId = UUID.fromString("5933fc67-bac7-4f48-81ed-61c8c463f054");
+      GetBulkSubmissionStatusById200Response response =
+          GetBulkSubmissionStatusById200Response.builder().status(status).build();
+      when(dataClaimsRestClient.getBulkSubmissionSummary(bulkSubmissionId))
+          .thenReturn(Mono.just(response));
       when(oidcAttributeUtils.getUserOffices(USER)).thenReturn(List.of(OFFICE_CODE));
       assertThat(
               mockMvc.perform(
-                  get("/submission/{submissionId}/status", submissionId)
-                      .with(oidcLogin().oidcUser(USER))))
+                  get("/upload-is-being-checked/status")
+                      .with(oidcLogin().oidcUser(USER))
+                      .sessionAttr(SUBMISSION_ID, submissionId)
+                      .sessionAttr(BULK_SUBMISSION_ID, bulkSubmissionId)))
           .hasStatusOk()
           .hasBodyTextEqualTo("false");
     }
 
     @Test
     void shouldReturn404WhenApiReturnsNull() {
-      UUID submissionId = UUID.fromString("5933fc67-bac7-4f48-81ed-61c8c463f054");
+      UUID submissionId = UUID.fromString("54dc87f7-aa33-4045-9f08-84b348519281");
+      UUID bulkSubmissionId = UUID.fromString("5933fc67-bac7-4f48-81ed-61c8c463f054");
       when(dataClaimsRestClient.getSubmission(submissionId))
           .thenThrow(new WebClientResponseException(404, "Not found", null, null, null));
       assertThat(
               mockMvc.perform(
-                  get("/submission/{submissionId}/status", submissionId)
-                      .with(oidcLogin().oidcUser(USER))))
+                  get("/upload-is-being-checked/status")
+                      .with(oidcLogin().oidcUser(USER))
+                      .sessionAttr(SUBMISSION_ID, submissionId)
+                      .sessionAttr(BULK_SUBMISSION_ID, bulkSubmissionId)))
           .hasStatus(404);
     }
 
     @Test
     void shouldReturn404WhenUnknownException() {
-      UUID submissionId = UUID.fromString("5933fc67-bac7-4f48-81ed-61c8c463f054");
+      UUID submissionId = UUID.fromString("54dc87f7-aa33-4045-9f08-84b348519281");
+      UUID bulkSubmissionId = UUID.fromString("5933fc67-bac7-4f48-81ed-61c8c463f054");
       when(dataClaimsRestClient.getSubmission(submissionId))
           .thenThrow(new RuntimeException("Something wrong"));
       assertThat(
               mockMvc.perform(
-                  get("/submission/{submissionId}/status", submissionId)
-                      .with(oidcLogin().oidcUser(USER))))
+                  get("/upload-is-being-checked/status")
+                      .with(oidcLogin().oidcUser(USER))
+                      .sessionAttr(SUBMISSION_ID, submissionId)
+                      .sessionAttr(BULK_SUBMISSION_ID, bulkSubmissionId)))
           .hasStatus(404);
-    }
-
-    @ParameterizedTest
-    @EnumSource(value = SubmissionStatus.class)
-    void shouldReturn403WhenOfficeCodeNotMatching(SubmissionStatus status) {
-      UUID submissionId = UUID.fromString("5933fc67-bac7-4f48-81ed-61c8c463f054");
-      SubmissionResponse response =
-          SubmissionResponse.builder()
-              .submissionId(submissionId)
-              .status(status)
-              .officeAccountNumber("54321")
-              .build();
-      when(dataClaimsRestClient.getSubmission(submissionId)).thenReturn(Mono.just(response));
-      when(oidcAttributeUtils.getUserOffices(USER)).thenReturn(List.of(OFFICE_CODE));
-      assertThat(
-              mockMvc.perform(
-                  get("/submission/{submissionId}/status", submissionId)
-                      .with(oidcLogin().oidcUser(USER))))
-          .hasStatus(403);
     }
   }
 }

@@ -3,13 +3,12 @@ document.addEventListener('DOMContentLoaded', () => {
       `[data-module="page-refresh-on-submission-status"]`);
 
   if (refreshElement) {
-    const submissionId = refreshElement.getAttribute('data-submission-id');
     // JS is available, so remove the browser-driven meta refresh
     refreshElement.remove();
 
     const checkSubmissionStatus = async () => {
       try {
-        const response = await fetch(`/submission/${submissionId}/status`);
+        const response = await fetch(`/upload-is-being-checked/status`);
 
         if (response.ok) {
           const isDone = await response.json();
