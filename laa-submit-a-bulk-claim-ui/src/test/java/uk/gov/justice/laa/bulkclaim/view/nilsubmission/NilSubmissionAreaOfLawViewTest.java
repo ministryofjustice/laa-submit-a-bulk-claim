@@ -3,13 +3,13 @@ package uk.gov.justice.laa.bulkclaim.view.nilsubmission;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.oidcLogin;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static uk.gov.justice.laa.bulkclaim.controller.ControllerTestHelper.OIDC_USER;
 
 import org.jsoup.Jsoup;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
-import uk.gov.justice.laa.bulkclaim.controller.ControllerTestHelper;
 import uk.gov.justice.laa.bulkclaim.controller.nilsubmission.NilSubmissionAreaOfLawController;
 import uk.gov.justice.laa.bulkclaim.dto.submission.NilSubmissionForm;
 import uk.gov.justice.laa.bulkclaim.view.ViewTestBase;
@@ -63,7 +63,7 @@ class NilSubmissionAreaOfLawViewTest extends ViewTestBase {
             .perform(
                 post(mapping)
                     .with(csrf())
-                    .with(oidcLogin().oidcUser(ControllerTestHelper.getOidcUser()))
+                    .with(oidcLogin().oidcUser(OIDC_USER))
                     .params(params)
                     .session(session))
             .andReturn()
@@ -83,10 +83,7 @@ class NilSubmissionAreaOfLawViewTest extends ViewTestBase {
     var doc =
         mockMvc
             .perform(
-                post(mapping)
-                    .with(csrf())
-                    .with(oidcLogin().oidcUser(ControllerTestHelper.getOidcUser()))
-                    .session(session))
+                post(mapping).with(csrf()).with(oidcLogin().oidcUser(OIDC_USER)).session(session))
             .andReturn()
             .getResponse();
 

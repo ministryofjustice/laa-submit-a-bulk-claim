@@ -6,6 +6,7 @@ import static org.mockito.Mockito.when;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.oidcLogin;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static uk.gov.justice.laa.bulkclaim.controller.ControllerTestHelper.OIDC_USER;
 import static uk.gov.justice.laa.dstew.payments.claimsdata.model.AreaOfLaw.MEDIATION;
 
 import java.util.LinkedHashMap;
@@ -16,7 +17,6 @@ import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
-import uk.gov.justice.laa.bulkclaim.controller.ControllerTestHelper;
 import uk.gov.justice.laa.bulkclaim.controller.nilsubmission.NilSubmissionPeriodController;
 import uk.gov.justice.laa.bulkclaim.dto.submission.NilSubmissionForm;
 import uk.gov.justice.laa.bulkclaim.helper.SubmissionsResultSetTestHelper;
@@ -134,7 +134,7 @@ class NilSubmissionPeriodViewTest extends ViewTestBase {
             .perform(
                 post(mapping)
                     .with(csrf())
-                    .with(oidcLogin().oidcUser(ControllerTestHelper.getOidcUser()))
+                    .with(oidcLogin().oidcUser(OIDC_USER))
                     .params(params)
                     .session(session))
             .andReturn()
@@ -161,10 +161,7 @@ class NilSubmissionPeriodViewTest extends ViewTestBase {
     var doc =
         mockMvc
             .perform(
-                post(mapping)
-                    .with(csrf())
-                    .with(oidcLogin().oidcUser(ControllerTestHelper.getOidcUser()))
-                    .session(session))
+                post(mapping).with(csrf()).with(oidcLogin().oidcUser(OIDC_USER)).session(session))
             .andReturn()
             .getResponse();
 

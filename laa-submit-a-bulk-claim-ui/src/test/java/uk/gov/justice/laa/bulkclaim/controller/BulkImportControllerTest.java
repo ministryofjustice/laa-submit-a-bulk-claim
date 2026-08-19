@@ -9,7 +9,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
-import static uk.gov.justice.laa.bulkclaim.controller.ControllerTestHelper.getOidcUser;
+import static uk.gov.justice.laa.bulkclaim.controller.ControllerTestHelper.OIDC_USER;
 
 import java.util.Collections;
 import java.util.List;
@@ -66,7 +66,7 @@ class BulkImportControllerTest {
     @DisplayName("Should return expected view")
     void shouldReturnExpectedView() throws Exception {
       mockMvc
-          .perform(get("/upload").with(oidcLogin().oidcUser(getOidcUser())))
+          .perform(get("/upload").with(oidcLogin().oidcUser(OIDC_USER)))
           .andExpect(status().isOk())
           .andExpect(view().name("pages/upload"));
     }
@@ -96,7 +96,7 @@ class BulkImportControllerTest {
               post("/upload")
                   .sessionAttr("fileUploadForm", input)
                   .with(csrf())
-                  .with(oidcLogin().oidcUser(getOidcUser())))
+                  .with(oidcLogin().oidcUser(OIDC_USER)))
           .andExpect(status().isOk())
           .andExpect(view().name("pages/upload"));
     }
@@ -122,7 +122,7 @@ class BulkImportControllerTest {
               post("/upload")
                   .sessionAttr("fileUploadForm", input)
                   .with(csrf())
-                  .with(oidcLogin().oidcUser(getOidcUser())))
+                  .with(oidcLogin().oidcUser(OIDC_USER)))
           .andExpect(status().isOk())
           .andExpect(view().name("pages/upload"));
     }
@@ -142,7 +142,7 @@ class BulkImportControllerTest {
               post("/upload")
                   .sessionAttr("fileUploadForm", input)
                   .with(csrf())
-                  .with(oidcLogin().oidcUser(getOidcUser())))
+                  .with(oidcLogin().oidcUser(OIDC_USER)))
           .andExpect(status().isOk())
           .andExpect(view().name("pages/upload"));
     }
@@ -167,7 +167,7 @@ class BulkImportControllerTest {
               post("/upload")
                   .flashAttr("fileUploadForm", input)
                   .with(csrf())
-                  .with(oidcLogin().oidcUser(getOidcUser())))
+                  .with(oidcLogin().oidcUser(OIDC_USER)))
           .andExpect(status().is3xxRedirection())
           .andExpect(view().name("redirect:/upload-is-being-checked"));
     }
@@ -194,13 +194,13 @@ class BulkImportControllerTest {
                   post("/upload")
                       .flashAttr("fileUploadForm", input)
                       .with(csrf())
-                      .with(oidcLogin().oidcUser(getOidcUser())))
+                      .with(oidcLogin().oidcUser(OIDC_USER)))
               .andExpect(status().isOk())
               .andExpect(view().name("pages/upload"))
               .andReturn();
 
       verify(dataClaimsRestClient)
-          .upload(eq(input.getFile()), eq(getOidcUser().getEmail()), eq(Collections.emptyList()));
+          .upload(eq(input.getFile()), eq(OIDC_USER.getEmail()), eq(Collections.emptyList()));
       verify(bulkClaimMetricService)
           .recordFailedFileUploadSize(eq(input.getFile().getSize()), eq(errorDetails));
       assertTrue(result.getResponse().getContentAsString().contains(errorDetails));
@@ -228,13 +228,13 @@ class BulkImportControllerTest {
                   post("/upload")
                       .flashAttr("fileUploadForm", input)
                       .with(csrf())
-                      .with(oidcLogin().oidcUser(getOidcUser())))
+                      .with(oidcLogin().oidcUser(OIDC_USER)))
               .andExpect(status().isOk())
               .andExpect(view().name("pages/upload"))
               .andReturn();
 
       verify(dataClaimsRestClient)
-          .upload(eq(input.getFile()), eq(getOidcUser().getEmail()), eq(Collections.emptyList()));
+          .upload(eq(input.getFile()), eq(OIDC_USER.getEmail()), eq(Collections.emptyList()));
       verify(bulkClaimMetricService)
           .recordFailedFileUploadSize(eq(input.getFile().getSize()), eq(defaultErrorMessage));
       assertTrue(result.getResponse().getContentAsString().contains(defaultErrorMessage));
@@ -263,7 +263,7 @@ class BulkImportControllerTest {
                   post("/upload")
                       .flashAttr("fileUploadForm", input)
                       .with(csrf())
-                      .with(oidcLogin().oidcUser(getOidcUser())))
+                      .with(oidcLogin().oidcUser(OIDC_USER)))
               .andExpect(status().isOk())
               .andExpect(view().name("pages/upload"))
               .andReturn();

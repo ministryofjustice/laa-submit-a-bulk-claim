@@ -7,6 +7,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.oidcLogin;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static uk.gov.justice.laa.bulkclaim.controller.ControllerTestHelper.OIDC_USER;
 import static uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionStatus.VALIDATION_IN_PROGRESS;
 import static uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionStatus.VALIDATION_SUCCEEDED;
 
@@ -26,11 +27,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
 import org.springframework.context.annotation.Import;
-import org.springframework.security.oauth2.core.oidc.user.OidcUser;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.assertj.MockMvcTester;
 import org.springframework.test.web.servlet.assertj.MvcTestResult;
-import reactor.core.publisher.Mono;
 import uk.gov.justice.laa.bulkclaim.builder.SubmissionClaimDetailsBuilder;
 import uk.gov.justice.laa.bulkclaim.builder.SubmissionMatterStartsDetailsBuilder;
 import uk.gov.justice.laa.bulkclaim.builder.SubmissionMessagesBuilder;
@@ -42,6 +41,7 @@ import uk.gov.justice.laa.bulkclaim.dto.submission.claim.SubmissionClaimRowCosts
 import uk.gov.justice.laa.bulkclaim.dto.submission.claim.SubmissionClaimsDetails;
 import uk.gov.justice.laa.bulkclaim.dto.submission.messages.MessagesSource;
 import uk.gov.justice.laa.bulkclaim.dto.submission.messages.MessagesSummary;
+import uk.gov.justice.laa.bulkclaim.service.SubmissionService;
 import uk.gov.justice.laa.bulkclaim.util.CurrencyUtil;
 import uk.gov.justice.laa.bulkclaim.util.DateTimeUtil;
 import uk.gov.justice.laa.bulkclaim.util.PaginationLinksBuilder;
@@ -68,7 +68,6 @@ class SubmissionDetailControllerTest extends BaseControllerTest {
 
   private static final UUID SUBMISSION_ID = UUID.fromString("bceac49c-d756-4e05-8e28-3334b84b6fe8");
   private static final String OFFICE_CODE = "123456";
-  private static final OidcUser USER = ControllerTestHelper.getOidcUser();
 
   @Autowired private MockMvcTester mockMvc;
 
@@ -77,32 +76,11 @@ class SubmissionDetailControllerTest extends BaseControllerTest {
   @MockitoBean private SubmissionMatterStartsDetailsBuilder submissionMatterStartsDetailsBuilder;
   @MockitoBean private SubmissionMessagesBuilder submissionMessagesBuilder;
   @MockitoBean private PaginationUtil paginationUtil;
+  @MockitoBean private SubmissionService submissionService;
 
   @Nested
   @DisplayName("GET: /submission/{submissionId}")
   class GetSubmission {
-
-    @Test
-    @DisplayName("Should store submission and redirect to detail view when submission exists")
-    void shouldStoreSubmissionsAndRedirectToDetail() {
-      var submission =
-          SubmissionResponse.builder()
-              .submissionId(SUBMISSION_ID)
-              .status(VALIDATION_SUCCEEDED)
-              .officeAccountNumber(OFFICE_CODE)
-              .build();
-      when(dataClaimsRestClient.getSubmission(SUBMISSION_ID)).thenReturn(Mono.just(submission));
-      when(oidcAttributeUtils.getUserOffices(USER)).thenReturn(List.of(OFFICE_CODE));
-
-      // When / Then
-      assertThat(
-              mockMvc.perform(get("/submission/" + SUBMISSION_ID).with(oidcLogin().oidcUser(USER))))
-          .hasStatus3xxRedirection()
-          .hasRedirectedUrl(
-              "/view-submission-detail?submissionId="
-                  + SUBMISSION_ID
-                  + "&page=0&messagesPage=0&navTab=CLAIM_DETAILS");
-    }
 
     @Test
     @DisplayName("Should redirect to import in progress when submission validation is running")
@@ -113,36 +91,19 @@ class SubmissionDetailControllerTest extends BaseControllerTest {
               .status(VALIDATION_IN_PROGRESS)
               .officeAccountNumber(OFFICE_CODE)
               .build();
-      when(dataClaimsRestClient.getSubmission(SUBMISSION_ID)).thenReturn(Mono.just(submission));
-      when(oidcAttributeUtils.getUserOffices(USER)).thenReturn(List.of(OFFICE_CODE));
+      when(submissionService.getSubmission(SUBMISSION_ID, OIDC_USER)).thenReturn(submission);
+      when(oidcAttributeUtils.getUserOffices(OIDC_USER)).thenReturn(List.of(OFFICE_CODE));
 
       MvcTestResult result =
-          mockMvc.perform(get("/submission/" + SUBMISSION_ID).with(oidcLogin().oidcUser(USER)));
+          mockMvc.perform(
+              get("/submission/" + SUBMISSION_ID).with(oidcLogin().oidcUser(OIDC_USER)));
 
       assertThat(result).hasStatus3xxRedirection().hasRedirectedUrl("/upload-is-being-checked");
-    }
-
-    @Test
-    @DisplayName("Should return not found when submission is not for allowed office code")
-    void shouldReturnNotFoundWhenOfficeCodeIsForbidden() {
-      var submission =
-          SubmissionResponse.builder()
-              .submissionId(SUBMISSION_ID)
-              .status(VALIDATION_IN_PROGRESS)
-              .officeAccountNumber(OFFICE_CODE)
-              .build();
-      when(dataClaimsRestClient.getSubmission(SUBMISSION_ID)).thenReturn(Mono.just(submission));
-      when(oidcAttributeUtils.getUserOffices(USER)).thenReturn(List.of("Different office code"));
-
-      assertThat(
-              mockMvc.perform(get("/submission/" + SUBMISSION_ID).with(oidcLogin().oidcUser(USER))))
-          .failure()
-          .hasMessage("404 NOT_FOUND \"User 1234567890 does not have access to office 123456\"");
     }
   }
 
   @Nested
-  @DisplayName("GET: /view-submission-detail")
+  @DisplayName("GET: /submissions/{submissionId}")
   class GetSubmissionDetail {
 
     @Test
@@ -154,9 +115,9 @@ class SubmissionDetailControllerTest extends BaseControllerTest {
               .status(VALIDATION_SUCCEEDED)
               .officeAccountNumber(OFFICE_CODE)
               .build();
-      when(dataClaimsRestClient.getSubmission(SUBMISSION_ID))
-          .thenReturn(Mono.just(submissionResponse));
-      when(oidcAttributeUtils.getUserOffices(USER)).thenReturn(List.of(OFFICE_CODE));
+      when(submissionService.getSubmission(SUBMISSION_ID, OIDC_USER))
+          .thenReturn(submissionResponse);
+      when(oidcAttributeUtils.getUserOffices(OIDC_USER)).thenReturn(List.of(OFFICE_CODE));
       when(submissionSummaryBuilder.build(any()))
           .thenReturn(
               new SubmissionSummary(
@@ -178,8 +139,8 @@ class SubmissionDetailControllerTest extends BaseControllerTest {
 
       assertThat(
               mockMvc.perform(
-                  get("/view-submission-detail?sort=line_number,desc&submissionId=" + SUBMISSION_ID)
-                      .with(oidcLogin().oidcUser(USER))
+                  get("/submissions/%s?sort=line_number,desc".formatted(SUBMISSION_ID))
+                      .with(oidcLogin().oidcUser(OIDC_USER))
                       .sessionAttr("submissionId", SUBMISSION_ID)))
           .hasStatusOk()
           .hasViewName("pages/view-submission-detail-accepted");
@@ -199,9 +160,9 @@ class SubmissionDetailControllerTest extends BaseControllerTest {
               .status(SubmissionStatus.VALIDATION_FAILED)
               .officeAccountNumber(OFFICE_CODE)
               .build();
-      when(dataClaimsRestClient.getSubmission(SUBMISSION_ID))
-          .thenReturn(Mono.just(submissionResponse));
-      when(oidcAttributeUtils.getUserOffices(USER)).thenReturn(List.of(OFFICE_CODE));
+      when(submissionService.getSubmission(SUBMISSION_ID, OIDC_USER))
+          .thenReturn(submissionResponse);
+      when(oidcAttributeUtils.getUserOffices(OIDC_USER)).thenReturn(List.of(OFFICE_CODE));
       when(submissionSummaryBuilder.build(any()))
           .thenReturn(
               new SubmissionSummary(
@@ -220,9 +181,8 @@ class SubmissionDetailControllerTest extends BaseControllerTest {
       // When / Then
       assertThat(
               mockMvc.perform(
-                  get("/view-submission-detail?sort=line_number,desc&navTab=CLAIM_DETAILS&submissionId="
-                          + SUBMISSION_ID)
-                      .with(oidcLogin().oidcUser(USER))
+                  get("/submissions/%s?sort=line_number,desc".formatted(SUBMISSION_ID))
+                      .with(oidcLogin().oidcUser(OIDC_USER))
                       .sessionAttr("submissionId", SUBMISSION_ID)))
           .hasStatusOk()
           .hasViewName("pages/view-submission-detail-invalid");
@@ -235,15 +195,14 @@ class SubmissionDetailControllerTest extends BaseControllerTest {
     @DisplayName("Should return expected result with matter starts")
     void shouldReturnExpectedResultWithMatterStarts() {
       var pagination = Page.builder().totalPages(1).totalElements(0).number(0).size(10).build();
-      when(dataClaimsRestClient.getSubmission(SUBMISSION_ID))
-          .thenReturn(
-              Mono.just(
-                  SubmissionResponse.builder()
-                      .status(VALIDATION_SUCCEEDED)
-                      .officeAccountNumber(OFFICE_CODE)
-                      .areaOfLaw(AreaOfLaw.LEGAL_HELP)
-                      .build()));
-      when(oidcAttributeUtils.getUserOffices(USER)).thenReturn(List.of(OFFICE_CODE));
+      var submission =
+          SubmissionResponse.builder()
+              .status(VALIDATION_SUCCEEDED)
+              .officeAccountNumber(OFFICE_CODE)
+              .areaOfLaw(AreaOfLaw.LEGAL_HELP)
+              .build();
+      when(submissionService.getSubmission(SUBMISSION_ID, OIDC_USER)).thenReturn(submission);
+      when(oidcAttributeUtils.getUserOffices(OIDC_USER)).thenReturn(List.of(OFFICE_CODE));
       when(submissionSummaryBuilder.build(any()))
           .thenReturn(
               new SubmissionSummary(
@@ -266,9 +225,9 @@ class SubmissionDetailControllerTest extends BaseControllerTest {
 
       assertThat(
               mockMvc.perform(
-                  get("/view-submission-detail?sort=line_number,desc&navTab=MATTER_STARTS&submissionId="
-                          + SUBMISSION_ID)
-                      .with(oidcLogin().oidcUser(USER))
+                  get("/submissions/%s?sort=line_number,desc&navTab=MATTER_STARTS"
+                          .formatted(SUBMISSION_ID))
+                      .with(oidcLogin().oidcUser(OIDC_USER))
                       .sessionAttr("submissionId", SUBMISSION_ID)))
           .hasStatusOk()
           .hasViewName("pages/view-submission-detail-accepted");
@@ -288,9 +247,9 @@ class SubmissionDetailControllerTest extends BaseControllerTest {
               .officeAccountNumber(OFFICE_CODE)
               .areaOfLaw(AreaOfLaw.CRIME_LOWER)
               .build();
-      when(dataClaimsRestClient.getSubmission(SUBMISSION_ID))
-          .thenReturn(Mono.just(submissionResponse));
-      when(oidcAttributeUtils.getUserOffices(USER)).thenReturn(List.of(OFFICE_CODE));
+      when(submissionService.getSubmission(SUBMISSION_ID, OIDC_USER))
+          .thenReturn(submissionResponse);
+      when(oidcAttributeUtils.getUserOffices(OIDC_USER)).thenReturn(List.of(OFFICE_CODE));
       when(submissionSummaryBuilder.build(any()))
           .thenReturn(
               new SubmissionSummary(
@@ -310,8 +269,8 @@ class SubmissionDetailControllerTest extends BaseControllerTest {
 
       MvcTestResult response =
           mockMvc.perform(
-              get("/view-submission-detail?sort=line_number,desc&submissionId=" + SUBMISSION_ID)
-                  .with(oidcLogin().oidcUser(USER))
+              get("/submissions/%s?sort=line_number,desc".formatted(SUBMISSION_ID))
+                  .with(oidcLogin().oidcUser(OIDC_USER))
                   .sessionAttr("submissionId", SUBMISSION_ID));
 
       assertThat(response).hasStatusOk().hasViewName("pages/view-submission-detail-accepted");
@@ -331,9 +290,9 @@ class SubmissionDetailControllerTest extends BaseControllerTest {
               .officeAccountNumber(OFFICE_CODE)
               .areaOfLaw(AreaOfLaw.CRIME_LOWER)
               .build();
-      when(dataClaimsRestClient.getSubmission(SUBMISSION_ID))
-          .thenReturn(Mono.just(submissionResponse));
-      when(oidcAttributeUtils.getUserOffices(USER)).thenReturn(List.of(OFFICE_CODE));
+      when(submissionService.getSubmission(SUBMISSION_ID, OIDC_USER))
+          .thenReturn(submissionResponse);
+      when(oidcAttributeUtils.getUserOffices(OIDC_USER)).thenReturn(List.of(OFFICE_CODE));
       when(submissionSummaryBuilder.build(any()))
           .thenReturn(
               new SubmissionSummary(
@@ -384,8 +343,8 @@ class SubmissionDetailControllerTest extends BaseControllerTest {
 
       assertThat(
               mockMvc.perform(
-                  get("/view-submission-detail?submissionId=" + SUBMISSION_ID)
-                      .with(oidcLogin().oidcUser(USER))
+                  get("/submissions/%s".formatted(SUBMISSION_ID))
+                      .with(oidcLogin().oidcUser(OIDC_USER))
                       .sessionAttr("submissionId", SUBMISSION_ID)))
           .hasStatusOk()
           .body()
@@ -394,21 +353,7 @@ class SubmissionDetailControllerTest extends BaseControllerTest {
     }
 
     @Test
-    @DisplayName("Should throw exception when submission does not exist")
-    void shouldThrowExceptionWhenSubmissionDoesNotExist() {
-      when(dataClaimsRestClient.getSubmission(SUBMISSION_ID)).thenReturn(Mono.empty());
-
-      assertThat(
-              mockMvc.perform(
-                  get("/view-submission-detail?navTab=MATTER_STARTS&submissionId=" + SUBMISSION_ID)
-                      .with(oidcLogin().oidcUser(ControllerTestHelper.getOidcUser()))
-                      .sessionAttr("submissionId", SUBMISSION_ID)))
-          .failure()
-          .hasMessageContaining("Submission bceac49c-d756-4e05-8e28-3334b84b6fe8 does not exist");
-    }
-
-    @Test
-    @DisplayName("Should call view-submission-detail with sort parameter")
+    @DisplayName("Should call submissions with sort parameter")
     void shouldCallWithSortParam() {
       var submissionResponse =
           SubmissionResponse.builder()
@@ -416,9 +361,9 @@ class SubmissionDetailControllerTest extends BaseControllerTest {
               .officeAccountNumber(OFFICE_CODE)
               .build();
 
-      when(dataClaimsRestClient.getSubmission(SUBMISSION_ID))
-          .thenReturn(Mono.just(submissionResponse));
-      when(oidcAttributeUtils.getUserOffices(USER)).thenReturn(List.of(OFFICE_CODE));
+      when(submissionService.getSubmission(SUBMISSION_ID, OIDC_USER))
+          .thenReturn(submissionResponse);
+      when(oidcAttributeUtils.getUserOffices(OIDC_USER)).thenReturn(List.of(OFFICE_CODE));
 
       when(submissionSummaryBuilder.build(eq(submissionResponse)))
           .thenReturn(
@@ -443,8 +388,8 @@ class SubmissionDetailControllerTest extends BaseControllerTest {
       when(submissionMatterStartsDetailsBuilder.build(any()))
           .thenReturn(List.of(new SubmissionMatterStartsRow("Description", 34)));
       mockMvc.perform(
-          get("/view-submission-detail?page=0&sort=line_number,desc&submissionId=" + SUBMISSION_ID)
-              .with(oidcLogin().oidcUser(USER))
+          get("/submissions/%s?page=0&sort=line_number,desc".formatted(SUBMISSION_ID))
+              .with(oidcLogin().oidcUser(OIDC_USER))
               .sessionAttr("submissionId", SUBMISSION_ID));
 
       verify(submissionClaimDetailsBuilder)
@@ -460,9 +405,9 @@ class SubmissionDetailControllerTest extends BaseControllerTest {
               .officeAccountNumber(OFFICE_CODE)
               .build();
 
-      when(dataClaimsRestClient.getSubmission(SUBMISSION_ID))
-          .thenReturn(Mono.just(submissionResponse));
-      when(oidcAttributeUtils.getUserOffices(USER)).thenReturn(List.of(OFFICE_CODE));
+      when(submissionService.getSubmission(SUBMISSION_ID, OIDC_USER))
+          .thenReturn(submissionResponse);
+      when(oidcAttributeUtils.getUserOffices(OIDC_USER)).thenReturn(List.of(OFFICE_CODE));
 
       when(submissionSummaryBuilder.build(eq(submissionResponse)))
           .thenReturn(
@@ -487,8 +432,8 @@ class SubmissionDetailControllerTest extends BaseControllerTest {
       when(submissionMatterStartsDetailsBuilder.build(any()))
           .thenReturn(List.of(new SubmissionMatterStartsRow("Description", 34)));
       mockMvc.perform(
-          get("/view-submission-detail?page=0&submissionId=" + SUBMISSION_ID)
-              .with(oidcLogin().oidcUser(USER))
+          get("/submissions/%s?page=0".formatted(SUBMISSION_ID))
+              .with(oidcLogin().oidcUser(OIDC_USER))
               .sessionAttr("submissionId", SUBMISSION_ID));
 
       verify(submissionClaimDetailsBuilder)

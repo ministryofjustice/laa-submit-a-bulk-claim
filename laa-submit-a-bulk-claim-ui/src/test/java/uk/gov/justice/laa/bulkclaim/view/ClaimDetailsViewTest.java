@@ -5,6 +5,7 @@ import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
+import static uk.gov.justice.laa.bulkclaim.controller.ControllerTestHelper.OIDC_USER;
 import static uk.gov.justice.laa.dstew.payments.claimsdata.model.AreaOfLaw.CRIME_LOWER;
 import static uk.gov.justice.laa.dstew.payments.claimsdata.model.AreaOfLaw.LEGAL_HELP;
 import static uk.gov.justice.laa.dstew.payments.claimsdata.model.AreaOfLaw.MEDIATION;
@@ -21,7 +22,6 @@ import org.jsoup.select.Elements;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
-import reactor.core.publisher.Mono;
 import uk.gov.justice.laa.bulkclaim.constants.ViewSubmissionNavigationTab;
 import uk.gov.justice.laa.bulkclaim.dto.submission.SubmissionSummary;
 import uk.gov.justice.laa.bulkclaim.dto.submission.claim.SubmissionClaimRow;
@@ -581,13 +581,12 @@ class ClaimDetailsViewTest extends SubmissionDetailsViewTestBase {
         headers.get(headerIndex),
         expectedAriaDirection,
         fieldName,
-        "/view-submission-detail?submissionId=%s&navTab=CLAIM_DETAILS&page=0&sort=%s,%s"
+        "/submissions/%s?navTab=CLAIM_DETAILS&page=0&sort=%s,%s"
             .formatted(submissionId, fieldKey, expectedLinkDirection));
   }
 
   private String claimSortLink(String field) {
-    return "/view-submission-detail?submissionId=%s&navTab=CLAIM_DETAILS&page=0&sort=%s,asc"
-        .formatted(submissionId, field);
+    return "/submissions/%s?navTab=CLAIM_DETAILS&page=0&sort=%s,asc".formatted(submissionId, field);
   }
 
   private void mockClaims(AreaOfLaw areaOfLaw) {
@@ -599,8 +598,7 @@ class ClaimDetailsViewTest extends SubmissionDetailsViewTestBase {
             .status(SubmissionStatus.VALIDATION_SUCCEEDED)
             .areaOfLaw(areaOfLaw)
             .build();
-    when(dataClaimsRestClient.getSubmission(submissionId))
-        .thenReturn(Mono.just(submissionResponse));
+    when(submissionService.getSubmission(submissionId, OIDC_USER)).thenReturn(submissionResponse);
     when(submissionSummaryBuilder.build(any()))
         .thenReturn(
             new SubmissionSummary(
@@ -628,8 +626,7 @@ class ClaimDetailsViewTest extends SubmissionDetailsViewTestBase {
             .officeAccountNumber(OFFICE_CODE)
             .areaOfLaw(areaOfLaw)
             .build();
-    when(dataClaimsRestClient.getSubmission(submissionId))
-        .thenReturn(Mono.just(submissionResponse));
+    when(submissionService.getSubmission(submissionId, OIDC_USER)).thenReturn(submissionResponse);
     when(submissionSummaryBuilder.build(any()))
         .thenReturn(
             new SubmissionSummary(

@@ -9,7 +9,7 @@ import static org.mockito.Mockito.isNull;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static uk.gov.justice.laa.bulkclaim.controller.ControllerTestHelper.getOidcUser;
+import static uk.gov.justice.laa.bulkclaim.controller.ControllerTestHelper.OIDC_USER;
 import static uk.gov.justice.laa.dstew.payments.claimsdata.model.AreaOfLaw.CRIME_LOWER;
 
 import jakarta.servlet.http.HttpSession;
@@ -69,7 +69,7 @@ class SearchControllerTest {
     when(model.containsAttribute("submissionSearchQuery")).thenReturn(false);
     when(oidcAttributeUtils.getUserOffices(any())).thenReturn(List.of("12345", "67890"));
 
-    String view = searchController.search(model, sessionStatus, getOidcUser());
+    String view = searchController.search(model, sessionStatus, OIDC_USER);
 
     ArgumentCaptor<SubmissionSearchQuery> queryCaptor =
         ArgumentCaptor.forClass(SubmissionSearchQuery.class);
@@ -88,7 +88,7 @@ class SearchControllerTest {
         SubmissionSearchQuery.builder().submissionPeriod("01/01/2024").build();
     final Model localModel = new ExtendedModelMap();
 
-    String view = searchController.handleSearch(getOidcUser(), query, bindingResult, localModel);
+    String view = searchController.handleSearch(OIDC_USER, query, bindingResult, localModel);
 
     assertEquals("pages/submissions-search", view);
     assertEquals(query, localModel.getAttribute("submissionSearchQuery"));
@@ -107,7 +107,7 @@ class SearchControllerTest {
             .build();
     final Model localModel = new ExtendedModelMap();
 
-    String view = searchController.handleSearch(getOidcUser(), query, bindingResult, localModel);
+    String view = searchController.handleSearch(OIDC_USER, query, bindingResult, localModel);
 
     assertEquals(
         "redirect:/submissions/search/results?page=0&submissionPeriod=JAN-2024&areaOfLaw=CRIME "
@@ -136,8 +136,7 @@ class SearchControllerTest {
             null, null, "JAN-2024", CRIME_LOWER, List.of(), SubmissionOutcomeFilter.SUCCEEDED);
 
     String view =
-        searchController.submissionsSearchResults(
-            query, model, getOidcUser(), sessionStatus, session);
+        searchController.submissionsSearchResults(query, model, OIDC_USER, sessionStatus, session);
 
     verify(sessionStatus).setComplete();
     verify(model).addAttribute(eq("pagination"), any(Page.class));
@@ -157,8 +156,7 @@ class SearchControllerTest {
     var query = SubmissionSearchQuery.builder().build();
 
     String view =
-        searchController.submissionsSearchResults(
-            query, model, getOidcUser(), sessionStatus, session);
+        searchController.submissionsSearchResults(query, model, OIDC_USER, sessionStatus, session);
 
     assertEquals("error", view);
   }
@@ -173,8 +171,7 @@ class SearchControllerTest {
     var query = SubmissionSearchQuery.builder().build();
 
     String view =
-        searchController.submissionsSearchResults(
-            query, model, getOidcUser(), sessionStatus, session);
+        searchController.submissionsSearchResults(query, model, OIDC_USER, sessionStatus, session);
 
     assertEquals("error", view);
   }
@@ -184,7 +181,7 @@ class SearchControllerTest {
   void searchShouldNotOverrideQueryIfAlreadyPresent() {
     when(model.containsAttribute("submissionSearchQuery")).thenReturn(true);
 
-    searchController.search(model, sessionStatus, getOidcUser());
+    searchController.search(model, sessionStatus, OIDC_USER);
 
     verify(model, never())
         .addAttribute(eq("submissionSearchQuery"), any(SubmissionSearchQuery.class));
@@ -197,7 +194,7 @@ class SearchControllerTest {
     mockApiSuccess();
 
     var query = new SubmissionSearchQuery(0, null, "  JAN-2024  ", null, List.of("1"), null);
-    searchController.submissionsSearchResults(query, model, getOidcUser(), sessionStatus, session);
+    searchController.submissionsSearchResults(query, model, OIDC_USER, sessionStatus, session);
 
     verify(claimsRestService)
         .search(eq(List.of("1")), eq("JAN-2024"), any(), any(), anyInt(), anyInt(), any());
@@ -210,7 +207,7 @@ class SearchControllerTest {
     mockApiSuccess();
 
     var query = new SubmissionSearchQuery(0, null, null, null, List.of("1"), null);
-    searchController.submissionsSearchResults(query, model, getOidcUser(), sessionStatus, session);
+    searchController.submissionsSearchResults(query, model, OIDC_USER, sessionStatus, session);
 
     verify(claimsRestService)
         .search(eq(List.of("1")), any(), any(), isNull(), anyInt(), anyInt(), any());
@@ -227,8 +224,7 @@ class SearchControllerTest {
       mockApiSuccess();
 
       var query = new SubmissionSearchQuery(0, null, null, null, List.of("1"), null);
-      searchController.submissionsSearchResults(
-          query, model, getOidcUser(), sessionStatus, session);
+      searchController.submissionsSearchResults(query, model, OIDC_USER, sessionStatus, session);
 
       verify(claimsRestService)
           .search(any(), isNull(), isNull(), isNull(), anyInt(), anyInt(), any());
@@ -241,8 +237,7 @@ class SearchControllerTest {
       mockApiSuccess();
 
       var query = new SubmissionSearchQuery(0, null, "JAN-2024", null, List.of("1"), null);
-      searchController.submissionsSearchResults(
-          query, model, getOidcUser(), sessionStatus, session);
+      searchController.submissionsSearchResults(query, model, OIDC_USER, sessionStatus, session);
 
       verify(claimsRestService)
           .search(any(), eq("JAN-2024"), any(), any(), anyInt(), anyInt(), any());
@@ -255,8 +250,7 @@ class SearchControllerTest {
       mockApiSuccess();
 
       var query = new SubmissionSearchQuery(0, null, null, CRIME_LOWER, List.of("1"), null);
-      searchController.submissionsSearchResults(
-          query, model, getOidcUser(), sessionStatus, session);
+      searchController.submissionsSearchResults(query, model, OIDC_USER, sessionStatus, session);
 
       verify(claimsRestService)
           .search(any(), any(), eq(CRIME_LOWER), any(), anyInt(), anyInt(), any());
@@ -271,8 +265,7 @@ class SearchControllerTest {
       var query =
           new SubmissionSearchQuery(
               0, null, null, null, List.of("1"), SubmissionOutcomeFilter.SUCCEEDED);
-      searchController.submissionsSearchResults(
-          query, model, getOidcUser(), sessionStatus, session);
+      searchController.submissionsSearchResults(query, model, OIDC_USER, sessionStatus, session);
 
       verify(claimsRestService)
           .search(
@@ -299,8 +292,7 @@ class SearchControllerTest {
               CRIME_LOWER,
               List.of("12345"),
               SubmissionOutcomeFilter.SUCCEEDED);
-      searchController.submissionsSearchResults(
-          query, model, getOidcUser(), sessionStatus, session);
+      searchController.submissionsSearchResults(query, model, OIDC_USER, sessionStatus, session);
 
       verify(claimsRestService)
           .search(
@@ -325,8 +317,7 @@ class SearchControllerTest {
       mockApiSuccess();
 
       var query = new SubmissionSearchQuery(0, null, null, null, List.of("12345", "1"), null);
-      searchController.submissionsSearchResults(
-          query, model, getOidcUser(), sessionStatus, session);
+      searchController.submissionsSearchResults(query, model, OIDC_USER, sessionStatus, session);
 
       verify(claimsRestService)
           .search(eq(List.of("12345")), any(), any(), any(), anyInt(), anyInt(), any());
@@ -339,8 +330,7 @@ class SearchControllerTest {
       mockApiSuccess();
 
       var query = new SubmissionSearchQuery(0, null, null, null, List.of("12345"), null);
-      searchController.submissionsSearchResults(
-          query, model, getOidcUser(), sessionStatus, session);
+      searchController.submissionsSearchResults(query, model, OIDC_USER, sessionStatus, session);
 
       verify(claimsRestService)
           .search(eq(List.of("12345")), any(), any(), any(), anyInt(), anyInt(), any());
@@ -353,8 +343,7 @@ class SearchControllerTest {
       mockApiSuccess();
 
       var query = new SubmissionSearchQuery(0, null, null, null, List.of("1"), null);
-      searchController.submissionsSearchResults(
-          query, model, getOidcUser(), sessionStatus, session);
+      searchController.submissionsSearchResults(query, model, OIDC_USER, sessionStatus, session);
 
       verify(claimsRestService)
           .search(eq(Collections.emptyList()), any(), any(), any(), anyInt(), anyInt(), any());

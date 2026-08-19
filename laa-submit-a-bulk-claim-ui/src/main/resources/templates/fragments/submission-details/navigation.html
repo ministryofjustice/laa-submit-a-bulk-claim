@@ -2,7 +2,7 @@
   <div class="govuk-grid-column-full">
     <nav class="moj-sub-navigation" aria-label="Sub navigation">
       <ul class="moj-sub-navigation__list"
-          th:with="baseUrl=@{/view-submission-detail(submissionId=${submissionSummary.submissionReference})}">
+          th:with="baseUrl=@{/submissions/{submissionId}(submissionId=${submissionSummary.submissionReference})}">
         <li class="moj-sub-navigation__item">
           <a class="moj-sub-navigation__link"
              th:with="isCurrent=${navTab == 'CLAIM_DETAILS'},

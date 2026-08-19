@@ -5,6 +5,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 import static uk.gov.justice.laa.bulkclaim.constants.SessionConstants.CLAIM_ID;
 import static uk.gov.justice.laa.bulkclaim.constants.SessionConstants.SUBMISSION_ID;
+import static uk.gov.justice.laa.bulkclaim.controller.ControllerTestHelper.OIDC_USER;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -31,6 +32,7 @@ import uk.gov.justice.laa.bulkclaim.helper.TestObjectCreator;
 import uk.gov.justice.laa.bulkclaim.mapper.ClaimFeeCalculationBreakdownMapper;
 import uk.gov.justice.laa.bulkclaim.mapper.ClaimSummaryMapper;
 import uk.gov.justice.laa.bulkclaim.service.ClaimService;
+import uk.gov.justice.laa.bulkclaim.service.SubmissionService;
 import uk.gov.justice.laa.bulkclaim.viewmodels.claimdetails.ClaimDetailPageData;
 import uk.gov.justice.laa.bulkclaim.viewmodels.claimdetails.ClaimDetailViewFactory;
 import uk.gov.justice.laa.bulkclaim.viewmodels.claimdetails.MediationClaimDetailsView;
@@ -51,11 +53,12 @@ class ClaimDetailMediationViewTest extends ViewTestBase {
   @MockitoBean private ClaimDetailViewFactory claimDetailViewFactory;
   @MockitoBean private ClaimStatusBannerBuilder claimStatusBannerBuilder;
   @MockitoBean private LatestAssessmentResolver latestAssessmentResolver;
+  @MockitoBean private SubmissionService submissionService;
 
   private MediationClaimDetails details;
 
   ClaimDetailMediationViewTest() {
-    this.mapping = "/view-claim-detail";
+    this.mapping = "/submissions/%s/claims/%s".formatted(submissionId, claimId);
   }
 
   @BeforeEach
@@ -80,6 +83,7 @@ class ClaimDetailMediationViewTest extends ViewTestBase {
         .thenReturn(Mono.just(ClaimHistoryResultSet.builder().events(List.of()).build()));
     when(submissionMessagesBuilder.buildAllWarnings(submissionId, claimId))
         .thenReturn(MessagesSummary.builder().messages(List.of()).build());
+    when(featureFlagsConfig.getIsAlternativeClaimViewEnabled()).thenReturn(true);
   }
 
   private void setValueFields(MediationClaimDetails details) {
@@ -124,7 +128,7 @@ class ClaimDetailMediationViewTest extends ViewTestBase {
     boolean showCurrentCalculated =
         derivedClaimStatus == DerivedClaimStatus.AMENDED
             || derivedClaimStatus == DerivedClaimStatus.ASSESSED;
-    when(claimService.getClaimDetailPageData(submissionId, claimId))
+    when(claimService.getClaimDetailPageData(submissionId, claimId, OIDC_USER))
         .thenReturn(
             new ClaimDetailPageData(
                 AreaOfLaw.MEDIATION, showCurrentCalculated, claimDetailView, banner.orElse(null)));

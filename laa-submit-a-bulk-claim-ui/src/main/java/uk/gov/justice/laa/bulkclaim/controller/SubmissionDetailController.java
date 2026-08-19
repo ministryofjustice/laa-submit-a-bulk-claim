@@ -3,21 +3,19 @@ package uk.gov.justice.laa.bulkclaim.controller;
 import static uk.gov.justice.laa.bulkclaim.constants.SessionConstants.BULK_SUBMISSION_ID;
 import static uk.gov.justice.laa.bulkclaim.constants.SessionConstants.SUBMISSION_ID;
 
+import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.oauth2.core.oidc.user.OidcUser;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.SessionAttributes;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-import org.springframework.web.util.UriComponentsBuilder;
 import uk.gov.justice.laa.bulkclaim.builder.SubmissionClaimDetailsBuilder;
 import uk.gov.justice.laa.bulkclaim.builder.SubmissionMatterStartsDetailsBuilder;
 import uk.gov.justice.laa.bulkclaim.builder.SubmissionMessagesBuilder;
@@ -32,6 +30,7 @@ import uk.gov.justice.laa.bulkclaim.dto.submission.messages.MessageSortField;
 import uk.gov.justice.laa.bulkclaim.dto.submission.messages.MessagesSummary;
 import uk.gov.justice.laa.bulkclaim.dto.submission.view.SubmissionViewQuery;
 import uk.gov.justice.laa.bulkclaim.dto.submission.view.SubmissionViewSortField;
+import uk.gov.justice.laa.bulkclaim.service.SubmissionService;
 import uk.gov.justice.laa.bulkclaim.util.PaginationLinksBuilder;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.AreaOfLaw;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.Page;
@@ -42,8 +41,6 @@ import uk.gov.justice.laa.dstew.payments.claimsdata.model.ValidationMessageType;
 @Slf4j
 @Controller
 @RequiredArgsConstructor
-@SubmissionControllerAdvice.Enabled
-@SessionAttributes({SUBMISSION_ID})
 public class SubmissionDetailController {
 
   private final SubmissionSummaryBuilder submissionSummaryBuilder;
@@ -52,43 +49,25 @@ public class SubmissionDetailController {
   private final SubmissionMatterStartsDetailsBuilder submissionMatterStartsDetailsBuilder;
   private final PaginationLinksBuilder paginationLinksBuilder;
   private final FeatureFlagsConfig featureFlagsConfig;
+  private final SubmissionService submissionService;
 
-  @GetMapping("/submission/{submissionId}")
+  @GetMapping({"/submission/{submissionId}", "/submissions/{submissionId}"})
   public String getSubmissionReference(
+      Model model,
       @PathVariable UUID submissionId,
-      @ModelAttribute("submissionResponse") SubmissionResponse submission,
-      @RequestParam(value = "page", defaultValue = "0") final int page,
-      @RequestParam(value = "messagesPage", defaultValue = "0") final int messagesPage,
-      @RequestParam(value = "navTab", required = false, defaultValue = "CLAIM_DETAILS")
-          ViewSubmissionNavigationTab navigationTab,
-      RedirectAttributes redirectAttributes) {
+      @Valid SubmissionViewQuery submissionViewQuery,
+      @Valid MessageQuery messageQuery,
+      @AuthenticationPrincipal OidcUser user,
+      HttpSession session) {
+
+    var submission = submissionService.getSubmission(submissionId, user);
 
     // Redirect based on submission status
     if (submission != null && submission.getStatus() == SubmissionStatus.VALIDATION_IN_PROGRESS) {
-      redirectAttributes.addFlashAttribute("submission", submission);
-      redirectAttributes.addFlashAttribute(SUBMISSION_ID, submissionId);
-      redirectAttributes.addFlashAttribute(BULK_SUBMISSION_ID, submission.getBulkSubmissionId());
+      session.setAttribute(SUBMISSION_ID, submissionId);
+      session.setAttribute(BULK_SUBMISSION_ID, submission.getBulkSubmissionId());
       return "redirect:/upload-is-being-checked";
     }
-
-    String uri =
-        UriComponentsBuilder.fromPath("/view-submission-detail")
-            .queryParam(SUBMISSION_ID, submissionId)
-            .queryParam("page", page)
-            .queryParam("messagesPage", messagesPage)
-            .queryParam("navTab", navigationTab.toString())
-            .toUriString();
-
-    // Otherwise, redirect to the standard submission details view
-    return "redirect:" + uri;
-  }
-
-  @GetMapping("/view-submission-detail")
-  public String getSubmissionDetail(
-      Model model,
-      @Valid SubmissionViewQuery submissionViewQuery,
-      @Valid MessageQuery messageQuery,
-      @ModelAttribute("submissionResponse") SubmissionResponse submission) {
 
     model.addAttribute("submissionViewQuery", submissionViewQuery);
     model.addAttribute("SubmissionViewSortField", SubmissionViewSortField.class);
@@ -137,11 +116,9 @@ public class SubmissionDetailController {
     model.addAttribute(
         "claimDetailsPaginationLinks",
         paginationLinksBuilder.build(
-            "/view-submission-detail#claims-table",
+            "/submissions/%s#claims-table".formatted(submissionViewQuery.getSubmissionId()),
             claimDetails.pagination(),
             "page",
-            SUBMISSION_ID,
-            submissionViewQuery.getSubmissionId(),
             "navTab",
             ViewSubmissionNavigationTab.CLAIM_DETAILS,
             "sort",
@@ -171,11 +148,9 @@ public class SubmissionDetailController {
     model.addAttribute(
         "messagesPaginationLinks",
         paginationLinksBuilder.build(
-            "/view-submission-detail",
+            "/submissions/%s".formatted(submissionViewQuery.getSubmissionId()),
             messagesSummary.pagination(),
             "messagesPage",
-            SUBMISSION_ID,
-            submissionViewQuery.getSubmissionId(),
             "navTab",
             ViewSubmissionNavigationTab.CLAIM_MESSAGES,
             "messagesSort",
@@ -212,11 +187,9 @@ public class SubmissionDetailController {
     model.addAttribute(
         "messagesPaginationLinks",
         paginationLinksBuilder.build(
-            "/view-submission-detail",
+            "/submissions/%s".formatted(messageQuery.getSubmissionId()),
             messagesSummary.pagination(),
             "messagesPage",
-            SUBMISSION_ID,
-            messageQuery.getSubmissionId(),
             "messagesSort",
             messageQuery.getSort().toString()));
 

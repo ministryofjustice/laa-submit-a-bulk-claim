@@ -35,6 +35,7 @@ import uk.gov.justice.laa.bulkclaim.dto.submission.messages.MessagesSummary;
 import uk.gov.justice.laa.bulkclaim.mapper.ClaimFeeCalculationBreakdownMapper;
 import uk.gov.justice.laa.bulkclaim.mapper.ClaimSummaryMapper;
 import uk.gov.justice.laa.bulkclaim.service.ClaimService;
+import uk.gov.justice.laa.bulkclaim.service.SubmissionService;
 import uk.gov.justice.laa.bulkclaim.util.OidcAttributeUtils;
 import uk.gov.justice.laa.bulkclaim.util.ThymeleafHrefUtils;
 import uk.gov.justice.laa.bulkclaim.viewmodels.claimdetails.ClaimDetailViewFactory;
@@ -60,6 +61,7 @@ class ClaimStatusBannerFragmentTest {
   @MockitoBean private LatestAssessmentResolver latestAssessmentResolver;
   @MockitoBean private ClaimService claimService;
   @MockitoBean private OidcAttributeUtils oidcAttributeUtils;
+  @MockitoBean private SubmissionService submissionService;
 
   @Test
   @DisplayName("Renders the Voided wording with an error-style alert")

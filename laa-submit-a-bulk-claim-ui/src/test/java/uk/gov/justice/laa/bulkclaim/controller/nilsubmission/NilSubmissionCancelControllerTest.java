@@ -8,6 +8,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.redirectedUrl;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static uk.gov.justice.laa.bulkclaim.constants.SessionConstants.NIL_SUBMISSION_FORM;
+import static uk.gov.justice.laa.bulkclaim.controller.ControllerTestHelper.OIDC_USER;
 import static uk.gov.justice.laa.dstew.payments.claimsdata.model.AreaOfLaw.CRIME_LOWER;
 
 import org.junit.jupiter.api.Test;
@@ -17,7 +18,6 @@ import org.springframework.mock.web.MockHttpSession;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.web.server.ResponseStatusException;
 import uk.gov.justice.laa.bulkclaim.controller.BaseControllerTest;
-import uk.gov.justice.laa.bulkclaim.controller.ControllerTestHelper;
 import uk.gov.justice.laa.bulkclaim.dto.submission.NilSubmissionForm;
 
 @WebMvcTest(NilSubmissionCancelController.class)
@@ -35,7 +35,7 @@ class NilSubmissionCancelControllerTest extends BaseControllerTest {
         .perform(
             get("/nil-submission/cancel")
                 .param("destination", "UPLOAD")
-                .with(oidcLogin().oidcUser(ControllerTestHelper.getOidcUser()))
+                .with(oidcLogin().oidcUser(OIDC_USER))
                 .sessionAttr(NIL_SUBMISSION_FORM, new NilSubmissionForm()))
         .andExpect(status().isNotFound());
   }
@@ -48,7 +48,7 @@ class NilSubmissionCancelControllerTest extends BaseControllerTest {
         .perform(
             get("/nil-submission/cancel")
                 .param("destination", "UPLOAD")
-                .with(oidcLogin().oidcUser(ControllerTestHelper.getOidcUser()))
+                .with(oidcLogin().oidcUser(OIDC_USER))
                 .session(session))
         .andExpect(status().is3xxRedirection())
         .andExpect(redirectedUrl("/upload"));
@@ -69,7 +69,7 @@ class NilSubmissionCancelControllerTest extends BaseControllerTest {
         .perform(
             get("/nil-submission/cancel")
                 .param("destination", "SEARCH")
-                .with(oidcLogin().oidcUser(ControllerTestHelper.getOidcUser()))
+                .with(oidcLogin().oidcUser(OIDC_USER))
                 .session(session))
         .andExpect(status().is3xxRedirection())
         .andExpect(redirectedUrl("/submissions/search"));

@@ -44,9 +44,9 @@ public class SubmissionViewQuery implements PageQuery<SubmissionViewSortField, S
 
   @Override
   public String getRedirectUrl(int page, SubmissionViewSort sort) {
-    UriComponentsBuilder builder = UriComponentsBuilder.fromPath("/view-submission-detail");
+    UriComponentsBuilder builder =
+        UriComponentsBuilder.fromPath("/submissions/").path(submissionId.toString());
 
-    addQueryParam(builder, "submissionId", submissionId);
     addQueryParam(builder, "navTab", navTab);
     addQueryParam(builder, "page", String.valueOf(page));
     addQueryParam(builder, "sort", Objects.toString(sort, null));
