@@ -80,7 +80,7 @@
                 sec:authentication="principal.attributes['preferred_username']">
 
             <li class="moj-header__navigation-item header-navigation-link">
-              <form th:action="@{/logout}" method="post">
+              <form name="logoutForm" th:action="@{/logout}" method="post">
                 <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
                   <a class="moj-header__navigation-link" href="#" data-module="logout-link" th:text="#{header.signOut}"></a>
               </form>
