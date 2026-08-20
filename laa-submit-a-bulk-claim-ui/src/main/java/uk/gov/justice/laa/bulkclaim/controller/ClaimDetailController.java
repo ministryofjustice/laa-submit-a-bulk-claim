@@ -21,7 +21,6 @@ import uk.gov.justice.laa.bulkclaim.client.DataClaimsRestClientV2;
 import uk.gov.justice.laa.bulkclaim.config.FeatureFlagsConfig;
 import uk.gov.justice.laa.bulkclaim.constants.ViewSubmissionNavigationTab;
 import uk.gov.justice.laa.bulkclaim.dto.submission.messages.MessagesSummary;
-import uk.gov.justice.laa.bulkclaim.exception.SubmitBulkClaimException;
 import uk.gov.justice.laa.bulkclaim.mapper.ClaimFeeCalculationBreakdownMapper;
 import uk.gov.justice.laa.bulkclaim.mapper.ClaimSummaryMapper;
 import uk.gov.justice.laa.bulkclaim.service.ClaimService;
@@ -35,7 +34,6 @@ import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionResponse;
 @RequiredArgsConstructor
 public final class ClaimDetailController {
 
-  private final DataClaimsRestClientV2 dataClaimsRestClientV2;
   private final ClaimSummaryMapper claimSummaryMapper;
   private final ClaimFeeCalculationBreakdownMapper claimFeeCalculationBreakdownMapper;
   private final SubmissionMessagesBuilder submissionMessagesBuilder;
@@ -51,7 +49,7 @@ public final class ClaimDetailController {
       @RequestParam(value = "page", defaultValue = "0") final int page,
       @RequestParam(value = "messagesPage", defaultValue = "0") final int messagesPage,
       @RequestParam(value = "navTab", required = false, defaultValue = "CLAIM_DETAILS")
-          ViewSubmissionNavigationTab navigationTab,
+      ViewSubmissionNavigationTab navigationTab,
       @AuthenticationPrincipal OidcUser user) {
 
     model.addAttribute(SUBMISSION_ID, submissionId);
@@ -119,14 +117,9 @@ public final class ClaimDetailController {
             .toUriString());
 
     ClaimResponseV2 claimResponse =
-        dataClaimsRestClientV2
-            .getSubmissionClaim(submissionId, claimId)
-            .blockOptional()
-            .orElseThrow(
-                () ->
-                    new SubmitBulkClaimException(
-                        "Claim %s does not exist for submission %s"
-                            .formatted(claimId.toString(), submissionId.toString())));
+        claimService
+            .getClaimV2(submissionId, claimId, user);
+
     model.addAttribute("ufn", claimResponse.getUniqueFileNumber());
     model.addAttribute(
         "claimStatus",
