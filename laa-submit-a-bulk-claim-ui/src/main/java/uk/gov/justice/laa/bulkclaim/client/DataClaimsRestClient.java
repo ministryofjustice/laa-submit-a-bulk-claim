@@ -74,22 +74,6 @@ public interface DataClaimsRestClient {
   Mono<SubmissionResponse> getSubmission(@PathVariable UUID submissionId)
       throws WebClientResponseException;
 
-  default ResponseEntity<ClaimResultSet> getClaims(
-      @RequestParam(value = "office_code") String officeCode,
-      @RequestParam(value = "submission_id") UUID submissionId,
-      @RequestParam(value = "page") Integer page,
-      @RequestParam(value = "size") Integer size) {
-    return getClaims(officeCode, submissionId, page, size, "lineNumber,asc");
-  }
-
-  @GetExchange("/claims")
-  ResponseEntity<ClaimResultSet> getClaims(
-      @RequestParam(value = "office_code") String officeCode,
-      @RequestParam(value = "submission_id") UUID submissionId,
-      @RequestParam(value = "page") Integer page,
-      @RequestParam(value = "size") Integer size,
-      @RequestParam(value = "sort", required = false) String sort);
-
   @GetExchange(value = "/submissions/{submission-id}/matter-starts/{matter-starts-id}")
   Mono<MatterStartGet> getSubmissionMatterStart(
       @PathVariable("submission-id") UUID submissionId,

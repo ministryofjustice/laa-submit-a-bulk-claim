@@ -21,10 +21,14 @@ public interface DataClaimsRestClientV2 {
       @RequestParam(value = "size") Integer size,
       @RequestParam(value = "sort", required = false) String sort);
 
-  /**
-   * V2 equivalent of {@link DataClaimsRestClient#getSubmissionClaim}, returning {@link
-   * ClaimResponseV2} instead of the plain {@code ClaimResponse}.
-   */
+  default ResponseEntity<ClaimResultSetV2> getClaims(
+      @RequestParam(value = "office_code") String officeCode,
+      @RequestParam(value = "submission_id") UUID submissionId,
+      @RequestParam(value = "page") Integer page,
+      @RequestParam(value = "size") Integer size) {
+    return getClaims(officeCode, submissionId, page, size, "line_number,asc");
+  }
+
   @GetExchange(value = "/submissions/{submission-id}/claims/{claim-id}")
   Mono<ClaimResponseV2> getSubmissionClaim(
       @PathVariable("submission-id") UUID submissionId, @PathVariable("claim-id") UUID claimId);
