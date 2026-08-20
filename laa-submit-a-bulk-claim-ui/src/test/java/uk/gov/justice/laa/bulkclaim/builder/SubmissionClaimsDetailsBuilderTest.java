@@ -58,15 +58,15 @@ class SubmissionClaimsDetailsBuilderTest {
             .calculatedTotalAmount(new BigDecimal("70.50"))
             .claims(List.of(SubmissionClaim.builder().claimId(claimId).build()))
             .build();
-    ClaimResultSet claimResultSet =
-        ClaimResultSet.builder()
+    ClaimResultSetV2 claimResultSet =
+        ClaimResultSetV2.builder()
             .totalElements(1)
-            .content(Collections.singletonList(ClaimResponse.builder().totalWarnings(1).build()))
+            .content(Collections.singletonList(ClaimResponseV2.builder().totalWarnings(1).build()))
             .size(10)
             .number(2)
             .totalPages(2)
             .build();
-    when(dataClaimsRestClient.getClaims(any(), any(), any(), any()))
+    when(dataClaimsRestClientV2.getClaims(any(), any(), any(), any()))
         .thenReturn(ResponseEntity.of(Optional.of(claimResultSet)));
     SubmissionClaimRow expected = getSubmissionClaimRow();
 
