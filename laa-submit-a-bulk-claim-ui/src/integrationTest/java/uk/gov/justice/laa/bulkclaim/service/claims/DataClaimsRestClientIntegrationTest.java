@@ -35,7 +35,7 @@ import uk.gov.justice.laa.dstew.payments.claimsdata.model.AreaOfLaw;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.AssessmentResultSet;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.BulkSubmissionStatus;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.ClaimHistoryResultSet;
-import uk.gov.justice.laa.dstew.payments.claimsdata.model.ClaimResponse;
+import uk.gov.justice.laa.dstew.payments.claimsdata.model.ClaimResponseV2;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.ClaimResultSet;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.CreateBulkSubmission201Response;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.GetBulkSubmissionStatusById200Response;
@@ -631,7 +631,8 @@ class DataClaimsRestClientIntegrationTest extends MockServerIntegrationTest {
                   .withHeader("Content-Type", "application/json")
                   .withBody(expectJson));
       // Then
-      ClaimResponse block = dataClaimsRestClient.getSubmissionClaim(submissionId, claimId).block();
+      ClaimResponseV2 block =
+          dataClaimsRestClient.getSubmissionClaim(submissionId, claimId).block();
       String result = objectMapper.writeValueAsString(block);
       assertThatJsonMatches(expectJson, result);
     }

@@ -11,7 +11,7 @@ import uk.gov.justice.laa.bulkclaim.dto.submission.SubmissionSummaryRow;
 import uk.gov.justice.laa.bulkclaim.dto.submission.messages.MessageRow;
 import uk.gov.justice.laa.bulkclaim.util.SubmissionPeriodUtil;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.AreaOfLaw;
-import uk.gov.justice.laa.dstew.payments.claimsdata.model.ClaimResponse;
+import uk.gov.justice.laa.dstew.payments.claimsdata.model.ClaimResponseV2;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionResponse;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.ValidationMessageBase;
 
@@ -58,9 +58,9 @@ public interface BulkClaimImportSummaryMapper {
   @Mapping(target = "message", source = "message.displayMessage")
   @Mapping(target = "type", source = "message.type")
   MessageRow toSubmissionSummaryClaimMessage(
-      ValidationMessageBase message, ClaimResponse claimResponse);
+      ValidationMessageBase message, ClaimResponseV2 claimResponse);
 
-  default String buildClientName(ClaimResponse claimResponse) {
+  default String buildClientName(ClaimResponseV2 claimResponse) {
     if (claimResponse == null) {
       return null;
     }

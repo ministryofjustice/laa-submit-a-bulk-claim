@@ -10,7 +10,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.justice.laa.bulkclaim.dto.submission.claim.ClaimFeeCalculationBreakdown;
 import uk.gov.justice.laa.bulkclaim.helper.TestObjectCreator;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.BoltOnPatch;
-import uk.gov.justice.laa.dstew.payments.claimsdata.model.ClaimResponse;
+import uk.gov.justice.laa.dstew.payments.claimsdata.model.ClaimResponseV2;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.FeeCalculationPatch;
 
 @ExtendWith({SpringExtension.class})
@@ -28,7 +28,7 @@ class ClaimFeeCalculationBreakdownMapperTest {
   @DisplayName("Should map all details")
   void shouldMapAllDetails() {
     // Given
-    ClaimResponse claimResponse = TestObjectCreator.buildClaimResponse();
+    ClaimResponseV2 claimResponse = TestObjectCreator.buildClaimResponseV2();
     claimResponse.setFeeCalculationResponse(
         new FeeCalculationPatch()
             .fixedFeeAmount(BigDecimal.valueOf(1100.10))

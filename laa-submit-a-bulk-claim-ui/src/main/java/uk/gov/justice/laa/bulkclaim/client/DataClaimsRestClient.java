@@ -17,7 +17,6 @@ import reactor.core.publisher.Mono;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.AreaOfLaw;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.AssessmentResultSet;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.ClaimHistoryResultSet;
-import uk.gov.justice.laa.dstew.payments.claimsdata.model.ClaimResponse;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.ClaimResultSet;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.CreateBulkSubmission201Response;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.CreateSubmission201Response;
@@ -74,10 +73,6 @@ public interface DataClaimsRestClient {
   @GetExchange(value = "/submissions/{submissionId}")
   Mono<SubmissionResponse> getSubmission(@PathVariable UUID submissionId)
       throws WebClientResponseException;
-
-  @GetExchange(value = "/submissions/{submission-id}/claims/{claim-id}")
-  Mono<ClaimResponse> getSubmissionClaim(
-      @PathVariable("submission-id") UUID submissionId, @PathVariable("claim-id") UUID claimId);
 
   default ResponseEntity<ClaimResultSet> getClaims(
       @RequestParam(value = "office_code") String officeCode,

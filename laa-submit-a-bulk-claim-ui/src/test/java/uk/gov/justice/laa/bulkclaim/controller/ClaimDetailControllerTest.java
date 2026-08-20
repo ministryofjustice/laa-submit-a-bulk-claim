@@ -40,7 +40,7 @@ import uk.gov.justice.laa.bulkclaim.viewmodels.claimdetails.ClaimDetailPageData;
 import uk.gov.justice.laa.bulkclaim.viewmodels.claimdetails.ClaimDetailViewFactory;
 import uk.gov.justice.laa.bulkclaim.viewmodels.claimdetails.CrimeClaimDetailsView;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.AreaOfLaw;
-import uk.gov.justice.laa.dstew.payments.claimsdata.model.ClaimResponse;
+import uk.gov.justice.laa.dstew.payments.claimsdata.model.ClaimResponseV2;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionResponse;
 
 @WebMvcTest(ClaimDetailController.class)
@@ -52,7 +52,6 @@ class ClaimDetailControllerTest extends BaseControllerTest {
   @Autowired private MockMvcTester mockMvc;
 
   @MockitoBean private DataClaimsRestClientV2 dataClaimsRestClientV2;
-
   @MockitoBean private ClaimSummaryMapper claimSummaryMapper;
   @MockitoBean private ClaimFeeCalculationBreakdownMapper claimFeeCalculationBreakdownMapper;
   @MockitoBean private SubmissionMessagesBuilder submissionMessagesBuilder;
@@ -81,8 +80,8 @@ class ClaimDetailControllerTest extends BaseControllerTest {
         when(submissionService.getSubmission(submissionId, OIDC_USER))
             .thenReturn(submissionResponse);
 
-        ClaimResponse claimResponse = TestObjectCreator.buildClaimResponse();
-        when(dataClaimsRestClient.getSubmissionClaim(submissionId, claimId))
+        ClaimResponseV2 claimResponse = TestObjectCreator.buildClaimResponseV2();
+        when(dataClaimsRestClientV2.getSubmissionClaim(submissionId, claimId))
             .thenReturn(Mono.just(claimResponse));
 
         when(claimSummaryMapper.toClaimSummary(claimResponse, AreaOfLaw.LEGAL_HELP.getValue()))
@@ -113,7 +112,7 @@ class ClaimDetailControllerTest extends BaseControllerTest {
         UUID claimId = UUID.fromString("59930faa-3f38-4ee1-b5bd-08dce5a4fdbc");
         UUID submissionId = UUID.fromString("244fcb9f-50ab-4af8-b635-76bd30e0e97d");
 
-        when(dataClaimsRestClient.getSubmissionClaim(submissionId, claimId))
+        when(dataClaimsRestClientV2.getSubmissionClaim(submissionId, claimId))
             .thenReturn(Mono.empty());
 
         assertThat(

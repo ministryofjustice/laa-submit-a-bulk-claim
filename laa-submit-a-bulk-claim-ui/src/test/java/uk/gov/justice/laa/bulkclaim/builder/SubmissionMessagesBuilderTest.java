@@ -15,11 +15,12 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import reactor.core.publisher.Mono;
 import uk.gov.justice.laa.bulkclaim.client.DataClaimsRestClient;
+import uk.gov.justice.laa.bulkclaim.client.DataClaimsRestClientV2;
 import uk.gov.justice.laa.bulkclaim.dto.submission.messages.MessageRow;
 import uk.gov.justice.laa.bulkclaim.dto.submission.messages.MessagesSummary;
 import uk.gov.justice.laa.bulkclaim.mapper.BulkClaimImportSummaryMapper;
 import uk.gov.justice.laa.bulkclaim.util.PaginationUtil;
-import uk.gov.justice.laa.dstew.payments.claimsdata.model.ClaimResponse;
+import uk.gov.justice.laa.dstew.payments.claimsdata.model.ClaimResponseV2;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.ValidationMessageBase;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.ValidationMessageType;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.ValidationMessagesResponse;
@@ -28,6 +29,7 @@ import uk.gov.justice.laa.dstew.payments.claimsdata.model.ValidationMessagesResp
 class SubmissionMessagesBuilderTest {
 
   @Mock private DataClaimsRestClient dataClaimsRestClient;
+  @Mock private DataClaimsRestClientV2 dataClaimsRestClientV2;
   @Mock private BulkClaimImportSummaryMapper bulkClaimImportSummaryMapper;
   @Mock private PaginationUtil paginationUtil;
 
@@ -58,8 +60,8 @@ class SubmissionMessagesBuilderTest {
             "client_surname,asc"))
         .thenReturn(Mono.just(errorResponse));
 
-    when(dataClaimsRestClient.getSubmissionClaim(submissionId, claimId))
-        .thenReturn(Mono.just(new ClaimResponse()));
+    when(dataClaimsRestClientV2.getSubmissionClaim(submissionId, claimId))
+        .thenReturn(Mono.just(new ClaimResponseV2()));
 
     MessageRow mappedError =
         new MessageRow(
