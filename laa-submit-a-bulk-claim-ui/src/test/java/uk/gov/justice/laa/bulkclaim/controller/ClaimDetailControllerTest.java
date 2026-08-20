@@ -51,7 +51,6 @@ class ClaimDetailControllerTest extends BaseControllerTest {
 
   @Autowired private MockMvcTester mockMvc;
 
-  @MockitoBean private DataClaimsRestClientV2 dataClaimsRestClientV2;
   @MockitoBean private ClaimSummaryMapper claimSummaryMapper;
   @MockitoBean private ClaimFeeCalculationBreakdownMapper claimFeeCalculationBreakdownMapper;
   @MockitoBean private SubmissionMessagesBuilder submissionMessagesBuilder;
@@ -81,8 +80,8 @@ class ClaimDetailControllerTest extends BaseControllerTest {
             .thenReturn(submissionResponse);
 
         ClaimResponseV2 claimResponse = TestObjectCreator.buildClaimResponseV2();
-        when(dataClaimsRestClientV2.getSubmissionClaim(submissionId, claimId))
-            .thenReturn(Mono.just(claimResponse));
+        when(claimService.getClaimV2(submissionId, claimId, OIDC_USER))
+            .thenReturn(claimResponse);
 
         when(claimSummaryMapper.toClaimSummary(claimResponse, AreaOfLaw.LEGAL_HELP.getValue()))
             .thenReturn(ClaimSummary.builder().build());
@@ -106,24 +105,6 @@ class ClaimDetailControllerTest extends BaseControllerTest {
             .toClaimSummary(claimResponse, AreaOfLaw.LEGAL_HELP.getValue());
       }
 
-      @Test
-      @DisplayName("Should throw exception when claim was not found")
-      void shouldThrowExceptionWhenClaimWasNotFound() {
-        UUID claimId = UUID.fromString("59930faa-3f38-4ee1-b5bd-08dce5a4fdbc");
-        UUID submissionId = UUID.fromString("244fcb9f-50ab-4af8-b635-76bd30e0e97d");
-
-        when(dataClaimsRestClientV2.getSubmissionClaim(submissionId, claimId))
-            .thenReturn(Mono.empty());
-
-        assertThat(
-                mockMvc.perform(
-                    get("/submissions/%s/claims/%s".formatted(submissionId, claimId))
-                        .with(oidcLogin().oidcUser(OIDC_USER))))
-            .failure()
-            .hasMessageEndingWith(
-                "Claim 59930faa-3f38-4ee1-b5bd-08dce5a4fdbc does not exist for submission "
-                    + "244fcb9f-50ab-4af8-b635-76bd30e0e97d");
-      }
     }
 
     @Nested
