@@ -186,7 +186,8 @@ class SubmissionDetailControllerTest extends BaseControllerTest {
           .hasStatusOk()
           .hasViewName("pages/view-submission-detail-invalid");
 
-      verify(submissionMessagesBuilder, times(1)).buildErrors(OIDC_USER, SUBMISSION_ID, 0, 50, null);
+      verify(submissionMessagesBuilder, times(1))
+          .buildErrors(OIDC_USER, SUBMISSION_ID, 0, 50, null);
       verify(submissionMatterStartsDetailsBuilder, times(1)).build(any());
     }
 

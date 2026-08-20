@@ -35,8 +35,6 @@ import uk.gov.justice.laa.dstew.payments.claimsdata.model.AreaOfLaw;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.AssessmentResultSet;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.BulkSubmissionStatus;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.ClaimHistoryResultSet;
-import uk.gov.justice.laa.dstew.payments.claimsdata.model.ClaimResponseV2;
-import uk.gov.justice.laa.dstew.payments.claimsdata.model.ClaimResultSet;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.CreateBulkSubmission201Response;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.GetBulkSubmissionStatusById200Response;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.MatterStartGet;
@@ -550,12 +548,14 @@ class DataClaimsRestClientIntegrationTest extends MockServerIntegrationTest {
           .when(
               HttpRequest.request()
                   .withMethod("GET")
-                  .withPath("/api/v1/submissions/" + submissionId + "/matter-starts/" + matterStartsId))
+                  .withPath(
+                      "/api/v1/submissions/" + submissionId + "/matter-starts/" + matterStartsId))
           .respond(response().withStatusCode(401).withHeader("Content-Type", "application/json"));
       // When
       assertThrows(
           Unauthorized.class,
-          () -> dataClaimsRestClient.getSubmissionMatterStart(submissionId, matterStartsId).block());
+          () ->
+              dataClaimsRestClient.getSubmissionMatterStart(submissionId, matterStartsId).block());
     }
 
     @Test
@@ -588,12 +588,14 @@ class DataClaimsRestClientIntegrationTest extends MockServerIntegrationTest {
           .when(
               HttpRequest.request()
                   .withMethod("GET")
-                  .withPath("/api/v1/submissions/" + submissionId + "/matter-starts/" + matterStartsId))
+                  .withPath(
+                      "/api/v1/submissions/" + submissionId + "/matter-starts/" + matterStartsId))
           .respond(response().withStatusCode(404).withHeader("Content-Type", "application/json"));
       // When
       assertThrows(
           NotFound.class,
-          () -> dataClaimsRestClient.getSubmissionMatterStart(submissionId, matterStartsId).block());
+          () ->
+              dataClaimsRestClient.getSubmissionMatterStart(submissionId, matterStartsId).block());
     }
 
     @Test

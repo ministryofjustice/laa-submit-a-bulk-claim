@@ -19,11 +19,9 @@ import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.assertj.MockMvcTester;
-import reactor.core.publisher.Mono;
 import uk.gov.justice.laa.bulkclaim.builder.ClaimStatusBannerBuilder;
 import uk.gov.justice.laa.bulkclaim.builder.LatestAssessmentResolver;
 import uk.gov.justice.laa.bulkclaim.builder.SubmissionMessagesBuilder;
-import uk.gov.justice.laa.bulkclaim.client.DataClaimsRestClientV2;
 import uk.gov.justice.laa.bulkclaim.dto.submission.claim.ClaimFeeCalculationBreakdown;
 import uk.gov.justice.laa.bulkclaim.dto.submission.claim.ClaimSummary;
 import uk.gov.justice.laa.bulkclaim.dto.submission.claim.viewmodels.ClaimFieldRow;
@@ -80,8 +78,7 @@ class ClaimDetailControllerTest extends BaseControllerTest {
             .thenReturn(submissionResponse);
 
         ClaimResponseV2 claimResponse = TestObjectCreator.buildClaimResponseV2();
-        when(claimService.getClaimV2(submissionId, claimId, OIDC_USER))
-            .thenReturn(claimResponse);
+        when(claimService.getClaimV2(submissionId, claimId, OIDC_USER)).thenReturn(claimResponse);
 
         when(claimSummaryMapper.toClaimSummary(claimResponse, AreaOfLaw.LEGAL_HELP.getValue()))
             .thenReturn(ClaimSummary.builder().build());
@@ -104,7 +101,6 @@ class ClaimDetailControllerTest extends BaseControllerTest {
         verify(claimSummaryMapper, times(1))
             .toClaimSummary(claimResponse, AreaOfLaw.LEGAL_HELP.getValue());
       }
-
     }
 
     @Nested

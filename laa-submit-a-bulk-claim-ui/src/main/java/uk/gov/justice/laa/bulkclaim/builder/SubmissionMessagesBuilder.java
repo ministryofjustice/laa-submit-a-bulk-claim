@@ -37,7 +37,8 @@ public class SubmissionMessagesBuilder {
   private final PaginationUtil paginationUtil;
 
   /** Builds a {@link MessagesSummary} for a given submission ID whilst only returning errors. */
-  public MessagesSummary buildErrors(OidcUser oidcUser, UUID submissionId, int page, int size, String sort) {
+  public MessagesSummary buildErrors(
+      OidcUser oidcUser, UUID submissionId, int page, int size, String sort) {
     return build(oidcUser, submissionId, null, ValidationMessageType.ERROR, page, size, sort);
   }
 
@@ -74,8 +75,7 @@ public class SubmissionMessagesBuilder {
         claimRefs.stream()
             .filter(Objects::nonNull)
             .collect(
-                Collectors.toMap(
-                    x -> x, x -> claimService.getClaimV2(submissionId, x, oidcUser)));
+                Collectors.toMap(x -> x, x -> claimService.getClaimV2(submissionId, x, oidcUser)));
 
     // Loop through an error map and add claims
     final List<MessageRow> errorList =

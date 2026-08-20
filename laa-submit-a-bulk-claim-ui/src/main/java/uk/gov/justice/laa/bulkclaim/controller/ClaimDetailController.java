@@ -17,7 +17,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.util.UriComponentsBuilder;
 import uk.gov.justice.laa.bulkclaim.builder.SubmissionMessagesBuilder;
-import uk.gov.justice.laa.bulkclaim.client.DataClaimsRestClientV2;
 import uk.gov.justice.laa.bulkclaim.config.FeatureFlagsConfig;
 import uk.gov.justice.laa.bulkclaim.constants.ViewSubmissionNavigationTab;
 import uk.gov.justice.laa.bulkclaim.dto.submission.messages.MessagesSummary;
@@ -49,7 +48,7 @@ public final class ClaimDetailController {
       @RequestParam(value = "page", defaultValue = "0") final int page,
       @RequestParam(value = "messagesPage", defaultValue = "0") final int messagesPage,
       @RequestParam(value = "navTab", required = false, defaultValue = "CLAIM_DETAILS")
-      ViewSubmissionNavigationTab navigationTab,
+          ViewSubmissionNavigationTab navigationTab,
       @AuthenticationPrincipal OidcUser user) {
 
     model.addAttribute(SUBMISSION_ID, submissionId);
@@ -116,9 +115,7 @@ public final class ClaimDetailController {
             .buildAndExpand(submissionId)
             .toUriString());
 
-    ClaimResponseV2 claimResponse =
-        claimService
-            .getClaimV2(submissionId, claimId, user);
+    ClaimResponseV2 claimResponse = claimService.getClaimV2(submissionId, claimId, user);
 
     model.addAttribute("ufn", claimResponse.getUniqueFileNumber());
     model.addAttribute(
