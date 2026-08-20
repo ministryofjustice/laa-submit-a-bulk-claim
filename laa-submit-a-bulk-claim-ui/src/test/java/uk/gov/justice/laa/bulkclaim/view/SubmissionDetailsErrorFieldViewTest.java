@@ -596,7 +596,7 @@ class SubmissionDetailsErrorFieldViewTest extends SubmissionDetailsViewTestBase 
                 BigDecimal.ONE,
                 areaOfLaw.getValue(),
                 OffsetDateTime.of(2025, 1, 1, 10, 10, 10, 0, ZoneOffset.UTC)));
-    when(submissionMessagesBuilder.buildErrors(any(), anyInt(), anyInt(), any()))
+    when(submissionMessagesBuilder.buildErrors(any(), any(), anyInt(), anyInt(), any()))
         .thenReturn(
             new MessagesSummary(
                 List.of(MessageRow.builder().build()), 0, 0, pagination, messagesSource));

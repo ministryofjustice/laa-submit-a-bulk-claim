@@ -99,7 +99,7 @@ class ClaimDetailLegalHelpViewTest extends ViewTestBase {
 
     when(dataClaimsRestClient.getClaimHistory(eq(claimId)))
         .thenReturn(Mono.just(ClaimHistoryResultSet.builder().events(List.of()).build()));
-    when(submissionMessagesBuilder.buildAllWarnings(submissionId, claimId))
+    when(submissionMessagesBuilder.buildAllWarnings(OIDC_USER, submissionId, claimId))
         .thenReturn(MessagesSummary.builder().messages(List.of()).build());
     when(featureFlagsConfig.getIsAlternativeClaimViewEnabled()).thenReturn(true);
   }
@@ -309,7 +309,7 @@ class ClaimDetailLegalHelpViewTest extends ViewTestBase {
     ClaimStatusBanner banner =
         new ClaimStatusBanner(DerivedClaimStatus.ASSESSED, "02/02/2026", "11:00");
     stubClaim(DerivedClaimStatus.ASSESSED, Optional.of(banner));
-    when(submissionMessagesBuilder.buildAllWarnings(submissionId, claimId))
+    when(submissionMessagesBuilder.buildAllWarnings(OIDC_USER, submissionId, claimId))
         .thenReturn(
             MessagesSummary.builder()
                 .messages(List.of(MessageRow.builder().message("A warning").build()))
