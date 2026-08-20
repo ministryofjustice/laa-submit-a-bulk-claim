@@ -87,11 +87,11 @@ public class SubmissionDetailController {
     if (submissionAccepted) {
       submissionSummary =
           handleAcceptedSubmission(
-              model, submissionSummary, submission, submissionViewQuery, messageQuery);
+              model, user, submissionSummary, submission, submissionViewQuery, messageQuery);
       addCommonSubmissionAttributes(model, submissionSummary, submission, submissionViewQuery);
       return "pages/view-submission-detail-accepted";
     } else {
-      handleInvalidSubmission(model, submission, messageQuery);
+      handleInvalidSubmission(model, user, submission, messageQuery);
       addCommonSubmissionAttributes(model, submissionSummary, submission, submissionViewQuery);
       return "pages/view-submission-detail-invalid";
     }
@@ -99,6 +99,7 @@ public class SubmissionDetailController {
 
   private SubmissionSummary handleAcceptedSubmission(
       Model model,
+      OidcUser user,
       SubmissionSummary submissionSummary,
       SubmissionResponse submissionResponse,
       SubmissionViewQuery submissionViewQuery,
@@ -136,6 +137,7 @@ public class SubmissionDetailController {
 
     MessagesSummary messagesSummary =
         submissionMessagesBuilder.build(
+            user,
             messageQuery.getSubmissionId(),
             null,
             ValidationMessageType.WARNING,
@@ -173,10 +175,11 @@ public class SubmissionDetailController {
   }
 
   private void handleInvalidSubmission(
-      Model model, SubmissionResponse submissionResponse, MessageQuery messageQuery) {
+      Model model, OidcUser user, SubmissionResponse submissionResponse, MessageQuery messageQuery) {
 
     MessagesSummary messagesSummary =
         submissionMessagesBuilder.buildErrors(
+            user,
             messageQuery.getSubmissionId(),
             messageQuery.getPage(),
             messageQuery.getSize(),

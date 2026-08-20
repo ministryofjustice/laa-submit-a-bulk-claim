@@ -89,7 +89,7 @@ class ClaimDetailControllerTest extends BaseControllerTest {
         when(claimFeeCalculationBreakdownMapper.toClaimFeeCalculationBreakdown(claimResponse))
             .thenReturn(ClaimFeeCalculationBreakdown.builder().build());
 
-        when(submissionMessagesBuilder.buildAllWarnings(submissionId, claimId))
+        when(submissionMessagesBuilder.buildAllWarnings(OIDC_USER, submissionId, claimId))
             .thenReturn(
                 MessagesSummary.builder()
                     .messages(singletonList(MessageRow.builder().build()))
@@ -175,7 +175,7 @@ class ClaimDetailControllerTest extends BaseControllerTest {
         when(featureFlagsConfig.getIsAlternativeClaimViewEnabled()).thenReturn(true);
         stubCommonDependencies();
 
-        when(submissionMessagesBuilder.buildAllWarnings(submissionId, claimId))
+        when(submissionMessagesBuilder.buildAllWarnings(OIDC_USER, submissionId, claimId))
             .thenReturn(
                 MessagesSummary.builder()
                     .messages(singletonList(MessageRow.builder().message("A warning").build()))

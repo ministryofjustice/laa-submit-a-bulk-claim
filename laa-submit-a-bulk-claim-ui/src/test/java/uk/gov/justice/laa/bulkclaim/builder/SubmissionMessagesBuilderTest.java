@@ -3,6 +3,7 @@ package uk.gov.justice.laa.bulkclaim.builder;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
+import static uk.gov.justice.laa.bulkclaim.controller.ControllerTestHelper.OIDC_USER;
 
 import java.util.List;
 import java.util.Optional;
@@ -19,6 +20,7 @@ import uk.gov.justice.laa.bulkclaim.client.DataClaimsRestClientV2;
 import uk.gov.justice.laa.bulkclaim.dto.submission.messages.MessageRow;
 import uk.gov.justice.laa.bulkclaim.dto.submission.messages.MessagesSummary;
 import uk.gov.justice.laa.bulkclaim.mapper.BulkClaimImportSummaryMapper;
+import uk.gov.justice.laa.bulkclaim.service.ClaimService;
 import uk.gov.justice.laa.bulkclaim.util.PaginationUtil;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.ClaimResponseV2;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.ValidationMessageBase;
@@ -28,6 +30,7 @@ import uk.gov.justice.laa.dstew.payments.claimsdata.model.ValidationMessagesResp
 @ExtendWith(MockitoExtension.class)
 class SubmissionMessagesBuilderTest {
 
+  @Mock private ClaimService claimService;
   @Mock private DataClaimsRestClient dataClaimsRestClient;
   @Mock private DataClaimsRestClientV2 dataClaimsRestClientV2;
   @Mock private BulkClaimImportSummaryMapper bulkClaimImportSummaryMapper;
@@ -60,8 +63,8 @@ class SubmissionMessagesBuilderTest {
             "client_surname,asc"))
         .thenReturn(Mono.just(errorResponse));
 
-    when(dataClaimsRestClientV2.getSubmissionClaim(submissionId, claimId))
-        .thenReturn(Mono.just(new ClaimResponseV2()));
+    when(claimService.getClaimV2(submissionId, claimId, OIDC_USER))
+        .thenReturn(new ClaimResponseV2());
 
     MessageRow mappedError =
         new MessageRow(
@@ -82,7 +85,7 @@ class SubmissionMessagesBuilderTest {
     when(bulkClaimImportSummaryMapper.toSubmissionSummaryClaimMessage(any(), any()))
         .thenReturn(mappedError);
 
-    MessagesSummary result = builder.buildErrors(submissionId, 0, 10, "client_surname,asc");
+    MessagesSummary result = builder.buildErrors(OIDC_USER, submissionId, 0, 10, "client_surname,asc");
 
     assertThat(result.messages()).containsExactly(mappedError);
     assertThat(result.totalMessageCount()).isEqualTo(1);
@@ -104,7 +107,7 @@ class SubmissionMessagesBuilderTest {
             "client_surname,asc"))
         .thenReturn(Mono.empty());
 
-    MessagesSummary result = builder.buildErrors(submissionId, 0, 10, "client_surname,asc");
+    MessagesSummary result = builder.buildErrors(OIDC_USER, submissionId, 0, 10, "client_surname,asc");
 
     assertThat(result.messages()).isEmpty();
     assertThat(result.totalMessageCount()).isZero();
@@ -154,7 +157,7 @@ class SubmissionMessagesBuilderTest {
     when(bulkClaimImportSummaryMapper.toSubmissionSummaryClaimMessage(any(), any()))
         .thenReturn(mappedError);
 
-    MessagesSummary result = builder.buildErrors(submissionId, 0, 10, "client_surname,asc");
+    MessagesSummary result = builder.buildErrors(OIDC_USER, submissionId, 0, 10, "client_surname,asc");
 
     assertThat(result.messages()).containsExactly(mappedError);
     assertThat(result.totalMessageCount()).isEqualTo(1);
@@ -205,7 +208,7 @@ class SubmissionMessagesBuilderTest {
     when(bulkClaimImportSummaryMapper.toSubmissionSummaryClaimMessage(any(), any()))
         .thenReturn(mappedError);
 
-    MessagesSummary result = builder.buildErrors(submissionId, 0, 10, "client_surname,asc");
+    MessagesSummary result = builder.buildErrors(OIDC_USER, submissionId, 0, 10, "client_surname,asc");
 
     assertThat(result.messages()).containsExactly(mappedError);
     assertThat(result.totalMessageCount()).isEqualTo(1);

@@ -28,8 +28,7 @@ public class SubmissionClaimDetailsBuilder {
                 submissionResponse.getOfficeAccountNumber(),
                 submissionResponse.getSubmissionId(),
                 page,
-                size,
-                "line_number")
+                size)
             .getBody();
     // Get all claims from data claims service
     List<SubmissionClaimRow> submissionClaimRows =
