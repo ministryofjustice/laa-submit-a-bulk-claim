@@ -5,6 +5,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
+import static uk.gov.justice.laa.bulkclaim.controller.ControllerTestHelper.OIDC_USER;
 import static uk.gov.justice.laa.dstew.payments.claimsdata.model.AreaOfLaw.CRIME_LOWER;
 
 import java.math.BigDecimal;
@@ -16,7 +17,6 @@ import java.util.Optional;
 import java.util.UUID;
 import org.jsoup.nodes.Document;
 import org.junit.jupiter.api.Test;
-import reactor.core.publisher.Mono;
 import uk.gov.justice.laa.bulkclaim.dto.submission.SubmissionSummary;
 import uk.gov.justice.laa.bulkclaim.dto.submission.claim.SubmissionClaimsDetails;
 import uk.gov.justice.laa.bulkclaim.dto.submission.messages.MessageRow;
@@ -67,7 +67,7 @@ class SubmissionDetailsSummaryViewTest extends SubmissionDetailsViewTestBase {
 
     var exportButton = selectFirst(doc, "#export-button");
     assertThat(exportButton.attr("href"))
-        .contains("/submission/%s/export".formatted(submissionId))
+        .contains("/submissions/%s/export".formatted(submissionId))
         .contains("office=0P322F")
         .contains("areaOfLaw=");
 
@@ -138,9 +138,7 @@ class SubmissionDetailsSummaryViewTest extends SubmissionDetailsViewTestBase {
             .officeAccountNumber(OFFICE_CODE)
             .areaOfLaw(CRIME_LOWER)
             .build();
-    when(dataClaimsRestClient.getSubmission(submissionId))
-        .thenReturn(Mono.just(submissionResponse));
-    when(oidcAttributeUtils.getUserOffices(USER)).thenReturn(List.of(OFFICE_CODE));
+    when(submissionService.getSubmission(submissionId, OIDC_USER)).thenReturn(submissionResponse);
     when(submissionSummaryBuilder.build(any()))
         .thenReturn(
             new SubmissionSummary(
@@ -169,8 +167,7 @@ class SubmissionDetailsSummaryViewTest extends SubmissionDetailsViewTestBase {
             .officeAccountNumber(OFFICE_CODE)
             .areaOfLaw(CRIME_LOWER)
             .build();
-    when(dataClaimsRestClient.getSubmission(submissionId))
-        .thenReturn(Mono.just(submissionResponse));
+    when(submissionService.getSubmission(submissionId, OIDC_USER)).thenReturn(submissionResponse);
     when(submissionSummaryBuilder.build(any()))
         .thenReturn(
             new SubmissionSummary(

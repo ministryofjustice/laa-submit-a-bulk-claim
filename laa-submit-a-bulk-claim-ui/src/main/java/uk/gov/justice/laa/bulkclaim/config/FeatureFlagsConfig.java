@@ -30,6 +30,13 @@ public class FeatureFlagsConfig {
     }
   }
 
+  public void checkAlternativeClaimViewDisabled() {
+    if (TRUE.equals(getIsAlternativeClaimViewEnabled())) {
+      throw new ResponseStatusException(
+          HttpStatus.NOT_FOUND, "isAlternativeClaimViewEnabled is true");
+    }
+  }
+
   public void checkUpdatedCalculatedValueAvailable() {
     if (!TRUE.equals(getIsUpdatedCalculatedValueAvailable())) {
       throw new ResponseStatusException(

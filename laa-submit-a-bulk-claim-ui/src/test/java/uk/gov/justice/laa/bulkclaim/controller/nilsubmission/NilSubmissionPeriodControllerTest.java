@@ -14,6 +14,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
 import static uk.gov.justice.laa.bulkclaim.constants.SessionConstants.NIL_SUBMISSION_FORM;
+import static uk.gov.justice.laa.bulkclaim.controller.ControllerTestHelper.OIDC_USER;
 import static uk.gov.justice.laa.dstew.payments.claimsdata.model.AreaOfLaw.MEDIATION;
 
 import java.util.LinkedHashMap;
@@ -26,7 +27,6 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.web.server.ResponseStatusException;
 import uk.gov.justice.laa.bulkclaim.controller.BaseControllerTest;
-import uk.gov.justice.laa.bulkclaim.controller.ControllerTestHelper;
 import uk.gov.justice.laa.bulkclaim.dto.submission.NilSubmissionForm;
 import uk.gov.justice.laa.bulkclaim.helper.SubmissionsResultSetTestHelper;
 import uk.gov.justice.laa.bulkclaim.service.SubmissionPeriodService;
@@ -47,7 +47,7 @@ class NilSubmissionPeriodControllerTest extends BaseControllerTest {
     mockMvc
         .perform(
             get("/nil-submission/period")
-                .with(oidcLogin().oidcUser(ControllerTestHelper.getOidcUser()))
+                .with(oidcLogin().oidcUser(OIDC_USER))
                 .sessionAttr(NIL_SUBMISSION_FORM, buildSessionForm()))
         .andExpect(status().isNotFound());
 
@@ -55,7 +55,7 @@ class NilSubmissionPeriodControllerTest extends BaseControllerTest {
         .perform(
             post("/nil-submission/period")
                 .with(csrf())
-                .with(oidcLogin().oidcUser(ControllerTestHelper.getOidcUser()))
+                .with(oidcLogin().oidcUser(OIDC_USER))
                 .sessionAttr(NIL_SUBMISSION_FORM, buildSessionForm()))
         .andExpect(status().isNotFound());
   }
@@ -69,7 +69,7 @@ class NilSubmissionPeriodControllerTest extends BaseControllerTest {
         .perform(
             post("/nil-submission/period")
                 .with(csrf())
-                .with(oidcLogin().oidcUser(ControllerTestHelper.getOidcUser()))
+                .with(oidcLogin().oidcUser(OIDC_USER))
                 .param("submissionPeriod", "JAN-2024")
                 .session(session))
         .andExpect(status().is3xxRedirection())
@@ -88,7 +88,7 @@ class NilSubmissionPeriodControllerTest extends BaseControllerTest {
         .perform(
             post("/nil-submission/period")
                 .with(csrf())
-                .with(oidcLogin().oidcUser(ControllerTestHelper.getOidcUser()))
+                .with(oidcLogin().oidcUser(OIDC_USER))
                 .param("submissionPeriod", "INVALID-2024")
                 .session(session))
         .andExpect(status().isOk())
@@ -111,7 +111,7 @@ class NilSubmissionPeriodControllerTest extends BaseControllerTest {
         .perform(
             post("/nil-submission/period")
                 .with(csrf())
-                .with(oidcLogin().oidcUser(ControllerTestHelper.getOidcUser()))
+                .with(oidcLogin().oidcUser(OIDC_USER))
                 .param("submissionPeriod", "JAN-2024")
                 .sessionAttr(NIL_SUBMISSION_FORM, new NilSubmissionForm()))
         .andExpect(status().isNotFound());
@@ -124,7 +124,7 @@ class NilSubmissionPeriodControllerTest extends BaseControllerTest {
     mockMvc
         .perform(
             get("/nil-submission/period")
-                .with(oidcLogin().oidcUser(ControllerTestHelper.getOidcUser()))
+                .with(oidcLogin().oidcUser(OIDC_USER))
                 .sessionAttr(NIL_SUBMISSION_FORM, buildSessionForm()))
         .andExpect(status().isOk())
         .andExpect(view().name("pages/nil-submission/period"))
@@ -138,7 +138,7 @@ class NilSubmissionPeriodControllerTest extends BaseControllerTest {
     mockMvc
         .perform(
             get("/nil-submission/period")
-                .with(oidcLogin().oidcUser(ControllerTestHelper.getOidcUser()))
+                .with(oidcLogin().oidcUser(OIDC_USER))
                 .sessionAttr(NIL_SUBMISSION_FORM, buildSessionForm()))
         .andExpect(status().isOk())
         .andExpect(view().name("pages/nil-submission/no-submission-periods"))
@@ -156,9 +156,7 @@ class NilSubmissionPeriodControllerTest extends BaseControllerTest {
 
     mockMvc
         .perform(
-            get("/nil-submission/period")
-                .with(oidcLogin().oidcUser(ControllerTestHelper.getOidcUser()))
-                .session(session))
+            get("/nil-submission/period").with(oidcLogin().oidcUser(OIDC_USER)).session(session))
         .andExpect(status().isOk());
 
     var updatedForm = (NilSubmissionForm) session.getAttribute(NIL_SUBMISSION_FORM);

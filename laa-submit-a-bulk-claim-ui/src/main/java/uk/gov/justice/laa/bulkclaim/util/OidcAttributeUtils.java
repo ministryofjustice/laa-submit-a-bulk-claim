@@ -3,16 +3,30 @@ package uk.gov.justice.laa.bulkclaim.util;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.oauth2.core.oidc.user.OidcUser;
 import org.springframework.stereotype.Component;
+import org.springframework.web.server.ResponseStatusException;
 
 @Component
+@Slf4j
 public class OidcAttributeUtils {
 
   private static final String OFFICES_ATTR = "LAA_ACCOUNTS";
 
   public List<String> getUserOffices(OidcUser oidcUser) {
     return getAttributeAsList(oidcUser, OFFICES_ATTR);
+  }
+
+  public void checkOfficeAccess(OidcUser oidcUser, String office) {
+    var offices = getUserOffices(oidcUser);
+    if (!offices.contains(office)) {
+      var oid = oidcUser.getAttribute("oid");
+      var message = "User %s does not have access to office %s".formatted(oid, office);
+      log.error(message);
+      throw new ResponseStatusException(HttpStatus.NOT_FOUND, message);
+    }
   }
 
   private List<String> getAttributeAsList(OidcUser oidcUser, String attributeName) {

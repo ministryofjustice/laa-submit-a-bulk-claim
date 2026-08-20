@@ -7,6 +7,7 @@ import static org.mockito.Mockito.when;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.oidcLogin;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
+import static uk.gov.justice.laa.bulkclaim.controller.ControllerTestHelper.OIDC_USER;
 
 import org.jsoup.Jsoup;
 import org.junit.jupiter.api.Test;
@@ -17,7 +18,6 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.web.client.ResourceAccessException;
 import tools.jackson.databind.ObjectMapper;
 import uk.gov.justice.laa.bulkclaim.controller.BulkImportController;
-import uk.gov.justice.laa.bulkclaim.controller.ControllerTestHelper;
 import uk.gov.justice.laa.bulkclaim.metrics.BulkClaimMetricService;
 import uk.gov.justice.laa.bulkclaim.service.VirusCheckService;
 import uk.gov.justice.laa.bulkclaim.validation.BulkImportFileValidator;
@@ -98,7 +98,7 @@ class BulkUploadPageViewTest extends ViewTestBase {
                 multipart(mapping)
                     .file(file)
                     .with(csrf())
-                    .with(oidcLogin().oidcUser(ControllerTestHelper.getOidcUser()))
+                    .with(oidcLogin().oidcUser(OIDC_USER))
                     .session(session))
             .andReturn()
             .getResponse();

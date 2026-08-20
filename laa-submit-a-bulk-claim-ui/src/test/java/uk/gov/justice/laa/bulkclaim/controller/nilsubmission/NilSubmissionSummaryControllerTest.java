@@ -15,6 +15,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
 import static uk.gov.justice.laa.bulkclaim.constants.SessionConstants.NIL_SUBMISSION_FORM;
+import static uk.gov.justice.laa.bulkclaim.controller.ControllerTestHelper.OIDC_USER;
 import static uk.gov.justice.laa.dstew.payments.claimsdata.model.AreaOfLaw.MEDIATION;
 
 import java.util.List;
@@ -27,7 +28,6 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.web.server.ResponseStatusException;
 import uk.gov.justice.laa.bulkclaim.controller.BaseControllerTest;
-import uk.gov.justice.laa.bulkclaim.controller.ControllerTestHelper;
 import uk.gov.justice.laa.bulkclaim.dto.NilSubmissionResult;
 import uk.gov.justice.laa.bulkclaim.dto.submission.NilSubmissionForm;
 import uk.gov.justice.laa.bulkclaim.service.NilSubmissionService;
@@ -48,7 +48,7 @@ class NilSubmissionSummaryControllerTest extends BaseControllerTest {
     mockMvc
         .perform(
             get("/nil-submission/summary-details")
-                .with(oidcLogin().oidcUser(ControllerTestHelper.getOidcUser()))
+                .with(oidcLogin().oidcUser(OIDC_USER))
                 .sessionAttr(NIL_SUBMISSION_FORM, buildSessionForm()))
         .andExpect(status().isNotFound());
 
@@ -56,7 +56,7 @@ class NilSubmissionSummaryControllerTest extends BaseControllerTest {
         .perform(
             post("/nil-submission/summary-details")
                 .with(csrf())
-                .with(oidcLogin().oidcUser(ControllerTestHelper.getOidcUser()))
+                .with(oidcLogin().oidcUser(OIDC_USER))
                 .sessionAttr(NIL_SUBMISSION_FORM, buildSessionForm()))
         .andExpect(status().isNotFound());
 
@@ -68,7 +68,7 @@ class NilSubmissionSummaryControllerTest extends BaseControllerTest {
     mockMvc
         .perform(
             get("/nil-submission/summary-details")
-                .with(oidcLogin().oidcUser(ControllerTestHelper.getOidcUser()))
+                .with(oidcLogin().oidcUser(OIDC_USER))
                 .sessionAttr(NIL_SUBMISSION_FORM, buildSessionForm()))
         .andExpect(status().isOk())
         .andExpect(view().name("pages/nil-submission/summary-details"));
@@ -86,10 +86,10 @@ class NilSubmissionSummaryControllerTest extends BaseControllerTest {
         .perform(
             post("/nil-submission/summary-details")
                 .with(csrf())
-                .with(oidcLogin().oidcUser(ControllerTestHelper.getOidcUser()))
+                .with(oidcLogin().oidcUser(OIDC_USER))
                 .session(session))
         .andExpect(status().is3xxRedirection())
-        .andExpect(redirectedUrl("/submission/" + submissionId));
+        .andExpect(redirectedUrl("/submissions/" + submissionId));
 
     var form = (NilSubmissionForm) session.getAttribute(NIL_SUBMISSION_FORM);
     assertNull(form.getOffice());
@@ -113,7 +113,7 @@ class NilSubmissionSummaryControllerTest extends BaseControllerTest {
         .perform(
             post("/nil-submission/summary-details")
                 .with(csrf())
-                .with(oidcLogin().oidcUser(ControllerTestHelper.getOidcUser()))
+                .with(oidcLogin().oidcUser(OIDC_USER))
                 .session(session))
         .andExpect(status().isOk())
         .andExpect(view().name("pages/nil-submission/summary-details"))
@@ -137,7 +137,7 @@ class NilSubmissionSummaryControllerTest extends BaseControllerTest {
         .perform(
             post("/nil-submission/summary-details")
                 .with(csrf())
-                .with(oidcLogin().oidcUser(ControllerTestHelper.getOidcUser()))
+                .with(oidcLogin().oidcUser(OIDC_USER))
                 .sessionAttr(NIL_SUBMISSION_FORM, form))
         .andExpect(status().isNotFound());
 

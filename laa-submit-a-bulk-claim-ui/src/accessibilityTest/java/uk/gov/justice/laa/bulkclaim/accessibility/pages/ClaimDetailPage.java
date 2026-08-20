@@ -11,7 +11,6 @@ public final class ClaimDetailPage {
   }
 
   public void open(String appBaseUrl, String submissionId, String claimId) {
-    page.navigate(appBaseUrl + "/view-submission-detail?submissionId=" + submissionId);
-    page.navigate(appBaseUrl + "/submission/claim/" + claimId);
+    page.navigate(appBaseUrl + "/submissions/%s/claims/%s".formatted(submissionId, claimId));
   }
 }

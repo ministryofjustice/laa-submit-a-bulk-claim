@@ -3,12 +3,16 @@ package uk.gov.justice.laa.bulkclaim.service;
 import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
+import org.springframework.security.oauth2.core.oidc.user.OidcUser;
 import org.springframework.stereotype.Component;
+import org.springframework.web.server.ResponseStatusException;
 import uk.gov.justice.laa.bulkclaim.builder.ClaimStatusBannerBuilder;
 import uk.gov.justice.laa.bulkclaim.builder.LatestAssessmentResolver;
 import uk.gov.justice.laa.bulkclaim.client.DataClaimsRestClient;
 import uk.gov.justice.laa.bulkclaim.client.DataClaimsRestClientV2;
-import uk.gov.justice.laa.bulkclaim.exception.SubmitBulkClaimException;
+import uk.gov.justice.laa.bulkclaim.util.OidcAttributeUtils;
 import uk.gov.justice.laa.bulkclaim.viewmodels.claimdetails.ClaimDetailPageData;
 import uk.gov.justice.laa.bulkclaim.viewmodels.claimdetails.ClaimDetailView;
 import uk.gov.justice.laa.bulkclaim.viewmodels.claimdetails.ClaimDetailViewFactory;
@@ -20,24 +24,34 @@ import uk.gov.justice.laa.dstew.payments.claimsdata.model.DerivedClaimStatus;
 
 @Component
 @RequiredArgsConstructor
+@Slf4j
 public class ClaimService {
 
   private final DataClaimsRestClient dataClaimsRestClient;
   private final DataClaimsRestClientV2 dataClaimsRestClientV2;
   private final ClaimDetailViewFactory claimDetailViewFactory;
   private final LatestAssessmentResolver latestAssessmentResolver;
+  private final OidcAttributeUtils oidcAttributeUtils;
 
-  public ClaimDetailPageData getClaimDetailPageData(UUID submissionId, UUID claimId) {
-
-    ClaimResponseV2 claimResponse =
+  public ClaimResponseV2 getClaimV2(UUID submissionId, UUID claimId, OidcUser user) {
+    ClaimResponseV2 claim =
         dataClaimsRestClientV2
             .getSubmissionClaim(submissionId, claimId)
             .blockOptional()
             .orElseThrow(
                 () ->
-                    new SubmitBulkClaimException(
+                    new ResponseStatusException(
+                        HttpStatus.NOT_FOUND,
                         "Claim %s does not exist for submission %s"
-                            .formatted(claimId.toString(), submissionId.toString())));
+                            .formatted(claimId, submissionId)));
+
+    oidcAttributeUtils.checkOfficeAccess(user, claim.getOfficeCode());
+    return claim;
+  }
+
+  public ClaimDetailPageData getClaimDetailPageData(
+      UUID submissionId, UUID claimId, OidcUser user) {
+    ClaimResponseV2 claimResponse = getClaimV2(submissionId, claimId, user);
 
     DerivedClaimStatus derivedClaimStatus = claimResponse.getDerivedClaimStatus();
     boolean showCurrentCalculated =

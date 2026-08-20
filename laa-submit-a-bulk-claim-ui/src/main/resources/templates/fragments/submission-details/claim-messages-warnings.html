@@ -115,7 +115,7 @@
               th:id="|claim-message-warning-${idx.index}|">
             <td class="govuk-table__cell">
               <a class="govuk-link"
-                 th:href="@{/submission/claim/{id}(id=${message.claimReference().get()}, navTab=${navTab}, messagesPage=${messagesPage})}"
+                 th:href="@{/submissions/{submissionId}/claims/{claimId}(submissionId=${submissionId}, claimId=${message.claimReference().get()}, navTab=${navTab}, messagesPage=${messagesPage})}"
                  th:text="#{submission.summary.claims.viewLink}"></a>
 
             </td>
@@ -136,7 +136,7 @@
               th:id="|claim-message-warning-${idx.index}|">
             <td class="govuk-table__cell">
               <a class="govuk-link"
-                 th:href="@{/submission/claim/{id}(id=${message.claimReference().get()}, navTab=${navTab}, messagesPage=${messagesPage})}"
+                 th:href="@{/submissions/{submissionId}/claims/{claimId}(submissionId=${submissionId}, claimId=${message.claimReference().get()}, navTab=${navTab}, messagesPage=${messagesPage})}"
                  th:text="#{submission.summary.claims.viewLink}"></a>
 
             </td>
@@ -159,7 +159,7 @@
               th:id="|claim-message-warning-${idx.index}|">
             <td class="govuk-table__cell">
               <a class="govuk-link"
-                 th:href="@{/submission/claim/{id}(id=${message.claimReference().get()}, navTab=${navTab}, messagesPage=${messagesPage})}"
+                 th:href="@{/submissions/{submissionId}/claims/{claimId}(submissionId=${submissionId}, claimId=${message.claimReference().get()}, navTab=${navTab}, messagesPage=${messagesPage})}"
                  th:text="#{submission.summary.claims.viewLink}"></a>
 
             </td>

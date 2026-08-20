@@ -6,6 +6,7 @@ import static org.springframework.security.test.web.servlet.request.SecurityMock
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.oidcLogin;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static uk.gov.justice.laa.bulkclaim.controller.ControllerTestHelper.OIDC_USER;
 
 import java.util.List;
 import java.util.Map;
@@ -18,7 +19,6 @@ import org.springframework.context.annotation.Import;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
-import uk.gov.justice.laa.bulkclaim.controller.ControllerTestHelper;
 import uk.gov.justice.laa.bulkclaim.controller.SearchController;
 import uk.gov.justice.laa.bulkclaim.dto.SubmissionOutcomeFilter;
 import uk.gov.justice.laa.bulkclaim.util.PaginationLinksBuilder;
@@ -113,7 +113,7 @@ class SearchFormViewTest extends ViewTestBase {
                       .with(csrf())
                       .params(params)
                       .session(session)
-                      .with(oidcLogin().oidcUser(ControllerTestHelper.getOidcUser())))
+                      .with(oidcLogin().oidcUser(OIDC_USER)))
               .andExpect(status().is(200))
               .andReturn()
               .getResponse()

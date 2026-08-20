@@ -1,9 +1,7 @@
 package uk.gov.justice.laa.bulkclaim.controller;
 
 import static uk.gov.justice.laa.bulkclaim.constants.SessionConstants.BULK_SUBMISSION_ID;
-import static uk.gov.justice.laa.bulkclaim.constants.SessionConstants.SUBMISSION_DATE_TIME;
 import static uk.gov.justice.laa.bulkclaim.constants.SessionConstants.SUBMISSION_ID;
-import static uk.gov.justice.laa.bulkclaim.constants.SessionConstants.UPLOADED_FILENAME;
 
 import java.util.List;
 import java.util.UUID;
@@ -14,8 +12,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.Assert;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.SessionAttributes;
+import org.springframework.web.bind.annotation.SessionAttribute;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
 import uk.gov.justice.laa.bulkclaim.client.DataClaimsRestClient;
 import uk.gov.justice.laa.bulkclaim.exception.SubmitBulkClaimException;
@@ -25,7 +22,6 @@ import uk.gov.justice.laa.dstew.payments.claimsdata.model.GetBulkSubmissionStatu
 @Slf4j
 @Controller
 @RequiredArgsConstructor
-@SessionAttributes({SUBMISSION_ID, BULK_SUBMISSION_ID, UPLOADED_FILENAME, SUBMISSION_DATE_TIME})
 public class BulkUploadBeingCheckedController {
 
   private final DataClaimsRestClient dataClaimsRestClient;
@@ -43,8 +39,13 @@ public class BulkUploadBeingCheckedController {
   @GetMapping("/upload-is-being-checked")
   public String uploadBeingChecked(
       Model model,
-      @ModelAttribute(SUBMISSION_ID) UUID submissionId,
-      @ModelAttribute(BULK_SUBMISSION_ID) UUID bulkSubmissionId) {
+      @SessionAttribute(name = SUBMISSION_ID, required = false) UUID submissionId,
+      @SessionAttribute(name = BULK_SUBMISSION_ID, required = false) UUID bulkSubmissionId) {
+
+    if (submissionId == null || bulkSubmissionId == null) {
+      log.info("Submission IDs not found in session, redirecting to landing page");
+      return "redirect:/";
+    }
 
     try {
       GetBulkSubmissionStatusById200Response bulkSubmission =
@@ -61,7 +62,7 @@ public class BulkUploadBeingCheckedController {
         return "pages/upload-being-checked";
       }
       if (completedStatuses.contains(bulkSubmissionStatus)) {
-        return "redirect:/submission/%s".formatted(submissionId.toString());
+        return "redirect:/submissions/%s".formatted(submissionId.toString());
       }
       throw new SubmitBulkClaimException(
           "Unexpected bulk submission status returned for: " + bulkSubmissionId);

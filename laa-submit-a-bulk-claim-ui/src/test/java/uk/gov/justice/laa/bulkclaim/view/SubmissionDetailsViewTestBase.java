@@ -1,6 +1,7 @@
 package uk.gov.justice.laa.bulkclaim.view;
 
 import static org.mockito.Mockito.when;
+import static uk.gov.justice.laa.bulkclaim.controller.ControllerTestHelper.OIDC_USER;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,6 +17,7 @@ import uk.gov.justice.laa.bulkclaim.constants.ViewSubmissionNavigationTab;
 import uk.gov.justice.laa.bulkclaim.controller.SubmissionDetailController;
 import uk.gov.justice.laa.bulkclaim.dto.PaginationLinks;
 import uk.gov.justice.laa.bulkclaim.dto.PaginationPageLink;
+import uk.gov.justice.laa.bulkclaim.service.SubmissionService;
 import uk.gov.justice.laa.bulkclaim.util.PaginationLinksBuilder;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.Page;
 
@@ -30,14 +32,15 @@ public abstract class SubmissionDetailsViewTestBase extends ViewTestBase {
   @MockitoBean protected SubmissionMessagesBuilder submissionMessagesBuilder;
   @MockitoBean protected SubmissionMatterStartsDetailsBuilder submissionMatterStartsDetailsBuilder;
   @MockitoBean protected PaginationLinksBuilder paginationLinksBuilder;
+  @MockitoBean protected SubmissionService submissionService;
 
   protected SubmissionDetailsViewTestBase() {
-    this.mapping = String.format("/view-submission-detail?submissionId=%s", submissionId);
+    this.mapping = "/submissions/%s".formatted(submissionId);
   }
 
   @BeforeEach
   void beforeEach() {
-    when(oidcAttributeUtils.getUserOffices(USER)).thenReturn(List.of(OFFICE_CODE));
+    when(oidcAttributeUtils.getUserOffices(OIDC_USER)).thenReturn(List.of(OFFICE_CODE));
   }
 
   protected static Page pagination(int currentPage, int totalPages) {
@@ -81,10 +84,10 @@ public abstract class SubmissionDetailsViewTestBase extends ViewTestBase {
       ViewSubmissionNavigationTab navTab,
       String sort) {
     if ("messagesPage".equals(pageVarName)) {
-      return "/view-submission-detail?submissionId=%s&navTab=%s&messagesPage=%s&messagesSort=%s"
+      return "/submissions/%s?navTab=%s&messagesPage=%s&messagesSort=%s"
           .formatted(submissionId, navTab, pageNumber, sort);
     }
-    return "/view-submission-detail?submissionId=%s&navTab=%s&page=%s&sort=%s"
+    return "/submissions/%s?navTab=%s&page=%s&sort=%s"
         .formatted(submissionId, navTab, pageNumber, sort);
   }
 }

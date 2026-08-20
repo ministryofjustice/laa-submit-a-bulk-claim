@@ -1,7 +1,6 @@
 package uk.gov.justice.laa.bulkclaim.controller.nilsubmission;
 
 import static uk.gov.justice.laa.bulkclaim.constants.SessionConstants.NIL_SUBMISSION_FORM;
-import static uk.gov.justice.laa.bulkclaim.constants.SessionConstants.SUBMISSION_ID;
 import static uk.gov.justice.laa.bulkclaim.util.NilSubmissionSessionManager.cleanseSession;
 import static uk.gov.justice.laa.bulkclaim.util.NilSubmissionSessionManager.validateSessionState;
 
@@ -24,7 +23,7 @@ import uk.gov.justice.laa.bulkclaim.util.NilSubmissionPage;
 @Controller
 @RequiredArgsConstructor
 @Slf4j
-@SessionAttributes({NIL_SUBMISSION_FORM, SUBMISSION_ID})
+@SessionAttributes({NIL_SUBMISSION_FORM})
 public class NilSubmissionsSummaryController {
 
   private final NilSubmissionService nilSubmissionService;
@@ -59,8 +58,7 @@ public class NilSubmissionsSummaryController {
       return "pages/nil-submission/summary-details";
     }
 
-    model.addAttribute(SUBMISSION_ID, result.submissionId());
     cleanseSession(form, NilSubmissionPage.OTHER);
-    return "redirect:/submission/" + result.submissionId();
+    return "redirect:/submissions/" + result.submissionId();
   }
 }

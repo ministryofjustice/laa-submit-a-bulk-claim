@@ -8,7 +8,7 @@
     <a id="export-button" class="govuk-button govuk-button--secondary"
        th:if="${showWarnings == true}"
        data-module="laa-hide-on-print-button"
-        th:href="@{/submission/{submissionId}/export(submissionId=${submissionSummary?.submissionReference}, office=${submissionSummary.officeAccount}, areaOfLaw=${submissionSummary.areaOfLaw()})}"
+        th:href="@{/submissions/{submissionId}/export(submissionId=${submissionSummary?.submissionReference}, office=${submissionSummary.officeAccount}, areaOfLaw=${submissionSummary.areaOfLaw()})}"
         th:text="#{submission.export}"></a>
   </div>
 

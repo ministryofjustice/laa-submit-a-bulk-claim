@@ -5,6 +5,7 @@ import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
+import static uk.gov.justice.laa.bulkclaim.controller.ControllerTestHelper.OIDC_USER;
 import static uk.gov.justice.laa.dstew.payments.claimsdata.model.AreaOfLaw.CRIME_LOWER;
 import static uk.gov.justice.laa.dstew.payments.claimsdata.model.AreaOfLaw.LEGAL_HELP;
 import static uk.gov.justice.laa.dstew.payments.claimsdata.model.AreaOfLaw.MEDIATION;
@@ -21,7 +22,6 @@ import org.jsoup.select.Elements;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
-import reactor.core.publisher.Mono;
 import uk.gov.justice.laa.bulkclaim.constants.ViewSubmissionNavigationTab;
 import uk.gov.justice.laa.bulkclaim.dto.submission.SubmissionSummary;
 import uk.gov.justice.laa.bulkclaim.dto.submission.claim.SubmissionClaimRow;
@@ -434,7 +434,7 @@ class SubmissionDetailsWarningFieldViewTest extends SubmissionDetailsViewTestBas
         headers.get(headerIndex),
         expectedAriaDirection,
         fieldName,
-        "/view-submission-detail?submissionId=%s&navTab=%s&messagesPage=0&messagesSort=%s,%s"
+        "/submissions/%s?navTab=%s&messagesPage=0&messagesSort=%s,%s"
             .formatted(
                 submissionId,
                 ViewSubmissionNavigationTab.CLAIM_MESSAGES,
@@ -443,7 +443,7 @@ class SubmissionDetailsWarningFieldViewTest extends SubmissionDetailsViewTestBas
   }
 
   private String warningSortLink(String field) {
-    return "/view-submission-detail?submissionId=%s&navTab=CLAIM_MESSAGES&messagesPage=0&messagesSort=%s,asc"
+    return "/submissions/%s?navTab=CLAIM_MESSAGES&messagesPage=0&messagesSort=%s,asc"
         .formatted(submissionId, field);
   }
 
@@ -456,8 +456,7 @@ class SubmissionDetailsWarningFieldViewTest extends SubmissionDetailsViewTestBas
             .officeAccountNumber(OFFICE_CODE)
             .areaOfLaw(areaOfLaw)
             .build();
-    when(dataClaimsRestClient.getSubmission(submissionId))
-        .thenReturn(Mono.just(submissionResponse));
+    when(submissionService.getSubmission(submissionId, OIDC_USER)).thenReturn(submissionResponse);
     when(submissionSummaryBuilder.build(any()))
         .thenReturn(
             new SubmissionSummary(
@@ -492,8 +491,7 @@ class SubmissionDetailsWarningFieldViewTest extends SubmissionDetailsViewTestBas
             .officeAccountNumber(OFFICE_CODE)
             .areaOfLaw(areaOfLaw)
             .build();
-    when(dataClaimsRestClient.getSubmission(submissionId))
-        .thenReturn(Mono.just(submissionResponse));
+    when(submissionService.getSubmission(submissionId, OIDC_USER)).thenReturn(submissionResponse);
     when(submissionSummaryBuilder.build(any()))
         .thenReturn(
             new SubmissionSummary(

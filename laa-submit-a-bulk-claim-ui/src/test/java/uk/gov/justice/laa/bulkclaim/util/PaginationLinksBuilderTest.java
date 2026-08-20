@@ -18,23 +18,18 @@ class PaginationLinksBuilderTest {
 
     PaginationLinks links =
         paginationLinksBuilder.build(
-            "/view-submission-detail#claims-table",
+            "/submissions/%s#claims-table".formatted("123"),
             page,
             "page",
-            "submissionId",
-            "123",
             "offices",
             List.of("A", "B"));
 
     assertThat(links.previousHref())
-        .isEqualTo(
-            "/view-submission-detail?page=0&submissionId=123&offices=A&offices=B#claims-table");
+        .isEqualTo("/submissions/%s?page=0&offices=A&offices=B#claims-table".formatted("123"));
     assertThat(links.nextHref())
-        .isEqualTo(
-            "/view-submission-detail?page=2&submissionId=123&offices=A&offices=B#claims-table");
+        .isEqualTo("/submissions/%s?page=2&offices=A&offices=B#claims-table".formatted("123"));
     assertThat(links.pageLinks().get(1).pageNumber()).isEqualTo(1);
     assertThat(links.pageLinks().get(1).href())
-        .isEqualTo(
-            "/view-submission-detail?page=1&submissionId=123&offices=A&offices=B#claims-table");
+        .isEqualTo("/submissions/%s?page=1&offices=A&offices=B#claims-table".formatted("123"));
   }
 }
