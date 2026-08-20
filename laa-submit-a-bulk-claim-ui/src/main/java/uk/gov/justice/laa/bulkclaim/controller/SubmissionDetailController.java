@@ -78,8 +78,6 @@ public class SubmissionDetailController {
     model.addAttribute("claimDetailsTab", ViewSubmissionNavigationTab.CLAIM_DETAILS);
 
     model.addAttribute(
-        "showOldClaimsTable", !featureFlagsConfig.getIsAlternativeClaimViewEnabled());
-    model.addAttribute(
         "showUpdatedCalculatedValueColumn",
         featureFlagsConfig.getIsUpdatedCalculatedValueAvailable());
 
