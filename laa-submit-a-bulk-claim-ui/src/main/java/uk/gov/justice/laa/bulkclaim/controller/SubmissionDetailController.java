@@ -175,7 +175,10 @@ public class SubmissionDetailController {
   }
 
   private void handleInvalidSubmission(
-      Model model, OidcUser user, SubmissionResponse submissionResponse, MessageQuery messageQuery) {
+      Model model,
+      OidcUser user,
+      SubmissionResponse submissionResponse,
+      MessageQuery messageQuery) {
 
     MessagesSummary messagesSummary =
         submissionMessagesBuilder.buildErrors(

@@ -85,7 +85,8 @@ class SubmissionMessagesBuilderTest {
     when(bulkClaimImportSummaryMapper.toSubmissionSummaryClaimMessage(any(), any()))
         .thenReturn(mappedError);
 
-    MessagesSummary result = builder.buildErrors(OIDC_USER, submissionId, 0, 10, "client_surname,asc");
+    MessagesSummary result =
+        builder.buildErrors(OIDC_USER, submissionId, 0, 10, "client_surname,asc");
 
     assertThat(result.messages()).containsExactly(mappedError);
     assertThat(result.totalMessageCount()).isEqualTo(1);
@@ -107,7 +108,8 @@ class SubmissionMessagesBuilderTest {
             "client_surname,asc"))
         .thenReturn(Mono.empty());
 
-    MessagesSummary result = builder.buildErrors(OIDC_USER, submissionId, 0, 10, "client_surname,asc");
+    MessagesSummary result =
+        builder.buildErrors(OIDC_USER, submissionId, 0, 10, "client_surname,asc");
 
     assertThat(result.messages()).isEmpty();
     assertThat(result.totalMessageCount()).isZero();
@@ -157,7 +159,8 @@ class SubmissionMessagesBuilderTest {
     when(bulkClaimImportSummaryMapper.toSubmissionSummaryClaimMessage(any(), any()))
         .thenReturn(mappedError);
 
-    MessagesSummary result = builder.buildErrors(OIDC_USER, submissionId, 0, 10, "client_surname,asc");
+    MessagesSummary result =
+        builder.buildErrors(OIDC_USER, submissionId, 0, 10, "client_surname,asc");
 
     assertThat(result.messages()).containsExactly(mappedError);
     assertThat(result.totalMessageCount()).isEqualTo(1);
@@ -208,7 +211,8 @@ class SubmissionMessagesBuilderTest {
     when(bulkClaimImportSummaryMapper.toSubmissionSummaryClaimMessage(any(), any()))
         .thenReturn(mappedError);
 
-    MessagesSummary result = builder.buildErrors(OIDC_USER, submissionId, 0, 10, "client_surname,asc");
+    MessagesSummary result =
+        builder.buildErrors(OIDC_USER, submissionId, 0, 10, "client_surname,asc");
 
     assertThat(result.messages()).containsExactly(mappedError);
     assertThat(result.totalMessageCount()).isEqualTo(1);

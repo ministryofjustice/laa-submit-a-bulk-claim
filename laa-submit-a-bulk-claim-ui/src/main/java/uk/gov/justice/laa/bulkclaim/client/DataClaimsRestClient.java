@@ -17,7 +17,6 @@ import reactor.core.publisher.Mono;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.AreaOfLaw;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.AssessmentResultSet;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.ClaimHistoryResultSet;
-import uk.gov.justice.laa.dstew.payments.claimsdata.model.ClaimResultSet;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.CreateBulkSubmission201Response;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.CreateSubmission201Response;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.GetBulkSubmissionStatusById200Response;
