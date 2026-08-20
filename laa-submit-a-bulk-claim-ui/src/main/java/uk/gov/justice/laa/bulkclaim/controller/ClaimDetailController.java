@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.util.UriComponentsBuilder;
 import uk.gov.justice.laa.bulkclaim.builder.SubmissionMessagesBuilder;
-import uk.gov.justice.laa.bulkclaim.client.DataClaimsRestClient;
+import uk.gov.justice.laa.bulkclaim.client.DataClaimsRestClientV2;
 import uk.gov.justice.laa.bulkclaim.config.FeatureFlagsConfig;
 import uk.gov.justice.laa.bulkclaim.constants.ViewSubmissionNavigationTab;
 import uk.gov.justice.laa.bulkclaim.dto.submission.messages.MessagesSummary;
@@ -27,7 +27,7 @@ import uk.gov.justice.laa.bulkclaim.mapper.ClaimSummaryMapper;
 import uk.gov.justice.laa.bulkclaim.service.ClaimService;
 import uk.gov.justice.laa.bulkclaim.service.SubmissionService;
 import uk.gov.justice.laa.bulkclaim.viewmodels.claimdetails.ClaimDetailPageData;
-import uk.gov.justice.laa.dstew.payments.claimsdata.model.ClaimResponse;
+import uk.gov.justice.laa.dstew.payments.claimsdata.model.ClaimResponseV2;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionResponse;
 
 @Slf4j
@@ -35,7 +35,7 @@ import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionResponse;
 @RequiredArgsConstructor
 public final class ClaimDetailController {
 
-  private final DataClaimsRestClient dataClaimsRestClient;
+  private final DataClaimsRestClientV2 dataClaimsRestClientV2;
   private final ClaimSummaryMapper claimSummaryMapper;
   private final ClaimFeeCalculationBreakdownMapper claimFeeCalculationBreakdownMapper;
   private final SubmissionMessagesBuilder submissionMessagesBuilder;
@@ -118,8 +118,8 @@ public final class ClaimDetailController {
             .buildAndExpand(submissionId)
             .toUriString());
 
-    ClaimResponse claimResponse =
-        dataClaimsRestClient
+    ClaimResponseV2 claimResponse =
+        dataClaimsRestClientV2
             .getSubmissionClaim(submissionId, claimId)
             .blockOptional()
             .orElseThrow(

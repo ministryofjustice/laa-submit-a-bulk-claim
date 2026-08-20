@@ -23,12 +23,13 @@ public class SubmissionClaimDetailsBuilder {
 
   public SubmissionClaimsDetails build(SubmissionResponse submissionResponse, int page, int size) {
     var submissionClaimData =
-        dataClaimsRestClient
+        dataClaimsRestClientV2
             .getClaims(
                 submissionResponse.getOfficeAccountNumber(),
                 submissionResponse.getSubmissionId(),
                 page,
-                size)
+                size,
+                "line_number")
             .getBody();
     // Get all claims from data claims service
     List<SubmissionClaimRow> submissionClaimRows =

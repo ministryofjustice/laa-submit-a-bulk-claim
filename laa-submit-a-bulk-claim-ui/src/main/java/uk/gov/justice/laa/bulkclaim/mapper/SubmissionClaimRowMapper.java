@@ -6,7 +6,6 @@ import org.mapstruct.Mapping;
 import org.mapstruct.Named;
 import uk.gov.justice.laa.bulkclaim.dto.submission.claim.SubmissionClaimRow;
 import uk.gov.justice.laa.bulkclaim.dto.submission.claim.SubmissionClaimRowCostsDetails;
-import uk.gov.justice.laa.dstew.payments.claimsdata.model.ClaimResponse;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.ClaimResponseV2;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.DerivedClaimStatus;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.FeeCalculationType;
@@ -32,7 +31,7 @@ public interface SubmissionClaimRowMapper {
   @Mapping(target = "costsDetails", source = "claimFields")
   @Mapping(target = "totalMessages", source = "totalMessages")
   @Mapping(target = "escapeCase", expression = "java(resolveEscapeCase(claimFields))")
-  SubmissionClaimRow toSubmissionClaimRow(ClaimResponse claimFields, int totalMessages);
+  SubmissionClaimRow toSubmissionClaimRow(ClaimResponseV2 claimFields, int totalMessages);
 
   @Mapping(target = "ufn", source = "claimFields.uniqueFileNumber")
   @Mapping(target = "ucn", source = "claimFields.uniqueClientNumber")
@@ -81,20 +80,7 @@ public interface SubmissionClaimRowMapper {
   }
 
   @Mapping(target = "claimValue", source = "claimFields.feeCalculationResponse.totalAmount")
-  SubmissionClaimRowCostsDetails toSubmissionClaimRowCostsDetails(ClaimResponse claimFields);
-
-  @Mapping(target = "claimValue", source = "claimFields.feeCalculationResponse.totalAmount")
   SubmissionClaimRowCostsDetails toSubmissionClaimRowCostsDetails(ClaimResponseV2 claimFields);
-
-  /** Retrieves the escape case flag from the nested fee calculation response if available. */
-  default Boolean resolveEscapeCase(ClaimResponse claimFields) {
-    if (claimFields == null
-        || claimFields.getFeeCalculationResponse() == null
-        || claimFields.getFeeCalculationResponse().getBoltOnDetails() == null) {
-      return null;
-    }
-    return claimFields.getFeeCalculationResponse().getBoltOnDetails().getEscapeCaseFlag();
-  }
 
   /**
    * Resolves the escape case flag from the given ClaimResponseV2 object. This method navigates
