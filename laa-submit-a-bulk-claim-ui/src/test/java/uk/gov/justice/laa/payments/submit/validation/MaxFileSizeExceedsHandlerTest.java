@@ -1,0 +1,55 @@
+package uk.gov.justice.laa.payments.submit.validation;
+
+import static org.assertj.core.api.Assertions.assertThat;
+
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.ui.ExtendedModelMap;
+import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
+import org.springframework.web.multipart.MaxUploadSizeExceededException;
+import uk.gov.justice.laa.payments.submit.controller.BulkImportController;
+import uk.gov.justice.laa.payments.submit.dto.FileUploadForm;
+import uk.gov.justice.laa.payments.submit.metrics.BulkClaimMetricService;
+
+@ExtendWith(MockitoExtension.class)
+class MaxFileSizeExceedsHandlerTest {
+
+  @Mock private BulkClaimMetricService bulkClaimMetricService;
+
+  @InjectMocks private MaxFileSizeExceedsHandler handler;
+
+  @Test
+  void handleMaxSizeExceptionPopulatesModelAndReturnsUploadView() {
+    Model model = new ExtendedModelMap();
+
+    String viewName = handler.handleMaxSizeException(new MaxUploadSizeExceededException(11), model);
+
+    assertThat(viewName).isEqualTo("pages/upload");
+    assertThat(model.getAttribute(BulkImportController.FILE_UPLOAD_FORM_MODEL_ATTR))
+        .isInstanceOf(FileUploadForm.class);
+    FileUploadForm fileUploadForm =
+        (FileUploadForm) model.getAttribute(BulkImportController.FILE_UPLOAD_FORM_MODEL_ATTR);
+    assertThat(fileUploadForm.getFile()).isNull();
+
+    Object bindingResultAttribute =
+        model.getAttribute(
+            "org.springframework.validation.BindingResult."
+                + BulkImportController.FILE_UPLOAD_FORM_MODEL_ATTR);
+    assertThat(bindingResultAttribute).isInstanceOf(BindingResult.class);
+
+    BindingResult bindingResult = (BindingResult) bindingResultAttribute;
+    FieldError fieldError = bindingResult.getFieldError("file");
+
+    assertThat(fieldError).isNotNull();
+    assertThat(fieldError.getCode()).isEqualTo("bulkImport.validation.size");
+    assertThat(fieldError.getDefaultMessage())
+        .isEqualTo("File size too large. Maximum allowed is 10MB.");
+    assertThat(fieldError.getArguments()).isNotNull();
+    assertThat(fieldError.getArguments()).contains("10MB");
+  }
+}

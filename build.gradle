@@ -3,5 +3,5 @@ plugins {
 }
 
 subprojects {
-    group = 'uk.gov.justice.laa.bulkclaim'
+    group = 'uk.gov.justice.laa.payments.submit'
 }

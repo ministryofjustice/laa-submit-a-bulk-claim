@@ -1,0 +1,52 @@
+package uk.gov.justice.laa.payments.submit.config;
+
+import static java.lang.Boolean.TRUE;
+
+import lombok.Data;
+import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.server.ResponseStatusException;
+
+@Data
+@Configuration
+@ConfigurationProperties(prefix = "feature-flags")
+public class FeatureFlagsConfig {
+  private Boolean isNilSubmissionEnabled;
+  private Boolean isAlternativeClaimViewEnabled;
+  private Boolean isUpdatedCalculatedValueAvailable;
+  private Boolean isAssessedColumnEnabled;
+
+  public void checkNilSubmissionEnabled() {
+    if (!TRUE.equals(getIsNilSubmissionEnabled())) {
+      throw new ResponseStatusException(HttpStatus.NOT_FOUND, "isNilSubmissionEnabled is false");
+    }
+  }
+
+  public void checkAlternativeClaimViewEnabled() {
+    if (!TRUE.equals(getIsAlternativeClaimViewEnabled())) {
+      throw new ResponseStatusException(
+          HttpStatus.NOT_FOUND, "isAlternativeClaimViewEnabled is false");
+    }
+  }
+
+  public void checkAlternativeClaimViewDisabled() {
+    if (TRUE.equals(getIsAlternativeClaimViewEnabled())) {
+      throw new ResponseStatusException(
+          HttpStatus.NOT_FOUND, "isAlternativeClaimViewEnabled is true");
+    }
+  }
+
+  public void checkUpdatedCalculatedValueAvailable() {
+    if (!TRUE.equals(getIsUpdatedCalculatedValueAvailable())) {
+      throw new ResponseStatusException(
+          HttpStatus.NOT_FOUND, "isUpdatedCalculatedValueAvailable is false");
+    }
+  }
+
+  public void checkAssessedColumnEnabled() {
+    if (!TRUE.equals(getIsAssessedColumnEnabled())) {
+      throw new ResponseStatusException(HttpStatus.NOT_FOUND, "isAssessedColumnEnabled is false");
+    }
+  }
+}
