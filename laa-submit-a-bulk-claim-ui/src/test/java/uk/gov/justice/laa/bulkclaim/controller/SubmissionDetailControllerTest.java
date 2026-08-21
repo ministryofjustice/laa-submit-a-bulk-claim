@@ -40,7 +40,6 @@ import uk.gov.justice.laa.bulkclaim.dto.submission.claim.SubmissionClaimRowCosts
 import uk.gov.justice.laa.bulkclaim.dto.submission.claim.SubmissionClaimsDetails;
 import uk.gov.justice.laa.bulkclaim.dto.submission.messages.MessagesSource;
 import uk.gov.justice.laa.bulkclaim.dto.submission.messages.MessagesSummary;
-import uk.gov.justice.laa.bulkclaim.service.SubmissionService;
 import uk.gov.justice.laa.bulkclaim.util.CurrencyUtil;
 import uk.gov.justice.laa.bulkclaim.util.DateTimeUtil;
 import uk.gov.justice.laa.bulkclaim.util.PaginationLinksBuilder;
@@ -75,7 +74,6 @@ class SubmissionDetailControllerTest extends BaseControllerTest {
   @MockitoBean private SubmissionMatterStartsDetailsBuilder submissionMatterStartsDetailsBuilder;
   @MockitoBean private SubmissionMessagesBuilder submissionMessagesBuilder;
   @MockitoBean private PaginationUtil paginationUtil;
-  @MockitoBean private SubmissionService submissionService;
 
   @Nested
   @DisplayName("GET: /submission/{submissionId}")

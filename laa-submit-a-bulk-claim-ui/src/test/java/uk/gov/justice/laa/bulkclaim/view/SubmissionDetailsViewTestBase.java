@@ -17,7 +17,6 @@ import uk.gov.justice.laa.bulkclaim.constants.ViewSubmissionNavigationTab;
 import uk.gov.justice.laa.bulkclaim.controller.SubmissionDetailController;
 import uk.gov.justice.laa.bulkclaim.dto.PaginationLinks;
 import uk.gov.justice.laa.bulkclaim.dto.PaginationPageLink;
-import uk.gov.justice.laa.bulkclaim.service.SubmissionService;
 import uk.gov.justice.laa.bulkclaim.util.PaginationLinksBuilder;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.Page;
 
@@ -32,7 +31,6 @@ public abstract class SubmissionDetailsViewTestBase extends ViewTestBase {
   @MockitoBean protected SubmissionMessagesBuilder submissionMessagesBuilder;
   @MockitoBean protected SubmissionMatterStartsDetailsBuilder submissionMatterStartsDetailsBuilder;
   @MockitoBean protected PaginationLinksBuilder paginationLinksBuilder;
-  @MockitoBean protected SubmissionService submissionService;
 
   protected SubmissionDetailsViewTestBase() {
     this.mapping = "/submissions/%s".formatted(submissionId);
