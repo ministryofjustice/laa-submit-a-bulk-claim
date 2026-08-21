@@ -9,6 +9,7 @@ import static org.springframework.security.test.web.servlet.request.SecurityMock
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static uk.gov.justice.laa.bulkclaim.controller.ControllerTestHelper.OIDC_USER;
 
+import java.util.Set;
 import java.util.UUID;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -151,7 +152,11 @@ class ClaimDetailControllerTest extends BaseControllerTest {
         when(claimService.getClaimDetailPageData(submissionId, claimId, OIDC_USER))
             .thenReturn(
                 new ClaimDetailPageData(
-                    AreaOfLaw.CRIME_LOWER, false, new CrimeClaimDetailsView(details), null));
+                    AreaOfLaw.CRIME_LOWER,
+                    false,
+                    new CrimeClaimDetailsView(details),
+                    null,
+                    Set.of()));
       }
 
       @Test

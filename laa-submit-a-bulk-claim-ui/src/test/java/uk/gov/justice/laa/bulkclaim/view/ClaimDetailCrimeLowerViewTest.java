@@ -10,6 +10,7 @@ import static uk.gov.justice.laa.bulkclaim.controller.ControllerTestHelper.OIDC_
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.junit.jupiter.api.BeforeEach;
@@ -129,6 +130,13 @@ class ClaimDetailCrimeLowerViewTest extends ViewTestBase {
 
   private void stubClaim(
       DerivedClaimStatus derivedClaimStatus, Optional<ClaimStatusBanner> banner) {
+    stubClaim(derivedClaimStatus, banner, Set.of());
+  }
+
+  private void stubClaim(
+      DerivedClaimStatus derivedClaimStatus,
+      Optional<ClaimStatusBanner> banner,
+      Set<String> amendedFields) {
     ClaimResponseV2 claimResponse = TestObjectCreator.buildClaimResponseV2(AreaOfLaw.CRIME_LOWER);
     claimResponse.setDerivedClaimStatus(derivedClaimStatus);
 
@@ -142,7 +150,8 @@ class ClaimDetailCrimeLowerViewTest extends ViewTestBase {
                 AreaOfLaw.CRIME_LOWER,
                 showCurrentCalculated,
                 claimDetailView,
-                banner.orElse(null)));
+                banner.orElse(null),
+                amendedFields));
   }
 
   @Test

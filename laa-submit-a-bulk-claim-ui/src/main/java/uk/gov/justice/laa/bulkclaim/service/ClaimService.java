@@ -8,6 +8,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.oauth2.core.oidc.user.OidcUser;
 import org.springframework.stereotype.Component;
 import org.springframework.web.server.ResponseStatusException;
+import uk.gov.justice.laa.bulkclaim.builder.AmendedFieldsBuilder;
 import uk.gov.justice.laa.bulkclaim.builder.ClaimStatusBannerBuilder;
 import uk.gov.justice.laa.bulkclaim.builder.LatestAssessmentResolver;
 import uk.gov.justice.laa.bulkclaim.client.DataClaimsRestClient;
@@ -31,6 +32,7 @@ public class ClaimService {
   private final DataClaimsRestClientV2 dataClaimsRestClientV2;
   private final ClaimDetailViewFactory claimDetailViewFactory;
   private final LatestAssessmentResolver latestAssessmentResolver;
+  private final ClaimStatusBannerBuilder claimStatusBannerBuilder;
   private final OidcAttributeUtils oidcAttributeUtils;
 
   public ClaimResponseV2 getClaimV2(UUID submissionId, UUID claimId, OidcUser user) {
@@ -76,6 +78,7 @@ public class ClaimService {
         claimResponse.getAreaOfLaw(),
         showCurrentCalculated,
         claimDetailView,
-        ClaimStatusBannerBuilder.build(derivedClaimStatus, historyEvents).orElse(null));
+        claimStatusBannerBuilder.build(derivedClaimStatus, historyEvents).orElse(null),
+        AmendedFieldsBuilder.build(historyEvents));
   }
 }

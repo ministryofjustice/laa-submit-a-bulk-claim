@@ -2,6 +2,7 @@ package uk.gov.justice.laa.bulkclaim.dto.submission.claim.viewmodels.viewfield;
 
 import java.util.LinkedHashMap;
 import java.util.Locale;
+import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Stream;
 import org.springframework.context.MessageSource;
@@ -18,8 +19,15 @@ public interface ClaimViewField<T> {
 
   Function<T, Object> getAccessor();
 
+  Set<String> getClaimsApiFieldNames();
+
   default String label(MessageSource messageSource) {
     return messageSource.getMessage(LABEL_KEY_PREFIX + name(), null, name(), Locale.UK);
+  }
+
+  default boolean isAmended(Set<String> amendedFields) {
+    return amendedFields != null
+        && amendedFields.stream().anyMatch(getClaimsApiFieldNames()::contains);
   }
 
   @SuppressWarnings("unchecked")

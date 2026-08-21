@@ -1,22 +1,21 @@
 package uk.gov.justice.laa.bulkclaim.builder;
 
 import java.time.OffsetDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import lombok.experimental.UtilityClass;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Component;
 import uk.gov.justice.laa.bulkclaim.dto.submission.claim.viewmodels.ClaimStatusBanner;
+import uk.gov.justice.laa.bulkclaim.util.DateTimeUtil;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.ClaimHistoryEvent;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.ClaimHistoryEventType;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.DerivedClaimStatus;
 
-@UtilityClass
+@Component
+@RequiredArgsConstructor
 public class ClaimStatusBannerBuilder {
-
-  private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-  private static final DateTimeFormatter TIME_FORMATTER = DateTimeFormatter.ofPattern("HH:mm");
 
   private static final Map<DerivedClaimStatus, ClaimHistoryEventType> BANNER_EVENT_TYPES =
       Map.of(
@@ -24,7 +23,9 @@ public class ClaimStatusBannerBuilder {
           DerivedClaimStatus.ASSESSED, ClaimHistoryEventType.ASSESSMENT,
           DerivedClaimStatus.AMENDED, ClaimHistoryEventType.AMENDMENT);
 
-  public static Optional<ClaimStatusBanner> build(
+  private final DateTimeUtil dateTimeUtil;
+
+  public Optional<ClaimStatusBanner> build(
       DerivedClaimStatus derivedClaimStatus, List<ClaimHistoryEvent> historyEvents) {
     ClaimHistoryEventType matchingEventType = BANNER_EVENT_TYPES.get(derivedClaimStatus);
     if (matchingEventType == null) {
@@ -41,7 +42,7 @@ public class ClaimStatusBannerBuilder {
     return Optional.of(
         new ClaimStatusBanner(
             derivedClaimStatus,
-            lastEdited == null ? "" : DATE_FORMATTER.format(lastEdited),
-            lastEdited == null ? "" : TIME_FORMATTER.format(lastEdited)));
+            lastEdited == null ? "" : dateTimeUtil.displayDateTimeDateValue(lastEdited),
+            lastEdited == null ? "" : dateTimeUtil.displayDateTimeTimeValue(lastEdited)));
   }
 }
