@@ -108,7 +108,8 @@ public class SubmissionMessagesBuilder {
             .orElse(0);
 
     MessagesSource messagesSource = null;
-    if (totalMessageCount > 0) {
+    if (messagesResponse != null && !Optional.of(messagesResponse)
+        .map(ValidationMessagesResponse::getContent).orElse(Collections.emptyList()).isEmpty()) {
       // Set message source to submission if first message has no claim ID (all claims are either
       // submission or claim).
       messagesSource =
