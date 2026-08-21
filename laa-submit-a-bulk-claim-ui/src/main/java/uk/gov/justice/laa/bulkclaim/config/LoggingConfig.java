@@ -24,6 +24,7 @@ public class LoggingConfig {
   public CommonsRequestLoggingFilter logFilter() {
     return new CommonsRequestLoggingFilter() {
       {
+        setIncludeQueryString(true);
         setIncludePayload(false);
         setIncludeHeaders(false);
         setBeforeMessagePrefix("HTTP [");
