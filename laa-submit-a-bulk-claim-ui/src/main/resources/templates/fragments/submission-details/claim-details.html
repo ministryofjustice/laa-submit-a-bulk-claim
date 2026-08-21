@@ -37,6 +37,9 @@
             <th:block th:replace="~{fragments/sortable-header :: sortableHeader(
                 ${submissionViewQuery}, ${SubmissionViewSortField.FEE_CODE}, 'submission.summary.claims.table.feeCode')}"></th:block>
 
+            <th:block th:if="${isCrime}" th:insert="~{fragments/sortable-header :: sortableHeader(
+                ${submissionViewQuery}, ${SubmissionViewSortField.CASE_CONCLUDED_DATE}, 'submission.summary.claims.table.dateWorkConcluded')}"></th:block>
+
             <th:block th:replace="~{fragments/sortable-header :: sortableHeader(
                 ${submissionViewQuery}, ${SubmissionViewSortField.TOTAL_AMOUNT}, 'submission.summary.claims.table.initialCalculatedValue')}"></th:block>
 
@@ -102,6 +105,8 @@
                 th:text="${claim.ufn ?: '-'}"></td>
             <td class="govuk-table__cell"
                 th:text="${claim.feeCode ?: '-'}"></td>
+            <td class="govuk-table__cell" th:if="${isCrime}"
+                th:text="${claim.concludedOrClaimedDate != null ? #temporals.format(claim.concludedOrClaimedDate, 'dd MMM yyyy') : '-'}"></td>
             <td class="govuk-table__cell"
                 th:text="${@currencyUtil.formatCurrency(claim.calculatedValue) }"></td>
             <th:block th:if="${showUpdatedCalculatedValueColumn}">

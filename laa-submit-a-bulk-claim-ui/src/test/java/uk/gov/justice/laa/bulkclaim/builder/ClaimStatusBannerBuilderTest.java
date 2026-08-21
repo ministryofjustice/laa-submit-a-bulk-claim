@@ -7,11 +7,15 @@ import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.Test;
 import uk.gov.justice.laa.bulkclaim.dto.submission.claim.viewmodels.ClaimStatusBanner;
+import uk.gov.justice.laa.bulkclaim.util.DateTimeUtil;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.ClaimHistoryEvent;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.ClaimHistoryEventType;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.DerivedClaimStatus;
 
 class ClaimStatusBannerBuilderTest {
+
+  private final ClaimStatusBannerBuilder claimStatusBannerBuilder =
+      new ClaimStatusBannerBuilder(new DateTimeUtil());
 
   @Test
   void shouldBuildVoidedBannerFromMostRecentVoidEvent() {
@@ -23,13 +27,13 @@ class ClaimStatusBannerBuilderTest {
                 ClaimHistoryEventType.SUBMISSION, OffsetDateTime.parse("2026-04-01T10:00:00Z")));
 
     Optional<ClaimStatusBanner> banner =
-        ClaimStatusBannerBuilder.build(DerivedClaimStatus.VOIDED, events);
+        claimStatusBannerBuilder.build(DerivedClaimStatus.VOIDED, events);
 
     assertThat(banner).isPresent();
     assertThat(banner.get().status()).isEqualTo(DerivedClaimStatus.VOIDED);
     assertThat(banner.get().label()).isEqualTo("Voided");
-    assertThat(banner.get().lastEditedDate()).isEqualTo("17/03/2026");
-    assertThat(banner.get().lastEditedTime()).isEqualTo("14:32");
+    assertThat(banner.get().lastEditedDate()).isEqualTo("17 March 2026");
+    assertThat(banner.get().lastEditedTime()).isEqualTo("2:32pm");
     assertThat(banner.get().error()).isTrue();
   }
 
@@ -41,12 +45,12 @@ class ClaimStatusBannerBuilderTest {
                 ClaimHistoryEventType.ASSESSMENT, OffsetDateTime.parse("2026-02-05T08:00:00Z")));
 
     Optional<ClaimStatusBanner> banner =
-        ClaimStatusBannerBuilder.build(DerivedClaimStatus.ASSESSED, events);
+        claimStatusBannerBuilder.build(DerivedClaimStatus.ASSESSED, events);
 
     assertThat(banner).isPresent();
     assertThat(banner.get().label()).isEqualTo("Assessed");
-    assertThat(banner.get().lastEditedDate()).isEqualTo("05/02/2026");
-    assertThat(banner.get().lastEditedTime()).isEqualTo("08:00");
+    assertThat(banner.get().lastEditedDate()).isEqualTo("5 February 2026");
+    assertThat(banner.get().lastEditedTime()).isEqualTo("8:00am");
     assertThat(banner.get().error()).isFalse();
   }
 
@@ -58,12 +62,12 @@ class ClaimStatusBannerBuilderTest {
                 ClaimHistoryEventType.AMENDMENT, OffsetDateTime.parse("2026-06-30T23:59:00Z")));
 
     Optional<ClaimStatusBanner> banner =
-        ClaimStatusBannerBuilder.build(DerivedClaimStatus.AMENDED, events);
+        claimStatusBannerBuilder.build(DerivedClaimStatus.AMENDED, events);
 
     assertThat(banner).isPresent();
     assertThat(banner.get().label()).isEqualTo("Amended");
-    assertThat(banner.get().lastEditedDate()).isEqualTo("30/06/2026");
-    assertThat(banner.get().lastEditedTime()).isEqualTo("23:59");
+    assertThat(banner.get().lastEditedDate()).isEqualTo("1 July 2026");
+    assertThat(banner.get().lastEditedTime()).isEqualTo("12:59am");
     assertThat(banner.get().error()).isFalse();
   }
 
@@ -72,9 +76,9 @@ class ClaimStatusBannerBuilderTest {
     List<ClaimHistoryEvent> events =
         List.of(historyEvent(ClaimHistoryEventType.SUBMISSION, OffsetDateTime.now()));
 
-    assertThat(ClaimStatusBannerBuilder.build(DerivedClaimStatus.ACCEPTED, events)).isEmpty();
-    assertThat(ClaimStatusBannerBuilder.build(DerivedClaimStatus.INVALID, events)).isEmpty();
-    assertThat(ClaimStatusBannerBuilder.build(DerivedClaimStatus.READY_TO_PROCESS, events))
+    assertThat(claimStatusBannerBuilder.build(DerivedClaimStatus.ACCEPTED, events)).isEmpty();
+    assertThat(claimStatusBannerBuilder.build(DerivedClaimStatus.INVALID, events)).isEmpty();
+    assertThat(claimStatusBannerBuilder.build(DerivedClaimStatus.READY_TO_PROCESS, events))
         .isEmpty();
   }
 
@@ -84,7 +88,7 @@ class ClaimStatusBannerBuilderTest {
         List.of(historyEvent(ClaimHistoryEventType.SUBMISSION, OffsetDateTime.now()));
 
     Optional<ClaimStatusBanner> banner =
-        ClaimStatusBannerBuilder.build(DerivedClaimStatus.ASSESSED, events);
+        claimStatusBannerBuilder.build(DerivedClaimStatus.ASSESSED, events);
 
     assertThat(banner).isPresent();
     assertThat(banner.get().lastEditedDate()).isEmpty();

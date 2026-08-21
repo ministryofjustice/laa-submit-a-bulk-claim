@@ -1,5 +1,6 @@
 package uk.gov.justice.laa.bulkclaim.dto.submission.claim.viewmodels.viewfield;
 
+import java.util.Set;
 import java.util.function.Function;
 import lombok.Getter;
 import uk.gov.justice.laa.bulkclaim.dto.submission.claim.viewmodels.ClaimFieldRow;
@@ -10,8 +11,8 @@ public enum LegalHelpClaimDetailsViewField implements ClaimViewField<LegalHelpCl
 
   // Page header / Summary
   CATEGORY_OF_LAW(LegalHelpClaimDetails::getCategoryOfLaw),
-  MATTER_TYPE_1(LegalHelpClaimDetails::getMatterTypeCodeOne),
-  MATTER_TYPE_2(LegalHelpClaimDetails::getMatterTypeCodeTwo),
+  MATTER_TYPE_1(LegalHelpClaimDetails::getMatterTypeCodeOne, "claim.matterTypeCode"),
+  MATTER_TYPE_2(LegalHelpClaimDetails::getMatterTypeCodeTwo, "claim.matterTypeCode"),
   // London rate not part of calculation - shown in the Values table with no calculated/assessed
   // column, so it is wrapped as a ClaimFieldRow to match that table's row shape.
   LONDON_RATE(claim -> new ClaimFieldRow(claim.getReportedLondonRateIndicator(), null, null)),
@@ -28,8 +29,11 @@ public enum LegalHelpClaimDetailsViewField implements ClaimViewField<LegalHelpCl
   SUBSTANTIVE_HEARING(LegalHelpClaimDetails::getSubstantiveHearing);
 
   private final Function<LegalHelpClaimDetails, Object> accessor;
+  private final Set<String> claimsApiFieldNames;
 
-  LegalHelpClaimDetailsViewField(Function<LegalHelpClaimDetails, Object> accessor) {
+  LegalHelpClaimDetailsViewField(
+      Function<LegalHelpClaimDetails, Object> accessor, String... claimsApiFieldNames) {
     this.accessor = accessor;
+    this.claimsApiFieldNames = Set.of(claimsApiFieldNames);
   }
 }

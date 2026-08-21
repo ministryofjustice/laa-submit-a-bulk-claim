@@ -51,6 +51,11 @@
             <th:block
                 th:text="${@thymeleafUtils.getFormattedValue(claimDetailView.getClient2Ucn()).resolve(#messages)}"></th:block>
           </p>
+          <p class="govuk-body">
+            <span class="govuk-!-font-weight-bold" th:text="#{viewClaim.summary.feeCode}"></span>
+            <th:block
+                th:text="${@thymeleafUtils.getFormattedValue(claimDetailView.getFeeCode()).resolve(#messages)}"></th:block>
+          </p>
         </th:block>
       </div>
 
@@ -71,10 +76,15 @@
           <div class="govuk-summary-card__content">
             <dl class="govuk-summary-list">
               <div class="govuk-summary-list__row"
-                   th:each="row, idx : ${claimDetailView.summaryRows()}">
+                   th:each="row, idx : ${claimDetailView.summaryRows()}"
+                   th:with="isAmended=${row.key.isAmended(amendedFields)}"
+                   th:classappend="${isAmended} ? '' : 'govuk-summary-list__row--no-actions'">
                 <dt class="govuk-summary-list__key" th:text="#{${'claimDetail.rows.' + row.key}}"/>
                 <dd class="govuk-summary-list__value"
                     th:text="${@thymeleafUtils.getFormattedValue(row.value).resolve(#messages)}"/>
+                <dd class="govuk-summary-list__actions" th:if="${isAmended}">
+                  <strong class="govuk-tag govuk-tag--yellow" th:text="#{common.amended}"/>
+                </dd>
               </div>
             </dl>
           </div>

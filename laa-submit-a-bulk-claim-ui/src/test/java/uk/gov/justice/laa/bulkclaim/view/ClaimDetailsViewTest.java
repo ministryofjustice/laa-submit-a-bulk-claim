@@ -1,5 +1,6 @@
 package uk.gov.justice.laa.bulkclaim.view;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -19,6 +20,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 import org.jsoup.select.Elements;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -46,11 +48,35 @@ class ClaimDetailsViewTest extends SubmissionDetailsViewTestBase {
     assertTableHeaderIsSortable(headers.get(1), "none", "UFN", claimSortLink("unique_file_number"));
     assertTableHeaderIsSortable(headers.get(2), "none", "Fee code", claimSortLink("fee_code"));
     assertTableHeaderIsSortable(
-        headers.get(3), "none", "Initial calculated value", claimSortLink("total_amount"));
+        headers.get(3), "none", "Date work concluded", claimSortLink("case_concluded_date"));
     assertTableHeaderIsSortable(
-        headers.get(4), "none", "Escape case", claimSortLink("escape_case_flag"));
+        headers.get(4), "none", "Initial calculated value", claimSortLink("total_amount"));
     assertTableHeaderIsSortable(
-        headers.get(5), "none", "Status", claimSortLink("derived_claim_status"));
+        headers.get(5), "none", "Escape case", claimSortLink("escape_case_flag"));
+    assertTableHeaderIsSortable(
+        headers.get(6), "none", "Status", claimSortLink("derived_claim_status"));
+  }
+
+  @Test
+  @DisplayName("Crime lower claims table shows the date work concluded for each claim")
+  void viewHasDateWorkConcludedCell_crime() {
+    mockClaims(
+        CRIME_LOWER,
+        SubmissionClaimRow.builder().concludedOrClaimedDate(LocalDate.of(2025, 2, 1)).build());
+
+    var cells = renderDocument().select("tbody.govuk-table__body tr td");
+
+    assertThat(cells.get(3).text()).isEqualTo("01 Feb 2025");
+  }
+
+  @Test
+  @DisplayName("Legal help claims table has no date work concluded column")
+  void viewHasNoDateWorkConcludedColumn_civil() {
+    mockClaims(LEGAL_HELP);
+
+    var headers = getTableHeaders(renderDocument());
+
+    assertThat(headers.eachText()).doesNotContain("Date work concluded");
   }
 
   @Test
@@ -157,7 +183,7 @@ class ClaimDetailsViewTest extends SubmissionDetailsViewTestBase {
       String expectedLinkDirection) {
     assertClaimFieldIsSortable(
         CRIME_LOWER,
-        3,
+        4,
         "total_amount",
         "Initial calculated value",
         currentDirection,
@@ -175,7 +201,7 @@ class ClaimDetailsViewTest extends SubmissionDetailsViewTestBase {
       String expectedLinkDirection) {
     assertClaimFieldIsSortable(
         CRIME_LOWER,
-        4,
+        5,
         "escape_case_flag",
         "Escape case",
         currentDirection,
@@ -193,7 +219,7 @@ class ClaimDetailsViewTest extends SubmissionDetailsViewTestBase {
       String expectedLinkDirection) {
     assertClaimFieldIsSortable(
         CRIME_LOWER,
-        5,
+        6,
         "derived_claim_status",
         "Status",
         currentDirection,
@@ -527,6 +553,10 @@ class ClaimDetailsViewTest extends SubmissionDetailsViewTestBase {
   }
 
   private void mockClaims(AreaOfLaw areaOfLaw) {
+    mockClaims(areaOfLaw, SubmissionClaimRow.builder().build());
+  }
+
+  private void mockClaims(AreaOfLaw areaOfLaw, SubmissionClaimRow claimRow) {
     Page pagination = Page.builder().totalPages(1).totalElements(1).number(0).size(10).build();
     SubmissionResponse submissionResponse =
         SubmissionResponse.builder()
@@ -547,9 +577,7 @@ class ClaimDetailsViewTest extends SubmissionDetailsViewTestBase {
                 areaOfLaw.getValue(),
                 OffsetDateTime.of(2025, 1, 1, 10, 10, 10, 0, ZoneOffset.UTC)));
     when(submissionClaimDetailsBuilder.build(any(), anyInt(), anyInt(), anyString()))
-        .thenReturn(
-            new SubmissionClaimsDetails(
-                List.of(SubmissionClaimRow.builder().build()), pagination, BigDecimal.ONE));
+        .thenReturn(new SubmissionClaimsDetails(List.of(claimRow), pagination, BigDecimal.ONE));
     when(submissionMessagesBuilder.build(any(), any(), any(), anyInt(), anyInt(), any()))
         .thenReturn(new MessagesSummary(List.of(), 0, 0, pagination, MessagesSource.CLAIM));
   }
