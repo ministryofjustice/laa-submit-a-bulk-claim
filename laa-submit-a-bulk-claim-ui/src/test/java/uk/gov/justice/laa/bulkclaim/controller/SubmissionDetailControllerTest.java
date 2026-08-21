@@ -16,7 +16,6 @@ import java.time.LocalDate;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
@@ -135,7 +134,7 @@ class SubmissionDetailControllerTest extends BaseControllerTest {
           .thenReturn(
               new SubmissionClaimsDetails(Collections.emptyList(), pagination, BigDecimal.ZERO));
       when(submissionMatterStartsDetailsBuilder.build(any()))
-          .thenReturn(Arrays.asList(new SubmissionMatterStartsRow("Description", 34)));
+          .thenReturn(List.of(new SubmissionMatterStartsRow("Description", 34)));
 
       assertThat(
               mockMvc.perform(
@@ -177,7 +176,7 @@ class SubmissionDetailControllerTest extends BaseControllerTest {
           .thenReturn(
               new MessagesSummary(Collections.emptyList(), 0, 0, pagination, MessagesSource.CLAIM));
       when(submissionMatterStartsDetailsBuilder.build(any()))
-          .thenReturn(Arrays.asList(new SubmissionMatterStartsRow("Description", 34)));
+          .thenReturn(List.of(new SubmissionMatterStartsRow("Description", 34)));
       // When / Then
       assertThat(
               mockMvc.perform(
@@ -321,7 +320,7 @@ class SubmissionDetailControllerTest extends BaseControllerTest {
                           "matter",
                           LocalDate.of(2025, 1, 1),
                           0,
-                          "VOID",
+                          "VOIDED",
                           "feeType",
                           "feeCode",
                           new SubmissionClaimRowCostsDetails(
@@ -349,7 +348,8 @@ class SubmissionDetailControllerTest extends BaseControllerTest {
           .hasStatusOk()
           .body()
           .asString()
-          .contains("VOIDED");
+          .contains("govuk-tag govuk-tag--red")
+          .contains("Voided");
     }
 
     @Test
