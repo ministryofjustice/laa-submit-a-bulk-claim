@@ -6,7 +6,7 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import uk.gov.justice.laa.bulkclaim.dto.submission.claim.BulkClaimCostItem;
 import uk.gov.justice.laa.bulkclaim.dto.submission.claim.ClaimFeeCalculationBreakdown;
-import uk.gov.justice.laa.dstew.payments.claimsdata.model.ClaimResponse;
+import uk.gov.justice.laa.dstew.payments.claimsdata.model.ClaimResponseV2;
 
 @Mapper(componentModel = "spring")
 public interface ClaimFeeCalculationBreakdownMapper {
@@ -95,7 +95,7 @@ public interface ClaimFeeCalculationBreakdownMapper {
       target = "vat.calculatedValue",
       source = "claimResponse.feeCalculationResponse.calculatedVatAmount")
   @Mapping(target = "calculatedTotal", source = "claimResponse.feeCalculationResponse.totalAmount")
-  ClaimFeeCalculationBreakdown toClaimFeeCalculationBreakdown(ClaimResponse claimResponse);
+  ClaimFeeCalculationBreakdown toClaimFeeCalculationBreakdown(ClaimResponseV2 claimResponse);
 
   @Mapping(target = "enteredValue", source = "enteredValue")
   @Mapping(target = "calculatedValue", source = "calculatedValue")

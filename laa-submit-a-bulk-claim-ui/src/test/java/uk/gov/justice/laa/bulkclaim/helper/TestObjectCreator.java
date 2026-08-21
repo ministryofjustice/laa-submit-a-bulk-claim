@@ -4,7 +4,6 @@ import java.math.BigDecimal;
 import java.time.OffsetDateTime;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.AreaOfLaw;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.BoltOnPatch;
-import uk.gov.justice.laa.dstew.payments.claimsdata.model.ClaimResponse;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.ClaimResponseV2;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.ClaimStatus;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.FeeCalculationPatch;
@@ -75,9 +74,9 @@ public final class TestObjectCreator {
         .build();
   }
 
-  public static ClaimResponse buildClaimResponse() {
+  public static ClaimResponseV2 buildClaimResponseV2() {
 
-    return ClaimResponse.builder()
+    return ClaimResponseV2.builder()
         .id("6d10189b-b020-4cc5-891b-e53bbefa501a")
         .status(ClaimStatus.READY_TO_PROCESS)
         .scheduleReference("schedule-reference-value")

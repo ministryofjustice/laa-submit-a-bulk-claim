@@ -19,11 +19,9 @@ import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.assertj.MockMvcTester;
-import reactor.core.publisher.Mono;
 import uk.gov.justice.laa.bulkclaim.builder.ClaimStatusBannerBuilder;
 import uk.gov.justice.laa.bulkclaim.builder.LatestAssessmentResolver;
 import uk.gov.justice.laa.bulkclaim.builder.SubmissionMessagesBuilder;
-import uk.gov.justice.laa.bulkclaim.client.DataClaimsRestClientV2;
 import uk.gov.justice.laa.bulkclaim.dto.submission.claim.ClaimFeeCalculationBreakdown;
 import uk.gov.justice.laa.bulkclaim.dto.submission.claim.ClaimSummary;
 import uk.gov.justice.laa.bulkclaim.dto.submission.claim.viewmodels.ClaimFieldRow;
@@ -40,7 +38,7 @@ import uk.gov.justice.laa.bulkclaim.viewmodels.claimdetails.ClaimDetailPageData;
 import uk.gov.justice.laa.bulkclaim.viewmodels.claimdetails.ClaimDetailViewFactory;
 import uk.gov.justice.laa.bulkclaim.viewmodels.claimdetails.CrimeClaimDetailsView;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.AreaOfLaw;
-import uk.gov.justice.laa.dstew.payments.claimsdata.model.ClaimResponse;
+import uk.gov.justice.laa.dstew.payments.claimsdata.model.ClaimResponseV2;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionResponse;
 
 @WebMvcTest(ClaimDetailController.class)
@@ -50,8 +48,6 @@ import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionResponse;
 class ClaimDetailControllerTest extends BaseControllerTest {
 
   @Autowired private MockMvcTester mockMvc;
-
-  @MockitoBean private DataClaimsRestClientV2 dataClaimsRestClientV2;
 
   @MockitoBean private ClaimSummaryMapper claimSummaryMapper;
   @MockitoBean private ClaimFeeCalculationBreakdownMapper claimFeeCalculationBreakdownMapper;
@@ -81,16 +77,15 @@ class ClaimDetailControllerTest extends BaseControllerTest {
         when(submissionService.getSubmission(submissionId, OIDC_USER))
             .thenReturn(submissionResponse);
 
-        ClaimResponse claimResponse = TestObjectCreator.buildClaimResponse();
-        when(dataClaimsRestClient.getSubmissionClaim(submissionId, claimId))
-            .thenReturn(Mono.just(claimResponse));
+        ClaimResponseV2 claimResponse = TestObjectCreator.buildClaimResponseV2();
+        when(claimService.getClaimV2(submissionId, claimId, OIDC_USER)).thenReturn(claimResponse);
 
         when(claimSummaryMapper.toClaimSummary(claimResponse, AreaOfLaw.LEGAL_HELP.getValue()))
             .thenReturn(ClaimSummary.builder().build());
         when(claimFeeCalculationBreakdownMapper.toClaimFeeCalculationBreakdown(claimResponse))
             .thenReturn(ClaimFeeCalculationBreakdown.builder().build());
 
-        when(submissionMessagesBuilder.buildAllWarnings(submissionId, claimId))
+        when(submissionMessagesBuilder.buildAllWarnings(OIDC_USER, submissionId, claimId))
             .thenReturn(
                 MessagesSummary.builder()
                     .messages(singletonList(MessageRow.builder().build()))
@@ -105,25 +100,6 @@ class ClaimDetailControllerTest extends BaseControllerTest {
 
         verify(claimSummaryMapper, times(1))
             .toClaimSummary(claimResponse, AreaOfLaw.LEGAL_HELP.getValue());
-      }
-
-      @Test
-      @DisplayName("Should throw exception when claim was not found")
-      void shouldThrowExceptionWhenClaimWasNotFound() {
-        UUID claimId = UUID.fromString("59930faa-3f38-4ee1-b5bd-08dce5a4fdbc");
-        UUID submissionId = UUID.fromString("244fcb9f-50ab-4af8-b635-76bd30e0e97d");
-
-        when(dataClaimsRestClient.getSubmissionClaim(submissionId, claimId))
-            .thenReturn(Mono.empty());
-
-        assertThat(
-                mockMvc.perform(
-                    get("/submissions/%s/claims/%s".formatted(submissionId, claimId))
-                        .with(oidcLogin().oidcUser(OIDC_USER))))
-            .failure()
-            .hasMessageEndingWith(
-                "Claim 59930faa-3f38-4ee1-b5bd-08dce5a4fdbc does not exist for submission "
-                    + "244fcb9f-50ab-4af8-b635-76bd30e0e97d");
       }
     }
 
@@ -176,7 +152,7 @@ class ClaimDetailControllerTest extends BaseControllerTest {
         when(featureFlagsConfig.getIsAlternativeClaimViewEnabled()).thenReturn(true);
         stubCommonDependencies();
 
-        when(submissionMessagesBuilder.buildAllWarnings(submissionId, claimId))
+        when(submissionMessagesBuilder.buildAllWarnings(OIDC_USER, submissionId, claimId))
             .thenReturn(
                 MessagesSummary.builder()
                     .messages(singletonList(MessageRow.builder().message("A warning").build()))

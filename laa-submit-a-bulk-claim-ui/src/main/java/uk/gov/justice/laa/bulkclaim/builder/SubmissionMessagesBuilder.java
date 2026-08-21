@@ -9,15 +9,16 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.oauth2.core.oidc.user.OidcUser;
 import org.springframework.stereotype.Component;
-import reactor.core.publisher.Mono;
 import uk.gov.justice.laa.bulkclaim.client.DataClaimsRestClient;
 import uk.gov.justice.laa.bulkclaim.dto.submission.messages.MessageRow;
 import uk.gov.justice.laa.bulkclaim.dto.submission.messages.MessagesSource;
 import uk.gov.justice.laa.bulkclaim.dto.submission.messages.MessagesSummary;
 import uk.gov.justice.laa.bulkclaim.mapper.BulkClaimImportSummaryMapper;
+import uk.gov.justice.laa.bulkclaim.service.ClaimService;
 import uk.gov.justice.laa.bulkclaim.util.PaginationUtil;
-import uk.gov.justice.laa.dstew.payments.claimsdata.model.ClaimResponse;
+import uk.gov.justice.laa.dstew.payments.claimsdata.model.ClaimResponseV2;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.ValidationMessageBase;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.ValidationMessageType;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.ValidationMessagesResponse;
@@ -30,21 +31,24 @@ import uk.gov.justice.laa.dstew.payments.claimsdata.model.ValidationMessagesResp
 @RequiredArgsConstructor
 public class SubmissionMessagesBuilder {
 
+  private final ClaimService claimService;
   private final DataClaimsRestClient dataClaimsRestClient;
   private final BulkClaimImportSummaryMapper bulkClaimImportSummaryMapper;
   private final PaginationUtil paginationUtil;
 
   /** Builds a {@link MessagesSummary} for a given submission ID whilst only returning errors. */
-  public MessagesSummary buildErrors(UUID submissionId, int page, int size, String sort) {
-    return build(submissionId, null, ValidationMessageType.ERROR, page, size, sort);
+  public MessagesSummary buildErrors(
+      OidcUser oidcUser, UUID submissionId, int page, int size, String sort) {
+    return build(oidcUser, submissionId, null, ValidationMessageType.ERROR, page, size, sort);
   }
 
   /** Builds a {@link MessagesSummary} for a given submission ID with both warnings and errors. */
-  public MessagesSummary buildAllWarnings(UUID submissionId, UUID claimId) {
-    return build(submissionId, claimId, ValidationMessageType.WARNING, null, null, null);
+  public MessagesSummary buildAllWarnings(OidcUser oidcUser, UUID submissionId, UUID claimId) {
+    return build(oidcUser, submissionId, claimId, ValidationMessageType.WARNING, null, null, null);
   }
 
   public MessagesSummary build(
+      OidcUser oidcUser,
       UUID submissionId,
       UUID claimId,
       ValidationMessageType type,
@@ -67,12 +71,11 @@ public class SubmissionMessagesBuilder {
             .collect(Collectors.toSet());
 
     // Collate all possible claim responses which messagesResponse could have
-    Map<UUID, Mono<ClaimResponse>> claims =
+    Map<UUID, ClaimResponseV2> claims =
         claimRefs.stream()
             .filter(Objects::nonNull)
             .collect(
-                Collectors.toMap(
-                    x -> x, x -> dataClaimsRestClient.getSubmissionClaim(submissionId, x)));
+                Collectors.toMap(x -> x, x -> claimService.getClaimV2(submissionId, x, oidcUser)));
 
     // Loop through an error map and add claims
     final List<MessageRow> errorList =
@@ -82,16 +85,10 @@ public class SubmissionMessagesBuilder {
             .stream()
             .map(
                 messages -> {
-                  ClaimResponse claimResponse =
+                  ClaimResponseV2 claimResponse =
                       Optional.ofNullable(messages.getClaimId())
-                          .map(
-                              claimRef ->
-                                  claims
-                                      .get(claimRef)
-                                      .onErrorResume(ex -> Mono.just(new ClaimResponse()))
-                                      .switchIfEmpty(Mono.just(new ClaimResponse()))
-                                      .block())
-                          .orElseGet(ClaimResponse::new);
+                          .map(claims::get)
+                          .orElseGet(ClaimResponseV2::new);
                   return bulkClaimImportSummaryMapper.toSubmissionSummaryClaimMessage(
                       messages, claimResponse);
                 })
