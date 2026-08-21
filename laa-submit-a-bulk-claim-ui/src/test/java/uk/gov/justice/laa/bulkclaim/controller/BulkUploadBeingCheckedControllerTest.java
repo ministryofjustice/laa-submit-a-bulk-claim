@@ -8,17 +8,20 @@ import static uk.gov.justice.laa.bulkclaim.constants.SessionConstants.BULK_SUBMI
 import static uk.gov.justice.laa.bulkclaim.constants.SessionConstants.SUBMISSION_ID;
 import static uk.gov.justice.laa.bulkclaim.controller.ControllerTestHelper.OIDC_USER;
 
+import java.util.List;
 import java.util.UUID;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
+import org.junit.jupiter.params.provider.EnumSource.Mode;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
 import org.springframework.http.HttpStatusCode;
+import org.springframework.security.oauth2.core.oidc.user.OidcUser;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.assertj.MockMvcTester;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
@@ -35,6 +38,8 @@ public class BulkUploadBeingCheckedControllerTest extends BaseControllerTest {
   @Autowired private MockMvcTester mockMvc;
 
   @MockitoBean private BulkClaimMetricService bulkClaimMetricService;
+  private static final String OFFICE_CODE = "123456";
+  private static final OidcUser USER = OIDC_USER;
 
   @Nested
   @DisplayName("GET: /upload-is-being-checked")
@@ -178,6 +183,85 @@ public class BulkUploadBeingCheckedControllerTest extends BaseControllerTest {
           .hasCauseInstanceOf(SubmitBulkClaimException.class)
           .hasMessageContaining(
               "Unexpected bulk submission status returned for: " + bulkSubmissionId);
+    }
+  }
+
+  @Nested
+  @DisplayName("GET: /submission/{submissionId}/status")
+  class IsSubmissionDoneEndpoint {
+
+    @ParameterizedTest
+    @EnumSource(
+        value = BulkSubmissionStatus.class,
+        names = {"VALIDATION_SUCCEEDED", "VALIDATION_FAILED", "READY_FOR_SUBMISSION"})
+    void shouldReturnTrueWhenSubmissionStatusReady(BulkSubmissionStatus status) {
+      UUID submissionId = UUID.fromString("54dc87f7-aa33-4045-9f08-84b348519281");
+      UUID bulkSubmissionId = UUID.fromString("5933fc67-bac7-4f48-81ed-61c8c463f054");
+      GetBulkSubmissionStatusById200Response response =
+          GetBulkSubmissionStatusById200Response.builder().status(status).build();
+      when(dataClaimsRestClient.getBulkSubmissionSummary(bulkSubmissionId))
+          .thenReturn(Mono.just(response));
+      assertThat(
+              mockMvc.perform(
+                  get("/upload-is-being-checked/status")
+                      .with(oidcLogin().oidcUser(USER))
+                      .sessionAttr(SUBMISSION_ID, submissionId)
+                      .sessionAttr(BULK_SUBMISSION_ID, bulkSubmissionId)))
+          .hasStatusOk()
+          .hasBodyTextEqualTo("true");
+    }
+
+    @ParameterizedTest
+    @EnumSource(
+        value = BulkSubmissionStatus.class,
+        names = {"VALIDATION_SUCCEEDED", "VALIDATION_FAILED", "READY_FOR_SUBMISSION"},
+        mode = Mode.EXCLUDE)
+    void shouldReturnFalseWhenSubmissionStatusNotReady(BulkSubmissionStatus status) {
+      UUID submissionId = UUID.fromString("54dc87f7-aa33-4045-9f08-84b348519281");
+      UUID bulkSubmissionId = UUID.fromString("5933fc67-bac7-4f48-81ed-61c8c463f054");
+      GetBulkSubmissionStatusById200Response response =
+          GetBulkSubmissionStatusById200Response.builder().status(status).build();
+      when(dataClaimsRestClient.getBulkSubmissionSummary(bulkSubmissionId))
+          .thenReturn(Mono.just(response));
+      when(oidcAttributeUtils.getUserOffices(USER)).thenReturn(List.of(OFFICE_CODE));
+      assertThat(
+              mockMvc.perform(
+                  get("/upload-is-being-checked/status")
+                      .with(oidcLogin().oidcUser(USER))
+                      .sessionAttr(SUBMISSION_ID, submissionId)
+                      .sessionAttr(BULK_SUBMISSION_ID, bulkSubmissionId)))
+          .hasStatusOk()
+          .hasBodyTextEqualTo("false");
+    }
+
+    @Test
+    void shouldReturn404WhenApiReturnsNull() {
+      UUID submissionId = UUID.fromString("54dc87f7-aa33-4045-9f08-84b348519281");
+      UUID bulkSubmissionId = UUID.fromString("5933fc67-bac7-4f48-81ed-61c8c463f054");
+      when(dataClaimsRestClient.getSubmission(submissionId))
+          .thenThrow(new WebClientResponseException(404, "Not found", null, null, null));
+      assertThat(
+              mockMvc.perform(
+                  get("/upload-is-being-checked/status")
+                      .with(oidcLogin().oidcUser(USER))
+                      .sessionAttr(SUBMISSION_ID, submissionId)
+                      .sessionAttr(BULK_SUBMISSION_ID, bulkSubmissionId)))
+          .hasStatus(404);
+    }
+
+    @Test
+    void shouldReturn404WhenUnknownException() {
+      UUID submissionId = UUID.fromString("54dc87f7-aa33-4045-9f08-84b348519281");
+      UUID bulkSubmissionId = UUID.fromString("5933fc67-bac7-4f48-81ed-61c8c463f054");
+      when(dataClaimsRestClient.getSubmission(submissionId))
+          .thenThrow(new RuntimeException("Something wrong"));
+      assertThat(
+              mockMvc.perform(
+                  get("/upload-is-being-checked/status")
+                      .with(oidcLogin().oidcUser(USER))
+                      .sessionAttr(SUBMISSION_ID, submissionId)
+                      .sessionAttr(BULK_SUBMISSION_ID, bulkSubmissionId)))
+          .hasStatus(404);
     }
   }
 }
