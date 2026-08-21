@@ -34,16 +34,12 @@ public class SubmissionMessagesBuilder {
   private final BulkClaimImportSummaryMapper bulkClaimImportSummaryMapper;
   private final PaginationUtil paginationUtil;
 
-  /**
-   * Builds a {@link MessagesSummary} for a given submission ID whilst only returning errors.
-   */
+  /** Builds a {@link MessagesSummary} for a given submission ID whilst only returning errors. */
   public MessagesSummary buildErrors(UUID submissionId, int page, int size, String sort) {
     return build(submissionId, null, ValidationMessageType.ERROR, page, size, sort);
   }
 
-  /**
-   * Builds a {@link MessagesSummary} for a given submission ID with both warnings and errors.
-   */
+  /** Builds a {@link MessagesSummary} for a given submission ID with both warnings and errors. */
   public MessagesSummary buildAllWarnings(UUID submissionId, UUID claimId) {
     return build(submissionId, claimId, ValidationMessageType.WARNING, null, null, null);
   }
