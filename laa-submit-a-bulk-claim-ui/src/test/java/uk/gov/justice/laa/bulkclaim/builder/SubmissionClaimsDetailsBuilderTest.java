@@ -34,7 +34,6 @@ class SubmissionClaimsDetailsBuilderTest {
 
   private SubmissionClaimDetailsBuilder builder;
 
-  @Mock DataClaimsRestClient dataClaimsRestClient;
   @Mock DataClaimsRestClientV2 dataClaimsRestClientV2;
   @Mock SubmissionClaimRowMapper submissionClaimRowMapper;
   @Mock PaginationUtil paginationUtil;
@@ -43,7 +42,7 @@ class SubmissionClaimsDetailsBuilderTest {
   void beforeEach() {
     builder =
         new SubmissionClaimDetailsBuilder(
-            dataClaimsRestClient, dataClaimsRestClientV2, submissionClaimRowMapper, paginationUtil);
+            dataClaimsRestClientV2, submissionClaimRowMapper, paginationUtil);
   }
 
   @Test
