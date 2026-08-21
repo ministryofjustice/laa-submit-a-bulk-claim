@@ -16,7 +16,6 @@ import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionResponse;
 @RequiredArgsConstructor
 public class SubmissionClaimDetailsBuilder {
 
-  private final DataClaimsRestClient dataClaimsRestClient;
   private final DataClaimsRestClientV2 dataClaimsRestClientV2;
   private final SubmissionClaimRowMapper submissionClaimRowMapper;
   private final PaginationUtil paginationUtil;
