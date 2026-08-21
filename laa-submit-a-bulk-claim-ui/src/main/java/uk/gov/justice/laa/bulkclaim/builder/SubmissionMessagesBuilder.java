@@ -34,12 +34,16 @@ public class SubmissionMessagesBuilder {
   private final BulkClaimImportSummaryMapper bulkClaimImportSummaryMapper;
   private final PaginationUtil paginationUtil;
 
-  /** Builds a {@link MessagesSummary} for a given submission ID whilst only returning errors. */
+  /**
+   * Builds a {@link MessagesSummary} for a given submission ID whilst only returning errors.
+   */
   public MessagesSummary buildErrors(UUID submissionId, int page, int size, String sort) {
     return build(submissionId, null, ValidationMessageType.ERROR, page, size, sort);
   }
 
-  /** Builds a {@link MessagesSummary} for a given submission ID with both warnings and errors. */
+  /**
+   * Builds a {@link MessagesSummary} for a given submission ID with both warnings and errors.
+   */
   public MessagesSummary buildAllWarnings(UUID submissionId, UUID claimId) {
     return build(submissionId, claimId, ValidationMessageType.WARNING, null, null, null);
   }
@@ -107,15 +111,12 @@ public class SubmissionMessagesBuilder {
             .map(ValidationMessagesResponse::getTotalClaims)
             .orElse(0);
 
-    MessagesSource messagesSource = null;
-    if (messagesResponse != null && !Optional.of(messagesResponse)
-        .map(ValidationMessagesResponse::getContent).orElse(Collections.emptyList()).isEmpty()) {
-      // Set message source to submission if first message has no claim ID (all claims are either
-      // submission or claim).
-      messagesSource =
-          messagesResponse.getContent().getFirst().getClaimId() == null
-              ? MessagesSource.SUBMISSION
-              : MessagesSource.CLAIM;
+    MessagesSource messagesSource = MessagesSource.CLAIM;
+    if (messagesResponse != null
+        && messagesResponse.getContent() != null
+        && !messagesResponse.getContent().isEmpty()
+        && messagesResponse.getContent().getFirst().getClaimId() == null) {
+      messagesSource = MessagesSource.SUBMISSION;
     }
 
     return new MessagesSummary(
