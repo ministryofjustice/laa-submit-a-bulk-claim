@@ -6,6 +6,8 @@ import jakarta.validation.Valid;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.oauth2.core.oidc.user.OidcUser;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -39,8 +41,10 @@ public class SubmitDraftController {
   }
 
   @PostMapping("/submission/submit-draft")
-  public String postSubmitDraft(@ModelAttribute(name = SUBMISSION_ID) UUID submissionId) {
-    draftSubmissionService.submitDraftSubmission(submissionId);
+  public String postSubmitDraft(
+      @ModelAttribute(name = SUBMISSION_ID) UUID submissionId,
+      @AuthenticationPrincipal OidcUser oidcUser) {
+    draftSubmissionService.submitDraftSubmission(submissionId, oidcUser);
     return "redirect:/submission/%s".formatted(submissionId);
   }
 }

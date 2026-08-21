@@ -18,17 +18,15 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.server.ResponseStatusException;
-import uk.gov.justice.laa.payments.submit.client.DataClaimsRestClient;
-import uk.gov.justice.laa.payments.submit.util.OidcAttributeUtils;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionResponse;
+import uk.gov.justice.laa.payments.submit.service.SubmissionService;
 
 @RequiredArgsConstructor
 @ControllerAdvice(annotations = SubmissionControllerAdvice.Enabled.class)
 @Slf4j
 public class SubmissionControllerAdvice {
 
-  private final DataClaimsRestClient dataClaimsRestClient;
-  private final OidcAttributeUtils oidcAttributeUtils;
+  private final SubmissionService submissionService;
 
   @ModelAttribute("submissionResponse")
   public SubmissionResponse getSubmission(
@@ -43,29 +41,7 @@ public class SubmissionControllerAdvice {
             .orElseThrow(
                 () -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Missing submissionId"));
 
-    var submissionResponse =
-        dataClaimsRestClient
-            .getSubmission(submissionId)
-            .blockOptional()
-            .orElseThrow(
-                () ->
-                    new ResponseStatusException(
-                        HttpStatus.NOT_FOUND,
-                        "Submission %s does not exist".formatted(submissionId)));
-
-    checkOfficeAccess(oidcUser, submissionResponse);
-    return submissionResponse;
-  }
-
-  private void checkOfficeAccess(OidcUser oidcUser, SubmissionResponse submissionResponse) {
-    var offices = oidcAttributeUtils.getUserOffices(oidcUser);
-    var office = submissionResponse.getOfficeAccountNumber();
-    if (!offices.contains(office)) {
-      var sub = oidcUser.getSubject();
-      var message = "User %s does not have access to office %s".formatted(sub, office);
-      log.error(message);
-      throw new ResponseStatusException(HttpStatus.NOT_FOUND, message);
-    }
+    return submissionService.getSubmission(submissionId, oidcUser);
   }
 
   @Target(ElementType.TYPE)
