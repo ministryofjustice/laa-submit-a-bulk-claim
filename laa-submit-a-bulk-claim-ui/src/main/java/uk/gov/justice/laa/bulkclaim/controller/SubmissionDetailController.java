@@ -82,7 +82,9 @@ public class SubmissionDetailController {
         featureFlagsConfig.getIsUpdatedCalculatedValueAvailable());
 
     SubmissionSummary submissionSummary = submissionSummaryBuilder.build(submission);
-    boolean submissionAccepted = submission.getStatus() == SubmissionStatus.VALIDATION_SUCCEEDED;
+    boolean submissionAccepted =
+        submission.getStatus() == SubmissionStatus.VALIDATION_SUCCEEDED
+            || submission.getStatus() == SubmissionStatus.READY_FOR_SUBMISSION;
 
     if (submissionAccepted) {
       submissionSummary =
@@ -131,7 +133,8 @@ public class SubmissionDetailController {
               submissionSummary.officeAccount(),
               claimDetails.totalClaimValue(),
               submissionSummary.areaOfLaw(),
-              submissionSummary.submitted());
+              submissionSummary.submitted(),
+              submissionSummary.isDraft());
     }
 
     MessagesSummary messagesSummary =

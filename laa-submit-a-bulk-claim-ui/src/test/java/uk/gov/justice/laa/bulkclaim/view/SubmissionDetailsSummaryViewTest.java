@@ -148,7 +148,8 @@ class SubmissionDetailsSummaryViewTest extends SubmissionDetailsViewTestBase {
                 "0P322F",
                 BigDecimal.ZERO,
                 CRIME_LOWER.getValue(),
-                OffsetDateTime.of(2025, 1, 1, 10, 10, 0, 0, ZoneOffset.UTC)));
+                OffsetDateTime.of(2025, 1, 1, 10, 10, 0, 0, ZoneOffset.UTC),
+                false));
     when(submissionClaimDetailsBuilder.build(any(), anyInt(), anyInt(), anyString()))
         .thenReturn(new SubmissionClaimsDetails(List.of(), pagination, new BigDecimal("123.45")));
     when(submissionMessagesBuilder.build(any(), any(), any(), anyInt(), anyInt(), any()))
@@ -177,7 +178,8 @@ class SubmissionDetailsSummaryViewTest extends SubmissionDetailsViewTestBase {
                 "0P322F",
                 BigDecimal.ZERO,
                 CRIME_LOWER.getValue(),
-                OffsetDateTime.of(2025, 1, 1, 10, 10, 0, 0, ZoneOffset.UTC)));
+                OffsetDateTime.of(2025, 1, 1, 10, 10, 0, 0, ZoneOffset.UTC),
+                false));
     when(submissionMessagesBuilder.buildErrors(any(), anyInt(), anyInt(), any()))
         .thenReturn(
             new MessagesSummary(

@@ -32,7 +32,6 @@ import uk.gov.justice.laa.bulkclaim.helper.TestObjectCreator;
 import uk.gov.justice.laa.bulkclaim.mapper.ClaimFeeCalculationBreakdownMapper;
 import uk.gov.justice.laa.bulkclaim.mapper.ClaimSummaryMapper;
 import uk.gov.justice.laa.bulkclaim.service.ClaimService;
-import uk.gov.justice.laa.bulkclaim.service.SubmissionService;
 import uk.gov.justice.laa.bulkclaim.viewmodels.claimdetails.ClaimDetailPageData;
 import uk.gov.justice.laa.bulkclaim.viewmodels.claimdetails.ClaimDetailViewFactory;
 import uk.gov.justice.laa.bulkclaim.viewmodels.claimdetails.CrimeClaimDetailsView;
@@ -53,7 +52,6 @@ class ClaimDetailCrimeLowerViewTest extends ViewTestBase {
   @MockitoBean private ClaimDetailViewFactory claimDetailViewFactory;
   @MockitoBean private ClaimStatusBannerBuilder claimStatusBannerBuilder;
   @MockitoBean private LatestAssessmentResolver latestAssessmentResolver;
-  @MockitoBean private SubmissionService submissionService;
 
   private CrimeLowerClaimDetails details;
 
