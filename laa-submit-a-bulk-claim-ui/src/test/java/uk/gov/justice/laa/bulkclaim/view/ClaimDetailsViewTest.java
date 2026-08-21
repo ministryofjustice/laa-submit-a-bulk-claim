@@ -41,43 +41,35 @@ class ClaimDetailsViewTest extends SubmissionDetailsViewTestBase {
     mockClaims(CRIME_LOWER);
     var doc = renderDocument();
     Elements headers = getTableHeaders(doc);
-    assertTableHeaderIsNotSortable(headers.get(0), "Claim");
     assertTableHeaderIsSortable(
-        headers.get(1), "none", "Client surname", claimSortLink("client_surname"));
+        headers.get(0), "none", "Client name", claimSortLink("client_forename"));
+    assertTableHeaderIsSortable(headers.get(1), "none", "UFN", claimSortLink("unique_file_number"));
+    assertTableHeaderIsSortable(headers.get(2), "none", "Fee code", claimSortLink("fee_code"));
     assertTableHeaderIsSortable(
-        headers.get(2), "none", "Client initial", claimSortLink("client_forename"));
-    assertTableHeaderIsSortable(headers.get(3), "none", "UFN", claimSortLink("unique_file_number"));
-    assertTableHeaderIsSortable(headers.get(4), "none", "Fee code", claimSortLink("fee_code"));
+        headers.get(3), "none", "Initial calculated value", claimSortLink("total_amount"));
     assertTableHeaderIsSortable(
-        headers.get(5), "none", "Date work concluded", claimSortLink("case_concluded_date"));
+        headers.get(4), "none", "Escape case", claimSortLink("escape_case_flag"));
     assertTableHeaderIsSortable(
-        headers.get(6), "none", "Calculated value", claimSortLink("total_amount"));
-    assertTableHeaderIsSortable(
-        headers.get(7), "none", "Escape case", claimSortLink("escape_case_flag"));
-    assertTableHeaderIsSortable(
-        headers.get(8), "none", "Messages", claimSortLink("total_warnings"));
+        headers.get(5), "none", "Status", claimSortLink("derived_claim_status"));
   }
 
   @Test
-  void viewHasSortableClaimHeaders_civil() {
+  void viewHasSortableClaimHeaders_legalHelp() {
     mockClaims(LEGAL_HELP);
     var doc = renderDocument();
     Elements headers = getTableHeaders(doc);
-    assertTableHeaderIsNotSortable(headers.get(0), "Claim");
     assertTableHeaderIsSortable(
-        headers.get(1), "none", "Client surname", claimSortLink("client_surname"));
+        headers.get(0), "none", "Client name", claimSortLink("client_forename"));
+    assertTableHeaderIsSortable(headers.get(1), "none", "UFN", claimSortLink("unique_file_number"));
+    assertTableHeaderIsSortable(headers.get(2), "none", "Fee code", claimSortLink("fee_code"));
     assertTableHeaderIsSortable(
-        headers.get(2), "none", "Client forename", claimSortLink("client_forename"));
-    assertTableHeaderIsSortable(headers.get(3), "none", "UFN", claimSortLink("unique_file_number"));
+        headers.get(3), "none", "Initial calculated value", claimSortLink("total_amount"));
     assertTableHeaderIsSortable(
         headers.get(4), "none", "UCN", claimSortLink("unique_client_number"));
-    assertTableHeaderIsSortable(headers.get(5), "none", "Fee code", claimSortLink("fee_code"));
     assertTableHeaderIsSortable(
-        headers.get(6), "none", "Calculated value", claimSortLink("total_amount"));
+        headers.get(5), "none", "Escape case", claimSortLink("escape_case_flag"));
     assertTableHeaderIsSortable(
-        headers.get(7), "none", "Escape case", claimSortLink("escape_case_flag"));
-    assertTableHeaderIsSortable(
-        headers.get(8), "none", "Messages", claimSortLink("total_warnings"));
+        headers.get(6), "none", "Status", claimSortLink("derived_claim_status"));
   }
 
   @Test
@@ -85,54 +77,35 @@ class ClaimDetailsViewTest extends SubmissionDetailsViewTestBase {
     mockClaims(MEDIATION);
     var doc = renderDocument();
     Elements headers = getTableHeaders(doc);
-    assertTableHeaderIsNotSortable(headers.get(0), "Claim");
     assertTableHeaderIsSortable(
-        headers.get(1), "none", "Client 1 surname", claimSortLink("client_surname"));
+        headers.get(0), "none", "Client 1 name", claimSortLink("client_forename"));
     assertTableHeaderIsSortable(
-        headers.get(2), "none", "Client 1 forename", claimSortLink("client_forename"));
+        headers.get(1), "none", "Client 1 UCN", claimSortLink("unique_client_number"));
     assertTableHeaderIsSortable(
-        headers.get(3), "none", "Client 1 UCN", claimSortLink("unique_client_number"));
+        headers.get(2), "none", "Client 2 name", claimSortLink("client_2_forename"));
     assertTableHeaderIsSortable(
-        headers.get(4), "none", "Client 2 surname", claimSortLink("client_2_surname"));
+        headers.get(3), "none", "Client 2 UCN", claimSortLink("client_2_ucn"));
+    assertTableHeaderIsSortable(headers.get(4), "none", "Fee code", claimSortLink("fee_code"));
     assertTableHeaderIsSortable(
-        headers.get(5), "none", "Client 2 forename", claimSortLink("client_2_forename"));
+        headers.get(5), "none", "Initial calculated value", claimSortLink("total_amount"));
     assertTableHeaderIsSortable(
-        headers.get(6), "none", "Client 2 UCN", claimSortLink("client_2_ucn"));
-    assertTableHeaderIsSortable(headers.get(7), "none", "Fee code", claimSortLink("fee_code"));
+        headers.get(6), "none", "Escape case", claimSortLink("escape_case_flag"));
     assertTableHeaderIsSortable(
-        headers.get(8), "none", "Calculated value", claimSortLink("total_amount"));
+        headers.get(7), "none", "Status", claimSortLink("derived_claim_status"));
   }
 
   @ParameterizedTest
   @MethodSource("detailFieldIsSortableArgs")
-  void viewSubmissionDetailClientSurnameClaimFieldIsSortable_crime(
+  void viewSubmissionDetailClientNameClaimFieldIsSortable_crime(
       String currentDirection,
       int currentPage,
       String expectedAriaDirection,
       String expectedLinkDirection) {
     assertClaimFieldIsSortable(
         CRIME_LOWER,
-        1,
-        "client_surname",
-        "Client surname",
-        currentDirection,
-        currentPage,
-        expectedAriaDirection,
-        expectedLinkDirection);
-  }
-
-  @ParameterizedTest
-  @MethodSource("detailFieldIsSortableArgs")
-  void viewSubmissionDetailClientForenameClaimFieldIsSortable_crime(
-      String currentDirection,
-      int currentPage,
-      String expectedAriaDirection,
-      String expectedLinkDirection) {
-    assertClaimFieldIsSortable(
-        CRIME_LOWER,
-        2,
+        0,
         "client_forename",
-        "Client initial",
+        "Client name",
         currentDirection,
         currentPage,
         expectedAriaDirection,
@@ -148,7 +121,7 @@ class ClaimDetailsViewTest extends SubmissionDetailsViewTestBase {
       String expectedLinkDirection) {
     assertClaimFieldIsSortable(
         CRIME_LOWER,
-        3,
+        1,
         "unique_file_number",
         "UFN",
         currentDirection,
@@ -166,7 +139,7 @@ class ClaimDetailsViewTest extends SubmissionDetailsViewTestBase {
       String expectedLinkDirection) {
     assertClaimFieldIsSortable(
         CRIME_LOWER,
-        4,
+        2,
         "fee_code",
         "Fee code",
         currentDirection,
@@ -177,34 +150,16 @@ class ClaimDetailsViewTest extends SubmissionDetailsViewTestBase {
 
   @ParameterizedTest
   @MethodSource("detailFieldIsSortableArgs")
-  void viewSubmissionDetailCaseConcludedDateClaimFieldIsSortable_crime(
+  void viewSubmissionDetailInitialCalculatedValueClaimFieldIsSortable_crime(
       String currentDirection,
       int currentPage,
       String expectedAriaDirection,
       String expectedLinkDirection) {
     assertClaimFieldIsSortable(
         CRIME_LOWER,
-        5,
-        "case_concluded_date",
-        "Date work concluded",
-        currentDirection,
-        currentPage,
-        expectedAriaDirection,
-        expectedLinkDirection);
-  }
-
-  @ParameterizedTest
-  @MethodSource("detailFieldIsSortableArgs")
-  void viewSubmissionDetailTotalAmountClaimFieldIsSortable_crime(
-      String currentDirection,
-      int currentPage,
-      String expectedAriaDirection,
-      String expectedLinkDirection) {
-    assertClaimFieldIsSortable(
-        CRIME_LOWER,
-        6,
+        3,
         "total_amount",
-        "Calculated value",
+        "Initial calculated value",
         currentDirection,
         currentPage,
         expectedAriaDirection,
@@ -220,7 +175,7 @@ class ClaimDetailsViewTest extends SubmissionDetailsViewTestBase {
       String expectedLinkDirection) {
     assertClaimFieldIsSortable(
         CRIME_LOWER,
-        7,
+        4,
         "escape_case_flag",
         "Escape case",
         currentDirection,
@@ -231,16 +186,16 @@ class ClaimDetailsViewTest extends SubmissionDetailsViewTestBase {
 
   @ParameterizedTest
   @MethodSource("detailFieldIsSortableArgs")
-  void viewSubmissionDetailTotalWarningsClaimFieldIsSortable_crime(
+  void viewSubmissionDetailStatusClaimFieldIsSortable_crime(
       String currentDirection,
       int currentPage,
       String expectedAriaDirection,
       String expectedLinkDirection) {
     assertClaimFieldIsSortable(
         CRIME_LOWER,
-        8,
-        "total_warnings",
-        "Messages",
+        5,
+        "derived_claim_status",
+        "Status",
         currentDirection,
         currentPage,
         expectedAriaDirection,
@@ -249,34 +204,16 @@ class ClaimDetailsViewTest extends SubmissionDetailsViewTestBase {
 
   @ParameterizedTest
   @MethodSource("detailFieldIsSortableArgs")
-  void viewSubmissionDetailClientSurnameClaimFieldIsSortable_legalHelp(
+  void viewSubmissionDetailClientNameClaimFieldIsSortable_legalHelp(
       String currentDirection,
       int currentPage,
       String expectedAriaDirection,
       String expectedLinkDirection) {
     assertClaimFieldIsSortable(
         LEGAL_HELP,
-        1,
-        "client_surname",
-        "Client surname",
-        currentDirection,
-        currentPage,
-        expectedAriaDirection,
-        expectedLinkDirection);
-  }
-
-  @ParameterizedTest
-  @MethodSource("detailFieldIsSortableArgs")
-  void viewSubmissionDetailClientForenameClaimFieldIsSortable_legalHelp(
-      String currentDirection,
-      int currentPage,
-      String expectedAriaDirection,
-      String expectedLinkDirection) {
-    assertClaimFieldIsSortable(
-        LEGAL_HELP,
-        2,
+        0,
         "client_forename",
-        "Client forename",
+        "Client name",
         currentDirection,
         currentPage,
         expectedAriaDirection,
@@ -292,9 +229,45 @@ class ClaimDetailsViewTest extends SubmissionDetailsViewTestBase {
       String expectedLinkDirection) {
     assertClaimFieldIsSortable(
         LEGAL_HELP,
-        3,
+        1,
         "unique_file_number",
         "UFN",
+        currentDirection,
+        currentPage,
+        expectedAriaDirection,
+        expectedLinkDirection);
+  }
+
+  @ParameterizedTest
+  @MethodSource("detailFieldIsSortableArgs")
+  void viewSubmissionDetailFeeCodeClaimFieldIsSortable_legalHelp(
+      String currentDirection,
+      int currentPage,
+      String expectedAriaDirection,
+      String expectedLinkDirection) {
+    assertClaimFieldIsSortable(
+        LEGAL_HELP,
+        2,
+        "fee_code",
+        "Fee code",
+        currentDirection,
+        currentPage,
+        expectedAriaDirection,
+        expectedLinkDirection);
+  }
+
+  @ParameterizedTest
+  @MethodSource("detailFieldIsSortableArgs")
+  void viewSubmissionDetailInitialCalculatedValueClaimFieldIsSortable_legalHelp(
+      String currentDirection,
+      int currentPage,
+      String expectedAriaDirection,
+      String expectedLinkDirection) {
+    assertClaimFieldIsSortable(
+        LEGAL_HELP,
+        3,
+        "total_amount",
+        "Initial calculated value",
         currentDirection,
         currentPage,
         expectedAriaDirection,
@@ -321,42 +294,6 @@ class ClaimDetailsViewTest extends SubmissionDetailsViewTestBase {
 
   @ParameterizedTest
   @MethodSource("detailFieldIsSortableArgs")
-  void viewSubmissionDetailFeeCodeClaimFieldIsSortable_legalHelp(
-      String currentDirection,
-      int currentPage,
-      String expectedAriaDirection,
-      String expectedLinkDirection) {
-    assertClaimFieldIsSortable(
-        LEGAL_HELP,
-        5,
-        "fee_code",
-        "Fee code",
-        currentDirection,
-        currentPage,
-        expectedAriaDirection,
-        expectedLinkDirection);
-  }
-
-  @ParameterizedTest
-  @MethodSource("detailFieldIsSortableArgs")
-  void viewSubmissionDetailTotalAmountClaimFieldIsSortable_legalHelp(
-      String currentDirection,
-      int currentPage,
-      String expectedAriaDirection,
-      String expectedLinkDirection) {
-    assertClaimFieldIsSortable(
-        LEGAL_HELP,
-        6,
-        "total_amount",
-        "Calculated value",
-        currentDirection,
-        currentPage,
-        expectedAriaDirection,
-        expectedLinkDirection);
-  }
-
-  @ParameterizedTest
-  @MethodSource("detailFieldIsSortableArgs")
   void viewSubmissionDetailEscapeCaseFlagClaimFieldIsSortable_legalHelp(
       String currentDirection,
       int currentPage,
@@ -364,7 +301,7 @@ class ClaimDetailsViewTest extends SubmissionDetailsViewTestBase {
       String expectedLinkDirection) {
     assertClaimFieldIsSortable(
         LEGAL_HELP,
-        7,
+        5,
         "escape_case_flag",
         "Escape case",
         currentDirection,
@@ -375,16 +312,16 @@ class ClaimDetailsViewTest extends SubmissionDetailsViewTestBase {
 
   @ParameterizedTest
   @MethodSource("detailFieldIsSortableArgs")
-  void viewSubmissionDetailTotalWarningsClaimFieldIsSortable_legalHelp(
+  void viewSubmissionDetailStatusClaimFieldIsSortable_legalHelp(
       String currentDirection,
       int currentPage,
       String expectedAriaDirection,
       String expectedLinkDirection) {
     assertClaimFieldIsSortable(
         LEGAL_HELP,
-        8,
-        "total_warnings",
-        "Messages",
+        6,
+        "derived_claim_status",
+        "Status",
         currentDirection,
         currentPage,
         expectedAriaDirection,
@@ -393,7 +330,25 @@ class ClaimDetailsViewTest extends SubmissionDetailsViewTestBase {
 
   @ParameterizedTest
   @MethodSource("detailFieldIsSortableArgs")
-  void viewSubmissionDetailClientSurnameClaimFieldIsSortable_mediation(
+  void viewSubmissionDetailClient1NameClaimFieldIsSortable_mediation(
+      String currentDirection,
+      int currentPage,
+      String expectedAriaDirection,
+      String expectedLinkDirection) {
+    assertClaimFieldIsSortable(
+        MEDIATION,
+        0,
+        "client_forename",
+        "Client 1 name",
+        currentDirection,
+        currentPage,
+        expectedAriaDirection,
+        expectedLinkDirection);
+  }
+
+  @ParameterizedTest
+  @MethodSource("detailFieldIsSortableArgs")
+  void viewSubmissionDetailClient1UcnClaimFieldIsSortable_mediation(
       String currentDirection,
       int currentPage,
       String expectedAriaDirection,
@@ -401,42 +356,6 @@ class ClaimDetailsViewTest extends SubmissionDetailsViewTestBase {
     assertClaimFieldIsSortable(
         MEDIATION,
         1,
-        "client_surname",
-        "Client 1 surname",
-        currentDirection,
-        currentPage,
-        expectedAriaDirection,
-        expectedLinkDirection);
-  }
-
-  @ParameterizedTest
-  @MethodSource("detailFieldIsSortableArgs")
-  void viewSubmissionDetailClientForenameClaimFieldIsSortable_mediation(
-      String currentDirection,
-      int currentPage,
-      String expectedAriaDirection,
-      String expectedLinkDirection) {
-    assertClaimFieldIsSortable(
-        MEDIATION,
-        2,
-        "client_forename",
-        "Client 1 forename",
-        currentDirection,
-        currentPage,
-        expectedAriaDirection,
-        expectedLinkDirection);
-  }
-
-  @ParameterizedTest
-  @MethodSource("detailFieldIsSortableArgs")
-  void viewSubmissionDetailUniqueClientNumberClaimFieldIsSortable_mediation(
-      String currentDirection,
-      int currentPage,
-      String expectedAriaDirection,
-      String expectedLinkDirection) {
-    assertClaimFieldIsSortable(
-        MEDIATION,
-        3,
         "unique_client_number",
         "Client 1 UCN",
         currentDirection,
@@ -447,34 +366,16 @@ class ClaimDetailsViewTest extends SubmissionDetailsViewTestBase {
 
   @ParameterizedTest
   @MethodSource("detailFieldIsSortableArgs")
-  void viewSubmissionDetailClient2SurnameClaimFieldIsSortable_mediation(
+  void viewSubmissionDetailClient2NameClaimFieldIsSortable_mediation(
       String currentDirection,
       int currentPage,
       String expectedAriaDirection,
       String expectedLinkDirection) {
     assertClaimFieldIsSortable(
         MEDIATION,
-        4,
-        "client_2_surname",
-        "Client 2 surname",
-        currentDirection,
-        currentPage,
-        expectedAriaDirection,
-        expectedLinkDirection);
-  }
-
-  @ParameterizedTest
-  @MethodSource("detailFieldIsSortableArgs")
-  void viewSubmissionDetailClient2ForenameClaimFieldIsSortable_mediation(
-      String currentDirection,
-      int currentPage,
-      String expectedAriaDirection,
-      String expectedLinkDirection) {
-    assertClaimFieldIsSortable(
-        MEDIATION,
-        5,
+        2,
         "client_2_forename",
-        "Client 2 forename",
+        "Client 2 name",
         currentDirection,
         currentPage,
         expectedAriaDirection,
@@ -490,7 +391,7 @@ class ClaimDetailsViewTest extends SubmissionDetailsViewTestBase {
       String expectedLinkDirection) {
     assertClaimFieldIsSortable(
         MEDIATION,
-        6,
+        3,
         "client_2_ucn",
         "Client 2 UCN",
         currentDirection,
@@ -508,7 +409,7 @@ class ClaimDetailsViewTest extends SubmissionDetailsViewTestBase {
       String expectedLinkDirection) {
     assertClaimFieldIsSortable(
         MEDIATION,
-        7,
+        4,
         "fee_code",
         "Fee code",
         currentDirection,
@@ -519,16 +420,52 @@ class ClaimDetailsViewTest extends SubmissionDetailsViewTestBase {
 
   @ParameterizedTest
   @MethodSource("detailFieldIsSortableArgs")
-  void viewSubmissionDetailTotalAmountClaimFieldIsSortable_mediation(
+  void viewSubmissionDetailInitialCalculatedValueClaimFieldIsSortable_mediation(
       String currentDirection,
       int currentPage,
       String expectedAriaDirection,
       String expectedLinkDirection) {
     assertClaimFieldIsSortable(
         MEDIATION,
-        8,
+        5,
         "total_amount",
-        "Calculated value",
+        "Initial calculated value",
+        currentDirection,
+        currentPage,
+        expectedAriaDirection,
+        expectedLinkDirection);
+  }
+
+  @ParameterizedTest
+  @MethodSource("detailFieldIsSortableArgs")
+  void viewSubmissionDetailEscapeCaseFlagClaimFieldIsSortable_mediation(
+      String currentDirection,
+      int currentPage,
+      String expectedAriaDirection,
+      String expectedLinkDirection) {
+    assertClaimFieldIsSortable(
+        MEDIATION,
+        6,
+        "escape_case_flag",
+        "Escape case",
+        currentDirection,
+        currentPage,
+        expectedAriaDirection,
+        expectedLinkDirection);
+  }
+
+  @ParameterizedTest
+  @MethodSource("detailFieldIsSortableArgs")
+  void viewSubmissionDetailStatusClaimFieldIsSortable_mediation(
+      String currentDirection,
+      int currentPage,
+      String expectedAriaDirection,
+      String expectedLinkDirection) {
+    assertClaimFieldIsSortable(
+        MEDIATION,
+        7,
+        "derived_claim_status",
+        "Status",
         currentDirection,
         currentPage,
         expectedAriaDirection,
@@ -545,10 +482,10 @@ class ClaimDetailsViewTest extends SubmissionDetailsViewTestBase {
       boolean expectedNextLink,
       int expectedEllipsesCount) {
     mockAcceptedSubmission(
-        CRIME_LOWER, pagination(currentPage, totalPages), pagination(0, 1), "client_surname,desc");
+        CRIME_LOWER, pagination(currentPage, totalPages), pagination(0, 1), "client_forename,desc");
     var doc =
         renderDocumentWithParams(
-            Map.of("page", String.valueOf(currentPage), "sort", "client_surname,desc"));
+            Map.of("page", String.valueOf(currentPage), "sort", "client_forename,desc"));
     assertPaginationRenders(
         doc,
         "page",
@@ -568,7 +505,7 @@ class ClaimDetailsViewTest extends SubmissionDetailsViewTestBase {
       int currentPage,
       String expectedAriaDirection,
       String expectedLinkDirection) {
-    mockAcceptedSubmission(areaOfLaw, pagination(0, 1), pagination(0, 1), "client_surname,desc");
+    mockAcceptedSubmission(areaOfLaw, pagination(0, 1), pagination(0, 1), "client_forename,desc");
     var doc =
         renderDocumentWithParams(
             Map.of(

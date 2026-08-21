@@ -74,7 +74,7 @@ class SubmissionServiceTest {
             .build();
     when(dataClaimsRestClient.getSubmission(SUBMISSION_ID)).thenReturn(Mono.just(submission));
     when(oidcUser.getAttributes()).thenReturn(Map.of("LAA_ACCOUNTS", List.of("Different")));
-    when(oidcUser.getSubject()).thenReturn("1234567890");
+    when(oidcUser.getAttribute("oid")).thenReturn("1111111111");
 
     var exception =
         assertThrows(
@@ -83,6 +83,6 @@ class SubmissionServiceTest {
 
     assertThat(exception.getStatusCode().value()).isEqualTo(HttpStatus.NOT_FOUND.value());
     assertThat(exception.getMessage())
-        .isEqualTo("404 NOT_FOUND \"User 1234567890 does not have access to office 123456\"");
+        .isEqualTo("404 NOT_FOUND \"User 1111111111 does not have access to office 123456\"");
   }
 }
