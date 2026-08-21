@@ -6,6 +6,7 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import uk.gov.justice.laa.payments.submit.client.DataClaimsRestClient;
 import uk.gov.justice.laa.payments.submit.config.FeatureFlagsConfig;
 import uk.gov.justice.laa.payments.submit.config.WebMvcTestConfig;
+import uk.gov.justice.laa.payments.submit.service.SubmissionService;
 import uk.gov.justice.laa.payments.submit.util.OidcAttributeUtils;
 
 @WebMvcTest(DefaultController.class)
@@ -15,4 +16,5 @@ public abstract class BaseControllerTest {
   @MockitoBean protected DataClaimsRestClient dataClaimsRestClient;
   @MockitoBean protected FeatureFlagsConfig featureFlagsConfig;
   @MockitoBean protected OidcAttributeUtils oidcAttributeUtils;
+  @MockitoBean protected SubmissionService submissionService;
 }

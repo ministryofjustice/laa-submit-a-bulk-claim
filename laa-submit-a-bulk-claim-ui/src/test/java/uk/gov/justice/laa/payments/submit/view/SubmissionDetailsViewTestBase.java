@@ -18,7 +18,6 @@ import uk.gov.justice.laa.payments.submit.constants.ViewSubmissionNavigationTab;
 import uk.gov.justice.laa.payments.submit.controller.SubmissionDetailController;
 import uk.gov.justice.laa.payments.submit.dto.PaginationLinks;
 import uk.gov.justice.laa.payments.submit.dto.PaginationPageLink;
-import uk.gov.justice.laa.payments.submit.service.SubmissionService;
 import uk.gov.justice.laa.payments.submit.util.PaginationLinksBuilder;
 
 @WebMvcTest(SubmissionDetailController.class)
@@ -32,7 +31,6 @@ public abstract class SubmissionDetailsViewTestBase extends ViewTestBase {
   @MockitoBean protected SubmissionMessagesBuilder submissionMessagesBuilder;
   @MockitoBean protected SubmissionMatterStartsDetailsBuilder submissionMatterStartsDetailsBuilder;
   @MockitoBean protected PaginationLinksBuilder paginationLinksBuilder;
-  @MockitoBean protected SubmissionService submissionService;
 
   protected SubmissionDetailsViewTestBase() {
     this.mapping = "/submissions/%s".formatted(submissionId);
