@@ -3,7 +3,7 @@
       th:replace="~{ main-layout :: layout(${ufn} ? #{viewClaim.heading(${ufn})} : #{viewClaim.heading.noUfn},~{::main},~{::#back-link},'search-submissions')}">
 
 
-<!--/*@thymesVar id="values" type="uk.gov.justice.laa.bulkclaim.viewmodels.claim.BulkClaimCostItem"*/-->
+<!--/*@thymesVar id="values" type="uk.gov.justice.laa.payments.submit.viewmodels.claim.BulkClaimCostItem"*/-->
 <tr class="govuk-table__row" th:fragment="fee-detail-row(title, values, notes)"
     th:with="rowStyle=${rowStyle?:null}">
   <th scope="row" class="govuk-table__header" th:classappend="${rowStyle} ? __${rowStyle}__ : ''"
