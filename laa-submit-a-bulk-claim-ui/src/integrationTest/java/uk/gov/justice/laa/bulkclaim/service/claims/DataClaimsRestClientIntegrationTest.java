@@ -32,7 +32,9 @@ import uk.gov.justice.laa.bulkclaim.client.DataClaimsRestClient;
 import uk.gov.justice.laa.bulkclaim.config.WebMvcTestConfig;
 import uk.gov.justice.laa.bulkclaim.helper.MockServerIntegrationTest;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.AreaOfLaw;
+import uk.gov.justice.laa.dstew.payments.claimsdata.model.AssessmentResultSet;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.BulkSubmissionStatus;
+import uk.gov.justice.laa.dstew.payments.claimsdata.model.ClaimHistoryResultSet;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.ClaimResponse;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.ClaimResultSet;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.CreateBulkSubmission201Response;
@@ -66,7 +68,7 @@ class DataClaimsRestClientIntegrationTest extends MockServerIntegrationTest {
     void shouldHandle201Response() {
       // Given
       MockMultipartFile file =
-          new MockMultipartFile("file", "test.txt", "text/plain", new byte[10 * 1024 * 1024]);
+          new MockMultipartFile("file", "test.txt", "text/plain", new byte[10]);
       String expectedBody =
           """
               {
@@ -105,7 +107,7 @@ class DataClaimsRestClientIntegrationTest extends MockServerIntegrationTest {
     void shouldHandle201ResponseWithEmptyOfficeArray() {
       // Given
       MockMultipartFile file =
-          new MockMultipartFile("file", "test.txt", "text/plain", new byte[10 * 1024 * 1024]);
+          new MockMultipartFile("file", "test.txt", "text/plain", new byte[10]);
       String expectedBody =
           """
               {
@@ -144,7 +146,7 @@ class DataClaimsRestClientIntegrationTest extends MockServerIntegrationTest {
     void shouldHandle400Response() {
       // Given
       MockMultipartFile file =
-          new MockMultipartFile("file", "test.txt", "text/plain", new byte[10 * 1024 * 1024]);
+          new MockMultipartFile("file", "test.txt", "text/plain", new byte[10]);
       mockServerClient
           .when(HttpRequest.request().withMethod("POST").withPath("/api/v1/bulk-submissions"))
           .respond(response().withStatusCode(400).withHeader("Content-Type", "application/json"));
@@ -160,7 +162,7 @@ class DataClaimsRestClientIntegrationTest extends MockServerIntegrationTest {
     void shouldHandle401Response() {
       // Given
       MockMultipartFile file =
-          new MockMultipartFile("file", "test.txt", "text/plain", new byte[10 * 1024 * 1024]);
+          new MockMultipartFile("file", "test.txt", "text/plain", new byte[10]);
       mockServerClient
           .when(HttpRequest.request().withMethod("POST").withPath("/api/v1/bulk-submissions"))
           .respond(response().withStatusCode(401).withHeader("Content-Type", "application/json"));
@@ -176,7 +178,7 @@ class DataClaimsRestClientIntegrationTest extends MockServerIntegrationTest {
     void shouldHandle403Response() {
       // Given
       MockMultipartFile file =
-          new MockMultipartFile("file", "test.txt", "text/plain", new byte[10 * 1024 * 1024]);
+          new MockMultipartFile("file", "test.txt", "text/plain", new byte[10]);
       mockServerClient
           .when(HttpRequest.request().withMethod("POST").withPath("/api/v1/bulk-submissions"))
           .respond(response().withStatusCode(403).withHeader("Content-Type", "application/json"));
@@ -192,7 +194,7 @@ class DataClaimsRestClientIntegrationTest extends MockServerIntegrationTest {
     void shouldHandle500Response() {
       // Given
       MockMultipartFile file =
-          new MockMultipartFile("file", "test.txt", "text/plain", new byte[10 * 1024 * 1024]);
+          new MockMultipartFile("file", "test.txt", "text/plain", new byte[10]);
       mockServerClient
           .when(HttpRequest.request().withMethod("POST").withPath("/api/v1/bulk-submissions"))
           .respond(response().withStatusCode(500).withHeader("Content-Type", "application/json"));
@@ -1014,6 +1016,97 @@ class DataClaimsRestClientIntegrationTest extends MockServerIntegrationTest {
                 assertThat(matterStartResultSet.getSubmissionId())
                     .isEqualTo(UUID.fromString("3fa85f64-5717-4562-b3fc-2c963f66afa6"));
               });
+    }
+  }
+
+  @Nested
+  @DisplayName("GET: /api/v1/claims/{claim-id}/history")
+  class GetClaimHistory {
+
+    @Test
+    @DisplayName("Should handle a 200 response")
+    void shouldHandle200Response() throws Exception {
+      // Given
+      UUID claimId = UUID.fromString("0199e23f-b903-7a25-b802-7d1676ba06c8");
+      String expectJson = readJsonFromFile("/GetClaimHistory200.json");
+      mockServerClient
+          .when(
+              HttpRequest.request()
+                  .withMethod("GET")
+                  .withPath("/api/v1/claims/" + claimId + "/history"))
+          .respond(
+              response()
+                  .withStatusCode(200)
+                  .withHeader("Content-Type", "application/json")
+                  .withBody(expectJson));
+
+      // Then
+      ClaimHistoryResultSet block = dataClaimsRestClient.getClaimHistory(claimId).block();
+      String result = objectMapper.writeValueAsString(block);
+      assertThatJsonMatches(expectJson, result);
+    }
+
+    @Test
+    @DisplayName("Should handle a 404 response")
+    void shouldHandle404Response() {
+      // Given
+      UUID claimId = UUID.fromString("0199e23f-b903-7a25-b802-7d1676ba06c8");
+      mockServerClient
+          .when(
+              HttpRequest.request()
+                  .withMethod("GET")
+                  .withPath("/api/v1/claims/" + claimId + "/history"))
+          .respond(response().withStatusCode(404).withHeader("Content-Type", "application/json"));
+
+      // When
+      assertThrows(NotFound.class, () -> dataClaimsRestClient.getClaimHistory(claimId).block());
+    }
+  }
+
+  @Nested
+  @DisplayName("GET: /api/v1/claims/{claim-id}/assessments")
+  class GetClaimAssessments {
+
+    @Test
+    @DisplayName("Should handle a 200 response")
+    void shouldHandle200Response() throws Exception {
+      // Given
+      UUID claimId = UUID.fromString("0199e23f-b903-7a25-b802-7d1676ba06c8");
+      String expectJson = readJsonFromFile("/GetClaimAssessments200.json");
+      mockServerClient
+          .when(
+              HttpRequest.request()
+                  .withMethod("GET")
+                  .withPath("/api/v1/claims/" + claimId + "/assessments"))
+          .respond(
+              response()
+                  .withStatusCode(200)
+                  .withHeader("Content-Type", "application/json")
+                  .withBody(expectJson));
+
+      // Then
+      AssessmentResultSet block =
+          dataClaimsRestClient.getClaimAssessments(claimId, null, null, null).block();
+      String result = objectMapper.writeValueAsString(block);
+      assertThatJsonMatches(expectJson, result);
+    }
+
+    @Test
+    @DisplayName("Should handle a 404 response")
+    void shouldHandle404Response() {
+      // Given
+      UUID claimId = UUID.fromString("0199e23f-b903-7a25-b802-7d1676ba06c8");
+      mockServerClient
+          .when(
+              HttpRequest.request()
+                  .withMethod("GET")
+                  .withPath("/api/v1/claims/" + claimId + "/assessments"))
+          .respond(response().withStatusCode(404).withHeader("Content-Type", "application/json"));
+
+      // When
+      assertThrows(
+          NotFound.class,
+          () -> dataClaimsRestClient.getClaimAssessments(claimId, null, null, null).block());
     }
   }
 }

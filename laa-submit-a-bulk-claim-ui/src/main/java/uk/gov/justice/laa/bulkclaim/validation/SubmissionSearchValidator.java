@@ -10,7 +10,6 @@ import org.springframework.validation.Validator;
 import uk.gov.justice.laa.bulkclaim.dto.SubmissionOutcomeFilter;
 import uk.gov.justice.laa.bulkclaim.dto.submission.search.SubmissionSearchQuery;
 import uk.gov.justice.laa.bulkclaim.util.SubmissionPeriodUtil;
-import uk.gov.justice.laa.dstew.payments.claimsdata.model.AreaOfLaw;
 
 /**
  * Validator implementation for the {@code SubmissionSearchQuery} class. Perquerys validation checks
@@ -20,7 +19,6 @@ import uk.gov.justice.laa.dstew.payments.claimsdata.model.AreaOfLaw;
  *
  * <ul>
  *   <li>Validates the submission period to ensure it is one of the available submission periods.
- *   <li>Validates the area of law input to ensure it matches one of the predefined options.
  *   <li>Validates the submission status to ensure it matches one of the predefined options.
  * </ul>
  *
@@ -35,7 +33,6 @@ public class SubmissionSearchValidator implements Validator {
 
   public static final String SUBMISSION_ID = "submissionId";
   public static final String SUBMISSION_PERIOD = "submissionPeriod";
-  public static final String AREA_OF_LAW = "areaOfLaw";
   public static final String SUBMISSION_STATUS = "submissionStatuses";
   public static final String OFFICES = "offices";
 
@@ -55,7 +52,6 @@ public class SubmissionSearchValidator implements Validator {
     SubmissionSearchQuery query = (SubmissionSearchQuery) target;
 
     validateSubmissionPeriod(errors, query);
-    validateAreaOfLaw(errors, query);
     validateSubmissionStatus(errors, query);
     validateOffices(errors, query);
   }
@@ -69,19 +65,6 @@ public class SubmissionSearchValidator implements Validator {
           SUBMISSION_PERIOD,
           "search.error.submissionPeriod.invalid",
           "Submission period must be one of the following: " + availableSubmissionPeriods.values());
-    }
-  }
-
-  private void validateAreaOfLaw(Errors errors, SubmissionSearchQuery query) {
-    if (!StringUtils.isEmpty(query.getAreaOfLaw())) {
-      try {
-        AreaOfLaw.fromValue(query.getAreaOfLaw().replace("_", " "));
-      } catch (IllegalArgumentException e) {
-        errors.rejectValue(
-            AREA_OF_LAW,
-            "search.error.areaOfLaw.invalid",
-            "Area of law must be one of the following: " + Arrays.toString(AreaOfLaw.values()));
-      }
     }
   }
 

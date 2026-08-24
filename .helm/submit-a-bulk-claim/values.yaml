@@ -146,6 +146,21 @@ env:
       configMapKeyRef:
         name: feature-flags
         key: is-nil-submission-enabled
+  - name: IS_ALTERNATIVE_CLAIM_VIEW_ENABLED
+    valueFrom:
+      configMapKeyRef:
+        name: feature-flags
+        key: is-alternative-claim-view-enabled
+  - name: IS_UPDATED_CALCULATED_VALUE_AVAILABLE
+    valueFrom:
+      configMapKeyRef:
+        name: feature-flags
+        key: is-updated-calculated-value-available
+  - name: IS_ASSESSED_COLUMN_ENABLED
+    valueFrom:
+      configMapKeyRef:
+        name: feature-flags
+        key: is-assessed-column-enabled
   - name: OUTAGE_BANNER_DISABLE_AT_TIMESTAMP
     valueFrom:
       configMapKeyRef:

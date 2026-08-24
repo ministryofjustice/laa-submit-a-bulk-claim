@@ -10,7 +10,7 @@ import uk.gov.justice.laa.bulkclaim.dto.sorting.SortField;
 public interface PageQuery<T extends SortField, U extends Sort<T>> {
 
   int DEFAULT_PAGE = 0;
-  int DEFAULT_PAGE_SIZE = 10;
+  int DEFAULT_PAGE_SIZE = 50;
 
   Integer getPage();
 
@@ -29,6 +29,9 @@ public interface PageQuery<T extends SortField, U extends Sort<T>> {
   }
 
   default void addQueryParam(UriComponentsBuilder builder, String key, Object value) {
+    if (value == null) {
+      return;
+    }
     if (value instanceof String valueString && !hasText(valueString)) {
       return;
     }

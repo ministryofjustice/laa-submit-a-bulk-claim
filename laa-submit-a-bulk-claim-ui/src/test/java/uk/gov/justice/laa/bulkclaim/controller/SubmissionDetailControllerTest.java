@@ -2,19 +2,20 @@ package uk.gov.justice.laa.bulkclaim.controller;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.oidcLogin;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static uk.gov.justice.laa.bulkclaim.controller.ControllerTestHelper.OIDC_USER;
+import static uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionStatus.VALIDATION_IN_PROGRESS;
+import static uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionStatus.VALIDATION_SUCCEEDED;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
@@ -25,17 +26,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
 import org.springframework.context.annotation.Import;
-import org.springframework.mock.web.MockHttpSession;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.assertj.MockMvcTester;
 import org.springframework.test.web.servlet.assertj.MvcTestResult;
-import reactor.core.publisher.Mono;
 import uk.gov.justice.laa.bulkclaim.builder.SubmissionClaimDetailsBuilder;
 import uk.gov.justice.laa.bulkclaim.builder.SubmissionMatterStartsDetailsBuilder;
 import uk.gov.justice.laa.bulkclaim.builder.SubmissionMessagesBuilder;
 import uk.gov.justice.laa.bulkclaim.builder.SubmissionSummaryBuilder;
-import uk.gov.justice.laa.bulkclaim.client.DataClaimsRestClient;
-import uk.gov.justice.laa.bulkclaim.config.WebMvcTestConfig;
 import uk.gov.justice.laa.bulkclaim.dto.submission.SubmissionMatterStartsRow;
 import uk.gov.justice.laa.bulkclaim.dto.submission.SubmissionSummary;
 import uk.gov.justice.laa.bulkclaim.dto.submission.claim.SubmissionClaimRow;
@@ -43,129 +40,87 @@ import uk.gov.justice.laa.bulkclaim.dto.submission.claim.SubmissionClaimRowCosts
 import uk.gov.justice.laa.bulkclaim.dto.submission.claim.SubmissionClaimsDetails;
 import uk.gov.justice.laa.bulkclaim.dto.submission.messages.MessagesSource;
 import uk.gov.justice.laa.bulkclaim.dto.submission.messages.MessagesSummary;
+import uk.gov.justice.laa.bulkclaim.service.SubmissionService;
+import uk.gov.justice.laa.bulkclaim.util.CurrencyUtil;
+import uk.gov.justice.laa.bulkclaim.util.DateTimeUtil;
 import uk.gov.justice.laa.bulkclaim.util.PaginationLinksBuilder;
 import uk.gov.justice.laa.bulkclaim.util.PaginationUtil;
 import uk.gov.justice.laa.bulkclaim.util.ThymeleafHrefUtils;
+import uk.gov.justice.laa.bulkclaim.util.ThymeleafUtils;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.AreaOfLaw;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.Page;
-import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionBase;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionResponse;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionStatus;
-import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionsResultSet;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.ValidationMessageType;
 
 @WebMvcTest(SubmissionDetailController.class)
 @AutoConfigureMockMvc
-@Import({WebMvcTestConfig.class, PaginationLinksBuilder.class, ThymeleafHrefUtils.class})
+@Import({
+  PaginationLinksBuilder.class,
+  ThymeleafHrefUtils.class,
+  CurrencyUtil.class,
+  DateTimeUtil.class,
+  ThymeleafUtils.class
+})
 @DisplayName("Submission detail controller test")
-class SubmissionDetailControllerTest {
+class SubmissionDetailControllerTest extends BaseControllerTest {
+
+  private static final UUID SUBMISSION_ID = UUID.fromString("bceac49c-d756-4e05-8e28-3334b84b6fe8");
+  private static final String OFFICE_CODE = "123456";
 
   @Autowired private MockMvcTester mockMvc;
 
   @MockitoBean private SubmissionSummaryBuilder submissionSummaryBuilder;
   @MockitoBean private SubmissionClaimDetailsBuilder submissionClaimDetailsBuilder;
   @MockitoBean private SubmissionMatterStartsDetailsBuilder submissionMatterStartsDetailsBuilder;
-  @MockitoBean private DataClaimsRestClient dataClaimsRestClient;
   @MockitoBean private SubmissionMessagesBuilder submissionMessagesBuilder;
   @MockitoBean private PaginationUtil paginationUtil;
+  @MockitoBean private SubmissionService submissionService;
 
   @Nested
   @DisplayName("GET: /submission/{submissionId}")
-  class GetSubmissionReference {
-
-    @Test
-    @DisplayName("Should store submission and redirect to detail view when submission exists")
-    void shouldStoreSubmissionsAndRedirectToDetail() {
-      UUID submissionReference = UUID.fromString("bceac49c-d756-4e05-8e28-3334b84b6fe8");
-      SubmissionBase submission = mock(SubmissionBase.class);
-      when(submission.getSubmissionId()).thenReturn(submissionReference);
-      when(submission.getStatus()).thenReturn(SubmissionStatus.VALIDATION_SUCCEEDED);
-
-      SubmissionsResultSet submissions = new SubmissionsResultSet();
-      submissions.setContent(List.of(submission));
-
-      MockHttpSession session = new MockHttpSession();
-      session.setAttribute("submissions", submissions);
-
-      // When / Then
-      assertThat(
-              mockMvc.perform(
-                  get("/submission/" + submissionReference)
-                      .with(oidcLogin().oidcUser(ControllerTestHelper.getOidcUser()))
-                      .session(session)))
-          .hasStatus3xxRedirection()
-          .hasRedirectedUrl(
-              "/view-submission-detail?submissionId="
-                  + submissionReference
-                  + "&page=0&messagesPage=0&navTab=CLAIM_DETAILS");
-    }
+  class GetSubmission {
 
     @Test
     @DisplayName("Should redirect to import in progress when submission validation is running")
-    void shouldRedirectToImportInProgressWhenValidationInProgress() throws Exception {
-      UUID submissionReference = UUID.fromString("bceac49c-d756-4e05-8e28-3334b84b6fe8");
-      SubmissionBase submission = mock(SubmissionBase.class);
-      when(submission.getSubmissionId()).thenReturn(submissionReference);
-      when(submission.getStatus()).thenReturn(SubmissionStatus.VALIDATION_IN_PROGRESS);
-
-      SubmissionsResultSet submissions = new SubmissionsResultSet();
-      submissions.setContent(List.of(submission));
-
-      MockHttpSession session = new MockHttpSession();
-      session.setAttribute("submissions", submissions);
+    void shouldRedirectToImportInProgressWhenValidationInProgress() {
+      var submission =
+          SubmissionResponse.builder()
+              .submissionId(SUBMISSION_ID)
+              .status(VALIDATION_IN_PROGRESS)
+              .officeAccountNumber(OFFICE_CODE)
+              .build();
+      when(submissionService.getSubmission(SUBMISSION_ID, OIDC_USER)).thenReturn(submission);
+      when(oidcAttributeUtils.getUserOffices(OIDC_USER)).thenReturn(List.of(OFFICE_CODE));
 
       MvcTestResult result =
           mockMvc.perform(
-              get("/submission/" + submissionReference)
-                  .with(oidcLogin().oidcUser(ControllerTestHelper.getOidcUser()))
-                  .session(session));
+              get("/submission/" + SUBMISSION_ID).with(oidcLogin().oidcUser(OIDC_USER)));
 
       assertThat(result).hasStatus3xxRedirection().hasRedirectedUrl("/upload-is-being-checked");
-    }
-
-    @Test
-    @DisplayName("Should return forbidden when submission does not belong to current session user")
-    void shouldReturnForbiddenWhenSubmissionMissing() {
-      UUID submissionReference = UUID.fromString("bceac49c-d756-4e05-8e28-3334b84b6fe8");
-      SubmissionBase submission = mock(SubmissionBase.class);
-      when(submission.getSubmissionId()).thenReturn(UUID.randomUUID());
-      when(submission.getStatus()).thenReturn(SubmissionStatus.VALIDATION_SUCCEEDED);
-
-      SubmissionsResultSet submissions = new SubmissionsResultSet();
-      submissions.setContent(List.of(submission));
-
-      MockHttpSession session = new MockHttpSession();
-      session.setAttribute("submissions", submissions);
-
-      assertThat(
-              mockMvc.perform(
-                  get("/submission/" + submissionReference)
-                      .with(oidcLogin().oidcUser(ControllerTestHelper.getOidcUser()))
-                      .session(session)))
-          .failure()
-          .hasMessageContaining("403 FORBIDDEN");
     }
   }
 
   @Nested
-  @DisplayName("GET: /view-submission-detail")
+  @DisplayName("GET: /submissions/{submissionId}")
   class GetSubmissionDetail {
 
     @Test
     @DisplayName("Should return expected result")
     void shouldReturnExpectedResult() {
-      // Given
-      final UUID submissionReference = UUID.fromString("bceac49c-d756-4e05-8e28-3334b84b6fe8");
-      final Page pagination =
-          Page.builder().totalPages(1).totalElements(0).number(0).size(10).build();
-      SubmissionResponse submissionResponse =
-          SubmissionResponse.builder().status(SubmissionStatus.VALIDATION_SUCCEEDED).build();
-      when(dataClaimsRestClient.getSubmission(submissionReference))
-          .thenReturn(Mono.just(submissionResponse));
+      var pagination = Page.builder().totalPages(1).totalElements(0).number(0).size(10).build();
+      var submissionResponse =
+          SubmissionResponse.builder()
+              .status(VALIDATION_SUCCEEDED)
+              .officeAccountNumber(OFFICE_CODE)
+              .build();
+      when(submissionService.getSubmission(SUBMISSION_ID, OIDC_USER))
+          .thenReturn(submissionResponse);
+      when(oidcAttributeUtils.getUserOffices(OIDC_USER)).thenReturn(List.of(OFFICE_CODE));
       when(submissionSummaryBuilder.build(any()))
           .thenReturn(
               new SubmissionSummary(
-                  submissionReference,
+                  SUBMISSION_ID,
                   "Submitted",
                   LocalDate.of(2025, 5, 1),
                   "AQ2B3C",
@@ -179,37 +134,38 @@ class SubmissionDetailControllerTest {
           .thenReturn(
               new SubmissionClaimsDetails(Collections.emptyList(), pagination, BigDecimal.ZERO));
       when(submissionMatterStartsDetailsBuilder.build(any()))
-          .thenReturn(Arrays.asList(new SubmissionMatterStartsRow("Description", 34)));
-      // When / Then
+          .thenReturn(List.of(new SubmissionMatterStartsRow("Description", 34)));
+
       assertThat(
               mockMvc.perform(
-                  get("/view-submission-detail?sort=line_number,desc&submissionId="
-                          + submissionReference)
-                      .with(oidcLogin().oidcUser(ControllerTestHelper.getOidcUser()))
-                      .sessionAttr("submissionId", submissionReference)))
+                  get("/submissions/%s?sort=line_number,desc".formatted(SUBMISSION_ID))
+                      .with(oidcLogin().oidcUser(OIDC_USER))
+                      .sessionAttr("submissionId", SUBMISSION_ID)))
           .hasStatusOk()
           .hasViewName("pages/view-submission-detail-accepted");
+
       verify(submissionClaimDetailsBuilder, times(1)).build(any(), anyInt(), anyInt(), any());
       verify(submissionMessagesBuilder, times(1))
-          .build(submissionReference, null, ValidationMessageType.WARNING, 0, 10, null);
+          .build(SUBMISSION_ID, null, ValidationMessageType.WARNING, 0, 50, null);
       verify(submissionMatterStartsDetailsBuilder, times(1)).build(any());
     }
 
     @Test
     @DisplayName("Should return expected result with claims")
     void shouldReturnExpectedResultWithClaims() {
-      // Given
-      final UUID submissionReference = UUID.fromString("bceac49c-d756-4e05-8e28-3334b84b6fe8");
-      final Page pagination =
-          Page.builder().totalPages(1).totalElements(0).number(0).size(10).build();
-      SubmissionResponse submissionResponse =
-          SubmissionResponse.builder().status(SubmissionStatus.VALIDATION_FAILED).build();
-      when(dataClaimsRestClient.getSubmission(submissionReference))
-          .thenReturn(Mono.just(submissionResponse));
+      var pagination = Page.builder().totalPages(1).totalElements(0).number(0).size(10).build();
+      var submissionResponse =
+          SubmissionResponse.builder()
+              .status(SubmissionStatus.VALIDATION_FAILED)
+              .officeAccountNumber(OFFICE_CODE)
+              .build();
+      when(submissionService.getSubmission(SUBMISSION_ID, OIDC_USER))
+          .thenReturn(submissionResponse);
+      when(oidcAttributeUtils.getUserOffices(OIDC_USER)).thenReturn(List.of(OFFICE_CODE));
       when(submissionSummaryBuilder.build(any()))
           .thenReturn(
               new SubmissionSummary(
-                  submissionReference,
+                  SUBMISSION_ID,
                   "Invalid",
                   LocalDate.of(2025, 5, 1),
                   "AQ2B3C",
@@ -220,38 +176,36 @@ class SubmissionDetailControllerTest {
           .thenReturn(
               new MessagesSummary(Collections.emptyList(), 0, 0, pagination, MessagesSource.CLAIM));
       when(submissionMatterStartsDetailsBuilder.build(any()))
-          .thenReturn(Arrays.asList(new SubmissionMatterStartsRow("Description", 34)));
+          .thenReturn(List.of(new SubmissionMatterStartsRow("Description", 34)));
       // When / Then
       assertThat(
               mockMvc.perform(
-                  get("/view-submission-detail?sort=line_number,desc&navTab=CLAIM_DETAILS&submissionId="
-                          + submissionReference)
-                      .with(oidcLogin().oidcUser(ControllerTestHelper.getOidcUser()))
-                      .sessionAttr("submissionId", submissionReference)))
+                  get("/submissions/%s?sort=line_number,desc".formatted(SUBMISSION_ID))
+                      .with(oidcLogin().oidcUser(OIDC_USER))
+                      .sessionAttr("submissionId", SUBMISSION_ID)))
           .hasStatusOk()
           .hasViewName("pages/view-submission-detail-invalid");
 
-      verify(submissionMessagesBuilder, times(1)).buildErrors(submissionReference, 0, 10, null);
+      verify(submissionMessagesBuilder, times(1)).buildErrors(SUBMISSION_ID, 0, 50, null);
       verify(submissionMatterStartsDetailsBuilder, times(1)).build(any());
     }
 
     @Test
     @DisplayName("Should return expected result with matter starts")
     void shouldReturnExpectedResultWithMatterStarts() {
-      // Given
-      UUID submissionReference = UUID.fromString("bceac49c-d756-4e05-8e28-3334b84b6fe8");
-      Page pagination = Page.builder().totalPages(1).totalElements(0).number(0).size(10).build();
-      when(dataClaimsRestClient.getSubmission(submissionReference))
-          .thenReturn(
-              Mono.just(
-                  SubmissionResponse.builder()
-                      .status(SubmissionStatus.VALIDATION_SUCCEEDED)
-                      .areaOfLaw(AreaOfLaw.LEGAL_HELP)
-                      .build()));
+      var pagination = Page.builder().totalPages(1).totalElements(0).number(0).size(10).build();
+      var submission =
+          SubmissionResponse.builder()
+              .status(VALIDATION_SUCCEEDED)
+              .officeAccountNumber(OFFICE_CODE)
+              .areaOfLaw(AreaOfLaw.LEGAL_HELP)
+              .build();
+      when(submissionService.getSubmission(SUBMISSION_ID, OIDC_USER)).thenReturn(submission);
+      when(oidcAttributeUtils.getUserOffices(OIDC_USER)).thenReturn(List.of(OFFICE_CODE));
       when(submissionSummaryBuilder.build(any()))
           .thenReturn(
               new SubmissionSummary(
-                  submissionReference,
+                  SUBMISSION_ID,
                   "Submitted",
                   LocalDate.of(2025, 5, 1),
                   "AQ2B3C",
@@ -267,15 +221,16 @@ class SubmissionDetailControllerTest {
           .thenReturn(
               new MessagesSummary(Collections.emptyList(), 0, 0, pagination, MessagesSource.CLAIM));
       when(submissionMatterStartsDetailsBuilder.build(any())).thenReturn(matterTypes);
-      // When / Then
+
       assertThat(
               mockMvc.perform(
-                  get("/view-submission-detail?sort=line_number,desc&navTab=MATTER_STARTS&submissionId="
-                          + submissionReference)
-                      .with(oidcLogin().oidcUser(ControllerTestHelper.getOidcUser()))
-                      .sessionAttr("submissionId", submissionReference)))
+                  get("/submissions/%s?sort=line_number,desc&navTab=MATTER_STARTS"
+                          .formatted(SUBMISSION_ID))
+                      .with(oidcLogin().oidcUser(OIDC_USER))
+                      .sessionAttr("submissionId", SUBMISSION_ID)))
           .hasStatusOk()
           .hasViewName("pages/view-submission-detail-accepted");
+
       verify(submissionClaimDetailsBuilder).build(any(), anyInt(), anyInt(), any());
       verify(submissionMatterStartsDetailsBuilder, times(1)).build(any());
     }
@@ -283,21 +238,21 @@ class SubmissionDetailControllerTest {
     @Test
     @DisplayName("Should populate summary data for accepted submission")
     void shouldPopulateSummaryForAcceptedSubmission() {
-      // Given
-      UUID submissionReference = UUID.fromString("bceac49c-d756-4e05-8e28-3334b84b6fe8");
-      Page pagination = Page.builder().totalPages(1).totalElements(0).number(0).size(10).build();
-      SubmissionResponse submissionResponse =
+      var pagination = Page.builder().totalPages(1).totalElements(0).number(0).size(10).build();
+      var submissionResponse =
           SubmissionResponse.builder()
-              .submissionId(submissionReference)
-              .status(SubmissionStatus.VALIDATION_SUCCEEDED)
+              .submissionId(SUBMISSION_ID)
+              .status(VALIDATION_SUCCEEDED)
+              .officeAccountNumber(OFFICE_CODE)
               .areaOfLaw(AreaOfLaw.CRIME_LOWER)
               .build();
-      when(dataClaimsRestClient.getSubmission(submissionReference))
-          .thenReturn(Mono.just(submissionResponse));
+      when(submissionService.getSubmission(SUBMISSION_ID, OIDC_USER))
+          .thenReturn(submissionResponse);
+      when(oidcAttributeUtils.getUserOffices(OIDC_USER)).thenReturn(List.of(OFFICE_CODE));
       when(submissionSummaryBuilder.build(any()))
           .thenReturn(
               new SubmissionSummary(
-                  submissionReference,
+                  SUBMISSION_ID,
                   "Submitted",
                   LocalDate.of(2025, 5, 1),
                   "AQ2B3C",
@@ -311,38 +266,36 @@ class SubmissionDetailControllerTest {
           .thenReturn(
               new MessagesSummary(Collections.emptyList(), 0, 0, pagination, MessagesSource.CLAIM));
 
-      // When
       MvcTestResult response =
           mockMvc.perform(
-              get("/view-submission-detail?sort=line_number,desc&submissionId="
-                      + submissionReference)
-                  .with(oidcLogin().oidcUser(ControllerTestHelper.getOidcUser()))
-                  .sessionAttr("submissionId", submissionReference));
+              get("/submissions/%s?sort=line_number,desc".formatted(SUBMISSION_ID))
+                  .with(oidcLogin().oidcUser(OIDC_USER))
+                  .sessionAttr("submissionId", SUBMISSION_ID));
 
-      // Then
       assertThat(response).hasStatusOk().hasViewName("pages/view-submission-detail-accepted");
       verify(submissionClaimDetailsBuilder).build(any(), anyInt(), anyInt(), any());
       verify(submissionMessagesBuilder)
-          .build(submissionReference, null, ValidationMessageType.WARNING, 0, 10, null);
+          .build(SUBMISSION_ID, null, ValidationMessageType.WARNING, 0, 50, null);
     }
 
     @Test
     @DisplayName("Should display voided tag for voided claim in claims table")
     void shouldDisplayVoidedTagForVoidedClaimInClaimsTable() {
-      UUID submissionReference = UUID.fromString("bceac49c-d756-4e05-8e28-3334b84b6fe8");
-      Page pagination = Page.builder().totalPages(3).totalElements(21).number(0).size(10).build();
-      SubmissionResponse submissionResponse =
+      var pagination = Page.builder().totalPages(3).totalElements(21).number(0).size(10).build();
+      var submissionResponse =
           SubmissionResponse.builder()
-              .submissionId(submissionReference)
-              .status(SubmissionStatus.VALIDATION_SUCCEEDED)
+              .submissionId(SUBMISSION_ID)
+              .status(VALIDATION_SUCCEEDED)
+              .officeAccountNumber(OFFICE_CODE)
               .areaOfLaw(AreaOfLaw.CRIME_LOWER)
               .build();
-      when(dataClaimsRestClient.getSubmission(submissionReference))
-          .thenReturn(Mono.just(submissionResponse));
+      when(submissionService.getSubmission(SUBMISSION_ID, OIDC_USER))
+          .thenReturn(submissionResponse);
+      when(oidcAttributeUtils.getUserOffices(OIDC_USER)).thenReturn(List.of(OFFICE_CODE));
       when(submissionSummaryBuilder.build(any()))
           .thenReturn(
               new SubmissionSummary(
-                  submissionReference,
+                  SUBMISSION_ID,
                   "Submitted",
                   LocalDate.of(2025, 5, 1),
                   "AQ2B3C",
@@ -367,7 +320,7 @@ class SubmissionDetailControllerTest {
                           "matter",
                           LocalDate.of(2025, 1, 1),
                           0,
-                          "VOID",
+                          "VOIDED",
                           "feeType",
                           "feeCode",
                           new SubmissionClaimRowCostsDetails(
@@ -378,7 +331,9 @@ class SubmissionDetailControllerTest {
                               BigDecimal.ZERO,
                               BigDecimal.ZERO,
                               BigDecimal.ZERO),
-                          Boolean.FALSE)),
+                          Boolean.FALSE,
+                          BigDecimal.ONE,
+                          BigDecimal.ONE)),
                   pagination,
                   BigDecimal.ONE));
       when(submissionMessagesBuilder.build(any(), any(), any(), anyInt(), anyInt(), any()))
@@ -387,46 +342,33 @@ class SubmissionDetailControllerTest {
 
       assertThat(
               mockMvc.perform(
-                  get("/view-submission-detail?submissionId=" + submissionReference)
-                      .with(oidcLogin().oidcUser(ControllerTestHelper.getOidcUser()))
-                      .sessionAttr("submissionId", submissionReference)))
+                  get("/submissions/%s".formatted(SUBMISSION_ID))
+                      .with(oidcLogin().oidcUser(OIDC_USER))
+                      .sessionAttr("submissionId", SUBMISSION_ID)))
           .hasStatusOk()
           .body()
           .asString()
-          .contains("VOIDED");
+          .contains("govuk-tag govuk-tag--red")
+          .contains("Voided");
     }
 
     @Test
-    @DisplayName("Should throw exception when submission does not exist")
-    void shouldThrowExceptionWhenSubmissionDoesNotExist() {
-      // Given
-      UUID submissionReference = UUID.fromString("bceac49c-d756-4e05-8e28-3334b84b6fe8");
-      when(dataClaimsRestClient.getSubmission(submissionReference)).thenReturn(Mono.empty());
-      // When / Then
-      assertThat(
-              mockMvc.perform(
-                  get("/view-submission-detail?navTab=MATTER_STARTS&submissionId="
-                          + submissionReference)
-                      .with(oidcLogin().oidcUser(ControllerTestHelper.getOidcUser()))
-                      .sessionAttr("submissionId", submissionReference)))
-          .failure()
-          .hasMessageEndingWith("Submission bceac49c-d756-4e05-8e28-3334b84b6fe8 does not exist");
-    }
-
-    @Test
-    @DisplayName("Should call view-submission-detail with sort parameter")
+    @DisplayName("Should call submissions with sort parameter")
     void shouldCallWithSortParam() {
-      var submissionId = UUID.fromString("bceac49c-d756-4e05-8e28-3334b84b6fe8");
       var submissionResponse =
-          SubmissionResponse.builder().status(SubmissionStatus.VALIDATION_SUCCEEDED).build();
+          SubmissionResponse.builder()
+              .status(VALIDATION_SUCCEEDED)
+              .officeAccountNumber(OFFICE_CODE)
+              .build();
 
-      when(dataClaimsRestClient.getSubmission(submissionId))
-          .thenReturn(Mono.just(submissionResponse));
+      when(submissionService.getSubmission(SUBMISSION_ID, OIDC_USER))
+          .thenReturn(submissionResponse);
+      when(oidcAttributeUtils.getUserOffices(OIDC_USER)).thenReturn(List.of(OFFICE_CODE));
 
       when(submissionSummaryBuilder.build(eq(submissionResponse)))
           .thenReturn(
               new SubmissionSummary(
-                  submissionId,
+                  SUBMISSION_ID,
                   "Submitted",
                   LocalDate.of(2025, 5, 1),
                   "AQ2B3C",
@@ -446,9 +388,9 @@ class SubmissionDetailControllerTest {
       when(submissionMatterStartsDetailsBuilder.build(any()))
           .thenReturn(List.of(new SubmissionMatterStartsRow("Description", 34)));
       mockMvc.perform(
-          get("/view-submission-detail?page=0&sort=line_number,desc&submissionId=" + submissionId)
-              .with(oidcLogin().oidcUser(ControllerTestHelper.getOidcUser()))
-              .sessionAttr("submissionId", submissionId));
+          get("/submissions/%s?page=0&sort=line_number,desc".formatted(SUBMISSION_ID))
+              .with(oidcLogin().oidcUser(OIDC_USER))
+              .sessionAttr("submissionId", SUBMISSION_ID));
 
       verify(submissionClaimDetailsBuilder)
           .build(eq(submissionResponse), eq(0), anyInt(), eq("line_number,desc"));
@@ -457,17 +399,20 @@ class SubmissionDetailControllerTest {
     @Test
     @DisplayName("Should uses defaults sort parameter when sort parameter is absent")
     void shouldUseDefaultSortParameter() {
-      var submissionId = UUID.fromString("bceac49c-d756-4e05-8e28-3334b84b6fe8");
       var submissionResponse =
-          SubmissionResponse.builder().status(SubmissionStatus.VALIDATION_SUCCEEDED).build();
+          SubmissionResponse.builder()
+              .status(VALIDATION_SUCCEEDED)
+              .officeAccountNumber(OFFICE_CODE)
+              .build();
 
-      when(dataClaimsRestClient.getSubmission(submissionId))
-          .thenReturn(Mono.just(submissionResponse));
+      when(submissionService.getSubmission(SUBMISSION_ID, OIDC_USER))
+          .thenReturn(submissionResponse);
+      when(oidcAttributeUtils.getUserOffices(OIDC_USER)).thenReturn(List.of(OFFICE_CODE));
 
       when(submissionSummaryBuilder.build(eq(submissionResponse)))
           .thenReturn(
               new SubmissionSummary(
-                  submissionId,
+                  SUBMISSION_ID,
                   "Submitted",
                   LocalDate.of(2025, 5, 1),
                   "AQ2B3C",
@@ -487,9 +432,9 @@ class SubmissionDetailControllerTest {
       when(submissionMatterStartsDetailsBuilder.build(any()))
           .thenReturn(List.of(new SubmissionMatterStartsRow("Description", 34)));
       mockMvc.perform(
-          get("/view-submission-detail?page=0&submissionId=" + submissionId)
-              .with(oidcLogin().oidcUser(ControllerTestHelper.getOidcUser()))
-              .sessionAttr("submissionId", submissionId));
+          get("/submissions/%s?page=0".formatted(SUBMISSION_ID))
+              .with(oidcLogin().oidcUser(OIDC_USER))
+              .sessionAttr("submissionId", SUBMISSION_ID));
 
       verify(submissionClaimDetailsBuilder)
           .build(eq(submissionResponse), eq(0), anyInt(), eq("line_number,asc"));

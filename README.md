@@ -258,7 +258,7 @@ create an account on SILAS for testing. This account can also be used in deploye
 ### Unit Tests
 
 ```sh
-./gradlew test
+./gradlew :laa-submit-a-bulk-claim-ui:test
 ```
 
 - Controller and service layers are covered with MockMvc and unit tests.

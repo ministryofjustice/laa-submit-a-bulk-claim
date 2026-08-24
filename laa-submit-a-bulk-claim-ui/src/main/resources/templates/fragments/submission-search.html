@@ -40,10 +40,10 @@
 
               <option value="" th:text="#{search.error.areaOfLaw.all}" selected>All</option>
               <option
-                  value="LEGAL_HELP"
+                  value="LEGAL HELP"
                   th:text="#{search.areaOfLaw.legalHelp}"></option>
               <option
-                  value="CRIME_LOWER"
+                  value="CRIME LOWER"
                   th:text="#{search.areaOfLaw.crimeLower}"></option>
               <option
                   value="MEDIATION"
@@ -143,7 +143,7 @@
               class="govuk-button"
               data-module="govuk-button"
               id="searchButton" th:text="#{search.button.primary}"></button>
-          <a class="govuk-link" th:href="@{/submissions/search}" th:text="#{search.button.clearAll}"></a>
+          <a class="govuk-link" id="clearAllLink" th:href="@{/submissions/search}" th:text="#{search.button.clearAll}"></a>
         </div>
       </div>
     </div>

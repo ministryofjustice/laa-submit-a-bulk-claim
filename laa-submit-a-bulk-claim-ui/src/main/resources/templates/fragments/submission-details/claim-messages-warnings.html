@@ -8,8 +8,11 @@
       <h2 class="govuk-heading-m" id="messages"
           th:text="#{submission.summary.messages.heading}"></h2>
 
-      <th:block th:if="${messagesSummary.messages == null or messagesSummary.messages.isEmpty()}">
+      <th:block th:if="${messagesSummary.messages == null or (messagesSummary.messages.isEmpty() and messagesSummary.totalMessageCount == 0)}">
         <p class="govuk-body" th:text="#{submission.summary.messages.none}"></p>
+      </th:block>
+      <th:block th:if="${messagesSummary.messages == null or (messagesSummary.messages.isEmpty() and messagesSummary.totalMessageCount > 0)}">
+        <p class="govuk-body" th:text="#{submission.summary.messages.noneOnPage}"></p>
       </th:block>
 
       <div class="moj-scrollable-pane"
@@ -115,7 +118,7 @@
               th:id="|claim-message-warning-${idx.index}|">
             <td class="govuk-table__cell">
               <a class="govuk-link"
-                 th:href="@{/submission/claim/{id}(id=${message.claimReference().get()}, navTab=${navTab}, messagesPage=${messagesPage})}"
+                 th:href="@{/submissions/{submissionId}/claims/{claimId}(submissionId=${submissionId}, claimId=${message.claimReference().get()}, navTab=${navTab}, messagesPage=${messagesPage})}"
                  th:text="#{submission.summary.claims.viewLink}"></a>
 
             </td>
@@ -136,7 +139,7 @@
               th:id="|claim-message-warning-${idx.index}|">
             <td class="govuk-table__cell">
               <a class="govuk-link"
-                 th:href="@{/submission/claim/{id}(id=${message.claimReference().get()}, navTab=${navTab}, messagesPage=${messagesPage})}"
+                 th:href="@{/submissions/{submissionId}/claims/{claimId}(submissionId=${submissionId}, claimId=${message.claimReference().get()}, navTab=${navTab}, messagesPage=${messagesPage})}"
                  th:text="#{submission.summary.claims.viewLink}"></a>
 
             </td>
@@ -159,7 +162,7 @@
               th:id="|claim-message-warning-${idx.index}|">
             <td class="govuk-table__cell">
               <a class="govuk-link"
-                 th:href="@{/submission/claim/{id}(id=${message.claimReference().get()}, navTab=${navTab}, messagesPage=${messagesPage})}"
+                 th:href="@{/submissions/{submissionId}/claims/{claimId}(submissionId=${submissionId}, claimId=${message.claimReference().get()}, navTab=${navTab}, messagesPage=${messagesPage})}"
                  th:text="#{submission.summary.claims.viewLink}"></a>
 
             </td>

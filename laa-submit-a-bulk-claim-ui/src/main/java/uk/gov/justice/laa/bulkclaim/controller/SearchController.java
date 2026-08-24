@@ -1,7 +1,5 @@
 package uk.gov.justice.laa.bulkclaim.controller;
 
-import static uk.gov.justice.laa.bulkclaim.constants.SessionConstants.CLAIM_ID;
-import static uk.gov.justice.laa.bulkclaim.constants.SessionConstants.SUBMISSION_ID;
 import static uk.gov.justice.laa.bulkclaim.dto.SubmissionOutcomeFilter.SUCCEEDED;
 
 import jakarta.servlet.http.HttpSession;
@@ -21,7 +19,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.SessionAttributes;
 import org.springframework.web.bind.support.SessionStatus;
 import org.springframework.web.client.HttpClientErrorException;
 import uk.gov.justice.laa.bulkclaim.client.DataClaimsRestClient;
@@ -33,7 +30,6 @@ import uk.gov.justice.laa.bulkclaim.util.PaginationLinksBuilder;
 import uk.gov.justice.laa.bulkclaim.util.PaginationUtil;
 import uk.gov.justice.laa.bulkclaim.util.SubmissionPeriodUtil;
 import uk.gov.justice.laa.bulkclaim.validation.SubmissionSearchValidator;
-import uk.gov.justice.laa.dstew.payments.claimsdata.model.AreaOfLaw;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.Page;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionBase;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionStatus;
@@ -42,7 +38,6 @@ import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionsResultSet;
 @Slf4j
 @RequiredArgsConstructor
 @Controller
-@SessionAttributes({SUBMISSION_ID, CLAIM_ID})
 public class SearchController {
 
   private final DataClaimsRestClient claimsRestService;
@@ -136,7 +131,7 @@ public class SearchController {
               .search(
                   officesToSearchFor,
                   trimToNull(submissionSearchQuery.getSubmissionPeriod()),
-                  getAreaOfLaw(submissionSearchQuery),
+                  submissionSearchQuery.getAreaOfLaw(),
                   getSubmissionStatus(submissionSearchQuery),
                   submissionSearchQuery.getPage(),
                   submissionSearchQuery.getSize(),
@@ -174,17 +169,6 @@ public class SearchController {
     } catch (Exception e) {
       log.error("Error connecting to Claims API with message: {} ", e.getMessage());
       return "error";
-    }
-  }
-
-  private static AreaOfLaw getAreaOfLaw(SubmissionSearchQuery submissionSearchQuery) {
-    try {
-      return Objects.isNull(submissionSearchQuery.getAreaOfLaw())
-          ? null
-          : AreaOfLaw.fromValue(
-              submissionSearchQuery.getAreaOfLaw().replace("_", " ").toUpperCase());
-    } catch (IllegalArgumentException e) {
-      return null;
     }
   }
 

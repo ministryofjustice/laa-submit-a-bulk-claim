@@ -158,11 +158,11 @@ public abstract class AbstractAccessibilityTest {
   }
 
   protected void openSubmissionDetail(AreaScenario scenario) {
-    page.navigate(appUrl("/view-submission-detail?submissionId=" + scenario.validSubmissionId()));
+    page.navigate(appUrl("/submissions/%s".formatted(scenario.validSubmissionId())));
   }
 
   protected void openInvalidSubmissionDetail(AreaScenario scenario) {
-    page.navigate(appUrl("/view-submission-detail?submissionId=" + scenario.invalidSubmissionId()));
+    page.navigate(appUrl("/submissions/%s".formatted(scenario.invalidSubmissionId())));
   }
 
   protected static String areaScenarioName(

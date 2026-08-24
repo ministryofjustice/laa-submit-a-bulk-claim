@@ -68,7 +68,7 @@ app:
 links:
   laa-homepage: https://www.gov.uk/government/organisations/legal-aid-agency
   bulk-upload-guidance: https://www.gov.uk/guidance/submit-a-bulk-claim-sabc
-  bulk-upload-amendments: https://www.gov.uk/guidance/submit-a-contracted-work-and-administration-cwa-claim-online#amendments-to-submitted-claims
+  bulk-upload-amendments: https://www.gov.uk/guidance/submit-a-contracted-work-and-administration-cwa-claim-online#amendments-to-claims-submitted-on-sabc
 
 sentry:
   enabled: ${SENTRY_ENABLED:false}
@@ -82,6 +82,10 @@ sentry:
 
 feature-flags:
   is-nil-submission-enabled: ${IS_NIL_SUBMISSION_ENABLED:false}
+  is-alternative-claim-view-enabled: ${IS_ALTERNATIVE_CLAIM_VIEW_ENABLED:false}
+  # This updated calculated value is not available via API yet, will need to be enabled once available
+  is-updated-calculated-value-available: ${IS_UPDATED_CALCULATED_VALUE_AVAILABLE:false}
+  is-assessed-column-enabled: ${IS_ASSESSED_COLUMN_ENABLED:false}
 
 management:
   server:

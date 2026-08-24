@@ -26,7 +26,7 @@ public class ExportSubmissionDetailController {
   private final ExportDataClaimsRestClient exportDataClaimsRestClient;
   private final OidcAttributeUtils oidcAttributeUtils;
 
-  @GetMapping("/submission/{submissionId}/export")
+  @GetMapping({"/submission/{submissionId}/export", "/submissions/{submissionId}/export"})
   public Mono<ResponseEntity<Resource>> exportSubmissionDetail(
       @PathVariable UUID submissionId,
       @RequestParam String office,

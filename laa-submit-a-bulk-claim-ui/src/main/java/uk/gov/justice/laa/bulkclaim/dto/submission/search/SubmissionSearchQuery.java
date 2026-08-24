@@ -4,11 +4,11 @@ import java.util.List;
 import java.util.Objects;
 import lombok.Builder;
 import lombok.Getter;
-import org.springframework.util.StringUtils;
 import org.springframework.web.util.UriComponentsBuilder;
 import uk.gov.justice.laa.bulkclaim.dto.PageQuery;
 import uk.gov.justice.laa.bulkclaim.dto.SubmissionOutcomeFilter;
 import uk.gov.justice.laa.bulkclaim.dto.sorting.SortDirection;
+import uk.gov.justice.laa.dstew.payments.claimsdata.model.AreaOfLaw;
 
 @Builder
 @Getter
@@ -20,7 +20,7 @@ public class SubmissionSearchQuery
   private SubmissionSearchSort sort;
 
   private String submissionPeriod;
-  private String areaOfLaw;
+  private AreaOfLaw areaOfLaw;
   private List<String> offices;
   private SubmissionOutcomeFilter submissionStatuses;
 
@@ -28,7 +28,7 @@ public class SubmissionSearchQuery
       Integer page,
       SubmissionSearchSort sort,
       String submissionPeriod,
-      String areaOfLaw,
+      AreaOfLaw areaOfLaw,
       List<String> offices,
       SubmissionOutcomeFilter submissionStatuses) {
     this.page = Objects.requireNonNullElse(page, DEFAULT_PAGE);
@@ -60,16 +60,12 @@ public class SubmissionSearchQuery
 
     addQueryParam(builder, "page", String.valueOf(page));
     addQueryParam(builder, "submissionPeriod", submissionPeriod);
-    addQueryParam(builder, "areaOfLaw", trimToNull(areaOfLaw));
+    addQueryParam(builder, "areaOfLaw", areaOfLaw);
     addQueryParamIfNotEmptyList(builder, "offices", offices);
     addQueryParam(builder, "submissionStatuses", submissionStatuses);
     addQueryParam(builder, "sort", Objects.toString(sort, null));
 
     return builder.build().toUriString();
-  }
-
-  private static String trimToNull(String value) {
-    return StringUtils.hasText(value) ? value.trim() : null;
   }
 
   private static void addQueryParamIfNotEmptyList(

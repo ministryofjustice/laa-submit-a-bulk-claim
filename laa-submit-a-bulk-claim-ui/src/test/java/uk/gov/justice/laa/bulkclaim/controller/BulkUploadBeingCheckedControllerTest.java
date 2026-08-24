@@ -6,6 +6,7 @@ import static org.springframework.security.test.web.servlet.request.SecurityMock
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static uk.gov.justice.laa.bulkclaim.constants.SessionConstants.BULK_SUBMISSION_ID;
 import static uk.gov.justice.laa.bulkclaim.constants.SessionConstants.SUBMISSION_ID;
+import static uk.gov.justice.laa.bulkclaim.controller.ControllerTestHelper.OIDC_USER;
 
 import java.util.UUID;
 import org.junit.jupiter.api.DisplayName;
@@ -17,14 +18,11 @@ import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
-import org.springframework.context.annotation.Import;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.assertj.MockMvcTester;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
 import reactor.core.publisher.Mono;
-import uk.gov.justice.laa.bulkclaim.client.DataClaimsRestClient;
-import uk.gov.justice.laa.bulkclaim.config.WebMvcTestConfig;
 import uk.gov.justice.laa.bulkclaim.exception.SubmitBulkClaimException;
 import uk.gov.justice.laa.bulkclaim.metrics.BulkClaimMetricService;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.BulkSubmissionStatus;
@@ -32,12 +30,9 @@ import uk.gov.justice.laa.dstew.payments.claimsdata.model.GetBulkSubmissionStatu
 
 @WebMvcTest(BulkUploadBeingCheckedController.class)
 @AutoConfigureMockMvc
-@Import(WebMvcTestConfig.class)
-public class BulkUploadBeingCheckedControllerTest {
+public class BulkUploadBeingCheckedControllerTest extends BaseControllerTest {
 
   @Autowired private MockMvcTester mockMvc;
-
-  @MockitoBean private DataClaimsRestClient dataClaimsRestClient;
 
   @MockitoBean private BulkClaimMetricService bulkClaimMetricService;
 
@@ -60,7 +55,7 @@ public class BulkUploadBeingCheckedControllerTest {
       assertThat(
               mockMvc.perform(
                   get("/upload-is-being-checked")
-                      .with(oidcLogin().oidcUser(ControllerTestHelper.getOidcUser()))
+                      .with(oidcLogin().oidcUser(OIDC_USER))
                       .sessionAttr(SUBMISSION_ID, submissionId)
                       .sessionAttr(BULK_SUBMISSION_ID, bulkSubmissionId)))
           .hasStatusOk()
@@ -87,7 +82,7 @@ public class BulkUploadBeingCheckedControllerTest {
       assertThat(
               mockMvc.perform(
                   get("/upload-is-being-checked")
-                      .with(oidcLogin().oidcUser(ControllerTestHelper.getOidcUser()))
+                      .with(oidcLogin().oidcUser(OIDC_USER))
                       .sessionAttr(SUBMISSION_ID, submissionId)
                       .sessionAttr(BULK_SUBMISSION_ID, bulkSubmissionId)))
           .hasStatusOk()
@@ -110,11 +105,11 @@ public class BulkUploadBeingCheckedControllerTest {
       assertThat(
               mockMvc.perform(
                   get("/upload-is-being-checked")
-                      .with(oidcLogin().oidcUser(ControllerTestHelper.getOidcUser()))
+                      .with(oidcLogin().oidcUser(OIDC_USER))
                       .sessionAttr(SUBMISSION_ID, submissionId)
                       .sessionAttr(BULK_SUBMISSION_ID, bulkSubmissionId)))
           .hasStatus3xxRedirection()
-          .hasRedirectedUrl("/submission/5933fc67-bac7-4f48-81ed-61c8c463f054");
+          .hasRedirectedUrl("/submissions/5933fc67-bac7-4f48-81ed-61c8c463f054");
     }
 
     @ParameterizedTest
@@ -130,7 +125,7 @@ public class BulkUploadBeingCheckedControllerTest {
       assertThat(
               mockMvc.perform(
                   get("/upload-is-being-checked")
-                      .with(oidcLogin().oidcUser(ControllerTestHelper.getOidcUser()))
+                      .with(oidcLogin().oidcUser(OIDC_USER))
                       .sessionAttr(SUBMISSION_ID, submissionId)
                       .sessionAttr(BULK_SUBMISSION_ID, bulkSubmissionId)))
           .failure()
@@ -153,7 +148,7 @@ public class BulkUploadBeingCheckedControllerTest {
       assertThat(
               mockMvc.perform(
                   get("/upload-is-being-checked")
-                      .with(oidcLogin().oidcUser(ControllerTestHelper.getOidcUser()))
+                      .with(oidcLogin().oidcUser(OIDC_USER))
                       .sessionAttr(SUBMISSION_ID, submissionId)
                       .sessionAttr(BULK_SUBMISSION_ID, bulkSubmissionId)))
           .failure()
@@ -176,7 +171,7 @@ public class BulkUploadBeingCheckedControllerTest {
       assertThat(
               mockMvc.perform(
                   get("/upload-is-being-checked")
-                      .with(oidcLogin().oidcUser(ControllerTestHelper.getOidcUser()))
+                      .with(oidcLogin().oidcUser(OIDC_USER))
                       .sessionAttr(SUBMISSION_ID, submissionId)
                       .sessionAttr(BULK_SUBMISSION_ID, bulkSubmissionId)))
           .failure()

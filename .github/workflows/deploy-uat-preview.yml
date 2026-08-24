@@ -16,15 +16,71 @@ jobs:
     outputs:
       preview_version: ${{ steps.get-preview-version.outputs.preview_version }}
     steps:
-      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          fetch-depth: 0
+          fetch-tags: true
+      - name: Compute version
+        id: compute
+        uses: ministryofjustice/laa-ccms-common-workflows/.github/actions/compute-version@4daa796eff475c7a107e17daf4e4882b8a1b949b # v2.3.0
       - name: Get preview version
         id: get-preview-version
+        shell: bash
+        env:
+          BUMP_TYPE: ${{ steps.compute.outputs.bump_type }}
+          MAJOR:     ${{ steps.compute.outputs.major }}
+          MINOR:     ${{ steps.compute.outputs.minor }}
+          PATCH:     ${{ steps.compute.outputs.patch }}
         run: |
           set -euo pipefail
+          BUMP="${BUMP_TYPE:-none}"
+          M="${MAJOR:-0}"; N="${MINOR:-0}"; P="${PATCH:-0}"
+          if [[ "$BUMP" == "none" ]]; then P=$((P+1)); fi
           commit_hash=$(git rev-parse --short HEAD)
-          version=$(awk -F= '/^version=/{print $2}' gradle.properties)
-          echo "preview_version=${version}-${commit_hash}" >> "$GITHUB_OUTPUT"
-          echo "Preview version: submit-a-bulk-claim-${version}-${commit_hash}"
+          version="${M}.${N}.${P}-SNAPSHOT-${commit_hash}"
+          echo "preview_version=${version}" >> "$GITHUB_OUTPUT"
+          echo "Preview version: submit-a-bulk-claim-${version}"
+
+  build-and-test:
+    needs: [ define-preview-version ]
+    uses: ministryofjustice/laa-ccms-common-workflows/.github/workflows/gradle-build-and-publish.yml@4daa796eff475c7a107e17daf4e4882b8a1b949b # v2.3.0
+    permissions:
+      contents: write
+      packages: write
+    with:
+      override_version: ${{ needs.define-preview-version.outputs.preview_version }}
+      build_command: ':laa-submit-a-bulk-claim-ui:build'
+      integration_test_task: integrationTest
+      junit_results_path: 'laa-submit-a-bulk-claim-ui/build/test-results'
+      junit_report_path: 'laa-submit-a-bulk-claim-ui/build/reports/tests'
+      checkstyle_report_path: 'laa-submit-a-bulk-claim-ui/build/reports/checkstyle'
+      jacoco_coverage_report_path: 'laa-submit-a-bulk-claim-ui/build/reports/jacoco'
+      semgrep_check: 'true'
+      java_version: 25
+    secrets:
+      gh_token: ${{ secrets.GITHUB_TOKEN }}
+
+  e2e-tests:
+    uses: ./.github/workflows/e2e-tests.yml
+    permissions:
+      id-token: write
+      contents: read
+    secrets:
+      pat_token: ${{ secrets.PAT_TOKEN }}
+      kube_cert: ${{ secrets.KUBE_CERT }}
+      kube_cluster: ${{ secrets.KUBE_CLUSTER }}
+      kube_namespace: ${{ secrets.KUBE_NAMESPACE }}
+      kube_token: ${{ secrets.KUBE_TOKEN }}
+      kube_namespace_laa_fee_scheme_api_uat: ${{ secrets.KUBE_NAMESPACE_LAA_FEE_SCHEME_API_UAT }}
+      kube_cert_laa_fee_scheme_api_uat: ${{ secrets.KUBE_CERT_LAA_FEE_SCHEME_API_UAT }}
+      kube_token_laa_fee_scheme_api_uat: ${{ secrets.KUBE_TOKEN_LAA_FEE_SCHEME_API_UAT }}
+      kube_cluster_laa_fee_scheme_api_uat: ${{ secrets.KUBE_CLUSTER_LAA_FEE_SCHEME_API_UAT }}
+      auth_client_id: ${{ secrets.AUTH_CLIENT_ID }}
+      auth_client_secret: ${{ secrets.AUTH_CLIENT_SECRET }}
+      auth_scope: ${{ secrets.AUTH_SCOPE }}
+      auth_tenant_id: ${{ secrets.AUTH_TENANT_ID }}
+      fsp_api_token: ${{ secrets.FSP_API_TOKEN }}
+      pda_api_token: ${{ secrets.PDA_API_TOKEN }}
 
   test-smoke:
     name: Test @smoke
@@ -42,24 +98,9 @@ jobs:
       github_app_id: ${{ vars.LAA_CCMS_CAAB_SERVICE_APP_ID }}
       github_app_private_key: ${{ secrets.LAA_CCMS_CAAB_SERVICE_KEY }}
 
-  build-and-test:
-    needs: [ define-preview-version ]
-    uses: ministryofjustice/laa-ccms-common-workflows/.github/workflows/gradle-build-and-publish.yml@v2
-    permissions:
-      contents: write
-      packages: write
-    with:
-      publish_package: false
-      override_version: ${{ needs.define-preview-version.outputs.preview_version }}
-      integration_test_task: integrationTest
-      semgrep_check: 'true'
-      java_version: 25
-    secrets:
-      gh_token: ${{ secrets.GITHUB_TOKEN }}
-
   pact-test:
     needs: [ define-preview-version ]
-    uses: ministryofjustice/laa-ccms-common-workflows/.github/workflows/pact-and-publish.yml@v2
+    uses: ministryofjustice/laa-ccms-common-workflows/.github/workflows/pact-and-publish.yml@4daa796eff475c7a107e17daf4e4882b8a1b949b # v2.3.0
     permissions:
       contents: write
       packages: write
@@ -87,25 +128,25 @@ jobs:
       PLAYWRIGHT_BROWSERS_PATH: /home/runner/.cache/ms-playwright
     steps:
       - name: Checkout
-        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
   
       - name: Set up Java
-        uses: actions/setup-java@be666c2fcd27ec809703dec50e508c2fdc7f6654 # v5
+        uses: actions/setup-java@0f481fcb613427c0f801b606911222b5b6f3083a # v5.5.0
         with:
           distribution: temurin
           java-version: '25'
 
       - name: Set up Node.js
-        uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6.4.0
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with:
-          node-version: '22'
+          node-version: '24'
   
       - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@50e97c2cd7a37755bbfafc9c5b7cafaece252f6e # v6.1.0
+        uses: gradle/actions/setup-gradle@3f131e8634966bd73d06cc69884922b02e6faf92 # v6.2.0
 
       - name: Cache Playwright browsers
         id: playwright-cache
-        uses: actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
           path: /home/runner/.cache/ms-playwright
           key: ${{ runner.os }}-playwright-1.56.0
@@ -138,7 +179,7 @@ jobs:
 
   ecr-publish-image:
     needs: [ build-and-test ]
-    uses: ministryofjustice/laa-ccms-common-workflows/.github/workflows/ecr-publish-image.yml@v2
+    uses: ministryofjustice/laa-ccms-common-workflows/.github/workflows/ecr-publish-image.yml@4daa796eff475c7a107e17daf4e4882b8a1b949b # v2.3.0
     permissions:
       contents: read
       id-token: write
@@ -171,7 +212,7 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
 
       - name: Deploy UAT preview branch
         id: deploy
