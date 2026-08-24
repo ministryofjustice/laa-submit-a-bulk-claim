@@ -5,7 +5,7 @@ plugins {
     id "io.sentry.jvm.gradle" version "5.12.2"
 }
 
-def versions = [sentry : '8.31.0']
+def versions = [sentry: '8.31.0']
 apply plugin: 'uk.gov.justice.service.laa.laa-spring-boot-gradle-plugin'
 
 
@@ -37,6 +37,7 @@ dependencyManagement {
     }
 }
 
+// Property version names found here: https://docs.spring.io/spring-boot/appendix/dependency-versions/properties.html
 // Upgrade to fix snyk vulnerabilities in 1.5.34
 ext['logback.version'] = '1.5.36'
 // Upgrade to fix remaining Apache Tomcat vulnerabilities reported against 11.0.22
@@ -45,6 +46,8 @@ ext['tomcat.version'] = '11.0.23'
 ext['log4j2.version'] = '2.25.5'
 // Upgrade to fix HTTP Request Smuggling (SNYK-JAVA-IONETTY-16425695)
 ext['netty.version'] = '4.2.17.Final'
+// Upgrade micrometer version
+ext['micrometer.version'] = '1.17.1'
 
 dependencyManagement {
     dependencies {
