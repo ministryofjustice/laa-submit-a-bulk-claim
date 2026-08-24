@@ -8,8 +8,11 @@
       <h2 class="govuk-heading-m" id="messages"
           th:text="#{submission.summary.messages.heading}"></h2>
 
-      <th:block th:if="${messagesSummary.messages == null or messagesSummary.messages.isEmpty()}">
+      <th:block th:if="${messagesSummary.messages == null or (messagesSummary.messages.isEmpty() and messagesSummary.totalMessageCount == 0)}">
         <p class="govuk-body" th:text="#{submission.summary.messages.none}"></p>
+      </th:block>
+      <th:block th:if="${messagesSummary.messages == null or (messagesSummary.messages.isEmpty() and messagesSummary.totalMessageCount > 0)}">
+        <p class="govuk-body" th:text="#{submission.summary.messages.noneOnPage}"></p>
       </th:block>
 
       <div class="moj-scrollable-pane"

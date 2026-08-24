@@ -104,14 +104,12 @@ public class SubmissionMessagesBuilder {
             .map(ValidationMessagesResponse::getTotalClaims)
             .orElse(0);
 
-    MessagesSource messagesSource = null;
-    if (totalMessageCount > 0) {
-      // Set message source to submission if first message has no claim ID (all claims are either
-      // submission or claim).
-      messagesSource =
-          messagesResponse.getContent().getFirst().getClaimId() == null
-              ? MessagesSource.SUBMISSION
-              : MessagesSource.CLAIM;
+    MessagesSource messagesSource = MessagesSource.CLAIM;
+    if (messagesResponse != null
+        && messagesResponse.getContent() != null
+        && !messagesResponse.getContent().isEmpty()
+        && messagesResponse.getContent().getFirst().getClaimId() == null) {
+      messagesSource = MessagesSource.SUBMISSION;
     }
 
     return new MessagesSummary(
