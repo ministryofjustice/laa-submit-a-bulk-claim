@@ -356,7 +356,7 @@ By default, the application outputs logs in ECS JSON format with distributed tra
     "log":
         {
             "level":"INFO",
-            "logger":"controller.uk.gov.justice.laa.payments.submit.BulkImportController"
+            "logger":"uk.gov.justice.laa.payments.submit.controller.BulkImportController"
         },
     "process":
         {
