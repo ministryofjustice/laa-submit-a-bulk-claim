@@ -9,7 +9,7 @@
          th:if="${matterStartsDetails.isEmpty()}"
          th:text="#{viewSubmission.matterStarts.none}"></p>
 
-      <!--/*@thymesVar id="matterStart" type="submission.dto.uk.gov.justice.laa.payments.submit.SubmissionMatterStartsRow"*/-->
+      <!--/*@thymesVar id="matterStart" type="uk.gov.justice.laa.payments.submit.dto.submission.SubmissionMatterStartsRow"*/-->
       <dl class="govuk-summary-list"
           th:unless="${matterStartsDetails.isEmpty()}">
         <div class="govuk-summary-list__row"
