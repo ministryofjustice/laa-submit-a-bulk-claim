@@ -1,0 +1,137 @@
+package uk.gov.justice.laa.payments.submit.controller;
+
+import static uk.gov.justice.laa.payments.submit.constants.SessionConstants.BULK_SUBMISSION_ID;
+import static uk.gov.justice.laa.payments.submit.constants.SessionConstants.SUBMISSION_ID;
+
+import jakarta.servlet.http.HttpSession;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.ProblemDetail;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.oauth2.core.oidc.user.OidcUser;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.util.StringUtils;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.support.SessionStatus;
+import org.springframework.web.reactive.function.client.WebClientResponseException;
+import tools.jackson.databind.ObjectMapper;
+import uk.gov.justice.laa.dstew.payments.claimsdata.model.CreateBulkSubmission201Response;
+import uk.gov.justice.laa.payments.submit.client.DataClaimsRestClient;
+import uk.gov.justice.laa.payments.submit.config.FeatureFlagsConfig;
+import uk.gov.justice.laa.payments.submit.dto.FileUploadForm;
+import uk.gov.justice.laa.payments.submit.metrics.BulkClaimMetricService;
+import uk.gov.justice.laa.payments.submit.util.OidcAttributeUtils;
+import uk.gov.justice.laa.payments.submit.validation.BulkImportFileValidator;
+import uk.gov.justice.laa.payments.submit.validation.FileFirusValidator;
+
+@Slf4j
+@RequiredArgsConstructor
+@Controller
+public class BulkImportController {
+
+  public static final String FILE_UPLOAD_FORM_MODEL_ATTR = "fileUploadForm";
+
+  private static final String UPLOAD_FAILED_CODE = "bulkImport.validation.uploadFailed";
+
+  private final BulkImportFileValidator bulkImportFileValidator;
+  private final FileFirusValidator bulkImportFileVirusValidator;
+  private final DataClaimsRestClient dataClaimsRestClient;
+  private final OidcAttributeUtils oidcAttributeUtils;
+  private final BulkClaimMetricService bulkClaimMetricService;
+  private final ObjectMapper objectMapper;
+  private final FeatureFlagsConfig featureFlagsConfig;
+
+  @GetMapping("/upload")
+  public String showUploadPage(Model model, SessionStatus sessionStatus) {
+
+    // Clear the session due to new submission
+    sessionStatus.setComplete();
+
+    // Always ensure there's a form object in the model if not already present
+    if (!model.containsAttribute(FILE_UPLOAD_FORM_MODEL_ATTR)) {
+      model.addAttribute(FILE_UPLOAD_FORM_MODEL_ATTR, new FileUploadForm());
+    }
+
+    model.addAttribute("isNilSubmissionEnabled", featureFlagsConfig.getIsNilSubmissionEnabled());
+
+    return "pages/upload";
+  }
+
+  @PostMapping("/upload")
+  public String performUpload(
+      @ModelAttribute(FILE_UPLOAD_FORM_MODEL_ATTR) FileUploadForm fileUploadForm,
+      BindingResult bindingResult,
+      @AuthenticationPrincipal OidcUser oidcUser,
+      Model model,
+      HttpSession session) {
+
+    bulkImportFileValidator.validate(fileUploadForm, bindingResult);
+    if (bindingResult.hasErrors()) {
+      bulkClaimMetricService.recordFailedFileUploadSize(fileUploadForm.getFile(), bindingResult);
+      return showErrorOnUpload(fileUploadForm, bindingResult, model);
+    }
+
+    bulkImportFileVirusValidator.validate(fileUploadForm, bindingResult);
+    if (bindingResult.hasErrors()) {
+      bulkClaimMetricService.recordFailedFileUploadSize(fileUploadForm.getFile(), bindingResult);
+      return showErrorOnUpload(fileUploadForm, bindingResult, model);
+    }
+
+    try {
+      ResponseEntity<CreateBulkSubmission201Response> responseEntity =
+          dataClaimsRestClient
+              .upload(
+                  fileUploadForm.getFile(),
+                  oidcUser.getPreferredUsername(),
+                  oidcAttributeUtils.getUserOffices(oidcUser))
+              .block();
+
+      CreateBulkSubmission201Response bulkSubmissionResponse = responseEntity.getBody();
+
+      log.info(
+          "Claims API Upload response bulk submission UUID: {}",
+          bulkSubmissionResponse.getBulkSubmissionId());
+      session.setAttribute(SUBMISSION_ID, bulkSubmissionResponse.getSubmissionIds().getFirst());
+      session.setAttribute(BULK_SUBMISSION_ID, bulkSubmissionResponse.getBulkSubmissionId());
+      bulkClaimMetricService.recordSuccessfulFileUploadSize(fileUploadForm.getFile());
+      return "redirect:/upload-is-being-checked";
+    } catch (WebClientResponseException e) {
+      try {
+        ProblemDetail problemDetail =
+            objectMapper.readValue(e.getResponseBodyAsString(), ProblemDetail.class);
+        String errorMessage = problemDetail.getDetail();
+        if (!StringUtils.hasText(errorMessage)) {
+          errorMessage = "An unknown error occurred during upload.";
+        }
+        log.error("API upload failed: {}", errorMessage);
+        bulkClaimMetricService.recordFailedFileUploadSize(
+            fileUploadForm.getFile().getSize(), errorMessage);
+        bindingResult.rejectValue("file", "api.error", errorMessage);
+      } catch (Exception parseEx) {
+        log.error("Failed to upload file to Claims API with message: {}", e.getMessage());
+        bindingResult.reject(UPLOAD_FAILED_CODE);
+      }
+
+      return showErrorOnUpload(fileUploadForm, bindingResult, model);
+
+    } catch (Exception e) {
+      log.error("Failed to upload file to Claims API with message: {}", e.getMessage());
+      bindingResult.reject(UPLOAD_FAILED_CODE);
+      return showErrorOnUpload(fileUploadForm, bindingResult, model);
+    }
+  }
+
+  private String showErrorOnUpload(
+      FileUploadForm fileUploadForm, BindingResult bindingResult, Model model) {
+
+    model.addAttribute(FILE_UPLOAD_FORM_MODEL_ATTR, fileUploadForm);
+    model.addAttribute(BindingResult.MODEL_KEY_PREFIX + FILE_UPLOAD_FORM_MODEL_ATTR, bindingResult);
+    model.addAttribute("isNilSubmissionEnabled", featureFlagsConfig.getIsNilSubmissionEnabled());
+    return "pages/upload";
+  }
+}

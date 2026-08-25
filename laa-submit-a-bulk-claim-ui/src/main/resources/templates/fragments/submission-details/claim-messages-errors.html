@@ -1,8 +1,8 @@
 <th:block th:fragment="claim-messages-errors"
           th:if="${messagesSummary.messagesSource.toString() == 'CLAIM'}">
-  <!--/*@thymesVar id="messagesSummary" type="uk.gov.justice.laa.bulkclaim.dto.submission.messages.MessagesSummary"*/-->
-  <!--/*@thymesVar id="messageQuery" type="uk.gov.justice.laa.bulkclaim.dto.submission.messages.MessageQuery"*/-->
-  <!--/*@thymesVar id="MessageSortField" type="uk.gov.justice.laa.bulkclaim.dto.submission.messages.MessageSortField"*/-->
+  <!--/*@thymesVar id="messagesSummary" type="messages.submission.dto.uk.gov.justice.laa.payments.submit.MessagesSummary"*/-->
+  <!--/*@thymesVar id="messageQuery" type="messages.submission.dto.uk.gov.justice.laa.payments.submit.MessageQuery"*/-->
+  <!--/*@thymesVar id="MessageSortField" type="messages.submission.dto.uk.gov.justice.laa.payments.submit.MessageSortField"*/-->
   <th:block th:if="${messagesSummary != null}">
     <div class="govuk-grid-column-full">
       <h2 class="govuk-heading-m" id="claim-messages-errors-heading"

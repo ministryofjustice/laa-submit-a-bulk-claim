@@ -1,7 +1,7 @@
 <th:block th:fragment="sortableHeader(query,field,messageKey)" xmlns:th="http://www.thymeleaf.org">
-  <!--/*@thymesVar id="query" type="uk.gov.justice.laa.bulkclaim.dto.PageQuery"*/-->
-  <!--/*@thymesVar id="field" type="uk.gov.justice.laa.bulkclaim.dto.sorting.SortField"*/-->
-  <!--/*@thymesVar id="direction" type="uk.gov.justice.laa.bulkclaim.dto.sorting.SortDirection"*/-->
+  <!--/*@thymesVar id="query" type="dto.uk.gov.justice.laa.payments.submit.PageQuery"*/-->
+  <!--/*@thymesVar id="field" type="sorting.dto.uk.gov.justice.laa.payments.submit.SortField"*/-->
+  <!--/*@thymesVar id="direction" type="sorting.dto.uk.gov.justice.laa.payments.submit.SortDirection"*/-->
 
   <th:block th:with="direction=${field.getDirection(query.sort)}">
     <th scope="col" class="govuk-table__header" th:aria-sort="${direction.aria}">

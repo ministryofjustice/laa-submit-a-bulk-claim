@@ -21,7 +21,7 @@
           </div>
           <div class="govuk-summary-list__row" th:each="rowEntry : ${rows}" th:with="row=${rowEntry.value}">
             <dt class="govuk-summary-list__key" th:text="#{${'claimDetail.rows.' + rowEntry.key}}"/>
-            <!--/*@thymesVar id="row" type="uk.gov.justice.laa.bulkclaim.dto.submission.claim.viewmodels.ClaimFieldRow"*/-->
+            <!--/*@thymesVar id="row" type="viewmodels.claim.submission.dto.uk.gov.justice.laa.payments.submit.ClaimFieldRow"*/-->
             <dd class="govuk-summary-list__value govuk-!-text-align-left"
                 th:text="${@thymeleafUtils.getFormattedValue(row.reported()).resolve(#messages)}"/>
             <dd class="govuk-summary-list__value govuk-!-text-align-left"

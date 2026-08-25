@@ -1,0 +1,20 @@
+package uk.gov.justice.laa.payments.submit.accessibility.pages;
+
+import com.microsoft.playwright.Page;
+
+public final class SubmissionDetailPage {
+
+  private final Page page;
+
+  public SubmissionDetailPage(Page page) {
+    this.page = page;
+  }
+
+  public void openMessagesTab() {
+    page.locator("a[href*='navTab=CLAIM_MESSAGES']").first().click();
+  }
+
+  public void openMatterStartsTab() {
+    page.locator("a[href*='navTab=MATTER_STARTS']").first().click();
+  }
+}
