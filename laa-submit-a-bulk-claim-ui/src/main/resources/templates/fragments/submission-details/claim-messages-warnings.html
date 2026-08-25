@@ -1,9 +1,9 @@
 <th:block th:fragment="claim-messages-warnings"
   th:with="pageVarName=${pageVarName?:'page'}">
   <th:block th:if="${navTab == 'CLAIM_MESSAGES' and messagesSummary != null}">
-    <!--/*@thymesVar id="messagesSummary" type="messages.submission.dto.uk.gov.justice.laa.payments.submit.MessagesSummary"*/-->
-    <!--/*@thymesVar id="messageQuery" type="messages.submission.dto.uk.gov.justice.laa.payments.submit.MessageQuery"*/-->
-    <!--/*@thymesVar id="MessageSortField" type="messages.submission.dto.uk.gov.justice.laa.payments.submit.MessageSortField"*/-->
+    <!--/*@thymesVar id="messagesSummary" type="uk.gov.justice.laa.payments.submit.dto.submission.messages.MessagesSummary"*/-->
+    <!--/*@thymesVar id="messageQuery" type="uk.gov.justice.laa.payments.submit.dto.submission.messages.MessageQuery"*/-->
+    <!--/*@thymesVar id="MessageSortField" type="uk.gov.justice.laa.payments.submit.dto.submission.messages.MessageSortField"*/-->
     <div class="govuk-grid-column-full">
       <h2 class="govuk-heading-m" id="messages"
           th:text="#{submission.summary.messages.heading}"></h2>
