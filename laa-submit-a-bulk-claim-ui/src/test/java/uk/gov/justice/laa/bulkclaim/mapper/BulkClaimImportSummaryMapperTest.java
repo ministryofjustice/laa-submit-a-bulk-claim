@@ -13,7 +13,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.justice.laa.bulkclaim.dto.submission.SubmissionSummaryRow;
 import uk.gov.justice.laa.bulkclaim.dto.submission.messages.MessageRow;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.AreaOfLaw;
-import uk.gov.justice.laa.dstew.payments.claimsdata.model.ClaimResponse;
+import uk.gov.justice.laa.dstew.payments.claimsdata.model.ClaimResponseV2;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionResponse;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.ValidationMessageBase;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.ValidationMessageType;
@@ -73,7 +73,7 @@ class BulkClaimImportSummaryMapperTest {
             .submissionId(submissionId)
             .displayMessage("This is an error!");
 
-    ClaimResponse claimResponse = new ClaimResponse();
+    ClaimResponseV2 claimResponse = new ClaimResponseV2();
     claimResponse.setUniqueFileNumber("F123");
     claimResponse.setUniqueClientNumber("C123");
     claimResponse.setClientForename("First");
@@ -109,7 +109,7 @@ class BulkClaimImportSummaryMapperTest {
             .submissionId(submissionId)
             .displayMessage("This is an error!");
 
-    ClaimResponse claimResponse = new ClaimResponse();
+    ClaimResponseV2 claimResponse = new ClaimResponseV2();
     claimResponse.setUniqueFileNumber("F123");
     claimResponse.setUniqueClientNumber("C123");
     claimResponse.setClientForename("First");
@@ -140,7 +140,7 @@ class BulkClaimImportSummaryMapperTest {
     ValidationMessageBase errors =
         new ValidationMessageBase().submissionId(UUID.randomUUID()).displayMessage("Error!");
 
-    ClaimResponse claimResponse = new ClaimResponse();
+    ClaimResponseV2 claimResponse = new ClaimResponseV2();
     claimResponse.setClientForename("");
     claimResponse.setClientSurname("");
     claimResponse.setClient2Forename("Second");
@@ -167,7 +167,7 @@ class BulkClaimImportSummaryMapperTest {
     ValidationMessageBase errors =
         new ValidationMessageBase().submissionId(UUID.randomUUID()).displayMessage("Error!");
 
-    ClaimResponse claimResponse = new ClaimResponse();
+    ClaimResponseV2 claimResponse = new ClaimResponseV2();
 
     MessageRow result = mapper.toSubmissionSummaryClaimMessage(errors, claimResponse);
 

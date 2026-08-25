@@ -127,7 +127,7 @@ class SubmissionDetailControllerTest extends BaseControllerTest {
                   new BigDecimal("100.50"),
                   "Legal aid",
                   OffsetDateTime.of(2025, 1, 1, 10, 10, 10, 0, ZoneOffset.UTC)));
-      when(submissionMessagesBuilder.build(any(), any(), any(), anyInt(), anyInt(), any()))
+      when(submissionMessagesBuilder.build(any(), any(), any(), any(), anyInt(), anyInt(), any()))
           .thenReturn(
               new MessagesSummary(Collections.emptyList(), 0, 0, pagination, MessagesSource.CLAIM));
       when(submissionClaimDetailsBuilder.build(eq(submissionResponse), anyInt(), anyInt(), any()))
@@ -146,7 +146,7 @@ class SubmissionDetailControllerTest extends BaseControllerTest {
 
       verify(submissionClaimDetailsBuilder, times(1)).build(any(), anyInt(), anyInt(), any());
       verify(submissionMessagesBuilder, times(1))
-          .build(SUBMISSION_ID, null, ValidationMessageType.WARNING, 0, 50, null);
+          .build(OIDC_USER, SUBMISSION_ID, null, ValidationMessageType.WARNING, 0, 50, null);
       verify(submissionMatterStartsDetailsBuilder, times(1)).build(any());
     }
 
@@ -172,7 +172,7 @@ class SubmissionDetailControllerTest extends BaseControllerTest {
                   new BigDecimal("100.50"),
                   "Legal aid",
                   OffsetDateTime.of(2025, 1, 1, 10, 10, 10, 0, ZoneOffset.UTC)));
-      when(submissionMessagesBuilder.buildErrors(any(), anyInt(), anyInt(), any()))
+      when(submissionMessagesBuilder.buildErrors(any(), any(), anyInt(), anyInt(), any()))
           .thenReturn(
               new MessagesSummary(Collections.emptyList(), 0, 0, pagination, MessagesSource.CLAIM));
       when(submissionMatterStartsDetailsBuilder.build(any()))
@@ -186,7 +186,8 @@ class SubmissionDetailControllerTest extends BaseControllerTest {
           .hasStatusOk()
           .hasViewName("pages/view-submission-detail-invalid");
 
-      verify(submissionMessagesBuilder, times(1)).buildErrors(SUBMISSION_ID, 0, 50, null);
+      verify(submissionMessagesBuilder, times(1))
+          .buildErrors(OIDC_USER, SUBMISSION_ID, 0, 50, null);
       verify(submissionMatterStartsDetailsBuilder, times(1)).build(any());
     }
 
@@ -217,7 +218,7 @@ class SubmissionDetailControllerTest extends BaseControllerTest {
       when(submissionClaimDetailsBuilder.build(any(), anyInt(), anyInt(), any()))
           .thenReturn(
               new SubmissionClaimsDetails(Collections.emptyList(), pagination, BigDecimal.ZERO));
-      when(submissionMessagesBuilder.build(any(), any(), any(), anyInt(), anyInt(), any()))
+      when(submissionMessagesBuilder.build(any(), any(), any(), any(), anyInt(), anyInt(), any()))
           .thenReturn(
               new MessagesSummary(Collections.emptyList(), 0, 0, pagination, MessagesSource.CLAIM));
       when(submissionMatterStartsDetailsBuilder.build(any())).thenReturn(matterTypes);
@@ -262,7 +263,7 @@ class SubmissionDetailControllerTest extends BaseControllerTest {
       when(submissionClaimDetailsBuilder.build(any(), anyInt(), anyInt(), any()))
           .thenReturn(
               new SubmissionClaimsDetails(Collections.emptyList(), pagination, BigDecimal.TEN));
-      when(submissionMessagesBuilder.build(any(), any(), any(), anyInt(), anyInt(), any()))
+      when(submissionMessagesBuilder.build(any(), any(), any(), any(), anyInt(), anyInt(), any()))
           .thenReturn(
               new MessagesSummary(Collections.emptyList(), 0, 0, pagination, MessagesSource.CLAIM));
 
@@ -275,7 +276,7 @@ class SubmissionDetailControllerTest extends BaseControllerTest {
       assertThat(response).hasStatusOk().hasViewName("pages/view-submission-detail-accepted");
       verify(submissionClaimDetailsBuilder).build(any(), anyInt(), anyInt(), any());
       verify(submissionMessagesBuilder)
-          .build(SUBMISSION_ID, null, ValidationMessageType.WARNING, 0, 50, null);
+          .build(OIDC_USER, SUBMISSION_ID, null, ValidationMessageType.WARNING, 0, 50, null);
     }
 
     @Test
@@ -336,7 +337,7 @@ class SubmissionDetailControllerTest extends BaseControllerTest {
                           BigDecimal.ONE)),
                   pagination,
                   BigDecimal.ONE));
-      when(submissionMessagesBuilder.build(any(), any(), any(), anyInt(), anyInt(), any()))
+      when(submissionMessagesBuilder.build(any(), any(), any(), any(), anyInt(), anyInt(), any()))
           .thenReturn(
               new MessagesSummary(Collections.emptyList(), 0, 0, pagination, MessagesSource.CLAIM));
 
@@ -381,7 +382,7 @@ class SubmissionDetailControllerTest extends BaseControllerTest {
           .thenReturn(
               new SubmissionClaimsDetails(Collections.emptyList(), pagination, BigDecimal.ZERO));
 
-      when(submissionMessagesBuilder.build(any(), any(), any(), anyInt(), anyInt(), any()))
+      when(submissionMessagesBuilder.build(any(), any(), any(), any(), anyInt(), anyInt(), any()))
           .thenReturn(
               new MessagesSummary(Collections.emptyList(), 0, 0, pagination, MessagesSource.CLAIM));
 
@@ -425,7 +426,7 @@ class SubmissionDetailControllerTest extends BaseControllerTest {
           .thenReturn(
               new SubmissionClaimsDetails(Collections.emptyList(), pagination, BigDecimal.ZERO));
 
-      when(submissionMessagesBuilder.build(any(), any(), any(), anyInt(), anyInt(), any()))
+      when(submissionMessagesBuilder.build(any(), any(), any(), any(), anyInt(), anyInt(), any()))
           .thenReturn(
               new MessagesSummary(Collections.emptyList(), 0, 0, pagination, MessagesSource.CLAIM));
 

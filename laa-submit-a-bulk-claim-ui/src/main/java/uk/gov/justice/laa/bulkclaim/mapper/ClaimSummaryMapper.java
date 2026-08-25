@@ -3,7 +3,7 @@ package uk.gov.justice.laa.bulkclaim.mapper;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import uk.gov.justice.laa.bulkclaim.dto.submission.claim.ClaimSummary;
-import uk.gov.justice.laa.dstew.payments.claimsdata.model.ClaimResponse;
+import uk.gov.justice.laa.dstew.payments.claimsdata.model.ClaimResponseV2;
 
 @Mapper(componentModel = "spring")
 public interface ClaimSummaryMapper {
@@ -14,5 +14,5 @@ public interface ClaimSummaryMapper {
       source = "claimResponse.feeCalculationResponse.boltOnDetails.escapeCaseFlag")
   @Mapping(target = "uniqueClientNumber2", source = "claimResponse.client2Ucn")
   @Mapping(target = "areaOfLaw", source = "areaOfLaw")
-  ClaimSummary toClaimSummary(ClaimResponse claimResponse, String areaOfLaw);
+  ClaimSummary toClaimSummary(ClaimResponseV2 claimResponse, String areaOfLaw);
 }

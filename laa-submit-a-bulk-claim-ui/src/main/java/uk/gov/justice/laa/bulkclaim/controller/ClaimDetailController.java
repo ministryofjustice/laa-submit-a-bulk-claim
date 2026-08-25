@@ -17,17 +17,15 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.util.UriComponentsBuilder;
 import uk.gov.justice.laa.bulkclaim.builder.SubmissionMessagesBuilder;
-import uk.gov.justice.laa.bulkclaim.client.DataClaimsRestClient;
 import uk.gov.justice.laa.bulkclaim.config.FeatureFlagsConfig;
 import uk.gov.justice.laa.bulkclaim.constants.ViewSubmissionNavigationTab;
 import uk.gov.justice.laa.bulkclaim.dto.submission.messages.MessagesSummary;
-import uk.gov.justice.laa.bulkclaim.exception.SubmitBulkClaimException;
 import uk.gov.justice.laa.bulkclaim.mapper.ClaimFeeCalculationBreakdownMapper;
 import uk.gov.justice.laa.bulkclaim.mapper.ClaimSummaryMapper;
 import uk.gov.justice.laa.bulkclaim.service.ClaimService;
 import uk.gov.justice.laa.bulkclaim.service.SubmissionService;
 import uk.gov.justice.laa.bulkclaim.viewmodels.claimdetails.ClaimDetailPageData;
-import uk.gov.justice.laa.dstew.payments.claimsdata.model.ClaimResponse;
+import uk.gov.justice.laa.dstew.payments.claimsdata.model.ClaimResponseV2;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionResponse;
 
 @Slf4j
@@ -35,7 +33,6 @@ import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionResponse;
 @RequiredArgsConstructor
 public final class ClaimDetailController {
 
-  private final DataClaimsRestClient dataClaimsRestClient;
   private final ClaimSummaryMapper claimSummaryMapper;
   private final ClaimFeeCalculationBreakdownMapper claimFeeCalculationBreakdownMapper;
   private final SubmissionMessagesBuilder submissionMessagesBuilder;
@@ -91,7 +88,7 @@ public final class ClaimDetailController {
     model.addAttribute("isAssessedColumnEnabled", featureFlagsConfig.getIsAssessedColumnEnabled());
 
     final MessagesSummary messagesSummary =
-        submissionMessagesBuilder.buildAllWarnings(submissionId, claimId);
+        submissionMessagesBuilder.buildAllWarnings(user, submissionId, claimId);
     model.addAttribute("claimMessages", messagesSummary);
 
     return "pages/view-claim-detail";
@@ -118,15 +115,8 @@ public final class ClaimDetailController {
             .buildAndExpand(submissionId)
             .toUriString());
 
-    ClaimResponse claimResponse =
-        dataClaimsRestClient
-            .getSubmissionClaim(submissionId, claimId)
-            .blockOptional()
-            .orElseThrow(
-                () ->
-                    new SubmitBulkClaimException(
-                        "Claim %s does not exist for submission %s"
-                            .formatted(claimId.toString(), submissionId.toString())));
+    ClaimResponseV2 claimResponse = claimService.getClaimV2(submissionId, claimId, user);
+
     model.addAttribute("ufn", claimResponse.getUniqueFileNumber());
     model.addAttribute(
         "claimStatus",
@@ -141,7 +131,7 @@ public final class ClaimDetailController {
     model.addAttribute("claimSummary", claimSummaryMapper.toClaimSummary(claimResponse, areaOfLaw));
 
     final MessagesSummary messagesSummary =
-        submissionMessagesBuilder.buildAllWarnings(submissionId, claimId);
+        submissionMessagesBuilder.buildAllWarnings(user, submissionId, claimId);
     model.addAttribute("claimMessages", messagesSummary);
 
     return "pages/view-claim-detail-old";

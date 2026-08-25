@@ -151,7 +151,7 @@ class SubmissionDetailsSummaryViewTest extends SubmissionDetailsViewTestBase {
                 OffsetDateTime.of(2025, 1, 1, 10, 10, 0, 0, ZoneOffset.UTC)));
     when(submissionClaimDetailsBuilder.build(any(), anyInt(), anyInt(), anyString()))
         .thenReturn(new SubmissionClaimsDetails(List.of(), pagination, new BigDecimal("123.45")));
-    when(submissionMessagesBuilder.build(any(), any(), any(), anyInt(), anyInt(), any()))
+    when(submissionMessagesBuilder.build(any(), any(), any(), any(), anyInt(), anyInt(), any()))
         .thenReturn(new MessagesSummary(List.of(), 0, 0, pagination, MessagesSource.CLAIM));
     when(submissionMatterStartsDetailsBuilder.build(any())).thenReturn(List.of());
     return renderDocument();
@@ -178,7 +178,7 @@ class SubmissionDetailsSummaryViewTest extends SubmissionDetailsViewTestBase {
                 BigDecimal.ZERO,
                 CRIME_LOWER.getValue(),
                 OffsetDateTime.of(2025, 1, 1, 10, 10, 0, 0, ZoneOffset.UTC)));
-    when(submissionMessagesBuilder.buildErrors(any(), anyInt(), anyInt(), any()))
+    when(submissionMessagesBuilder.buildErrors(any(), any(), anyInt(), anyInt(), any()))
         .thenReturn(
             new MessagesSummary(
                 List.of(
