@@ -1,5 +1,5 @@
 <th:block th:fragment="sortArrow(direction)" xmlns:th="http://www.thymeleaf.org">
-    <!--/*@thymesVar id="direction" type="sorting.dto.uk.gov.justice.laa.payments.submit.SortDirection"*/-->
+    <!--/*@thymesVar id="direction" type="uk.gov.justice.laa.payments.submit.dto.sorting.SortDirection"*/-->
 
     <svg th:if="${direction.name() == 'ASCENDING'}" class="app-sort-link__icon" width="22" height="22" focusable="false" aria-hidden="true" role="img" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg">
         <path d="M6.5625 15.5L11 6.63125L15.4375 15.5H6.5625Z" fill="currentColor"/>
