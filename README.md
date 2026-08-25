@@ -341,7 +341,7 @@ logging:
     level:
         root: ${ROOT_LOGGING_LEVEL:info}
         org.springframework: ${SPRING_LOGGING_LEVEL:info}
-        uk.gov.justice.laa.bulkclaim: ${APP_LOGGING_LEVEL:info}
+        uk.gov.justice.payments.submit: ${APP_LOGGING_LEVEL:info}
     pattern:
         console: "%style{%d{yyyy-MM-dd'T'HH:mm:ss.SSSXXX}}{faint} %highlight{%-5level} %style{%pid}{magenta} %style{---}{faint} %style{[%15.15t]}{faint} %style{[%X{traceId},%X{spanId}]}{yellow} %style{%-40.40logger{39}}{cyan} %style{:}{faint} %msg%n"
 ```
