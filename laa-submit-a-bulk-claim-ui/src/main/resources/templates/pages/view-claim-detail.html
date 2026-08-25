@@ -2,9 +2,9 @@
 <html lang="en" class="govuk-template" xmlns:th="http://www.thymeleaf.org"
       th:replace="~{ main-layout :: layout(${claimDetailView.pageTitle()},~{::main},~{::#back-link},'search-submissions')}">
 
-<!--/*@thymesVar id="claimDetailView" type="claimdetails.viewmodels.uk.gov.justice.laa.payments.submit.ClaimDetailView$CrimeLower"*/-->
-<!--/*@thymesVar id="banner" type="viewmodels.claim.submission.dto.uk.gov.justice.laa.payments.submit.ClaimStatusBanner"*/-->
-<!--/*@thymesVar id="claimMessages" type="messages.submission.dto.uk.gov.justice.laa.payments.submit.MessagesSummary"*/-->
+<!--/*@thymesVar id="claimDetailView" type="uk.gov.justice.laa.payments.submit.viewmodels.claimdetails.ClaimDetailView"*/-->
+<!--/*@thymesVar id="banner" type="uk.gov.justice.laa.payments.submit.dto.submission.claim.viewmodels.ClaimStatusBanner"*/-->
+<!--/*@thymesVar id="claimMessages" type="uk.gov.justice.laa.payments.submit.dto.submission.messages.MessagesSummary"*/-->
 
 <th:block id="back-link">
   <a th:href="${viewSubmissionBackLink}"
