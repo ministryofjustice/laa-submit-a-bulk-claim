@@ -1,6 +1,6 @@
 <th:block xmlns:th="http://www.thymeleaf.org"
           th:fragment="claim-value-table(title, rows, showCurrentCalculated)">
-  <!--/*@thymesVar id="rows" type="java.util.List<uk.gov.justice.laa.bulkclaim.dto.submission.claim.viewmodels.ClaimValueRow>"*/-->
+  <!--/*@thymesVar id="rows" type="java.util.List<uk.gov.justice.laa.payments.submit.dto.submission.claim.viewmodels.ClaimValueRow>"*/-->
 
   <div class="govuk-grid-column-full">
     <div class="govuk-summary-card">
@@ -21,7 +21,7 @@
           </div>
           <div class="govuk-summary-list__row" th:each="rowEntry : ${rows}" th:with="row=${rowEntry.value}">
             <dt class="govuk-summary-list__key" th:text="#{${'claimDetail.rows.' + rowEntry.key}}"/>
-            <!--/*@thymesVar id="row" type="uk.gov.justice.laa.bulkclaim.dto.submission.claim.viewmodels.ClaimFieldRow"*/-->
+            <!--/*@thymesVar id="row" type="uk.gov.justice.laa.payments.submit.dto.submission.claim.viewmodels.ClaimFieldRow"*/-->
             <dd class="govuk-summary-list__value govuk-!-text-align-left"
                 th:text="${@thymeleafUtils.getFormattedValue(row.reported()).resolve(#messages)}"/>
             <dd class="govuk-summary-list__value govuk-!-text-align-left"

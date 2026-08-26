@@ -1,0 +1,125 @@
+package uk.gov.justice.laa.payments.submit.validation;
+
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.http.HttpStatus;
+import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.validation.SimpleErrors;
+import org.springframework.validation.Validator;
+import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.ResourceAccessException;
+import uk.gov.justice.laa.payments.submit.dto.FileUploadForm;
+import uk.gov.justice.laa.payments.submit.exception.TokenProviderException;
+import uk.gov.justice.laa.payments.submit.exception.VirusCheckException;
+import uk.gov.justice.laa.payments.submit.service.VirusCheckService;
+
+@ExtendWith(MockitoExtension.class)
+@DisplayName("Bulk import file virus validator test")
+class BulkImportFileVirusValidatorTest {
+
+  @Mock VirusCheckService virusCheckService;
+
+  Validator bulkClaimFileVirusValidator;
+
+  @BeforeEach
+  void beforeEach() {
+    bulkClaimFileVirusValidator = new BulkImportFileVirusValidator(virusCheckService);
+  }
+
+  @Test
+  @DisplayName("Should not have errors")
+  void shouldHaveNoErrors() {
+    // Given an empty file
+    MockMultipartFile file =
+        new MockMultipartFile("file", "test.txt", "text/plain", new byte[10 * 1024 * 1024]);
+    FileUploadForm fileUploadForm = new FileUploadForm(file);
+    SimpleErrors errors = new SimpleErrors(fileUploadForm);
+
+    // When
+    bulkClaimFileVirusValidator.validate(fileUploadForm, errors);
+
+    // Then
+    verify(virusCheckService, times(1)).checkVirus(file);
+    assertThat(errors.hasErrors()).isFalse();
+  }
+
+  @Test
+  @DisplayName("Should have errors when virus check failed")
+  void shouldHaveErrorsWhenVirusCheckFailed() {
+    // Given an empty file
+    MockMultipartFile file =
+        new MockMultipartFile("file", "test.txt", "text/plain", new byte[10 * 1024 * 1024]);
+    FileUploadForm fileUploadForm = new FileUploadForm(file);
+    SimpleErrors errors = new SimpleErrors(fileUploadForm);
+    doThrow(new VirusCheckException("Virus check failed")).when(virusCheckService).checkVirus(file);
+
+    // When
+    bulkClaimFileVirusValidator.validate(fileUploadForm, errors);
+
+    // Then
+    verify(virusCheckService, times(1)).checkVirus(file);
+    assertThat(errors.hasErrors()).isTrue();
+    assertThat(errors.getAllErrors().getFirst().getCode())
+        .isEqualTo("bulkImport.validation.virusScanFailed");
+  }
+
+  @DisplayName("Should have errors when token provider exception is thrown")
+  @Test
+  void shouldHaveErrorsWhenTokenProviderException() {
+    MockMultipartFile file =
+        new MockMultipartFile("file", "test.txt", "text/plain", new byte[10 * 1024 * 1024]);
+    FileUploadForm fileUploadForm = new FileUploadForm(file);
+    SimpleErrors errors = new SimpleErrors(fileUploadForm);
+    doThrow(new TokenProviderException("Invalid SDS Token"))
+        .when(virusCheckService)
+        .checkVirus(file);
+
+    bulkClaimFileVirusValidator.validate(fileUploadForm, errors);
+
+    verify(virusCheckService, times(1)).checkVirus(file);
+    assertThat(errors.hasErrors()).isTrue();
+    assertThat(errors.getAllErrors().getFirst().getCode())
+        .isEqualTo("bulkImport.validation.uploadFailed");
+  }
+
+  @DisplayName("Should have errors SDS provider throws http client exception")
+  @Test
+  void shouldHaveErrorsWhenTokenProviderExceptionIncorrectSDSConfig() {
+    MockMultipartFile file =
+        new MockMultipartFile("file", "test.txt", "text/plain", new byte[10 * 1024 * 1024]);
+    FileUploadForm fileUploadForm = new FileUploadForm(file);
+    SimpleErrors errors = new SimpleErrors(fileUploadForm);
+    doThrow(new HttpClientErrorException(HttpStatus.BAD_REQUEST, "Invalid SDS Token"))
+        .when(virusCheckService)
+        .checkVirus(file);
+    bulkClaimFileVirusValidator.validate(fileUploadForm, errors);
+    verify(virusCheckService, times(1)).checkVirus(file);
+    assertThat(errors.hasErrors()).isTrue();
+    assertThat(errors.getAllErrors().getFirst().getCode()).isEqualTo("error.heading");
+  }
+
+  @DisplayName("Should have errors SDS provider coonot be reached")
+  @Test
+  void shouldThrowExceptionWhenResourceNotFound() {
+    MockMultipartFile file =
+        new MockMultipartFile("file", "test.txt", "text/plain", new byte[10 * 1024 * 1024]);
+    FileUploadForm fileUploadForm = new FileUploadForm(file);
+    SimpleErrors errors = new SimpleErrors(fileUploadForm);
+    doThrow(new ResourceAccessException("Resource not found"))
+        .when(virusCheckService)
+        .checkVirus(file);
+    bulkClaimFileVirusValidator.validate(fileUploadForm, errors);
+    verify(virusCheckService, times(1)).checkVirus(file);
+    assertThat(errors.hasErrors()).isTrue();
+    assertThat(errors.getAllErrors().getFirst().getCode()).isEqualTo("error.heading");
+  }
+}

@@ -1,0 +1,16 @@
+package uk.gov.justice.laa.payments.submit.accessibility.pages;
+
+import com.microsoft.playwright.Page;
+
+public final class LandingPage {
+
+  private final Page page;
+
+  public LandingPage(Page page) {
+    this.page = page;
+  }
+
+  public void open(String appBaseUrl) {
+    page.navigate(appBaseUrl + "/");
+  }
+}

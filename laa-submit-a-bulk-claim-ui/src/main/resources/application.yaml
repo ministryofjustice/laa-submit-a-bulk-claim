@@ -114,7 +114,7 @@ logging:
   level:
     root: ${ROOT_LOGGING_LEVEL:info}
     org.springframework: ${SPRING_LOGGING_LEVEL:info}
-    uk.gov.justice.laa.bulkclaim: ${APP_LOGGING_LEVEL:info}
+    uk.gov.justice.laa.payments.submit: ${APP_LOGGING_LEVEL:info}
   structured:
     format:
       console: ecs
