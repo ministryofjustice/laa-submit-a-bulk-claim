@@ -1,17 +1,17 @@
 <!DOCTYPE HTML>
 <html lang="en" class="govuk-template" xmlns:th="http://www.thymeleaf.org"
-      th:replace="~{ layout/main-layout :: layout(#{nilSubmission.heading}, ~{::main},
+      th:replace="~{ main-layout :: layout(#{nilSubmission.heading}, ~{::main},
         ~{::#back-link},'nil-submission')}">
 
 <th:block id="back-link">
     <a th:href="@{/nil-submission/areaoflaw}"
-       class="govuk-back-link"
+       class="govuk-back-link requires-js"
        th:text="#{common.back}"/>
 </th:block>
 <main class="govuk-main-wrapper" id="main-content">
     <div class="govuk-width-container">
         <div class="govuk-grid-row">
-            <div class="govuk-grid-column-full" th:object="${nilSubmissionForm}">
+            <div class="govuk-grid-column-two-thirds" th:object="${nilSubmissionForm}">
                 <div th:replace="~{fragments/error-components :: error-summary}"/>
                 <div id="nil-submission-hint" class="govuk-hint" th:text="#{nilSubmission.hint}"></div>
                 <h1 class="govuk-heading-l" th:text="#{nilSubmission.period.heading}"/>
@@ -20,9 +20,8 @@
                     <div class="govuk-form-group"
                          th:classappend="${#fields.hasErrors('submissionPeriod')} ? ' govuk-form-group--error'">
                         <fieldset class="govuk-fieldset">
-                            <legend class="govuk-fieldset__legend govuk-fieldset__legend--m"
-                                    th:text="#{search.submissionPeriod}">
-                            </legend>
+                            <label class="govuk-label govuk-label--s" for="submissionPeriod-input"
+                                   th:text="#{search.submissionPeriod}"></label>
                             <th:block th:replace="~{fragments/error-components :: error-messages('submissionPeriod')}"/>
                             <div class="govuk-body govuk-input--width-15">
                                 <select class="govuk-select"

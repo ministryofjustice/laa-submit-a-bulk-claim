@@ -5,7 +5,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import uk.gov.justice.laa.bulkclaim.dto.submission.claim.ClaimSummary;
 import uk.gov.justice.laa.bulkclaim.helper.TestObjectCreator;
-import uk.gov.justice.laa.dstew.payments.claimsdata.model.ClaimResponse;
+import uk.gov.justice.laa.dstew.payments.claimsdata.model.ClaimResponseV2;
 
 @DisplayName("Claim summary mapper test")
 class ClaimSummaryMapperTest {
@@ -17,7 +17,7 @@ class ClaimSummaryMapperTest {
   void shouldMapAllDetails() {
     // Given
     String areaOfLaw = "CIVIL";
-    ClaimResponse claimResponse = TestObjectCreator.buildClaimResponse();
+    ClaimResponseV2 claimResponse = TestObjectCreator.buildClaimResponseV2();
     // When
     ClaimSummary result = mapper.toClaimSummary(claimResponse, areaOfLaw);
     // Then

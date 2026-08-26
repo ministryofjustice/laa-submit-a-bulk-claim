@@ -44,9 +44,9 @@ public class MessageQuery implements PageQuery<MessageSortField, MessageSort> {
 
   @Override
   public String getRedirectUrl(int page, MessageSort sort) {
-    UriComponentsBuilder builder = UriComponentsBuilder.fromPath("/view-submission-detail");
+    UriComponentsBuilder builder =
+        UriComponentsBuilder.fromPath("/submissions/").path(submissionId.toString());
 
-    addQueryParam(builder, "submissionId", submissionId);
     addQueryParam(builder, "navTab", navTab);
     addQueryParam(builder, "messagesPage", String.valueOf(page));
     addQueryParam(builder, "messagesSort", Objects.toString(sort, null));

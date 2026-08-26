@@ -15,8 +15,8 @@ import org.springframework.web.service.annotation.HttpExchange;
 import org.springframework.web.service.annotation.PostExchange;
 import reactor.core.publisher.Mono;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.AreaOfLaw;
-import uk.gov.justice.laa.dstew.payments.claimsdata.model.ClaimResponse;
-import uk.gov.justice.laa.dstew.payments.claimsdata.model.ClaimResultSet;
+import uk.gov.justice.laa.dstew.payments.claimsdata.model.AssessmentResultSet;
+import uk.gov.justice.laa.dstew.payments.claimsdata.model.ClaimHistoryResultSet;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.CreateBulkSubmission201Response;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.CreateSubmission201Response;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.GetBulkSubmissionStatusById200Response;
@@ -73,26 +73,6 @@ public interface DataClaimsRestClient {
   Mono<SubmissionResponse> getSubmission(@PathVariable UUID submissionId)
       throws WebClientResponseException;
 
-  @GetExchange(value = "/submissions/{submission-id}/claims/{claim-id}")
-  Mono<ClaimResponse> getSubmissionClaim(
-      @PathVariable("submission-id") UUID submissionId, @PathVariable("claim-id") UUID claimId);
-
-  default ResponseEntity<ClaimResultSet> getClaims(
-      @RequestParam(value = "office_code") String officeCode,
-      @RequestParam(value = "submission_id") UUID submissionId,
-      @RequestParam(value = "page") Integer page,
-      @RequestParam(value = "size") Integer size) {
-    return getClaims(officeCode, submissionId, page, size, "lineNumber,asc");
-  }
-
-  @GetExchange("/claims")
-  ResponseEntity<ClaimResultSet> getClaims(
-      @RequestParam(value = "office_code") String officeCode,
-      @RequestParam(value = "submission_id") UUID submissionId,
-      @RequestParam(value = "page") Integer page,
-      @RequestParam(value = "size") Integer size,
-      @RequestParam(value = "sort", required = false) String sort);
-
   @GetExchange(value = "/submissions/{submission-id}/matter-starts/{matter-starts-id}")
   Mono<MatterStartGet> getSubmissionMatterStart(
       @PathVariable("submission-id") UUID submissionId,
@@ -114,4 +94,14 @@ public interface DataClaimsRestClient {
   @PostExchange("/submissions")
   ResponseEntity<CreateSubmission201Response> createSubmission(
       @RequestBody SubmissionPost submission);
+
+  @GetExchange(value = "/claims/{claim-id}/history")
+  Mono<ClaimHistoryResultSet> getClaimHistory(@PathVariable("claim-id") UUID claimId);
+
+  @GetExchange(value = "/claims/{claim-id}/assessments")
+  Mono<AssessmentResultSet> getClaimAssessments(
+      @PathVariable("claim-id") UUID claimId,
+      @RequestParam(value = "page", required = false) Integer page,
+      @RequestParam(value = "size", required = false) Integer size,
+      @RequestParam(value = "sort", required = false) String sort);
 }

@@ -1,0 +1,48 @@
+{
+  "claim_id": "0199e23f-b903-7a25-b802-7d1676ba06c8",
+  "events": [
+    {
+      "event_type": "ASSESSMENT",
+      "event_timestamp": "2025-08-14T09:30:00Z",
+      "actor_id": "caseworker-1",
+      "source_id": "0199e23f-c000-7a25-b802-7d1676ba06c9",
+      "metadata": {
+        "assessment_type": "STAGE_DISBURSEMENT_ASSESSMENT",
+        "assessment_outcome": "PAID_IN_FULL",
+        "assessment_reason": "Reassessed disbursement"
+      }
+    },
+    {
+      "event_type": "AMENDMENT",
+      "event_timestamp": "2025-08-10T12:00:00Z",
+      "actor_id": "caseworker-1",
+      "source_id": "0199e23f-b000-7a25-b802-7d1676ba06c8",
+      "metadata": {
+        "requested_by_code": "PROVIDER",
+        "amendment_reason_code": "DATA_ENTRY_ERROR",
+        "pricing_recalculated": true,
+        "price_changed": true,
+        "escape_case_logged": false,
+        "changes": [
+          {
+            "field_identifier": "net_profit_costs_amount",
+            "change_source": "REQUESTED",
+            "before": 100,
+            "after": 120
+          }
+        ]
+      }
+    },
+    {
+      "event_type": "SUBMISSION",
+      "event_timestamp": "2025-08-01T10:00:00Z",
+      "actor_id": "SYSTEM",
+      "source_id": "0199e23f-a000-7a25-b802-7d1676ba06c8",
+      "metadata": {
+        "submission_period": "JUL-2025",
+        "office_account_number": "0P322F",
+        "area_of_law": "LEGAL HELP"
+      }
+    }
+  ]
+}

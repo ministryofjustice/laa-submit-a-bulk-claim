@@ -6,9 +6,9 @@ import uk.gov.justice.laa.bulkclaim.e2e.pages.LandingPagePage;
 import uk.gov.justice.laa.bulkclaim.e2e.pages.SubmissionDetailPage;
 import uk.gov.justice.laa.bulkclaim.e2e.pages.UploadPage;
 import uk.gov.justice.laa.bulkclaim.e2e.pages.nilsubmission.NilSubmissionAreaOfLawPage;
+import uk.gov.justice.laa.bulkclaim.e2e.pages.nilsubmission.NilSubmissionCrimeScheduleNumberPage;
 import uk.gov.justice.laa.bulkclaim.e2e.pages.nilsubmission.NilSubmissionOfficePage;
 import uk.gov.justice.laa.bulkclaim.e2e.pages.nilsubmission.NilSubmissionPeriodPage;
-import uk.gov.justice.laa.bulkclaim.e2e.pages.nilsubmission.NilSubmissionReferencePage;
 import uk.gov.justice.laa.bulkclaim.e2e.pages.nilsubmission.NilSubmissionSummaryPage;
 
 public class NilSubmissionE2ETest extends BaseTest {
@@ -33,7 +33,7 @@ public class NilSubmissionE2ETest extends BaseTest {
     periodPage.selectFirstAvailablePeriod();
     periodPage.getContinueButton().click();
 
-    var referencePage = new NilSubmissionReferencePage(page);
+    var referencePage = new NilSubmissionCrimeScheduleNumberPage(page);
     referencePage.getReferenceInput().fill("CRM/0P322F/2025");
     referencePage.getContinueButton().click();
 

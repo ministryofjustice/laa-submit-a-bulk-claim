@@ -49,7 +49,7 @@ jobs:
       packages: write
     with:
       override_version: ${{ needs.define-preview-version.outputs.preview_version }}
-      build_command: ':laa-submit-a-bulk-claim-ui:assemble'
+      build_command: ':laa-submit-a-bulk-claim-ui:build'
       integration_test_task: integrationTest
       junit_results_path: 'laa-submit-a-bulk-claim-ui/build/test-results'
       junit_report_path: 'laa-submit-a-bulk-claim-ui/build/reports/tests'

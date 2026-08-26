@@ -1,11 +1,7 @@
 package uk.gov.justice.laa.bulkclaim.mapper;
 
 import java.time.LocalDate;
-import java.time.YearMonth;
-import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeFormatterBuilder;
 import java.util.List;
-import java.util.Locale;
 import java.util.Optional;
 import java.util.UUID;
 import org.mapstruct.Mapper;
@@ -13,8 +9,9 @@ import org.mapstruct.Mapping;
 import org.mapstruct.Named;
 import uk.gov.justice.laa.bulkclaim.dto.submission.SubmissionSummaryRow;
 import uk.gov.justice.laa.bulkclaim.dto.submission.messages.MessageRow;
+import uk.gov.justice.laa.bulkclaim.util.SubmissionPeriodUtil;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.AreaOfLaw;
-import uk.gov.justice.laa.dstew.payments.claimsdata.model.ClaimResponse;
+import uk.gov.justice.laa.dstew.payments.claimsdata.model.ClaimResponseV2;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionResponse;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.ValidationMessageBase;
 
@@ -41,14 +38,7 @@ public interface BulkClaimImportSummaryMapper {
 
   @Named("toSubmissionPeriod")
   default LocalDate toSubmissionPeriod(final String submissionPeriod) {
-    DateTimeFormatter formatter =
-        new DateTimeFormatterBuilder()
-            .parseCaseInsensitive()
-            .appendPattern("MMM-yyyy")
-            .toFormatter(Locale.ENGLISH);
-
-    YearMonth yearMonth = YearMonth.parse(submissionPeriod, formatter);
-    return yearMonth.atDay(1);
+    return SubmissionPeriodUtil.toSubmissionPeriodStart(submissionPeriod);
   }
 
   @Mapping(target = "ufn", source = "claimResponse.uniqueFileNumber")
@@ -68,9 +58,9 @@ public interface BulkClaimImportSummaryMapper {
   @Mapping(target = "message", source = "message.displayMessage")
   @Mapping(target = "type", source = "message.type")
   MessageRow toSubmissionSummaryClaimMessage(
-      ValidationMessageBase message, ClaimResponse claimResponse);
+      ValidationMessageBase message, ClaimResponseV2 claimResponse);
 
-  default String buildClientName(ClaimResponse claimResponse) {
+  default String buildClientName(ClaimResponseV2 claimResponse) {
     if (claimResponse == null) {
       return null;
     }

@@ -2,171 +2,146 @@ package uk.gov.justice.laa.bulkclaim.controller.nilsubmission;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.*;
-import static uk.gov.justice.laa.bulkclaim.constants.SessionConstants.SUBMISSION_ID;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.verifyNoInteractions;
+import static org.mockito.Mockito.when;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.oidcLogin;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.model;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.redirectedUrl;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
+import static uk.gov.justice.laa.bulkclaim.constants.SessionConstants.NIL_SUBMISSION_FORM;
+import static uk.gov.justice.laa.bulkclaim.controller.ControllerTestHelper.OIDC_USER;
 import static uk.gov.justice.laa.dstew.payments.claimsdata.model.AreaOfLaw.MEDIATION;
 
 import java.util.List;
 import java.util.UUID;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.*;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.ui.Model;
-import org.springframework.web.reactive.function.client.WebClientResponseException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
+import org.springframework.mock.web.MockHttpSession;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.web.server.ResponseStatusException;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-import tools.jackson.databind.ObjectMapper;
-import uk.gov.justice.laa.bulkclaim.client.DataClaimsRestClient;
-import uk.gov.justice.laa.bulkclaim.config.FeatureFlagsConfig;
-import uk.gov.justice.laa.bulkclaim.controller.ControllerTestHelper;
+import uk.gov.justice.laa.bulkclaim.controller.BaseControllerTest;
+import uk.gov.justice.laa.bulkclaim.dto.NilSubmissionResult;
 import uk.gov.justice.laa.bulkclaim.dto.submission.NilSubmissionForm;
-import uk.gov.justice.laa.bulkclaim.dto.submission.SubmissionValidationErrorResponse;
-import uk.gov.justice.laa.bulkclaim.dto.submission.messages.NilSubmissionMessagesSummary;
-import uk.gov.justice.laa.dstew.payments.claimsdata.model.CreateSubmission201Response;
-import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionPost;
-import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionStatus;
+import uk.gov.justice.laa.bulkclaim.service.NilSubmissionService;
 
-class NilSubmissionSummaryControllerTest {
+@WebMvcTest(NilSubmissionsSummaryController.class)
+class NilSubmissionSummaryControllerTest extends BaseControllerTest {
 
-  @Mock private DataClaimsRestClient claimsRestService;
-  @Mock private FeatureFlagsConfig featureFlagsConfig;
-  @Mock private ObjectMapper objectMapper;
-  @Mock private Model model;
-  @Mock private RedirectAttributes redirectAttributes;
+  @Autowired private MockMvc mockMvc;
 
-  @InjectMocks private NilSubmissionsSummaryController controller;
-
-  @BeforeEach
-  void setUp() {
-    MockitoAnnotations.openMocks(this);
-  }
+  @MockitoBean private NilSubmissionService nilSubmissionService;
 
   @Test
-  void whenFeatureFlagDisabled_all_mappings_returnsErrorView() {
-    doThrow(new ResponseStatusException(HttpStatus.NOT_FOUND, "isNilSubmissionEnabled is false"))
+  void whenFeatureFlagDisabled_allMappings_returnsErrorView() throws Exception {
+    doThrow(new ResponseStatusException(org.springframework.http.HttpStatus.NOT_FOUND))
         .when(featureFlagsConfig)
         .checkNilSubmissionEnabled();
 
-    NilSubmissionForm form = buildSessionForm();
+    mockMvc
+        .perform(
+            get("/nil-submission/summary-details")
+                .with(oidcLogin().oidcUser(OIDC_USER))
+                .sessionAttr(NIL_SUBMISSION_FORM, buildSessionForm()))
+        .andExpect(status().isNotFound());
 
-    assertThrows(ResponseStatusException.class, () -> controller.getSummary(form, model));
+    mockMvc
+        .perform(
+            post("/nil-submission/summary-details")
+                .with(csrf())
+                .with(oidcLogin().oidcUser(OIDC_USER))
+                .sessionAttr(NIL_SUBMISSION_FORM, buildSessionForm()))
+        .andExpect(status().isNotFound());
 
-    assertThrows(
-        ResponseStatusException.class,
-        () ->
-            controller.postSummary(
-                form, redirectAttributes, model, ControllerTestHelper.getOidcUser()));
-
-    verifyNoInteractions(claimsRestService);
+    verifyNoInteractions(nilSubmissionService);
   }
 
   @Test
-  void whenFeatureFlagEnabled_getSummary_returnsSummaryView() {
-
-    assertEquals(
-        "pages/nil-submission/summary-details", controller.getSummary(buildSessionForm(), model));
+  void whenFeatureFlagEnabled_getSummary_returnsSummaryView() throws Exception {
+    mockMvc
+        .perform(
+            get("/nil-submission/summary-details")
+                .with(oidcLogin().oidcUser(OIDC_USER))
+                .sessionAttr(NIL_SUBMISSION_FORM, buildSessionForm()))
+        .andExpect(status().isOk())
+        .andExpect(view().name("pages/nil-submission/summary-details"));
   }
 
   @Test
-  void postSummary_redirectsToSubmissionDetails() {
-    when(featureFlagsConfig.getIsNilSubmissionEnabled()).thenReturn(true);
-
+  void postSummary_redirectsToSubmissionDetails() throws Exception {
     UUID submissionId = UUID.fromString("00000000-0000-0000-0000-0000000000a1");
-    CreateSubmission201Response submissionResponse = mock(CreateSubmission201Response.class);
-    when(submissionResponse.getId()).thenReturn(submissionId);
-    when(claimsRestService.createSubmission(any()))
-        .thenReturn(ResponseEntity.ok(submissionResponse));
+    when(nilSubmissionService.createSubmission(any(), any()))
+        .thenReturn(new NilSubmissionResult(submissionId, List.of()));
 
-    NilSubmissionForm form = buildSessionForm();
+    var session = sessionWithForm(buildSessionForm());
 
-    assertEquals(
-        "redirect:/submission/" + submissionId,
-        controller.postSummary(
-            form, redirectAttributes, model, ControllerTestHelper.getOidcUser()));
+    mockMvc
+        .perform(
+            post("/nil-submission/summary-details")
+                .with(csrf())
+                .with(oidcLogin().oidcUser(OIDC_USER))
+                .session(session))
+        .andExpect(status().is3xxRedirection())
+        .andExpect(redirectedUrl("/submissions/" + submissionId));
 
-    ArgumentCaptor<SubmissionPost> submissionPostCaptor =
-        ArgumentCaptor.forClass(SubmissionPost.class);
-    verify(claimsRestService).createSubmission(submissionPostCaptor.capture());
-    SubmissionPost submissionPost = submissionPostCaptor.getValue();
-    assertEquals("12345", submissionPost.getOfficeAccountNumber());
-    assertEquals(0, submissionPost.getNumberOfClaims());
-    assertEquals(SubmissionStatus.READY_FOR_VALIDATION, submissionPost.getStatus());
-    assertEquals(MEDIATION, submissionPost.getAreaOfLaw());
-    assertEquals("OCT-2025", submissionPost.getSubmissionPeriod());
-
-    verify(model).addAttribute(eq(SUBMISSION_ID), eq(submissionId));
-    verify(redirectAttributes).addFlashAttribute(eq(SUBMISSION_ID), eq(submissionId));
-
+    var form = (NilSubmissionForm) session.getAttribute(NIL_SUBMISSION_FORM);
     assertNull(form.getOffice());
     assertNull(form.getAreaOfLaw());
     assertNull(form.getSubmissionPeriod());
-    assertNull(form.getScheduleReference());
+    assertNull(form.getSubmissionReference());
   }
 
   @Test
   void postSummary_returnsInvalidViewWithMessagesSummary() throws Exception {
-    when(featureFlagsConfig.getIsNilSubmissionEnabled()).thenReturn(true);
+    when(nilSubmissionService.createSubmission(any(), any()))
+        .thenReturn(
+            new NilSubmissionResult(
+                UUID.fromString("00000000-0000-0000-0000-0000000000a2"),
+                List.of(
+                    "Mediation submission reference must be a maximum of 20 characters and contain only letters, numbers and forward slashes")));
 
-    SubmissionValidationErrorResponse errorResponse =
-        new SubmissionValidationErrorResponse(
-            null,
-            null,
-            null,
-            null,
-            null,
-            null,
-            List.of(
-                new SubmissionValidationErrorResponse.Issue(
-                    null,
-                    "Mediation submission reference must be a maximum of 20 characters and contain only letters, numbers and forward slashes",
-                    null,
-                    null,
-                    null)));
-    when(objectMapper.readValue(any(String.class), eq(SubmissionValidationErrorResponse.class)))
-        .thenReturn(errorResponse);
-    when(claimsRestService.createSubmission(any()))
-        .thenThrow(new WebClientResponseException(400, "", null, null, null, null));
+    var session = sessionWithForm(buildSessionForm());
 
-    NilSubmissionForm form = buildSessionForm();
+    mockMvc
+        .perform(
+            post("/nil-submission/summary-details")
+                .with(csrf())
+                .with(oidcLogin().oidcUser(OIDC_USER))
+                .session(session))
+        .andExpect(status().isOk())
+        .andExpect(view().name("pages/nil-submission/summary-details"))
+        .andExpect(model().attributeExists("errorMessages"));
 
-    assertEquals(
-        "pages/nil-submission/detail-invalid",
-        controller.postSummary(
-            form, redirectAttributes, model, ControllerTestHelper.getOidcUser()));
-
-    verify(model).addAttribute(eq("messagesSummary"), any(NilSubmissionMessagesSummary.class));
-
-    assertNull(form.getOffice());
-    assertNull(form.getAreaOfLaw());
-    assertNull(form.getSubmissionPeriod());
-    assertNull(form.getScheduleReference());
+    var form = (NilSubmissionForm) session.getAttribute(NIL_SUBMISSION_FORM);
+    assertEquals("12345", form.getOffice());
+    assertEquals(MEDIATION, form.getAreaOfLaw());
+    assertEquals("OCT-2025", form.getSubmissionPeriod());
+    assertEquals("REF-123", form.getSubmissionReference());
   }
 
   @Test
-  void buildNilSubmissionMessagesSummary_mapsFieldsCorrectly() {
-    NilSubmissionForm form = buildSessionForm();
-    NilSubmissionMessagesSummary summary =
-        NilSubmissionsSummaryController.buildNilSubmissionMessagesSummary(
-            form,
-            List.of(
-                "Submission already exists for Office (12345), Area of Law (MEDIATION), Period (OCT-2025)",
-                "Mediation submission reference must be a maximum of 20 characters and contain only letters, numbers and forward slashes"));
+  void postSummary_withoutRequiredSessionState_returnsNotFound() throws Exception {
+    NilSubmissionForm form = new NilSubmissionForm();
+    form.setOffice("12345");
+    form.setAreaOfLaw(MEDIATION);
+    form.setSubmissionPeriod("OCT-2025");
 
-    assertEquals(2, summary.totalMessageCount());
-    assertEquals(MEDIATION, summary.areaOfLaw());
-    assertEquals("12345", summary.officeAccount());
-    assertEquals("OCT-2025", summary.submissionPeriod());
-    assertEquals("REF-123", summary.submissionReference());
-    assertEquals(
-        List.of(
-            "Submission already exists for Office (12345), Area of Law (MEDIATION), Period (OCT-2025)",
-            "Mediation submission reference must be a maximum of 20 characters and contain only letters, numbers and forward slashes"),
-        summary.messages());
+    mockMvc
+        .perform(
+            post("/nil-submission/summary-details")
+                .with(csrf())
+                .with(oidcLogin().oidcUser(OIDC_USER))
+                .sessionAttr(NIL_SUBMISSION_FORM, form))
+        .andExpect(status().isNotFound());
+
+    verifyNoInteractions(nilSubmissionService);
   }
 
   private static NilSubmissionForm buildSessionForm() {
@@ -174,7 +149,13 @@ class NilSubmissionSummaryControllerTest {
     form.setOffice("12345");
     form.setAreaOfLaw(MEDIATION);
     form.setSubmissionPeriod("OCT-2025");
-    form.setScheduleReference("REF-123");
+    form.setSubmissionReference("REF-123");
     return form;
+  }
+
+  private MockHttpSession sessionWithForm(NilSubmissionForm form) {
+    MockHttpSession session = new MockHttpSession();
+    session.setAttribute(NIL_SUBMISSION_FORM, form);
+    return session;
   }
 }

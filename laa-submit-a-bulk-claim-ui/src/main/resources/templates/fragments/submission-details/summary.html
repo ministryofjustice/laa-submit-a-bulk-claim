@@ -8,7 +8,7 @@
     <a id="export-button" class="govuk-button govuk-button--secondary"
        th:if="${showWarnings == true}"
        data-module="laa-hide-on-print-button"
-        th:href="@{/submission/{submissionId}/export(submissionId=${submissionSummary?.submissionReference}, office=${submissionSummary.officeAccount}, areaOfLaw=${submissionSummary.areaOfLaw()})}"
+        th:href="@{/submissions/{submissionId}/export(submissionId=${submissionSummary?.submissionReference}, office=${submissionSummary.officeAccount}, areaOfLaw=${submissionSummary.areaOfLaw()})}"
         th:text="#{submission.export}"></a>
   </div>
 
@@ -25,7 +25,8 @@
         <dt class="govuk-summary-list__key"
             th:text="#{submission.summary.properties.dateTime}"></dt>
         <dd class="govuk-summary-list__value"
-            th:text="|${#temporals.format(submissionSummary.submitted,'d MMM yyyy')} at ${#temporals.format(submissionSummary.submitted(),'h:mma')}|"></dd>
+            th:with="submittedLondonTime=${@dateTimeUtil.toLondonLocalDateTime(submissionSummary.submitted())}"
+            th:text="|${#temporals.format(submittedLondonTime,'d MMM yyyy')} at ${#temporals.format(submittedLondonTime,'h:mma')}|"></dd>
       </div>
       <div class="govuk-summary-list__row">
         <dt class="govuk-summary-list__key"
@@ -56,7 +57,7 @@
         <dt class="govuk-summary-list__key"
             th:text="#{submission.summary.properties.calculatedBulkValue}"></dt>
         <dd class="govuk-summary-list__value"
-            th:text="${@currencyUtil.toString(submissionSummary.submissionValue())}"></dd>
+            th:text="${@currencyUtil.formatCurrency(submissionSummary.submissionValue())}"></dd>
       </div>
     </dl>
 

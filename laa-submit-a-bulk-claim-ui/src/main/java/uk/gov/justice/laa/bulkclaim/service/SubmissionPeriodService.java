@@ -6,11 +6,9 @@ import static uk.gov.justice.laa.bulkclaim.dto.SubmissionOutcomeFilter.SUCCEEDED
 import java.time.LocalDate;
 import java.time.YearMonth;
 import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeFormatterBuilder;
 import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -85,25 +83,23 @@ public class SubmissionPeriodService {
   }
 
   public Map<String, String> sortSubmissionPeriods(Map<String, String> submissionPeriods) {
-    DateTimeFormatter formatter =
-        new DateTimeFormatterBuilder()
-            .parseCaseInsensitive()
-            .appendPattern("MMMM yyyy")
-            .toFormatter(Locale.UK);
-
     return submissionPeriods.entrySet().stream()
-        .sorted(Comparator.comparing(e -> YearMonth.parse(e.getValue(), formatter)))
+        .sorted(
+            Comparator.comparing(
+                e -> YearMonth.parse(e.getValue(), SubmissionPeriodUtil.FULL_PERIOD_FMT)))
         .collect(
             Collectors.toMap(
                 Map.Entry::getKey, Map.Entry::getValue, (a, b) -> a, LinkedHashMap::new));
   }
 
   Map<String, String> getLastTwelveMonths() {
-
     SubmissionPeriodUtil submissionPeriodUtil =
         new SubmissionPeriodUtil(
             dateWrapperUtil,
-            dateWrapperUtil.nowYearMonth().minusMonths(12).format(SubmissionPeriodUtil.IN_FMT));
+            dateWrapperUtil
+                .nowYearMonth()
+                .minusMonths(12)
+                .format(SubmissionPeriodUtil.ABBR_PERIOD_FMT));
     return submissionPeriodUtil.getAllPossibleSubmissionPeriods();
   }
 }

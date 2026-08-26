@@ -3,6 +3,7 @@ package uk.gov.justice.laa.bulkclaim.controller;
 import static uk.gov.justice.laa.bulkclaim.constants.SessionConstants.BULK_SUBMISSION_ID;
 import static uk.gov.justice.laa.bulkclaim.constants.SessionConstants.SUBMISSION_ID;
 
+import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ProblemDetail;
@@ -18,7 +19,6 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.support.SessionStatus;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import tools.jackson.databind.ObjectMapper;
 import uk.gov.justice.laa.bulkclaim.client.DataClaimsRestClient;
 import uk.gov.justice.laa.bulkclaim.config.FeatureFlagsConfig;
@@ -68,7 +68,7 @@ public class BulkImportController {
       BindingResult bindingResult,
       @AuthenticationPrincipal OidcUser oidcUser,
       Model model,
-      RedirectAttributes redirectAttributes) {
+      HttpSession session) {
 
     bulkImportFileValidator.validate(fileUploadForm, bindingResult);
     if (bindingResult.hasErrors()) {
@@ -96,10 +96,8 @@ public class BulkImportController {
       log.info(
           "Claims API Upload response bulk submission UUID: {}",
           bulkSubmissionResponse.getBulkSubmissionId());
-      redirectAttributes.addFlashAttribute(
-          SUBMISSION_ID, bulkSubmissionResponse.getSubmissionIds().getFirst());
-      redirectAttributes.addFlashAttribute(
-          BULK_SUBMISSION_ID, bulkSubmissionResponse.getBulkSubmissionId());
+      session.setAttribute(SUBMISSION_ID, bulkSubmissionResponse.getSubmissionIds().getFirst());
+      session.setAttribute(BULK_SUBMISSION_ID, bulkSubmissionResponse.getBulkSubmissionId());
       bulkClaimMetricService.recordSuccessfulFileUploadSize(fileUploadForm.getFile());
       return "redirect:/upload-is-being-checked";
     } catch (WebClientResponseException e) {

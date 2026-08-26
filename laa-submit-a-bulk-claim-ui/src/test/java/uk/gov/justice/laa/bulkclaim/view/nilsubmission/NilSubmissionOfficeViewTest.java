@@ -6,27 +6,78 @@ import static org.mockito.Mockito.when;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.oidcLogin;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static uk.gov.justice.laa.bulkclaim.controller.ControllerTestHelper.OIDC_USER;
 
 import java.util.List;
 import org.jsoup.Jsoup;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
-import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
-import uk.gov.justice.laa.bulkclaim.controller.ControllerTestHelper;
 import uk.gov.justice.laa.bulkclaim.controller.nilsubmission.NilSubmissionOfficeController;
 import uk.gov.justice.laa.bulkclaim.dto.submission.NilSubmissionForm;
-import uk.gov.justice.laa.bulkclaim.util.OidcAttributeUtils;
 import uk.gov.justice.laa.bulkclaim.view.ViewTestBase;
 
 @WebMvcTest(NilSubmissionOfficeController.class)
 class NilSubmissionOfficeViewTest extends ViewTestBase {
 
-  @MockitoBean private OidcAttributeUtils oidcAttributeUtils;
-
   NilSubmissionOfficeViewTest() {
     this.mapping = "/nil-submission/office";
+  }
+
+  @Test
+  void multipleOfficeCodesShowsRadios() {
+    when(oidcAttributeUtils.getUserOffices(any())).thenReturn(List.of("0P322F", "OTHER"));
+
+    var doc = renderDocument();
+
+    assertPageHasTitle(doc, "Create a nil submission");
+    assertPageHasBackLink(doc);
+
+    assertPageHasHint(doc, "nil-submission-hint", "Create a nil submission");
+    assertPageHasHeading(doc, "Select the office account number");
+
+    assertPageHasRadioButtons(doc, "0P322F", "OTHER");
+    assertNoRadioSelected(doc);
+
+    assertPageHasPrimaryButton(doc, "Continue");
+    assertPageHasSecondaryLink(doc, "Cancel");
+  }
+
+  @Test
+  void singleOfficeCodePreselectsRadio() {
+    when(oidcAttributeUtils.getUserOffices(any())).thenReturn(List.of("0P322F"));
+
+    var doc = renderDocument();
+
+    assertPageHasTitle(doc, "Create a nil submission");
+    assertPageHasBackLink(doc);
+
+    assertPageHasHint(doc, "nil-submission-hint", "Create a nil submission");
+    assertPageHasHeading(doc, "Select the office account number");
+
+    assertPageHasRadioButtons(doc, "0P322F");
+    assertThat(selectFirst(doc, ".govuk-radios__input").hasAttr("checked")).isTrue();
+
+    assertPageHasPrimaryButton(doc, "Continue");
+    assertPageHasSecondaryLink(doc, "Cancel");
+  }
+
+  @Test
+  void noOfficeCodesShowsMessage() {
+    when(oidcAttributeUtils.getUserOffices(any())).thenReturn(List.of());
+
+    var doc = renderDocument();
+
+    assertPageHasTitle(doc, "Create a nil submission");
+    assertPageHasBackLink(doc);
+
+    assertPageHasHeading(doc, "Sorry, you do not have access");
+    assertPageBodyText(
+        doc,
+        "There are no office account numbers assigned to your sign in details. Contact your firm"
+            + " LAA administrator to add the relevant office account numbers to your SILAS"
+            + " account");
   }
 
   @Test
@@ -44,7 +95,7 @@ class NilSubmissionOfficeViewTest extends ViewTestBase {
             .perform(
                 post(mapping)
                     .with(csrf())
-                    .with(oidcLogin().oidcUser(ControllerTestHelper.getOidcUser()))
+                    .with(oidcLogin().oidcUser(OIDC_USER))
                     .params(params)
                     .session(session))
             .andReturn()
@@ -66,10 +117,7 @@ class NilSubmissionOfficeViewTest extends ViewTestBase {
     var doc =
         mockMvc
             .perform(
-                post(mapping)
-                    .with(csrf())
-                    .with(oidcLogin().oidcUser(ControllerTestHelper.getOidcUser()))
-                    .session(session))
+                post(mapping).with(csrf()).with(oidcLogin().oidcUser(OIDC_USER)).session(session))
             .andReturn()
             .getResponse();
 

@@ -19,7 +19,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.ResponseEntity;
-import uk.gov.justice.laa.bulkclaim.client.DataClaimsRestClient;
 import uk.gov.justice.laa.bulkclaim.client.DataClaimsRestClientV2;
 import uk.gov.justice.laa.bulkclaim.dto.submission.claim.SubmissionClaimRow;
 import uk.gov.justice.laa.bulkclaim.dto.submission.claim.SubmissionClaimRowCostsDetails;
@@ -34,7 +33,6 @@ class SubmissionClaimsDetailsBuilderTest {
 
   private SubmissionClaimDetailsBuilder builder;
 
-  @Mock DataClaimsRestClient dataClaimsRestClient;
   @Mock DataClaimsRestClientV2 dataClaimsRestClientV2;
   @Mock SubmissionClaimRowMapper submissionClaimRowMapper;
   @Mock PaginationUtil paginationUtil;
@@ -43,7 +41,7 @@ class SubmissionClaimsDetailsBuilderTest {
   void beforeEach() {
     builder =
         new SubmissionClaimDetailsBuilder(
-            dataClaimsRestClient, dataClaimsRestClientV2, submissionClaimRowMapper, paginationUtil);
+            dataClaimsRestClientV2, submissionClaimRowMapper, paginationUtil);
   }
 
   @Test
@@ -58,15 +56,15 @@ class SubmissionClaimsDetailsBuilderTest {
             .calculatedTotalAmount(new BigDecimal("70.50"))
             .claims(List.of(SubmissionClaim.builder().claimId(claimId).build()))
             .build();
-    ClaimResultSet claimResultSet =
-        ClaimResultSet.builder()
+    ClaimResultSetV2 claimResultSet =
+        ClaimResultSetV2.builder()
             .totalElements(1)
-            .content(Collections.singletonList(ClaimResponse.builder().totalWarnings(1).build()))
+            .content(Collections.singletonList(ClaimResponseV2.builder().totalWarnings(1).build()))
             .size(10)
             .number(2)
             .totalPages(2)
             .build();
-    when(dataClaimsRestClient.getClaims(any(), any(), any(), any()))
+    when(dataClaimsRestClientV2.getClaims(any(), any(), any(), any()))
         .thenReturn(ResponseEntity.of(Optional.of(claimResultSet)));
     SubmissionClaimRow expected = getSubmissionClaimRow();
 
@@ -158,6 +156,8 @@ class SubmissionClaimsDetailsBuilderTest {
             new BigDecimal("50.10"),
             new BigDecimal("60.10"),
             new BigDecimal("70.10")),
-        Boolean.TRUE);
+        Boolean.TRUE,
+        BigDecimal.ONE,
+        BigDecimal.ONE);
   }
 }

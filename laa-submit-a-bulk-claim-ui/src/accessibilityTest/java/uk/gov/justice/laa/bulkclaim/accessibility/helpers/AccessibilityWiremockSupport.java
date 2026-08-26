@@ -173,7 +173,7 @@ final class AccessibilityWiremockSupport {
 
     wiremock.stubFor(
         get(urlPathEqualTo(
-                "/api/v1/submissions/"
+                "/api/v2/submissions/"
                     + scenario.validSubmissionId()
                     + "/claims/"
                     + scenario.validClaimId()))
@@ -183,6 +183,20 @@ final class AccessibilityWiremockSupport {
                         .formatted(
                             scenario.validClaimId(),
                             scenario.validSubmissionId(),
+                            scenario.validClaimId()))));
+
+    wiremock.stubFor(
+        get(urlPathEqualTo(
+                "/api/v2/submissions/"
+                    + scenario.invalidSubmissionId()
+                    + "/claims/"
+                    + scenario.validClaimId()))
+            .willReturn(
+                okJson(
+                    template("wiremock/claim-api/get-claim-detail.json")
+                        .formatted(
+                            scenario.validClaimId(),
+                            scenario.invalidSubmissionId(),
                             scenario.validClaimId()))));
 
     wiremock.stubFor(

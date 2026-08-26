@@ -18,7 +18,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.justice.laa.bulkclaim.dto.submission.claim.SubmissionClaimRow;
 import uk.gov.justice.laa.bulkclaim.dto.submission.claim.SubmissionClaimRowCostsDetails;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.*;
-import uk.gov.justice.laa.dstew.payments.claimsdata.model.ClaimResponse;
+import uk.gov.justice.laa.dstew.payments.claimsdata.model.ClaimResponseV2;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.ClaimStatus;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.FeeCalculationPatch;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.FeeCalculationType;
@@ -38,8 +38,8 @@ class SubmissionClaimRowMapperTest {
   @DisplayName("Should map submission claim")
   void shouldMapSubmissionClaim() {
     // Given
-    ClaimResponse claimResponse =
-        ClaimResponse.builder()
+    ClaimResponseV2 claimResponse =
+        ClaimResponseV2.builder()
             .id("5146e93f-92c8-4c56-bd25-0cb6953f534")
             .lineNumber(1)
             .uniqueFileNumber("UFN123")
@@ -101,8 +101,8 @@ class SubmissionClaimRowMapperTest {
   @DisplayName("Should map claim costs details")
   void shouldMapClaimCostsDetails() {
     // Given
-    ClaimResponse claimResponse =
-        ClaimResponse.builder()
+    ClaimResponseV2 claimResponse =
+        ClaimResponseV2.builder()
             .netProfitCostsAmount(new BigDecimal("100.10"))
             .netCounselCostsAmount(new BigDecimal("200.20"))
             .netDisbursementAmount(new BigDecimal("300.30"))
@@ -143,7 +143,7 @@ class SubmissionClaimRowMapperTest {
   @DisplayName("Should map escape case flag when present")
   void shouldMapEscapeCaseFlagWhenPresent() {
     // Given
-    ClaimResponse claimResponse = mock(ClaimResponse.class, RETURNS_DEEP_STUBS);
+    ClaimResponseV2 claimResponse = mock(ClaimResponseV2.class, RETURNS_DEEP_STUBS);
     when(claimResponse.getId()).thenReturn("5146e93f-92c8-4c56-bd25-0cb6953f534");
     when(claimResponse.getLineNumber()).thenReturn(1);
     when(claimResponse.getUniqueFileNumber()).thenReturn("UFN123");
@@ -197,11 +197,12 @@ class SubmissionClaimRowMapperTest {
               .disbursementsVatAmount(new BigDecimal("17.50"))
               .netWaitingCostsAmount(new BigDecimal("400.40"))
               .travelWaitingCostsAmount(new BigDecimal("500.50"))
-              .status(ClaimStatus.VOID)
+              .derivedClaimStatus(DerivedClaimStatus.VOIDED)
               .feeCalculationResponse(
                   FeeCalculationPatch.builder()
                       .feeType(FeeCalculationType.DISB_ONLY)
                       .feeCode("FC123")
+                      .totalAmount(new BigDecimal("1500.50"))
                       .build())
               .totalWarnings(3)
               .build();
@@ -244,9 +245,13 @@ class SubmissionClaimRowMapperTest {
                 .isEqualTo(new BigDecimal("500.50"));
             softAssertion.assertThat(actualResponse.totalMessages()).isEqualTo(3);
             softAssertion.assertThat(actualResponse.escapeCase()).isNull();
+            softAssertion.assertThat(actualResponse.status()).isEqualTo("VOIDED");
             softAssertion
-                .assertThat(actualResponse.status())
-                .isEqualTo(ClaimStatus.VOID.toString());
+                .assertThat(actualResponse.calculatedValue())
+                .isEqualTo(new BigDecimal("1500.50"));
+            softAssertion
+                .assertThat(actualResponse.updatedCalculatedValue())
+                .isEqualTo(new BigDecimal("1500.50"));
           });
     }
 

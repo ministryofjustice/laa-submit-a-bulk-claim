@@ -1,7 +1,14 @@
 package uk.gov.justice.laa.bulkclaim.config;
 
+import static org.springframework.data.redis.cache.RedisCacheManager.builder;
+import static org.springframework.data.redis.cache.RedisCacheWriter.create;
+
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.data.redis.cache.RedisCacheManager;
+import org.springframework.data.redis.cache.RedisCacheWriter.RedisCacheWriterConfigurer;
+import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.session.data.redis.config.annotation.web.http.EnableRedisHttpSession;
 
 /**
@@ -22,4 +29,11 @@ import org.springframework.session.data.redis.config.annotation.web.http.EnableR
 @EnableRedisHttpSession(
     redisNamespace = "submit-a-bulk-claim:session",
     maxInactiveIntervalInSeconds = 60 * 60)
-public class RedisSessionConfig {}
+public class RedisSessionConfig {
+
+  @Bean
+  RedisCacheManager redisCacheManager(RedisConnectionFactory connectionFactory) {
+    var cacheWriter = create(connectionFactory, RedisCacheWriterConfigurer::immediateWrites);
+    return builder(cacheWriter).build();
+  }
+}

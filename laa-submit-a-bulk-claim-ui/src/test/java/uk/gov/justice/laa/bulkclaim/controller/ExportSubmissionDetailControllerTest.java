@@ -6,6 +6,7 @@ import static org.mockito.Mockito.when;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.oidcLogin;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.asyncDispatch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static uk.gov.justice.laa.bulkclaim.controller.ControllerTestHelper.OIDC_USER;
 
 import java.util.Collections;
 import java.util.List;
@@ -22,7 +23,6 @@ import org.springframework.test.web.servlet.assertj.MockMvcTester;
 import reactor.core.publisher.Mono;
 import uk.gov.justice.laa.bulkclaim.client.ExportDataClaimsRestClient;
 import uk.gov.justice.laa.bulkclaim.exception.SubmitBulkClaimException;
-import uk.gov.justice.laa.bulkclaim.util.OidcAttributeUtils;
 
 @WebMvcTest(ExportSubmissionDetailController.class)
 @AutoConfigureMockMvc
@@ -32,10 +32,9 @@ class ExportSubmissionDetailControllerTest extends BaseControllerTest {
   @Autowired private MockMvcTester mockMvc;
 
   @MockitoBean private ExportDataClaimsRestClient exportDataClaimsRestClient;
-  @MockitoBean private OidcAttributeUtils oidcAttributeUtils;
 
   @Nested
-  @DisplayName("GET: /submission/{submissionId}/export")
+  @DisplayName("GET: /submissions/{submissionId}/export")
   class GetExportSubmission {
 
     @Test
@@ -54,9 +53,9 @@ class ExportSubmissionDetailControllerTest extends BaseControllerTest {
       // When (first request starts async processing due to controller method using "Mono")
       var initial =
           mockMvc.perform(
-              get("/submission/%s/export?office=%s&areaOfLaw=%s"
+              get("/submissions/%s/export?office=%s&areaOfLaw=%s"
                       .formatted(submissionReference, office, areaOfLaw))
-                  .with(oidcLogin().oidcUser(ControllerTestHelper.getOidcUser())));
+                  .with(oidcLogin().oidcUser(OIDC_USER)));
 
       // When / Then
       assertThat(mockMvc.perform(asyncDispatch(initial.getMvcResult())))
@@ -82,9 +81,9 @@ class ExportSubmissionDetailControllerTest extends BaseControllerTest {
       // When / Then
       assertThat(
               mockMvc.perform(
-                  get("/submission/%s/export?office=%s&areaOfLaw=%s"
+                  get("/submissions/%s/export?office=%s&areaOfLaw=%s"
                           .formatted(submissionReference, office, areaOfLaw))
-                      .with(oidcLogin().oidcUser(ControllerTestHelper.getOidcUser()))))
+                      .with(oidcLogin().oidcUser(OIDC_USER))))
           .failure()
           .hasCauseInstanceOf(SubmitBulkClaimException.class)
           .hasMessageContaining("User (test@example.com) does not have access to office: 12345");

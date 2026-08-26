@@ -106,6 +106,7 @@ jobs:
           pid_env_var: PORT_FORWARD_FSP_PID
           wait_label: fsp-api
 
+
       - name: Set up Java
         uses: actions/setup-java@ad2b38190b15e4d6bdf0c97fb4fca8412226d287 # v5.3.0
         with:
@@ -128,11 +129,12 @@ jobs:
           AUTH_SCOPE: ${{ secrets.auth_scope }}
           AUTH_TENANT_ID: ${{ secrets.auth_tenant_id }}
           SDS_API_URL: ${{ vars.SDS_API_URL }}
-          FEE_SCHEME_PLATFORM_API_URL: 'http://localhost:8095'
+          FEE_SCHEME_PLATFORM_API_URL: 'http://host.docker.internal:8095'
           FEE_SCHEME_PLATFORM_API_ACCESS_TOKEN: ${{ secrets.fsp_api_token }}
-          PROVIDER_DETAILS_API_URL: 'http://localhost:8186'
-          PROVIDER_DETAILS_API_HOSTNAME: 'http://localhost:8186'
+          PROVIDER_DETAILS_API_URL: 'http://host.docker.internal:8186'
+          PROVIDER_DETAILS_API_HOSTNAME: 'http://host.docker.internal:8186'
           PROVIDER_DETAILS_API_ACCESS_TOKEN: ${{ secrets.pda_api_token }}
+          SUBMIT_SPRING_PROFILES_ACTIVE: oidc,github-test-runner
           LAA_ACCOUNTS: 0P322F
 
       - name: Wait for services to be ready
