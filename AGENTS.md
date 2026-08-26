@@ -2,7 +2,7 @@
 
 ## Guidance
 
-- Sister app: `../laa-amend-a-bulk-claim` - [repo](https://github.com/ministryofjustice/laa-submit-a-bulk-claim)
+- Sister app: `../laa-amend-a-claim` - [repo](https://github.com/ministryofjustice/laa-amend-a-claim)
 - Use it to align shared claim terminology and journey wording.
 
 ## Architecture
