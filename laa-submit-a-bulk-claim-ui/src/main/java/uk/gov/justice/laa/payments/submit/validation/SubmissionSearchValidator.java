@@ -7,7 +7,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
-import uk.gov.justice.laa.payments.submit.controller.SearchController;
 import uk.gov.justice.laa.payments.submit.dto.SubmissionOutcomeFilter;
 import uk.gov.justice.laa.payments.submit.dto.submission.search.SubmissionSearchQuery;
 import uk.gov.justice.laa.payments.submit.util.SubmissionPeriodUtil;
@@ -23,8 +22,9 @@ import uk.gov.justice.laa.payments.submit.util.SubmissionPeriodUtil;
  *   <li>Validates the submission status to ensure it matches one of the predefined options.
  * </ul>
  *
- * <p>Does not handle office validation, as {@link SearchController} already filters out offices
- * which the user is not part of.
+ * <p>Does not handle office validation, as {@link
+ * uk.gov.justice.laa.payments.submit.controller.SearchController} already filters out offices which
+ * the user is not part of.
  *
  * <p>Errors and validation failures are reported using the {@code Errors} interface.
  */
