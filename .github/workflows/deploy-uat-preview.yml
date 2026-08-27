@@ -185,9 +185,10 @@ jobs:
       id-token: write
       security-events: write
     with:
-      jar_subproject: 'laa-submit-a-bulk-claim-ui'
+      dockerfile_path: 'Dockerfile'
       image_version: ${{ format('{0}-{1}', vars.IMAGE_PREFIX, needs.build-and-test.outputs.published_artifact_version) }}
       java_version: 25
+      image_scan_severity: 'high'
     secrets:
       gh_token: ${{ secrets.GITHUB_TOKEN }}
       ecr_repository: ${{ vars.LAA_SUBMIT_A_BULK_CLAIM_ECR_REPOSITORY }}
