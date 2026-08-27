@@ -12,6 +12,7 @@ import uk.gov.justice.laa.payments.submit.dto.submission.claim.viewmodels.ClaimD
 import uk.gov.justice.laa.payments.submit.dto.submission.claim.viewmodels.CrimeLowerClaimDetails;
 import uk.gov.justice.laa.payments.submit.dto.submission.claim.viewmodels.LegalHelpClaimDetails;
 import uk.gov.justice.laa.payments.submit.dto.submission.claim.viewmodels.MediationClaimDetails;
+import uk.gov.justice.laa.payments.submit.util.MatterTypeUtil;
 
 @Mapper(componentModel = "spring", uses = ClaimMapperHelper.class)
 public interface ClaimDetailsMapper {
@@ -97,22 +98,12 @@ public interface ClaimDetailsMapper {
 
   @Named("matterTypeCodeOne")
   static String matterTypeCodeOne(String matterTypeCode) {
-    if (matterTypeCode == null) {
-      return null;
-    }
-    return matterTypeCode.split(":")[0];
+    return MatterTypeUtil.part(matterTypeCode, MatterTypeUtil.FIRST_PART);
   }
 
   @Named("matterTypeCodeTwo")
   static String matterTypeCodeTwo(String matterTypeCode) {
-    if (matterTypeCode == null) {
-      return null;
-    }
-    String[] split = matterTypeCode.split(":");
-    if (split.length < 2) {
-      return null;
-    }
-    return split[1];
+    return MatterTypeUtil.part(matterTypeCode, MatterTypeUtil.SECOND_PART);
   }
 
   @ObjectFactory

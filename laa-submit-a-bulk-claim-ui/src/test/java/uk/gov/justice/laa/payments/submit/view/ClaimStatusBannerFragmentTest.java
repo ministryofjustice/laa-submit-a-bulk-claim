@@ -37,6 +37,7 @@ import uk.gov.justice.laa.payments.submit.mapper.ClaimFeeCalculationBreakdownMap
 import uk.gov.justice.laa.payments.submit.mapper.ClaimSummaryMapper;
 import uk.gov.justice.laa.payments.submit.service.ClaimService;
 import uk.gov.justice.laa.payments.submit.service.SubmissionService;
+import uk.gov.justice.laa.payments.submit.util.DateTimeUtil;
 import uk.gov.justice.laa.payments.submit.util.OidcAttributeUtils;
 import uk.gov.justice.laa.payments.submit.util.ThymeleafHrefUtils;
 import uk.gov.justice.laa.payments.submit.viewmodels.claimdetails.ClaimDetailViewFactory;
@@ -50,6 +51,9 @@ class ClaimStatusBannerFragmentTest {
   private static final Set<String> SELECTOR = Set.of("claim-status-banner");
 
   @Autowired private SpringTemplateEngine templateEngine;
+
+  private final ClaimStatusBannerBuilder claimStatusBannerBuilder =
+      new ClaimStatusBannerBuilder(new DateTimeUtil());
 
   @MockitoBean private FeatureFlagsConfig featureFlagsConfig;
   @MockitoBean private DataClaimsRestClient dataClaimsRestClient;
@@ -114,7 +118,7 @@ class ClaimStatusBannerFragmentTest {
   @DisplayName("Renders no status banner for a derived status without one")
   void shouldRenderNoBannerForAcceptedStatus() {
     Optional<ClaimStatusBanner> banner =
-        ClaimStatusBannerBuilder.build(DerivedClaimStatus.ACCEPTED, List.of());
+        claimStatusBannerBuilder.build(DerivedClaimStatus.ACCEPTED, List.of());
 
     Document doc = render(banner.orElse(null), null);
 

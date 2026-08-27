@@ -84,6 +84,7 @@ public final class ClaimDetailController {
     model.addAttribute("showCurrentCalculated", pageData.showCurrentCalculated());
     model.addAttribute("claimDetailView", pageData.claimDetailView());
     model.addAttribute("banner", pageData.banner());
+    model.addAttribute("amendedFields", pageData.amendedFields());
 
     model.addAttribute("isAssessedColumnEnabled", featureFlagsConfig.getIsAssessedColumnEnabled());
 

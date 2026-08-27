@@ -13,6 +13,7 @@ import uk.gov.justice.laa.dstew.payments.claimsdata.model.ClaimHistoryEvent;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.ClaimHistoryResultSet;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.ClaimResponseV2;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.DerivedClaimStatus;
+import uk.gov.justice.laa.payments.submit.builder.AmendedFieldsBuilder;
 import uk.gov.justice.laa.payments.submit.builder.ClaimStatusBannerBuilder;
 import uk.gov.justice.laa.payments.submit.builder.LatestAssessmentResolver;
 import uk.gov.justice.laa.payments.submit.client.DataClaimsRestClient;
@@ -31,6 +32,7 @@ public class ClaimService {
   private final DataClaimsRestClientV2 dataClaimsRestClientV2;
   private final ClaimDetailViewFactory claimDetailViewFactory;
   private final LatestAssessmentResolver latestAssessmentResolver;
+  private final ClaimStatusBannerBuilder claimStatusBannerBuilder;
   private final OidcAttributeUtils oidcAttributeUtils;
 
   public ClaimResponseV2 getClaimV2(UUID submissionId, UUID claimId, OidcUser user) {
@@ -76,6 +78,7 @@ public class ClaimService {
         claimResponse.getAreaOfLaw(),
         showCurrentCalculated,
         claimDetailView,
-        ClaimStatusBannerBuilder.build(derivedClaimStatus, historyEvents).orElse(null));
+        claimStatusBannerBuilder.build(derivedClaimStatus, historyEvents).orElse(null),
+        AmendedFieldsBuilder.build(historyEvents));
   }
 }

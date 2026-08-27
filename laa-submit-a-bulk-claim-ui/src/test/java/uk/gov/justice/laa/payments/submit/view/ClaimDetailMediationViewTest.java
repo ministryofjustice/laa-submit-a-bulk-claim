@@ -10,6 +10,7 @@ import static uk.gov.justice.laa.payments.submit.controller.ControllerTestHelper
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.junit.jupiter.api.BeforeEach;
@@ -121,6 +122,13 @@ class ClaimDetailMediationViewTest extends ViewTestBase {
 
   private void stubClaim(
       DerivedClaimStatus derivedClaimStatus, Optional<ClaimStatusBanner> banner) {
+    stubClaim(derivedClaimStatus, banner, Set.of());
+  }
+
+  private void stubClaim(
+      DerivedClaimStatus derivedClaimStatus,
+      Optional<ClaimStatusBanner> banner,
+      Set<String> amendedFields) {
     ClaimResponseV2 claimResponse = TestObjectCreator.buildClaimResponseV2(AreaOfLaw.MEDIATION);
     claimResponse.setDerivedClaimStatus(derivedClaimStatus);
 
@@ -131,7 +139,11 @@ class ClaimDetailMediationViewTest extends ViewTestBase {
     when(claimService.getClaimDetailPageData(submissionId, claimId, OIDC_USER))
         .thenReturn(
             new ClaimDetailPageData(
-                AreaOfLaw.MEDIATION, showCurrentCalculated, claimDetailView, banner.orElse(null)));
+                AreaOfLaw.MEDIATION,
+                showCurrentCalculated,
+                claimDetailView,
+                banner.orElse(null),
+                amendedFields));
   }
 
   @Test
@@ -143,6 +155,11 @@ class ClaimDetailMediationViewTest extends ViewTestBase {
 
     assertPageHasHeading(doc, "Sally Jenkins");
     assertThat(doc.getElementById("claim-status-banner")).isNull();
+
+    var header = doc.select("main p.govuk-body").text();
+    assertThat(header).contains("Client 1 name Sally Jenkins");
+    assertThat(header).contains("Client 1 UCN 02122002/S/JENK");
+    assertThat(header).contains("Fee code ASST");
 
     var summary = getSummaryListInCard(doc, "Summary");
     assertRowContainsValues(summary.getFirst(), "Client 1 name", "Sally Jenkins");
