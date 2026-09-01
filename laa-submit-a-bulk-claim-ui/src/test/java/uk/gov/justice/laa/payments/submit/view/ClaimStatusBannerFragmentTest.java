@@ -80,7 +80,7 @@ class ClaimStatusBannerFragmentTest {
     assertThat(alert.hasClass("moj-alert--error")).isTrue();
     assertThat(alert.hasClass("moj-alert--information")).isFalse();
     assertThat(alert.text())
-        .contains("This claim has been Voided Last edited on 17/03/2026 at 14:32");
+        .contains("This claim has been voided Last edited on 17/03/2026 at 14:32");
   }
 
   @Test
@@ -96,7 +96,7 @@ class ClaimStatusBannerFragmentTest {
     assertThat(alert.hasClass("moj-alert--information")).isTrue();
     assertThat(alert.hasClass("moj-alert--error")).isFalse();
     assertThat(alert.text())
-        .contains("This claim has been Assessed Last edited on 05/02/2026 at 08:00");
+        .contains("This claim has been assessed Last edited on 05/02/2026 at 08:00");
   }
 
   @Test
@@ -111,7 +111,7 @@ class ClaimStatusBannerFragmentTest {
     assertThat(alert).isNotNull();
     assertThat(alert.hasClass("moj-alert--information")).isTrue();
     assertThat(alert.text())
-        .contains("This claim has been Amended Last edited on 30/06/2026 at 23:59");
+        .contains("This claim has been amended Last edited on 30/06/2026 at 23:59");
   }
 
   @Test

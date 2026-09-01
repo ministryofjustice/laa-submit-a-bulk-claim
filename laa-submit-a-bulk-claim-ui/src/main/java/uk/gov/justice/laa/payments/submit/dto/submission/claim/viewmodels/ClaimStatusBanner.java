@@ -6,8 +6,7 @@ public record ClaimStatusBanner(
     DerivedClaimStatus status, String lastEditedDate, String lastEditedTime) {
 
   public String label() {
-    String name = status.name();
-    return name.charAt(0) + name.substring(1).toLowerCase();
+    return status.name().toLowerCase();
   }
 
   public boolean error() {
