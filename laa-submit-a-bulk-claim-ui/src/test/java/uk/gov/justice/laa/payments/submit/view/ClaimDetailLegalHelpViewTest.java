@@ -267,7 +267,7 @@ class ClaimDetailLegalHelpViewTest extends ViewTestBase {
 
     assertThat(doc.getElementById("claim-status-banner")).isNotNull();
     assertThat(doc.getElementById("claim-status-banner").text())
-        .contains("This claim has been Amended Last edited on 01/02/2026 at 10:00");
+        .contains("This claim has been amended Last edited on 01/02/2026 at 10:00");
 
     var values = getSummaryListInCard(doc, "Values");
     assertThat(values.getFirst()).hasSize(4);
@@ -286,7 +286,7 @@ class ClaimDetailLegalHelpViewTest extends ViewTestBase {
     Document doc = renderDocument();
 
     assertThat(doc.getElementById("claim-status-banner").text())
-        .contains("This claim has been Assessed Last edited on 02/02/2026 at 11:00");
+        .contains("This claim has been assessed Last edited on 02/02/2026 at 11:00");
 
     var values = getSummaryListInCard(doc, "Values");
     assertAllThreeValueColumnsPopulated(values);
@@ -309,7 +309,7 @@ class ClaimDetailLegalHelpViewTest extends ViewTestBase {
     Document doc = renderDocument();
 
     assertThat(doc.getElementById("claim-status-banner").text())
-        .contains("This claim has been Voided Last edited on 03/02/2026 at 12:00");
+        .contains("This claim has been voided Last edited on 03/02/2026 at 12:00");
 
     var values = getSummaryListInCard(doc, "Values");
     assertThat(values.getFirst()).hasSize(3);

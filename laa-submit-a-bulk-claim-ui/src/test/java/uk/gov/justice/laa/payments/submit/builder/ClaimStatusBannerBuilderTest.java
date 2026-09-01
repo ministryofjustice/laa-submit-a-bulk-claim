@@ -31,7 +31,7 @@ class ClaimStatusBannerBuilderTest {
 
     assertThat(banner).isPresent();
     assertThat(banner.get().status()).isEqualTo(DerivedClaimStatus.VOIDED);
-    assertThat(banner.get().label()).isEqualTo("Voided");
+    assertThat(banner.get().label()).isEqualTo("voided");
     assertThat(banner.get().lastEditedDate()).isEqualTo("17 March 2026");
     assertThat(banner.get().lastEditedTime()).isEqualTo("2:32pm");
     assertThat(banner.get().error()).isTrue();
@@ -48,7 +48,7 @@ class ClaimStatusBannerBuilderTest {
         claimStatusBannerBuilder.build(DerivedClaimStatus.ASSESSED, events);
 
     assertThat(banner).isPresent();
-    assertThat(banner.get().label()).isEqualTo("Assessed");
+    assertThat(banner.get().label()).isEqualTo("assessed");
     assertThat(banner.get().lastEditedDate()).isEqualTo("5 February 2026");
     assertThat(banner.get().lastEditedTime()).isEqualTo("8:00am");
     assertThat(banner.get().error()).isFalse();
@@ -65,7 +65,7 @@ class ClaimStatusBannerBuilderTest {
         claimStatusBannerBuilder.build(DerivedClaimStatus.AMENDED, events);
 
     assertThat(banner).isPresent();
-    assertThat(banner.get().label()).isEqualTo("Amended");
+    assertThat(banner.get().label()).isEqualTo("amended");
     assertThat(banner.get().lastEditedDate()).isEqualTo("1 July 2026");
     assertThat(banner.get().lastEditedTime()).isEqualTo("12:59am");
     assertThat(banner.get().error()).isFalse();
