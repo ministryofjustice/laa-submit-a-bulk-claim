@@ -16,8 +16,14 @@ public enum CrimeLowerClaimDetailsViewField implements ClaimViewField<CrimeLower
   OUTCOME_CODE(CrimeLowerClaimDetails::getOutcomeCode, "claimCase.outcomeCode"),
 
   // Values
-  TRAVEL_COSTS(CrimeLowerClaimDetails::getTravelCosts, "claimSummaryFee.travelWaitingCostsAmount"),
-  WAITING_COSTS(CrimeLowerClaimDetails::getWaitingCosts, "claimSummaryFee.netWaitingCostsAmount");
+  TRAVEL_COSTS(
+      CrimeLowerClaimDetails::getTravelCosts,
+      "claimSummaryFee.travelWaitingCostsAmount",
+      "fee.netTravelCostsAmount"),
+  WAITING_COSTS(
+      CrimeLowerClaimDetails::getWaitingCosts,
+      "claimSummaryFee.netWaitingCostsAmount",
+      "fee.netWaitingCostsAmount");
 
   private final Function<CrimeLowerClaimDetails, Object> accessor;
   private final Set<String> claimsApiFieldNames;

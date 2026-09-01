@@ -14,7 +14,7 @@ import uk.gov.justice.laa.payments.submit.util.MatterTypeUtil;
 public enum LegalHelpClaimDetailsViewField implements ClaimViewField<LegalHelpClaimDetails> {
 
   // Page header / Summary
-  CATEGORY_OF_LAW(LegalHelpClaimDetails::getCategoryOfLaw),
+  CATEGORY_OF_LAW(LegalHelpClaimDetails::getCategoryOfLaw, "fee.categoryOfLaw"),
   MATTER_TYPE_1(
       LegalHelpClaimDetails::getMatterTypeCodeOne, MatterTypeUtil.partIdentifier(FIRST_PART)),
   MATTER_TYPE_2(
@@ -24,21 +24,40 @@ public enum LegalHelpClaimDetailsViewField implements ClaimViewField<LegalHelpCl
   LONDON_RATE(LegalHelpClaimDetailsViewField::londonRateRow, "claimSummaryFee.isLondonRate"),
 
   // Values
-  COUNSELS_COSTS(LegalHelpClaimDetails::getCounselsCosts, "claimSummaryFee.netCounselCostsAmount"),
+  COUNSELS_COSTS(
+      LegalHelpClaimDetails::getCounselsCosts,
+      "claimSummaryFee.netCounselCostsAmount",
+      "fee.netCostOfCounselAmount"),
   TRAVEL_AND_WAITING_COSTS(
-      LegalHelpClaimDetails::getTravelAndWaitingCosts, "claimSummaryFee.travelWaitingCostsAmount"),
+      LegalHelpClaimDetails::getTravelAndWaitingCosts,
+      "claimSummaryFee.travelWaitingCostsAmount",
+      "fee.travelAndWaitingCostsAmount"),
   DETENTION_TRAVEL_WAITING_COSTS(
       LegalHelpClaimDetails::getDetentionTravelWaitingCosts,
-      "claimSummaryFee.detentionTravelWaitingCostsAmount"),
-  JR_FORM_FILLING(LegalHelpClaimDetails::getJrFormFilling, "claimSummaryFee.jrFormFillingAmount"),
+      "claimSummaryFee.detentionTravelWaitingCostsAmount",
+      "fee.detentionTravelAndWaitingCostsAmount"),
+  JR_FORM_FILLING(
+      LegalHelpClaimDetails::getJrFormFilling,
+      "claimSummaryFee.jrFormFillingAmount",
+      "fee.jrFormFillingAmount"),
   ADJOURNED_HEARING_FEE(
-      LegalHelpClaimDetails::getAdjournedHearingFee, "claimSummaryFee.adjournedHearingFeeAmount"),
-  CMRH_ORAL(LegalHelpClaimDetails::getCmrhOral, "claimSummaryFee.cmrhOralCount"),
-  CMRH_TELEPHONE(LegalHelpClaimDetails::getCmrhTelephone, "claimSummaryFee.cmrhTelephoneCount"),
+      LegalHelpClaimDetails::getAdjournedHearingFee,
+      "claimSummaryFee.adjournedHearingFeeAmount",
+      "fee.boltOnAdjournedHearingFee"),
+  CMRH_ORAL(
+      LegalHelpClaimDetails::getCmrhOral, "claimSummaryFee.cmrhOralCount", "fee.boltOnCmrhOralFee"),
+  CMRH_TELEPHONE(
+      LegalHelpClaimDetails::getCmrhTelephone,
+      "claimSummaryFee.cmrhTelephoneCount",
+      "fee.boltOnCmrhTelephoneFee"),
   HOME_OFFICE_INTERVIEW(
-      LegalHelpClaimDetails::getHomeOfficeInterview, "claimSummaryFee.hoInterview"),
+      LegalHelpClaimDetails::getHomeOfficeInterview,
+      "claimSummaryFee.hoInterview",
+      "fee.boltOnHomeOfficeInterviewFee"),
   SUBSTANTIVE_HEARING(
-      LegalHelpClaimDetails::getSubstantiveHearing, "claimSummaryFee.isSubstantiveHearing");
+      LegalHelpClaimDetails::getSubstantiveHearing,
+      "claimSummaryFee.isSubstantiveHearing",
+      "fee.boltOnSubstantiveHearingFee");
 
   private static ClaimFieldRow londonRateRow(LegalHelpClaimDetails claim) {
     return new ClaimFieldRow(claim.getReportedLondonRateIndicator(), null, null);

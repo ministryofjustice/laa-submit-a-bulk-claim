@@ -26,13 +26,28 @@ class AmendedFieldsBuilderTest {
   }
 
   @Test
-  @DisplayName("Should ignore changes sourced from fee scheme platform repricing")
-  void shouldIgnoreFspChanges() {
+  @DisplayName("Should return changes sourced from fee scheme platform repricing")
+  void shouldReturnFspChanges() {
     List<ClaimHistoryEvent> events =
         List.of(
             amendmentEvent(change("claim.feeCode", "REQUESTED"), change("fee.totalAmount", "FSP")));
 
-    assertThat(AmendedFieldsBuilder.build(events)).containsExactly("claim.feeCode");
+    assertThat(AmendedFieldsBuilder.build(events))
+        .containsExactlyInAnyOrder("claim.feeCode", "fee.totalAmount");
+  }
+
+  @Test
+  @DisplayName("Should return fee scheme changes when the field the provider edited is not shown")
+  void shouldReturnFspChangesWhenRequestedFieldIsNotDisplayed() {
+    List<ClaimHistoryEvent> events =
+        List.of(
+            amendmentEvent(
+                change("claim.schemeId", "REQUESTED"),
+                change("fee.calculatedVatAmount", "FSP"),
+                change("fee.totalAmount", "FSP")));
+
+    assertThat(AmendedFieldsBuilder.build(events))
+        .containsExactlyInAnyOrder("claim.schemeId", "fee.calculatedVatAmount", "fee.totalAmount");
   }
 
   @Test

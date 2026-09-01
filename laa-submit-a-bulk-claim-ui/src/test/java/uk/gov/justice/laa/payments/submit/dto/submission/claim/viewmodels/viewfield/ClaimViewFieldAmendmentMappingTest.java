@@ -18,21 +18,12 @@ import uk.gov.justice.laa.payments.submit.viewmodels.claimdetails.MediationClaim
 class ClaimViewFieldAmendmentMappingTest {
 
   private static final String IDENTIFIER_PATTERN =
-      "^(claim|client|claimCase|claimSummaryFee)\\.[a-z][A-Za-z0-9]*(#[01])?$";
+      "^(claim|client|claimCase|claimSummaryFee|fee)\\.[a-z][A-Za-z0-9]*(#[01])?$";
 
   private static final String UNRELATED_IDENTIFIER = "claim.someOtherField";
 
   private static final Set<String> NOT_AMENDABLE =
-      Set.of(
-          "OFFICE_ACCOUNT_NUMBER",
-          "DATE_SUBMITTED",
-          "AREA_OF_LAW",
-          "FEE_CODE_DESCRIPTION",
-          "CATEGORY_OF_LAW",
-          "ESCAPE_CASE",
-          "FIXED_FEE",
-          "TOTAL_VAT",
-          "TOTAL_INCLUDING_VAT");
+      Set.of("OFFICE_ACCOUNT_NUMBER", "DATE_SUBMITTED", "AREA_OF_LAW");
 
   private static Stream<ClaimViewField<?>> displayedRows() {
     return Stream.<List<? extends ClaimViewField<?>>>of(

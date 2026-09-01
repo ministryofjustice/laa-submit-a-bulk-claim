@@ -103,14 +103,59 @@ class ClaimDetailAmendedTagViewTest extends ViewTestBase {
   }
 
   @Test
-  @DisplayName("Should not tag the derived totals when a cost the total depends on was amended")
-  void shouldNotTagDerivedTotals() {
+  @DisplayName("Should not tag the totals when the fee scheme did not reprice the claim")
+  void shouldNotTagTotalsWhenNotRepriced() {
     when(featureFlagsConfig.getIsAssessedColumnEnabled()).thenReturn(true);
     stubLegalHelpClaim(amended("claimSummaryFee.netProfitCostsAmount"));
 
     Document doc = renderDocument();
 
     assertThat(taggedRowLabels(doc, "Total allowed value")).isEmpty();
+  }
+
+  @Test
+  @DisplayName("Should tag the totals that the fee scheme recalculated")
+  void shouldTagRecalculatedTotals() {
+    when(featureFlagsConfig.getIsAssessedColumnEnabled()).thenReturn(true);
+    stubLegalHelpClaim(
+        amended(
+            "claimSummaryFee.netProfitCostsAmount",
+            "fee.netProfitCostsAmount",
+            "fee.calculatedVatAmount",
+            "fee.totalAmount"));
+
+    Document doc = renderDocument();
+
+    assertThat(taggedRowLabels(doc, "Total allowed value"))
+        .containsExactlyInAnyOrder("Total VAT", "Total including VAT");
+    assertThat(taggedRowLabels(doc, "Values")).containsExactly("Profit costs (excluding VAT)");
+  }
+
+  @Test
+  @DisplayName("Should tag the recalculated totals when the amended field is not a displayed row")
+  void shouldTagRecalculatedTotalsWhenAmendedFieldIsNotDisplayed() {
+    when(featureFlagsConfig.getIsAssessedColumnEnabled()).thenReturn(true);
+    stubLegalHelpClaim(amended("claim.schemeId", "fee.calculatedVatAmount", "fee.totalAmount"));
+
+    Document doc = renderDocument();
+
+    assertThat(taggedRowLabels(doc, "Total allowed value"))
+        .containsExactlyInAnyOrder("Total VAT", "Total including VAT");
+    assertThat(taggedSummaryRowLabels(doc)).isEmpty();
+  }
+
+  @Test
+  @DisplayName("Should tag the fee scheme rows that a repricing changed")
+  void shouldTagRepricedFeeSchemeRows() {
+    stubLegalHelpClaim(
+        amended(
+            "claim.feeCode", "fee.feeCodeDescription", "fee.escapeCaseFlag", "fee.categoryOfLaw"));
+
+    Document doc = renderDocument();
+
+    assertThat(taggedSummaryRowLabels(doc))
+        .containsExactlyInAnyOrder(
+            "Fee code", "Fee code description", "Escape case", "Category of law");
   }
 
   @Test

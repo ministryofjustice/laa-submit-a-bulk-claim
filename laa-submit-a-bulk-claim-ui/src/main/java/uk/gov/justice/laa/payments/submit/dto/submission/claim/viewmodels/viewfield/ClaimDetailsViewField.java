@@ -15,22 +15,31 @@ public enum ClaimDetailsViewField implements ClaimViewField<ClaimDetails> {
   DATE_SUBMITTED(ClaimDetails::getDateSubmitted),
   AREA_OF_LAW(ClaimDetails::getAreaOfLaw),
   FEE_CODE(ClaimDetails::getFeeCode, "claim.feeCode"),
-  FEE_CODE_DESCRIPTION(ClaimDetails::getFeeCodeDescription),
+  FEE_CODE_DESCRIPTION(ClaimDetails::getFeeCodeDescription, "fee.feeCodeDescription"),
   MATTER_TYPE(ClaimDetails::getMatterTypeCode, "claim.matterTypeCode"),
   CASE_START_DATE(ClaimDetails::getCaseStartDate, "claim.caseStartDate"),
   DATE_OF_WORK_CONCLUDED(ClaimDetails::getCaseConcludedDate, "claim.caseConcludedDate"),
-  ESCAPE_CASE(ClaimDetails::getEscapeCase),
+  ESCAPE_CASE(ClaimDetails::getEscapeCase, "fee.escapeCaseFlag"),
 
   // Values
-  FIXED_FEE(ClaimDetails::getFixedFee),
-  PROFIT_COSTS(ClaimDetails::getProfitCosts, "claimSummaryFee.netProfitCostsAmount"),
-  DISBURSEMENTS(ClaimDetails::getDisbursements, "claimSummaryFee.netDisbursementAmount"),
-  DISBURSEMENTS_VAT(ClaimDetails::getDisbursementsVat, "claimSummaryFee.disbursementsVatAmount"),
-  VAT(ClaimDetails::getVat, "claimSummaryFee.isVatApplicable"),
+  FIXED_FEE(ClaimDetails::getFixedFee, "fee.fixedFeeAmount"),
+  PROFIT_COSTS(
+      ClaimDetails::getProfitCosts,
+      "claimSummaryFee.netProfitCostsAmount",
+      "fee.netProfitCostsAmount"),
+  DISBURSEMENTS(
+      ClaimDetails::getDisbursements,
+      "claimSummaryFee.netDisbursementAmount",
+      "fee.disbursementAmount"),
+  DISBURSEMENTS_VAT(
+      ClaimDetails::getDisbursementsVat,
+      "claimSummaryFee.disbursementsVatAmount",
+      "fee.disbursementVatAmount"),
+  VAT(ClaimDetails::getVat, "claimSummaryFee.isVatApplicable", "fee.vatIndicator"),
 
   // Total allowed value
-  TOTAL_VAT(ClaimDetails::getTotalVat),
-  TOTAL_INCLUDING_VAT(ClaimDetails::getTotalIncludingVat);
+  TOTAL_VAT(ClaimDetails::getTotalVat, "fee.calculatedVatAmount"),
+  TOTAL_INCLUDING_VAT(ClaimDetails::getTotalIncludingVat, "fee.totalAmount");
 
   private final Function<ClaimDetails, Object> accessor;
   private final Set<String> claimsApiFieldNames;

@@ -7,7 +7,6 @@ import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Set;
 import lombok.experimental.UtilityClass;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.ClaimHistoryEvent;
@@ -17,11 +16,9 @@ import uk.gov.justice.laa.payments.submit.util.MatterTypeUtil;
 public class AmendedFieldsBuilder {
 
   private static final String CHANGES = "changes";
-  private static final String CHANGE_SOURCE = "change_source";
   private static final String FIELD_IDENTIFIER = "field_identifier";
   private static final String BEFORE = "before";
   private static final String AFTER = "after";
-  private static final String REQUESTED = "REQUESTED";
 
   public static Set<String> build(List<ClaimHistoryEvent> historyEvents) {
     Set<String> amendedFields = new LinkedHashSet<>();
@@ -29,7 +26,6 @@ public class AmendedFieldsBuilder {
         .filter(event -> event.getEventType() == AMENDMENT)
         .map(AmendedFieldsBuilder::getChanges)
         .flatMap(Collection::stream)
-        .filter(AmendedFieldsBuilder::isRequested)
         .forEach(change -> addIdentifiers(change, amendedFields));
     return amendedFields;
   }
@@ -60,9 +56,5 @@ public class AmendedFieldsBuilder {
       return List.of();
     }
     return (List<Map<String, Object>>) metadata.getOrDefault(CHANGES, List.of());
-  }
-
-  private static boolean isRequested(final Map<String, Object> change) {
-    return Objects.equals(REQUESTED, change.get(CHANGE_SOURCE));
   }
 }
