@@ -1,5 +1,5 @@
 <th:block xmlns:th="http://www.thymeleaf.org"
-          th:fragment="claim-value-table(title, rows, showCurrentCalculated)">
+          th:fragment="claim-value-table(title, rows, showCurrentCalculated, amendedFields)">
   <!--/*@thymesVar id="rows" type="java.util.List<uk.gov.justice.laa.payments.submit.dto.submission.claim.viewmodels.ClaimValueRow>"*/-->
 
   <div class="govuk-grid-column-full">
@@ -9,7 +9,7 @@
       </div>
       <div class="govuk-summary-card__content">
         <dl class="govuk-summary-list">
-          <div class="govuk-summary-list__row">
+          <div class="govuk-summary-list__row govuk-summary-list__row--no-actions">
             <dt class="govuk-summary-list__key" th:text="#{viewClaim.values.item}"/>
             <dd class="govuk-summary-list__value govuk-!-font-weight-bold govuk-!-text-align-left"
                 th:text="#{viewClaim.values.reported}"/>
@@ -19,7 +19,9 @@
                 th:if="${showCurrentCalculated}"
                 th:text="|#{viewClaim.values.currentCalculated}|"/>
           </div>
-          <div class="govuk-summary-list__row" th:each="rowEntry : ${rows}" th:with="row=${rowEntry.value}">
+          <div class="govuk-summary-list__row" th:each="rowEntry : ${rows}"
+               th:with="row=${rowEntry.value}, isAmended=${rowEntry.key.isAmended(amendedFields)}"
+               th:classappend="${isAmended} ? '' : 'govuk-summary-list__row--no-actions'">
             <dt class="govuk-summary-list__key" th:text="#{${'claimDetail.rows.' + rowEntry.key}}"/>
             <!--/*@thymesVar id="row" type="uk.gov.justice.laa.payments.submit.dto.submission.claim.viewmodels.ClaimFieldRow"*/-->
             <dd class="govuk-summary-list__value govuk-!-text-align-left"
@@ -29,6 +31,9 @@
             <dd class="govuk-summary-list__value govuk-!-text-align-left"
                 th:if="${showCurrentCalculated}"
                 th:text="${@thymeleafUtils.getFormattedValue(row.assessed()).resolve(#messages)}"/>
+            <dd class="govuk-summary-list__actions" th:if="${isAmended}">
+              <strong class="govuk-tag govuk-tag--yellow" th:text="#{common.amended}"/>
+            </dd>
           </div>
         </dl>
       </div>

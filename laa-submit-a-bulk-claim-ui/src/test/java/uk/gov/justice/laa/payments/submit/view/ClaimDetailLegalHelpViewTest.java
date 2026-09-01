@@ -10,6 +10,7 @@ import static uk.gov.justice.laa.payments.submit.controller.ControllerTestHelper
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.junit.jupiter.api.BeforeEach;
@@ -172,6 +173,13 @@ class ClaimDetailLegalHelpViewTest extends ViewTestBase {
 
   private void stubClaim(
       DerivedClaimStatus derivedClaimStatus, Optional<ClaimStatusBanner> banner) {
+    stubClaim(derivedClaimStatus, banner, Set.of());
+  }
+
+  private void stubClaim(
+      DerivedClaimStatus derivedClaimStatus,
+      Optional<ClaimStatusBanner> banner,
+      Set<String> amendedFields) {
     ClaimResponseV2 claimResponse = TestObjectCreator.buildClaimResponseV2(AreaOfLaw.LEGAL_HELP);
     claimResponse.setDerivedClaimStatus(derivedClaimStatus);
 
@@ -182,7 +190,11 @@ class ClaimDetailLegalHelpViewTest extends ViewTestBase {
     when(claimService.getClaimDetailPageData(submissionId, claimId, OIDC_USER))
         .thenReturn(
             new ClaimDetailPageData(
-                AreaOfLaw.LEGAL_HELP, showCurrentCalculated, claimDetailView, banner.orElse(null)));
+                AreaOfLaw.LEGAL_HELP,
+                showCurrentCalculated,
+                claimDetailView,
+                banner.orElse(null),
+                amendedFields));
   }
 
   @Test
