@@ -152,6 +152,8 @@ class SubmissionDetailsCrimeLowerViewTest extends SubmissionDetailsViewTestBase 
     assertThat(escapedRowCells.get(4).text()).isEqualTo("£250.00");
     assertThat(escapedRowCells.get(5).text()).isEqualTo("Yes");
     assertThat(selectFirst(rows.get(0), ".govuk-tag--green").text()).isEqualTo("Accepted");
+    assertThat(selectFirst(rows.get(0), "a").attr("href"))
+        .contains("/submissions/%s/claims/%s".formatted(submissionId, ESCAPED_CLAIM_ID));
 
     var fixedFeeRowCells = rows.get(1).select("td");
     assertThat(fixedFeeRowCells.get(0).text()).isEqualTo("FirstTwo Unescaped");
@@ -160,6 +162,8 @@ class SubmissionDetailsCrimeLowerViewTest extends SubmissionDetailsViewTestBase 
     assertThat(fixedFeeRowCells.get(4).text()).isEqualTo("£95.50");
     assertThat(fixedFeeRowCells.get(5).text()).isEqualTo("No");
     assertThat(selectFirst(rows.get(1), ".govuk-tag--yellow").text()).isEqualTo("Amended");
+    assertThat(selectFirst(rows.get(1), "a").attr("href"))
+        .contains("/submissions/%s/claims/%s".formatted(submissionId, FIXED_FEE_CLAIM_ID));
 
     assertPageHasSecondaryButton(doc, "Download claims");
     var exportButton = selectFirst(doc, "#export-button");
