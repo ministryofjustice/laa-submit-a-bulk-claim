@@ -148,6 +148,8 @@ class SubmissionDetailsMediationViewTest extends SubmissionDetailsViewTestBase {
     assertThat(firstRowCells.get(5).text()).isEqualTo("£50.00");
     assertThat(firstRowCells.get(6).text()).isEqualTo("No");
     assertThat(selectFirst(rows.get(0), ".govuk-tag--green").text()).isEqualTo("Accepted");
+    assertThat(selectFirst(rows.get(0), "a").attr("href"))
+        .contains("/submissions/%s/claims/%s".formatted(submissionId, FIRST_CLAIM_ID));
 
     var secondRowCells = rows.get(1).select("td");
     assertThat(secondRowCells.get(0).text()).isEqualTo("Second Surname");
@@ -158,6 +160,8 @@ class SubmissionDetailsMediationViewTest extends SubmissionDetailsViewTestBase {
     assertThat(secondRowCells.get(5).text()).isEqualTo("£5,000.00");
     assertThat(secondRowCells.get(6).text()).isEqualTo("No");
     assertThat(selectFirst(rows.get(1), ".govuk-tag--yellow").text()).isEqualTo("Amended");
+    assertThat(selectFirst(rows.get(1), "a").attr("href"))
+        .contains("/submissions/%s/claims/%s".formatted(submissionId, SECOND_CLAIM_ID));
 
     assertPageHasSecondaryButton(doc, "Download claims");
     var exportButton = selectFirst(doc, "#export-button");
