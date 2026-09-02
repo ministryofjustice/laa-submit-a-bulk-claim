@@ -16,13 +16,13 @@ jobs:
     outputs:
       preview_version: ${{ steps.get-preview-version.outputs.preview_version }}
     steps:
-      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           fetch-depth: 0
           fetch-tags: true
       - name: Compute version
         id: compute
-        uses: ministryofjustice/laa-ccms-common-workflows/.github/actions/compute-version@4daa796eff475c7a107e17daf4e4882b8a1b949b # v2.3.0
+        uses: ministryofjustice/laa-ccms-common-workflows/.github/actions/compute-version@0c06c747af49e3efb703717e6185cf693494d5a4 # v2.4.2
       - name: Get preview version
         id: get-preview-version
         shell: bash
@@ -43,7 +43,7 @@ jobs:
 
   build-and-test:
     needs: [ define-preview-version ]
-    uses: ministryofjustice/laa-ccms-common-workflows/.github/workflows/gradle-build-and-publish.yml@4daa796eff475c7a107e17daf4e4882b8a1b949b # v2.3.0
+    uses: ministryofjustice/laa-ccms-common-workflows/.github/workflows/gradle-build-and-publish.yml@0c06c747af49e3efb703717e6185cf693494d5a4 # v2.4.2
     permissions:
       contents: write
       packages: write
@@ -100,7 +100,7 @@ jobs:
 
   pact-test:
     needs: [ define-preview-version ]
-    uses: ministryofjustice/laa-ccms-common-workflows/.github/workflows/pact-and-publish.yml@4daa796eff475c7a107e17daf4e4882b8a1b949b # v2.3.0
+    uses: ministryofjustice/laa-ccms-common-workflows/.github/workflows/pact-and-publish.yml@0c06c747af49e3efb703717e6185cf693494d5a4 # v2.4.2
     permissions:
       contents: write
       packages: write
@@ -128,10 +128,10 @@ jobs:
       PLAYWRIGHT_BROWSERS_PATH: /home/runner/.cache/ms-playwright
     steps:
       - name: Checkout
-        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
   
       - name: Set up Java
-        uses: actions/setup-java@0f481fcb613427c0f801b606911222b5b6f3083a # v5.5.0
+        uses: actions/setup-java@dd06d9cba3e5552c54d9f8ea23572deb30010f7c # v6.0.0
         with:
           distribution: temurin
           java-version: '25'
@@ -142,7 +142,7 @@ jobs:
           node-version: '24'
   
       - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@3f131e8634966bd73d06cc69884922b02e6faf92 # v6.2.0
+        uses: gradle/actions/setup-gradle@9c971963bec38e04b3d30dcc455b5382be2fdbfb # v6.3.0
 
       - name: Cache Playwright browsers
         id: playwright-cache
@@ -179,7 +179,7 @@ jobs:
 
   ecr-publish-image:
     needs: [ build-and-test ]
-    uses: ministryofjustice/laa-ccms-common-workflows/.github/workflows/ecr-publish-image.yml@4daa796eff475c7a107e17daf4e4882b8a1b949b # v2.3.0
+    uses: ministryofjustice/laa-ccms-common-workflows/.github/workflows/ecr-publish-image.yml@0c06c747af49e3efb703717e6185cf693494d5a4 # v2.4.2
     permissions:
       contents: read
       id-token: write
@@ -213,7 +213,7 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
       - name: Deploy UAT preview branch
         id: deploy
