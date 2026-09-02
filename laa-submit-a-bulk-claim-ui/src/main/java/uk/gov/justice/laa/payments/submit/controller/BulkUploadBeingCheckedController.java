@@ -4,16 +4,19 @@ import static uk.gov.justice.laa.payments.submit.constants.SessionConstants.BULK
 import static uk.gov.justice.laa.payments.submit.constants.SessionConstants.SUBMISSION_ID;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatusCode;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.Assert;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.SessionAttribute;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
+import org.springframework.web.server.ResponseStatusException;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.BulkSubmissionStatus;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.GetBulkSubmissionStatusById200Response;
 import uk.gov.justice.laa.payments.submit.client.DataClaimsRestClient;
@@ -77,6 +80,32 @@ public class BulkUploadBeingCheckedController {
         return "pages/upload-being-checked";
       }
       throw new SubmitBulkClaimException("Claims API returned an error", e);
+    } catch (ResponseStatusException e) {
+      throw e;
+    }
+  }
+
+  @GetMapping("/upload-is-being-checked/status")
+  public ResponseEntity<Boolean> isSubmissionDone(
+      @SessionAttribute(name = SUBMISSION_ID, required = false) UUID submissionId,
+      @SessionAttribute(name = BULK_SUBMISSION_ID, required = false) UUID bulkSubmissionId) {
+    try {
+      Optional<GetBulkSubmissionStatusById200Response> submissionResponse =
+          dataClaimsRestClient.getBulkSubmissionSummary(bulkSubmissionId).blockOptional();
+
+      BulkSubmissionStatus submissionStatus =
+          submissionResponse
+              .map(GetBulkSubmissionStatusById200Response::getStatus)
+              .orElse(BulkSubmissionStatus.DISCARDED);
+      log.debug("Submission status: {}", submissionStatus);
+      return ResponseEntity.ok(completedStatuses.contains(submissionStatus));
+    } catch (WebClientResponseException e) {
+      return new ResponseEntity<>(false, e.getStatusCode());
+    } catch (ResponseStatusException e) {
+      throw e;
+    } catch (Exception e) {
+      log.error("Unexpected error occurred while checking submission status", e);
+      return new ResponseEntity<>(false, HttpStatusCode.valueOf(404));
     }
   }
 }
