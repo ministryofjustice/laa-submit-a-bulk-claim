@@ -14,7 +14,7 @@
         <div th:replace="~{fragments/error-components :: error-summary}"/>
 
         <h1 class="govuk-heading-xl" th:text="#{bulkImport.heading}"/>
-        <p class="govuk-body-l"
+        <p class="govuk-body"
            th:text="#{bulkImport.fileUploadAdvise(${@environment.getProperty('app.upload-max-file-size')})}"/>
         <p class="govuk-body govuk-!-margin-bottom-6" th:text="#{bulkImport.nextStep}"/>
 
