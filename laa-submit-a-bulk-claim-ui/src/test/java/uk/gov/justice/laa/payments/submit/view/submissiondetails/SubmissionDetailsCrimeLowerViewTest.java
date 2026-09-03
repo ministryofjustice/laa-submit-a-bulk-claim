@@ -17,7 +17,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
-import org.assertj.core.api.Assertions;
 import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
 import org.junit.jupiter.api.BeforeEach;
@@ -153,7 +152,7 @@ class SubmissionDetailsCrimeLowerViewTest extends SubmissionDetailsViewTestBase 
 
     // Summary
     var summaryList = getFirstSummaryList(doc);
-    Assertions.assertThat(summaryList).hasSize(6);
+    assertThat(summaryList).hasSize(6);
     assertRowContainsValues(summaryList.get(2), "Area of law", "Crime lower");
     assertRowContainsValues(summaryList.get(5), "Calculated bulk claim value", "£495.50");
 
@@ -174,9 +173,8 @@ class SubmissionDetailsCrimeLowerViewTest extends SubmissionDetailsViewTestBase 
     assertThat(escapedRowCells.get(2).text()).isEqualTo("CLIN");
     assertThat(escapedRowCells.get(4).text()).isEqualTo("£250.00");
     assertThat(escapedRowCells.get(5).text()).isEqualTo("Yes");
-    Assertions.assertThat(selectFirst(rows.get(0), ".govuk-tag--green").text())
-        .isEqualTo("Accepted");
-    Assertions.assertThat(selectFirst(rows.get(0), "a").attr("href"))
+    assertThat(selectFirst(rows.get(0), ".govuk-tag--green").text()).isEqualTo("Accepted");
+    assertThat(selectFirst(rows.get(0), "a").attr("href"))
         .contains("/submissions/%s/claims/%s".formatted(submissionId, ESCAPED_CLAIM_ID));
 
     var fixedFeeRowCells = rows.get(1).select("td");
@@ -185,9 +183,8 @@ class SubmissionDetailsCrimeLowerViewTest extends SubmissionDetailsViewTestBase 
     assertThat(fixedFeeRowCells.get(2).text()).isEqualTo("IBVN");
     assertThat(fixedFeeRowCells.get(4).text()).isEqualTo("£95.50");
     assertThat(fixedFeeRowCells.get(5).text()).isEqualTo("No");
-    Assertions.assertThat(selectFirst(rows.get(1), ".govuk-tag--yellow").text())
-        .isEqualTo("Amended");
-    Assertions.assertThat(selectFirst(rows.get(1), "a").attr("href"))
+    assertThat(selectFirst(rows.get(1), ".govuk-tag--yellow").text()).isEqualTo("Amended");
+    assertThat(selectFirst(rows.get(1), "a").attr("href"))
         .contains("/submissions/%s/claims/%s".formatted(submissionId, FIXED_FEE_CLAIM_ID));
 
     var assessedRowCells = rows.get(2).select("td");
@@ -196,9 +193,8 @@ class SubmissionDetailsCrimeLowerViewTest extends SubmissionDetailsViewTestBase 
     assertThat(assessedRowCells.get(2).text()).isEqualTo("KMLA");
     assertThat(assessedRowCells.get(4).text()).isEqualTo("£150.00");
     assertThat(assessedRowCells.get(5).text()).isEqualTo("No");
-    Assertions.assertThat(selectFirst(rows.get(2), ".govuk-tag--blue").text())
-        .isEqualTo("Assessed");
-    Assertions.assertThat(selectFirst(rows.get(2), "a").attr("href"))
+    assertThat(selectFirst(rows.get(2), ".govuk-tag--blue").text()).isEqualTo("Assessed");
+    assertThat(selectFirst(rows.get(2), "a").attr("href"))
         .contains("/submissions/%s/claims/%s".formatted(submissionId, ASSESSED_CLAIM_ID));
 
     var voidedRowCells = rows.get(3).select("td");
@@ -207,8 +203,8 @@ class SubmissionDetailsCrimeLowerViewTest extends SubmissionDetailsViewTestBase 
     assertThat(voidedRowCells.get(2).text()).isEqualTo("KMCN");
     assertThat(voidedRowCells.get(4).text()).isEqualTo("£0.00");
     assertThat(voidedRowCells.get(5).text()).isEqualTo("No");
-    Assertions.assertThat(selectFirst(rows.get(3), ".govuk-tag--red").text()).isEqualTo("Voided");
-    Assertions.assertThat(selectFirst(rows.get(3), "a").attr("href"))
+    assertThat(selectFirst(rows.get(3), ".govuk-tag--red").text()).isEqualTo("Voided");
+    assertThat(selectFirst(rows.get(3), "a").attr("href"))
         .contains("/submissions/%s/claims/%s".formatted(submissionId, VOIDED_CLAIM_ID));
   }
 

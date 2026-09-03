@@ -17,7 +17,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
-import org.assertj.core.api.Assertions;
 import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
 import org.junit.jupiter.api.BeforeEach;
@@ -159,7 +158,7 @@ class SubmissionDetailsLegalHelpViewTest extends SubmissionDetailsViewTestBase {
 
     // Summary
     var summaryList = getFirstSummaryList(doc);
-    Assertions.assertThat(summaryList).hasSize(6);
+    assertThat(summaryList).hasSize(6);
     assertRowContainsValues(summaryList.get(2), "Area of law", "Legal help");
     assertRowContainsValues(summaryList.get(5), "Calculated bulk claim value", "£2,000.00");
 
@@ -179,9 +178,8 @@ class SubmissionDetailsLegalHelpViewTest extends SubmissionDetailsViewTestBase {
     assertThat(escapedRowCells.get(3).text()).isEqualTo("£2,000.00");
     assertThat(escapedRowCells.get(4).text()).isEqualTo("UCN125");
     assertThat(escapedRowCells.get(5).text()).isEqualTo("Yes");
-    Assertions.assertThat(selectFirst(rows.get(0), ".govuk-tag--green").text())
-        .isEqualTo("Accepted");
-    Assertions.assertThat(selectFirst(rows.get(0), "a").attr("href"))
+    assertThat(selectFirst(rows.get(0), ".govuk-tag--green").text()).isEqualTo("Accepted");
+    assertThat(selectFirst(rows.get(0), "a").attr("href"))
         .contains("/submissions/%s/claims/%s".formatted(submissionId, ESCAPED_CLAIM_ID));
 
     var fixedFeeRowCells = rows.get(1).select("td");
@@ -191,9 +189,8 @@ class SubmissionDetailsLegalHelpViewTest extends SubmissionDetailsViewTestBase {
     assertThat(fixedFeeRowCells.get(3).text()).isEqualTo("£0.00");
     assertThat(fixedFeeRowCells.get(4).text()).isEqualTo("UCN126");
     assertThat(fixedFeeRowCells.get(5).text()).isEqualTo("No");
-    Assertions.assertThat(selectFirst(rows.get(1), ".govuk-tag--yellow").text())
-        .isEqualTo("Amended");
-    Assertions.assertThat(selectFirst(rows.get(1), "a").attr("href"))
+    assertThat(selectFirst(rows.get(1), ".govuk-tag--yellow").text()).isEqualTo("Amended");
+    assertThat(selectFirst(rows.get(1), "a").attr("href"))
         .contains("/submissions/%s/claims/%s".formatted(submissionId, FIXED_FEE_CLAIM_ID));
 
     var assessedRowCells = rows.get(2).select("td");
@@ -203,9 +200,8 @@ class SubmissionDetailsLegalHelpViewTest extends SubmissionDetailsViewTestBase {
     assertThat(assessedRowCells.get(3).text()).isEqualTo("£0.00");
     assertThat(assessedRowCells.get(4).text()).isEqualTo("UCN126");
     assertThat(assessedRowCells.get(5).text()).isEqualTo("No");
-    Assertions.assertThat(selectFirst(rows.get(2), ".govuk-tag--blue").text())
-        .isEqualTo("Assessed");
-    Assertions.assertThat(selectFirst(rows.get(2), "a").attr("href"))
+    assertThat(selectFirst(rows.get(2), ".govuk-tag--blue").text()).isEqualTo("Assessed");
+    assertThat(selectFirst(rows.get(2), "a").attr("href"))
         .contains("/submissions/%s/claims/%s".formatted(submissionId, ASSESSED_CLAIM_ID));
 
     var voidRowCells = rows.get(3).select("td");
@@ -215,8 +211,8 @@ class SubmissionDetailsLegalHelpViewTest extends SubmissionDetailsViewTestBase {
     assertThat(voidRowCells.get(3).text()).isEqualTo("£0.00");
     assertThat(voidRowCells.get(4).text()).isEqualTo("UCN126");
     assertThat(voidRowCells.get(5).text()).isEqualTo("No");
-    Assertions.assertThat(selectFirst(rows.get(3), ".govuk-tag--red").text()).isEqualTo("Voided");
-    Assertions.assertThat(selectFirst(rows.get(3), "a").attr("href"))
+    assertThat(selectFirst(rows.get(3), ".govuk-tag--red").text()).isEqualTo("Voided");
+    assertThat(selectFirst(rows.get(3), "a").attr("href"))
         .contains("/submissions/%s/claims/%s".formatted(submissionId, VOIDED_CLAIM_ID));
   }
 
@@ -241,11 +237,10 @@ class SubmissionDetailsLegalHelpViewTest extends SubmissionDetailsViewTestBase {
 
     var matterStartsContainer = selectFirst(doc, "#matter-starts").parent();
     var summaryList = matterStartsContainer.select(".govuk-summary-list__row");
-    Assertions.assertThat(summaryList).hasSize(1);
-    Assertions.assertThat(selectFirst(summaryList.get(0), ".govuk-summary-list__key").text())
+    assertThat(summaryList).hasSize(1);
+    assertThat(selectFirst(summaryList.get(0), ".govuk-summary-list__key").text())
         .isEqualTo("Category AAP");
-    Assertions.assertThat(selectFirst(summaryList.get(0), ".govuk-summary-list__value").text())
-        .isEqualTo("3");
+    assertThat(selectFirst(summaryList.get(0), ".govuk-summary-list__value").text()).isEqualTo("3");
   }
 
   @Test

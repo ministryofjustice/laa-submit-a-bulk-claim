@@ -15,7 +15,6 @@ import java.time.ZoneOffset;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-import org.assertj.core.api.Assertions;
 import org.jsoup.nodes.Document;
 import org.junit.jupiter.api.Test;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.Page;
@@ -34,11 +33,11 @@ class SubmissionDetailsSummaryViewTest extends SubmissionDetailsViewTestBase {
     var doc = renderAcceptedPage();
 
     assertPageHasHeading(doc, "Submission summary");
-    Assertions.assertThat(selectFirst(doc, ".govuk-tag--green").text()).isEqualTo("Accepted");
+    assertThat(selectFirst(doc, ".govuk-tag--green").text()).isEqualTo("Accepted");
     var banner = selectFirst(doc, ".govuk-notification-banner--success");
-    Assertions.assertThat(selectFirst(banner, ".govuk-notification-banner__title").text())
+    assertThat(selectFirst(banner, ".govuk-notification-banner__title").text())
         .isEqualTo("Success");
-    Assertions.assertThat(selectFirst(banner, ".govuk-notification-banner__content").text())
+    assertThat(selectFirst(banner, ".govuk-notification-banner__content").text())
         .contains("Your submission has been accepted.")
         .contains("You cannot make changes.")
         .contains("request an amendment")
@@ -50,7 +49,7 @@ class SubmissionDetailsSummaryViewTest extends SubmissionDetailsViewTestBase {
     var doc = renderAcceptedPage();
 
     var summaryList = getFirstSummaryList(doc);
-    Assertions.assertThat(summaryList).hasSize(6);
+    assertThat(summaryList).hasSize(6);
     assertRowContainsValues(
         summaryList.get(0), "Submission date and time", "1 Jan 2025 at 10:10AM");
     assertRowContainsValues(summaryList.get(1), "Account", "0P322F");
@@ -67,12 +66,12 @@ class SubmissionDetailsSummaryViewTest extends SubmissionDetailsViewTestBase {
     assertPageHasSecondaryButton(doc, "Download claims");
 
     var exportButton = selectFirst(doc, "#export-button");
-    Assertions.assertThat(exportButton.attr("href"))
+    assertThat(exportButton.attr("href"))
         .contains("/submissions/%s/export".formatted(submissionId))
         .contains("office=0P322F")
         .contains("areaOfLaw=");
 
-    Assertions.assertThat(
+    assertThat(
             selectFirst(doc, "[data-module=laa-print-button]").attr("data-print-action-container"))
         .isEqualTo("secondary-action-container");
   }
@@ -85,7 +84,7 @@ class SubmissionDetailsSummaryViewTest extends SubmissionDetailsViewTestBase {
     assertPageHasHeading(doc, "Submission summary");
     assertPageHasContent(doc, "2 claims have errors for missing or incorrect information");
     assertPageHasContent(doc, "Resolve the errors and upload the file again.");
-    Assertions.assertThat(selectFirst(doc, ".govuk-tag--red").text()).isEqualTo("Rejected");
+    assertThat(selectFirst(doc, ".govuk-tag--red").text()).isEqualTo("Rejected");
   }
 
   @Test
@@ -93,7 +92,7 @@ class SubmissionDetailsSummaryViewTest extends SubmissionDetailsViewTestBase {
     var doc = renderRejectedPage();
 
     var summaryList = getFirstSummaryList(doc);
-    Assertions.assertThat(summaryList).hasSize(5);
+    assertThat(summaryList).hasSize(5);
     assertRowContainsValues(
         summaryList.get(0), "Submission date and time", "1 Jan 2025 at 10:10AM");
     assertRowContainsValues(summaryList.get(1), "Account", "0P322F");
@@ -106,7 +105,7 @@ class SubmissionDetailsSummaryViewTest extends SubmissionDetailsViewTestBase {
   void rejectedSubmissionPageShowsPrintActionAndNoDownloadAction() {
     var doc = renderRejectedPage();
 
-    Assertions.assertThat(
+    assertThat(
             selectFirst(doc, "[data-module=laa-print-button]").attr("data-print-action-container"))
         .isEqualTo("secondary-action-container");
 
@@ -121,13 +120,11 @@ class SubmissionDetailsSummaryViewTest extends SubmissionDetailsViewTestBase {
     assertThat(doc.select(".govuk-table__header").eachText())
         .containsExactly("Client surname", "Client initial", "UFN", "Messages");
 
-    Assertions.assertThat(selectFirst(doc, "#claim-message-error-0 td:nth-child(1)").text())
-        .isEqualTo("Doe");
-    Assertions.assertThat(selectFirst(doc, "#claim-message-error-0 td:nth-child(2)").text())
-        .isEqualTo("John");
-    Assertions.assertThat(selectFirst(doc, "#claim-message-error-0 td:nth-child(3)").text())
+    assertThat(selectFirst(doc, "#claim-message-error-0 td:nth-child(1)").text()).isEqualTo("Doe");
+    assertThat(selectFirst(doc, "#claim-message-error-0 td:nth-child(2)").text()).isEqualTo("John");
+    assertThat(selectFirst(doc, "#claim-message-error-0 td:nth-child(3)").text())
         .isEqualTo("UFN-001");
-    Assertions.assertThat(selectFirst(doc, "#claim-message-error-0 td:nth-child(4)").text())
+    assertThat(selectFirst(doc, "#claim-message-error-0 td:nth-child(4)").text())
         .isEqualTo(
             "The provider is not contracted for the category of law associated with the fee code");
   }

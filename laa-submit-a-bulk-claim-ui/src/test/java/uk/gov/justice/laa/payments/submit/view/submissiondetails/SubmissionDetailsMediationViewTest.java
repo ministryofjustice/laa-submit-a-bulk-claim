@@ -16,7 +16,6 @@ import java.time.ZoneOffset;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
-import org.assertj.core.api.Assertions;
 import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
 import org.junit.jupiter.api.BeforeEach;
@@ -156,7 +155,7 @@ class SubmissionDetailsMediationViewTest extends SubmissionDetailsViewTestBase {
 
     // Summary
     var summaryList = getFirstSummaryList(doc);
-    Assertions.assertThat(summaryList).hasSize(6);
+    assertThat(summaryList).hasSize(6);
     assertRowContainsValues(summaryList.get(2), "Area of law", "Mediation");
     assertRowContainsValues(summaryList.get(5), "Calculated bulk claim value", "£5,125.00");
 
@@ -177,9 +176,8 @@ class SubmissionDetailsMediationViewTest extends SubmissionDetailsViewTestBase {
     assertThat(firstRowCells.get(4).text()).isEqualTo("ASSA");
     assertThat(firstRowCells.get(5).text()).isEqualTo("£50.00");
     assertThat(firstRowCells.get(6).text()).isEqualTo("No");
-    Assertions.assertThat(selectFirst(rows.get(0), ".govuk-tag--green").text())
-        .isEqualTo("Accepted");
-    Assertions.assertThat(selectFirst(rows.get(0), "a").attr("href"))
+    assertThat(selectFirst(rows.get(0), ".govuk-tag--green").text()).isEqualTo("Accepted");
+    assertThat(selectFirst(rows.get(0), "a").attr("href"))
         .contains("/submissions/%s/claims/%s".formatted(submissionId, FIRST_CLAIM_ID));
 
     var secondRowCells = rows.get(1).select("td");
@@ -190,9 +188,8 @@ class SubmissionDetailsMediationViewTest extends SubmissionDetailsViewTestBase {
     assertThat(secondRowCells.get(4).text()).isEqualTo("ASST");
     assertThat(secondRowCells.get(5).text()).isEqualTo("£5,000.00");
     assertThat(secondRowCells.get(6).text()).isEqualTo("No");
-    Assertions.assertThat(selectFirst(rows.get(1), ".govuk-tag--yellow").text())
-        .isEqualTo("Amended");
-    Assertions.assertThat(selectFirst(rows.get(1), "a").attr("href"))
+    assertThat(selectFirst(rows.get(1), ".govuk-tag--yellow").text()).isEqualTo("Amended");
+    assertThat(selectFirst(rows.get(1), "a").attr("href"))
         .contains("/submissions/%s/claims/%s".formatted(submissionId, SECOND_CLAIM_ID));
 
     var assessedRowCells = rows.get(2).select("td");
@@ -203,9 +200,8 @@ class SubmissionDetailsMediationViewTest extends SubmissionDetailsViewTestBase {
     assertThat(assessedRowCells.get(4).text()).isEqualTo("MASS");
     assertThat(assessedRowCells.get(5).text()).isEqualTo("£75.00");
     assertThat(assessedRowCells.get(6).text()).isEqualTo("No");
-    Assertions.assertThat(selectFirst(rows.get(2), ".govuk-tag--blue").text())
-        .isEqualTo("Assessed");
-    Assertions.assertThat(selectFirst(rows.get(2), "a").attr("href"))
+    assertThat(selectFirst(rows.get(2), ".govuk-tag--blue").text()).isEqualTo("Assessed");
+    assertThat(selectFirst(rows.get(2), "a").attr("href"))
         .contains("/submissions/%s/claims/%s".formatted(submissionId, THIRD_CLAIM_ID));
 
     var voidedRowCells = rows.get(3).select("td");
@@ -216,8 +212,8 @@ class SubmissionDetailsMediationViewTest extends SubmissionDetailsViewTestBase {
     assertThat(voidedRowCells.get(4).text()).isEqualTo("MVOI");
     assertThat(voidedRowCells.get(5).text()).isEqualTo("£0.00");
     assertThat(voidedRowCells.get(6).text()).isEqualTo("No");
-    Assertions.assertThat(selectFirst(rows.get(3), ".govuk-tag--red").text()).isEqualTo("Voided");
-    Assertions.assertThat(selectFirst(rows.get(3), "a").attr("href"))
+    assertThat(selectFirst(rows.get(3), ".govuk-tag--red").text()).isEqualTo("Voided");
+    assertThat(selectFirst(rows.get(3), "a").attr("href"))
         .contains("/submissions/%s/claims/%s".formatted(submissionId, FOURTH_CLAIM_ID));
   }
 
@@ -227,11 +223,10 @@ class SubmissionDetailsMediationViewTest extends SubmissionDetailsViewTestBase {
 
     var matterStartsContainer = selectFirst(doc, "#matter-starts").parent();
     var summaryList = matterStartsContainer.select(".govuk-summary-list__row");
-    Assertions.assertThat(summaryList).hasSize(1);
-    Assertions.assertThat(selectFirst(summaryList.get(0), ".govuk-summary-list__key").text())
+    assertThat(summaryList).hasSize(1);
+    assertThat(selectFirst(summaryList.get(0), ".govuk-summary-list__key").text())
         .isEqualTo("Mediation type MDAC");
-    Assertions.assertThat(selectFirst(summaryList.get(0), ".govuk-summary-list__value").text())
-        .isEqualTo("5");
+    assertThat(selectFirst(summaryList.get(0), ".govuk-summary-list__value").text()).isEqualTo("5");
   }
 
   @Test
