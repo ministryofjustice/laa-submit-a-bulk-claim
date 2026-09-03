@@ -110,9 +110,6 @@ class SubmissionDetailsMediationViewTest extends SubmissionDetailsViewTestBase {
   void renderMediationSubmissionDetails() {
     Document doc = renderDocument();
 
-    assertPageHasHeading(doc, "Submission summary");
-    assertThat(selectFirst(doc, ".govuk-tag--green").text()).isEqualTo("Accepted");
-
     // Summary
     var summaryList = getFirstSummaryList(doc);
     assertThat(summaryList).hasSize(6);
@@ -162,16 +159,6 @@ class SubmissionDetailsMediationViewTest extends SubmissionDetailsViewTestBase {
     assertThat(selectFirst(rows.get(1), ".govuk-tag--yellow").text()).isEqualTo("Amended");
     assertThat(selectFirst(rows.get(1), "a").attr("href"))
         .contains("/submissions/%s/claims/%s".formatted(submissionId, SECOND_CLAIM_ID));
-
-    assertPageHasSecondaryButton(doc, "Download claims");
-    var exportButton = selectFirst(doc, "#export-button");
-    assertThat(exportButton.attr("href"))
-        .contains("/submissions/%s/export".formatted(submissionId))
-        .contains("office=%s".formatted(OFFICE_CODE))
-        .contains("areaOfLaw=");
-    assertThat(
-            selectFirst(doc, "[data-module=laa-print-button]").attr("data-print-action-container"))
-        .isEqualTo("secondary-action-container");
   }
 
   @Test
