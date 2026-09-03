@@ -40,6 +40,8 @@ class SubmissionDetailsCrimeLowerViewTest extends SubmissionDetailsViewTestBase 
 
   private static final UUID ESCAPED_CLAIM_ID = UUID.randomUUID();
   private static final UUID FIXED_FEE_CLAIM_ID = UUID.randomUUID();
+  private static final UUID ASSESSED_CLAIM_ID = UUID.randomUUID();
+  private static final UUID VOIDED_CLAIM_ID = UUID.randomUUID();
 
   @BeforeEach
   void beforeEachCrimeLowerViewTest() {
@@ -89,12 +91,40 @@ class SubmissionDetailsCrimeLowerViewTest extends SubmissionDetailsViewTestBase 
             .escapeCase(false)
             .calculatedValue(new BigDecimal("95.50"))
             .build();
+    SubmissionClaimRow assessedClaim =
+        SubmissionClaimRow.builder()
+            .id(ASSESSED_CLAIM_ID)
+            .lineNumber(3)
+            .ufn("011015/127")
+            .clientForename("Third")
+            .clientSurname("Assessed")
+            .concludedOrClaimedDate(LocalDate.of(2025, 5, 13))
+            .feeCode("KMLA")
+            .status("ASSESSED")
+            .escapeCase(false)
+            .calculatedValue(new BigDecimal("150.00"))
+            .build();
+    SubmissionClaimRow voidedClaim =
+        SubmissionClaimRow.builder()
+            .id(VOIDED_CLAIM_ID)
+            .lineNumber(4)
+            .ufn("011015/128")
+            .clientForename("Fourth")
+            .clientSurname("Voided")
+            .concludedOrClaimedDate(LocalDate.of(2025, 5, 14))
+            .feeCode("KMCN")
+            .status("VOIDED")
+            .escapeCase(false)
+            .calculatedValue(new BigDecimal("0.00"))
+            .build();
     Page claimsPagination =
-        Page.builder().number(0).totalPages(1).size(PAGE_SIZE).totalElements(2).build();
+        Page.builder().number(0).totalPages(1).size(PAGE_SIZE).totalElements(4).build();
     when(submissionClaimDetailsBuilder.build(any(), anyInt(), anyInt(), anyString()))
         .thenReturn(
             new SubmissionClaimsDetails(
-                List.of(escapedClaim, fixedFeeClaim), claimsPagination, new BigDecimal("345.50")));
+                List.of(escapedClaim, fixedFeeClaim, assessedClaim, voidedClaim),
+                claimsPagination,
+                new BigDecimal("495.50")));
 
     Page messagesPagination =
         Page.builder().number(0).totalPages(1).size(PAGE_SIZE).totalElements(1).build();
@@ -125,18 +155,18 @@ class SubmissionDetailsCrimeLowerViewTest extends SubmissionDetailsViewTestBase 
     var summaryList = getFirstSummaryList(doc);
     Assertions.assertThat(summaryList).hasSize(6);
     assertRowContainsValues(summaryList.get(2), "Area of law", "Crime lower");
-    assertRowContainsValues(summaryList.get(5), "Calculated bulk claim value", "£345.50");
+    assertRowContainsValues(summaryList.get(5), "Calculated bulk claim value", "£495.50");
 
     // Warning count banner
     assertPageHasContent(doc, "1 claim has a warning message");
 
     // Crime lower has no matter starts
     var navItemTexts = doc.select(".moj-sub-navigation__item").eachText();
-    assertThat(navItemTexts).contains("Claims (2)", "Messages (1)");
+    assertThat(navItemTexts).contains("Claims (4)", "Messages (1)");
     assertThat(navItemTexts).noneMatch(text -> text.contains("Matter starts"));
 
     var rows = doc.select(".govuk-table__body tr");
-    assertThat(rows).hasSize(2);
+    assertThat(rows).hasSize(4);
 
     var escapedRowCells = rows.get(0).select("td");
     assertThat(escapedRowCells.get(0).text()).isEqualTo("First Escaped");
@@ -159,6 +189,27 @@ class SubmissionDetailsCrimeLowerViewTest extends SubmissionDetailsViewTestBase 
         .isEqualTo("Amended");
     Assertions.assertThat(selectFirst(rows.get(1), "a").attr("href"))
         .contains("/submissions/%s/claims/%s".formatted(submissionId, FIXED_FEE_CLAIM_ID));
+
+    var assessedRowCells = rows.get(2).select("td");
+    assertThat(assessedRowCells.get(0).text()).isEqualTo("Third Assessed");
+    assertThat(assessedRowCells.get(1).text()).isEqualTo("011015/127");
+    assertThat(assessedRowCells.get(2).text()).isEqualTo("KMLA");
+    assertThat(assessedRowCells.get(4).text()).isEqualTo("£150.00");
+    assertThat(assessedRowCells.get(5).text()).isEqualTo("No");
+    Assertions.assertThat(selectFirst(rows.get(2), ".govuk-tag--blue").text())
+        .isEqualTo("Assessed");
+    Assertions.assertThat(selectFirst(rows.get(2), "a").attr("href"))
+        .contains("/submissions/%s/claims/%s".formatted(submissionId, ASSESSED_CLAIM_ID));
+
+    var voidedRowCells = rows.get(3).select("td");
+    assertThat(voidedRowCells.get(0).text()).isEqualTo("Fourth Voided");
+    assertThat(voidedRowCells.get(1).text()).isEqualTo("011015/128");
+    assertThat(voidedRowCells.get(2).text()).isEqualTo("KMCN");
+    assertThat(voidedRowCells.get(4).text()).isEqualTo("£0.00");
+    assertThat(voidedRowCells.get(5).text()).isEqualTo("No");
+    Assertions.assertThat(selectFirst(rows.get(3), ".govuk-tag--red").text()).isEqualTo("Voided");
+    Assertions.assertThat(selectFirst(rows.get(3), "a").attr("href"))
+        .contains("/submissions/%s/claims/%s".formatted(submissionId, VOIDED_CLAIM_ID));
   }
 
   @Test

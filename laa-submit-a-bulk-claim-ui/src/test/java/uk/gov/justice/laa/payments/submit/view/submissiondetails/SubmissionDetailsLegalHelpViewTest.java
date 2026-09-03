@@ -40,6 +40,8 @@ class SubmissionDetailsLegalHelpViewTest extends SubmissionDetailsViewTestBase {
 
   private static final UUID ESCAPED_CLAIM_ID = UUID.randomUUID();
   private static final UUID FIXED_FEE_CLAIM_ID = UUID.randomUUID();
+  private static final UUID ASSESSED_CLAIM_ID = UUID.randomUUID();
+  private static final UUID VOIDED_CLAIM_ID = UUID.randomUUID();
 
   @BeforeEach
   void beforeEachLegalHelpViewTest() {
@@ -91,12 +93,42 @@ class SubmissionDetailsLegalHelpViewTest extends SubmissionDetailsViewTestBase {
             .escapeCase(false)
             .calculatedValue(new BigDecimal("00.00"))
             .build();
+    SubmissionClaimRow assessedClaim =
+        SubmissionClaimRow.builder()
+            .id(ASSESSED_CLAIM_ID)
+            .lineNumber(2)
+            .ufn("011015/126")
+            .ucn("UCN126")
+            .clientForename("Forename")
+            .clientSurname("Assessed")
+            .concludedOrClaimedDate(LocalDate.of(2025, 5, 12))
+            .feeCode("FPB010")
+            .status("ASSESSED")
+            .escapeCase(false)
+            .calculatedValue(new BigDecimal("00.00"))
+            .build();
+    SubmissionClaimRow voidedClaim =
+        SubmissionClaimRow.builder()
+            .id(VOIDED_CLAIM_ID)
+            .lineNumber(2)
+            .ufn("011015/126")
+            .ucn("UCN126")
+            .clientForename("Forename")
+            .clientSurname("Voided")
+            .concludedOrClaimedDate(LocalDate.of(2025, 5, 12))
+            .feeCode("FPB010")
+            .status("VOIDED")
+            .escapeCase(false)
+            .calculatedValue(new BigDecimal("00.00"))
+            .build();
     Page claimsPagination =
-        Page.builder().number(0).totalPages(1).size(PAGE_SIZE).totalElements(2).build();
+        Page.builder().number(0).totalPages(1).size(PAGE_SIZE).totalElements(4).build();
     when(submissionClaimDetailsBuilder.build(any(), anyInt(), anyInt(), anyString()))
         .thenReturn(
             new SubmissionClaimsDetails(
-                List.of(escapedClaim, fixedFeeClaim), claimsPagination, new BigDecimal("2000.00")));
+                List.of(escapedClaim, fixedFeeClaim, assessedClaim, voidedClaim),
+                claimsPagination,
+                new BigDecimal("2000.00")));
 
     Page messagesPagination =
         Page.builder().number(0).totalPages(1).size(PAGE_SIZE).totalElements(1).build();
@@ -135,10 +167,10 @@ class SubmissionDetailsLegalHelpViewTest extends SubmissionDetailsViewTestBase {
     assertPageHasContent(doc, "1 claim has a warning message");
 
     var navItemTexts = doc.select(".moj-sub-navigation__item").eachText();
-    assertThat(navItemTexts).contains("Claims (2)", "Messages (1)", "Matter starts (3)");
+    assertThat(navItemTexts).contains("Claims (4)", "Messages (1)", "Matter starts (3)");
 
     var rows = doc.select(".govuk-table__body tr");
-    assertThat(rows).hasSize(2);
+    assertThat(rows).hasSize(4);
 
     var escapedRowCells = rows.get(0).select("td");
     assertThat(escapedRowCells.get(0).text()).isEqualTo("First Escaped");
@@ -163,6 +195,29 @@ class SubmissionDetailsLegalHelpViewTest extends SubmissionDetailsViewTestBase {
         .isEqualTo("Amended");
     Assertions.assertThat(selectFirst(rows.get(1), "a").attr("href"))
         .contains("/submissions/%s/claims/%s".formatted(submissionId, FIXED_FEE_CLAIM_ID));
+
+    var assessedRowCells = rows.get(2).select("td");
+    assertThat(assessedRowCells.get(0).text()).isEqualTo("Forename Assessed");
+    assertThat(assessedRowCells.get(1).text()).isEqualTo("011015/126");
+    assertThat(assessedRowCells.get(2).text()).isEqualTo("FPB010");
+    assertThat(assessedRowCells.get(3).text()).isEqualTo("£0.00");
+    assertThat(assessedRowCells.get(4).text()).isEqualTo("UCN126");
+    assertThat(assessedRowCells.get(5).text()).isEqualTo("No");
+    Assertions.assertThat(selectFirst(rows.get(2), ".govuk-tag--blue").text())
+        .isEqualTo("Assessed");
+    Assertions.assertThat(selectFirst(rows.get(2), "a").attr("href"))
+        .contains("/submissions/%s/claims/%s".formatted(submissionId, ASSESSED_CLAIM_ID));
+
+    var voidRowCells = rows.get(3).select("td");
+    assertThat(voidRowCells.get(0).text()).isEqualTo("Forename Voided");
+    assertThat(voidRowCells.get(1).text()).isEqualTo("011015/126");
+    assertThat(voidRowCells.get(2).text()).isEqualTo("FPB010");
+    assertThat(voidRowCells.get(3).text()).isEqualTo("£0.00");
+    assertThat(voidRowCells.get(4).text()).isEqualTo("UCN126");
+    assertThat(voidRowCells.get(5).text()).isEqualTo("No");
+    Assertions.assertThat(selectFirst(rows.get(3), ".govuk-tag--red").text()).isEqualTo("Voided");
+    Assertions.assertThat(selectFirst(rows.get(3), "a").attr("href"))
+        .contains("/submissions/%s/claims/%s".formatted(submissionId, VOIDED_CLAIM_ID));
   }
 
   @Test

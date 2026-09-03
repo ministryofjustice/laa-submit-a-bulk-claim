@@ -38,6 +38,8 @@ class SubmissionDetailsMediationViewTest extends SubmissionDetailsViewTestBase {
 
   private static final UUID FIRST_CLAIM_ID = UUID.randomUUID();
   private static final UUID SECOND_CLAIM_ID = UUID.randomUUID();
+  private static final UUID THIRD_CLAIM_ID = UUID.randomUUID();
+  private static final UUID FOURTH_CLAIM_ID = UUID.randomUUID();
 
   @BeforeEach
   void beforeEachMediationViewTest() {
@@ -96,12 +98,48 @@ class SubmissionDetailsMediationViewTest extends SubmissionDetailsViewTestBase {
             .escapeCase(false)
             .calculatedValue(new BigDecimal("5000.00"))
             .build();
+    SubmissionClaimRow assessedClaim =
+        SubmissionClaimRow.builder()
+            .id(THIRD_CLAIM_ID)
+            .lineNumber(3)
+            .ufn("011015/127")
+            .ucn("UCN127")
+            .clientForename("Third")
+            .clientSurname("Assessed")
+            .client2Forename("ThirdTwo")
+            .client2Surname("Surname3")
+            .client2Ucn("UCN227")
+            .concludedOrClaimedDate(LocalDate.of(2025, 5, 13))
+            .feeCode("MASS")
+            .status("ASSESSED")
+            .escapeCase(false)
+            .calculatedValue(new BigDecimal("75.00"))
+            .build();
+    SubmissionClaimRow voidedClaim =
+        SubmissionClaimRow.builder()
+            .id(FOURTH_CLAIM_ID)
+            .lineNumber(4)
+            .ufn("011015/128")
+            .ucn("UCN128")
+            .clientForename("Fourth")
+            .clientSurname("Voided")
+            .client2Forename("FourthTwo")
+            .client2Surname("Surname4")
+            .client2Ucn("UCN228")
+            .concludedOrClaimedDate(LocalDate.of(2025, 5, 14))
+            .feeCode("MVOI")
+            .status("VOIDED")
+            .escapeCase(false)
+            .calculatedValue(new BigDecimal("0.00"))
+            .build();
     Page claimsPagination =
-        Page.builder().number(0).totalPages(1).size(PAGE_SIZE).totalElements(2).build();
+        Page.builder().number(0).totalPages(1).size(PAGE_SIZE).totalElements(4).build();
     when(submissionClaimDetailsBuilder.build(any(), anyInt(), anyInt(), anyString()))
         .thenReturn(
             new SubmissionClaimsDetails(
-                List.of(firstClaim, secondClaim), claimsPagination, new BigDecimal("5050.00")));
+                List.of(firstClaim, secondClaim, assessedClaim, voidedClaim),
+                claimsPagination,
+                new BigDecimal("5125.00")));
 
     Page messagesPagination =
         Page.builder().number(0).totalPages(0).size(PAGE_SIZE).totalElements(0).build();
@@ -120,16 +158,16 @@ class SubmissionDetailsMediationViewTest extends SubmissionDetailsViewTestBase {
     var summaryList = getFirstSummaryList(doc);
     Assertions.assertThat(summaryList).hasSize(6);
     assertRowContainsValues(summaryList.get(2), "Area of law", "Mediation");
-    assertRowContainsValues(summaryList.get(5), "Calculated bulk claim value", "£5,050.00");
+    assertRowContainsValues(summaryList.get(5), "Calculated bulk claim value", "£5,125.00");
 
     // Mediation claims are never escaped, so no warning banner is shown
     assertThat(doc.selectFirst(".moj-alert--warning")).isNull();
 
     var navItemTexts = doc.select(".moj-sub-navigation__item").eachText();
-    assertThat(navItemTexts).contains("Claims (2)", "Messages (0)", "Matter starts (5)");
+    assertThat(navItemTexts).contains("Claims (4)", "Messages (0)", "Matter starts (5)");
 
     var rows = doc.select(".govuk-table__body tr");
-    assertThat(rows).hasSize(2);
+    assertThat(rows).hasSize(4);
 
     var firstRowCells = rows.get(0).select("td");
     assertThat(firstRowCells.get(0).text()).isEqualTo("First Surname");
@@ -156,6 +194,31 @@ class SubmissionDetailsMediationViewTest extends SubmissionDetailsViewTestBase {
         .isEqualTo("Amended");
     Assertions.assertThat(selectFirst(rows.get(1), "a").attr("href"))
         .contains("/submissions/%s/claims/%s".formatted(submissionId, SECOND_CLAIM_ID));
+
+    var assessedRowCells = rows.get(2).select("td");
+    assertThat(assessedRowCells.get(0).text()).isEqualTo("Third Assessed");
+    assertThat(assessedRowCells.get(1).text()).isEqualTo("UCN127");
+    assertThat(assessedRowCells.get(2).text()).isEqualTo("ThirdTwo Surname3");
+    assertThat(assessedRowCells.get(3).text()).isEqualTo("UCN227");
+    assertThat(assessedRowCells.get(4).text()).isEqualTo("MASS");
+    assertThat(assessedRowCells.get(5).text()).isEqualTo("£75.00");
+    assertThat(assessedRowCells.get(6).text()).isEqualTo("No");
+    Assertions.assertThat(selectFirst(rows.get(2), ".govuk-tag--blue").text())
+        .isEqualTo("Assessed");
+    Assertions.assertThat(selectFirst(rows.get(2), "a").attr("href"))
+        .contains("/submissions/%s/claims/%s".formatted(submissionId, THIRD_CLAIM_ID));
+
+    var voidedRowCells = rows.get(3).select("td");
+    assertThat(voidedRowCells.get(0).text()).isEqualTo("Fourth Voided");
+    assertThat(voidedRowCells.get(1).text()).isEqualTo("UCN128");
+    assertThat(voidedRowCells.get(2).text()).isEqualTo("FourthTwo Surname4");
+    assertThat(voidedRowCells.get(3).text()).isEqualTo("UCN228");
+    assertThat(voidedRowCells.get(4).text()).isEqualTo("MVOI");
+    assertThat(voidedRowCells.get(5).text()).isEqualTo("£0.00");
+    assertThat(voidedRowCells.get(6).text()).isEqualTo("No");
+    Assertions.assertThat(selectFirst(rows.get(3), ".govuk-tag--red").text()).isEqualTo("Voided");
+    Assertions.assertThat(selectFirst(rows.get(3), "a").attr("href"))
+        .contains("/submissions/%s/claims/%s".formatted(submissionId, FOURTH_CLAIM_ID));
   }
 
   @Test
