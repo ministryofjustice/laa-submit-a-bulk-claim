@@ -1,9 +1,10 @@
-package uk.gov.justice.laa.payments.submit.view;
+package uk.gov.justice.laa.payments.submit.view.submissiondetails;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 import static uk.gov.justice.laa.dstew.payments.claimsdata.model.AreaOfLaw.LEGAL_HELP;
 import static uk.gov.justice.laa.payments.submit.controller.ControllerTestHelper.OIDC_USER;
@@ -16,12 +17,17 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
+import org.assertj.core.api.Assertions;
 import org.jsoup.nodes.Document;
+import org.jsoup.select.Elements;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.Page;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionResponse;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionStatus;
+import uk.gov.justice.laa.payments.submit.constants.ViewSubmissionNavigationTab;
 import uk.gov.justice.laa.payments.submit.dto.submission.SubmissionMatterStartsRow;
 import uk.gov.justice.laa.payments.submit.dto.submission.SubmissionSummary;
 import uk.gov.justice.laa.payments.submit.dto.submission.claim.SubmissionClaimRow;
@@ -121,7 +127,7 @@ class SubmissionDetailsLegalHelpViewTest extends SubmissionDetailsViewTestBase {
 
     // Summary
     var summaryList = getFirstSummaryList(doc);
-    assertThat(summaryList).hasSize(6);
+    Assertions.assertThat(summaryList).hasSize(6);
     assertRowContainsValues(summaryList.get(2), "Area of law", "Legal help");
     assertRowContainsValues(summaryList.get(5), "Calculated bulk claim value", "£2,000.00");
 
@@ -130,16 +136,6 @@ class SubmissionDetailsLegalHelpViewTest extends SubmissionDetailsViewTestBase {
 
     var navItemTexts = doc.select(".moj-sub-navigation__item").eachText();
     assertThat(navItemTexts).contains("Claims (2)", "Messages (1)", "Matter starts (3)");
-
-    assertThat(doc.select(".govuk-table__header").eachText())
-        .containsExactly(
-            "Client name",
-            "UFN",
-            "Fee code",
-            "Initial calculated value",
-            "UCN",
-            "Escape case",
-            "Status");
 
     var rows = doc.select(".govuk-table__body tr");
     assertThat(rows).hasSize(2);
@@ -151,8 +147,9 @@ class SubmissionDetailsLegalHelpViewTest extends SubmissionDetailsViewTestBase {
     assertThat(escapedRowCells.get(3).text()).isEqualTo("£2,000.00");
     assertThat(escapedRowCells.get(4).text()).isEqualTo("UCN125");
     assertThat(escapedRowCells.get(5).text()).isEqualTo("Yes");
-    assertThat(selectFirst(rows.get(0), ".govuk-tag--green").text()).isEqualTo("Accepted");
-    assertThat(selectFirst(rows.get(0), "a").attr("href"))
+    Assertions.assertThat(selectFirst(rows.get(0), ".govuk-tag--green").text())
+        .isEqualTo("Accepted");
+    Assertions.assertThat(selectFirst(rows.get(0), "a").attr("href"))
         .contains("/submissions/%s/claims/%s".formatted(submissionId, ESCAPED_CLAIM_ID));
 
     var fixedFeeRowCells = rows.get(1).select("td");
@@ -162,8 +159,9 @@ class SubmissionDetailsLegalHelpViewTest extends SubmissionDetailsViewTestBase {
     assertThat(fixedFeeRowCells.get(3).text()).isEqualTo("£0.00");
     assertThat(fixedFeeRowCells.get(4).text()).isEqualTo("UCN126");
     assertThat(fixedFeeRowCells.get(5).text()).isEqualTo("No");
-    assertThat(selectFirst(rows.get(1), ".govuk-tag--yellow").text()).isEqualTo("Amended");
-    assertThat(selectFirst(rows.get(1), "a").attr("href"))
+    Assertions.assertThat(selectFirst(rows.get(1), ".govuk-tag--yellow").text())
+        .isEqualTo("Amended");
+    Assertions.assertThat(selectFirst(rows.get(1), "a").attr("href"))
         .contains("/submissions/%s/claims/%s".formatted(submissionId, FIXED_FEE_CLAIM_ID));
   }
 
@@ -188,9 +186,208 @@ class SubmissionDetailsLegalHelpViewTest extends SubmissionDetailsViewTestBase {
 
     var matterStartsContainer = selectFirst(doc, "#matter-starts").parent();
     var summaryList = matterStartsContainer.select(".govuk-summary-list__row");
-    assertThat(summaryList).hasSize(1);
-    assertThat(selectFirst(summaryList.get(0), ".govuk-summary-list__key").text())
+    Assertions.assertThat(summaryList).hasSize(1);
+    Assertions.assertThat(selectFirst(summaryList.get(0), ".govuk-summary-list__key").text())
         .isEqualTo("Category AAP");
-    assertThat(selectFirst(summaryList.get(0), ".govuk-summary-list__value").text()).isEqualTo("3");
+    Assertions.assertThat(selectFirst(summaryList.get(0), ".govuk-summary-list__value").text())
+        .isEqualTo("3");
+  }
+
+  @Test
+  void viewHasNoDateWorkConcludedColumn() {
+    mockClaims(SubmissionClaimRow.builder().build());
+
+    var headers = getTableHeaders(renderDocument());
+
+    assertThat(headers.eachText()).doesNotContain("Date work concluded");
+  }
+
+  @Test
+  void viewHasSortableClaimHeaders() {
+    mockClaims(SubmissionClaimRow.builder().build());
+    var doc = renderDocument();
+    Elements headers = getTableHeaders(doc);
+    assertTableHeaderIsSortable(
+        headers.get(0), "none", "Client name", claimSortLink("client_forename"));
+    assertTableHeaderIsSortable(headers.get(1), "none", "UFN", claimSortLink("unique_file_number"));
+    assertTableHeaderIsSortable(headers.get(2), "none", "Fee code", claimSortLink("fee_code"));
+    assertTableHeaderIsSortable(
+        headers.get(3), "none", "Initial calculated value", claimSortLink("total_amount"));
+    assertTableHeaderIsSortable(
+        headers.get(4), "none", "UCN", claimSortLink("unique_client_number"));
+    assertTableHeaderIsSortable(
+        headers.get(5), "none", "Escape case", claimSortLink("escape_case_flag"));
+    assertTableHeaderIsSortable(
+        headers.get(6), "none", "Status", claimSortLink("derived_claim_status"));
+  }
+
+  @ParameterizedTest
+  @MethodSource("detailFieldIsSortableArgs")
+  void viewSubmissionDetailClientNameClaimFieldIsSortable(
+      String currentDirection,
+      int currentPage,
+      String expectedAriaDirection,
+      String expectedLinkDirection) {
+    assertClaimFieldIsSortable(
+        0,
+        "client_forename",
+        "Client name",
+        currentDirection,
+        currentPage,
+        expectedAriaDirection,
+        expectedLinkDirection);
+  }
+
+  @ParameterizedTest
+  @MethodSource("detailFieldIsSortableArgs")
+  void viewSubmissionDetailUniqueFileNumberClaimFieldIsSortable(
+      String currentDirection,
+      int currentPage,
+      String expectedAriaDirection,
+      String expectedLinkDirection) {
+    assertClaimFieldIsSortable(
+        1,
+        "unique_file_number",
+        "UFN",
+        currentDirection,
+        currentPage,
+        expectedAriaDirection,
+        expectedLinkDirection);
+  }
+
+  @ParameterizedTest
+  @MethodSource("detailFieldIsSortableArgs")
+  void viewSubmissionDetailFeeCodeClaimFieldIsSortable(
+      String currentDirection,
+      int currentPage,
+      String expectedAriaDirection,
+      String expectedLinkDirection) {
+    assertClaimFieldIsSortable(
+        2,
+        "fee_code",
+        "Fee code",
+        currentDirection,
+        currentPage,
+        expectedAriaDirection,
+        expectedLinkDirection);
+  }
+
+  @ParameterizedTest
+  @MethodSource("detailFieldIsSortableArgs")
+  void viewSubmissionDetailInitialCalculatedValueClaimFieldIsSortable(
+      String currentDirection,
+      int currentPage,
+      String expectedAriaDirection,
+      String expectedLinkDirection) {
+    assertClaimFieldIsSortable(
+        3,
+        "total_amount",
+        "Initial calculated value",
+        currentDirection,
+        currentPage,
+        expectedAriaDirection,
+        expectedLinkDirection);
+  }
+
+  @ParameterizedTest
+  @MethodSource("detailFieldIsSortableArgs")
+  void viewSubmissionDetailUniqueClientNumberClaimFieldIsSortable(
+      String currentDirection,
+      int currentPage,
+      String expectedAriaDirection,
+      String expectedLinkDirection) {
+    assertClaimFieldIsSortable(
+        4,
+        "unique_client_number",
+        "UCN",
+        currentDirection,
+        currentPage,
+        expectedAriaDirection,
+        expectedLinkDirection);
+  }
+
+  @ParameterizedTest
+  @MethodSource("detailFieldIsSortableArgs")
+  void viewSubmissionDetailEscapeCaseFlagClaimFieldIsSortable(
+      String currentDirection,
+      int currentPage,
+      String expectedAriaDirection,
+      String expectedLinkDirection) {
+    assertClaimFieldIsSortable(
+        5,
+        "escape_case_flag",
+        "Escape case",
+        currentDirection,
+        currentPage,
+        expectedAriaDirection,
+        expectedLinkDirection);
+  }
+
+  @ParameterizedTest
+  @MethodSource("detailFieldIsSortableArgs")
+  void viewSubmissionDetailStatusClaimFieldIsSortable(
+      String currentDirection,
+      int currentPage,
+      String expectedAriaDirection,
+      String expectedLinkDirection) {
+    assertClaimFieldIsSortable(
+        6,
+        "derived_claim_status",
+        "Status",
+        currentDirection,
+        currentPage,
+        expectedAriaDirection,
+        expectedLinkDirection);
+  }
+
+  private void assertClaimFieldIsSortable(
+      int headerIndex,
+      String fieldKey,
+      String fieldName,
+      String currentDirection,
+      int currentPage,
+      String expectedAriaDirection,
+      String expectedLinkDirection) {
+    mockClaimsPagination(pagination(0, 1), "client_forename,desc");
+    var doc =
+        renderDocumentWithParams(
+            Map.of(
+                "page",
+                String.valueOf(currentPage),
+                "sort",
+                "%s,%s".formatted(fieldKey, currentDirection)));
+    Elements headers = getTableHeaders(doc);
+    assertTableHeaderIsSortable(
+        headers.get(headerIndex),
+        expectedAriaDirection,
+        fieldName,
+        "/submissions/%s?navTab=CLAIM_DETAILS&page=0&sort=%s,%s"
+            .formatted(submissionId, fieldKey, expectedLinkDirection));
+  }
+
+  private String claimSortLink(String field) {
+    return "/submissions/%s?navTab=CLAIM_DETAILS&page=0&sort=%s,asc".formatted(submissionId, field);
+  }
+
+  private void mockClaims(SubmissionClaimRow claimRow) {
+    Page pagination = Page.builder().totalPages(1).totalElements(1).number(0).size(10).build();
+    when(submissionClaimDetailsBuilder.build(any(), anyInt(), anyInt(), anyString()))
+        .thenReturn(new SubmissionClaimsDetails(List.of(claimRow), pagination, BigDecimal.ONE));
+  }
+
+  private void mockClaimsPagination(Page claimPagination, String defaultSort) {
+    when(submissionClaimDetailsBuilder.build(any(), anyInt(), anyInt(), anyString()))
+        .thenReturn(
+            new SubmissionClaimsDetails(
+                List.of(SubmissionClaimRow.builder().build()), claimPagination, BigDecimal.ONE));
+    when(paginationLinksBuilder.build(any(), eq(claimPagination), eq("page"), any(Object[].class)))
+        .thenReturn(
+            buildSubmissionDetailPaginationLinks(
+                submissionId,
+                claimPagination.getNumber(),
+                claimPagination.getTotalPages(),
+                "page",
+                ViewSubmissionNavigationTab.CLAIM_DETAILS,
+                defaultSort));
   }
 }

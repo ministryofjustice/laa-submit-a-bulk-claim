@@ -1,8 +1,7 @@
-package uk.gov.justice.laa.payments.submit.view;
+package uk.gov.justice.laa.payments.submit.view.submissiondetails;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 import static uk.gov.justice.laa.dstew.payments.claimsdata.model.AreaOfLaw.CRIME_LOWER;
@@ -16,8 +15,6 @@ import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
-import java.util.UUID;
 import org.jsoup.select.Elements;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -28,80 +25,82 @@ import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionResponse;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionStatus;
 import uk.gov.justice.laa.payments.submit.constants.ViewSubmissionNavigationTab;
 import uk.gov.justice.laa.payments.submit.dto.submission.SubmissionSummary;
-import uk.gov.justice.laa.payments.submit.dto.submission.claim.SubmissionClaimRow;
-import uk.gov.justice.laa.payments.submit.dto.submission.claim.SubmissionClaimsDetails;
 import uk.gov.justice.laa.payments.submit.dto.submission.messages.MessageRow;
 import uk.gov.justice.laa.payments.submit.dto.submission.messages.MessagesSource;
 import uk.gov.justice.laa.payments.submit.dto.submission.messages.MessagesSummary;
 
-class SubmissionDetailsWarningFieldViewTest extends SubmissionDetailsViewTestBase {
+class SubmissionDetailsErrorFieldViewTest extends SubmissionDetailsViewTestBase {
 
   @Test
-  void viewSubmissionDetailHasSortableWarningHeaders_crime() {
-    mockWarningMessages(CRIME_LOWER);
+  void viewSubmissionDetailHasSortableClaimErrorHeaders_crime() {
+    mockErrorMessages(CRIME_LOWER, MessagesSource.CLAIM);
     var doc = renderDocumentWithParams(Map.of("navTab", "CLAIM_MESSAGES"));
     Elements headers = getTableHeaders(doc);
-    assertTableHeaderIsNotSortable(headers.get(0), "Claim");
     assertTableHeaderIsSortable(
-        headers.get(1), "none", "Client surname", warningSortLink("client_surname"));
+        headers.get(0), "none", "Client surname", errorSortLink("client_surname"));
     assertTableHeaderIsSortable(
-        headers.get(2), "none", "Client initial", warningSortLink("client_forename"));
+        headers.get(1), "none", "Client initial", errorSortLink("client_forename"));
+    assertTableHeaderIsSortable(headers.get(2), "none", "UFN", errorSortLink("unique_file_number"));
     assertTableHeaderIsSortable(
-        headers.get(3), "none", "UFN", warningSortLink("unique_file_number"));
-    assertTableHeaderIsSortable(
-        headers.get(4), "none", "Messages", warningSortLink("display_message"));
+        headers.get(3), "none", "Messages", errorSortLink("display_message"));
   }
 
   @Test
-  void viewSubmissionDetailHasSortableWarningHeaders_civil() {
-    mockWarningMessages(LEGAL_HELP);
+  void viewSubmissionDetailHasSortableClaimErrorHeaders_civil() {
+    mockErrorMessages(LEGAL_HELP, MessagesSource.CLAIM);
     var doc = renderDocumentWithParams(Map.of("navTab", "CLAIM_MESSAGES"));
     Elements headers = getTableHeaders(doc);
-    assertTableHeaderIsNotSortable(headers.get(0), "Claim");
     assertTableHeaderIsSortable(
-        headers.get(1), "none", "Client surname", warningSortLink("client_surname"));
+        headers.get(0), "none", "Client surname", errorSortLink("client_surname"));
     assertTableHeaderIsSortable(
-        headers.get(2), "none", "Client initial", warningSortLink("client_forename"));
+        headers.get(1), "none", "Client initial", errorSortLink("client_forename"));
+    assertTableHeaderIsSortable(headers.get(2), "none", "UFN", errorSortLink("unique_file_number"));
     assertTableHeaderIsSortable(
-        headers.get(3), "none", "UFN", warningSortLink("unique_file_number"));
+        headers.get(3), "none", "UCN", errorSortLink("unique_client_number"));
     assertTableHeaderIsSortable(
-        headers.get(4), "none", "UCN", warningSortLink("unique_client_number"));
-    assertTableHeaderIsSortable(
-        headers.get(5), "none", "Messages", warningSortLink("display_message"));
+        headers.get(4), "none", "Messages", errorSortLink("display_message"));
   }
 
   @Test
-  void viewSubmissionDetailHasSortableWarningHeaders_mediation() {
-    mockWarningMessages(MEDIATION);
+  void viewSubmissionDetailHasSortableClaimErrorHeaders_mediation() {
+    mockErrorMessages(MEDIATION, MessagesSource.CLAIM);
     var doc = renderDocumentWithParams(Map.of("navTab", "CLAIM_MESSAGES"));
     Elements headers = getTableHeaders(doc);
-    assertTableHeaderIsNotSortable(headers.get(0), "Claim");
     assertTableHeaderIsSortable(
-        headers.get(1), "none", "Client 1 surname", warningSortLink("client_surname"));
+        headers.get(0), "none", "Client 1 surname", errorSortLink("client_surname"));
     assertTableHeaderIsSortable(
-        headers.get(2), "none", "Client 1 forename", warningSortLink("client_forename"));
+        headers.get(1), "none", "Client 1 forename", errorSortLink("client_forename"));
     assertTableHeaderIsSortable(
-        headers.get(3), "none", "Client 1 UCN", warningSortLink("unique_client_number"));
+        headers.get(2), "none", "Client 1 UCN", errorSortLink("unique_client_number"));
     assertTableHeaderIsSortable(
-        headers.get(4), "none", "Client 2 surname", warningSortLink("client_2_surname"));
+        headers.get(3), "none", "Client 2 surname", errorSortLink("client_2_surname"));
     assertTableHeaderIsSortable(
-        headers.get(5), "none", "Client 2 forename", warningSortLink("client_2_forename"));
+        headers.get(4), "none", "Client 2 forename", errorSortLink("client_2_forename"));
     assertTableHeaderIsSortable(
-        headers.get(6), "none", "Client 2 UCN", warningSortLink("client_2_ucn"));
+        headers.get(5), "none", "Client 2 UCN", errorSortLink("client_2_ucn"));
     assertTableHeaderIsSortable(
-        headers.get(7), "none", "Messages", warningSortLink("display_message"));
+        headers.get(6), "none", "Messages", errorSortLink("display_message"));
+  }
+
+  @Test
+  void viewSubmissionDetailHasSortableSubmissionErrorHeaders() {
+    mockErrorMessages(CRIME_LOWER, MessagesSource.SUBMISSION);
+    var doc = renderDocumentWithParams(Map.of("navTab", "CLAIM_MESSAGES"));
+    Elements headers = getTableHeaders(doc);
+    assertTableHeaderIsSortable(
+        headers.get(0), "none", "Messages", errorSortLink("display_message"));
   }
 
   @ParameterizedTest
   @MethodSource("detailFieldIsSortableArgs")
-  void viewSubmissionDetailClientSurnameWarningFieldIsSortable_crime(
+  void viewSubmissionDetailClientSurnameClaimErrorFieldIsSortable_crime(
       String currentDirection,
       int currentPage,
       String expectedAriaDirection,
       String expectedLinkDirection) {
-    assertWarningFieldIsSortable(
+    assertClaimErrorFieldIsSortable(
         CRIME_LOWER,
-        1,
+        0,
         "client_surname",
         "Client surname",
         currentDirection,
@@ -112,14 +111,14 @@ class SubmissionDetailsWarningFieldViewTest extends SubmissionDetailsViewTestBas
 
   @ParameterizedTest
   @MethodSource("detailFieldIsSortableArgs")
-  void viewSubmissionDetailClientForenameWarningFieldIsSortable_crime(
+  void viewSubmissionDetailClientInitialClaimErrorFieldIsSortable_crime(
       String currentDirection,
       int currentPage,
       String expectedAriaDirection,
       String expectedLinkDirection) {
-    assertWarningFieldIsSortable(
+    assertClaimErrorFieldIsSortable(
         CRIME_LOWER,
-        2,
+        1,
         "client_forename",
         "Client initial",
         currentDirection,
@@ -130,14 +129,14 @@ class SubmissionDetailsWarningFieldViewTest extends SubmissionDetailsViewTestBas
 
   @ParameterizedTest
   @MethodSource("detailFieldIsSortableArgs")
-  void viewSubmissionDetailUniqueFileNumberWarningFieldIsSortable_crime(
+  void viewSubmissionDetailUfnClaimErrorFieldIsSortable_crime(
       String currentDirection,
       int currentPage,
       String expectedAriaDirection,
       String expectedLinkDirection) {
-    assertWarningFieldIsSortable(
+    assertClaimErrorFieldIsSortable(
         CRIME_LOWER,
-        3,
+        2,
         "unique_file_number",
         "UFN",
         currentDirection,
@@ -148,14 +147,14 @@ class SubmissionDetailsWarningFieldViewTest extends SubmissionDetailsViewTestBas
 
   @ParameterizedTest
   @MethodSource("detailFieldIsSortableArgs")
-  void viewSubmissionDetailDisplayMessageWarningFieldIsSortable_crime(
+  void viewSubmissionDetailMessagesClaimErrorFieldIsSortable_crime(
       String currentDirection,
       int currentPage,
       String expectedAriaDirection,
       String expectedLinkDirection) {
-    assertWarningFieldIsSortable(
+    assertClaimErrorFieldIsSortable(
         CRIME_LOWER,
-        4,
+        3,
         "display_message",
         "Messages",
         currentDirection,
@@ -166,14 +165,14 @@ class SubmissionDetailsWarningFieldViewTest extends SubmissionDetailsViewTestBas
 
   @ParameterizedTest
   @MethodSource("detailFieldIsSortableArgs")
-  void viewSubmissionDetailClientSurnameWarningFieldIsSortable_legalHelp(
+  void viewSubmissionDetailClientSurnameClaimErrorFieldIsSortable_legalHelp(
       String currentDirection,
       int currentPage,
       String expectedAriaDirection,
       String expectedLinkDirection) {
-    assertWarningFieldIsSortable(
+    assertClaimErrorFieldIsSortable(
         LEGAL_HELP,
-        1,
+        0,
         "client_surname",
         "Client surname",
         currentDirection,
@@ -184,14 +183,14 @@ class SubmissionDetailsWarningFieldViewTest extends SubmissionDetailsViewTestBas
 
   @ParameterizedTest
   @MethodSource("detailFieldIsSortableArgs")
-  void viewSubmissionDetailClientForenameWarningFieldIsSortable_legalHelp(
+  void viewSubmissionDetailClientInitialClaimErrorFieldIsSortable_legalHelp(
       String currentDirection,
       int currentPage,
       String expectedAriaDirection,
       String expectedLinkDirection) {
-    assertWarningFieldIsSortable(
+    assertClaimErrorFieldIsSortable(
         LEGAL_HELP,
-        2,
+        1,
         "client_forename",
         "Client initial",
         currentDirection,
@@ -202,14 +201,14 @@ class SubmissionDetailsWarningFieldViewTest extends SubmissionDetailsViewTestBas
 
   @ParameterizedTest
   @MethodSource("detailFieldIsSortableArgs")
-  void viewSubmissionDetailUniqueFileNumberWarningFieldIsSortable_legalHelp(
+  void viewSubmissionDetailUfnClaimErrorFieldIsSortable_legalHelp(
       String currentDirection,
       int currentPage,
       String expectedAriaDirection,
       String expectedLinkDirection) {
-    assertWarningFieldIsSortable(
+    assertClaimErrorFieldIsSortable(
         LEGAL_HELP,
-        3,
+        2,
         "unique_file_number",
         "UFN",
         currentDirection,
@@ -220,14 +219,14 @@ class SubmissionDetailsWarningFieldViewTest extends SubmissionDetailsViewTestBas
 
   @ParameterizedTest
   @MethodSource("detailFieldIsSortableArgs")
-  void viewSubmissionDetailUniqueClientNumberWarningFieldIsSortable_legalHelp(
+  void viewSubmissionDetailUcnClaimErrorFieldIsSortable_legalHelp(
       String currentDirection,
       int currentPage,
       String expectedAriaDirection,
       String expectedLinkDirection) {
-    assertWarningFieldIsSortable(
+    assertClaimErrorFieldIsSortable(
         LEGAL_HELP,
-        4,
+        3,
         "unique_client_number",
         "UCN",
         currentDirection,
@@ -238,14 +237,14 @@ class SubmissionDetailsWarningFieldViewTest extends SubmissionDetailsViewTestBas
 
   @ParameterizedTest
   @MethodSource("detailFieldIsSortableArgs")
-  void viewSubmissionDetailDisplayMessageWarningFieldIsSortable_legalHelp(
+  void viewSubmissionDetailMessagesClaimErrorFieldIsSortable_legalHelp(
       String currentDirection,
       int currentPage,
       String expectedAriaDirection,
       String expectedLinkDirection) {
-    assertWarningFieldIsSortable(
+    assertClaimErrorFieldIsSortable(
         LEGAL_HELP,
-        5,
+        4,
         "display_message",
         "Messages",
         currentDirection,
@@ -256,14 +255,14 @@ class SubmissionDetailsWarningFieldViewTest extends SubmissionDetailsViewTestBas
 
   @ParameterizedTest
   @MethodSource("detailFieldIsSortableArgs")
-  void viewSubmissionDetailClientSurnameWarningFieldIsSortable_mediation(
+  void viewSubmissionDetailClient1SurnameClaimErrorFieldIsSortable_mediation(
       String currentDirection,
       int currentPage,
       String expectedAriaDirection,
       String expectedLinkDirection) {
-    assertWarningFieldIsSortable(
+    assertClaimErrorFieldIsSortable(
         MEDIATION,
-        1,
+        0,
         "client_surname",
         "Client 1 surname",
         currentDirection,
@@ -274,14 +273,14 @@ class SubmissionDetailsWarningFieldViewTest extends SubmissionDetailsViewTestBas
 
   @ParameterizedTest
   @MethodSource("detailFieldIsSortableArgs")
-  void viewSubmissionDetailClientForenameWarningFieldIsSortable_mediation(
+  void viewSubmissionDetailClient1ForenameClaimErrorFieldIsSortable_mediation(
       String currentDirection,
       int currentPage,
       String expectedAriaDirection,
       String expectedLinkDirection) {
-    assertWarningFieldIsSortable(
+    assertClaimErrorFieldIsSortable(
         MEDIATION,
-        2,
+        1,
         "client_forename",
         "Client 1 forename",
         currentDirection,
@@ -292,14 +291,14 @@ class SubmissionDetailsWarningFieldViewTest extends SubmissionDetailsViewTestBas
 
   @ParameterizedTest
   @MethodSource("detailFieldIsSortableArgs")
-  void viewSubmissionDetailUniqueClientNumberWarningFieldIsSortable_mediation(
+  void viewSubmissionDetailClient1UcnClaimErrorFieldIsSortable_mediation(
       String currentDirection,
       int currentPage,
       String expectedAriaDirection,
       String expectedLinkDirection) {
-    assertWarningFieldIsSortable(
+    assertClaimErrorFieldIsSortable(
         MEDIATION,
-        3,
+        2,
         "unique_client_number",
         "Client 1 UCN",
         currentDirection,
@@ -310,14 +309,14 @@ class SubmissionDetailsWarningFieldViewTest extends SubmissionDetailsViewTestBas
 
   @ParameterizedTest
   @MethodSource("detailFieldIsSortableArgs")
-  void viewSubmissionDetailClient2SurnameWarningFieldIsSortable_mediation(
+  void viewSubmissionDetailClient2SurnameClaimErrorFieldIsSortable_mediation(
       String currentDirection,
       int currentPage,
       String expectedAriaDirection,
       String expectedLinkDirection) {
-    assertWarningFieldIsSortable(
+    assertClaimErrorFieldIsSortable(
         MEDIATION,
-        4,
+        3,
         "client_2_surname",
         "Client 2 surname",
         currentDirection,
@@ -328,14 +327,14 @@ class SubmissionDetailsWarningFieldViewTest extends SubmissionDetailsViewTestBas
 
   @ParameterizedTest
   @MethodSource("detailFieldIsSortableArgs")
-  void viewSubmissionDetailClient2ForenameWarningFieldIsSortable_mediation(
+  void viewSubmissionDetailClient2ForenameClaimErrorFieldIsSortable_mediation(
       String currentDirection,
       int currentPage,
       String expectedAriaDirection,
       String expectedLinkDirection) {
-    assertWarningFieldIsSortable(
+    assertClaimErrorFieldIsSortable(
         MEDIATION,
-        5,
+        4,
         "client_2_forename",
         "Client 2 forename",
         currentDirection,
@@ -346,14 +345,14 @@ class SubmissionDetailsWarningFieldViewTest extends SubmissionDetailsViewTestBas
 
   @ParameterizedTest
   @MethodSource("detailFieldIsSortableArgs")
-  void viewSubmissionDetailClient2UcnWarningFieldIsSortable_mediation(
+  void viewSubmissionDetailClient2UcnClaimErrorFieldIsSortable_mediation(
       String currentDirection,
       int currentPage,
       String expectedAriaDirection,
       String expectedLinkDirection) {
-    assertWarningFieldIsSortable(
+    assertClaimErrorFieldIsSortable(
         MEDIATION,
-        6,
+        5,
         "client_2_ucn",
         "Client 2 UCN",
         currentDirection,
@@ -364,14 +363,68 @@ class SubmissionDetailsWarningFieldViewTest extends SubmissionDetailsViewTestBas
 
   @ParameterizedTest
   @MethodSource("detailFieldIsSortableArgs")
-  void viewSubmissionDetailDisplayMessageWarningFieldIsSortable_mediation(
+  void viewSubmissionDetailMessagesClaimErrorFieldIsSortable_mediation(
       String currentDirection,
       int currentPage,
       String expectedAriaDirection,
       String expectedLinkDirection) {
-    assertWarningFieldIsSortable(
+    assertClaimErrorFieldIsSortable(
         MEDIATION,
-        7,
+        6,
+        "display_message",
+        "Messages",
+        currentDirection,
+        currentPage,
+        expectedAriaDirection,
+        expectedLinkDirection);
+  }
+
+  @ParameterizedTest
+  @MethodSource("detailFieldIsSortableArgs")
+  void viewSubmissionDetailMessagesSubmissionErrorFieldIsSortable_crime(
+      String currentDirection,
+      int currentPage,
+      String expectedAriaDirection,
+      String expectedLinkDirection) {
+    assertSubmissionErrorFieldIsSortable(
+        CRIME_LOWER,
+        0,
+        "display_message",
+        "Messages",
+        currentDirection,
+        currentPage,
+        expectedAriaDirection,
+        expectedLinkDirection);
+  }
+
+  @ParameterizedTest
+  @MethodSource("detailFieldIsSortableArgs")
+  void viewSubmissionDetailMessagesSubmissionErrorFieldIsSortable_legalHelp(
+      String currentDirection,
+      int currentPage,
+      String expectedAriaDirection,
+      String expectedLinkDirection) {
+    assertSubmissionErrorFieldIsSortable(
+        LEGAL_HELP,
+        0,
+        "display_message",
+        "Messages",
+        currentDirection,
+        currentPage,
+        expectedAriaDirection,
+        expectedLinkDirection);
+  }
+
+  @ParameterizedTest
+  @MethodSource("detailFieldIsSortableArgs")
+  void viewSubmissionDetailMessagesSubmissionErrorFieldIsSortable_mediation(
+      String currentDirection,
+      int currentPage,
+      String expectedAriaDirection,
+      String expectedLinkDirection) {
+    assertSubmissionErrorFieldIsSortable(
+        MEDIATION,
+        0,
         "display_message",
         "Messages",
         currentDirection,
@@ -382,15 +435,51 @@ class SubmissionDetailsWarningFieldViewTest extends SubmissionDetailsViewTestBas
 
   @ParameterizedTest
   @MethodSource("paginationRendersArgs")
-  void viewSubmissionDetailRendersMessagesPaginationAcrossPages(
+  void viewSubmissionDetailRendersClaimErrorPaginationAcrossPages(
       int currentPage,
       int totalPages,
       List<Integer> expectedVisiblePages,
       boolean expectedPreviousLink,
       boolean expectedNextLink,
       int expectedEllipsesCount) {
-    mockAcceptedSubmission(
-        CRIME_LOWER, pagination(0, 1), pagination(currentPage, totalPages), "display_message,desc");
+    mockErrorMessages(
+        CRIME_LOWER,
+        MessagesSource.CLAIM,
+        pagination(currentPage, totalPages),
+        "client_surname,desc");
+    var doc =
+        renderDocumentWithParams(
+            Map.of(
+                "navTab",
+                "CLAIM_MESSAGES",
+                "messagesPage",
+                String.valueOf(currentPage),
+                "messagesSort",
+                "client_surname,desc"));
+    assertPaginationRenders(
+        doc,
+        "messagesPage",
+        currentPage,
+        expectedVisiblePages,
+        expectedPreviousLink,
+        expectedNextLink,
+        expectedEllipsesCount);
+  }
+
+  @ParameterizedTest
+  @MethodSource("paginationRendersArgs")
+  void viewSubmissionDetailRendersSubmissionErrorPaginationAcrossPages(
+      int currentPage,
+      int totalPages,
+      List<Integer> expectedVisiblePages,
+      boolean expectedPreviousLink,
+      boolean expectedNextLink,
+      int expectedEllipsesCount) {
+    mockErrorMessages(
+        CRIME_LOWER,
+        MessagesSource.SUBMISSION,
+        pagination(currentPage, totalPages),
+        "display_message,desc");
     var doc =
         renderDocumentWithParams(
             Map.of(
@@ -410,16 +499,20 @@ class SubmissionDetailsWarningFieldViewTest extends SubmissionDetailsViewTestBas
         expectedEllipsesCount);
   }
 
-  private void assertWarningFieldIsSortable(
+  private void assertClaimErrorFieldIsSortable(
       AreaOfLaw areaOfLaw,
-      int headerIndex,
-      String fieldKey,
+      int columnIndex,
       String fieldName,
+      String columnLabel,
       String currentDirection,
       int currentPage,
       String expectedAriaDirection,
       String expectedLinkDirection) {
-    mockAcceptedSubmission(areaOfLaw, pagination(0, 1), pagination(0, 1), "display_message,desc");
+    mockErrorMessages(
+        areaOfLaw,
+        MessagesSource.CLAIM,
+        pagination(currentPage, 1),
+        "%s,%s".formatted(fieldName, currentDirection));
     var doc =
         renderDocumentWithParams(
             Map.of(
@@ -428,66 +521,67 @@ class SubmissionDetailsWarningFieldViewTest extends SubmissionDetailsViewTestBas
                 "messagesPage",
                 String.valueOf(currentPage),
                 "messagesSort",
-                "%s,%s".formatted(fieldKey, currentDirection)));
-    Elements headers = getTableHeaders(doc);
+                "%s,%s".formatted(fieldName, currentDirection)));
+    var headers = getTableHeaders(doc);
     assertTableHeaderIsSortable(
-        headers.get(headerIndex),
+        headers.get(columnIndex),
         expectedAriaDirection,
-        fieldName,
-        "/submissions/%s?navTab=%s&messagesPage=0&messagesSort=%s,%s"
-            .formatted(
-                submissionId,
-                ViewSubmissionNavigationTab.CLAIM_MESSAGES,
-                fieldKey,
-                expectedLinkDirection));
+        columnLabel,
+        errorSortLink(fieldName, expectedLinkDirection));
   }
 
-  private String warningSortLink(String field) {
+  private void assertSubmissionErrorFieldIsSortable(
+      AreaOfLaw areaOfLaw,
+      int columnIndex,
+      String fieldName,
+      String columnLabel,
+      String currentDirection,
+      int currentPage,
+      String expectedAriaDirection,
+      String expectedLinkDirection) {
+    mockErrorMessages(
+        areaOfLaw,
+        MessagesSource.SUBMISSION,
+        pagination(currentPage, 1),
+        "%s,%s".formatted(fieldName, currentDirection));
+    var doc =
+        renderDocumentWithParams(
+            Map.of(
+                "navTab",
+                "CLAIM_MESSAGES",
+                "messagesPage",
+                String.valueOf(currentPage),
+                "messagesSort",
+                "%s,%s".formatted(fieldName, currentDirection)));
+    var headers = getTableHeaders(doc);
+    assertTableHeaderIsSortable(
+        headers.get(columnIndex),
+        expectedAriaDirection,
+        columnLabel,
+        errorSortLink(fieldName, expectedLinkDirection));
+  }
+
+  private String errorSortLink(String field) {
     return "/submissions/%s?navTab=CLAIM_MESSAGES&messagesPage=0&messagesSort=%s,asc"
         .formatted(submissionId, field);
   }
 
-  private void mockWarningMessages(AreaOfLaw areaOfLaw) {
-    Page pagination = Page.builder().totalPages(1).totalElements(1).number(0).size(10).build();
-    SubmissionResponse submissionResponse =
-        SubmissionResponse.builder()
-            .submissionId(submissionId)
-            .status(SubmissionStatus.VALIDATION_SUCCEEDED)
-            .officeAccountNumber(OFFICE_CODE)
-            .areaOfLaw(areaOfLaw)
-            .build();
-    when(submissionService.getSubmission(submissionId, OIDC_USER)).thenReturn(submissionResponse);
-    when(submissionSummaryBuilder.build(any()))
-        .thenReturn(
-            new SubmissionSummary(
-                submissionId,
-                "Submitted",
-                LocalDate.of(2025, 5, 1),
-                "AQ2B3C",
-                BigDecimal.ONE,
-                areaOfLaw.getValue(),
-                OffsetDateTime.of(2025, 1, 1, 10, 10, 10, 0, ZoneOffset.UTC)));
-    when(submissionClaimDetailsBuilder.build(any(), anyInt(), anyInt(), anyString()))
-        .thenReturn(
-            new SubmissionClaimsDetails(
-                List.of(SubmissionClaimRow.builder().build()), pagination, BigDecimal.ONE));
-    when(submissionMessagesBuilder.build(any(), any(), any(), any(), anyInt(), anyInt(), any()))
-        .thenReturn(
-            new MessagesSummary(
-                List.of(
-                    MessageRow.builder().claimReference(Optional.of(UUID.randomUUID())).build()),
-                0,
-                0,
-                pagination,
-                MessagesSource.CLAIM));
+  private String errorSortLink(String field, String direction) {
+    return "/submissions/%s?navTab=CLAIM_MESSAGES&messagesPage=0&messagesSort=%s,%s"
+        .formatted(submissionId, field, direction);
   }
 
-  private void mockAcceptedSubmission(
-      AreaOfLaw areaOfLaw, Page claimPagination, Page messagesPagination, String defaultSort) {
+  private void mockErrorMessages(AreaOfLaw areaOfLaw, MessagesSource messagesSource) {
+    Page pagination = Page.builder().totalPages(1).totalElements(1).number(0).size(10).build();
+    mockErrorMessages(areaOfLaw, messagesSource, pagination, "display_message,desc");
+  }
+
+  private void mockErrorMessages(
+      AreaOfLaw areaOfLaw, MessagesSource messagesSource, Page pagination, String sort) {
     SubmissionResponse submissionResponse =
         SubmissionResponse.builder()
             .submissionId(submissionId)
-            .status(SubmissionStatus.VALIDATION_SUCCEEDED)
+            .status(SubmissionStatus.VALIDATION_FAILED)
             .officeAccountNumber(OFFICE_CODE)
             .areaOfLaw(areaOfLaw)
             .build();
@@ -496,43 +590,25 @@ class SubmissionDetailsWarningFieldViewTest extends SubmissionDetailsViewTestBas
         .thenReturn(
             new SubmissionSummary(
                 submissionId,
-                "Submitted",
+                "Invalid",
                 LocalDate.of(2025, 5, 1),
                 "AQ2B3C",
                 BigDecimal.ONE,
                 areaOfLaw.getValue(),
                 OffsetDateTime.of(2025, 1, 1, 10, 10, 10, 0, ZoneOffset.UTC)));
-    when(submissionClaimDetailsBuilder.build(any(), anyInt(), anyInt(), anyString()))
-        .thenReturn(
-            new SubmissionClaimsDetails(
-                List.of(SubmissionClaimRow.builder().build()), claimPagination, BigDecimal.ONE));
-    when(submissionMessagesBuilder.build(any(), any(), any(), any(), anyInt(), anyInt(), any()))
+    when(submissionMessagesBuilder.buildErrors(any(), any(), anyInt(), anyInt(), any()))
         .thenReturn(
             new MessagesSummary(
-                List.of(
-                    MessageRow.builder().claimReference(Optional.of(UUID.randomUUID())).build()),
-                0,
-                0,
-                messagesPagination,
-                MessagesSource.CLAIM));
-    when(paginationLinksBuilder.build(any(), eq(claimPagination), eq("page"), any(Object[].class)))
-        .thenReturn(
-            buildSubmissionDetailPaginationLinks(
-                submissionId,
-                claimPagination.getNumber(),
-                claimPagination.getTotalPages(),
-                "page",
-                ViewSubmissionNavigationTab.CLAIM_DETAILS,
-                defaultSort));
+                List.of(MessageRow.builder().build()), 0, 0, pagination, messagesSource));
     when(paginationLinksBuilder.build(
-            any(), eq(messagesPagination), eq("messagesPage"), any(Object[].class)))
+            any(), eq(pagination), eq("messagesPage"), any(Object[].class)))
         .thenReturn(
             buildSubmissionDetailPaginationLinks(
                 submissionId,
-                messagesPagination.getNumber(),
-                messagesPagination.getTotalPages(),
+                pagination.getNumber(),
+                pagination.getTotalPages(),
                 "messagesPage",
                 ViewSubmissionNavigationTab.CLAIM_MESSAGES,
-                defaultSort));
+                sort));
   }
 }
