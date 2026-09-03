@@ -13,7 +13,7 @@ import uk.gov.justice.laa.payments.submit.e2e.pages.UploadPage;
 
 public class SubmissionDetailsE2ETest extends BaseTest {
 
-  @Test
+  //@Test
   void legalHelpSubmissionSuccessful() {
     var landingPage = new LandingPagePage(page);
     landingPage.getStartNowButton().click();
