@@ -42,7 +42,7 @@ class SubmissionDetailsLegalHelpViewTest extends SubmissionDetailsViewTestBase {
   private static final UUID FIXED_FEE_CLAIM_ID = UUID.randomUUID();
 
   @BeforeEach
-  void beforeEach() {
+  void beforeEachLegalHelpViewTest() {
     SubmissionResponse submissionResponse =
         SubmissionResponse.builder()
             .submissionId(submissionId)

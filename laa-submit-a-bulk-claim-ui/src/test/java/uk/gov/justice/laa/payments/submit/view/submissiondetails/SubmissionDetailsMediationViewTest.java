@@ -40,7 +40,7 @@ class SubmissionDetailsMediationViewTest extends SubmissionDetailsViewTestBase {
   private static final UUID SECOND_CLAIM_ID = UUID.randomUUID();
 
   @BeforeEach
-  void beforeEach() {
+  void beforeEachMediationViewTest() {
     SubmissionResponse submissionResponse =
         SubmissionResponse.builder()
             .submissionId(submissionId)
