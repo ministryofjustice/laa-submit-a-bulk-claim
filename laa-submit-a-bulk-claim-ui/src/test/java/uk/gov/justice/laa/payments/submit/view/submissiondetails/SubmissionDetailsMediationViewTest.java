@@ -156,7 +156,13 @@ class SubmissionDetailsMediationViewTest extends SubmissionDetailsViewTestBase {
     // Summary
     var summaryList = getFirstSummaryList(doc);
     assertThat(summaryList).hasSize(6);
+    assertRowContainsValues(
+        summaryList.get(0), "Submission date and time", "1 Jan 2025 at 10:10AM");
+    assertRowContainsValues(summaryList.get(1), "Account", "123456");
     assertRowContainsValues(summaryList.get(2), "Area of law", "Mediation");
+    assertRowContainsValues(summaryList.get(3), "Submission period", "MAY-2025");
+    assertRowContainsValues(
+        summaryList.get(4), "Submission reference", String.valueOf(submissionId));
     assertRowContainsValues(summaryList.get(5), "Calculated bulk claim value", "£5,125.00");
 
     // Mediation claims are never escaped, so no warning banner is shown
@@ -215,6 +221,23 @@ class SubmissionDetailsMediationViewTest extends SubmissionDetailsViewTestBase {
     assertThat(selectFirst(rows.get(3), ".govuk-tag--red").text()).isEqualTo("Voided");
     assertThat(selectFirst(rows.get(3), "a").attr("href"))
         .contains("/submissions/%s/claims/%s".formatted(submissionId, FOURTH_CLAIM_ID));
+  }
+
+  @Test
+  void acceptedSubmissionPageShowsDownloadAndPrintActions() {
+    var doc = renderDocument();
+
+    assertPageHasSecondaryButton(doc, "Download claims");
+
+    var exportButton = selectFirst(doc, "#export-button");
+    assertThat(exportButton.attr("href"))
+        .contains("/submissions/%s/export".formatted(submissionId))
+        .contains("office=123456")
+        .contains("areaOfLaw=MEDIATION");
+
+    assertThat(
+            selectFirst(doc, "[data-module=laa-print-button]").attr("data-print-action-container"))
+        .isEqualTo("secondary-action-container");
   }
 
   @Test

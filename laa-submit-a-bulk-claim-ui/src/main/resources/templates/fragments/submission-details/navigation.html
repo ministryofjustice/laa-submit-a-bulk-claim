@@ -5,6 +5,7 @@
           th:with="baseUrl=@{/submissions/{submissionId}(submissionId=${submissionSummary.submissionReference})}">
         <li class="moj-sub-navigation__item">
           <a class="moj-sub-navigation__link"
+             id="claims-tab"
              th:with="isCurrent=${navTab == 'CLAIM_DETAILS'},
               url=@{${baseUrl}(navTab='CLAIM_DETAILS')}"
              th:attr="aria-current=${isCurrent ? 'page' : null}"
@@ -13,6 +14,7 @@
         </li>
         <li class="moj-sub-navigation__item" th:if="${messagesSummary != null}">
           <a class="moj-sub-navigation__link"
+             id="messages-tab"
              th:with="isCurrent=${navTab == 'CLAIM_MESSAGES'},
               url=@{${baseUrl}(navTab='CLAIM_MESSAGES')}"
              th:attr="aria-current=${isCurrent ? 'page' : null}"
@@ -22,6 +24,7 @@
         <li class="moj-sub-navigation__item"
             th:unless="${isCrimeLower}">
           <a class="moj-sub-navigation__link"
+             id="matter-starts-tab"
              th:with="isCurrent=${navTab == 'MATTER_STARTS'},
               url=@{${baseUrl}(navTab='MATTER_STARTS')}"
              th:attr="aria-current=${isCurrent ? 'page' : null}"
