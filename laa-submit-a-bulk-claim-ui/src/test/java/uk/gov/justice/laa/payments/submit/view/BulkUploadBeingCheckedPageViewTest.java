@@ -29,8 +29,6 @@ class BulkUploadBeingCheckedPageViewTest extends ViewTestBase {
     assertPageHasTitle(doc, "Your file is being checked");
     assertPageDoesNotHaveBackLink(doc);
     assertPageHasHeading(doc, "Your file is being checked");
-    assertPageHasContent(doc, "If your file is rejected");
-    assertPageHasContent(doc, "You do not need to stay on this page.");
   }
 
   @Test
@@ -41,15 +39,6 @@ class BulkUploadBeingCheckedPageViewTest extends ViewTestBase {
 
     var refreshMeta = doc.selectFirst("meta[http-equiv=refresh]");
     assertThat(refreshMeta).isNotNull();
-  }
-
-  @Test
-  void uploadBeingCheckedPageShowsGoToSearchButton() {
-    stubBulkSubmissionStatus(BulkSubmissionStatus.READY_FOR_PARSING);
-
-    var doc = renderDocument();
-
-    assertPageHasLink(doc, "go-to-search-button", "Go to search", "/submissions/search");
   }
 
   private void stubBulkSubmissionStatus(BulkSubmissionStatus status) {

@@ -12,4 +12,25 @@ public record SubmissionSummary(
     String officeAccount,
     BigDecimal submissionValue,
     String areaOfLaw,
-    OffsetDateTime submitted) {}
+    OffsetDateTime submitted,
+    boolean isDraft) {
+
+  public SubmissionSummary(
+      UUID submissionReference,
+      String status,
+      LocalDate submissionPeriod,
+      String officeAccount,
+      BigDecimal submissionValue,
+      String areaOfLaw,
+      OffsetDateTime submitted) {
+    this(
+        submissionReference,
+        status,
+        submissionPeriod,
+        officeAccount,
+        submissionValue,
+        areaOfLaw,
+        submitted,
+        false);
+  }
+}
