@@ -54,7 +54,9 @@ public class SubmissionDetailPage extends BasePage {
 
   public void assertTotalWarnings(int total) {
     assertThat(warningBanner).isVisible();
-    assertThat(warningBanner).containsText(total + " claims have warning messages");
+    var expectedText =
+        total == 1 ? "1 claim has a warning message" : total + " claims have warning messages";
+    assertThat(warningBanner).containsText(expectedText);
   }
 
   public void assertSubmissionSummary(String officeAccount, String areaOfLaw,
