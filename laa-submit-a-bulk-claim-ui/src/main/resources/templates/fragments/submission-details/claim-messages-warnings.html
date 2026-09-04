@@ -18,6 +18,7 @@
       <div class="moj-scrollable-pane"
            th:if="${messagesSummary.messages != null and !messagesSummary.messages.isEmpty()}">
         <table class="govuk-table"
+               id="messages-table"
                th:with="
                   area=${submissionSummary.areaOfLaw != null ? #strings.toLowerCase(submissionSummary.areaOfLaw) : ''},
                   isCrime=${area.contains('crime lower')},

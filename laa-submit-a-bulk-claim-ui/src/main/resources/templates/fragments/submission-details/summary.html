@@ -21,38 +21,38 @@
 
   <div class="govuk-grid-column-two-thirds-from-desktop">
     <dl class="govuk-summary-list">
-      <div class="govuk-summary-list__row">
+      <div class="govuk-summary-list__row" id="submission-summary__created">
         <dt class="govuk-summary-list__key"
             th:text="#{submission.summary.properties.dateTime}"></dt>
         <dd class="govuk-summary-list__value"
             th:with="submittedLondonTime=${@dateTimeUtil.toLondonLocalDateTime(submissionSummary.submitted())}"
             th:text="|${#temporals.format(submittedLondonTime,'d MMM yyyy')} at ${#temporals.format(submittedLondonTime,'h:mma')}|"></dd>
       </div>
-      <div class="govuk-summary-list__row">
+      <div class="govuk-summary-list__row" id="submission-summary__office">
         <dt class="govuk-summary-list__key"
             th:text="#{submission.summary.properties.account}"></dt>
         <dd class="govuk-summary-list__value"
             th:text="${submissionSummary.officeAccount}"></dd>
       </div>
-      <div class="govuk-summary-list__row">
+      <div class="govuk-summary-list__row" id="submission-summary__area-of-law">
         <dt class="govuk-summary-list__key"
             th:text="#{submission.summary.properties.areaOfLaw}"></dt>
         <dd class="govuk-summary-list__value"
             th:text="${submissionSummary.areaOfLaw != null ? #strings.capitalize(#strings.toLowerCase(submissionSummary.areaOfLaw)) : '-'}"></dd>
       </div>
-      <div class="govuk-summary-list__row">
+      <div class="govuk-summary-list__row" id="submission-summary__submission-period">
         <dt class="govuk-summary-list__key"
             th:text="#{submission.summary.properties.submissionPeriod}"></dt>
         <dd class="govuk-summary-list__value"
             th:text="${#temporals.format(submissionSummary.submissionPeriod, 'MMM-yyyy').toUpperCase()}"></dd>
       </div>
-      <div class="govuk-summary-list__row">
+      <div class="govuk-summary-list__row" id="submission-summary__reference">
         <dt class="govuk-summary-list__key"
             th:text="#{submission.summary.properties.reference}"></dt>
         <dd class="govuk-summary-list__value"
             th:text="${submissionSummary.submissionReference}"></dd>
       </div>
-      <div class="govuk-summary-list__row"
+      <div class="govuk-summary-list__row" id="submission-summary__submission-value"
            th:if="${showSubmissionValue and submissionSummary.submissionValue() != null}">
         <dt class="govuk-summary-list__key"
             th:text="#{submission.summary.properties.calculatedBulkValue}"></dt>
@@ -75,7 +75,8 @@
                   fill="currentColor"/>
           </svg>
         </div>
-        <div class="moj-alert__content">
+        <div class="moj-alert__content"
+          id="submission-summary-warning">
           <h2 class="moj-alert__heading"
               th:text="${messagesSummary.totalClaimsWithErrors() == 1 ?
                 #messages.msg('submission.summary.warning.single', messagesSummary.totalClaimsWithErrors()) :
