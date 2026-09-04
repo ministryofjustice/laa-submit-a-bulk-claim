@@ -109,4 +109,55 @@ class SubmissionDetailsE2ETest extends BaseTest {
     submissionDetails.getMessagesTab().click();
     submissionDetails.assertTotalMessages(5);
   }
+
+  @Test
+  void mediationSubmissionSuccessful() {
+    var landingPage = new LandingPagePage(page);
+    landingPage.getStartNowButton().click();
+
+    var uploadPage = new UploadPage(page);
+    var csvPath = Paths.get("../docs/sample-data/mediation-january-2026-ms.csv").toAbsolutePath();
+    uploadPage.uploadFile(csvPath);
+    uploadPage.getContinueButton().click();
+
+    new UploadBeingCheckedPage(page);
+
+    var submissionDetailPage = new SubmissionDetailPage(page);
+
+    // Checks that submission details page is reached via upload. Will validate page content
+    //  after searching for submission.
+    submissionDetailPage.assertSubmissionAccepted();
+
+    // Next search for the same submission
+    uploadPage.getSearchLink().click();
+    var searchPage = new SearchPage(page);
+    searchPage.getSearchButton().click();
+
+    // View the newly submitted submission
+    searchPage.clickOnLink(0);
+
+    var submissionDetails = new SubmissionDetailPage(page);
+    // Assert basic summary details
+    submissionDetails.assertSubmissionAccepted();
+    submissionDetailPage.assertTotalWarnings(5);
+    submissionDetails.assertSubmissionSummary(
+        "0P322F", "Mediation", "JAN-2026", "£13,930.00");
+
+    // Assert tabs are visible
+    assertThat(submissionDetails.getClaimsTab()).isVisible();
+    assertThat(submissionDetails.getMessagesTab()).isVisible();
+    assertThat(submissionDetails.getMatterStartsTab()).isVisible();
+
+    // Assert claims tab
+    submissionDetails.assertTotalClaims(10);
+
+    // Assert messages tab
+    submissionDetails.getMessagesTab().click();
+    submissionDetails.assertTotalMessages(5);
+
+    // Assert matter starts tab
+    submissionDetails.getMatterStartsTab().click();
+    submissionDetails.assertTotalMatterStarts(1);
+  }
+
 }
