@@ -11,6 +11,7 @@
 
       <!--/*@thymesVar id="matterStart" type="uk.gov.justice.laa.payments.submit.dto.submission.SubmissionMatterStartsRow"*/-->
       <dl class="govuk-summary-list"
+          id="matter-starts-list"
           th:unless="${matterStartsDetails.isEmpty()}">
         <div class="govuk-summary-list__row"
              th:each="matterStart, idx : ${matterStartsDetails}">

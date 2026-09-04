@@ -15,8 +15,8 @@
 
       <th:block
           th:if="${claimDetails != null and !claimDetails.submissionClaims.isEmpty()}">
-        <div id="claims-table"></div>
         <table class="govuk-table"
+               id="claims-table"
                th:with="area=${submissionSummary.areaOfLaw != null ? #strings.toLowerCase(submissionSummary.areaOfLaw) : ''},
                         isCrime=${area.contains('crime lower')},
                         isCivil=${area.contains('legal help')},
