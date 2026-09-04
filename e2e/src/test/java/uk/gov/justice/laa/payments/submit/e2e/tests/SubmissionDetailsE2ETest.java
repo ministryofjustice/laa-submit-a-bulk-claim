@@ -1,6 +1,5 @@
 package uk.gov.justice.laa.payments.submit.e2e.tests;
 
-import static com.microsoft.playwright.assertions.PlaywrightAssertions.assertThat;
 
 import java.nio.file.Paths;
 import org.junit.jupiter.api.Test;
@@ -13,7 +12,7 @@ import uk.gov.justice.laa.payments.submit.e2e.pages.UploadPage;
 
 public class SubmissionDetailsE2ETest extends BaseTest {
 
-  //@Test
+  @Test
   void legalHelpSubmissionSuccessful() {
     var landingPage = new LandingPagePage(page);
     landingPage.getStartNowButton().click();
@@ -33,21 +32,33 @@ public class SubmissionDetailsE2ETest extends BaseTest {
 
     // Next search for the same submission
     uploadPage.getSearchLink().click();
-
     var searchPage = new SearchPage(page);
     searchPage.getSearchButton().click();
 
-    assertThat(searchPage.getResultsTable()).isVisible();
-
-    assertTableContainsHeaders(
-        "Date submitted", "Office account", "Area of law", "Submission period", "Status");
-
+    // View the newly submitted submission
     searchPage.clickOnLink(0);
 
     var submissionDetails = new SubmissionDetailPage(page);
+    // Assert basic summary details
     submissionDetails.assertSubmissionAccepted();
+    submissionDetailPage.assertTotalWarnings(9);
+    submissionDetails.assertSubmissionSummary(
+        "0P322F", "Legal help", "APR-2026", "£33,115.60");
+
+    // Assert tabs are visible
     submissionDetails.getClaimsTab().isVisible();
     submissionDetails.getMessagesTab().isVisible();
     submissionDetails.getMatterStartsTab().isVisible();
+
+    // Assert claims tab
+    submissionDetails.assertTotalClaims(9);
+
+    // Assert messages tab
+    submissionDetails.getMessagesTab().click();
+    submissionDetails.assertTotalMessages(9);
+
+    // Assert matter starts tab
+    submissionDetails.getMatterStartsTab().click();
+    submissionDetails.assertTotalMatterStarts(2);
   }
 }
