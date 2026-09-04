@@ -15,4 +15,9 @@ public class SearchPage extends BasePage {
     searchButton = page.locator("#searchButton");
     resultsTable = page.locator(".govuk-table");
   }
+
+  public void clickOnLink(int index) {
+
+    resultsTable.locator(".govuk-table__cell .govuk-link--no-visited-state").nth(index).click();
+  }
 }

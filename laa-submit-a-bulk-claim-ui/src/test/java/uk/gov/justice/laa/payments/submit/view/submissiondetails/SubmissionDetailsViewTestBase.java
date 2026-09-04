@@ -1,4 +1,4 @@
-package uk.gov.justice.laa.payments.submit.view;
+package uk.gov.justice.laa.payments.submit.view.submissiondetails;
 
 import static org.mockito.Mockito.when;
 import static uk.gov.justice.laa.payments.submit.controller.ControllerTestHelper.OIDC_USER;
@@ -20,6 +20,7 @@ import uk.gov.justice.laa.payments.submit.dto.PaginationLinks;
 import uk.gov.justice.laa.payments.submit.dto.PaginationPageLink;
 import uk.gov.justice.laa.payments.submit.service.SubmissionService;
 import uk.gov.justice.laa.payments.submit.util.PaginationLinksBuilder;
+import uk.gov.justice.laa.payments.submit.view.ViewTestBase;
 
 @WebMvcTest(SubmissionDetailController.class)
 public abstract class SubmissionDetailsViewTestBase extends ViewTestBase {

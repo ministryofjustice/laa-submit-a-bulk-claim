@@ -1,4 +1,4 @@
-package uk.gov.justice.laa.payments.submit.view;
+package uk.gov.justice.laa.payments.submit.view.submissiondetails;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
