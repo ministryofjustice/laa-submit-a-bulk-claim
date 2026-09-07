@@ -17,13 +17,20 @@ public class ValidationMessageLogDao {
         INSERT INTO claims.validation_message_log (
           id, submission_id, claim_id, type, source, display_message, created_on
         ) VALUES (
-          :id::uuid, :submissionId::uuid, :claimId::uuid, 'WARNING', :source, :displayMessage, now()
+                  :id::uuid, 
+                  :submissionId::uuid,
+                  :claimId::uuid, 
+                  :type, 
+                  :source, 
+                  :displayMessage, 
+                  now()
         )
         """,
         new MapSqlParameterSource()
             .addValue("id", id)
             .addValue("submissionId", submissionId)
             .addValue("claimId", claimId)
+            .addValue("type", "WARNING")
             .addValue("source", source)
             .addValue("displayMessage", displayMessage));
   }

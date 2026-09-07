@@ -20,12 +20,17 @@ public class CalculatedFeeDetailDao {
       String userId) {
     jdbcTemplate.update(
         """
-        INSERT INTO claims.calculated_fee_detail (
-          id, claim_summary_fee_id, claim_id, total_amount, created_by_user_id, created_on
-        ) VALUES (
-          :id::uuid, :claimSummaryFeeId::uuid, :claimId::uuid, :totalAmount, :userId, now()
-        )
-        """,
+            INSERT INTO claims.calculated_fee_detail (
+              id, claim_summary_fee_id, claim_id, total_amount, created_by_user_id, created_on
+            ) VALUES (
+                      :id::uuid, 
+                      :claimSummaryFeeId::uuid, 
+                      :claimId::uuid, 
+                      :totalAmount, 
+                      :userId, 
+                      now()
+            )
+            """,
         new MapSqlParameterSource()
             .addValue("id", id)
             .addValue("claimSummaryFeeId", claimSummaryFeeId)

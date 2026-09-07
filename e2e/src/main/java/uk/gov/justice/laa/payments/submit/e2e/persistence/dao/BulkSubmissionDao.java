@@ -15,8 +15,17 @@ public class BulkSubmissionDao {
     jdbcTemplate.update(
         """
         INSERT INTO claims.bulk_submission (id, data, status, created_by_user_id, created_on)
-        VALUES (:id::uuid, '{}'::jsonb, 'VALIDATION_SUCCEEDED', :userId, now())
+        VALUES (
+                :id::uuid, 
+                -- This contains usually a full JSON object, it's not needed for SaBC so leave this blank
+                '{}'::jsonb, 
+                :status, 
+                :userId, 
+                now())
         """,
-        new MapSqlParameterSource().addValue("id", id).addValue("userId", userId));
+        new MapSqlParameterSource()
+            .addValue("id", id)
+            .addValue("status", "VALIDATION_SUCCEEDED")
+            .addValue("userId", userId));
   }
 }

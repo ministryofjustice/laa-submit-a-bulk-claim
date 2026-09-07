@@ -15,7 +15,11 @@ public class ClaimSummaryFeeDao {
     jdbcTemplate.update(
         """
         INSERT INTO claims.claim_summary_fee (id, claim_id, created_by_user_id, created_on)
-        VALUES (:id::uuid, :claimId::uuid, :userId, now())
+        VALUES (
+                :id::uuid, 
+                :claimId::uuid, 
+                :userId, 
+                now())
         """,
         new MapSqlParameterSource()
             .addValue("id", id)

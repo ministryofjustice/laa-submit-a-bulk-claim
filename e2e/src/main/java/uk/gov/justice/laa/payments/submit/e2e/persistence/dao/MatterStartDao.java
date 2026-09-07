@@ -19,12 +19,19 @@ public class MatterStartDao {
           id, submission_id, number_of_matter_starts, category_code, mediation_type,
           created_by_user_id, created_on
         ) VALUES (
-          :id::uuid, :submissionId::uuid, 1, :categoryCode, :mediationType, :userId, now()
+                  :id::uuid, 
+                  :submissionId::uuid, 
+                  :numberOfMatterStarts, 
+                  :categoryCode, 
+                  :mediationType, 
+                  :userId, 
+                  now()
         )
         """,
         new MapSqlParameterSource()
             .addValue("id", id)
             .addValue("submissionId", submissionId)
+            .addValue("numberOfMatterStarts", 1)
             .addValue("categoryCode", categoryCode)
             .addValue("mediationType", mediationType)
             .addValue("userId", userId));

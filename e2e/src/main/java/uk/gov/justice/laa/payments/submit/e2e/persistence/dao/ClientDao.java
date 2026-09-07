@@ -15,7 +15,11 @@ public class ClientDao {
     jdbcTemplate.update(
         """
         INSERT INTO claims.client (id, claim_id, created_by_user_id, created_on)
-        VALUES (:id::uuid, :claimId::uuid, :userId, now())
+        VALUES (
+                :id::uuid, 
+                :claimId::uuid, 
+                :userId, 
+                now())
         """,
         new MapSqlParameterSource()
             .addValue("id", id)

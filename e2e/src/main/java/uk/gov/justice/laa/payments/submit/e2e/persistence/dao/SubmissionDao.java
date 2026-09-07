@@ -26,8 +26,17 @@ public class SubmissionDao {
           status, is_nil_submission, number_of_claims, created_by_user_id, created_on,
           provider_user_id
         ) VALUES (
-          :id::uuid, :bulkSubmissionId::uuid, :officeAccountNumber, :submissionPeriod,
-          :areaOfLaw, 'VALIDATION_SUCCEEDED', false, :numberOfClaims, :userId, now(), :userId
+                  :id::uuid, 
+                  :bulkSubmissionId::uuid, 
+                  :officeAccountNumber, 
+                  :submissionPeriod,
+                  :areaOfLaw, 
+                  :status, 
+                  :isNilSubmission, 
+                  :numberOfClaims, 
+                  :userId, 
+                  now(), 
+                  :userId
         )
         """,
         new MapSqlParameterSource()
@@ -36,6 +45,8 @@ public class SubmissionDao {
             .addValue("officeAccountNumber", officeAccountNumber)
             .addValue("submissionPeriod", submissionPeriod)
             .addValue("areaOfLaw", areaOfLaw)
+            .addValue("status", "VALIDATION_SUCCEEDED")
+            .addValue("isNilSubmission", false)
             .addValue("numberOfClaims", numberOfClaims)
             .addValue("userId", userId));
   }
