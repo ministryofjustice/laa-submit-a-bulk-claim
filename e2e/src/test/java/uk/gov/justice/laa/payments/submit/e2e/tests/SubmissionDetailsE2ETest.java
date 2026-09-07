@@ -12,17 +12,20 @@ import uk.gov.justice.laa.payments.submit.e2e.pages.LandingPagePage;
 import uk.gov.justice.laa.payments.submit.e2e.pages.SearchPage;
 import uk.gov.justice.laa.payments.submit.e2e.pages.SubmissionDetailPage;
 import uk.gov.justice.laa.payments.submit.e2e.pages.UploadPage;
+import uk.gov.justice.laa.payments.submit.e2e.persistence.dao.BulkSubmissionDao;
+import uk.gov.justice.laa.payments.submit.e2e.persistence.dao.MatterStartDao;
+import uk.gov.justice.laa.payments.submit.e2e.persistence.dao.SubmissionDao;
+import uk.gov.justice.laa.payments.submit.e2e.persistence.dao.ValidationMessageLogDao;
 import uk.gov.justice.laa.payments.submit.e2e.utils.ClaimFixtureFactory;
 
 class SubmissionDetailsE2ETest extends JdbcTemplateBaseTest {
 
   private static final String USER_ID = "e2e-test-user";
-  private static final String OFFICE_ACCOUNT_NUMBER = "0P322F";
   private static final String[] LEGAL_HELP_CATEGORY_CODES = {"AAP", "COM"};
 
-  private final String legalHelpSubmissionId = UUID.randomUUID().toString();
-  private final String crimeLowerSubmissionId = UUID.randomUUID().toString();
-  private final String mediationSubmissionId = UUID.randomUUID().toString();
+  private final UUID legalHelpSubmissionId = UUID.randomUUID();
+  private final UUID crimeLowerSubmissionId = UUID.randomUUID();
+  private final UUID mediationSubmissionId = UUID.randomUUID();
 
   @Override
   protected void seedDatabase() {
@@ -35,39 +38,46 @@ class SubmissionDetailsE2ETest extends JdbcTemplateBaseTest {
   }
 
   private void addSubmission(
-      String submissionId,
+      UUID submissionId,
       String areaOfLaw,
       String submissionPeriod,
       int claimCount,
       BigDecimal totalValue,
       int warningCount,
       int matterStartCount) {
-    String bulkSubmissionId = UUID.randomUUID().toString();
-    bulkSubmissionDao.insert(bulkSubmissionId, USER_ID);
-    submissionDao.insert(
-        submissionId,
-        bulkSubmissionId,
-        OFFICE_ACCOUNT_NUMBER,
-        submissionPeriod,
-        areaOfLaw,
-        claimCount,
-        USER_ID);
+    UUID bulkSubmissionId = BulkSubmissionDao.builder().build().insert(jdbcTemplate);
+
+    SubmissionDao.builder(bulkSubmissionId).id(submissionId)
+        .submissionPeriod(submissionPeriod)
+        .areaOfLaw(areaOfLaw)
+        .numberOfClaims(claimCount)
+        .userId(USER_ID)
+        .build().insert(jdbcTemplate);
 
     List<BigDecimal> amounts = ClaimFixtureFactory.splitEvenly(totalValue, claimCount);
-    List<String> claimIds = new ArrayList<>();
+    List<UUID> claimIds = new ArrayList<>();
     for (int i = 0; i < claimCount; i++) {
       claimIds.add(
           claimFixtureFactory.addClaim(submissionId, i + 1, amounts.get(i), USER_ID));
     }
 
     for (int i = 0; i < warningCount; i++) {
-      claimFixtureFactory.addWarning(submissionId, claimIds.get(i), i + 1);
+      ValidationMessageLogDao.builder(submissionId)
+          .claimId(claimIds.get(i))
+          .displayMessage("Test warning message " + (i + 1))
+          .build()
+          .insert(jdbcTemplate);
     }
 
     for (int i = 0; i < matterStartCount; i++) {
       String categoryCode = "LEGAL_HELP".equals(areaOfLaw) ? LEGAL_HELP_CATEGORY_CODES[i] : null;
       String mediationType = "MEDIATION".equals(areaOfLaw) ? "MDAS All Issues Sole" : null;
-      claimFixtureFactory.addMatterStart(submissionId, categoryCode, mediationType, USER_ID);
+      MatterStartDao.builder(submissionId)
+          .categoryCode(categoryCode)
+          .mediationType(mediationType)
+          .userId(USER_ID)
+          .build()
+          .insert(jdbcTemplate);
     }
   }
 

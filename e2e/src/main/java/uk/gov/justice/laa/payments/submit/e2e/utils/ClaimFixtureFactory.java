@@ -22,7 +22,8 @@ public class ClaimFixtureFactory {
 
   /**
    * Used to split a total amount evenly across a total number of claims.
-   * @param total the total amount to be split
+   *
+   * @param total       the total amount to be split
    * @param totalClaims the number of claims to split the total amount across
    * @return a list of amounts split evenly across the specified number of claims
    */
