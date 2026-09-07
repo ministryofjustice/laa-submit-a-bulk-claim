@@ -7,17 +7,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import org.junit.jupiter.api.Test;
-import uk.gov.justice.laa.payments.submit.e2e.base.SqlInsertBaseTest;
-import uk.gov.justice.laa.payments.submit.e2e.models.BulkSubmissionInsert;
-import uk.gov.justice.laa.payments.submit.e2e.models.Insert;
-import uk.gov.justice.laa.payments.submit.e2e.models.SubmissionInsert;
+import uk.gov.justice.laa.payments.submit.e2e.base.JdbcTemplateBaseTest;
 import uk.gov.justice.laa.payments.submit.e2e.pages.LandingPagePage;
 import uk.gov.justice.laa.payments.submit.e2e.pages.SearchPage;
 import uk.gov.justice.laa.payments.submit.e2e.pages.SubmissionDetailPage;
 import uk.gov.justice.laa.payments.submit.e2e.pages.UploadPage;
 import uk.gov.justice.laa.payments.submit.e2e.utils.ClaimFixtureFactory;
 
-class SubmissionDetailsE2ETest extends SqlInsertBaseTest {
+class SubmissionDetailsE2ETest extends JdbcTemplateBaseTest {
 
   private static final String USER_ID = "e2e-test-user";
   private static final String OFFICE_ACCOUNT_NUMBER = "0P322F";
@@ -28,42 +25,16 @@ class SubmissionDetailsE2ETest extends SqlInsertBaseTest {
   private final String mediationSubmissionId = UUID.randomUUID().toString();
 
   @Override
-  protected List<Insert> inserts() {
-    List<Insert> inserts = new ArrayList<>();
-
+  protected void seedDatabase() {
     addSubmission(
-        inserts,
-        legalHelpSubmissionId,
-        "LEGAL_HELP",
-        "APR-2026",
-        9,
-        new BigDecimal("33115.60"),
-        9,
-        2);
+        legalHelpSubmissionId, "LEGAL_HELP", "APR-2026", 9, new BigDecimal("33115.60"), 9, 2);
     addSubmission(
-        inserts,
-        crimeLowerSubmissionId,
-        "CRIME_LOWER",
-        "JUN-2026",
-        10,
-        new BigDecimal("5465.50"),
-        5,
-        0);
+        crimeLowerSubmissionId, "CRIME_LOWER", "JUN-2026", 10, new BigDecimal("5465.50"), 5, 0);
     addSubmission(
-        inserts,
-        mediationSubmissionId,
-        "MEDIATION",
-        "JAN-2026",
-        10,
-        new BigDecimal("13930.00"),
-        5,
-        1);
-
-    return inserts;
+        mediationSubmissionId, "MEDIATION", "JAN-2026", 10, new BigDecimal("13930.00"), 5, 1);
   }
 
   private void addSubmission(
-      List<Insert> inserts,
       String submissionId,
       String areaOfLaw,
       String submissionPeriod,
@@ -72,38 +43,31 @@ class SubmissionDetailsE2ETest extends SqlInsertBaseTest {
       int warningCount,
       int matterStartCount) {
     String bulkSubmissionId = UUID.randomUUID().toString();
-    inserts.add(BulkSubmissionInsert.builder().id(bulkSubmissionId).userId(USER_ID).build());
-
-    inserts.add(
-        SubmissionInsert.builder()
-            .id(submissionId)
-            .bulkSubmissionId(bulkSubmissionId)
-            .officeAccountNumber(OFFICE_ACCOUNT_NUMBER)
-            .submissionPeriod(submissionPeriod)
-            .areaOfLaw(areaOfLaw)
-            .numberOfClaims(claimCount)
-            .legalHelpSubmissionReference(null)
-            .mediationSubmissionReference(null)
-            .crimeLowerScheduleNumber(null)
-            .userId(USER_ID)
-            .build());
+    bulkSubmissionDao.insert(bulkSubmissionId, USER_ID);
+    submissionDao.insert(
+        submissionId,
+        bulkSubmissionId,
+        OFFICE_ACCOUNT_NUMBER,
+        submissionPeriod,
+        areaOfLaw,
+        claimCount,
+        USER_ID);
 
     List<BigDecimal> amounts = ClaimFixtureFactory.splitEvenly(totalValue, claimCount);
     List<String> claimIds = new ArrayList<>();
     for (int i = 0; i < claimCount; i++) {
       claimIds.add(
-          ClaimFixtureFactory.addClaim(
-              inserts, submissionId, i + 1, amounts.get(i), USER_ID));
+          claimFixtureFactory.addClaim(submissionId, i + 1, amounts.get(i), USER_ID));
     }
 
     for (int i = 0; i < warningCount; i++) {
-      ClaimFixtureFactory.addWarning(inserts, submissionId, claimIds.get(i), i + 1);
+      claimFixtureFactory.addWarning(submissionId, claimIds.get(i), i + 1);
     }
 
     for (int i = 0; i < matterStartCount; i++) {
       String categoryCode = "LEGAL_HELP".equals(areaOfLaw) ? LEGAL_HELP_CATEGORY_CODES[i] : null;
-      String mediationType = "MEDIATION".equals(areaOfLaw) ? "MDAS" : null;
-      ClaimFixtureFactory.addMatterStart(inserts, submissionId, categoryCode, mediationType, USER_ID);
+      String mediationType = "MEDIATION".equals(areaOfLaw) ? "MDAS All Issues Sole" : null;
+      claimFixtureFactory.addMatterStart(submissionId, categoryCode, mediationType, USER_ID);
     }
   }
 

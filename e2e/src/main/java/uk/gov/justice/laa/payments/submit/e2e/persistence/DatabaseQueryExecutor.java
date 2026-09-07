@@ -1,37 +1,26 @@
 package uk.gov.justice.laa.payments.submit.e2e.persistence;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
-import java.util.List;
+import org.postgresql.ds.PGSimpleDataSource;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import uk.gov.justice.laa.payments.submit.e2e.config.EnvConfig;
-import uk.gov.justice.laa.payments.submit.e2e.models.Insert;
-import uk.gov.justice.laa.payments.submit.e2e.models.SqlStatement;
 
-public class DatabaseQueryExecutor implements AutoCloseable {
+public class DatabaseQueryExecutor {
 
-  private final Connection connection;
+  private final JdbcTemplate jdbcTemplate;
+  private final NamedParameterJdbcTemplate namedParameterJdbcTemplate;
 
-  public DatabaseQueryExecutor() throws SQLException {
-    String url = EnvConfig.dbConnectionUrl();
-    this.connection = DriverManager.getConnection(url, EnvConfig.dbUser(), EnvConfig.dbPassword());
+  public DatabaseQueryExecutor() {
+    var dataSource = new PGSimpleDataSource();
+    dataSource.setUrl(EnvConfig.dbConnectionUrl());
+    dataSource.setUser(EnvConfig.dbUser());
+    dataSource.setPassword(EnvConfig.dbPassword());
+    this.jdbcTemplate = new JdbcTemplate(dataSource);
+    this.namedParameterJdbcTemplate = new NamedParameterJdbcTemplate(jdbcTemplate);
   }
 
-  public void executeUpdate(SqlStatement sql) {
-    try (var preparedStatement = prepareStatement(sql)) {
-      preparedStatement.executeUpdate();
-    } catch (Exception e) {
-      throw new RuntimeException("Failed to execute SQL update against DB", e);
-    }
-  }
-
-  private PreparedStatement prepareStatement(SqlStatement sql) throws SQLException {
-    var ps = connection.prepareStatement(sql.sql());
-    for (var entry : sql.getParameters().entrySet()) {
-      ps.setObject(entry.getKey(), entry.getValue());
-    }
-    return ps;
+  public NamedParameterJdbcTemplate namedParameterJdbcTemplate() {
+    return namedParameterJdbcTemplate;
   }
 
   public void cleanAll() {
@@ -48,17 +37,7 @@ public class DatabaseQueryExecutor implements AutoCloseable {
     deleteAll("bulk_submission");
   }
 
-  public void seed(List<Insert> inserts) {
-    inserts.stream().map(SqlStatement::fromFile).forEach(this::executeUpdate);
-  }
-
   public void deleteAll(String table) {
-    String sql = String.format("DELETE FROM claims.%s", table);
-    executeUpdate(SqlStatement.fromRaw(sql));
-  }
-
-  @Override
-  public void close() throws Exception {
-    connection.close();
+    jdbcTemplate.update(String.format("DELETE FROM claims.%s", table));
   }
 }

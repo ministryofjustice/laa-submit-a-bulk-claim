@@ -5,18 +5,34 @@ import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
-import uk.gov.justice.laa.payments.submit.e2e.models.CalculatedFeeDetailInsert;
-import uk.gov.justice.laa.payments.submit.e2e.models.ClaimCaseInsert;
-import uk.gov.justice.laa.payments.submit.e2e.models.ClaimInsert;
-import uk.gov.justice.laa.payments.submit.e2e.models.ClaimSummaryFeeInsert;
-import uk.gov.justice.laa.payments.submit.e2e.models.ClientInsert;
-import uk.gov.justice.laa.payments.submit.e2e.models.Insert;
-import uk.gov.justice.laa.payments.submit.e2e.models.MatterStartInsert;
-import uk.gov.justice.laa.payments.submit.e2e.models.ValidationMessageLogInsert;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import uk.gov.justice.laa.payments.submit.e2e.persistence.dao.CalculatedFeeDetailDao;
+import uk.gov.justice.laa.payments.submit.e2e.persistence.dao.ClaimCaseDao;
+import uk.gov.justice.laa.payments.submit.e2e.persistence.dao.ClaimDao;
+import uk.gov.justice.laa.payments.submit.e2e.persistence.dao.ClaimSummaryFeeDao;
+import uk.gov.justice.laa.payments.submit.e2e.persistence.dao.ClientDao;
+import uk.gov.justice.laa.payments.submit.e2e.persistence.dao.MatterStartDao;
+import uk.gov.justice.laa.payments.submit.e2e.persistence.dao.ValidationMessageLogDao;
 
-public final class ClaimFixtureFactory {
+public class ClaimFixtureFactory {
 
-  private ClaimFixtureFactory() {}
+  private final ClaimDao claimDao;
+  private final ClaimCaseDao claimCaseDao;
+  private final ClientDao clientDao;
+  private final ClaimSummaryFeeDao claimSummaryFeeDao;
+  private final CalculatedFeeDetailDao calculatedFeeDetailDao;
+  private final ValidationMessageLogDao validationMessageLogDao;
+  private final MatterStartDao matterStartDao;
+
+  public ClaimFixtureFactory(NamedParameterJdbcTemplate jdbcTemplate) {
+    this.claimDao = new ClaimDao(jdbcTemplate);
+    this.claimCaseDao = new ClaimCaseDao(jdbcTemplate);
+    this.clientDao = new ClientDao(jdbcTemplate);
+    this.claimSummaryFeeDao = new ClaimSummaryFeeDao(jdbcTemplate);
+    this.calculatedFeeDetailDao = new CalculatedFeeDetailDao(jdbcTemplate);
+    this.validationMessageLogDao = new ValidationMessageLogDao(jdbcTemplate);
+    this.matterStartDao = new MatterStartDao(jdbcTemplate);
+  }
 
   public static List<BigDecimal> splitEvenly(BigDecimal total, int count) {
     List<BigDecimal> amounts = new ArrayList<>();
@@ -30,74 +46,42 @@ public final class ClaimFixtureFactory {
     return amounts;
   }
 
-  public static String addClaim(
-      List<Insert> inserts,
-      String submissionId,
-      int lineNumber,
-      BigDecimal totalAmount,
-      String userId) {
+  public String addClaim(
+      String submissionId, int lineNumber, BigDecimal totalAmount, String userId) {
     String claimId = UUID.randomUUID().toString();
     String claimSummaryFeeId = UUID.randomUUID().toString();
 
-    inserts.add(
-        ClaimInsert.builder()
-            .id(claimId)
-            .submissionId(submissionId)
-            .lineNumber(lineNumber)
-            .scheduleReference("SCH" + lineNumber)
-            .caseReferenceNumber("CASE" + lineNumber)
-            .uniqueFileNumber("010126/00" + lineNumber)
-            .matterTypeCode("TEST")
-            .feeCode("FEE1")
-            .userId(userId)
-            .build());
-    inserts.add(ClaimCaseInsert.builder().id(UUID.randomUUID().toString()).claimId(claimId)
-        .userId(userId).build());
-    inserts.add(ClientInsert.builder().id(UUID.randomUUID().toString()).claimId(claimId)
-        .userId(userId).build());
-    inserts.add(
-        ClaimSummaryFeeInsert.builder()
-            .id(claimSummaryFeeId)
-            .claimId(claimId)
-            .userId(userId)
-            .build());
-    inserts.add(
-        CalculatedFeeDetailInsert.builder()
-            .id(UUID.randomUUID().toString())
-            .claimSummaryFeeId(claimSummaryFeeId)
-            .claimId(claimId)
-            .totalAmount(totalAmount)
-            .userId(userId)
-            .build());
+    claimDao.insert(
+        claimId,
+        submissionId,
+        lineNumber,
+        "SCH" + lineNumber,
+        "CASE" + lineNumber,
+        "010126/00" + lineNumber,
+        "TEST",
+        "FEE1",
+        userId);
+    claimCaseDao.insert(UUID.randomUUID().toString(), claimId, userId);
+    clientDao.insert(UUID.randomUUID().toString(), claimId, userId);
+    claimSummaryFeeDao.insert(claimSummaryFeeId, claimId, userId);
+    calculatedFeeDetailDao.insert(
+        UUID.randomUUID().toString(), claimSummaryFeeId, claimId, totalAmount, userId);
 
     return claimId;
   }
 
-  public static void addWarning(
-      List<Insert> inserts, String submissionId, String claimId, int index) {
-    inserts.add(
-        ValidationMessageLogInsert.builder()
-            .id(UUID.randomUUID().toString())
-            .submissionId(submissionId)
-            .claimId(claimId)
-            .source("VALIDATOR")
-            .displayMessage("Test warning message " + index)
-            .build());
+  public void addWarning(String submissionId, String claimId, int index) {
+    validationMessageLogDao.insert(
+        UUID.randomUUID().toString(),
+        submissionId,
+        claimId,
+        "VALIDATOR",
+        "Test warning message " + index);
   }
 
-  public static void addMatterStart(
-      List<Insert> inserts,
-      String submissionId,
-      String categoryCode,
-      String mediationType,
-      String userId) {
-    inserts.add(
-        MatterStartInsert.builder()
-            .id(UUID.randomUUID().toString())
-            .submissionId(submissionId)
-            .categoryCode(categoryCode)
-            .mediationType(mediationType)
-            .userId(userId)
-            .build());
+  public void addMatterStart(
+      String submissionId, String categoryCode, String mediationType, String userId) {
+    matterStartDao.insert(
+        UUID.randomUUID().toString(), submissionId, categoryCode, mediationType, userId);
   }
 }
