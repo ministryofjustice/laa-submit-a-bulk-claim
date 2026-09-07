@@ -1,39 +1,51 @@
 package uk.gov.justice.laa.payments.submit.e2e.persistence.dao;
 
+import java.util.UUID;
+import lombok.Builder;
+import lombok.Builder.Default;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import uk.gov.justice.laa.payments.submit.e2e.persistence.dao.ClaimCaseDao.ClaimCaseDaoBuilder;
 
+@Builder
 public class MatterStartDao {
 
-  private final NamedParameterJdbcTemplate jdbcTemplate;
+  @Default
+  private UUID id = UUID.randomUUID();
+  private final UUID submissionId;
+  private String categoryCode;
+  private String mediationType;
+  private String userId;
+  @Default
+  private int numberOfMatterStarts = 1;
 
-  public MatterStartDao(NamedParameterJdbcTemplate jdbcTemplate) {
-    this.jdbcTemplate = jdbcTemplate;
+  public static MatterStartDaoBuilder builder(UUID submissionId) {
+    return new MatterStartDaoBuilder().submissionId(submissionId);
   }
 
-  public void insert(
-      String id, String submissionId, String categoryCode, String mediationType, String userId) {
+  public UUID insert(NamedParameterJdbcTemplate jdbcTemplate) {
     jdbcTemplate.update(
         """
         INSERT INTO claims.matter_start (
           id, submission_id, number_of_matter_starts, category_code, mediation_type,
           created_by_user_id, created_on
         ) VALUES (
-                  :id::uuid, 
-                  :submissionId::uuid, 
-                  :numberOfMatterStarts, 
-                  :categoryCode, 
-                  :mediationType, 
-                  :userId, 
+                  :id,
+                  :submissionId,
+                  :numberOfMatterStarts,
+                  :categoryCode,
+                  :mediationType,
+                  :userId,
                   now()
         )
         """,
         new MapSqlParameterSource()
-            .addValue("id", id)
-            .addValue("submissionId", submissionId)
-            .addValue("numberOfMatterStarts", 1)
-            .addValue("categoryCode", categoryCode)
-            .addValue("mediationType", mediationType)
-            .addValue("userId", userId));
+            .addValue("id", this.id)
+            .addValue("submissionId", this.submissionId)
+            .addValue("numberOfMatterStarts", this.numberOfMatterStarts)
+            .addValue("categoryCode", this.categoryCode)
+            .addValue("mediationType", this.mediationType)
+            .addValue("userId", this.userId));
+    return this.id;
   }
 }

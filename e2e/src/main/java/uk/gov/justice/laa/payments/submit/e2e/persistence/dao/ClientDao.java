@@ -1,29 +1,38 @@
 package uk.gov.justice.laa.payments.submit.e2e.persistence.dao;
 
+import java.util.UUID;
+import lombok.Builder;
+import lombok.Builder.Default;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import uk.gov.justice.laa.payments.submit.e2e.persistence.dao.ClaimCaseDao.ClaimCaseDaoBuilder;
 
+@Builder
 public class ClientDao {
 
-  private final NamedParameterJdbcTemplate jdbcTemplate;
+  @Default
+  private UUID id = UUID.randomUUID();
+  private final UUID claimId;
+  private String userId;
 
-  public ClientDao(NamedParameterJdbcTemplate jdbcTemplate) {
-    this.jdbcTemplate = jdbcTemplate;
+  public static ClaimCaseDaoBuilder builder(UUID claimId) {
+    return new ClaimCaseDaoBuilder().claimId(claimId);
   }
 
-  public void insert(String id, String claimId, String userId) {
+  public UUID insert(NamedParameterJdbcTemplate jdbcTemplate) {
     jdbcTemplate.update(
         """
         INSERT INTO claims.client (id, claim_id, created_by_user_id, created_on)
         VALUES (
-                :id::uuid, 
-                :claimId::uuid, 
+                :id, 
+                :claimId, 
                 :userId, 
                 now())
         """,
         new MapSqlParameterSource()
-            .addValue("id", id)
-            .addValue("claimId", claimId)
-            .addValue("userId", userId));
+            .addValue("id", this.id)
+            .addValue("claimId", this.claimId)
+            .addValue("userId", this.userId));
+    return this.id;
   }
 }
