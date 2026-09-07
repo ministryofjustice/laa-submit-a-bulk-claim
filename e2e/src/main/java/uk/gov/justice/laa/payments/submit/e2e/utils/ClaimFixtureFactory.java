@@ -34,11 +34,17 @@ public class ClaimFixtureFactory {
     this.matterStartDao = new MatterStartDao(jdbcTemplate);
   }
 
-  public static List<BigDecimal> splitEvenly(BigDecimal total, int count) {
+  /**
+   * Used to split a total amount evenly across a total number of claims.
+   * @param total the total amount to be split
+   * @param totalClaims the number of claims to split the total amount across
+   * @return a list of amounts split evenly across the specified number of claims
+   */
+  public static List<BigDecimal> splitEvenly(BigDecimal total, int totalClaims) {
     List<BigDecimal> amounts = new ArrayList<>();
-    BigDecimal share = total.divide(BigDecimal.valueOf(count), 2, RoundingMode.HALF_UP);
+    BigDecimal share = total.divide(BigDecimal.valueOf(totalClaims), 2, RoundingMode.HALF_UP);
     BigDecimal runningTotal = BigDecimal.ZERO;
-    for (int i = 0; i < count - 1; i++) {
+    for (int i = 0; i < totalClaims - 1; i++) {
       amounts.add(share);
       runningTotal = runningTotal.add(share);
     }
