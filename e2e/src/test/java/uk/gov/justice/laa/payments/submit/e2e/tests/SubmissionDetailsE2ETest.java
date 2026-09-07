@@ -1,20 +1,110 @@
 package uk.gov.justice.laa.payments.submit.e2e.tests;
 
-
 import static com.microsoft.playwright.assertions.PlaywrightAssertions.assertThat;
 
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
 import org.junit.jupiter.api.Test;
-import uk.gov.justice.laa.payments.submit.e2e.base.DbUnitBaseTest;
+import uk.gov.justice.laa.payments.submit.e2e.base.SqlInsertBaseTest;
+import uk.gov.justice.laa.payments.submit.e2e.models.BulkSubmissionInsert;
+import uk.gov.justice.laa.payments.submit.e2e.models.Insert;
+import uk.gov.justice.laa.payments.submit.e2e.models.SubmissionInsert;
 import uk.gov.justice.laa.payments.submit.e2e.pages.LandingPagePage;
 import uk.gov.justice.laa.payments.submit.e2e.pages.SearchPage;
 import uk.gov.justice.laa.payments.submit.e2e.pages.SubmissionDetailPage;
 import uk.gov.justice.laa.payments.submit.e2e.pages.UploadPage;
+import uk.gov.justice.laa.payments.submit.e2e.utils.ClaimFixtureFactory;
 
-class SubmissionDetailsE2ETest extends DbUnitBaseTest {
+class SubmissionDetailsE2ETest extends SqlInsertBaseTest {
+
+  private static final String USER_ID = "e2e-test-user";
+  private static final String OFFICE_ACCOUNT_NUMBER = "0P322F";
+  private static final String[] LEGAL_HELP_CATEGORY_CODES = {"AAP", "COM"};
+
+  private final String legalHelpSubmissionId = UUID.randomUUID().toString();
+  private final String crimeLowerSubmissionId = UUID.randomUUID().toString();
+  private final String mediationSubmissionId = UUID.randomUUID().toString();
 
   @Override
-  protected String getDataSetPath() {
-    return "datasets/submission_details.xml";
+  protected List<Insert> inserts() {
+    List<Insert> inserts = new ArrayList<>();
+
+    addSubmission(
+        inserts,
+        legalHelpSubmissionId,
+        "LEGAL_HELP",
+        "APR-2026",
+        9,
+        new BigDecimal("33115.60"),
+        9,
+        2);
+    addSubmission(
+        inserts,
+        crimeLowerSubmissionId,
+        "CRIME_LOWER",
+        "JUN-2026",
+        10,
+        new BigDecimal("5465.50"),
+        5,
+        0);
+    addSubmission(
+        inserts,
+        mediationSubmissionId,
+        "MEDIATION",
+        "JAN-2026",
+        10,
+        new BigDecimal("13930.00"),
+        5,
+        1);
+
+    return inserts;
+  }
+
+  private void addSubmission(
+      List<Insert> inserts,
+      String submissionId,
+      String areaOfLaw,
+      String submissionPeriod,
+      int claimCount,
+      BigDecimal totalValue,
+      int warningCount,
+      int matterStartCount) {
+    String bulkSubmissionId = UUID.randomUUID().toString();
+    inserts.add(BulkSubmissionInsert.builder().id(bulkSubmissionId).userId(USER_ID).build());
+
+    inserts.add(
+        SubmissionInsert.builder()
+            .id(submissionId)
+            .bulkSubmissionId(bulkSubmissionId)
+            .officeAccountNumber(OFFICE_ACCOUNT_NUMBER)
+            .submissionPeriod(submissionPeriod)
+            .areaOfLaw(areaOfLaw)
+            .numberOfClaims(claimCount)
+            .legalHelpSubmissionReference(null)
+            .mediationSubmissionReference(null)
+            .crimeLowerScheduleNumber(null)
+            .userId(USER_ID)
+            .build());
+
+    List<BigDecimal> amounts = ClaimFixtureFactory.splitEvenly(totalValue, claimCount);
+    List<String> claimIds = new ArrayList<>();
+    for (int i = 0; i < claimCount; i++) {
+      claimIds.add(
+          ClaimFixtureFactory.addClaim(
+              inserts, submissionId, i + 1, amounts.get(i), USER_ID));
+    }
+
+    for (int i = 0; i < warningCount; i++) {
+      ClaimFixtureFactory.addWarning(inserts, submissionId, claimIds.get(i), i + 1);
+    }
+
+    for (int i = 0; i < matterStartCount; i++) {
+      String categoryCode = "LEGAL_HELP".equals(areaOfLaw) ? LEGAL_HELP_CATEGORY_CODES[i] : null;
+      String mediationType = "MEDIATION".equals(areaOfLaw) ? "MDAS" : null;
+      ClaimFixtureFactory.addMatterStart(inserts, submissionId, categoryCode, mediationType, USER_ID);
+    }
   }
 
   @Test
@@ -135,5 +225,4 @@ class SubmissionDetailsE2ETest extends DbUnitBaseTest {
     submissionDetails.getMatterStartsTab().click();
     submissionDetails.assertTotalMatterStarts(1);
   }
-
 }
