@@ -4,7 +4,9 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.util.List;
 import uk.gov.justice.laa.payments.submit.e2e.config.EnvConfig;
+import uk.gov.justice.laa.payments.submit.e2e.models.Insert;
 import uk.gov.justice.laa.payments.submit.e2e.models.SqlStatement;
 
 public class DatabaseQueryExecutor implements AutoCloseable {
@@ -44,6 +46,10 @@ public class DatabaseQueryExecutor implements AutoCloseable {
     deleteAll("matter_start");
     deleteAll("submission");
     deleteAll("bulk_submission");
+  }
+
+  public void seed(List<Insert> inserts) {
+    inserts.stream().map(SqlStatement::fromFile).forEach(this::executeUpdate);
   }
 
   public void deleteAll(String table) {

@@ -1,0 +1,31 @@
+INSERT INTO claims.submission (
+  id,
+  bulk_submission_id,
+  office_account_number,
+  submission_period,
+  area_of_law,
+  status,
+  is_nil_submission,
+  number_of_claims,
+  legal_help_submission_reference,
+  mediation_submission_reference,
+  crime_lower_schedule_number,
+  created_by_user_id,
+  created_on,
+  provider_user_id
+) VALUES (
+  ?::uuid,
+  ?::uuid,
+  ?,
+  ?,
+  ?,
+  'VALIDATION_SUCCEEDED',
+  false,
+  ?,
+  ?,
+  ?,
+  ?,
+  ?,
+  now(),
+  ?
+);
