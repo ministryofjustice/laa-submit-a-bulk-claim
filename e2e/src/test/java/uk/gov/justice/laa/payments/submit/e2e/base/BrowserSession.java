@@ -1,6 +1,7 @@
 package uk.gov.justice.laa.payments.submit.e2e.base;
 
 import static com.microsoft.playwright.options.AriaRole.BUTTON;
+import static com.microsoft.playwright.options.AriaRole.LINK;
 import static com.microsoft.playwright.options.WaitForSelectorState.VISIBLE;
 
 import com.microsoft.playwright.Browser;
@@ -53,7 +54,7 @@ public class BrowserSession {
       try {
         Page signoutPage = context.newPage();
         signoutPage.navigate(EnvConfig.baseUrl());
-        signoutPage.getByRole(BUTTON, new Page.GetByRoleOptions().setName("Sign out")).click();
+        signoutPage.getByRole(LINK, new Page.GetByRoleOptions().setName("Sign out")).click();
         signoutPage.waitForLoadState();
 
       } finally {
