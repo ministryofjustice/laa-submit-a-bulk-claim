@@ -5,7 +5,6 @@ import lombok.Builder;
 import lombok.Builder.Default;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
-import uk.gov.justice.laa.payments.submit.e2e.persistence.dao.ClaimCaseDao.ClaimCaseDaoBuilder;
 
 @Builder
 public class ClientDao {
@@ -15,8 +14,8 @@ public class ClientDao {
   private final UUID claimId;
   private String userId;
 
-  public static ClaimCaseDaoBuilder builder(UUID claimId) {
-    return new ClaimCaseDaoBuilder().claimId(claimId);
+  public static ClientDaoBuilder builder(UUID claimId) {
+    return new ClientDaoBuilder().claimId(claimId);
   }
 
   public UUID insert(NamedParameterJdbcTemplate jdbcTemplate) {
