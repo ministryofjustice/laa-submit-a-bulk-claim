@@ -14,7 +14,7 @@ public class BulkSubmissionDao {
   @Getter
   private UUID id = UUID.randomUUID();
   @Default
-  private String userId = "test-user";;
+  private String userId = "test-user";
   @Default
   private String status = "VALIDATION_SUCCEEDED";
 
