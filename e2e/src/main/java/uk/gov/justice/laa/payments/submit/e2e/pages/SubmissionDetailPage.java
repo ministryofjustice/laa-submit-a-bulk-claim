@@ -56,7 +56,7 @@ public class SubmissionDetailPage extends BasePage {
     assertThat(warningBanner).isVisible();
     var expectedText =
         total == 1 ? "1 claim has a warning message" : total + " claims have warning messages";
-    assertThat(warningBanner).containsText(expectedText);
+    assertThat(warningBanner).hasText(expectedText);
   }
 
   public void assertSubmissionSummary(String officeAccount, String areaOfLaw,
@@ -80,8 +80,7 @@ public class SubmissionDetailPage extends BasePage {
   }
 
   public void assertTotalMatterStarts(int total) {
-    var matterStarts = matterStartsList.locator("div");
     assertThat(matterStartsList).isVisible();
-    assertThat(matterStarts).hasCount(total);
+    assertThat(matterStartsTab).containsText("(%d)".formatted(total));
   }
 }
