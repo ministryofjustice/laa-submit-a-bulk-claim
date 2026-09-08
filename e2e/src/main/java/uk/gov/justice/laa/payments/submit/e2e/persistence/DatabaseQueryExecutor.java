@@ -24,20 +24,16 @@ public class DatabaseQueryExecutor {
   }
 
   public void cleanAll() {
-    deleteAll("validation_message_log");
-    deleteAll("assessment");
-    deleteAll("calculated_fee_detail");
-    deleteAll("claim_summary_fee");
-    deleteAll("client");
-    deleteAll("claim_amendment");
-    deleteAll("claim_case");
-    deleteAll("claim");
-    deleteAll("matter_start");
-    deleteAll("submission");
-    deleteAll("bulk_submission");
-  }
-
-  public void deleteAll(String table) {
-    jdbcTemplate.update(String.format("DELETE FROM claims.%s", table));
+    jdbcTemplate.update("DELETE FROM claims.validation_message_log");
+    jdbcTemplate.update("DELETE FROM claims.assessment");
+    jdbcTemplate.update("DELETE FROM claims.calculated_fee_detail");
+    jdbcTemplate.update("DELETE FROM claims.claim_summary_fee");
+    jdbcTemplate.update("DELETE FROM claims.client");
+    jdbcTemplate.update("DELETE FROM claims.claim_amendment");
+    jdbcTemplate.update("DELETE FROM claims.claim_case");
+    jdbcTemplate.update("DELETE FROM claims.claim");
+    jdbcTemplate.update("DELETE FROM claims.matter_start");
+    jdbcTemplate.update("DELETE FROM claims.submission");
+    jdbcTemplate.update("DELETE FROM claims.bulk_submission");
   }
 }
