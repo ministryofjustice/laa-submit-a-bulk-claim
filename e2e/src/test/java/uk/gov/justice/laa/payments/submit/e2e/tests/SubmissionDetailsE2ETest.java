@@ -92,7 +92,7 @@ class SubmissionDetailsE2ETest extends JdbcTemplateBaseTest {
     // Next search for the same submission
     uploadPage.getSearchLink().click();
     var searchPage = new SearchPage(page);
-    searchPage.getAreaOfLawSelect().selectOption("Legal help");
+    searchPage.getAreaOfLawSelect().selectOption("LEGAL HELP");
     searchPage.getSearchButton().click();
 
     // Click first option
@@ -133,7 +133,7 @@ class SubmissionDetailsE2ETest extends JdbcTemplateBaseTest {
     // Next search for the same submission
     uploadPage.getSearchLink().click();
     var searchPage = new SearchPage(page);
-    searchPage.getAreaOfLawSelect().selectOption("Crime lower");
+    searchPage.getAreaOfLawSelect().selectOption("CRIME LOWER");
     searchPage.getSearchButton().click();
 
     // Click first option
@@ -170,7 +170,7 @@ class SubmissionDetailsE2ETest extends JdbcTemplateBaseTest {
     // Next search for the same submission
     uploadPage.getSearchLink().click();
     var searchPage = new SearchPage(page);
-    searchPage.getAreaOfLawSelect().selectOption("Mediation");
+    searchPage.getAreaOfLawSelect().selectOption("MEDIATION");
     searchPage.getSearchButton().click();
 
     // Click first option

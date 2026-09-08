@@ -28,14 +28,17 @@ public class ClaimFixtureFactory {
    * @return a list of amounts split evenly across the specified number of claims
    */
   public static List<BigDecimal> splitEvenly(BigDecimal total, int totalClaims) {
-    List<BigDecimal> amounts = new ArrayList<>();
-    BigDecimal share = total.divide(BigDecimal.valueOf(totalClaims), 2, RoundingMode.HALF_UP);
-    BigDecimal runningTotal = BigDecimal.ZERO;
-    for (int i = 0; i < totalClaims - 1; i++) {
-      amounts.add(share);
-      runningTotal = runningTotal.add(share);
+    List<BigDecimal> amounts = new ArrayList<>(totalClaims);
+    BigDecimal share = total.divide(BigDecimal.valueOf(totalClaims), 2, RoundingMode.DOWN);
+    int remainderPennies =
+        total
+            .subtract(share.multiply(BigDecimal.valueOf(totalClaims)))
+            .movePointRight(2)
+            .intValueExact();
+    for (int i = 0; i < totalClaims; i++) {
+      amounts.add(
+          share.add(i < remainderPennies ? new BigDecimal("0.01") : BigDecimal.ZERO));
     }
-    amounts.add(total.subtract(runningTotal));
     return amounts;
   }
 
