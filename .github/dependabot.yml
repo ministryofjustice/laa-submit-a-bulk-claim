@@ -49,7 +49,7 @@ updates:
         patterns:
           - "**"
   - package-ecosystem: "npm"
-    directory: "/"
+    directory: "/laa-submit-a-bulk-claim-ui"
     schedule:
       interval: "daily"
     cooldown:

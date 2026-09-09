@@ -69,13 +69,6 @@ dependencies {
     implementation 'org.thymeleaf.extras:thymeleaf-extras-springsecurity6'
 
     implementation 'org.apache.commons:commons-lang3'
-    // Front end
-    // https://mvnrepository.com/artifact/org.webjars/webjars-locator-lite
-    implementation 'org.webjars:webjars-locator-lite'
-    // https://mvnrepository.com/artifact/org.webjars.npm/govuk-frontend
-    implementation 'org.webjars.npm:govuk-frontend:5.13.0'
-    implementation 'org.webjars.npm:ministryofjustice__frontend:9.0.0'
-    implementation 'org.webjars.npm:accessible-autocomplete:3.0.1'
     implementation 'org.springframework.boot:spring-boot-starter-actuator'
     implementation 'io.prometheus:prometheus-metrics-tracer-initializer'
     implementation 'io.micrometer:micrometer-registry-prometheus'
@@ -297,3 +290,38 @@ tasks.named('build') {
 tasks.compileJava {
     options.compilerArgs.addAll(['-Xlint:deprecation', '-Xlint:unchecked'])
 }
+
+def npmExecutable = providers.exec {
+    commandLine 'bash', '-lc', 'which npm'
+}.standardOutput.asText.map { it.trim() }.getOrElse('npm')
+
+tasks.register('npmInstall', Exec) {
+    group = 'build setup'
+    description = 'Installs Node dependencies for frontend asset compilation.'
+    workingDir = projectDir
+    inputs.files('package.json', 'package-lock.json')
+    outputs.dir(layout.projectDirectory.dir('node_modules'))
+    commandLine npmExecutable, 'ci', '--no-audit', '--no-fund'
+}
+
+tasks.register('compileFEAssets', Exec) {
+    group = 'build'
+    description = 'Compiles application frontend assets with gulp.'
+    workingDir = projectDir
+    dependsOn tasks.named('npmInstall')
+    inputs.files('gulpfile.ts', 'package.json', 'package-lock.json')
+    commandLine npmExecutable, 'run', 'gulp'
+}
+
+tasks.register('watch', Exec) {
+    group = 'build'
+    description = 'Compiles application frontend assets with gulp.'
+    workingDir = projectDir
+    dependsOn tasks.named('npmInstall')
+    inputs.files('gulpfile.ts', 'package.json', 'package-lock.json')
+    commandLine npmExecutable, 'run', 'gulp', 'watch'
+}
+
+processResources.dependsOn compileFEAssets
+processResources
+        { from(layout.buildDirectory.dir("generatedFEAssets")) }
