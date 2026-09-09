@@ -301,7 +301,7 @@ tasks.register('npmInstall', Exec) {
     workingDir = projectDir
     inputs.files('package.json', 'package-lock.json')
     outputs.dir(layout.projectDirectory.dir('node_modules'))
-    commandLine npmExecutable, 'i', '--no-audit', '--no-fund'
+    commandLine npmExecutable, 'ci', '--no-audit', '--no-fund'
 }
 
 tasks.register('compileFEAssets', Exec) {

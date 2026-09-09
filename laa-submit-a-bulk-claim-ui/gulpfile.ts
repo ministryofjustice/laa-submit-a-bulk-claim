@@ -22,13 +22,7 @@ function compileStylesheets() {
         loadPaths: ['.', 'node_modules'],
         quietDeps: true,        // silences the @import deprecation noise from vendor files
         silenceDeprecations: ['import']
-      })
-      .on('error', function (this: Transform, err: Error) {
-        // @ts-ignore: Usually shouldn't suppress, however this is a dev file and not for production.
-        sass.logError.call(this, err);   // print the readable Sass error
-        this.emit('end');                // end the stream so Gulp doesn't hang
-      })
-  )
+      }))
   .pipe(cleanCSS())
   .pipe(rename('app.min.css'))
   .pipe(gulp.dest('build/generatedFEAssets/static/css'))
