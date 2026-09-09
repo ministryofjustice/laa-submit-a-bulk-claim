@@ -26,6 +26,7 @@ function compileStylesheets() {
   .pipe(cleanCSS())
   .pipe(rename('app.min.css'))
   .pipe(gulp.dest('build/generatedFEAssets/static/css'))
+  .pipe(gulp.dest('build/resources/main/static/css'))
   .on('end', () => console.log('CSS written to build/generatedFEAssets/static/css'));
 }
 
@@ -110,9 +111,11 @@ function watch() {
     browserSync.reload();
   });
 
+  
   gulp.watch('src/main/resources/sass/**/*.scss', series(compileStylesheets))
   .on('change', (path) => {
     console.log('Stylesheet changed:', path);
+    compileStylesheets()
     browserSync.reload();
   });
 

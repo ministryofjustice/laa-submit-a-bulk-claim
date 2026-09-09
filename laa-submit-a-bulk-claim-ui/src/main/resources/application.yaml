@@ -124,3 +124,17 @@ logging:
         version: ${spring.application.version:default}
         environment: ${spring.profiles.active:default}
         node_name: ${HOSTNAME:unknown}
+---
+spring:
+  config:
+    activate:
+      on-profile: local
+
+  thymeleaf:
+    cache: false
+    prefix: file:laa-submit-a-bulk-claim-ui/src/main/resources/templates/
+  web:
+    resources:
+      static-locations: file:laa-submit-a-bulk-claim-ui/build/resources/main/static/
+      cache:
+        period: 0
