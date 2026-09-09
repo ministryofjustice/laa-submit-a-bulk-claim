@@ -14,7 +14,7 @@
     "gulp": "gulp"
   },
   "devDependencies": {
-    "@ministryofjustice/frontend": "^10.0.1",
+    "@ministryofjustice/frontend": "^11.0.0",
     "@types/browser-sync": "^2.29.1",
     "@types/gulp": "^4.0.18",
     "@types/gulp-clean-css": "^4.3.4",
