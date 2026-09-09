@@ -34,5 +34,8 @@ claims-api-reference/generated
 
 .env
 
-/node_modules
-/package-lock.json
+node_modules/
+/laa-submit-a-bulk-claim-ui/src/main/resources/static/
+/laa-submit-a-bulk-claim-ui/src/main/resources/es/govuk-frontend.min.js
+/laa-submit-a-bulk-claim-ui/src/main/resources/es/moj-frontend.min.js
+/laa-submit-a-bulk-claim-ui/src/main/resources/es/accessible-autocomplete.min.js

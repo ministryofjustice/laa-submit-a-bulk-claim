@@ -1,0 +1,35 @@
+{
+  "name": "laa-submit-a-bulk-claim-ui",
+  "version": "1.0.0",
+  "description": "Development dependencies for laa-submit-a-bulk-claim-ui frontend asset compilation",
+  "homepage": "https://github.com/ministryofjustice/laa-submit-a-bulk-claim#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ministryofjustice/laa-submit-a-bulk-claim.git"
+  },
+  "type": "module",
+  "license": "MIT",
+  "author": "Controlled Work Claims",
+  "scripts": {
+    "gulp": "gulp"
+  },
+  "devDependencies": {
+    "@ministryofjustice/frontend": "^10.0.1",
+    "@types/browser-sync": "^2.29.1",
+    "@types/gulp": "^4.0.18",
+    "@types/gulp-clean-css": "^4.3.4",
+    "@types/gulp-rename": "^2.0.7",
+    "@types/gulp-sass": "^6.0.0",
+    "accessible-autocomplete": "^3.0.1",
+    "browser-sync": "^3.0.4",
+    "esbuild": "^0.28.1",
+    "govuk-frontend": "^6.4.0",
+    "gulp": "^5.0.1",
+    "gulp-clean": "^0.4.0",
+    "gulp-clean-css": "^4.3.0",
+    "gulp-rename": "^2.1.0",
+    "gulp-sass": "^6.0.1",
+    "sass": "^1.102.0",
+    "typescript": "^7.0.2"
+  }
+}

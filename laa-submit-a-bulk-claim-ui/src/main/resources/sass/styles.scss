@@ -1,4 +1,4 @@
-.sabc-govuk-table__cell__bold-bottom{
+.sabc-govuk-table__cell__bold-bottom {
   border-bottom: 1.5px solid #000 !important;
 }
 
@@ -9,7 +9,7 @@
   gap: 12px;                 /* spacing between the two elements */
 }
 
-.govuk-extension__background_white{
+.govuk-extension__background_white {
   background-color: white;
 }
 
@@ -39,3 +39,38 @@
   display: none;
 }
 
+.upload-table {
+  overflow-x: auto;
+}
+
+.username {
+  font-weight: bold;
+  color: #1d8feb;
+}
+
+.search-panel {
+  padding: 15px 20px 0px 20px;
+  border-bottom: 1px solid transparent;
+  background-color: #f3f2f1;
+}
+
+@media print {
+  .upload-table {
+    overflow: visible !important;
+  }
+
+  .govuk-table {
+    width: 100%;
+    font-size: 8px;
+    table-layout: auto;
+    word-break: break-all;
+  }
+
+  #print-button,
+  .govuk-link,
+  .govuk-header,
+  .govuk-footer,
+  .govuk-back-link {
+    display: none;
+  }
+}
