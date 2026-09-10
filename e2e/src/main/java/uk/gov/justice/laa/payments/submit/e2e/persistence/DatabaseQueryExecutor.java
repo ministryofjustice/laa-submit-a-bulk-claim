@@ -25,6 +25,7 @@ public class DatabaseQueryExecutor {
 
   public void cleanAll() {
     jdbcTemplate.update("DELETE FROM claims.validation_message_log");
+    jdbcTemplate.update("DELETE FROM claims.matter_start");
     jdbcTemplate.update("DELETE FROM claims.assessment");
     jdbcTemplate.update("DELETE FROM claims.calculated_fee_detail");
     jdbcTemplate.update("DELETE FROM claims.claim_summary_fee");
@@ -32,7 +33,6 @@ public class DatabaseQueryExecutor {
     jdbcTemplate.update("DELETE FROM claims.claim_amendment");
     jdbcTemplate.update("DELETE FROM claims.claim_case");
     jdbcTemplate.update("DELETE FROM claims.claim");
-    jdbcTemplate.update("DELETE FROM claims.matter_start");
     jdbcTemplate.update("DELETE FROM claims.submission");
     jdbcTemplate.update("DELETE FROM claims.bulk_submission");
   }
