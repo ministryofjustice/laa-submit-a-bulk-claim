@@ -2,10 +2,6 @@ name: E2E tests
 
 on:
   workflow_call:
-    inputs:
-      image_tag:
-        required: true
-        type: string
     secrets:
       pat_token:
         required: true
@@ -48,27 +44,34 @@ jobs:
   e2e-tests:
     runs-on: ubuntu-latest
     environment: uat
-    env:
-      IMAGE_TAG: ${{ inputs.image_tag }}
-
     steps:
       - name: Checkout
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
 
       - name: Checkout laa-data-claims-parent
-        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           repository: ministryofjustice/laa-data-claims-parent
           path: laa-data-claims-parent
-          submodules: true
+          submodules: 'true'
+
+      - name: Update parent submodules
+        working-directory: laa-data-claims-parent
+        env:
+          SUBMIT_REF: ${{ github.head_ref || github.ref_name }}
+        run: |
+          ./update-bulk-claim-repos.sh
+          cd laa-submit-a-bulk-claim          
+          git fetch origin "$SUBMIT_REF"
+          git checkout -B "$SUBMIT_REF" FETCH_HEAD
 
       - name: Install kubectl
-        uses: azure/setup-kubectl@829323503d1be3d00ca8346e5391ca0b07a9ab0d
+        uses: azure/setup-kubectl@829323503d1be3d00ca8346e5391ca0b07a9ab0d # v5.1.0
         with:
           version: v1.29.4
 
       - name: Authenticate to SaBC cluster
-        uses: ministryofjustice/laa-reusable-github-actions/.github/actions/authenticate_to_cluster@768f673017edbb793cf052fa159c272d6c1f9177
+        uses: ministryofjustice/laa-reusable-github-actions/.github/actions/authenticate_to_cluster@768f673017edbb793cf052fa159c272d6c1f9177 # unversioned
         with:
           kube-cert: ${{ secrets.kube_cert }}
           kube-cluster: ${{ secrets.kube_cluster }}
@@ -76,7 +79,7 @@ jobs:
           kube-token: ${{ secrets.kube_token }}
           kube-sa: deploy-user
 
-      - name: Port forward to PDA-API service
+      - name: Port forward to PDA-API service in SaBC namespace
         uses: ./.github/actions/port-forward-service
         with:
           kube_namespace: ${{ secrets.kube_namespace }}
@@ -87,7 +90,7 @@ jobs:
           wait_label: pda-api
 
       - name: Authenticate to FSP cluster
-        uses: ministryofjustice/laa-reusable-github-actions/.github/actions/authenticate_to_cluster@768f673017edbb793cf052fa159c272d6c1f9177
+        uses: ministryofjustice/laa-reusable-github-actions/.github/actions/authenticate_to_cluster@768f673017edbb793cf052fa159c272d6c1f9177 # unversioned
         with:
           kube-cert: ${{ secrets.kube_cert_laa_fee_scheme_api_uat }}
           kube-token: ${{ secrets.kube_token_laa_fee_scheme_api_uat }}
@@ -95,7 +98,7 @@ jobs:
           kube-namespace: ${{ secrets.kube_namespace_laa_fee_scheme_api_uat }}
           kube-sa: deploy-user
 
-      - name: Port forward to FSP API
+      - name: Port forward to FPS-API service in FSP namespace
         uses: ./.github/actions/port-forward-service
         with:
           kube_namespace: ${{ secrets.kube_namespace_laa_fee_scheme_api_uat }}
@@ -105,56 +108,36 @@ jobs:
           pid_env_var: PORT_FORWARD_FSP_PID
           wait_label: fsp-api
 
+
       - name: Set up Java
-        uses: actions/setup-java@dd06d9cba3e5552c54d9f8ea23572deb30010f7c
+        uses: actions/setup-java@dd06d9cba3e5552c54d9f8ea23572deb30010f7c # v6.0.0
         with:
           distribution: temurin
           java-version: '25'
 
       - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@9c971963bec38e04b3d30dcc455b5382be2fdbfb
+        uses: gradle/actions/setup-gradle@9c971963bec38e04b3d30dcc455b5382be2fdbfb # v6.3.0
 
       - name: Install task
-        uses: go-task/setup-task@a00fbb05ce67b35648be3c78cbc9fd85354c757e
+        uses: go-task/setup-task@a00fbb05ce67b35648be3c78cbc9fd85354c757e # v2.2.0
 
-      - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@e7f100cf4c008499ea8adda475de1042d6975c7b
-        with:
-          role-to-assume: ${{ secrets.LAA_SUBMIT_A_BULK_CLAIM_ECR_ROLE_TO_ASSUME }}
-          aws-region: ${{ vars.LAA_SUBMIT_A_BULK_CLAIM_ECR_REGION }}
-
-      - name: Login to ECR
-        id: login-ecr
-        uses: aws-actions/amazon-ecr-login@fa648b43de3d4d023bcb3f89ed6940096949c419
-
-      - name: Pull image from ECR
-        shell: bash
-        run: |
-          REGISTRY="${{ steps.login-ecr.outputs.registry }}"
-          docker pull "${REGISTRY}/${{ vars.LAA_SUBMIT_A_BULK_CLAIM_ECR_REPOSITORY }}:${IMAGE_TAG}"
-
-      - name: Start app stack from ECR image
-        shell: bash
-        run: |
-          REGISTRY="${{ steps.login-ecr.outputs.registry }}"
-          export REGISTRY
-          export REPO="${{ vars.LAA_SUBMIT_A_BULK_CLAIM_ECR_REPOSITORY }}"
-          export IMAGE_TAG="${IMAGE_TAG}"
-          export AUTH_CLIENT_ID="${{ secrets.auth_client_id }}"
-          export AUTH_CLIENT_SECRET="${{ secrets.auth_client_secret }}"
-          export AUTH_SCOPE="${{ secrets.auth_scope }}"
-          export AUTH_TENANT_ID="${{ secrets.auth_tenant_id }}"
-          export SDS_API_URL="${{ vars.SDS_API_URL }}"
-          export FEE_SCHEME_PLATFORM_API_URL="http://host.docker.internal:8095"
-          export FEE_SCHEME_PLATFORM_API_ACCESS_TOKEN="${{ secrets.fsp_api_token }}"
-          export PROVIDER_DETAILS_API_URL="http://host.docker.internal:8186"
-          export PROVIDER_DETAILS_API_HOSTNAME="http://host.docker.internal:8186"
-          export PROVIDER_DETAILS_API_ACCESS_TOKEN="${{ secrets.pda_api_token }}"
-          export SUBMIT_SPRING_PROFILES_ACTIVE="oidc,github-test-runner"
-          export LAA_ACCOUNTS="0P322F"
-          export GITHUB_TOKEN="${{ secrets.pat_token }}"
-
-          docker compose -f "${GITHUB_WORKSPACE}/.github/compose/e2e-stack.yml" up -d
+      - name: Build and start services
+        working-directory: laa-data-claims-parent
+        run: task up:submit
+        env:
+          GITHUB_TOKEN: ${{ secrets.pat_token }} # PAT token required for providers-api dependency
+          AUTH_CLIENT_ID: ${{ secrets.auth_client_id }}
+          AUTH_CLIENT_SECRET: ${{ secrets.auth_client_secret }}
+          AUTH_SCOPE: ${{ secrets.auth_scope }}
+          AUTH_TENANT_ID: ${{ secrets.auth_tenant_id }}
+          SDS_API_URL: ${{ vars.SDS_API_URL }}
+          FEE_SCHEME_PLATFORM_API_URL: 'http://host.docker.internal:8095'
+          FEE_SCHEME_PLATFORM_API_ACCESS_TOKEN: ${{ secrets.fsp_api_token }}
+          PROVIDER_DETAILS_API_URL: 'http://host.docker.internal:8186'
+          PROVIDER_DETAILS_API_HOSTNAME: 'http://host.docker.internal:8186'
+          PROVIDER_DETAILS_API_ACCESS_TOKEN: ${{ secrets.pda_api_token }}
+          SUBMIT_SPRING_PROFILES_ACTIVE: oidc,github-test-runner
+          LAA_ACCOUNTS: 0P322F
 
       - name: Wait for services to be ready
         working-directory: laa-data-claims-parent/laa-submit-a-bulk-claim
@@ -164,7 +147,7 @@ jobs:
         working-directory: laa-data-claims-parent/laa-submit-a-bulk-claim
         run: ./gradlew :e2e:test --no-configuration-cache
         env:
-          GITHUB_TOKEN: ${{ secrets.pat_token }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           E2E_AUTH_METHOD: mock
           E2E_BASE_URL: http://localhost:8082
           E2E_DB_CONNECTION_URL: jdbc:postgresql://localhost:5432/laa_data_claims_api_dev
@@ -182,10 +165,12 @@ jobs:
           docker logs event-service-localstack > logs/localstack.log 2>&1 || true
           docker logs redis > logs/redis.log 2>&1 || true
           docker logs oidc > logs/oidc.log 2>&1 || true
+          cat pf-8095.log > logs/pf-fsp.log 2>&1 || true
+          cat pf-8186.log > logs/pf-pda.log 2>&1 || true
 
       - name: Upload logs
         if: always()
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: e2e-tests-docker-logs
           path: logs
@@ -193,7 +178,7 @@ jobs:
 
       - name: Upload reports
         if: always()
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: e2e-tests-reports
           path: |
@@ -204,10 +189,10 @@ jobs:
 
       - name: Cleanup
         if: always()
-        shell: bash
+        working-directory: laa-data-claims-parent
         run: |
           set +e
-          docker compose -f "${GITHUB_WORKSPACE}/.github/compose/e2e-stack.yml" down --remove-orphans || true
+          task down
           [ -n "${PORT_FORWARD_FSP_PID:-}" ] && kill "${PORT_FORWARD_FSP_PID}" || true
           [ -n "${PORT_FORWARD_PDA_PID:-}" ] && kill "${PORT_FORWARD_PDA_PID}" || true
           true

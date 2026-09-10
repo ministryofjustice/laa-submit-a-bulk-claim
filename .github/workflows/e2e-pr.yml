@@ -42,17 +42,8 @@ jobs:
           VERSION="${M}.${N}.${P}-SNAPSHOT-${HASH}"
           echo "preview_version=${VERSION}" >> "$GITHUB_OUTPUT"
 
-  e2e-setup:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
-      - name: Early setup
-        run: echo "Prepare any prerequisites here"
-
   wait-for-image:
-    needs:
-      - define-preview-version
-      - e2e-setup
+    needs: [define-preview-version]
     runs-on: ubuntu-latest
     env:
       IMAGE_TAG: ${{ format('{0}-{1}', vars.IMAGE_PREFIX, needs.define-preview-version.outputs.preview_version) }}
