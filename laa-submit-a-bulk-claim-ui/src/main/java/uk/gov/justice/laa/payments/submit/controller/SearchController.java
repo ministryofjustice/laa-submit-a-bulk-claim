@@ -3,6 +3,7 @@ package uk.gov.justice.laa.payments.submit.controller;
 import static uk.gov.justice.laa.payments.submit.dto.SubmissionOutcomeFilter.SUCCEEDED;
 
 import jakarta.servlet.http.HttpSession;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
 import lombok.RequiredArgsConstructor;
@@ -81,10 +82,16 @@ public class SearchController {
       BindingResult bindingResult,
       Model model) {
 
+    var userOffices = oidcAttributeUtils.getUserOffices(oidcUser);
+    var userOfficesSet = new HashSet<>(userOffices); // For performance of containsAll call below
+    if (submissionSearchQuery.getOffices() != null
+        && !userOfficesSet.containsAll(submissionSearchQuery.getOffices())) {
+      bindingResult.rejectValue(SubmissionSearchValidator.OFFICES, "search.error.offices.invalid");
+    }
+
     if (bindingResult.hasErrors()) {
       model.addAttribute(SUBMISSION_SEARCH_QUERY, submissionSearchQuery);
       model.addAttribute(BindingResult.MODEL_KEY_PREFIX + SUBMISSION_SEARCH_QUERY, bindingResult);
-      List<String> userOffices = oidcAttributeUtils.getUserOffices(oidcUser);
       model.addAttribute("userOffices", userOffices);
 
       return "pages/submissions-search";

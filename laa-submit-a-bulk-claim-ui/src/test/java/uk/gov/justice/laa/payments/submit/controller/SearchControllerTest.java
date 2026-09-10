@@ -84,6 +84,7 @@ class SearchControllerTest {
   @DisplayName("Handle search should redirect to query if validation errors")
   void handleSearchShouldRedirectBackOnErrors() {
     when(bindingResult.hasErrors()).thenReturn(true);
+    when(oidcAttributeUtils.getUserOffices(any())).thenReturn(List.of("12345"));
     final SubmissionSearchQuery query =
         SubmissionSearchQuery.builder().submissionPeriod("01/01/2024").build();
     final Model localModel = new ExtendedModelMap();
@@ -98,6 +99,7 @@ class SearchControllerTest {
   @DisplayName("Handle search should redirect with query params when valid")
   void handleSearchShouldRedirectWithParamsOnSuccess() {
     when(bindingResult.hasErrors()).thenReturn(false);
+    when(oidcAttributeUtils.getUserOffices(any())).thenReturn(List.of("12345"));
     final SubmissionSearchQuery query =
         SubmissionSearchQuery.builder()
             .submissionPeriod("JAN-2024")

@@ -1,5 +1,6 @@
 package uk.gov.justice.laa.payments.submit.view;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
@@ -102,6 +103,35 @@ class SearchFormViewTest extends ViewTestBase {
     var doc = renderSearchFormPost(params);
 
     Assertions.assertTrue(doc.selectFirst("details.govuk-details").hasAttr("open"));
+  }
+
+  @Test
+  void searchFormDisplaysSubmissionStatusValidationErrorWhenStatusIsInvalid() {
+    when(oidcAttributeUtils.getUserOffices(any())).thenReturn(List.of("12345"));
+
+    var params = new LinkedMultiValueMap<String, String>();
+    params.add("submissionStatuses", "INVALID_STATUS");
+    params.add("offices", "12345");
+    var doc = renderSearchFormPost(params);
+
+    assertPageHasErrorSummary(doc, "submissionStatuses-input");
+    assertThat(doc.selectFirst("#submissionStatuses-input")).isNotNull();
+    assertPageHasContent(doc, "There is a problem");
+    assertPageHasContent(doc, "Select a valid submission outcome");
+  }
+
+  @Test
+  void searchFormDisplaysOfficeValidationErrorWhenOfficeCodeIsInvalid() {
+    when(oidcAttributeUtils.getUserOffices(any())).thenReturn(List.of("12345"));
+
+    var params = new LinkedMultiValueMap<String, String>();
+    params.add("submissionStatuses", SubmissionOutcomeFilter.SUCCEEDED.name());
+    params.add("offices", "99999");
+    var doc = renderSearchFormPost(params);
+
+    assertPageHasErrorSummary(doc, "offices-input");
+    assertPageHasContent(doc, "There is a problem");
+    assertPageHasContent(doc, "Select a valid office code");
   }
 
   private Document renderSearchFormPost(MultiValueMap<String, String> params) {
