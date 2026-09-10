@@ -80,7 +80,7 @@ class SearchE2ETest extends JdbcTemplateBaseTest {
     uploadPage.getSearchLink().click();
 
     var searchPage = new SearchPage(page);
-    searchPage.getAreaOfLawSelect().locator("Legal help");
+    searchPage.getAreaOfLawSelect().selectOption("LEGAL HELP");
     searchPage.getSearchButton().click();
 
     assertThat(searchPage.getResultsTable()).isVisible();
