@@ -1,4 +1,3 @@
-# .github/compose/e2e-override.yml
 services:
   sabc-ui:
     image: ${REGISTRY}/${REPO}:${IMAGE_TAG}
@@ -21,5 +20,24 @@ services:
       - "8082:8082"
       - "8182:8081"
       - "5082:5005"
+    depends_on:
+      - redis
+      - local-postgres
     extra_hosts:
       - "host.docker.internal:host-gateway"
+
+  redis:
+    image: redis:8-alpine
+    container_name: redis
+    ports:
+      - "6382:6379"
+
+  local-postgres:
+    image: postgres:18.1-alpine
+    container_name: local-postgres
+    environment:
+      POSTGRES_DB: laa_data_claims_api_dev
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: dev
+    ports:
+      - "5432:5432"

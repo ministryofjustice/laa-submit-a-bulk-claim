@@ -62,16 +62,6 @@ jobs:
           path: laa-data-claims-parent
           submodules: true
 
-      - name: Update parent submodules
-        working-directory: laa-data-claims-parent
-        env:
-          SUBMIT_REF: ${{ github.head_ref || github.ref_name }}
-        run: |
-          ./update-bulk-claim-repos.sh
-          cd laa-submit-a-bulk-claim
-          git fetch origin "$SUBMIT_REF"
-          git checkout -B "$SUBMIT_REF" FETCH_HEAD
-
       - name: Install kubectl
         uses: azure/setup-kubectl@829323503d1be3d00ca8346e5391ca0b07a9ab0d
         with:
@@ -146,9 +136,6 @@ jobs:
       - name: Start app stack from ECR image
         shell: bash
         run: |
-          APP_REPO="${GITHUB_WORKSPACE}"
-          PARENT_REPO="${GITHUB_WORKSPACE}/laa-data-claims-parent"
-
           REGISTRY="${{ steps.login-ecr.outputs.registry }}"
           export REGISTRY
           export REPO="${{ vars.LAA_SUBMIT_A_BULK_CLAIM_ECR_REPOSITORY }}"
@@ -167,10 +154,7 @@ jobs:
           export LAA_ACCOUNTS="0P322F"
           export GITHUB_TOKEN="${{ secrets.pat_token }}"
 
-          docker compose \
-            -f "${PARENT_REPO}/docker-compose.yml" \
-            -f "${APP_REPO}/.github/compose/e2e-override.yml" \
-            up -d
+          docker compose -f .github/compose/e2e-stack.yml up -d
 
       - name: Wait for services to be ready
         working-directory: laa-data-claims-parent/laa-submit-a-bulk-claim
