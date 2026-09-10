@@ -98,3 +98,4 @@ jobs:
       auth_tenant_id: ${{ secrets.AUTH_TENANT_ID }}
       fsp_api_token: ${{ secrets.FSP_API_TOKEN }}
       pda_api_token: ${{ secrets.PDA_API_TOKEN }}
+      LAA_SUBMIT_A_BULK_CLAIM_ECR_ROLE_TO_ASSUME: ${{ secrets.LAA_SUBMIT_A_BULK_CLAIM_ECR_ROLE_TO_ASSUME }}
