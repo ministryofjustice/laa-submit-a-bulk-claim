@@ -36,16 +36,6 @@ services:
     ports:
       - "6382:6379"
 
-  local-postgres:
-    image: postgres:18.1-alpine
-    container_name: local-postgres
-    environment:
-      POSTGRES_DB: laa_data_claims_api_dev
-      POSTGRES_USER: user
-      POSTGRES_PASSWORD: dev
-    ports:
-      - "5432:5432"
-
   claims-api:
     build:
       context: ../../laa-data-claims-parent/laa-data-claims-api
@@ -53,19 +43,6 @@ services:
     container_name: data-claims-api-app
     ports:
       - "8180:8081"
-    environment:
-      AWS_REGION: us-east-1
-      SPRING_DATASOURCE_URL: jdbc:postgresql://local-postgres:5432/laa_data_claims_api_dev
-      AWS_ACCESS_KEY_ID: dummy-access-key
-      AWS_SECRET_ACCESS_KEY: dummy-access-key
-      AWS_ENDPOINT_URL: http://host.docker.internal:4566
-      AWS_SQS_ENDPOINT: http://host.docker.internal:4566
-      SPRING_PROFILES_ACTIVE: local
-      JAVA_TOOL_OPTIONS: -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005
-      PROVIDER_DETAILS_API_URL: ${PROVIDER_DETAILS_API_URL}
-      PROVIDER_DETAILS_API_ACCESS_TOKEN: ${PROVIDER_DETAILS_API_ACCESS_TOKEN}
-      FEE_SCHEME_PLATFORM_API_URL: ${FEE_SCHEME_PLATFORM_API_ACCESS_TOKEN}
-      FEE_SCHEME_PLATFORM_API_ACCESS_TOKEN: ${FEE_SCHEME_PLATFORM_API_ACCESS_TOKEN}
 
   event-service:
     build:
@@ -74,31 +51,3 @@ services:
     container_name: data-claims-event-service-app
     ports:
       - "8181:8081"
-    environment:
-      CLAIMS_API_HOSTNAME: http://claims-api:8080
-      CLAIMS_API_ACCESS_TOKEN: f67f968e-b479-4e61-b66e-f57984931e56
-      BULK_CLAIM_QUEUE_NAME: claims-api-queue
-      PROVIDER_DETAILS_API_HOSTNAME: ${PROVIDER_DETAILS_API_HOSTNAME}
-      PROVIDER_DETAILS_API_ACCESS_TOKEN: ${PROVIDER_DETAILS_API_ACCESS_TOKEN}
-      FEE_SCHEME_PLATFORM_API_URL: ${FEE_SCHEME_PLATFORM_API_URL}
-      FEE_SCHEME_PLATFORM_API_ACCESS_TOKEN: ${FEE_SCHEME_PLATFORM_API_ACCESS_TOKEN}
-      SPRING_CLOUD_AWS_REGION_STATIC: us-east-1
-      AWS_REGION: us-east-1
-      AWS_ACCESS_KEY_ID: dummy-access-key
-      AWS_SECRET_ACCESS_KEY: dummy-access-key
-      AWS_ENDPOINT_URL: http://localstack:4566
-      SPRING_CLOUD_AWS_SQS_ENDPOINT: http://localstack:4566
-      JAVA_TOOL_OPTIONS: -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005
-    depends_on:
-      localstack:
-        condition: service_healthy
-
-  localstack:
-    image: localstack/localstack:4.14.0
-    container_name: event-service-localstack
-    ports:
-      - "4566:4566"
-    environment:
-      SERVICES: sqs,sns
-      DEBUG: "1"
-      AWS_DEFAULT_REGION: us-east-1

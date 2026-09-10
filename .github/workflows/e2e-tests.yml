@@ -76,7 +76,7 @@ jobs:
           kube-token: ${{ secrets.kube_token }}
           kube-sa: deploy-user
 
-      - name: Port forward to PDA-API service in SaBC namespace
+      - name: Port forward to PDA-API service
         uses: ./.github/actions/port-forward-service
         with:
           kube_namespace: ${{ secrets.kube_namespace }}
@@ -95,7 +95,7 @@ jobs:
           kube-namespace: ${{ secrets.kube_namespace_laa_fee_scheme_api_uat }}
           kube-sa: deploy-user
 
-      - name: Port forward to FSP-API service in FSP namespace
+      - name: Port forward to FSP API
         uses: ./.github/actions/port-forward-service
         with:
           kube_namespace: ${{ secrets.kube_namespace_laa_fee_scheme_api_uat }}
@@ -182,8 +182,6 @@ jobs:
           docker logs event-service-localstack > logs/localstack.log 2>&1 || true
           docker logs redis > logs/redis.log 2>&1 || true
           docker logs oidc > logs/oidc.log 2>&1 || true
-          cat pf-8095.log > logs/pf-fsp.log 2>&1 || true
-          cat pf-8186.log > logs/pf-pda.log 2>&1 || true
 
       - name: Upload logs
         if: always()
@@ -206,11 +204,10 @@ jobs:
 
       - name: Cleanup
         if: always()
-        working-directory: laa-data-claims-parent
         shell: bash
         run: |
           set +e
-          docker compose -f docker-compose.yml down --remove-orphans || true
+          docker compose -f "${GITHUB_WORKSPACE}/.github/compose/e2e-stack.yml" down --remove-orphans || true
           [ -n "${PORT_FORWARD_FSP_PID:-}" ] && kill "${PORT_FORWARD_FSP_PID}" || true
           [ -n "${PORT_FORWARD_PDA_PID:-}" ] && kill "${PORT_FORWARD_PDA_PID}" || true
           true

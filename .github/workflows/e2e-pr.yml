@@ -21,9 +21,11 @@ jobs:
         with:
           fetch-depth: 0
           fetch-tags: true
+
       - name: Compute version
         id: compute
         uses: ministryofjustice/laa-ccms-common-workflows/.github/actions/compute-version@4daa796eff475c7a107e17daf4e4882b8a1b949b
+
       - name: Build preview version
         id: preview
         shell: bash
@@ -77,11 +79,11 @@ jobs:
       - define-preview-version
       - wait-for-image
     uses: ./.github/workflows/e2e-tests.yml
-    with:
-      image_tag: ${{ format('{0}-{1}', vars.IMAGE_PREFIX, needs.define-preview-version.outputs.preview_version) }}
     permissions:
       id-token: write
       contents: read
+    with:
+      image_tag: ${{ format('{0}-{1}', vars.IMAGE_PREFIX, needs.define-preview-version.outputs.preview_version) }}
     secrets:
       pat_token: ${{ secrets.PAT_TOKEN }}
       kube_cert: ${{ secrets.KUBE_CERT }}
