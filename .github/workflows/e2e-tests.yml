@@ -145,8 +145,10 @@ jobs:
 
       - name: Start app stack from ECR image
         shell: bash
-        working-directory: laa-data-claims-parent
         run: |
+          APP_REPO="${GITHUB_WORKSPACE}"
+          PARENT_REPO="${GITHUB_WORKSPACE}/laa-data-claims-parent"
+
           REGISTRY="${{ steps.login-ecr.outputs.registry }}"
           export REGISTRY
           export REPO="${{ vars.LAA_SUBMIT_A_BULK_CLAIM_ECR_REPOSITORY }}"
@@ -166,8 +168,8 @@ jobs:
           export GITHUB_TOKEN="${{ secrets.pat_token }}"
 
           docker compose \
-            -f docker-compose.yml \
-            -f ../laa-submit-a-bulk-claim/.github/compose/e2e-override.yml \
+            -f "${PARENT_REPO}/docker-compose.yml" \
+            -f "${APP_REPO}/.github/compose/e2e-override.yml" \
             up -d
 
       - name: Wait for services to be ready
