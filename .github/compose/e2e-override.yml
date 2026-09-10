@@ -21,3 +21,5 @@ services:
       - "8082:8082"
       - "8182:8081"
       - "5082:5005"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"

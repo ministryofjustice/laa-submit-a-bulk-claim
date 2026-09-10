@@ -145,6 +145,7 @@ jobs:
 
       - name: Start app stack from ECR image
         shell: bash
+        working-directory: laa-data-claims-parent
         run: |
           REGISTRY="${{ steps.login-ecr.outputs.registry }}"
           export REGISTRY
@@ -165,8 +166,8 @@ jobs:
           export GITHUB_TOKEN="${{ secrets.pat_token }}"
 
           docker compose \
-            -f docker-compose.yaml \
-            -f .github/compose/e2e-override.yml \
+            -f docker-compose.yml \
+            -f ../laa-submit-a-bulk-claim/.github/compose/e2e-override.yml \
             up -d
 
       - name: Wait for services to be ready
@@ -219,10 +220,11 @@ jobs:
 
       - name: Cleanup
         if: always()
+        working-directory: laa-data-claims-parent
         shell: bash
         run: |
           set +e
-          docker compose -f docker-compose.yaml down --remove-orphans || true
+          docker compose -f docker-compose.yml down --remove-orphans || true
           [ -n "${PORT_FORWARD_FSP_PID:-}" ] && kill "${PORT_FORWARD_FSP_PID}" || true
           [ -n "${PORT_FORWARD_PDA_PID:-}" ] && kill "${PORT_FORWARD_PDA_PID}" || true
           true
