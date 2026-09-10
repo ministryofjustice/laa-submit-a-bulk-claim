@@ -154,7 +154,7 @@ jobs:
           export LAA_ACCOUNTS="0P322F"
           export GITHUB_TOKEN="${{ secrets.pat_token }}"
 
-          docker compose -f .github/compose/e2e-stack.yml up -d
+          docker compose -f "${GITHUB_WORKSPACE}/.github/compose/e2e-stack.yml" up -d
 
       - name: Wait for services to be ready
         working-directory: laa-data-claims-parent/laa-submit-a-bulk-claim

@@ -3,26 +3,30 @@ services:
     image: ${REGISTRY}/${REPO}:${IMAGE_TAG}
     container_name: submit-a-bulk-claim-app
     environment:
+      SERVER_MAX_FILE_SIZE: 50MB
+      UPLOAD_MAX_FILE_SIZE: 10MB
       AUTH_CLIENT_ID: ${AUTH_CLIENT_ID}
       AUTH_CLIENT_SECRET: ${AUTH_CLIENT_SECRET}
       AUTH_SCOPE: ${AUTH_SCOPE}
       AUTH_TENANT_ID: ${AUTH_TENANT_ID}
       SDS_API_URL: ${SDS_API_URL}
-      FEE_SCHEME_PLATFORM_API_URL: ${FEE_SCHEME_PLATFORM_API_URL}
-      FEE_SCHEME_PLATFORM_API_ACCESS_TOKEN: ${FEE_SCHEME_PLATFORM_API_ACCESS_TOKEN}
-      PROVIDER_DETAILS_API_URL: ${PROVIDER_DETAILS_API_URL}
-      PROVIDER_DETAILS_API_HOSTNAME: ${PROVIDER_DETAILS_API_HOSTNAME}
-      PROVIDER_DETAILS_API_ACCESS_TOKEN: ${PROVIDER_DETAILS_API_ACCESS_TOKEN}
-      SUBMIT_SPRING_PROFILES_ACTIVE: ${SUBMIT_SPRING_PROFILES_ACTIVE}
-      LAA_ACCOUNTS: ${LAA_ACCOUNTS}
-      GITHUB_TOKEN: ${GITHUB_TOKEN}
+      CLAIM_API_URL: http://claims-api:8080
+      CLAIMS_API_ACCESS_TOKEN: f67f968e-b479-4e61-b66e-f57984931e56
+      REST_CLIENT_CONNECT_TIMEOUT: 5000
+      REST_CLIENT_READ_TIMEOUT: 40000
+      REDIS_HOST: redis://redis:6379
+      SPRING_PROFILES_ACTIVE: ${SUBMIT_SPRING_PROFILES_ACTIVE:-oidc}
+      JAVA_TOOL_OPTIONS: -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005
+      IS_NIL_SUBMISSION_ENABLED: "true"
+      IS_ALTERNATIVE_CLAIM_VIEW_ENABLED: "true"
     ports:
       - "8082:8082"
       - "8182:8081"
       - "5082:5005"
     depends_on:
       - redis
-      - local-postgres
+      - claims-api
+      - event-service
     extra_hosts:
       - "host.docker.internal:host-gateway"
 
@@ -41,3 +45,60 @@ services:
       POSTGRES_PASSWORD: dev
     ports:
       - "5432:5432"
+
+  claims-api:
+    build:
+      context: ../../laa-data-claims-parent/laa-data-claims-api
+      dockerfile: Dockerfile
+    container_name: data-claims-api-app
+    ports:
+      - "8180:8081"
+    environment:
+      AWS_REGION: us-east-1
+      SPRING_DATASOURCE_URL: jdbc:postgresql://local-postgres:5432/laa_data_claims_api_dev
+      AWS_ACCESS_KEY_ID: dummy-access-key
+      AWS_SECRET_ACCESS_KEY: dummy-access-key
+      AWS_ENDPOINT_URL: http://host.docker.internal:4566
+      AWS_SQS_ENDPOINT: http://host.docker.internal:4566
+      SPRING_PROFILES_ACTIVE: local
+      JAVA_TOOL_OPTIONS: -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005
+      PROVIDER_DETAILS_API_URL: ${PROVIDER_DETAILS_API_URL}
+      PROVIDER_DETAILS_API_ACCESS_TOKEN: ${PROVIDER_DETAILS_API_ACCESS_TOKEN}
+      FEE_SCHEME_PLATFORM_API_URL: ${FEE_SCHEME_PLATFORM_API_ACCESS_TOKEN}
+      FEE_SCHEME_PLATFORM_API_ACCESS_TOKEN: ${FEE_SCHEME_PLATFORM_API_ACCESS_TOKEN}
+
+  event-service:
+    build:
+      context: ../../laa-data-claims-parent/laa-data-claims-event-service
+      dockerfile: Dockerfile_internal
+    container_name: data-claims-event-service-app
+    ports:
+      - "8181:8081"
+    environment:
+      CLAIMS_API_HOSTNAME: http://claims-api:8080
+      CLAIMS_API_ACCESS_TOKEN: f67f968e-b479-4e61-b66e-f57984931e56
+      BULK_CLAIM_QUEUE_NAME: claims-api-queue
+      PROVIDER_DETAILS_API_HOSTNAME: ${PROVIDER_DETAILS_API_HOSTNAME}
+      PROVIDER_DETAILS_API_ACCESS_TOKEN: ${PROVIDER_DETAILS_API_ACCESS_TOKEN}
+      FEE_SCHEME_PLATFORM_API_URL: ${FEE_SCHEME_PLATFORM_API_URL}
+      FEE_SCHEME_PLATFORM_API_ACCESS_TOKEN: ${FEE_SCHEME_PLATFORM_API_ACCESS_TOKEN}
+      SPRING_CLOUD_AWS_REGION_STATIC: us-east-1
+      AWS_REGION: us-east-1
+      AWS_ACCESS_KEY_ID: dummy-access-key
+      AWS_SECRET_ACCESS_KEY: dummy-access-key
+      AWS_ENDPOINT_URL: http://localstack:4566
+      SPRING_CLOUD_AWS_SQS_ENDPOINT: http://localstack:4566
+      JAVA_TOOL_OPTIONS: -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005
+    depends_on:
+      localstack:
+        condition: service_healthy
+
+  localstack:
+    image: localstack/localstack:4.14.0
+    container_name: event-service-localstack
+    ports:
+      - "4566:4566"
+    environment:
+      SERVICES: sqs,sns
+      DEBUG: "1"
+      AWS_DEFAULT_REGION: us-east-1
