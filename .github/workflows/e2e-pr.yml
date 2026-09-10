@@ -50,10 +50,18 @@ jobs:
       ECR_REPOSITORY: ${{ vars.LAA_SUBMIT_A_BULK_CLAIM_ECR_REPOSITORY }}
     steps:
       - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@e7f100cf4c008499ea8adda475de1042d6975c7b
+        uses: aws-actions/configure-aws-credentials@fb7eb401298e393da51cdcb2feb1ed0183619014 # v6
         with:
           role-to-assume: ${{ secrets.LAA_SUBMIT_A_BULK_CLAIM_ECR_ROLE_TO_ASSUME }}
           aws-region: ${{ vars.LAA_SUBMIT_A_BULK_CLAIM_ECR_REGION }}
+
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@03f1aad4c6c7ffd436567f42f9384779290529bd # v2.1.7
+
+      - name: Pull image
+        run: |
+          docker pull ${{ steps.login-ecr.outputs.registry }}/${{ vars.LAA_SUBMIT_A_BULK_CLAIM_ECR_REPOSITORY }}:${{ env.IMAGE_TAG }}
 
       - name: Wait for ECR image
         run: |
