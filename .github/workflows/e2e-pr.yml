@@ -1,0 +1,100 @@
+name: E2E (PR)
+
+on:
+  pull_request:
+
+permissions:
+  contents: read
+  id-token: write
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  define-preview-version:
+    runs-on: ubuntu-latest
+    outputs:
+      preview_version: ${{ steps.preview.outputs.preview_version }}
+    steps:
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
+        with:
+          fetch-depth: 0
+          fetch-tags: true
+      - name: Compute version
+        id: compute
+        uses: ministryofjustice/laa-ccms-common-workflows/.github/actions/compute-version@4daa796eff475c7a107e17daf4e4882b8a1b949b
+      - name: Build preview version
+        id: preview
+        shell: bash
+        env:
+          BUMP_TYPE: ${{ steps.compute.outputs.bump_type }}
+          MAJOR: ${{ steps.compute.outputs.major }}
+          MINOR: ${{ steps.compute.outputs.minor }}
+          PATCH: ${{ steps.compute.outputs.patch }}
+        run: |
+          BUMP="${BUMP_TYPE:-none}"
+          M="${MAJOR:-0}"; N="${MINOR:-0}"; P="${PATCH:-0}"
+          if [[ "$BUMP" == "none" ]]; then P=$((P+1)); fi
+          HASH=$(git rev-parse --short HEAD)
+          VERSION="${M}.${N}.${P}-SNAPSHOT-${HASH}"
+          echo "preview_version=${VERSION}" >> "$GITHUB_OUTPUT"
+
+  e2e-setup:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
+      - name: Early setup
+        run: echo "Prepare any prerequisites here"
+
+  wait-for-image:
+    needs:
+      - define-preview-version
+      - e2e-setup
+    runs-on: ubuntu-latest
+    env:
+      IMAGE_TAG: ${{ format('{0}-{1}', vars.IMAGE_PREFIX, needs.define-preview-version.outputs.preview_version) }}
+      ECR_REPOSITORY: ${{ vars.LAA_SUBMIT_A_BULK_CLAIM_ECR_REPOSITORY }}
+    steps:
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@e7f100cf4c008499ea8adda475de1042d6975c7b
+        with:
+          role-to-assume: ${{ secrets.LAA_SUBMIT_A_BULK_CLAIM_ECR_ROLE_TO_ASSUME }}
+          aws-region: ${{ vars.LAA_SUBMIT_A_BULK_CLAIM_ECR_REGION }}
+
+      - name: Wait for ECR image
+        run: |
+          for i in {1..30}; do
+            aws ecr describe-images --repository-name "$ECR_REPOSITORY" --image-ids imageTag="$IMAGE_TAG" >/dev/null 2>&1 && exit 0
+            echo "Image not ready yet: $IMAGE_TAG"
+            sleep 20
+          done
+          echo "Timed out waiting for $IMAGE_TAG"
+          exit 1
+
+  run-e2e:
+    needs:
+      - define-preview-version
+      - wait-for-image
+    uses: ./.github/workflows/e2e-tests.yml
+    with:
+      image_tag: ${{ format('{0}-{1}', vars.IMAGE_PREFIX, needs.define-preview-version.outputs.preview_version) }}
+    permissions:
+      id-token: write
+      contents: read
+    secrets:
+      pat_token: ${{ secrets.PAT_TOKEN }}
+      kube_cert: ${{ secrets.KUBE_CERT }}
+      kube_cluster: ${{ secrets.KUBE_CLUSTER }}
+      kube_namespace: ${{ secrets.KUBE_NAMESPACE }}
+      kube_token: ${{ secrets.KUBE_TOKEN }}
+      kube_namespace_laa_fee_scheme_api_uat: ${{ secrets.KUBE_NAMESPACE_LAA_FEE_SCHEME_API_UAT }}
+      kube_cert_laa_fee_scheme_api_uat: ${{ secrets.KUBE_CERT_LAA_FEE_SCHEME_API_UAT }}
+      kube_token_laa_fee_scheme_api_uat: ${{ secrets.KUBE_TOKEN_LAA_FEE_SCHEME_API_UAT }}
+      kube_cluster_laa_fee_scheme_api_uat: ${{ secrets.KUBE_CLUSTER_LAA_FEE_SCHEME_API_UAT }}
+      auth_client_id: ${{ secrets.AUTH_CLIENT_ID }}
+      auth_client_secret: ${{ secrets.AUTH_CLIENT_SECRET }}
+      auth_scope: ${{ secrets.AUTH_SCOPE }}
+      auth_tenant_id: ${{ secrets.AUTH_TENANT_ID }}
+      fsp_api_token: ${{ secrets.FSP_API_TOKEN }}
+      pda_api_token: ${{ secrets.PDA_API_TOKEN }}

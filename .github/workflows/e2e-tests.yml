@@ -2,6 +2,10 @@ name: E2E tests
 
 on:
   workflow_call:
+    inputs:
+      image_tag:
+        required: true
+        type: string
     secrets:
       pat_token:
         required: true
@@ -42,7 +46,12 @@ jobs:
   e2e-tests:
     runs-on: ubuntu-latest
     environment: uat
+    env:
+      IMAGE_TAG: ${{ inputs.image_tag }}
     steps:
+      - name: Pull image
+        run: |
+          echo "Image tag is ${IMAGE_TAG}"
       - name: Checkout
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
 
@@ -119,9 +128,17 @@ jobs:
       - name: Install task
         uses: go-task/setup-task@a00fbb05ce67b35648be3c78cbc9fd85354c757e # v2.2.0
 
-      - name: Build and start services
-        working-directory: laa-data-claims-parent
-        run: task up:submit
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@e7f100cf4c008499ea8adda475de1042d6975c7b
+        with:
+          role-to-assume: ${{ secrets.LAA_SUBMIT_A_BULK_CLAIM_ECR_ROLE_TO_ASSUME }}
+          aws-region: ${{ vars.LAA_SUBMIT_A_BULK_CLAIM_ECR_REGION }}
+
+      - name: Pull image from ECR
+        run: |
+          aws ecr get-login-password --region "${{ vars.LAA_SUBMIT_A_BULK_CLAIM_ECR_REGION }}" \
+            | docker login --username AWS --password-stdin "${{ vars.LAA_SUBMIT_A_BULK_CLAIM_ECR_REPOSITORY }}"
+          docker pull "${{ vars.LAA_SUBMIT_A_BULK_CLAIM_ECR_REPOSITORY }}:${IMAGE_TAG}"
         env:
           GITHUB_TOKEN: ${{ secrets.pat_token }} # PAT token required for providers-api dependency
           AUTH_CLIENT_ID: ${{ secrets.auth_client_id }}
@@ -136,6 +153,12 @@ jobs:
           PROVIDER_DETAILS_API_ACCESS_TOKEN: ${{ secrets.pda_api_token }}
           SUBMIT_SPRING_PROFILES_ACTIVE: oidc,github-test-runner
           LAA_ACCOUNTS: 0P322F
+      - name: Start app from ECR image
+        run: |
+          docker run -d \
+            --name submit-a-bulk-claim-app \
+            -p 8082:8082 \
+            "${{ vars.LAA_SUBMIT_A_BULK_CLAIM_ECR_REPOSITORY }}:${IMAGE_TAG}"
 
       - name: Wait for services to be ready
         working-directory: laa-data-claims-parent/laa-submit-a-bulk-claim
@@ -190,7 +213,8 @@ jobs:
         working-directory: laa-data-claims-parent
         run: |
           set +e
-          task down
+          docker stop submit-a-bulk-claim-app || true
+          docker rm submit-a-bulk-claim-app || true
           [ -n "${PORT_FORWARD_FSP_PID:-}" ] && kill "${PORT_FORWARD_FSP_PID}" || true
           [ -n "${PORT_FORWARD_PDA_PID:-}" ] && kill "${PORT_FORWARD_PDA_PID}" || true
           true
