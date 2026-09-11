@@ -43,7 +43,7 @@ class BulkUploadPageViewTest extends ViewTestBase {
     assertPageDoesNotHaveBackLink(doc);
     assertPageHasPrimaryButton(doc, "Continue");
     assertPageHasLabel(doc, "file-input", "Upload an XML, CSV, or TXT file");
-    assertPageHasContent(doc, "The file must be 10MB or smaller.");
+    assertPageHasContent(doc, "The maximum file size is");
     assertPageHasContent(doc, "We will check your file on the next screen.");
   }
 

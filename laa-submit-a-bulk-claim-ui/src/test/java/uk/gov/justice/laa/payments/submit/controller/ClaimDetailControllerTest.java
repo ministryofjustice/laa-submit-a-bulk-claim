@@ -36,7 +36,6 @@ import uk.gov.justice.laa.payments.submit.helper.TestObjectCreator;
 import uk.gov.justice.laa.payments.submit.mapper.ClaimFeeCalculationBreakdownMapper;
 import uk.gov.justice.laa.payments.submit.mapper.ClaimSummaryMapper;
 import uk.gov.justice.laa.payments.submit.service.ClaimService;
-import uk.gov.justice.laa.payments.submit.service.SubmissionService;
 import uk.gov.justice.laa.payments.submit.util.ThymeleafHrefUtils;
 import uk.gov.justice.laa.payments.submit.viewmodels.claimdetails.ClaimDetailPageData;
 import uk.gov.justice.laa.payments.submit.viewmodels.claimdetails.ClaimDetailViewFactory;
@@ -57,7 +56,6 @@ class ClaimDetailControllerTest extends BaseControllerTest {
   @MockitoBean private ClaimDetailViewFactory claimDetailViewFactory;
   @MockitoBean private ClaimStatusBannerBuilder claimStatusBannerBuilder;
   @MockitoBean private LatestAssessmentResolver latestAssessmentResolver;
-  @MockitoBean private SubmissionService submissionService;
 
   @Nested
   @DisplayName("GET: /submissions/{submissionId}/claims/{claimId}")
