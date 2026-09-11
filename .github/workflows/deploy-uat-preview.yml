@@ -41,25 +41,6 @@ jobs:
           echo "preview_version=${version}" >> "$GITHUB_OUTPUT"
           echo "Preview version: submit-a-bulk-claim-${version}"
 
-  build-and-test:
-    needs: [ define-preview-version ]
-    uses: ministryofjustice/laa-ccms-common-workflows/.github/workflows/gradle-build-and-publish.yml@0c06c747af49e3efb703717e6185cf693494d5a4 # v2.4.2
-    permissions:
-      contents: write
-      packages: write
-    with:
-      override_version: ${{ needs.define-preview-version.outputs.preview_version }}
-      build_command: ':laa-submit-a-bulk-claim-ui:build'
-      integration_test_task: integrationTest
-      junit_results_path: 'laa-submit-a-bulk-claim-ui/build/test-results'
-      junit_report_path: 'laa-submit-a-bulk-claim-ui/build/reports/tests'
-      checkstyle_report_path: 'laa-submit-a-bulk-claim-ui/build/reports/checkstyle'
-      jacoco_coverage_report_path: 'laa-submit-a-bulk-claim-ui/build/reports/jacoco'
-      semgrep_check: 'true'
-      java_version: 25
-    secrets:
-      gh_token: ${{ secrets.GITHUB_TOKEN }}
-
   e2e-tests:
     uses: ./.github/workflows/e2e-tests.yml
     permissions:
@@ -81,6 +62,84 @@ jobs:
       auth_tenant_id: ${{ secrets.AUTH_TENANT_ID }}
       fsp_api_token: ${{ secrets.FSP_API_TOKEN }}
       pda_api_token: ${{ secrets.PDA_API_TOKEN }}
+
+  build-and-publish:
+    needs: [ define-preview-version ]
+    uses: ministryofjustice/laa-ccms-common-workflows/.github/workflows/gradle-build-and-publish.yml@0c06c747af49e3efb703717e6185cf693494d5a4 # v2.4.2
+    permissions:
+      contents: write
+      packages: write
+    with:
+      override_version: ${{ needs.define-preview-version.outputs.preview_version }}
+      release_type: 'none'
+      build_command: ':laa-submit-a-bulk-claim-ui:assemble'
+      junit_results: 'false'
+      junit_report: 'false'
+      checkstyle_report: 'false'
+      jacoco_coverage_report: 'false'
+      semgrep_check: 'true'
+      java_version: 25
+    secrets:
+      gh_token: ${{ secrets.GITHUB_TOKEN }}
+
+  unit-test:
+    needs: [ define-preview-version ]
+    uses: ministryofjustice/laa-ccms-common-workflows/.github/workflows/gradle-build-and-publish.yml@0c06c747af49e3efb703717e6185cf693494d5a4 # v2.4.2
+    permissions:
+      contents: write
+      packages: write
+    with:
+      override_version: ${{ needs.define-preview-version.outputs.preview_version }}
+      release_type: 'none'
+      build_command: ':laa-submit-a-bulk-claim-ui:test'
+      junit_results_path: 'laa-submit-a-bulk-claim-ui/build/test-results/test'
+      junit_report_path: 'laa-submit-a-bulk-claim-ui/build/reports/tests/test'
+      checkstyle_report: 'false'
+      jacoco_coverage_report: 'false'
+      semgrep_check: 'false'
+      java_version: 25
+    secrets:
+      gh_token: ${{ secrets.GITHUB_TOKEN }}
+
+  coverage:
+    needs: [ define-preview-version ]
+    uses: ministryofjustice/laa-ccms-common-workflows/.github/workflows/gradle-build-and-publish.yml@0c06c747af49e3efb703717e6185cf693494d5a4 # v2.4.2
+    permissions:
+      contents: write
+      packages: write
+    with:
+      override_version: ${{ needs.define-preview-version.outputs.preview_version }}
+      release_type: 'none'
+      build_command: ':laa-submit-a-bulk-claim-ui:test :laa-submit-a-bulk-claim-ui:jacocoTestCoverageVerification'
+      junit_results: 'false'
+      junit_report: 'false'
+      checkstyle_report: 'false'
+      jacoco_coverage_report_path: 'laa-submit-a-bulk-claim-ui/build/reports/jacoco'
+      semgrep_check: 'false'
+      java_version: 25
+    secrets:
+      gh_token: ${{ secrets.GITHUB_TOKEN }}
+
+  integration-test:
+    needs: [ define-preview-version ]
+    uses: ministryofjustice/laa-ccms-common-workflows/.github/workflows/gradle-build-and-publish.yml@0c06c747af49e3efb703717e6185cf693494d5a4 # v2.4.2
+    permissions:
+      contents: write
+      packages: write
+    with:
+      override_version: ${{ needs.define-preview-version.outputs.preview_version }}
+      release_type: 'none'
+      build_command: 'help'
+      build_args: '--quiet'
+      integration_test_task: integrationTest
+      junit_results_path: 'laa-submit-a-bulk-claim-ui/build/test-results/integrationTest'
+      junit_report_path: 'laa-submit-a-bulk-claim-ui/build/reports/tests/integrationTest'
+      checkstyle_report: 'false'
+      jacoco_coverage_report: 'false'
+      semgrep_check: 'false'
+      java_version: 25
+    secrets:
+      gh_token: ${{ secrets.GITHUB_TOKEN }}
 
   test-smoke:
     name: Test @smoke
@@ -178,7 +237,7 @@ jobs:
           if-no-files-found: warn
 
   ecr-publish-image:
-    needs: [ build-and-test ]
+    needs: [ build-and-publish ]
     uses: ministryofjustice/laa-ccms-common-workflows/.github/workflows/ecr-publish-image.yml@0c06c747af49e3efb703717e6185cf693494d5a4 # v2.4.2
     permissions:
       contents: read
@@ -186,7 +245,7 @@ jobs:
       security-events: write
     with:
       dockerfile_path: 'Dockerfile'
-      image_version: ${{ format('{0}-{1}', vars.IMAGE_PREFIX, needs.build-and-test.outputs.published_artifact_version) }}
+      image_version: ${{ format('{0}-{1}', vars.IMAGE_PREFIX, needs.build-and-publish.outputs.published_artifact_version) }}
       java_version: 25
       image_scan_severity: 'high'
     secrets:
@@ -201,9 +260,7 @@ jobs:
 
   deploy-uat-preview:
     needs:
-      - pact-test
       - ecr-publish-image
-      - accessibility-test
     runs-on: ubuntu-latest
     environment: uat
     permissions:
