@@ -72,15 +72,6 @@ jobs:
           retention-days: 14
           if-no-files-found: warn
 
-      - name: Upload checkstyle report
-        if: ${{ always() && inputs.test_type == 'unit' }}
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
-        with:
-          name: unit-checkstyle-report
-          path: laa-submit-a-bulk-claim-ui/build/reports/checkstyle
-          retention-days: 14
-          if-no-files-found: warn
-
       - name: Upload test report
         if: always()
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
