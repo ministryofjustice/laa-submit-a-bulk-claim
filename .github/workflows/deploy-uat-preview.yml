@@ -137,6 +137,8 @@ jobs:
       build_command: 'help'
       build_args: '--quiet'
       integration_test_task: integrationTest
+      junit_results: 'false'
+      junit_report: 'false'
       junit_results_path: 'laa-submit-a-bulk-claim-ui/build/test-results/integrationTest'
       junit_report_path: 'laa-submit-a-bulk-claim-ui/build/reports/tests/integrationTest'
       checkstyle_report: 'false'
