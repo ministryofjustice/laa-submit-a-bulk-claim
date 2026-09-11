@@ -42,6 +42,7 @@ jobs:
           echo "Preview version: submit-a-bulk-claim-${version}"
 
   semgrep-scan:
+    needs: [ define-preview-version ]
     name: semgrep-security-scan
     runs-on: ubuntu-latest
     container:
@@ -52,8 +53,11 @@ jobs:
         run: semgrep scan --exclude-rule python.django.security.django-no-csrf-token.django-no-csrf-token --error --config auto
 
   build:
-    needs: [ define-preview-version ]
+    needs: [ semgrep-scan ]
     uses: ./.github/workflows/build.yml
+    permissions:
+      contents: read
+      packages: write
     with:
       branch: ${{ github.sha }}
       version: ${{ needs.define-preview-version.outputs.preview_version }}
@@ -63,6 +67,10 @@ jobs:
 
   unit-test:
     uses: ./.github/workflows/test.yml
+    permissions:
+      contents: read
+      packages: read
+      id-token: write
     with:
       branch: ${{ github.sha }}
       environment: uat
@@ -72,6 +80,10 @@ jobs:
 
   integration-test:
     uses: ./.github/workflows/test.yml
+    permissions:
+      contents: read
+      packages: read
+      id-token: write
     with:
       branch: ${{ github.sha }}
       environment: uat
