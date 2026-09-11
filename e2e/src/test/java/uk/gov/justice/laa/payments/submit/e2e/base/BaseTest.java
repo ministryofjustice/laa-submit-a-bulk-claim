@@ -4,7 +4,6 @@ import static com.microsoft.playwright.assertions.PlaywrightAssertions.assertTha
 import static java.util.regex.Pattern.compile;
 
 import com.microsoft.playwright.Page;
-import java.sql.SQLException;
 import java.util.List;
 
 import org.junit.jupiter.api.AfterEach;
@@ -41,12 +40,8 @@ public abstract class BaseTest {
 
   @BeforeEach
   public void setup() {
-    try {
-      dqe = new DatabaseQueryExecutor();
-      dqe.cleanAll();
-    } catch (SQLException e) {
-      throw new RuntimeException("Failed to seed database", e);
-    }
+    dqe = new DatabaseQueryExecutor();
+    dqe.cleanAll();
 
     page = BrowserSession.getContext().newPage();
     page.navigate(EnvConfig.baseUrl());
@@ -57,12 +52,6 @@ public abstract class BaseTest {
     if (page != null) {
       try {
         page.close();
-      } catch (Exception ignored) {
-      }
-    }
-    if (dqe != null) {
-      try {
-        dqe.close();
       } catch (Exception ignored) {
       }
     }

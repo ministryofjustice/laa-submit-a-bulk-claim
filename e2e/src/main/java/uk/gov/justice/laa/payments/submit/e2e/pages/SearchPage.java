@@ -9,11 +9,13 @@ public class SearchPage extends BasePage {
 
   private final Locator searchButton;
   private final Locator resultsTable;
+  private final Locator areaOfLawSelect;
 
   public SearchPage(Page page) {
     super(page, "Search for a submission");
     searchButton = page.locator("#searchButton");
     resultsTable = page.locator(".govuk-table");
+    areaOfLawSelect = page.locator("#area-of-law");
   }
 
   public void clickOnLink(int index) {
