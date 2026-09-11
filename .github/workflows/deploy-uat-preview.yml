@@ -246,6 +246,7 @@ jobs:
           aws-region: ${{ vars.LAA_SUBMIT_A_BULK_CLAIM_ECR_REGION }}
 
       - name: Login to ECR
+        id: login-ecr
         uses: aws-actions/amazon-ecr-login@fa648b43de3d4d023bcb3f89ed6940096949c419 # v2.1.5
 
       - name: Install Snyk CLI
@@ -263,7 +264,7 @@ jobs:
         continue-on-error: true
         env:
           SNYK_OAUTH_TOKEN: ${{ steps.snyk-auth.outputs.token }}
-          IMAGE_NAME: ${{ format('{0}.dkr.ecr.{1}.amazonaws.com/{2}:{3}', secrets.AWS_ACCOUNT_ID, vars.LAA_SUBMIT_A_BULK_CLAIM_ECR_REGION, vars.LAA_SUBMIT_A_BULK_CLAIM_ECR_REPOSITORY, needs.ecr-publish-image.outputs.published_image_version) }}
+          IMAGE_NAME: ${{ format('{0}/{1}:{2}', steps.login-ecr.outputs.registry, vars.LAA_SUBMIT_A_BULK_CLAIM_ECR_REPOSITORY, needs.ecr-publish-image.outputs.published_image_version) }}
         run: |
           snyk container test "$IMAGE_NAME" \
             --org=legal-aid-agency \
