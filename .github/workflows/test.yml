@@ -68,7 +68,7 @@ jobs:
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: ${{ format('{0}-test-results', inputs.test_type) }}
-          path: ${{ inputs.test_type == 'integration' && 'laa-submit-a-bulk-claim-ui/build/test-results/integrationTest' || 'laa-submit-a-bulk-claim-ui/build/test-results/test' }}
+          path: laa-submit-a-bulk-claim-ui/build/test-results
           retention-days: 14
           if-no-files-found: warn
 
@@ -77,7 +77,7 @@ jobs:
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: ${{ format('{0}-test-report', inputs.test_type) }}
-          path: ${{ inputs.test_type == 'integration' && 'laa-submit-a-bulk-claim-ui/build/reports/tests/integrationTest' || 'laa-submit-a-bulk-claim-ui/build/reports/tests/test' }}
+          path: laa-submit-a-bulk-claim-ui/build/reports/tests
           retention-days: 14
           if-no-files-found: warn
 

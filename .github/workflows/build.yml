@@ -27,15 +27,14 @@ on:
       PAT_TOKEN:
         required: true
 
-permissions:
-  contents: read
-  packages: write
-
 jobs:
   build:
     runs-on: ubuntu-latest
     outputs:
       published_artifact_version: ${{ steps.capture-version.outputs.published_artifact_version }}
+    permissions:
+      contents: read
+      packages: write
 
     steps:
       - name: Checkout source code
