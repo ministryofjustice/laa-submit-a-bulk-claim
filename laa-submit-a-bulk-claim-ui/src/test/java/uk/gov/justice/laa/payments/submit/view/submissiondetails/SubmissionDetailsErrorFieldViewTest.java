@@ -36,10 +36,11 @@ import uk.gov.justice.laa.payments.submit.dto.submission.messages.MessagesSummar
 class SubmissionDetailsErrorFieldViewTest extends SubmissionDetailsViewTestBase {
 
   @Test
-  void rendersErrorAlertAndRejectedTag() {
+  void rendersInvalidSubmissionBannerAndSummary() {
     var doc = renderRejectedPage();
 
     assertThat(doc.select(".moj-alert--error")).isNotEmpty();
+    assertPageHasTitle(doc, "Submission details");
     assertPageHasHeading(doc, "Submission summary");
     assertPageHasContent(doc, "2 claims have errors for missing or incorrect information");
     assertPageHasContent(doc, "Resolve the errors and upload the file again.");
