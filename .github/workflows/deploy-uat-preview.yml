@@ -41,24 +41,55 @@ jobs:
           echo "preview_version=${version}" >> "$GITHUB_OUTPUT"
           echo "Preview version: submit-a-bulk-claim-${version}"
 
-  build-and-test:
+  semgrep-scan:
     needs: [ define-preview-version ]
-    uses: ministryofjustice/laa-ccms-common-workflows/.github/workflows/gradle-build-and-publish.yml@0c06c747af49e3efb703717e6185cf693494d5a4 # v2.4.2
+    name: semgrep-security-scan
+    runs-on: ubuntu-latest
+    container:
+      image: returntocorp/semgrep
+    steps:
+      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
+      - name: Run Semgrep scan
+        run: semgrep scan --exclude-rule python.django.security.django-no-csrf-token.django-no-csrf-token --error --config auto
+
+  build:
+    needs: [ semgrep-scan ]
+    uses: ./.github/workflows/build.yml
     permissions:
-      contents: write
+      contents: read
       packages: write
     with:
-      override_version: ${{ needs.define-preview-version.outputs.preview_version }}
-      build_command: ':laa-submit-a-bulk-claim-ui:build'
-      integration_test_task: integrationTest
-      junit_results_path: 'laa-submit-a-bulk-claim-ui/build/test-results'
-      junit_report_path: 'laa-submit-a-bulk-claim-ui/build/reports/tests'
-      checkstyle_report_path: 'laa-submit-a-bulk-claim-ui/build/reports/checkstyle'
-      jacoco_coverage_report_path: 'laa-submit-a-bulk-claim-ui/build/reports/jacoco'
-      semgrep_check: 'true'
+      branch: ${{ github.sha }}
+      version: ${{ needs.define-preview-version.outputs.preview_version }}
       java_version: 25
     secrets:
-      gh_token: ${{ secrets.GITHUB_TOKEN }}
+      PAT_TOKEN: ${{ secrets.PAT_TOKEN }}
+
+  unit-test:
+    uses: ./.github/workflows/test.yml
+    permissions:
+      contents: read
+      packages: read
+      id-token: write
+    with:
+      branch: ${{ github.sha }}
+      environment: uat
+      test_type: unit
+    secrets:
+      pat_token: ${{ secrets.PAT_TOKEN }}
+
+  integration-test:
+    uses: ./.github/workflows/test.yml
+    permissions:
+      contents: read
+      packages: read
+      id-token: write
+    with:
+      branch: ${{ github.sha }}
+      environment: uat
+      test_type: integration
+    secrets:
+      pat_token: ${{ secrets.PAT_TOKEN }}
 
   e2e-tests:
     uses: ./.github/workflows/e2e-tests.yml
@@ -84,13 +115,15 @@ jobs:
 
   test-smoke:
     name: Test @smoke
-    needs: [ define-preview-version ]
+    needs:
+      - define-preview-version
+      - ecr-publish-image
     uses: ministryofjustice/bulk-submission-and-fee-scheme-tests-/.github/workflows/trigger-e2e-dispatch.yml@bb8c62731903909f477ced8396ec5b8e41c8c62b # 17/04/2026
     permissions:
       contents: read
       id-token: write
     with:
-      sabc_image_tag: submit-a-bulk-claim-${{ needs.define-preview-version.outputs.preview_version }}
+      sabc_image_tag: ${{ needs.ecr-publish-image.outputs.published_image_version }}
       test_annotation: "@smoke"
       pr_number: ${{ github.event.number }}
       github_app_organisation: 'ministryofjustice'
@@ -99,7 +132,6 @@ jobs:
       github_app_private_key: ${{ secrets.LAA_CCMS_CAAB_SERVICE_KEY }}
 
   pact-test:
-    needs: [ define-preview-version ]
     uses: ministryofjustice/laa-ccms-common-workflows/.github/workflows/pact-and-publish.yml@0c06c747af49e3efb703717e6185cf693494d5a4 # v2.4.2
     permissions:
       contents: write
@@ -119,7 +151,6 @@ jobs:
       pact_broker_password: ${{ secrets.PACT_BROKER_PASSWORD }}
 
   accessibility-test:
-    needs: [ define-preview-version ]
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -178,32 +209,111 @@ jobs:
           if-no-files-found: warn
 
   ecr-publish-image:
-    needs: [ build-and-test ]
+    needs:
+      - semgrep-scan
+      - build
     uses: ministryofjustice/laa-ccms-common-workflows/.github/workflows/ecr-publish-image.yml@0c06c747af49e3efb703717e6185cf693494d5a4 # v2.4.2
     permissions:
       contents: read
       id-token: write
       security-events: write
     with:
-      dockerfile_path: 'Dockerfile'
-      image_version: ${{ format('{0}-{1}', vars.IMAGE_PREFIX, needs.build-and-test.outputs.published_artifact_version) }}
+      jar_subproject: 'laa-submit-a-bulk-claim-ui'
+      image_version: ${{ format('{0}-{1}', vars.IMAGE_PREFIX, needs.build.outputs.published_artifact_version) }}
       java_version: 25
-      image_scan_severity: 'high'
+      image_scan: 'false'
     secrets:
       gh_token: ${{ secrets.GITHUB_TOKEN }}
       ecr_repository: ${{ vars.LAA_SUBMIT_A_BULK_CLAIM_ECR_REPOSITORY }}
       ecr_region: ${{ vars.LAA_SUBMIT_A_BULK_CLAIM_ECR_REGION }}
       ecr_role_to_assume: ${{ secrets.LAA_SUBMIT_A_BULK_CLAIM_ECR_ROLE_TO_ASSUME }}
-      snyk_client_id: ${{ secrets.SNYK_CLIENT_ID }}
-      snyk_client_secret: ${{ secrets.SNYK_CLIENT_SECRET }}
 
+  snyk-image-scan:
+    needs: [ ecr-publish-image ]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+      security-events: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@fb7eb401298e393da51cdcb2feb1ed0183619014 # v6
+        with:
+          role-to-assume: ${{ secrets.LAA_SUBMIT_A_BULK_CLAIM_ECR_ROLE_TO_ASSUME }}
+          aws-region: ${{ vars.LAA_SUBMIT_A_BULK_CLAIM_ECR_REGION }}
+
+      - name: Login to ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@fa648b43de3d4d023bcb3f89ed6940096949c419 # v2.1.5
+
+      - name: Install Snyk CLI
+        uses: snyk/actions/setup@9adf32b1121593767fc3c057af55b55db032dc04 # v1.0.0
+
+      - name: Authenticate to Snyk
+        id: snyk-auth
+        uses: ministryofjustice/laa-reusable-github-actions/.github/actions/snyk-auth@6db001458db30ae747d9eb8eb25707ce52b359bc
+        with:
+          client_id: ${{ secrets.SNYK_CLIENT_ID }}
+          client_secret: ${{ secrets.SNYK_CLIENT_SECRET }}
+
+      - name: Scan published image
+        id: snyk
+        continue-on-error: true
+        env:
+          SNYK_OAUTH_TOKEN: ${{ steps.snyk-auth.outputs.token }}
+          IMAGE_NAME: ${{ format('{0}/{1}:{2}', steps.login-ecr.outputs.registry, vars.LAA_SUBMIT_A_BULK_CLAIM_ECR_REPOSITORY, needs.ecr-publish-image.outputs.published_image_version) }}
+        run: |
+          snyk container test "$IMAGE_NAME" \
+            --org=legal-aid-agency \
+            --severity-threshold=high \
+            --fail-on=upgradable \
+            --sarif-file-output=snyk-report.sarif \
+            --policy-path=.snyk
+
+      - name: Fix undefined values in sarif report
+        if: ${{ always() && hashFiles('snyk-report.sarif') != '' }}
+        run: |
+          cat snyk-report.sarif | jq '
+              .runs[].tool[].rules[]
+              |= (
+                  if (
+                    .properties["security-severity"] == null or
+                    .properties["security-severity"] == "null" or
+                    .properties["security-severity"] == "undefined" or
+                    .properties["security-severity"] == ""
+                  )
+                  then .properties["security-severity"] =
+                   (  if .shortDescription.text | test("(?i)critical") then "9.0"
+                      elif .shortDescription.text | test("(?i)high") then "7.0"
+                      elif .shortDescription.text | test("(?i)medium") then "4.0"
+                      elif .shortDescription.text | test("(?i)low") then "0.1"
+                      else ""
+                      end
+                   )
+                   else .
+                   end
+               )
+          ' > snyk-report-cleansed.sarif
+
+      - name: Upload image scan result to GitHub Code Scanning
+        if: ${{ always() && hashFiles('snyk-report-cleansed.sarif') != '' }}
+        uses: github/codeql-action/upload-sarif@87557b9c84dde89fdd9b10e88954ac2f4248e463 # v4.36.1
+        with:
+          sarif_file: snyk-report-cleansed.sarif
+
+      - name: Fail job if Snyk found vulnerabilities
+        if: ${{ steps.snyk.outcome == 'failure' }}
+        run: |
+          echo "Snyk found vulnerabilities, see code scanning outputs."
+          exit 1
 
   deploy-uat-preview:
     needs:
-      - pact-test
+      - semgrep-scan
       - ecr-publish-image
-      - accessibility-test
     runs-on: ubuntu-latest
     environment: uat
     permissions:
