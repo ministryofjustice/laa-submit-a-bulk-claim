@@ -115,9 +115,7 @@ jobs:
 
   test-smoke:
     name: Test @smoke
-    needs:
-      - define-preview-version
-      - ecr-publish-image
+    needs: [ define-preview-version ]
     uses: ministryofjustice/bulk-submission-and-fee-scheme-tests-/.github/workflows/trigger-e2e-dispatch.yml@bb8c62731903909f477ced8396ec5b8e41c8c62b # 17/04/2026
     permissions:
       contents: read
@@ -220,7 +218,7 @@ jobs:
       id-token: write
       security-events: write
     with:
-      dockerfile_path: 'Dockerfile'
+      jar_subproject: 'laa-submit-a-bulk-claim-ui'
       image_version: ${{ format('{0}-{1}', vars.IMAGE_PREFIX, needs.build.outputs.published_artifact_version) }}
       java_version: 25
       image_scan_severity: 'high'
