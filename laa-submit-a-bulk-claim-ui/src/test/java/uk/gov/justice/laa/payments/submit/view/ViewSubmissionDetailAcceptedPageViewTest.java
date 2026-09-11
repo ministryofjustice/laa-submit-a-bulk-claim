@@ -82,6 +82,8 @@ class ViewSubmissionDetailAcceptedPageViewTest extends ViewTestBase {
     when(submissionClaimDetailsBuilder.build(eq(submissionResponse), anyInt(), anyInt(), any()))
         .thenReturn(new SubmissionClaimsDetails(List.of(), pagination, BigDecimal.ZERO));
 
+    when(submissionMatterStartsDetailsBuilder.build(any())).thenReturn(List.of());
+
     var doc = renderDocument();
 
     assertPageHasTitle(doc, "Submission details");

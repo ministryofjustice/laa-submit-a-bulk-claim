@@ -78,6 +78,7 @@ class ViewSubmissionDetailInvalidPageViewTest extends ViewTestBase {
     when(submissionMessagesBuilder.buildErrors(any(), any(), anyInt(), anyInt(), any()))
         .thenReturn(new MessagesSummary(List.of(), 1, 1, pagination, MessagesSource.CLAIM));
 
+    when(submissionMatterStartsDetailsBuilder.build(any())).thenReturn(List.of());
     var doc = renderDocument();
 
     assertPageHasTitle(doc, "Submission details");
