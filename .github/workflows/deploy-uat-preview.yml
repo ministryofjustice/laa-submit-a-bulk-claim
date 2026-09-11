@@ -46,6 +46,8 @@ jobs:
     permissions:
       id-token: write
       contents: read
+    with:
+      image_tag: ${{ format('{0}-{1}', vars.IMAGE_PREFIX, needs.build-and-publish.outputs.published_artifact_version) }}
     secrets:
       pat_token: ${{ secrets.PAT_TOKEN }}
       kube_cert: ${{ secrets.KUBE_CERT }}
@@ -62,6 +64,9 @@ jobs:
       auth_tenant_id: ${{ secrets.AUTH_TENANT_ID }}
       fsp_api_token: ${{ secrets.FSP_API_TOKEN }}
       pda_api_token: ${{ secrets.PDA_API_TOKEN }}
+      ecr_role_to_assume: ${{ secrets.LAA_SUBMIT_A_BULK_CLAIM_ECR_ROLE_TO_ASSUME }}
+      ecr_region: ${{ vars.LAA_SUBMIT_A_BULK_CLAIM_ECR_REGION }}
+      ecr_repository: ${{ vars.LAA_SUBMIT_A_BULK_CLAIM_ECR_REPOSITORY }}
 
   build-and-publish:
     needs: [ define-preview-version ]

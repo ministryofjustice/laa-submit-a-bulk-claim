@@ -2,6 +2,10 @@ name: E2E tests
 
 on:
   workflow_call:
+    inputs:
+      image_tag:
+        required: true
+        type: string
     secrets:
       pat_token:
         required: true
@@ -32,6 +36,12 @@ on:
       fsp_api_token:
         required: true
       pda_api_token:
+        required: true
+      ecr_role_to_assume:
+        required: true
+      ecr_region:
+        required: true
+      ecr_repository:
         required: true
 
 permissions:
@@ -118,6 +128,32 @@ jobs:
 
       - name: Install task
         uses: go-task/setup-task@a00fbb05ce67b35648be3c78cbc9fd85354c757e # v2.2.0
+
+      - name: Configure AWS credentials for ECR
+        uses: aws-actions/configure-aws-credentials@cabfdba3510de1431bac9dba27511d97497fc100 # v5
+        with:
+          role-to-assume: ${{ secrets.ecr_role_to_assume }}
+          aws-region: ${{ secrets.ecr_region }}
+
+      - name: Wait for preview image in ECR
+        shell: bash
+        env:
+          ECR_REPOSITORY: ${{ secrets.ecr_repository }}
+          IMAGE_TAG: ${{ inputs.image_tag }}
+        run: |
+          set -euo pipefail
+          for attempt in {1..30}; do
+            if aws ecr describe-images \
+              --repository-name "$ECR_REPOSITORY" \
+              --image-ids imageTag="$IMAGE_TAG" >/dev/null 2>&1; then
+              echo "Image $IMAGE_TAG is available in ECR"
+              exit 0
+            fi
+            echo "Waiting for image $IMAGE_TAG in ECR (attempt $attempt/30)"
+            sleep 20
+          done
+          echo "::error::Timed out waiting for image $IMAGE_TAG in ECR"
+          exit 1
 
       - name: Build and start services
         working-directory: laa-data-claims-parent
