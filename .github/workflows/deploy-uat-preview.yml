@@ -55,7 +55,7 @@ jobs:
     needs: [ define-preview-version ]
     uses: ./.github/workflows/build.yml
     with:
-      branch: ${{ github.head_ref || github.ref_name }}
+      branch: ${{ github.sha }}
       version: ${{ needs.define-preview-version.outputs.preview_version }}
       java_version: 25
     secrets:
@@ -64,7 +64,7 @@ jobs:
   unit-test:
     uses: ./.github/workflows/test.yml
     with:
-      branch: ${{ github.head_ref || github.ref_name }}
+      branch: ${{ github.sha }}
       environment: uat
       test_type: unit
     secrets:
@@ -73,7 +73,7 @@ jobs:
   integration-test:
     uses: ./.github/workflows/test.yml
     with:
-      branch: ${{ github.head_ref || github.ref_name }}
+      branch: ${{ github.sha }}
       environment: uat
       test_type: integration
     secrets:
