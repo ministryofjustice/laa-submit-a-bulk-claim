@@ -236,6 +236,9 @@ jobs:
       id-token: write
       security-events: write
     steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@fb7eb401298e393da51cdcb2feb1ed0183619014 # v6
         with:
@@ -270,6 +273,7 @@ jobs:
             --policy-path=.snyk
 
       - name: Fix undefined values in sarif report
+        if: ${{ always() && hashFiles('snyk-report.sarif') != '' }}
         run: |
           cat snyk-report.sarif | jq '
               .runs[].tool[].rules[]
@@ -294,6 +298,7 @@ jobs:
           ' > snyk-report-cleansed.sarif
 
       - name: Upload image scan result to GitHub Code Scanning
+        if: ${{ always() && hashFiles('snyk-report-cleansed.sarif') != '' }}
         uses: github/codeql-action/upload-sarif@87557b9c84dde89fdd9b10e88954ac2f4248e463 # v4.36.1
         with:
           sarif_file: snyk-report-cleansed.sarif
