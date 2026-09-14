@@ -69,6 +69,7 @@ jobs:
       snyk_client_id: ${{ secrets.SNYK_CLIENT_ID }}
       snyk_client_secret: ${{ secrets.SNYK_CLIENT_SECRET }}
 
+
   deploy-uat:
     needs:
       - ecr-publish-image
