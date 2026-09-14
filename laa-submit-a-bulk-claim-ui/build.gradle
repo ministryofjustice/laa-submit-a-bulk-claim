@@ -20,6 +20,9 @@ repositories {
 
 // Property version names found here: https://docs.spring.io/spring-boot/appendix/dependency-versions/properties.html
 
+ext['jackson-2-bom.version'] = '2.21.6'
+ext['jackson-bom.version'] = '3.1.6'
+
 dependencyManagement {
     dependencies {
         // === INSERT YOUR OVERRIDES HERE ===
