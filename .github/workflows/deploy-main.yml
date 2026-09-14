@@ -69,35 +69,10 @@ jobs:
       snyk_client_id: ${{ secrets.SNYK_CLIENT_ID }}
       snyk_client_secret: ${{ secrets.SNYK_CLIENT_SECRET }}
 
-  e2e-tests:
-    needs:
-      - deploy-uat
-    uses: ./.github/workflows/e2e-tests.yml
-    permissions:
-      id-token: write
-      contents: read
-    secrets:
-      pat_token: ${{ secrets.PAT_TOKEN }}
-      kube_cert: ${{ secrets.KUBE_CERT }}
-      kube_cluster: ${{ secrets.KUBE_CLUSTER }}
-      kube_namespace: ${{ secrets.KUBE_NAMESPACE }}
-      kube_token: ${{ secrets.KUBE_TOKEN }}
-      kube_namespace_laa_fee_scheme_api_uat: ${{ secrets.KUBE_NAMESPACE_LAA_FEE_SCHEME_API_UAT }}
-      kube_cert_laa_fee_scheme_api_uat: ${{ secrets.KUBE_CERT_LAA_FEE_SCHEME_API_UAT }}
-      kube_token_laa_fee_scheme_api_uat: ${{ secrets.KUBE_TOKEN_LAA_FEE_SCHEME_API_UAT }}
-      kube_cluster_laa_fee_scheme_api_uat: ${{ secrets.KUBE_CLUSTER_LAA_FEE_SCHEME_API_UAT }}
-      auth_client_id: ${{ secrets.AUTH_CLIENT_ID }}
-      auth_client_secret: ${{ secrets.AUTH_CLIENT_SECRET }}
-      auth_scope: ${{ secrets.AUTH_SCOPE }}
-      auth_tenant_id: ${{ secrets.AUTH_TENANT_ID }}
-      fsp_api_token: ${{ secrets.FSP_API_TOKEN }}
-      pda_api_token: ${{ secrets.PDA_API_TOKEN }}
-
   deploy-uat:
     needs:
       - ecr-publish-image
       - pact-test
-      - e2e-tests
     permissions:
       id-token: write
       contents: read
