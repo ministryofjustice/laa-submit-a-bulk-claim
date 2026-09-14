@@ -33,6 +33,14 @@ jobs:
       PAT_TOKEN: ${{ secrets.pat_token }}
 
     steps:
+      - name: Validate test type
+        env:
+          TEST_TYPE: ${{ inputs.test_type }}
+        run: |
+          case "$TEST_TYPE" in
+            unit|integration) ;;
+            *) echo "::error::test_type must be 'unit' or 'integration'"; exit 1 ;;
+          esac
       # Checkout and setup
       - name: Checkout Source Code
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
