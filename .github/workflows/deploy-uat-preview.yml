@@ -63,7 +63,7 @@ jobs:
       version: ${{ needs.define-preview-version.outputs.preview_version }}
       java_version: 25
     secrets:
-      PAT_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      PAT_TOKEN: ${{ secrets.PAT_TOKEN }}
 
   unit-test:
     uses: ./.github/workflows/test.yml
@@ -76,7 +76,7 @@ jobs:
       environment: uat
       test_type: unit
     secrets:
-      pat_token: ${{ secrets.GITHUB_TOKEN }}
+      pat_token: ${{ secrets.PAT_TOKEN }}
 
   integration-test:
     uses: ./.github/workflows/test.yml
@@ -89,7 +89,7 @@ jobs:
       environment: uat
       test_type: integration
     secrets:
-      pat_token: ${{ secrets.GITHUB_TOKEN }}
+      pat_token: ${{ secrets.PAT_TOKEN }}
 
   e2e-tests:
     uses: ./.github/workflows/e2e-tests.yml
@@ -97,7 +97,7 @@ jobs:
       id-token: write
       contents: read
     secrets:
-      pat_token: ${{ secrets.GITHUB_TOKEN }}
+      pat_token: ${{ secrets.PAT_TOKEN }}
       kube_cert: ${{ secrets.KUBE_CERT }}
       kube_cluster: ${{ secrets.KUBE_CLUSTER }}
       kube_namespace: ${{ secrets.KUBE_NAMESPACE }}
