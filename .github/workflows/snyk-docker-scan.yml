@@ -1,0 +1,82 @@
+name: Security
+
+on:
+  workflow_call:
+    inputs:
+      branch:
+        required: false
+        type: string
+        default: 'main'
+      image_tag:
+        required: true
+        type: string
+      aws_region:
+        required: false
+        type: string
+        default: 'eu-west-2'
+      ecr_repository:
+        required: true
+        type: string
+    secrets:
+      ECR_ROLE_TO_ASSUME:
+        required: true
+      SNYK_CLIENT_ID:
+        required: true
+      SNYK_CLIENT_SECRET:
+        required: true
+
+permissions:
+  contents: read
+  security-events: write
+  id-token: write
+
+jobs:
+  vulnerability-scan-docker:
+    name: Vulnerability Scan - Docker
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      security-events: write
+      id-token: write
+    env:
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+    steps:
+      - name: Checkout Source Code
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ inputs.branch }}
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@cbe3b392738ccf3f987d68400dafcf4b0624a56c # v6.2.4
+        with:
+          role-to-assume: ${{ secrets.ECR_ROLE_TO_ASSUME }}
+          aws-region: ${{ inputs.aws_region }}
+
+      - name: Authenticate to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@03f1aad4c6c7ffd436567f42f9384779290529bd # v2.1.7
+
+      - name: Pull Docker image from ECR
+        run: |
+          docker pull "$REGISTRY/$REPOSITORY:$IMAGE_TAG"
+          docker tag "$REGISTRY/$REPOSITORY:$IMAGE_TAG" submit-a-bulk-claim:scan
+        env:
+          REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          REPOSITORY: ${{ inputs.ecr_repository }}
+          IMAGE_TAG: ${{ inputs.image_tag }}
+
+      - name: Obtain Short-lived Snyk token
+        id: auth
+        uses: ministryofjustice/laa-reusable-github-actions/.github/actions/snyk-auth@6db001458db30ae747d9eb8eb25707ce52b359bc
+        with:
+          client_id: ${{ secrets.SNYK_CLIENT_ID }}
+          client_secret: ${{ secrets.SNYK_CLIENT_SECRET }}
+
+      - name: Run Snyk on Docker image
+        env:
+          SNYK_OAUTH_TOKEN: ${{ steps.auth.outputs.token }}
+        uses: snyk/actions/docker@9adf32b1121593767fc3c057af55b55db032dc04
+        with:
+          image: submit-a-bulk-claim:scan
+          args: --file=Dockerfile --severity-threshold=high --policy-path=.snyk
