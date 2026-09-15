@@ -13,6 +13,7 @@ public class SearchPage extends BasePage {
   private final Locator resultsTable;
   private final Locator areaOfLawSelect;
   private final Locator resultsHeading;
+  private final Locator submissionPeriodHeader;
 
   public SearchPage(Page page) {
     super(page, "Search for a submission");
@@ -20,16 +21,24 @@ public class SearchPage extends BasePage {
     resultsTable = page.locator(".govuk-table");
     areaOfLawSelect = page.locator("#area-of-law");
     resultsHeading = page.locator("#results-heading");
+    submissionPeriodHeader = page.locator("a:has-text('Submission period')");
   }
 
   public void clickOnLink(int index) {
     resultsTable.locator(".govuk-table__cell .govuk-link--no-visited-state").nth(index).click();
   }
 
-  public void assertTotalSubmissions(int total){
+  public void assertTotalSubmissions(int total) {
     assertThat(resultsHeading).isVisible();
     var expectedTest =
         total == 1 ? "1 Search result" : total + " Search results";
     assertThat(resultsHeading).hasText(expectedTest);
+  }
+
+  public void assertSubmissionPeriodColumnValues(String... values) {
+    var submissionPeriodColumnValues = resultsTable.locator("tbody tr td:nth-child(4)");
+    for (int i = 0; i < values.length; i++) {
+      assertThat(submissionPeriodColumnValues.nth(i)).hasText(values[i]);
+    }
   }
 }

@@ -89,4 +89,26 @@ class SearchE2ETest extends JdbcTemplateBaseTest {
         "Date submitted", "Office account", "Area of law", "Submission period", "Status");
     searchPage.assertTotalSubmissions(1);
   }
+
+  @Test
+  void sortBySubmissionPeriodHeader(){
+    var landingPage = new LandingPagePage(page);
+    landingPage.getStartNowButton().click();
+
+    var uploadPage = new UploadPage(page);
+    uploadPage.getSearchLink().click();
+
+    var searchPage = new SearchPage(page);
+    searchPage.getSearchButton().click();
+
+    searchPage.getSubmissionPeriodHeader().click();
+
+    assertThat(searchPage.getResultsTable()).isVisible();
+
+    // Check submission period is sorted now
+    searchPage.assertSubmissionPeriodColumnValues("May 2026", "June 2026", "July 2026");
+    // Reverse the sort order by clicking the header again
+    searchPage.getSubmissionPeriodHeader().click();
+    searchPage.assertSubmissionPeriodColumnValues("July 2026", "June 2026", "May 2026");
+  }
 }
