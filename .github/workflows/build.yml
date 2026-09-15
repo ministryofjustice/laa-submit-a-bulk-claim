@@ -11,10 +11,6 @@ on:
         required: false
         type: string
         default: ''
-      release_type:
-        required: false
-        type: string
-        default: ''
       java_version:
         required: false
         type: string
@@ -58,36 +54,15 @@ jobs:
         with:
           node-version: '24'
 
-      - name: Compute release version
-        id: compute-version
-        uses: ministryofjustice/laa-ccms-common-workflows/.github/actions/compute-version@0c06c747af49e3efb703717e6185cf693494d5a4 # v2.4.2
-        if: ${{ inputs.version == '' && inputs.release_type != '' }}
-        with:
-          release_type: ${{ inputs.release_type }}
-
       - name: Assemble app and run checkstyle
         env:
           GITHUB_TOKEN: ${{ secrets.PAT_TOKEN }}
           VERSION: ${{ inputs.version }}
-          RELEASE_TYPE: ${{ inputs.release_type }}
-          BUMP_TYPE: ${{ steps.compute-version.outputs.bump_type }}
-          MAJOR: ${{ steps.compute-version.outputs.major }}
-          MINOR: ${{ steps.compute-version.outputs.minor }}
-          PATCH: ${{ steps.compute-version.outputs.patch }}
         run: |
           set -euo pipefail
-          RESOLVED_VERSION="${VERSION}"
-          if [ -z "$RESOLVED_VERSION" ] && [ -n "$RELEASE_TYPE" ]; then
-            case "${BUMP_TYPE:-}" in
-              major) RESOLVED_VERSION="$((MAJOR + 1)).0.0" ;;
-              minor) RESOLVED_VERSION="${MAJOR}.$((MINOR + 1)).0" ;;
-              patch|none|'') RESOLVED_VERSION="${MAJOR}.${MINOR}.$((PATCH + 1))" ;;
-              *) echo "Unsupported bump type: ${BUMP_TYPE}" >&2; exit 1 ;;
-            esac
-          fi
           BUILD_ARGS=(":laa-submit-a-bulk-claim-ui:assemble" ":laa-submit-a-bulk-claim-ui:checkstyleAll")
-          if [ -n "$RESOLVED_VERSION" ]; then
-            BUILD_ARGS+=("-Pversion=$RESOLVED_VERSION")
+          if [ -n "${VERSION:-}" ]; then
+            BUILD_ARGS+=("-Pversion=$VERSION")
           fi
           ./gradlew "${BUILD_ARGS[@]}"
 
@@ -104,25 +79,11 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.PAT_TOKEN }}
           VERSION: ${{ inputs.version }}
-          RELEASE_TYPE: ${{ inputs.release_type }}
-          BUMP_TYPE: ${{ steps.compute-version.outputs.bump_type }}
-          MAJOR: ${{ steps.compute-version.outputs.major }}
-          MINOR: ${{ steps.compute-version.outputs.minor }}
-          PATCH: ${{ steps.compute-version.outputs.patch }}
         run: |
           set -euo pipefail
-          RESOLVED_VERSION="${VERSION}"
-          if [ -z "$RESOLVED_VERSION" ] && [ -n "$RELEASE_TYPE" ]; then
-            case "${BUMP_TYPE:-}" in
-              major) RESOLVED_VERSION="$((MAJOR + 1)).0.0" ;;
-              minor) RESOLVED_VERSION="${MAJOR}.$((MINOR + 1)).0" ;;
-              patch|none|'') RESOLVED_VERSION="${MAJOR}.${MINOR}.$((PATCH + 1))" ;;
-              *) echo "Unsupported bump type: ${BUMP_TYPE}" >&2; exit 1 ;;
-            esac
-          fi
           PUBLISH_ARGS=()
-          if [ -n "$RESOLVED_VERSION" ]; then
-            PUBLISH_ARGS+=("-Pversion=$RESOLVED_VERSION")
+          if [ -n "${VERSION:-}" ]; then
+            PUBLISH_ARGS+=("-Pversion=$VERSION")
           fi
           ./gradlew :laa-submit-a-bulk-claim-ui:publish "${PUBLISH_ARGS[@]}"
 
@@ -130,23 +91,9 @@ jobs:
         id: capture-version
         env:
           INPUT_VERSION: ${{ inputs.version }}
-          RELEASE_TYPE: ${{ inputs.release_type }}
-          BUMP_TYPE: ${{ steps.compute-version.outputs.bump_type }}
-          MAJOR: ${{ steps.compute-version.outputs.major }}
-          MINOR: ${{ steps.compute-version.outputs.minor }}
-
-          PATCH: ${{ steps.compute-version.outputs.patch }}
         run: |
           set -euo pipefail
           VERSION="${INPUT_VERSION:-}"
-          if [ -z "$VERSION" ] && [ -n "$RELEASE_TYPE" ]; then
-            case "${BUMP_TYPE:-}" in
-              major) VERSION="$((MAJOR + 1)).0.0" ;;
-              minor) VERSION="${MAJOR}.$((MINOR + 1)).0" ;;
-              patch|none|'') VERSION="${MAJOR}.${MINOR}.$((PATCH + 1))" ;;
-              *) echo "Unsupported bump type: ${BUMP_TYPE}" >&2; exit 1 ;;
-            esac
-          fi
           if [ -z "$VERSION" ]; then
             VERSION=$(grep "^version=" gradle.properties | cut -d'=' -f2)
           fi

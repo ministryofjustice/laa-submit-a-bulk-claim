@@ -31,7 +31,6 @@ jobs:
       packages: write
     with:
       branch: main
-      release_type: ${{ github.event.inputs.release_type || '' }}
       java_version: 25
     secrets:
       PAT_TOKEN: ${{ secrets.PAT_TOKEN }}
@@ -109,6 +108,7 @@ jobs:
   deploy-uat:
     needs:
       - ecr-publish-image
+      - pact-test
       - e2e-tests
     permissions:
       id-token: write
@@ -159,6 +159,7 @@ jobs:
   deploy-staging:
     needs:
       - ecr-publish-image
+      - pact-test
       - deploy-uat
     permissions:
       id-token: write
