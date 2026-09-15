@@ -30,7 +30,7 @@ jobs:
       contents: read
       packages: write
     with:
-      branch: main
+      branch: ${{ github.sha }}
       java_version: 25
     secrets:
       PAT_TOKEN: ${{ secrets.PAT_TOKEN }}
@@ -42,7 +42,7 @@ jobs:
       packages: read
       id-token: write
     with:
-      branch: main
+      branch: ${{ github.sha }}
       environment: uat
       test_type: unit
     secrets:
@@ -55,7 +55,7 @@ jobs:
       packages: read
       id-token: write
     with:
-      branch: main
+      branch: ${{ github.sha }}
       environment: uat
       test_type: integration
     secrets:
@@ -132,6 +132,8 @@ jobs:
     permissions:
       id-token: write
       contents: read
+    with:
+      branch: ${{ github.sha }}
     secrets:
       pat_token: ${{ secrets.PAT_TOKEN }}
       kube_cert: ${{ secrets.KUBE_CERT }}

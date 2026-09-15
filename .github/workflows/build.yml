@@ -60,7 +60,7 @@ jobs:
           VERSION: ${{ inputs.version }}
         run: |
           set -euo pipefail
-          BUILD_ARGS=(":laa-submit-a-bulk-claim-ui:assemble" ":laa-submit-a-bulk-claim-ui:checkstyleAll")
+          BUILD_ARGS=(":laa-submit-a-bulk-claim-ui:assemble" ":laa-submit-a-bulk-claim-ui:checkstyleAll" ":laa-submit-a-bulk-claim-ui:spotlessCheck")
           if [ -n "${VERSION:-}" ]; then
             BUILD_ARGS+=("-Pversion=$VERSION")
           fi
