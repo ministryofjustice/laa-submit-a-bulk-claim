@@ -207,8 +207,7 @@ class BulkUploadPageViewTest extends ViewTestBase {
             .andReturn()
             .getResponse();
 
-    verify(bulkClaimMetricService)
-            .recordFailedFileUploadSize(anyLong(), eq(errorDetails));
+    verify(bulkClaimMetricService).recordFailedFileUploadSize(anyLong(), eq(errorDetails));
 
     assertThat(response.getStatus()).isEqualTo(200);
     var doc = Jsoup.parse(response.getContentAsString());
