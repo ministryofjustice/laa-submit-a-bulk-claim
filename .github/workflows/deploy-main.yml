@@ -86,7 +86,6 @@ jobs:
       - build
       - unit-test
       - integration-test
-      - pact-test
     uses: ministryofjustice/laa-ccms-common-workflows/.github/workflows/ecr-publish-image.yml@0c06c747af49e3efb703717e6185cf693494d5a4 # v2.4.2
     permissions:
       contents: read
@@ -129,12 +128,6 @@ jobs:
       LAA_SUBMIT_A_BULK_CLAIM_ECR_ROLE_TO_ASSUME: ${{ secrets.LAA_SUBMIT_A_BULK_CLAIM_ECR_ROLE_TO_ASSUME }}
 
   e2e-tests:
-    needs:
-      - semgrep-scan
-      - build
-      - unit-test
-      - integration-test
-      - pact-test
     uses: ./.github/workflows/e2e-tests.yml
     permissions:
       id-token: write
