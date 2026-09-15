@@ -191,7 +191,7 @@ class BulkUploadPageViewTest extends ViewTestBase {
             new WebClientResponseException(
                 HttpStatus.BAD_REQUEST.value(), "bad request", null, responseBody, null));
 
-    doThrow(new IllegalArgumentException("Something when wrong"))
+    doThrow(new IllegalArgumentException("Something went wrong"))
         .when(bulkClaimMetricService)
         .recordFailedFileUploadSize(anyLong(), anyString());
 
