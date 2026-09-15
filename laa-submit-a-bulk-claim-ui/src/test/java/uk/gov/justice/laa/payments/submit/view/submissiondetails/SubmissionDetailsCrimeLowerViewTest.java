@@ -150,6 +150,13 @@ class SubmissionDetailsCrimeLowerViewTest extends SubmissionDetailsViewTestBase 
   void renderCrimeLowerSubmissionDetails() {
     Document doc = renderDocument();
 
+    assertPageHasTitle(doc, "Submission details");
+    assertPageHasHeading(doc, "Submission summary");
+    assertPageHasContent(doc, "Your submission has been accepted.");
+    assertPageHasContent(
+        doc, "You cannot make changes. See messages for any actions you may want to take.");
+    assertPageHasContent(doc, "request an amendment");
+
     // Summary
     var summaryList = getFirstSummaryList(doc);
     assertThat(summaryList).hasSize(6);
