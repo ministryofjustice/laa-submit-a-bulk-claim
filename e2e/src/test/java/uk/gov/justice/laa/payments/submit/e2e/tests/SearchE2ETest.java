@@ -88,6 +88,7 @@ class SearchE2ETest extends JdbcTemplateBaseTest {
     assertTableContainsHeaders(
         "Date submitted", "Office account", "Area of law", "Submission period", "Status");
     searchPage.assertTotalSubmissions(1);
+    searchPage.assertSubmissionAreaOfLawColumnValues("Legal help");
   }
 
   @Test

@@ -30,15 +30,22 @@ public class SearchPage extends BasePage {
 
   public void assertTotalSubmissions(int total) {
     assertThat(resultsHeading).isVisible();
-    var expectedTest =
+    var expectedText =
         total == 1 ? "1 Search result" : total + " Search results";
-    assertThat(resultsHeading).hasText(expectedTest);
+    assertThat(resultsHeading).hasText(expectedText);
   }
 
   public void assertSubmissionPeriodColumnValues(String... values) {
     var submissionPeriodColumnValues = resultsTable.locator("tbody tr td:nth-child(4)");
     for (int i = 0; i < values.length; i++) {
       assertThat(submissionPeriodColumnValues.nth(i)).hasText(values[i]);
+    }
+  }
+
+  public void assertSubmissionAreaOfLawColumnValues(String... values) {
+    var submissionAreaOfLawColumnValues = resultsTable.locator("tbody tr td:nth-child(3)");
+    for (int i = 0; i < values.length; i++) {
+      assertThat(submissionAreaOfLawColumnValues.nth(i)).hasText(values[i]);
     }
   }
 }
