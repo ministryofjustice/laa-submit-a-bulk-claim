@@ -45,6 +45,7 @@ public class SecurityConfig {
                         "/assets/**",
                         "/javascripts/**",
                         "/stylesheets/**",
+                        "/xml/**",
                         "/actuator/prometheus",
                         "/actuator/health",
                         "/actuator/info",
