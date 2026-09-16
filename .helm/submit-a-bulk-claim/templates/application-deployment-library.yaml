@@ -232,6 +232,7 @@ metadata:
     nginx.ingress.kubernetes.io/modsecurity-snippet: |
       SecRuleEngine On
       SecDefaultAction "phase:2,pass,log,tag:github_team=laa-submit-a-bulk-claim"
+      SecRule REQUEST_URI "@beginsWith /schema/" "id:1000000,phase:1,pass,nolog,ctl:ruleRemoveById=920440"
     {{- end }}
 spec:
   ingressClassName: {{ .Values.ingress.className }}
