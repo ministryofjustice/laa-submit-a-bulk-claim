@@ -16,10 +16,12 @@ import uk.gov.justice.laa.payments.submit.e2e.persistence.dao.BulkSubmissionDao;
 import uk.gov.justice.laa.payments.submit.e2e.persistence.dao.MatterStartDao;
 import uk.gov.justice.laa.payments.submit.e2e.persistence.dao.SubmissionDao;
 import uk.gov.justice.laa.payments.submit.e2e.persistence.dao.ValidationMessageLogDao;
+import uk.gov.justice.laa.payments.submit.e2e.utils.ClaimFixtureFactory;
 
 class SubmissionDetailsE2ETest extends JdbcTemplateBaseTest {
 
   private static final String USER_ID = "e2e-test-user";
+  private static final String[] LEGAL_HELP_CATEGORY_CODES = {"AAP", "COM"};
 
   private final UUID legalHelpSubmissionId = UUID.randomUUID();
   private final UUID crimeLowerSubmissionId = UUID.randomUUID();
@@ -28,16 +30,11 @@ class SubmissionDetailsE2ETest extends JdbcTemplateBaseTest {
   @Override
   protected void seedDatabase() {
     addSubmission(
-        legalHelpSubmissionId, "LEGAL_HELP", "APR-2026", 9, new BigDecimal("3311.60"), 9);
-    addMatterStart(legalHelpSubmissionId, "AAP", "MDAS All Issues Sole");
-    addMatterStart(legalHelpSubmissionId, "COM", null);
-
+        legalHelpSubmissionId, "LEGAL_HELP", "APR-2026", 9, new BigDecimal("33115.60"), 9, 2);
     addSubmission(
-        crimeLowerSubmissionId, "CRIME_LOWER", "JUN-2026", 10, new BigDecimal("546.53"), 5);
-
+        crimeLowerSubmissionId, "CRIME_LOWER", "JUN-2026", 10, new BigDecimal("5465.50"), 5, 0);
     addSubmission(
-        mediationSubmissionId, "MEDIATION", "JAN-2026", 10, new BigDecimal("1393.10"), 5);
-    addMatterStart(mediationSubmissionId, null, "MDAS All Issues Sole");
+        mediationSubmissionId, "MEDIATION", "JAN-2026", 10, new BigDecimal("13930.00"), 5, 1);
   }
 
   private void addSubmission(
@@ -45,8 +42,9 @@ class SubmissionDetailsE2ETest extends JdbcTemplateBaseTest {
       String areaOfLaw,
       String submissionPeriod,
       int claimCount,
-      BigDecimal claimValue,
-      int warningCount) {
+      BigDecimal totalValue,
+      int warningCount,
+      int matterStartCount) {
     UUID bulkSubmissionId = BulkSubmissionDao.builder().build().insert(jdbcTemplate);
 
     SubmissionDao.builder(bulkSubmissionId).id(submissionId)
@@ -56,10 +54,11 @@ class SubmissionDetailsE2ETest extends JdbcTemplateBaseTest {
         .userId(USER_ID)
         .build().insert(jdbcTemplate);
 
+    List<BigDecimal> amounts = ClaimFixtureFactory.splitEvenly(totalValue, claimCount);
     List<UUID> claimIds = new ArrayList<>();
     for (int i = 0; i < claimCount; i++) {
       claimIds.add(
-          claimFixtureFactory.addClaim(submissionId, i + 1, claimValue, USER_ID));
+          claimFixtureFactory.addClaim(submissionId, i + 1, amounts.get(i), USER_ID));
     }
 
     for (int i = 0; i < warningCount; i++) {
@@ -70,15 +69,16 @@ class SubmissionDetailsE2ETest extends JdbcTemplateBaseTest {
           .insert(jdbcTemplate);
     }
 
-  }
-
-  void addMatterStart(UUID submissionId, String categoryCode, String mediationType) {
+    for (int i = 0; i < matterStartCount; i++) {
+      String categoryCode = "LEGAL_HELP".equals(areaOfLaw) ? LEGAL_HELP_CATEGORY_CODES[i] : null;
+      String mediationType = "MEDIATION".equals(areaOfLaw) ? "MDAS All Issues Sole" : null;
       MatterStartDao.builder(submissionId)
           .categoryCode(categoryCode)
           .mediationType(mediationType)
           .userId(USER_ID)
           .build()
           .insert(jdbcTemplate);
+    }
   }
 
   @Test
@@ -103,7 +103,7 @@ class SubmissionDetailsE2ETest extends JdbcTemplateBaseTest {
     submissionDetails.assertSubmissionAccepted();
     submissionDetails.assertTotalWarnings(9);
     submissionDetails.assertSubmissionSummary(
-        "0P322F", "Legal help", "APR-2026", "£29,804.40");
+        "0P322F", "Legal help", "APR-2026", "£33,115.60");
 
     // Assert tabs are visible
     assertThat(submissionDetails.getClaimsTab()).isVisible();
@@ -144,7 +144,7 @@ class SubmissionDetailsE2ETest extends JdbcTemplateBaseTest {
     submissionDetails.assertSubmissionAccepted();
     submissionDetails.assertTotalWarnings(5);
     submissionDetails.assertSubmissionSummary(
-        "0P322F", "Crime lower", "JUN-2026", "£5,465.30");
+        "0P322F", "Crime lower", "JUN-2026", "£5,465.50");
 
     // Assert tabs are visible
     assertThat(submissionDetails.getClaimsTab()).isVisible();
@@ -181,7 +181,7 @@ class SubmissionDetailsE2ETest extends JdbcTemplateBaseTest {
     submissionDetails.assertSubmissionAccepted();
     submissionDetails.assertTotalWarnings(5);
     submissionDetails.assertSubmissionSummary(
-        "0P322F", "Mediation", "JAN-2026", "£13,931.00");
+        "0P322F", "Mediation", "JAN-2026", "£13,930.00");
 
     // Assert tabs are visible
     assertThat(submissionDetails.getClaimsTab()).isVisible();
