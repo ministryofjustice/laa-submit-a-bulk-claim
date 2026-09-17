@@ -19,7 +19,7 @@ jobs:
     container:
       image: returntocorp/semgrep@sha256:34ab619bf1391a24bfda3f05debd0d8a6ce3093c2d5f9d39cfc00f83c1397823 # 1.176.1
     steps:
-      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - name: Run Semgrep scan
         run: semgrep scan --exclude-rule python.django.security.django-no-csrf-token.django-no-csrf-token --error --config auto
 
@@ -63,7 +63,7 @@ jobs:
 
   pact-test:
     needs: [ build ]
-    uses: ministryofjustice/laa-ccms-common-workflows/.github/workflows/pact-and-publish.yml@0c06c747af49e3efb703717e6185cf693494d5a4 # v2.4.2
+    uses: ministryofjustice/laa-ccms-common-workflows/.github/workflows/pact-and-publish.yml@035ee98ca0047659f865532ea6234abd69529ee8 # v2.5.0
     permissions:
       contents: write
       packages: write
@@ -86,7 +86,7 @@ jobs:
       - build
       - unit-test
       - integration-test
-    uses: ministryofjustice/laa-ccms-common-workflows/.github/workflows/ecr-publish-image.yml@0c06c747af49e3efb703717e6185cf693494d5a4 # v2.4.2
+    uses: ministryofjustice/laa-ccms-common-workflows/.github/workflows/ecr-publish-image.yml@035ee98ca0047659f865532ea6234abd69529ee8 # v2.5.0
     permissions:
       contents: read
       id-token: write
