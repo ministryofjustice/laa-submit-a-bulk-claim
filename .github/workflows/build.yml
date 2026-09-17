@@ -54,7 +54,7 @@ jobs:
         with:
           node-version: '24'
 
-      - name: Assemble app and run checkstyle
+      - name: Assemble app and run checkstyle/spotless
         env:
           GITHUB_TOKEN: ${{ secrets.PAT_TOKEN }}
           VERSION: ${{ inputs.version }}
