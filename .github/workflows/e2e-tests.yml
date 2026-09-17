@@ -2,6 +2,11 @@ name: E2E tests
 
 on:
   workflow_call:
+    inputs:
+      branch:
+        required: false
+        type: string
+        default: main
     secrets:
       pat_token:
         required: true
@@ -45,6 +50,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          ref: ${{ inputs.branch }}
 
       - name: Checkout laa-data-claims-parent
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -56,7 +63,7 @@ jobs:
       - name: Update parent submodules
         working-directory: laa-data-claims-parent
         env:
-          SUBMIT_REF: ${{ github.head_ref || github.ref_name }}
+          SUBMIT_REF: ${{ inputs.branch }}
         run: |
           ./update-bulk-claim-repos.sh
           cd laa-submit-a-bulk-claim          
@@ -115,6 +122,8 @@ jobs:
 
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@9c971963bec38e04b3d30dcc455b5382be2fdbfb # v6.3.0
+        with:
+          cache-read-only: false
 
       - name: Install task
         uses: go-task/setup-task@a00fbb05ce67b35648be3c78cbc9fd85354c757e # v2.2.0
