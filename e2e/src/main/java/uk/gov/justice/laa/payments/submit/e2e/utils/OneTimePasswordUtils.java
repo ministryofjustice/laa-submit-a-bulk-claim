@@ -17,12 +17,12 @@ public class OneTimePasswordUtils {
     try {
       // Derive key dynamically, not hardcoded
       byte[] keyBytes = decodeBase32(base32Secret);
-      SecretKeySpec signingKey = new SecretKeySpec(keyBytes.clone(), "HmacSHA1");
+      SecretKeySpec signingKey = new SecretKeySpec(keyBytes.clone(), "HmacSHA256");
 
       long timeWindow = Instant.now().getEpochSecond() / 30;
       ByteBuffer buffer = ByteBuffer.allocate(8).putLong(timeWindow);
 
-      Mac mac = Mac.getInstance("HmacSHA1");
+      Mac mac = Mac.getInstance("HmacSHA256");
       mac.init(signingKey);
 
       byte[] hash = mac.doFinal(buffer.array());
