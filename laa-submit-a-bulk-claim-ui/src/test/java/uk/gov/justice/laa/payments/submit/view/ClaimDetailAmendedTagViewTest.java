@@ -34,7 +34,6 @@ import uk.gov.justice.laa.payments.submit.dto.submission.messages.MessagesSummar
 import uk.gov.justice.laa.payments.submit.mapper.ClaimFeeCalculationBreakdownMapper;
 import uk.gov.justice.laa.payments.submit.mapper.ClaimSummaryMapper;
 import uk.gov.justice.laa.payments.submit.service.ClaimService;
-import uk.gov.justice.laa.payments.submit.service.SubmissionService;
 import uk.gov.justice.laa.payments.submit.util.MatterTypeUtil;
 import uk.gov.justice.laa.payments.submit.viewmodels.claimdetails.ClaimDetailPageData;
 import uk.gov.justice.laa.payments.submit.viewmodels.claimdetails.ClaimDetailView;
@@ -54,7 +53,6 @@ class ClaimDetailAmendedTagViewTest extends ViewTestBase {
   @MockitoBean private ClaimDetailViewFactory claimDetailViewFactory;
   @MockitoBean private ClaimStatusBannerBuilder claimStatusBannerBuilder;
   @MockitoBean private LatestAssessmentResolver latestAssessmentResolver;
-  @MockitoBean private SubmissionService submissionService;
 
   ClaimDetailAmendedTagViewTest() {
     this.mapping = "/submissions/%s/claims/%s".formatted(submissionId, claimId);

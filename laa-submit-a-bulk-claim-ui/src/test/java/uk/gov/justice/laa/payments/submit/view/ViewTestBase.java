@@ -36,6 +36,7 @@ import org.springframework.util.MultiValueMap;
 import uk.gov.justice.laa.payments.submit.client.DataClaimsRestClient;
 import uk.gov.justice.laa.payments.submit.config.FeatureFlagsConfig;
 import uk.gov.justice.laa.payments.submit.config.WebMvcTestConfig;
+import uk.gov.justice.laa.payments.submit.service.SubmissionService;
 import uk.gov.justice.laa.payments.submit.util.OidcAttributeUtils;
 import uk.gov.justice.laa.payments.submit.util.ThymeleafHrefUtils;
 
@@ -47,6 +48,7 @@ public abstract class ViewTestBase {
   @MockitoBean protected DataClaimsRestClient dataClaimsRestClient;
   @MockitoBean protected FeatureFlagsConfig featureFlagsConfig;
   @MockitoBean protected OidcAttributeUtils oidcAttributeUtils;
+  @MockitoBean protected SubmissionService submissionService;
 
   @BeforeEach
   public void setup() {

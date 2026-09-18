@@ -39,6 +39,7 @@ import uk.gov.justice.laa.payments.submit.config.FeatureFlagsConfig;
 import uk.gov.justice.laa.payments.submit.config.WebMvcTestConfig;
 import uk.gov.justice.laa.payments.submit.dto.FileUploadForm;
 import uk.gov.justice.laa.payments.submit.metrics.BulkClaimMetricService;
+import uk.gov.justice.laa.payments.submit.service.SubmissionService;
 import uk.gov.justice.laa.payments.submit.util.OidcAttributeUtils;
 import uk.gov.justice.laa.payments.submit.validation.BulkImportFileValidator;
 import uk.gov.justice.laa.payments.submit.validation.BulkImportFileVirusValidator;
@@ -57,6 +58,7 @@ class BulkImportControllerTest {
   @MockitoBean private OidcAttributeUtils oidcAttributeUtils;
   @MockitoBean private BulkClaimMetricService bulkClaimMetricService;
   @MockitoBean private FeatureFlagsConfig featureFlagsConfig;
+  @MockitoBean private SubmissionService submissionService;
 
   @Nested
   @DisplayName("GET: /upload")
