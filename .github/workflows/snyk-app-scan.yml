@@ -194,7 +194,10 @@ jobs:
       - name: Run Snyk code vulnerability scan
         id: snyk-code
         continue-on-error: true
-        run: snyk code test --file=laa-submit-a-bulk-claim-ui/build.gradle --all-sub-projects --package-manager=gradle --severity-threshold=low --sarif-file-output=snyk-code.sarif
+        run: |
+          snyk code test \
+            --severity-threshold=low \
+            --sarif-file-output=snyk-code.sarif
         env:
           SNYK_OAUTH_TOKEN: ${{ steps.auth.outputs.token }}
 
@@ -206,5 +209,5 @@ jobs:
           category: snyk-code
 
       - name: Fail when Snyk finds vulnerabilities
-        if: ${{ steps.snyk.outcome == 'failure' }}
+        if: ${{ steps.snyk-code.outcome == 'failure' }}
         run: exit 1
