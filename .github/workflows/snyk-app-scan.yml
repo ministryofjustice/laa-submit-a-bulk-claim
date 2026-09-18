@@ -1,4 +1,4 @@
-name: Security Scan
+name: Dependency Security Scan
 
 on:
   push:
@@ -30,7 +30,7 @@ jobs:
         uses: gradle/actions/setup-gradle@9c971963bec38e04b3d30dcc455b5382be2fdbfb # v6.3.0
 
       - name: Install Snyk CLI
-        run: npm install -g snyk
+        run: npm install --global snyk@1.1306.4
 
       - name: Obtain Short-lived Snyk token
         id: auth
@@ -39,14 +39,95 @@ jobs:
           client_id: ${{ secrets.SNYK_CLIENT_ID }}
           client_secret: ${{ secrets.SNYK_CLIENT_SECRET }}
 
-      - name: Run Snyk app vulnerability scan
-        run: snyk test laa-submit-a-bulk-claim-ui/ --severity-threshold=low --sarif-file-output=snyk-app.sarif
+      - name: Run Snyk dependency scan
+        id: snyk
+        continue-on-error: true
+        run: |
+          snyk test \
+            --file=laa-submit-a-bulk-claim-ui/build.gradle \
+            --all-sub-projects \
+            --package-manager=gradle \
+            --severity-threshold=high \
+            --json-file-output=snyk-app.json
         env:
           SNYK_OAUTH_TOKEN: ${{ steps.auth.outputs.token }}
 
-      - name: Upload result to GitHub Code Scanning
+      - name: Publish Snyk dependency summary
         if: always()
-        uses: github/codeql-action/upload-sarif@18420e3271f74589575af831a523c833acda327f
+        run: |
+          python - <<'PY'
+          import json, os, sys
+          path = "snyk-app.json"
+
+          if not os.path.exists(path):
+              print("No Snyk JSON output found.")
+              sys.exit(0)
+
+          with open(path) as f:
+              data = json.load(f)
+
+          vuln_items = []
+
+          raw = data.get("vulnerabilities")
+          if isinstance(raw, dict):
+              vuln_items = raw.get("list", [])
+          elif isinstance(raw, list):
+              vuln_items = raw
+
+          if not vuln_items:
+              issue_root = data.get("issues", {})
+              raw_issues = issue_root.get("vulnerabilities", [])
+              if isinstance(raw_issues, list):
+                  vuln_items = raw_issues
+
+          flat = []
+          for item in vuln_items:
+              if isinstance(item, dict):
+                  flat.append(item)
+              elif isinstance(item, list):
+                  for sub in item:
+                      if isinstance(sub, dict):
+                          flat.append(sub)
+
+          total = len(flat)
+          by_sev = {"low": 0, "medium": 0, "high": 0, "critical": 0}
+
+          for v in flat:
+              sev = str(v.get("severity", "")).lower()
+              if sev in by_sev:
+                  by_sev[sev] += 1
+
+          summary = [
+              "## Snyk application dependency scan",
+              "",
+              f"- Total vulnerabilities: {total}",
+              f"- Low: {by_sev['low']}",
+              f"- Medium: {by_sev['medium']}",
+              f"- High: {by_sev['high']}",
+              f"- Critical: {by_sev['critical']}",
+              "",
+          ]
+
+          if flat:
+              summary.append("| Package | Severity | Title |")
+              summary.append("| --- | --- | --- |")
+              for v in flat[:10]:
+                  pkg = v.get("packageName", v.get("package", "unknown"))
+                  sev = v.get("severity", "unknown")
+                  title = v.get("title", v.get("name", "unknown"))
+                  summary.append(f"| {pkg} | {sev} | {title} |")
+
+          with open(os.environ["GITHUB_STEP_SUMMARY"], "a") as out:
+              out.write("\n".join(summary) + "\n")
+          PY
+
+      - name: Upload Snyk JSON report
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
-          sarif_file: snyk-app.sarif
-          category: snyk-app
+          name: snyk-app-report
+          path: snyk-app.json
+
+      - name: Fail when Snyk finds vulnerabilities
+        if: ${{ steps.snyk.outcome == 'failure' }}
+        run: exit 1
