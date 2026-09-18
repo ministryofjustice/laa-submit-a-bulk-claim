@@ -25,7 +25,9 @@ ext['jackson-bom.version'] = '3.1.6'
 
 dependencyManagement {
     dependencies {
-        // === INSERT YOUR OVERRIDES HERE ===
+        dependency 'org.springframework:spring-beans:7.0.9'
+        dependency 'org.mock-server:mockserver-client-java:8.0.0'
+        dependency 'org.mock-server:mockserver-core:8.0.0'
     }
 }
 
@@ -101,11 +103,11 @@ dependencies {
     testImplementation 'org.springframework.security:spring-security-test'
 
     testImplementation 'org.testcontainers:mockserver:1.21.3'
-    testImplementation 'org.mock-server:mockserver-client-java:7.0.0'
+    testImplementation 'org.mock-server:mockserver-client-java:8.0.0'
 
     testImplementation 'au.com.dius.pact.consumer:junit5:4.6.19'
 
-    testImplementation 'org.jsoup:jsoup:1.22.1'
+    testImplementation 'org.jsoup:jsoup:1.23.2'
     testImplementation 'com.tngtech.archunit:archunit-junit5:1.5.0'
 
     accessibilityTestImplementation 'com.microsoft.playwright:playwright:1.56.0'
