@@ -60,7 +60,7 @@ jobs:
       - name: Pull Docker image from ECR
         run: |
           docker pull "$REGISTRY/$REPOSITORY:$IMAGE_TAG"
-          docker tag "$REGISTRY/$REPOSITORY:$IMAGE_TAG" submit-a-bulk-claim:scan
+          docker tag "$REGISTRY/$REPOSITORY:$IMAGE_TAG" ministryofjustice/submit-a-bulk-claim:scan
         env:
           REGISTRY: ${{ steps.login-ecr.outputs.registry }}
           REPOSITORY: ${{ inputs.ecr_repository }}
@@ -80,7 +80,7 @@ jobs:
           SNYK_OAUTH_TOKEN: ${{ steps.auth.outputs.token }}
         uses: snyk/actions/docker@9adf32b1121593767fc3c057af55b55db032dc04
         with:
-          image: submit-a-bulk-claim:scan
+          image: ministryofjustice/submit-a-bulk-claim:scan
           args: --file=Dockerfile --severity-threshold=high --policy-path=.snyk
 
       - name: Monitor Docker image with Snyk
@@ -89,7 +89,7 @@ jobs:
           SNYK_OAUTH_TOKEN: ${{ steps.auth.outputs.token }}
         uses: snyk/actions/docker@9adf32b1121593767fc3c057af55b55db032dc04
         with:
-          image: submit-a-bulk-claim:scan
+          image: ministryofjustice/submit-a-bulk-claim:scan
           args: --file=Dockerfile --policy-path=.snyk
           command: monitor
 

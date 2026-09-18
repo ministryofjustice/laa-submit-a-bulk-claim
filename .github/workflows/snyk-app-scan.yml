@@ -61,10 +61,7 @@ jobs:
 
           path = "snyk-app.json"
           if not os.path.exists(path):
-              print("No Snyk JSON output found.")
-              with open(os.environ["GITHUB_OUTPUT"], "a") as out:
-                  out.write("has_fixable_vulns=false\n")
-              raise SystemExit(0)
+              raise SystemExit("No Snyk JSON output found.")
 
           with open(path) as f:
               root = json.load(f)
