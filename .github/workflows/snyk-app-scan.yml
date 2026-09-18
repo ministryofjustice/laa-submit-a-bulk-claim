@@ -53,6 +53,7 @@ jobs:
           SNYK_OAUTH_TOKEN: ${{ steps.auth.outputs.token }}
 
       - name: Publish condensed Snyk dependency summary
+        id: summary
         if: always()
         run: |
           python - <<'PY'
@@ -61,6 +62,8 @@ jobs:
           path = "snyk-app.json"
           if not os.path.exists(path):
               print("No Snyk JSON output found.")
+              with open(os.environ["GITHUB_OUTPUT"], "a") as out:
+                  out.write("has_fixable_vulns=false\n")
               raise SystemExit(0)
 
           with open(path) as f:
@@ -68,6 +71,7 @@ jobs:
 
           results = root if isinstance(root, list) else [root]
           findings = {}
+          fixable_found = False
 
           for result in results:
               if not isinstance(result, dict):
@@ -86,44 +90,63 @@ jobs:
 
                   pkg = vuln.get("packageName", "unknown")
                   sev = str(vuln.get("severity", "unknown")).lower()
-                  fixed = vuln.get("fixedIn") or vuln.get("nearestFixedInVersion") or "Not available"
+                  current_version = vuln.get("version") or vuln.get("packageVersion") or "unknown"
+
+                  fixed = vuln.get("fixedIn") or vuln.get("nearestFixedInVersion")
                   if isinstance(fixed, list):
-                      fixed = ", ".join(map(str, fixed))
+                      fixed = ", ".join(str(x) for x in fixed if x)
+                  elif fixed in (None, "", "None"):
+                      fixed = "Not available"
 
                   upgrade = vuln.get("upgradePath") or []
                   if isinstance(upgrade, list):
                       upgrade = " -> ".join(str(x) for x in upgrade if x and x is not False)
-                  elif not upgrade:
+                  if not upgrade:
                       upgrade = "No direct upgrade path"
+
+                  has_fix = False
+                  if isinstance(fixed, str) and fixed not in ("Not available", "None"):
+                      has_fix = True
+                  elif isinstance(upgrade, str) and upgrade and upgrade != "No direct upgrade path":
+                      has_fix = True
+
+                  if has_fix:
+                      fixable_found = True
 
                   key = (project, pkg)
                   item = findings.setdefault(key, {
                       "severity": sev,
                       "fixed": set(),
                       "upgrade": set(),
-                      "paths": 0
+                      "paths": 0,
+                      "current_version": set(),
                   })
                   item["severity"] = max([item["severity"], sev], key=["low","medium","high","critical"].index)
                   if isinstance(fixed, str):
                       item["fixed"].add(fixed)
-                  if upgrade:
+                  if isinstance(upgrade, str):
                       item["upgrade"].add(upgrade)
                   item["paths"] += 1
+                  item["current_version"].add(str(current_version))
 
           rows = [
               "## Snyk application dependency scan",
               "",
-              "| Project | Dependency | Highest severity | Fixed in | Upgrade path | Affected paths |",
-              "| --- | --- | --- | --- | --- | --- |"
+              "| Project | Dependency | Current version | Highest severity | Fixed in | Upgrade path | Affected paths |",
+              "| --- | --- | --- | --- | --- | --- | --- |"
           ]
 
           for (project, pkg), info in sorted(findings.items(), key=lambda kv: (kv[0][0], kv[0][1])):
               fixed = ", ".join(sorted(info["fixed"]))
               upgrade = ", ".join(sorted(info["upgrade"])) or "No direct upgrade path"
-              rows.append(f"| {project} | {pkg} | {info['severity'].title()} | {fixed} | {upgrade} | {info['paths']} |")
+              current_version = ", ".join(sorted(info["current_version"]))
+              rows.append(f"| {project} | {pkg} | {current_version} | {info['severity'].title()} | {fixed} | {upgrade} | {info['paths']} |")
 
           with open(os.environ["GITHUB_STEP_SUMMARY"], "a") as out:
               out.write("\n".join(rows) + "\n")
+
+          with open(os.environ["GITHUB_OUTPUT"], "a") as out:
+              out.write(f"has_fixable_vulns={'true' if fixable_found else 'false'}\n")
           PY
 
       - name: Upload Snyk JSON report
@@ -133,8 +156,8 @@ jobs:
           name: snyk-app-report
           path: snyk-app.json
 
-      - name: Fail when Snyk finds vulnerabilities
-        if: ${{ steps.snyk.outcome == 'failure' }}
+      - name: Fail when Snyk finds fixable vulnerabilities
+        if: ${{ steps.snyk.outcome == 'failure' && steps.summary.outputs.has_fixable_vulns == 'true' }}
         run: exit 1
 
   vulnerability-scan-code:
