@@ -83,6 +83,16 @@ jobs:
           image: submit-a-bulk-claim:scan
           args: --file=Dockerfile --severity-threshold=high --policy-path=.snyk
 
+      - name: Monitor Docker image with Snyk
+        if: ${{ inputs.branch == 'main' }}
+        env:
+          SNYK_OAUTH_TOKEN: ${{ steps.auth.outputs.token }}
+        uses: snyk/actions/docker@9adf32b1121593767fc3c057af55b55db032dc04
+        with:
+          image: submit-a-bulk-claim:scan
+          args: --file=Dockerfile --policy-path=.snyk
+          command: monitor
+
       - name: Upload result to GitHub Code Scanning
         if: ${{ always() && hashFiles('snyk.sarif') != '' }}
         uses: github/codeql-action/upload-sarif@b96794f015dfd88f77b49b1c93e0fa7110f94c63 # v4.38.0
