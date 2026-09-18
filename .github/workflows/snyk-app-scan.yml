@@ -57,41 +57,32 @@ jobs:
         run: |
           python - <<'PY'
           import json, os, sys
-          path = "snyk-app.json"
 
+          path = "snyk-app.json"
           if not os.path.exists(path):
               print("No Snyk JSON output found.")
               sys.exit(0)
 
           with open(path) as f:
-              data = json.load(f)
+              root = json.load(f)
 
-          vuln_items = []
-
-          raw = data.get("vulnerabilities")
-          if isinstance(raw, dict):
-              vuln_items = raw.get("list", [])
-          elif isinstance(raw, list):
-              vuln_items = raw
-
-          if not vuln_items:
-              issue_root = data.get("issues", {})
-              raw_issues = issue_root.get("vulnerabilities", [])
-              if isinstance(raw_issues, list):
-                  vuln_items = raw_issues
+          results = root if isinstance(root, list) else [root]
 
           flat = []
-          for item in vuln_items:
-              if isinstance(item, dict):
-                  flat.append(item)
-              elif isinstance(item, list):
-                  for sub in item:
-                      if isinstance(sub, dict):
-                          flat.append(sub)
+          for result in results:
+              if not isinstance(result, dict):
+                  continue
+
+              vulns = result.get("vulnerabilities")
+              if isinstance(vulns, list):
+                  flat.extend(v for v in vulns if isinstance(v, dict))
+              elif isinstance(result.get("issues"), dict):
+                  issues = result["issues"].get("vulnerabilities", [])
+                  if isinstance(issues, list):
+                      flat.extend(v for v in issues if isinstance(v, dict))
 
           total = len(flat)
           by_sev = {"low": 0, "medium": 0, "high": 0, "critical": 0}
-
           for v in flat:
               sev = str(v.get("severity", "")).lower()
               if sev in by_sev:
@@ -109,8 +100,7 @@ jobs:
           ]
 
           if flat:
-              summary.append("| Package | Severity | Title |")
-              summary.append("| --- | --- | --- |")
+              summary += ["| Package | Severity | Title |", "| --- | --- | --- |"]
               for v in flat[:10]:
                   pkg = v.get("packageName", v.get("package", "unknown"))
                   sev = v.get("severity", "unknown")
