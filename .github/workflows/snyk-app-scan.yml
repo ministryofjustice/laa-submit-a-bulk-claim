@@ -52,11 +52,11 @@ jobs:
         env:
           SNYK_OAUTH_TOKEN: ${{ steps.auth.outputs.token }}
 
-      - name: Publish Snyk dependency summary
+      - name: Publish condensed Snyk dependency summary
         if: always()
         run: |
           python - <<'PY'
-          import json, os, sys
+          import json, os
 
           path = "snyk-app.json"
           if not os.path.exists(path):
@@ -67,43 +67,54 @@ jobs:
               root = json.load(f)
 
           results = root if isinstance(root, list) else [root]
-          flat = []
+          findings = {}
 
           for result in results:
               if not isinstance(result, dict):
                   continue
-              vulns = result.get("vulnerabilities", [])
-              if isinstance(vulns, list):
-                  flat.extend(v for v in vulns if isinstance(v, dict))
+              for vuln in result.get("vulnerabilities", []):
+                  if not isinstance(vuln, dict):
+                      continue
 
-          summary = [
+                  pkg = vuln.get("packageName", "unknown")
+                  sev = str(vuln.get("severity", "unknown")).lower()
+                  fixed = vuln.get("fixedIn") or vuln.get("nearestFixedInVersion") or "Not available"
+                  if isinstance(fixed, list):
+                      fixed = ", ".join(map(str, fixed))
+
+                  upgrade = vuln.get("upgradePath") or []
+                  if isinstance(upgrade, list):
+                      upgrade = " -> ".join(str(x) for x in upgrade if x)
+                  elif not upgrade:
+                      upgrade = "No direct upgrade path"
+
+                  item = findings.setdefault(pkg, {
+                      "severity": sev,
+                      "fixed": set(),
+                      "upgrade": set(),
+                      "paths": 0
+                  })
+                  item["severity"] = max([item["severity"], sev], key=["low","medium","high","critical"].index)
+                  if isinstance(fixed, str):
+                      item["fixed"].add(fixed)
+                  if upgrade:
+                      item["upgrade"].add(upgrade)
+                  item["paths"] += 1
+
+          rows = [
               "## Snyk application dependency scan",
               "",
-              "| Package | Severity | Fixed in | Upgrade path |",
-              "| --- | --- | --- | --- |"
+              "| Dependency | Highest severity | Fixed in | Upgrade path | Affected paths |",
+              "| --- | --- | --- | --- | --- |"
           ]
 
-          for v in flat[:25]:
-              pkg = v.get("packageName", v.get("package", "unknown"))
-              sev = v.get("severity", "unknown").title()
-
-              fixed_in = v.get("fixedIn") or v.get("nearestFixedInVersion") or "Not available"
-              if isinstance(fixed_in, list):
-                  fixed_in = ", ".join(map(str, fixed_in))
-              if fixed_in in (None, "", "None"):
-                  fixed_in = "Not available"
-
-              upgrade = v.get("upgradePath") or []
-              if isinstance(upgrade, list):
-                  upgrade = " -> ".join(str(x) for x in upgrade if x)
-              elif not upgrade:
-                  upgrade = "No direct upgrade path"
-
-              title = v.get("title", "No title")
-              summary.append(f"| {pkg} | {sev} | {fixed_in} | {upgrade} |")
+          for pkg, info in sorted(findings.items()):
+              fixed = ", ".join(sorted(info["fixed"]))
+              upgrade = ", ".join(sorted(info["upgrade"])) or "No direct upgrade path"
+              rows.append(f"| {pkg} | {info['severity'].title()} | {fixed} | {upgrade} | {info['paths']} |")
 
           with open(os.environ["GITHUB_STEP_SUMMARY"], "a") as out:
-              out.write("\n".join(summary) + "\n")
+              out.write("\n".join(rows) + "\n")
           PY
 
       - name: Upload Snyk JSON report
