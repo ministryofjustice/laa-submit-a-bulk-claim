@@ -1,4 +1,4 @@
-name: Dependency Security Scan
+name: Security Scan
 
 on:
   push:
@@ -72,6 +72,14 @@ jobs:
           for result in results:
               if not isinstance(result, dict):
                   continue
+
+              project = (
+                  result.get("projectName")
+                  or result.get("displayTargetFile")
+                  or result.get("targetFile")
+                  or "unknown"
+              )
+
               for vuln in result.get("vulnerabilities", []):
                   if not isinstance(vuln, dict):
                       continue
@@ -84,11 +92,12 @@ jobs:
 
                   upgrade = vuln.get("upgradePath") or []
                   if isinstance(upgrade, list):
-                      upgrade = " -> ".join(str(x) for x in upgrade if x)
+                      upgrade = " -> ".join(str(x) for x in upgrade if x and x is not False)
                   elif not upgrade:
                       upgrade = "No direct upgrade path"
 
-                  item = findings.setdefault(pkg, {
+                  key = (project, pkg)
+                  item = findings.setdefault(key, {
                       "severity": sev,
                       "fixed": set(),
                       "upgrade": set(),
@@ -104,14 +113,14 @@ jobs:
           rows = [
               "## Snyk application dependency scan",
               "",
-              "| Dependency | Highest severity | Fixed in | Upgrade path | Affected paths |",
-              "| --- | --- | --- | --- | --- |"
+              "| Project | Dependency | Highest severity | Fixed in | Upgrade path | Affected paths |",
+              "| --- | --- | --- | --- | --- | --- |"
           ]
 
-          for pkg, info in sorted(findings.items()):
+          for (project, pkg), info in sorted(findings.items(), key=lambda kv: (kv[0][0], kv[0][1])):
               fixed = ", ".join(sorted(info["fixed"]))
               upgrade = ", ".join(sorted(info["upgrade"])) or "No direct upgrade path"
-              rows.append(f"| {pkg} | {info['severity'].title()} | {fixed} | {upgrade} | {info['paths']} |")
+              rows.append(f"| {project} | {pkg} | {info['severity'].title()} | {fixed} | {upgrade} | {info['paths']} |")
 
           with open(os.environ["GITHUB_STEP_SUMMARY"], "a") as out:
               out.write("\n".join(rows) + "\n")
@@ -167,10 +176,10 @@ jobs:
           SNYK_OAUTH_TOKEN: ${{ steps.auth.outputs.token }}
 
       - name: Upload result to GitHub Code Scanning
-        if: ${{ always() && hashFiles('snyk-app.sarif') != '' }}
+        if: ${{ always() && hashFiles('snyk-code.sarif') != '' }}
         uses: github/codeql-action/upload-sarif@18420e3271f74589575af831a523c833acda327f
         with:
-          sarif_file: snyk-coded.sarif
+          sarif_file: snyk-code.sarif
           category: snyk-code
 
       - name: Fail when Snyk finds vulnerabilities
