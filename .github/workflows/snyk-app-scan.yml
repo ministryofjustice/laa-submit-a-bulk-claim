@@ -13,7 +13,6 @@ jobs:
     runs-on: ubuntu-latest
     env:
       SNYK_TEST_EXCLUDE: build,generated
-      SNYK_TEST_EXCLUDE: build,generated
       SNYK_TARGET_REFERENCE: main
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
