@@ -56,7 +56,7 @@ jobs:
         if: always()
         run: |
           python - <<'PY'
-          import json, os
+          import json, os, sys
 
           path = "snyk-app.json"
           if not os.path.exists(path):
@@ -76,21 +76,30 @@ jobs:
               if isinstance(vulns, list):
                   flat.extend(v for v in vulns if isinstance(v, dict))
 
-          summary = ["## Snyk application dependency scan", ""]
-          summary.append("| Package | Severity | Fixed in | Upgrade path |")
-          summary.append("| --- | --- | --- | --- |")
+          summary = [
+              "## Snyk application dependency scan",
+              "",
+              "| Package | Severity | Fixed in | Upgrade path |",
+              "| --- | --- | --- | --- |"
+          ]
 
-          for v in flat[:20]:
-              pkg = v.get("packageName", "unknown")
-              sev = v.get("severity", "unknown")
+          for v in flat[:25]:
+              pkg = v.get("packageName", v.get("package", "unknown"))
+              sev = v.get("severity", "unknown").title()
+
               fixed_in = v.get("fixedIn") or v.get("nearestFixedInVersion") or "Not available"
               if isinstance(fixed_in, list):
-                  fixed_in = ", ".join(str(x) for x in fixed_in)
+                  fixed_in = ", ".join(map(str, fixed_in))
+              if fixed_in in (None, "", "None"):
+                  fixed_in = "Not available"
+
               upgrade = v.get("upgradePath") or []
               if isinstance(upgrade, list):
                   upgrade = " -> ".join(str(x) for x in upgrade if x)
               elif not upgrade:
                   upgrade = "No direct upgrade path"
+
+              title = v.get("title", "No title")
               summary.append(f"| {pkg} | {sev} | {fixed_in} | {upgrade} |")
 
           with open(os.environ["GITHUB_STEP_SUMMARY"], "a") as out:
