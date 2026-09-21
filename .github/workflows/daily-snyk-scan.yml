@@ -9,7 +9,7 @@ permissions:
   contents: read
 
 jobs:
-  snyk-scan:
+  upload-image:
     permissions:
       contents: read
       id-token: write
@@ -30,7 +30,7 @@ jobs:
       snyk_client_secret: ${{ secrets.SNYK_CLIENT_SECRET }}
 
   snyk-image-scan:
-    needs: [ snyk-scan ]
+    needs: [ upload-image ]
     uses: ./.github/workflows/snyk-docker-scan.yml
     permissions:
       contents: read
@@ -38,7 +38,7 @@ jobs:
       id-token: write
     with:
       branch: ${{ github.sha }}
-      image_tag: ${{ needs.snyk-scan.outputs.published_image_version }}
+      image_tag: ${{ needs.upload-image.outputs.published_image_version }}
       aws_region: ${{ vars.LAA_SUBMIT_A_BULK_CLAIM_ECR_REGION }}
       ecr_repository: ${{ vars.LAA_SUBMIT_A_BULK_CLAIM_ECR_REPOSITORY }}
       image_scan_threshold: 'medium'
@@ -48,8 +48,8 @@ jobs:
       SNYK_CLIENT_SECRET: ${{ secrets.SNYK_CLIENT_SECRET }}
 
   notify-slack:
-    needs: [ snyk-image-scan ]
-    if: ${{ always() && needs.snyk-image-scan.result == 'failure' }}
+    needs: [ upload-image, snyk-image-scan ]
+    if: ${{ always() && (needs.upload-image.result == 'failure' || needs.snyk-image-scan.result == 'failure') }}
     runs-on: ubuntu-latest
     steps:
       - name: Notify Slack on failure

@@ -93,11 +93,11 @@ jobs:
           command: ${{ inputs.branch == 'main' && 'monitor' || 'test' }}
 
       - name: Fix undefined values in sarif report
-        if: ${{ inputs.image_scan == 'true' && inputs.image_scan_upload_sarif == 'true'}}
+        if: ${{ always() && hashFiles('snyk.sarif') != '' }}
         run: |
           echo "Input sarif: "
-          cat snyk-report.sarif
-          cat snyk-report.sarif | jq '
+          cat snyk.sarif
+          cat snyk.sarif | jq '
               .runs[].tool[].rules[]
               |= (
                   if (
