@@ -4,7 +4,6 @@ on:
   schedule:
     - cron: '0 6,15 * * *'
   workflow_dispatch:
-  push:
 
 permissions:
   contents: read
@@ -50,8 +49,7 @@ jobs:
 
   notify-slack:
     needs: [ snyk-image-scan ]
-    #if: ${{ always() && needs.snyk-image-scan.result == 'failure' }}
-    if: false # temp disabled
+    if: ${{ always() && needs.snyk-image-scan.result == 'failure' }}
     runs-on: ubuntu-latest
     steps:
       - name: Notify Slack on failure
