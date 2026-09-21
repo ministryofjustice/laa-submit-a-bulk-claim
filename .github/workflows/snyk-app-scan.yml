@@ -44,7 +44,7 @@ jobs:
         continue-on-error: true
         run: |
           snyk test \
-            --file=laa-submit-a-bulk-claim-ui/build.gradle \
+            --file=build.gradle \
             --all-sub-projects \
             --package-manager=gradle \
             --severity-threshold=high \
