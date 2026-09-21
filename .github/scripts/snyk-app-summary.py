@@ -81,9 +81,9 @@ def main() -> None:
             item["current_version"].add(str(current_version))
 
     output_path = os.environ.get("GITHUB_OUTPUT")
-      if output_path:
-        with open(output_path, "a") as output:
-          print(f"has_fixable_vulns={'true' if fixable_found else 'false'}", file=output)
+    if output_path:
+      with open(output_path, "a") as output:
+        print(f"has_fixable_vulns={'true' if fixable_found else 'false'}", file=output)
     rows = [
         "## Snyk application dependency scan",
         "",
