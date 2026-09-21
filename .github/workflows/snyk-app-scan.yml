@@ -47,7 +47,7 @@ jobs:
             --file=build.gradle \
             --all-sub-projects \
             --package-manager=gradle \
-            --fail-on=upgradeable \
+            --fail-on=upgradable \
             --severity-threshold=medium \
             --json-file-output=snyk-app.json
         env:
