@@ -24,7 +24,7 @@ on:
       image_scan_fails_on:
         required: false
         type: string
-        default: 'upgradeable'
+        default: 'upgradable'
     secrets:
       ECR_ROLE_TO_ASSUME:
         required: true

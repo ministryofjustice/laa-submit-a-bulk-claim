@@ -61,5 +61,5 @@ jobs:
           webhook-type: incoming-webhook
           payload: |
             text: >
-              :x: @here Daily Snyk scan failed for `${{ github.repository }}`.
+              :x: <!here> Daily Snyk scan failed for `${{ github.repository }}`.
               Review the workflow run: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}
