@@ -92,11 +92,40 @@ jobs:
           args: --file=Dockerfile --severity-threshold=${{ inputs.image_scan_threshold }} --fail-on=${{ inputs.image_scan_fails_on }} --policy-path=.snyk
           command: ${{ inputs.branch == 'main' && 'monitor' || 'test' }}
 
+      - name: Fix undefined values in sarif report
+        if: ${{ inputs.image_scan == 'true' && inputs.image_scan_upload_sarif == 'true'}}
+        run: |
+          echo "Input sarif: "
+          cat snyk-report.sarif
+          cat snyk-report.sarif | jq '
+              .runs[].tool[].rules[]
+              |= (
+                  if (
+                    .properties["security-severity"] == null or
+                    .properties["security-severity"] == "null" or
+                    .properties["security-severity"] == "undefined" or
+                    .properties["security-severity"] == ""
+                  )
+                  then .properties["security-severity"] =
+                   (  if .shortDescription.text | test("(?i)critical") then "9.0"
+                      elif .shortDescription.text | test("(?i)high") then "7.0"
+                      elif .shortDescription.text | test("(?i)medium") then "4.0"
+                      elif .shortDescription.text | test("(?i)low") then "0.1"
+                      else ""
+                      end
+                   )
+                   else .
+                   end
+               )
+          ' > snyk-report-cleansed.sarif
+          echo "Output sarif: "
+          cat snyk-report-cleansed.sarif
+
       - name: Upload result to GitHub Code Scanning
-        if: ${{ always() && hashFiles('snyk.sarif') != '' }}
+        if: ${{ always() && hashFiles('snyk-report-cleansed.sarif') != '' }}
         uses: github/codeql-action/upload-sarif@b96794f015dfd88f77b49b1c93e0fa7110f94c63 # v4.38.0
         with:
-          sarif_file: snyk.sarif
+          sarif_file: snyk-report-cleansed.sarif
           category: snyk-container
 
       - name: Fail when Snyk finds vulnerabilities
