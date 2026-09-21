@@ -82,16 +82,7 @@ jobs:
         with:
           image: ministryofjustice/submit-a-bulk-claim:scan
           args: --file=Dockerfile --severity-threshold=high --policy-path=.snyk
-
-      - name: Monitor Docker image with Snyk
-        if: ${{ inputs.branch == 'main' }}
-        env:
-          SNYK_OAUTH_TOKEN: ${{ steps.auth.outputs.token }}
-        uses: snyk/actions/docker@9adf32b1121593767fc3c057af55b55db032dc04
-        with:
-          image: ministryofjustice/submit-a-bulk-claim:scan
-          args: --file=Dockerfile --policy-path=.snyk
-          command: monitor
+          command: ${{ inputs.branch == 'main' && 'monitor' || 'test' }}
 
       - name: Upload result to GitHub Code Scanning
         if: ${{ always() && hashFiles('snyk.sarif') != '' }}

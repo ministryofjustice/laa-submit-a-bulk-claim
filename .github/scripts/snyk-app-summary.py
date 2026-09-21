@@ -46,7 +46,7 @@ def main() -> None:
             fixed = vuln.get("fixedIn") or vuln.get("nearestFixedInVersion")
             if isinstance(fixed, list):
                 fixed = ", ".join(str(x) for x in fixed if x)
-            elif fixed in (None, "", "None"):
+            if fixed in (None, "", "None"):
                 fixed = "Not available"
 
             upgrade = vuln.get("upgradePath") or []
@@ -80,8 +80,11 @@ def main() -> None:
             item["paths"] += 1
             item["current_version"].add(str(current_version))
 
+    output_path = os.environ.get("GITHUB_OUTPUT")
+     if output_path:
+       with open(output_path, "a") as output:
+        print(f"has_fixable_vulns={'true' if fixable_found else 'false'}", file=output)
     rows = [
-        f"has_fixable_vulns={'true' if fixable_found else 'false'}",
         "## Snyk application dependency scan",
         "",
     ]

@@ -15,8 +15,7 @@ REPORT_PATH = "snyk-code.sarif"
 
 def main() -> None:
     if not os.path.exists(REPORT_PATH):
-        print("No Snyk SARIF output found.")
-        return
+        raise SystemExit("No Snyk SARIF output found.")
 
     with open(REPORT_PATH) as f:
         root = json.load(f)
