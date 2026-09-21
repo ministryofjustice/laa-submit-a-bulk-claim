@@ -4,25 +4,21 @@
 Reads a Snyk SARIF report and writes a Markdown summary table to
 GITHUB_STEP_SUMMARY.
 
-Usage: ./snyk-code-summary.py <snyk-sarif-path>
+Usage: ./snyk-code-summary.py
 """
 
 import json
 import os
-import sys
+
+REPORT_PATH = "snyk-code.sarif"
 
 
 def main() -> None:
-    if len(sys.argv) != 2:
-        print(f"Usage: {sys.argv[0]} <snyk-sarif-path>", file=sys.stderr)
-        raise SystemExit(1)
-
-    path = sys.argv[1]
-    if not os.path.exists(path):
+    if not os.path.exists(REPORT_PATH):
         print("No Snyk SARIF output found.")
         return
 
-    with open(path) as f:
+    with open(REPORT_PATH) as f:
         root = json.load(f)
 
     severity_order = ["note", "warning", "error"]
@@ -76,8 +72,7 @@ def main() -> None:
     else:
         summary_rows.append("| - | - | - | - | No issues found |")
 
-    with open(os.environ["GITHUB_STEP_SUMMARY"], "a") as out:
-        out.write("\n".join(summary_rows) + "\n")
+    print("\n".join(summary_rows))
 
 
 if __name__ == "__main__":

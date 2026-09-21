@@ -4,24 +4,20 @@
 Reads a Snyk JSON report and writes a Markdown summary table to
 GITHUB_STEP_SUMMARY, plus a `has_fixable_vulns` output to GITHUB_OUTPUT.
 
-Usage: ./snyk-app-summary.py <snyk-json-path>
+Usage: ./snyk-app-summary.py
 """
 
 import json
 import os
-import sys
+
+REPORT_PATH = "snyk-app.json"
 
 
 def main() -> None:
-    if len(sys.argv) != 2:
-        print(f"Usage: {sys.argv[0]} <snyk-json-path>", file=sys.stderr)
-        raise SystemExit(1)
-
-    path = sys.argv[1]
-    if not os.path.exists(path):
+    if not os.path.exists(REPORT_PATH):
         raise SystemExit("No Snyk JSON output found.")
 
-    with open(path) as f:
+    with open(REPORT_PATH) as f:
         root = json.load(f)
 
     results = root if isinstance(root, list) else [root]
@@ -85,6 +81,7 @@ def main() -> None:
             item["current_version"].add(str(current_version))
 
     rows = [
+        f"has_fixable_vulns={'true' if fixable_found else 'false'}",
         "## Snyk application dependency scan",
         "",
     ]
@@ -101,11 +98,7 @@ def main() -> None:
             current_version = ", ".join(sorted(info["current_version"]))
             rows.append(f"| {project} | {pkg} | {current_version} | {info['severity'].title()} | {fixed} | {upgrade} | {info['paths']} |")
 
-    with open(os.environ["GITHUB_STEP_SUMMARY"], "a") as out:
-        out.write("\n".join(rows) + "\n")
-
-    with open(os.environ["GITHUB_OUTPUT"], "a") as out:
-        out.write(f"has_fixable_vulns={'true' if fixable_found else 'false'}\n")
+    print("\n".join(rows))
 
 
 if __name__ == "__main__":
