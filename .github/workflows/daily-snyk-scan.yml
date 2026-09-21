@@ -4,6 +4,7 @@ on:
   schedule:
     - cron: '0 6,15 * * *'
   workflow_dispatch:
+  push:
 
 permissions:
   contents: read
@@ -18,7 +19,7 @@ jobs:
     with:
       jar_subproject: 'laa-submit-a-bulk-claim-ui'
       image_version: daily-snyk-latest
-      publish: 'false'
+      publish: 'true'
       java_version: 25
       image_scan: 'false'
     secrets:
