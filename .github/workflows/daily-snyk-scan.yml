@@ -50,7 +50,8 @@ jobs:
 
   notify-slack:
     needs: [ snyk-image-scan ]
-    if: ${{ always() && needs.snyk-image-scan.result == 'failure' }}
+    #if: ${{ always() && needs.snyk-image-scan.result == 'failure' }}
+    if: false # temp disabled
     runs-on: ubuntu-latest
     steps:
       - name: Notify Slack on failure
