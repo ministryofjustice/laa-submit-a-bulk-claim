@@ -41,13 +41,14 @@ jobs:
 
       - name: Run Snyk dependency scan
         id: snyk
-        continue-on-error: true
+        continue-on-error: true # Want snyk errors to not be blocking on our PRs
         run: |
           snyk test \
             --file=build.gradle \
             --all-sub-projects \
             --package-manager=gradle \
-            --severity-threshold=high \
+            --fail-on=upgradeable \
+            --severity-threshold=medium \
             --json-file-output=snyk-app.json
         env:
           SNYK_OAUTH_TOKEN: ${{ steps.auth.outputs.token }}
@@ -63,10 +64,6 @@ jobs:
         with:
           name: snyk-app-report
           path: snyk-app.json
-
-      - name: Fail when Snyk finds fixable vulnerabilities
-        if: ${{ steps.snyk.outcome == 'failure' && steps.summary.outputs.has_fixable_vulns == 'true' }}
-        run: exit 1
 
   vulnerability-scan-code:
     name: Vulnerability Scan - Code

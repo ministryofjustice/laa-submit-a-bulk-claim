@@ -20,9 +20,8 @@ jobs:
       jar_subproject: 'laa-submit-a-bulk-claim-ui'
       image_version: daily-snyk-latest
       publish: 'false'
-      image_scan_severity: 'medium'
-      image_scan_fail_on: 'all'
       java_version: 25
+      image_scan: 'false'
     secrets:
       gh_token: ${{ secrets.GITHUB_TOKEN }}
       ecr_repository: ${{ vars.LAA_SUBMIT_A_BULK_CLAIM_ECR_REPOSITORY }}
@@ -31,9 +30,28 @@ jobs:
       snyk_client_id: ${{ secrets.SNYK_CLIENT_ID }}
       snyk_client_secret: ${{ secrets.SNYK_CLIENT_SECRET }}
 
-  notify-slack:
+  snyk-image-scan:
     needs: [ snyk-scan ]
-    if: ${{ always() && needs.snyk-scan.result == 'failure' }}
+    uses: ./.github/workflows/snyk-docker-scan.yml
+    permissions:
+      contents: read
+      security-events: write
+      id-token: write
+    with:
+      branch: ${{ github.sha }}
+      image_tag: ${{ needs.snyk-scan.outputs.published_image_version }}
+      aws_region: ${{ vars.LAA_SUBMIT_A_BULK_CLAIM_ECR_REGION }}
+      ecr_repository: ${{ vars.LAA_SUBMIT_A_BULK_CLAIM_ECR_REPOSITORY }}
+      image_scan_threshold: 'medium'
+      image_scan_fails_on: 'all'
+    secrets:
+      ECR_ROLE_TO_ASSUME: ${{ secrets.LAA_SUBMIT_A_BULK_CLAIM_ECR_ROLE_TO_ASSUME }}
+      SNYK_CLIENT_ID: ${{ secrets.SNYK_CLIENT_ID }}
+      SNYK_CLIENT_SECRET: ${{ secrets.SNYK_CLIENT_SECRET }}
+
+  notify-slack:
+    needs: [ snyk-image-scan ]
+    if: ${{ always() && needs.snyk-image-scan.result == 'failure' }}
     runs-on: ubuntu-latest
     steps:
       - name: Notify Slack on failure

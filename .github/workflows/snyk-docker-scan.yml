@@ -17,6 +17,14 @@ on:
       ecr_repository:
         required: true
         type: string
+      image_scan_threshold:
+        required: false
+        type: string
+        default: 'medium'
+      image_scan_fails_on:
+        required: false
+        type: string
+        default: 'upgradeable'
     secrets:
       ECR_ROLE_TO_ASSUME:
         required: true
@@ -81,7 +89,7 @@ jobs:
         uses: snyk/actions/docker@9adf32b1121593767fc3c057af55b55db032dc04
         with:
           image: ministryofjustice/submit-a-bulk-claim:scan
-          args: --file=Dockerfile --severity-threshold=high --policy-path=.snyk
+          args: --file=Dockerfile --severity-threshold=${{ inputs.image_scan_threshold }} --fail-on=${{ inputs.image_scan_fails_on }} --policy-path=.snyk
           command: ${{ inputs.branch == 'main' && 'monitor' || 'test' }}
 
       - name: Upload result to GitHub Code Scanning
