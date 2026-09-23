@@ -7,6 +7,7 @@ import static org.springframework.security.test.web.servlet.request.SecurityMock
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.oidcLogin;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.model;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
 import static uk.gov.justice.laa.payments.submit.controller.ControllerTestHelper.OIDC_USER;
@@ -124,6 +125,38 @@ class BulkImportControllerTest {
                   .with(csrf())
                   .with(oidcLogin().oidcUser(OIDC_USER)))
           .andExpect(status().isOk())
+          .andExpect(view().name("pages/upload"));
+    }
+
+    @Test
+    @DisplayName("Should redirect when file fails size check")
+    void shouldRedirectWhenFileFailsSizeCheck() throws Exception {
+
+      MockMultipartFile file =
+          new MockMultipartFile("fileUpload", "empty.txt", "text/plain", "text".getBytes());
+      FileUploadForm input = new FileUploadForm(file);
+
+      doAnswer(
+              invocationOnMock -> {
+                Errors errors = invocationOnMock.getArgument(1);
+                errors.rejectValue("file", "bulkImport.validation.size");
+                return null;
+              })
+          .when(bulkImportFileValidator)
+          .validate(any(FileUploadForm.class), any(Errors.class));
+
+      mockMvc
+          .perform(
+              post("/upload")
+                  .sessionAttr("fileUploadForm", input)
+                  .with(csrf())
+                  .with(oidcLogin().oidcUser(OIDC_USER)))
+          .andExpect(status().isOk())
+          .andExpect(model().attributeHasFieldErrors("fileUploadForm", "file"))
+          .andExpect(
+              model()
+                  .attributeHasFieldErrorCode(
+                      "fileUploadForm", "file", "bulkImport.validation.size"))
           .andExpect(view().name("pages/upload"));
     }
 
