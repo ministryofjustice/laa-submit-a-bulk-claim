@@ -2,6 +2,8 @@ package uk.gov.justice.laa.payments.submit.controller;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.oidcLogin;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.asyncDispatch;
@@ -14,9 +16,15 @@ import java.util.UUID;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
+import org.springframework.http.ContentDisposition;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.assertj.MockMvcTester;
@@ -87,6 +95,103 @@ class ExportSubmissionDetailControllerTest extends BaseControllerTest {
           .failure()
           .hasCauseInstanceOf(SubmitBulkClaimException.class)
           .hasMessageContaining("User (test@example.com) does not have access to office: 12345");
+    }
+
+    @ParameterizedTest
+    @CsvSource({
+      "LEGAL HELP, legal-help",
+      "CRIME LOWER, crime-lower",
+      "MEDIATION, mediation",
+    })
+    @DisplayName("Should request the export for the area of law path variable")
+    void shouldRequestExportForAreaOfLawPathVariable(
+        String areaOfLaw, String expectedPathVariable) {
+      // Given
+      String office = "12345";
+      UUID submissionReference = UUID.fromString("3fa85f64-5717-4562-b3fc-2c963f66afa6");
+      when(exportDataClaimsRestClient.getSubmissionExport(any(), any(), any()))
+          .thenReturn(Mono.just(ResponseEntity.ok("one,two,three".getBytes())));
+      when(oidcAttributeUtils.getUserOffices(any())).thenReturn(List.of(office));
+
+      // When
+      var initial =
+          mockMvc.perform(
+              get("/submissions/%s/export?office=%s&areaOfLaw=%s"
+                      .formatted(submissionReference, office, areaOfLaw))
+                  .with(oidcLogin().oidcUser(OIDC_USER)));
+
+      // Then
+      assertThat(mockMvc.perform(asyncDispatch(initial.getMvcResult()))).hasStatusOk();
+      verify(exportDataClaimsRestClient)
+          .getSubmissionExport(eq(expectedPathVariable), eq(submissionReference), eq(office));
+    }
+
+    @Test
+    @DisplayName("Should return the content type and file name provided by the claims API")
+    void shouldReturnContentTypeAndFileNameFromClaimsApi() {
+      // Given
+      String office = "12345";
+      UUID submissionReference = UUID.fromString("3fa85f64-5717-4562-b3fc-2c963f66afa6");
+
+      HttpHeaders claimsApiHeaders = new HttpHeaders();
+      claimsApiHeaders.setContentType(MediaType.parseMediaType("text/csv"));
+      claimsApiHeaders.setContentDisposition(
+          ContentDisposition.attachment().filename("submission-claims-legal-help.csv").build());
+      claimsApiHeaders.add("x-internal-header", "should-not-be-forwarded");
+
+      when(exportDataClaimsRestClient.getSubmissionExport(any(), any(), any()))
+          .thenReturn(
+              Mono.just(
+                  ResponseEntity.ok().headers(claimsApiHeaders).body("one,two,three".getBytes())));
+      when(oidcAttributeUtils.getUserOffices(any())).thenReturn(List.of(office));
+
+      // When
+      var initial =
+          mockMvc.perform(
+              get("/submissions/%s/export?office=%s&areaOfLaw=%s"
+                      .formatted(submissionReference, office, "LEGAL HELP"))
+                  .with(oidcLogin().oidcUser(OIDC_USER)));
+
+      // Then
+      assertThat(mockMvc.perform(asyncDispatch(initial.getMvcResult())))
+          .hasStatusOk()
+          .headers()
+          .satisfies(
+              headers -> {
+                assertThat(headers.getContentType())
+                    .isEqualTo(MediaType.parseMediaType("text/csv"));
+                assertThat(headers.getContentDisposition().getFilename())
+                    .isEqualTo("submission-claims-legal-help.csv");
+                assertThat(headers.getContentDisposition().isAttachment()).isTrue();
+                assertThat(headers.headerNames()).doesNotContain("x-internal-header");
+              });
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {"/submission/%s/export", "/submissions/%s/export"})
+    @DisplayName("Should export from both the singular and plural mappings")
+    void shouldExportFromBothMappings(String mapping) {
+      // Given
+      String fileContent = "one,two,three";
+      String office = "12345";
+      UUID submissionReference = UUID.fromString("3fa85f64-5717-4562-b3fc-2c963f66afa6");
+      when(exportDataClaimsRestClient.getSubmissionExport(any(), any(), any()))
+          .thenReturn(Mono.just(ResponseEntity.ok(fileContent.getBytes())));
+      when(oidcAttributeUtils.getUserOffices(any())).thenReturn(List.of(office));
+
+      // When
+      var initial =
+          mockMvc.perform(
+              get("%s?office=%s&areaOfLaw=%s"
+                      .formatted(mapping.formatted(submissionReference), office, "LEGAL HELP"))
+                  .with(oidcLogin().oidcUser(OIDC_USER)));
+
+      // Then
+      assertThat(mockMvc.perform(asyncDispatch(initial.getMvcResult())))
+          .hasStatusOk()
+          .body()
+          .asString()
+          .isEqualTo(fileContent);
     }
   }
 }

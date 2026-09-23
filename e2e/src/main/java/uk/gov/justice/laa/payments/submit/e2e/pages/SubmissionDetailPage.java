@@ -2,9 +2,9 @@ package uk.gov.justice.laa.payments.submit.e2e.pages;
 
 import static com.microsoft.playwright.assertions.PlaywrightAssertions.assertThat;
 
+import com.microsoft.playwright.Download;
 import com.microsoft.playwright.Locator;
 import com.microsoft.playwright.Page;
-import com.microsoft.playwright.assertions.LocatorAssertions.ContainsTextOptions;
 import lombok.Getter;
 
 @Getter
@@ -15,6 +15,7 @@ public class SubmissionDetailPage extends BasePage {
   private final Locator claimsTab;
   private final Locator messagesTab;
   private final Locator matterStartsTab;
+  private final Locator exportButton;
 
   private final Locator officeAccount;
   private final Locator areaOfLaw;
@@ -34,6 +35,7 @@ public class SubmissionDetailPage extends BasePage {
     claimsTab = page.locator("#claims-tab");
     messagesTab = page.locator("#messages-tab");
     matterStartsTab = page.locator("#matter-starts-tab");
+    exportButton = page.locator("#export-button");
 
     officeAccount = page.locator("#submission-summary__office dd");
     areaOfLaw = page.locator("#submission-summary__area-of-law dd");
@@ -82,5 +84,10 @@ public class SubmissionDetailPage extends BasePage {
   public void assertTotalMatterStarts(int total) {
     assertThat(matterStartsList).isVisible();
     assertThat(matterStartsTab).containsText("(%d)".formatted(total));
+  }
+
+  public Download downloadClaims() {
+    assertThat(exportButton).isVisible();
+    return page.waitForDownload(exportButton::click);
   }
 }

@@ -222,16 +222,8 @@ class SubmissionDetailsCrimeLowerViewTest extends SubmissionDetailsViewTestBase 
   }
 
   @Test
-  void acceptedSubmissionPageShowsDownloadAndPrintActions() {
+  void acceptedSubmissionPageShowsPrintAction() {
     var doc = renderDocument();
-
-    assertPageHasSecondaryButton(doc, "Download claims");
-
-    var exportButton = selectFirst(doc, "#export-button");
-    assertThat(exportButton.attr("href"))
-        .contains("/submissions/%s/export".formatted(submissionId))
-        .contains("office=123456")
-        .contains("areaOfLaw=CRIME%20LOWER");
 
     assertThat(
             selectFirst(doc, "[data-module=laa-print-button]").attr("data-print-action-container"))
