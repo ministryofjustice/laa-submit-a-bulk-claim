@@ -104,6 +104,15 @@ runs:
         yq eval-all "( .appVersion = \"${IMAGE_TAG}\" )" -i .helm/submit-a-bulk-claim/Chart.yaml
         cat .helm/submit-a-bulk-claim/Chart.yaml
 
+    - name: Clear stale Helm locks
+      uses: ./.github/actions/clear-helm-lock
+      with:
+        kube_namespace: ${{ inputs.kube-namespace }}
+        release_names: |
+          ${{ steps.extract_release_name.outputs.release-name }}
+          ${{ steps.extract_release_name.outputs.release-name }}-redis
+          ${{ steps.extract_release_name.outputs.release-name }}-oidc-mock
+
     - name: Helm deployment of branch
       id: helm-install
       shell: bash

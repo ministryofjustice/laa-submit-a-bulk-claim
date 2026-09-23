@@ -1,0 +1,49 @@
+name: "Clear stale Helm locks"
+description: "Clears Helm releases left in a pending state by an interrupted deploy"
+
+inputs:
+  release_names:
+    description: "Newline separated Helm releases to check"
+    required: true
+    type: string
+  kube_namespace:
+    description: "Namespace that contains the releases"
+    required: true
+    type: string
+
+runs:
+  using: "composite"
+  steps:
+
+    - name: Clear stale Helm locks
+      shell: bash
+      env:
+        RELEASE_NAMES: "${{ inputs.release_names }}"
+        KUBE_NAMESPACE: "${{ inputs.kube_namespace }}"
+      run: |
+        set -euo pipefail
+
+        while IFS= read -r release <&3; do
+          release="$(echo "$release" | tr -d '[:space:]')"
+          [ -z "$release" ] && continue
+
+          status="$(helm status "$release" --namespace "$KUBE_NAMESPACE" -o json 2>/dev/null \
+            | jq -r '.info.status // empty' 2>/dev/null || true)"
+
+          case "$status" in
+            pending-install)
+              echo "::warning::Release '$release' is stuck in $status; uninstalling before deploy"
+              helm uninstall "$release" --namespace "$KUBE_NAMESPACE" --wait --timeout=10m
+              ;;
+            pending-*)
+              echo "::warning::Release '$release' is stuck in $status; rolling back before deploy"
+              helm rollback "$release" --namespace "$KUBE_NAMESPACE" --wait --timeout=10m
+              ;;
+            '')
+              echo "No existing release found for '$release'; nothing to clear"
+              ;;
+            *)
+              echo "Release '$release' status is $status; nothing to clear"
+              ;;
+          esac
+        done 3<<< "$RELEASE_NAMES"
