@@ -1,0 +1,61 @@
+name: "Clear stale Helm locks"
+description: "Clears Helm releases left in a pending state by an interrupted deploy"
+
+inputs:
+  release_names:
+    description: "Newline separated Helm releases to check"
+    required: true
+    type: string
+  kube_namespace:
+    description: "Namespace that contains the releases"
+    required: true
+    type: string
+
+runs:
+  using: "composite"
+  steps:
+
+    - name: Clear stale Helm locks
+      shell: bash
+      env:
+        RELEASE_NAMES: "${{ inputs.release_names }}"
+        KUBE_NAMESPACE: "${{ inputs.kube_namespace }}"
+      run: |
+        set -euo pipefail
+
+        helm_error="$(mktemp)"
+        trap 'rm -f "$helm_error"' EXIT
+
+        while IFS= read -r release <&3; do
+          release="$(echo "$release" | tr -d '[:space:]')"
+          [ -z "$release" ] && continue
+
+          if status_json="$(helm status "$release" --namespace "$KUBE_NAMESPACE" -o json 2>"$helm_error")"; then
+            status="$(jq -r '.info.status // empty' <<< "$status_json")"
+          elif grep -qi 'release: not found' "$helm_error"; then
+            echo "No existing release found for '$release'; nothing to clear"
+            continue
+          else
+            echo "::error::Unable to read Helm status for '$release'"
+            cat "$helm_error" >&2
+            exit 1
+          fi
+
+          case "$status" in
+            pending-install)
+              echo "::warning::Release '$release' is stuck in $status; uninstalling before deploy"
+              helm uninstall "$release" --namespace "$KUBE_NAMESPACE" --wait --timeout=10m
+              ;;
+            pending-*)
+              echo "::warning::Release '$release' is stuck in $status; rolling back before deploy"
+              helm rollback "$release" --namespace "$KUBE_NAMESPACE" --wait --timeout=10m
+              ;;
+            '')
+              echo "::error::Helm reported no status for existing release '$release'"
+              exit 1
+              ;;
+            *)
+              echo "Release '$release' status is $status; nothing to clear"
+              ;;
+          esac
+        done 3<<< "$RELEASE_NAMES"
