@@ -17,9 +17,9 @@
       </th:block>
 
       <h2 class="govuk-heading-l" th:text="#{landing.beforeStart.heading}"/>
-      <p class="govuk-body"
-         th:utext="#{landing.beforeStart.files(
-     ${laaBulkUploadGuidanceText})}"></p>
+      <p class="govuk-body" th:text="#{landing.beforeStart.files.one(${@environment.getProperty('app.upload-max-file-size')})}"></p>
+      <p class="govuk-body" th:utext="#{landing.beforeStart.files.two(${laaBulkUploadSpreadsheetLink}, ${laaBulkUploadGuidanceDocumentsLink})}"></p>
+      <p class="govuk-body" th:utext="#{landing.beforeStart.files.three(${laaBulkUploadGuidanceLink})}"></p>
       <a class="govuk-button govuk-button--start"
          th:href="@{/upload}"
          role="button"

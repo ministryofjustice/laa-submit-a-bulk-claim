@@ -466,7 +466,8 @@ class SubmissionDetailsWarningFieldViewTest extends SubmissionDetailsViewTestBas
                 "AQ2B3C",
                 BigDecimal.ONE,
                 areaOfLaw.getValue(),
-                OffsetDateTime.of(2025, 1, 1, 10, 10, 10, 0, ZoneOffset.UTC)));
+                OffsetDateTime.of(2025, 1, 1, 10, 10, 10, 0, ZoneOffset.UTC),
+                false));
     when(submissionClaimDetailsBuilder.build(any(), anyInt(), anyInt(), anyString()))
         .thenReturn(
             new SubmissionClaimsDetails(
@@ -501,7 +502,8 @@ class SubmissionDetailsWarningFieldViewTest extends SubmissionDetailsViewTestBas
                 "AQ2B3C",
                 BigDecimal.ONE,
                 areaOfLaw.getValue(),
-                OffsetDateTime.of(2025, 1, 1, 10, 10, 10, 0, ZoneOffset.UTC)));
+                OffsetDateTime.of(2025, 1, 1, 10, 10, 10, 0, ZoneOffset.UTC),
+                false));
     when(submissionClaimDetailsBuilder.build(any(), anyInt(), anyInt(), anyString()))
         .thenReturn(
             new SubmissionClaimsDetails(
