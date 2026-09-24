@@ -76,8 +76,7 @@ public class BulkSubmissionE2ETest extends BaseTest {
     landingPage.getStartNowButton().click();
 
     var upload = new UploadPage(page);
-    var csvPath =
-            Paths.get("../docs/sample-data/README.md").toAbsolutePath();
+    var csvPath = Paths.get("../docs/sample-data/README.md").toAbsolutePath();
     upload.uploadFile(csvPath);
 
     upload.getContinueButton().click();
