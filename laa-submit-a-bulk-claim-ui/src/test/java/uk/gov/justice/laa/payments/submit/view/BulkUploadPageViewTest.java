@@ -15,6 +15,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static uk.gov.justice.laa.payments.submit.controller.ControllerTestHelper.OIDC_USER;
 
 import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
@@ -39,6 +40,8 @@ class BulkUploadPageViewTest extends ViewTestBase {
 
   private static final MockMultipartFile MOCK_MULTIPART_FILE =
       new MockMultipartFile("file", "claims.csv", "text/csv", "text".getBytes());
+  private static final MockMultipartFile MOCK_ILLEGAL_MULTIPART_FILE =
+      new MockMultipartFile("file", "claims.sew", "text/cvd", "text".getBytes());
   @MockitoBean private VirusCheckService virusCheckService;
   @MockitoBean private BulkClaimMetricService bulkClaimMetricService;
   @MockitoBean private ObjectMapper objectMapper;
@@ -150,6 +153,10 @@ class BulkUploadPageViewTest extends ViewTestBase {
     assertThat(response.getStatus()).isEqualTo(200);
     var doc = Jsoup.parse(response.getContentAsString());
 
+    assertErrorDetailsDisplayed(errorDetails, doc);
+  }
+
+  private void assertErrorDetailsDisplayed(String errorDetails, Document doc) {
     assertThat(selectFirst(doc, ".govuk-error-summary__title").text())
         .isEqualTo("There is a problem");
     assertThat(selectFirst(doc, ".govuk-error-message").text()).isEqualTo("Error: " + errorDetails);
@@ -178,6 +185,43 @@ class BulkUploadPageViewTest extends ViewTestBase {
     assertThat(selectFirst(doc, ".govuk-error-summary__title").text())
         .isEqualTo("There is a problem");
     assertPageHasContent(doc, "The selected file could not be uploaded - try again");
+  }
+
+  @Test
+  void uploadPageShowsErrorOnNoFileUpload() throws Exception {
+    var response =
+        mockMvc
+            .perform(
+                multipart(mapping)
+                    .with(csrf())
+                    .with(oidcLogin().oidcUser(OIDC_USER))
+                    .session(session))
+            .andExpect(status().isOk())
+            .andReturn()
+            .getResponse();
+
+    assertThat(response.getStatus()).isEqualTo(200);
+    var doc = Jsoup.parse(response.getContentAsString());
+    assertErrorDetailsDisplayed("Select a file", doc);
+  }
+
+  @Test
+  void uploadPageShowsErrorNonSupportedFileUpload() throws Exception {
+    var response =
+        mockMvc
+            .perform(
+                multipart(mapping)
+                    .file(MOCK_ILLEGAL_MULTIPART_FILE)
+                    .with(csrf())
+                    .with(oidcLogin().oidcUser(OIDC_USER))
+                    .session(session))
+            .andExpect(status().isOk())
+            .andReturn()
+            .getResponse();
+
+    assertThat(response.getStatus()).isEqualTo(200);
+    var doc = Jsoup.parse(response.getContentAsString());
+    assertErrorDetailsDisplayed("The selected file must be a valid CSV, XML or TXT file", doc);
   }
 
   @Test
