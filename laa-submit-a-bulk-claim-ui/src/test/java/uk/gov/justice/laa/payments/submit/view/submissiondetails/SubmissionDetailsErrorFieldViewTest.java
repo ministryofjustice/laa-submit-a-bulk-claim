@@ -638,7 +638,7 @@ class SubmissionDetailsErrorFieldViewTest extends SubmissionDetailsViewTestBase 
                 BigDecimal.ONE,
                 areaOfLaw.getValue(),
                 OffsetDateTime.of(2025, 1, 1, 10, 10, 10, 0, ZoneOffset.UTC)));
-    when(submissionMessagesBuilder.buildErrors(any(), any(), anyInt(), anyInt(), any()))
+    when(submissionMessagesService.getErrorMessages(any(), any(), anyInt(), anyInt(), any()))
         .thenReturn(
             new MessagesSummary(
                 List.of(MessageRow.builder().build()), 0, 0, pagination, messagesSource));
@@ -675,7 +675,7 @@ class SubmissionDetailsErrorFieldViewTest extends SubmissionDetailsViewTestBase 
                 BigDecimal.ZERO,
                 CRIME_LOWER.getValue(),
                 OffsetDateTime.of(2025, 1, 1, 10, 10, 0, 0, ZoneOffset.UTC)));
-    when(submissionMessagesBuilder.buildErrors(any(), any(), anyInt(), anyInt(), any()))
+    when(submissionMessagesService.getErrorMessages(any(), any(), anyInt(), anyInt(), any()))
         .thenReturn(
             new MessagesSummary(
                 List.of(
@@ -698,7 +698,7 @@ class SubmissionDetailsErrorFieldViewTest extends SubmissionDetailsViewTestBase 
                 2,
                 pagination,
                 MessagesSource.CLAIM));
-    when(submissionMatterStartsDetailsBuilder.build(any())).thenReturn(List.of());
+    when(submissionMatterStartsDetailsService.getAll(any())).thenReturn(List.of());
     return renderDocument();
   }
 }

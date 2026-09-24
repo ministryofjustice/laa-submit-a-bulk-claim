@@ -50,19 +50,15 @@ class SortTest {
 
     @Test
     void shouldConvertToString() {
-      var sort =
-          TestSort.builder()
-              .field(new TestSortField("foo"))
-              .direction(SortDirection.ASCENDING)
-              .build();
+      var sort = new TestSort("foo,asc");
 
       assertThat(sort.toString()).isEqualTo("foo,asc");
     }
 
     @Test
     void shouldConvertSortToStringWhenNoOrder() {
-      var sort =
-          TestSort.builder().field(new TestSortField("foo")).direction(SortDirection.NONE).build();
+      var sort = new TestSort("foo,asc");
+      sort.direction = SortDirection.NONE;
       assertThat(sort.toString()).isNull();
     }
   }

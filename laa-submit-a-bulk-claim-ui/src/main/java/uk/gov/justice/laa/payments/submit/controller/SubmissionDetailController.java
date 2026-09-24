@@ -22,8 +22,6 @@ import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionResponse;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionStatus;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.ValidationMessageType;
 import uk.gov.justice.laa.payments.submit.builder.SubmissionClaimDetailsBuilder;
-import uk.gov.justice.laa.payments.submit.builder.SubmissionMatterStartsDetailsBuilder;
-import uk.gov.justice.laa.payments.submit.builder.SubmissionMessagesBuilder;
 import uk.gov.justice.laa.payments.submit.builder.SubmissionSummaryBuilder;
 import uk.gov.justice.laa.payments.submit.config.FeatureFlagsConfig;
 import uk.gov.justice.laa.payments.submit.constants.ViewSubmissionNavigationTab;
@@ -35,6 +33,8 @@ import uk.gov.justice.laa.payments.submit.dto.submission.messages.MessageSortFie
 import uk.gov.justice.laa.payments.submit.dto.submission.messages.MessagesSummary;
 import uk.gov.justice.laa.payments.submit.dto.submission.view.SubmissionViewQuery;
 import uk.gov.justice.laa.payments.submit.dto.submission.view.SubmissionViewSortField;
+import uk.gov.justice.laa.payments.submit.service.SubmissionMatterStartsDetailsService;
+import uk.gov.justice.laa.payments.submit.service.SubmissionMessagesService;
 import uk.gov.justice.laa.payments.submit.service.SubmissionService;
 import uk.gov.justice.laa.payments.submit.util.PaginationLinksBuilder;
 
@@ -45,8 +45,8 @@ public class SubmissionDetailController {
 
   private final SubmissionSummaryBuilder submissionSummaryBuilder;
   private final SubmissionClaimDetailsBuilder submissionClaimDetailsBuilder;
-  private final SubmissionMessagesBuilder submissionMessagesBuilder;
-  private final SubmissionMatterStartsDetailsBuilder submissionMatterStartsDetailsBuilder;
+  private final SubmissionMessagesService submissionMessagesService;
+  private final SubmissionMatterStartsDetailsService submissionMatterStartsDetailsService;
   private final PaginationLinksBuilder paginationLinksBuilder;
   private final FeatureFlagsConfig featureFlagsConfig;
   private final SubmissionService submissionService;
@@ -135,29 +135,38 @@ public class SubmissionDetailController {
               submissionSummary.submitted());
     }
 
-    MessagesSummary messagesSummary =
-        submissionMessagesBuilder.build(
-            user,
-            messageQuery.getSubmissionId(),
-            null,
-            ValidationMessageType.WARNING,
-            messageQuery.getPage(),
-            messageQuery.getSize(),
-            messageQuery.getSort().toString());
+    MessagesSummary messagesSummary;
+
+    if (submissionViewQuery.getNavTab() == ViewSubmissionNavigationTab.CLAIM_MESSAGES) {
+      messagesSummary =
+          submissionMessagesService.getMessagesWithClaimSummary(
+              user,
+              messageQuery.getSubmissionId(),
+              null,
+              ValidationMessageType.WARNING,
+              messageQuery.getPage(),
+              messageQuery.getSize(),
+              messageQuery.getSort().toString());
+
+      model.addAttribute(
+          "messagesPaginationLinks",
+          paginationLinksBuilder.build(
+              "/submissions/%s".formatted(submissionViewQuery.getSubmissionId()),
+              messagesSummary.pagination(),
+              "messagesPage",
+              "navTab",
+              ViewSubmissionNavigationTab.CLAIM_MESSAGES,
+              "messagesSort",
+              messageQuery.getSort().toString()));
+    } else {
+      messagesSummary =
+          submissionMessagesService.getMessageCounts(
+              messageQuery.getSubmissionId(), null, ValidationMessageType.WARNING);
+    }
     model.addAttribute("messagesSummary", messagesSummary);
-    model.addAttribute(
-        "messagesPaginationLinks",
-        paginationLinksBuilder.build(
-            "/submissions/%s".formatted(submissionViewQuery.getSubmissionId()),
-            messagesSummary.pagination(),
-            "messagesPage",
-            "navTab",
-            ViewSubmissionNavigationTab.CLAIM_MESSAGES,
-            "messagesSort",
-            messageQuery.getSort().toString()));
 
     List<SubmissionMatterStartsRow> matterStartsDetails =
-        submissionMatterStartsDetailsBuilder.build(submissionResponse);
+        submissionMatterStartsDetailsService.getAll(submissionResponse);
     model.addAttribute("matterStartsDetails", matterStartsDetails);
 
     boolean isCrimeLower =
@@ -181,7 +190,7 @@ public class SubmissionDetailController {
       MessageQuery messageQuery) {
 
     MessagesSummary messagesSummary =
-        submissionMessagesBuilder.buildErrors(
+        submissionMessagesService.getErrorMessages(
             user,
             messageQuery.getSubmissionId(),
             messageQuery.getPage(),
@@ -198,7 +207,7 @@ public class SubmissionDetailController {
             messageQuery.getSort().toString()));
 
     List<SubmissionMatterStartsRow> matterStartsDetails =
-        submissionMatterStartsDetailsBuilder.build(submissionResponse);
+        submissionMatterStartsDetailsService.getAll(submissionResponse);
     model.addAttribute("matterStartsDetails", matterStartsDetails);
 
     addCounts(model, messagesSummary, matterStartsDetails);

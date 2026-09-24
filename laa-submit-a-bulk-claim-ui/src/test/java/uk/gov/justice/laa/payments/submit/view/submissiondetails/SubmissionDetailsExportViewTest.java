@@ -5,6 +5,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
+import static uk.gov.justice.laa.dstew.payments.claimsdata.model.ValidationMessageType.WARNING;
 import static uk.gov.justice.laa.payments.submit.controller.ControllerTestHelper.OIDC_USER;
 
 import java.math.BigDecimal;
@@ -104,11 +105,11 @@ class SubmissionDetailsExportViewTest extends SubmissionDetailsViewTestBase {
 
     MessagesSummary messagesSummary =
         new MessagesSummary(List.of(), 0, 0, pagination, MessagesSource.CLAIM);
-    when(submissionMessagesBuilder.build(any(), any(), any(), any(), anyInt(), anyInt(), any()))
+    when(submissionMessagesService.getMessageCounts(submissionId, null, WARNING))
         .thenReturn(messagesSummary);
-    when(submissionMessagesBuilder.buildErrors(any(), any(), anyInt(), anyInt(), any()))
+    when(submissionMessagesService.getErrorMessages(any(), any(), anyInt(), anyInt(), any()))
         .thenReturn(messagesSummary);
 
-    when(submissionMatterStartsDetailsBuilder.build(any())).thenReturn(List.of());
+    when(submissionMatterStartsDetailsService.getAll(any())).thenReturn(List.of());
   }
 }

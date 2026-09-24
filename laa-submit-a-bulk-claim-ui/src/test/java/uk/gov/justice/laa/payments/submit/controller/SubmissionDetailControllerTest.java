@@ -2,6 +2,7 @@ package uk.gov.justice.laa.payments.submit.controller;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -18,6 +19,7 @@ import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -35,16 +37,17 @@ import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionResponse;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionStatus;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.ValidationMessageType;
 import uk.gov.justice.laa.payments.submit.builder.SubmissionClaimDetailsBuilder;
-import uk.gov.justice.laa.payments.submit.builder.SubmissionMatterStartsDetailsBuilder;
-import uk.gov.justice.laa.payments.submit.builder.SubmissionMessagesBuilder;
 import uk.gov.justice.laa.payments.submit.builder.SubmissionSummaryBuilder;
 import uk.gov.justice.laa.payments.submit.dto.submission.SubmissionMatterStartsRow;
 import uk.gov.justice.laa.payments.submit.dto.submission.SubmissionSummary;
 import uk.gov.justice.laa.payments.submit.dto.submission.claim.SubmissionClaimRow;
 import uk.gov.justice.laa.payments.submit.dto.submission.claim.SubmissionClaimRowCostsDetails;
 import uk.gov.justice.laa.payments.submit.dto.submission.claim.SubmissionClaimsDetails;
+import uk.gov.justice.laa.payments.submit.dto.submission.messages.MessageRow;
 import uk.gov.justice.laa.payments.submit.dto.submission.messages.MessagesSource;
 import uk.gov.justice.laa.payments.submit.dto.submission.messages.MessagesSummary;
+import uk.gov.justice.laa.payments.submit.service.SubmissionMatterStartsDetailsService;
+import uk.gov.justice.laa.payments.submit.service.SubmissionMessagesService;
 import uk.gov.justice.laa.payments.submit.service.SubmissionService;
 import uk.gov.justice.laa.payments.submit.util.CurrencyUtil;
 import uk.gov.justice.laa.payments.submit.util.DateTimeUtil;
@@ -72,8 +75,8 @@ class SubmissionDetailControllerTest extends BaseControllerTest {
 
   @MockitoBean private SubmissionSummaryBuilder submissionSummaryBuilder;
   @MockitoBean private SubmissionClaimDetailsBuilder submissionClaimDetailsBuilder;
-  @MockitoBean private SubmissionMatterStartsDetailsBuilder submissionMatterStartsDetailsBuilder;
-  @MockitoBean private SubmissionMessagesBuilder submissionMessagesBuilder;
+  @MockitoBean private SubmissionMatterStartsDetailsService submissionMatterStartsDetailsService;
+  @MockitoBean private SubmissionMessagesService submissionMessagesService;
   @MockitoBean private PaginationUtil paginationUtil;
   @MockitoBean private SubmissionService submissionService;
 
@@ -127,13 +130,14 @@ class SubmissionDetailControllerTest extends BaseControllerTest {
                   new BigDecimal("100.50"),
                   "Legal aid",
                   OffsetDateTime.of(2025, 1, 1, 10, 10, 10, 0, ZoneOffset.UTC)));
-      when(submissionMessagesBuilder.build(any(), any(), any(), any(), anyInt(), anyInt(), any()))
+      when(submissionMessagesService.getMessagesWithClaimSummary(
+              any(), any(), any(), any(), anyInt(), anyInt(), any()))
           .thenReturn(
               new MessagesSummary(Collections.emptyList(), 0, 0, pagination, MessagesSource.CLAIM));
       when(submissionClaimDetailsBuilder.build(eq(submissionResponse), anyInt(), anyInt(), any()))
           .thenReturn(
               new SubmissionClaimsDetails(Collections.emptyList(), pagination, BigDecimal.ZERO));
-      when(submissionMatterStartsDetailsBuilder.build(any()))
+      when(submissionMatterStartsDetailsService.getAll(any()))
           .thenReturn(List.of(new SubmissionMatterStartsRow("Description", 34)));
 
       assertThat(
@@ -145,9 +149,9 @@ class SubmissionDetailControllerTest extends BaseControllerTest {
           .hasViewName("pages/view-submission-detail-accepted");
 
       verify(submissionClaimDetailsBuilder, times(1)).build(any(), anyInt(), anyInt(), any());
-      verify(submissionMessagesBuilder, times(1))
-          .build(OIDC_USER, SUBMISSION_ID, null, ValidationMessageType.WARNING, 0, 50, null);
-      verify(submissionMatterStartsDetailsBuilder, times(1)).build(any());
+      verify(submissionMessagesService, times(1))
+          .getMessageCounts(SUBMISSION_ID, null, ValidationMessageType.WARNING);
+      verify(submissionMatterStartsDetailsService, times(1)).getAll(any());
     }
 
     @Test
@@ -172,10 +176,10 @@ class SubmissionDetailControllerTest extends BaseControllerTest {
                   new BigDecimal("100.50"),
                   "Legal aid",
                   OffsetDateTime.of(2025, 1, 1, 10, 10, 10, 0, ZoneOffset.UTC)));
-      when(submissionMessagesBuilder.buildErrors(any(), any(), anyInt(), anyInt(), any()))
+      when(submissionMessagesService.getErrorMessages(any(), any(), anyInt(), anyInt(), any()))
           .thenReturn(
               new MessagesSummary(Collections.emptyList(), 0, 0, pagination, MessagesSource.CLAIM));
-      when(submissionMatterStartsDetailsBuilder.build(any()))
+      when(submissionMatterStartsDetailsService.getAll(any()))
           .thenReturn(List.of(new SubmissionMatterStartsRow("Description", 34)));
       // When / Then
       assertThat(
@@ -186,9 +190,9 @@ class SubmissionDetailControllerTest extends BaseControllerTest {
           .hasStatusOk()
           .hasViewName("pages/view-submission-detail-invalid");
 
-      verify(submissionMessagesBuilder, times(1))
-          .buildErrors(OIDC_USER, SUBMISSION_ID, 0, 50, null);
-      verify(submissionMatterStartsDetailsBuilder, times(1)).build(any());
+      verify(submissionMessagesService, times(1))
+          .getErrorMessages(OIDC_USER, SUBMISSION_ID, 0, 50, null);
+      verify(submissionMatterStartsDetailsService, times(1)).getAll(any());
     }
 
     @Test
@@ -218,10 +222,11 @@ class SubmissionDetailControllerTest extends BaseControllerTest {
       when(submissionClaimDetailsBuilder.build(any(), anyInt(), anyInt(), any()))
           .thenReturn(
               new SubmissionClaimsDetails(Collections.emptyList(), pagination, BigDecimal.ZERO));
-      when(submissionMessagesBuilder.build(any(), any(), any(), any(), anyInt(), anyInt(), any()))
+      when(submissionMessagesService.getMessagesWithClaimSummary(
+              any(), any(), any(), any(), anyInt(), anyInt(), any()))
           .thenReturn(
               new MessagesSummary(Collections.emptyList(), 0, 0, pagination, MessagesSource.CLAIM));
-      when(submissionMatterStartsDetailsBuilder.build(any())).thenReturn(matterTypes);
+      when(submissionMatterStartsDetailsService.getAll(any())).thenReturn(matterTypes);
 
       assertThat(
               mockMvc.perform(
@@ -233,7 +238,81 @@ class SubmissionDetailControllerTest extends BaseControllerTest {
           .hasViewName("pages/view-submission-detail-accepted");
 
       verify(submissionClaimDetailsBuilder).build(any(), anyInt(), anyInt(), any());
-      verify(submissionMatterStartsDetailsBuilder, times(1)).build(any());
+      verify(submissionMatterStartsDetailsService, times(1)).getAll(any());
+    }
+
+    @Test
+    @DisplayName("Should render warning message rows from the claim summary path on messages tab")
+    void shouldRenderWarningMessageRowsFromClaimSummaryPathOnMessagesTab() {
+      var pagination = Page.builder().totalPages(1).totalElements(1).number(0).size(10).build();
+      var claimId = UUID.fromString("5146e93f-92c8-4c56-bd25-0cb6953f534d");
+      var submissionResponse =
+          SubmissionResponse.builder()
+              .submissionId(SUBMISSION_ID)
+              .status(VALIDATION_SUCCEEDED)
+              .officeAccountNumber(OFFICE_CODE)
+              .areaOfLaw(AreaOfLaw.LEGAL_HELP)
+              .build();
+      when(submissionService.getSubmission(SUBMISSION_ID, OIDC_USER))
+          .thenReturn(submissionResponse);
+      when(oidcAttributeUtils.getUserOffices(OIDC_USER)).thenReturn(List.of(OFFICE_CODE));
+      when(submissionSummaryBuilder.build(any()))
+          .thenReturn(
+              new SubmissionSummary(
+                  SUBMISSION_ID,
+                  "Submitted",
+                  LocalDate.of(2025, 5, 1),
+                  "AQ2B3C",
+                  new BigDecimal("100.50"),
+                  AreaOfLaw.LEGAL_HELP.getValue(),
+                  OffsetDateTime.of(2025, 1, 1, 10, 10, 10, 0, ZoneOffset.UTC)));
+      when(submissionClaimDetailsBuilder.build(eq(submissionResponse), anyInt(), anyInt(), any()))
+          .thenReturn(
+              new SubmissionClaimsDetails(Collections.emptyList(), pagination, BigDecimal.ZERO));
+      when(submissionMessagesService.getMessagesWithClaimSummary(
+              any(), any(), any(), any(), anyInt(), anyInt(), any()))
+          .thenReturn(
+              new MessagesSummary(
+                  List.of(
+                      MessageRow.builder()
+                          .claimReference(Optional.of(claimId))
+                          .clientSurname("Escaped")
+                          .clientForename("First")
+                          .ufn("011015/125")
+                          .ucn("UCN125")
+                          .message("This claim is escaped")
+                          .build()),
+                  1,
+                  1,
+                  pagination,
+                  MessagesSource.CLAIM));
+      when(submissionMatterStartsDetailsService.getAll(any()))
+          .thenReturn(List.of(new SubmissionMatterStartsRow("Description", 34)));
+
+      assertThat(
+              mockMvc.perform(
+                  get("/submissions/%s?navTab=CLAIM_MESSAGES&messagesPage=0&messagesSort=client_surname,asc"
+                          .formatted(SUBMISSION_ID))
+                      .with(oidcLogin().oidcUser(OIDC_USER))
+                      .sessionAttr("submissionId", SUBMISSION_ID)))
+          .hasStatusOk()
+          .hasViewName("pages/view-submission-detail-accepted")
+          .body()
+          .asString()
+          .contains("This claim is escaped")
+          .contains("UCN125");
+
+      verify(submissionMessagesService, times(1))
+          .getMessagesWithClaimSummary(
+              OIDC_USER,
+              SUBMISSION_ID,
+              null,
+              ValidationMessageType.WARNING,
+              0,
+              50,
+              "client_surname,asc");
+      verify(submissionMessagesService, never())
+          .getMessageCounts(SUBMISSION_ID, null, ValidationMessageType.WARNING);
     }
 
     @Test
@@ -263,7 +342,8 @@ class SubmissionDetailControllerTest extends BaseControllerTest {
       when(submissionClaimDetailsBuilder.build(any(), anyInt(), anyInt(), any()))
           .thenReturn(
               new SubmissionClaimsDetails(Collections.emptyList(), pagination, BigDecimal.TEN));
-      when(submissionMessagesBuilder.build(any(), any(), any(), any(), anyInt(), anyInt(), any()))
+      when(submissionMessagesService.getMessagesWithClaimSummary(
+              any(), any(), any(), any(), anyInt(), anyInt(), any()))
           .thenReturn(
               new MessagesSummary(Collections.emptyList(), 0, 0, pagination, MessagesSource.CLAIM));
 
@@ -275,8 +355,8 @@ class SubmissionDetailControllerTest extends BaseControllerTest {
 
       assertThat(response).hasStatusOk().hasViewName("pages/view-submission-detail-accepted");
       verify(submissionClaimDetailsBuilder).build(any(), anyInt(), anyInt(), any());
-      verify(submissionMessagesBuilder)
-          .build(OIDC_USER, SUBMISSION_ID, null, ValidationMessageType.WARNING, 0, 50, null);
+      verify(submissionMessagesService)
+          .getMessageCounts(SUBMISSION_ID, null, ValidationMessageType.WARNING);
     }
 
     @Test
@@ -337,7 +417,8 @@ class SubmissionDetailControllerTest extends BaseControllerTest {
                           BigDecimal.ONE)),
                   pagination,
                   BigDecimal.ONE));
-      when(submissionMessagesBuilder.build(any(), any(), any(), any(), anyInt(), anyInt(), any()))
+      when(submissionMessagesService.getMessagesWithClaimSummary(
+              any(), any(), any(), any(), anyInt(), anyInt(), any()))
           .thenReturn(
               new MessagesSummary(Collections.emptyList(), 0, 0, pagination, MessagesSource.CLAIM));
 
@@ -382,11 +463,12 @@ class SubmissionDetailControllerTest extends BaseControllerTest {
           .thenReturn(
               new SubmissionClaimsDetails(Collections.emptyList(), pagination, BigDecimal.ZERO));
 
-      when(submissionMessagesBuilder.build(any(), any(), any(), any(), anyInt(), anyInt(), any()))
+      when(submissionMessagesService.getMessagesWithClaimSummary(
+              any(), any(), any(), any(), anyInt(), anyInt(), any()))
           .thenReturn(
               new MessagesSummary(Collections.emptyList(), 0, 0, pagination, MessagesSource.CLAIM));
 
-      when(submissionMatterStartsDetailsBuilder.build(any()))
+      when(submissionMatterStartsDetailsService.getAll(any()))
           .thenReturn(List.of(new SubmissionMatterStartsRow("Description", 34)));
       mockMvc.perform(
           get("/submissions/%s?page=0&sort=line_number,desc".formatted(SUBMISSION_ID))
@@ -426,11 +508,12 @@ class SubmissionDetailControllerTest extends BaseControllerTest {
           .thenReturn(
               new SubmissionClaimsDetails(Collections.emptyList(), pagination, BigDecimal.ZERO));
 
-      when(submissionMessagesBuilder.build(any(), any(), any(), any(), anyInt(), anyInt(), any()))
+      when(submissionMessagesService.getMessagesWithClaimSummary(
+              any(), any(), any(), any(), anyInt(), anyInt(), any()))
           .thenReturn(
               new MessagesSummary(Collections.emptyList(), 0, 0, pagination, MessagesSource.CLAIM));
 
-      when(submissionMatterStartsDetailsBuilder.build(any()))
+      when(submissionMatterStartsDetailsService.getAll(any()))
           .thenReturn(List.of(new SubmissionMatterStartsRow("Description", 34)));
       mockMvc.perform(
           get("/submissions/%s?page=0".formatted(SUBMISSION_ID))

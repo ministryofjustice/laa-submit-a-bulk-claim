@@ -18,13 +18,13 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.util.UriComponentsBuilder;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.ClaimResponseV2;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionResponse;
-import uk.gov.justice.laa.payments.submit.builder.SubmissionMessagesBuilder;
 import uk.gov.justice.laa.payments.submit.config.FeatureFlagsConfig;
 import uk.gov.justice.laa.payments.submit.constants.ViewSubmissionNavigationTab;
 import uk.gov.justice.laa.payments.submit.dto.submission.messages.MessagesSummary;
 import uk.gov.justice.laa.payments.submit.mapper.ClaimFeeCalculationBreakdownMapper;
 import uk.gov.justice.laa.payments.submit.mapper.ClaimSummaryMapper;
 import uk.gov.justice.laa.payments.submit.service.ClaimService;
+import uk.gov.justice.laa.payments.submit.service.SubmissionMessagesService;
 import uk.gov.justice.laa.payments.submit.service.SubmissionService;
 import uk.gov.justice.laa.payments.submit.viewmodels.claimdetails.ClaimDetailPageData;
 
@@ -35,7 +35,7 @@ public final class ClaimDetailController {
 
   private final ClaimSummaryMapper claimSummaryMapper;
   private final ClaimFeeCalculationBreakdownMapper claimFeeCalculationBreakdownMapper;
-  private final SubmissionMessagesBuilder submissionMessagesBuilder;
+  private final SubmissionMessagesService submissionMessagesService;
   private final FeatureFlagsConfig featureFlagsConfig;
   private final ClaimService claimService;
   private final SubmissionService submissionService;
@@ -89,7 +89,7 @@ public final class ClaimDetailController {
     model.addAttribute("isAssessedColumnEnabled", featureFlagsConfig.getIsAssessedColumnEnabled());
 
     final MessagesSummary messagesSummary =
-        submissionMessagesBuilder.buildAllWarnings(user, submissionId, claimId);
+        submissionMessagesService.getAllWarningMessages(user, submissionId, claimId);
     model.addAttribute("claimMessages", messagesSummary);
 
     return "pages/view-claim-detail";
@@ -132,7 +132,7 @@ public final class ClaimDetailController {
     model.addAttribute("claimSummary", claimSummaryMapper.toClaimSummary(claimResponse, areaOfLaw));
 
     final MessagesSummary messagesSummary =
-        submissionMessagesBuilder.buildAllWarnings(user, submissionId, claimId);
+        submissionMessagesService.getAllWarningMessages(user, submissionId, claimId);
     model.addAttribute("claimMessages", messagesSummary);
 
     return "pages/view-claim-detail-old";
