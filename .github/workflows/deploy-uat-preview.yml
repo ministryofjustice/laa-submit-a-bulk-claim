@@ -222,6 +222,7 @@ jobs:
       image_tag: ${{ needs.ecr-publish-image.outputs.published_image_version }}
       aws_region: ${{ vars.LAA_SUBMIT_A_BULK_CLAIM_ECR_REGION }}
       ecr_repository: ${{ vars.LAA_SUBMIT_A_BULK_CLAIM_ECR_REPOSITORY }}
+      image_scan_threshold: 'critical'
     secrets:
       ECR_ROLE_TO_ASSUME: ${{ secrets.LAA_SUBMIT_A_BULK_CLAIM_ECR_ROLE_TO_ASSUME }}
       SNYK_CLIENT_ID: ${{ secrets.SNYK_CLIENT_ID }}
