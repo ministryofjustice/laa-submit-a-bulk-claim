@@ -153,10 +153,10 @@ class BulkUploadPageViewTest extends ViewTestBase {
     assertThat(response.getStatus()).isEqualTo(200);
     var doc = Jsoup.parse(response.getContentAsString());
 
-    assertErrorMDetailsDisplayed(errorDetails, doc);
+    assertErrorDetailsDisplayed(errorDetails, doc);
   }
 
-  private void assertErrorMDetailsDisplayed(String errorDetails, Document doc) {
+  private void assertErrorDetailsDisplayed(String errorDetails, Document doc) {
     assertThat(selectFirst(doc, ".govuk-error-summary__title").text())
         .isEqualTo("There is a problem");
     assertThat(selectFirst(doc, ".govuk-error-message").text()).isEqualTo("Error: " + errorDetails);
@@ -202,7 +202,7 @@ class BulkUploadPageViewTest extends ViewTestBase {
 
     assertThat(response.getStatus()).isEqualTo(200);
     var doc = Jsoup.parse(response.getContentAsString());
-    assertErrorMDetailsDisplayed("Select a file", doc);
+    assertErrorDetailsDisplayed("Select a file", doc);
   }
 
   @Test
@@ -221,7 +221,7 @@ class BulkUploadPageViewTest extends ViewTestBase {
 
     assertThat(response.getStatus()).isEqualTo(200);
     var doc = Jsoup.parse(response.getContentAsString());
-    assertErrorMDetailsDisplayed("The selected file must be a valid CSV, XML or TXT file", doc);
+    assertErrorDetailsDisplayed("The selected file must be a valid CSV, XML or TXT file", doc);
   }
 
   @Test
