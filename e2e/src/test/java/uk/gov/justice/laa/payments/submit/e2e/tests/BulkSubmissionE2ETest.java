@@ -82,7 +82,8 @@ public class BulkSubmissionE2ETest extends BaseTest {
     upload.getContinueButton().click();
 
     assertThat(upload.getErrorSummary()).isVisible();
-    assertThat(upload.getErrorSummary()).containsText("The selected file must be a valid CSV, XML or TXT file");
+    assertThat(upload.getErrorSummary())
+        .containsText("The selected file must be a valid CSV, XML or TXT file");
     assertThat(upload.getErrorMessage()).isVisible();
     assertThat(upload.getErrorMessage()).containsText("Error: The selected file must be a valid CSV, XML or TXT file");
   }
