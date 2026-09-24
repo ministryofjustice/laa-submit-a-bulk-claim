@@ -129,8 +129,8 @@ class BulkImportControllerTest {
     }
 
     @Test
-    @DisplayName("Should redirect when file fails size check")
-    void shouldRedirectWhenFileFailsSizeCheck() throws Exception {
+    @DisplayName("Should render upload page when file fails size check")
+    void shouldRenderUploadPageWhenFileFailsSizeCheck() throws Exception {
 
       MockMultipartFile file =
           new MockMultipartFile("fileUpload", "empty.txt", "text/plain", "text".getBytes());
