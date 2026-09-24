@@ -131,7 +131,8 @@ class SubmissionDetailsLegalHelpViewTest extends SubmissionDetailsViewTestBase {
 
     Page messagesPagination =
         Page.builder().number(0).totalPages(1).size(PAGE_SIZE).totalElements(1).build();
-    when(submissionMessagesBuilder.build(any(), any(), any(), any(), anyInt(), anyInt(), any()))
+    when(submissionMessagesService.getMessagesWithClaimSummary(
+            any(), any(), any(), any(), anyInt(), anyInt(), any()))
         .thenReturn(
             new MessagesSummary(
                 List.of(
@@ -147,8 +148,10 @@ class SubmissionDetailsLegalHelpViewTest extends SubmissionDetailsViewTestBase {
                 1,
                 messagesPagination,
                 MessagesSource.CLAIM));
+    when(submissionMessagesService.getMessageCounts(any(), any(), any()))
+        .thenReturn(new MessagesSummary(List.of(), 1, 1, null, MessagesSource.CLAIM));
 
-    when(submissionMatterStartsDetailsBuilder.build(any()))
+    when(submissionMatterStartsDetailsService.getAll(any()))
         .thenReturn(List.of(new SubmissionMatterStartsRow("Category AAP", 3)));
   }
 

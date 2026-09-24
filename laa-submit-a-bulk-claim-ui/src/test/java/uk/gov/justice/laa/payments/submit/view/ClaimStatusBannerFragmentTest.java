@@ -24,7 +24,6 @@ import org.thymeleaf.templatemode.TemplateMode;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.DerivedClaimStatus;
 import uk.gov.justice.laa.payments.submit.builder.ClaimStatusBannerBuilder;
 import uk.gov.justice.laa.payments.submit.builder.LatestAssessmentResolver;
-import uk.gov.justice.laa.payments.submit.builder.SubmissionMessagesBuilder;
 import uk.gov.justice.laa.payments.submit.client.DataClaimsRestClient;
 import uk.gov.justice.laa.payments.submit.client.DataClaimsRestClientV2;
 import uk.gov.justice.laa.payments.submit.config.FeatureFlagsConfig;
@@ -36,6 +35,7 @@ import uk.gov.justice.laa.payments.submit.dto.submission.messages.MessagesSummar
 import uk.gov.justice.laa.payments.submit.mapper.ClaimFeeCalculationBreakdownMapper;
 import uk.gov.justice.laa.payments.submit.mapper.ClaimSummaryMapper;
 import uk.gov.justice.laa.payments.submit.service.ClaimService;
+import uk.gov.justice.laa.payments.submit.service.SubmissionMessagesService;
 import uk.gov.justice.laa.payments.submit.service.SubmissionService;
 import uk.gov.justice.laa.payments.submit.util.DateTimeUtil;
 import uk.gov.justice.laa.payments.submit.util.OidcAttributeUtils;
@@ -60,7 +60,7 @@ class ClaimStatusBannerFragmentTest {
   @MockitoBean private DataClaimsRestClientV2 dataClaimsRestClientV2;
   @MockitoBean private ClaimSummaryMapper claimSummaryMapper;
   @MockitoBean private ClaimFeeCalculationBreakdownMapper claimFeeCalculationBreakdownMapper;
-  @MockitoBean private SubmissionMessagesBuilder submissionMessagesBuilder;
+  @MockitoBean private SubmissionMessagesService submissionMessagesService;
   @MockitoBean private ClaimDetailViewFactory claimDetailViewFactory;
   @MockitoBean private LatestAssessmentResolver latestAssessmentResolver;
   @MockitoBean private ClaimService claimService;

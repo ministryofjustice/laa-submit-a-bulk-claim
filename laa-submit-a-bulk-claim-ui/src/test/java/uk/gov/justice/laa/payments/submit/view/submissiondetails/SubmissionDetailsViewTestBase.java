@@ -11,13 +11,13 @@ import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.Page;
 import uk.gov.justice.laa.payments.submit.builder.SubmissionClaimDetailsBuilder;
-import uk.gov.justice.laa.payments.submit.builder.SubmissionMatterStartsDetailsBuilder;
-import uk.gov.justice.laa.payments.submit.builder.SubmissionMessagesBuilder;
 import uk.gov.justice.laa.payments.submit.builder.SubmissionSummaryBuilder;
 import uk.gov.justice.laa.payments.submit.constants.ViewSubmissionNavigationTab;
 import uk.gov.justice.laa.payments.submit.controller.SubmissionDetailController;
 import uk.gov.justice.laa.payments.submit.dto.PaginationLinks;
 import uk.gov.justice.laa.payments.submit.dto.PaginationPageLink;
+import uk.gov.justice.laa.payments.submit.service.SubmissionMatterStartsDetailsService;
+import uk.gov.justice.laa.payments.submit.service.SubmissionMessagesService;
 import uk.gov.justice.laa.payments.submit.service.SubmissionService;
 import uk.gov.justice.laa.payments.submit.util.PaginationLinksBuilder;
 import uk.gov.justice.laa.payments.submit.view.ViewTestBase;
@@ -30,8 +30,8 @@ public abstract class SubmissionDetailsViewTestBase extends ViewTestBase {
 
   @MockitoBean protected SubmissionSummaryBuilder submissionSummaryBuilder;
   @MockitoBean protected SubmissionClaimDetailsBuilder submissionClaimDetailsBuilder;
-  @MockitoBean protected SubmissionMessagesBuilder submissionMessagesBuilder;
-  @MockitoBean protected SubmissionMatterStartsDetailsBuilder submissionMatterStartsDetailsBuilder;
+  @MockitoBean protected SubmissionMessagesService submissionMessagesService;
+  @MockitoBean protected SubmissionMatterStartsDetailsService submissionMatterStartsDetailsService;
   @MockitoBean protected PaginationLinksBuilder paginationLinksBuilder;
   @MockitoBean protected SubmissionService submissionService;
 

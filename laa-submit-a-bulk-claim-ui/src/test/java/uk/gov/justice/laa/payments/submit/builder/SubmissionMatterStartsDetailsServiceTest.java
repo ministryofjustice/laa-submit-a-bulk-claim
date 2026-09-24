@@ -7,7 +7,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
-import static uk.gov.justice.laa.payments.submit.builder.SubmissionMatterStartsDetailsBuilder.NEW_MATTER_STARTS_LABEL;
+import static uk.gov.justice.laa.payments.submit.service.SubmissionMatterStartsDetailsService.NEW_MATTER_STARTS_LABEL;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -29,19 +29,20 @@ import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionResponse;
 import uk.gov.justice.laa.payments.submit.client.DataClaimsRestClient;
 import uk.gov.justice.laa.payments.submit.dto.submission.SubmissionMatterStartsRow;
 import uk.gov.justice.laa.payments.submit.mapper.SubmissionMatterStartsMapper;
+import uk.gov.justice.laa.payments.submit.service.SubmissionMatterStartsDetailsService;
 
 @ExtendWith(MockitoExtension.class)
 @DisplayName("Submission matter starts builder tests")
-class SubmissionMatterStartsDetailsBuilderTest {
+class SubmissionMatterStartsDetailsServiceTest {
 
-  private SubmissionMatterStartsDetailsBuilder builder;
+  private SubmissionMatterStartsDetailsService builder;
 
   @Mock DataClaimsRestClient dataClaimsRestClient;
   @Mock SubmissionMatterStartsMapper mapper;
 
   @BeforeEach
   void beforeEach() {
-    this.builder = new SubmissionMatterStartsDetailsBuilder(dataClaimsRestClient, mapper);
+    this.builder = new SubmissionMatterStartsDetailsService(dataClaimsRestClient, mapper);
   }
 
   @Test
@@ -75,7 +76,7 @@ class SubmissionMatterStartsDetailsBuilderTest {
     SubmissionMatterStartsRow expected = new SubmissionMatterStartsRow("Description", 25);
     when(mapper.toSubmissionMatterTypesRow(any())).thenReturn(expected);
     // When
-    List<SubmissionMatterStartsRow> build = builder.build(submissionResponse);
+    List<SubmissionMatterStartsRow> build = builder.getAll(submissionResponse);
     // Then
     assertThat(build.size()).isEqualTo(1);
     assertThat(build).contains(new SubmissionMatterStartsRow("Description", 25));
@@ -114,7 +115,7 @@ class SubmissionMatterStartsDetailsBuilderTest {
                     .build()));
 
     // When
-    List<SubmissionMatterStartsRow> build = builder.build(submissionResponse);
+    List<SubmissionMatterStartsRow> build = builder.getAll(submissionResponse);
     // Then
     assertThat(build.size()).isEqualTo(1);
     assertThat(build).contains(new SubmissionMatterStartsRow(NEW_MATTER_STARTS_LABEL, 3));
@@ -157,7 +158,7 @@ class SubmissionMatterStartsDetailsBuilderTest {
                     .build()));
 
     // When
-    List<SubmissionMatterStartsRow> build = builder.build(submissionResponse);
+    List<SubmissionMatterStartsRow> build = builder.getAll(submissionResponse);
     // Then
     assertThat(build.size()).isEqualTo(1);
     assertThat(build).contains(new SubmissionMatterStartsRow(NEW_MATTER_STARTS_LABEL, 26));
@@ -187,7 +188,7 @@ class SubmissionMatterStartsDetailsBuilderTest {
                     .build()));
 
     // When
-    List<SubmissionMatterStartsRow> build = builder.build(submissionResponse);
+    List<SubmissionMatterStartsRow> build = builder.getAll(submissionResponse);
     // Then
     assertThat(build).isEmpty();
     verify(dataClaimsRestClient).getAllMatterStartsForSubmission(eq(submissionReference));

@@ -127,7 +127,8 @@ class SubmissionDetailsCrimeLowerViewTest extends SubmissionDetailsViewTestBase 
 
     Page messagesPagination =
         Page.builder().number(0).totalPages(1).size(PAGE_SIZE).totalElements(1).build();
-    when(submissionMessagesBuilder.build(any(), any(), any(), any(), anyInt(), anyInt(), any()))
+    when(submissionMessagesService.getMessagesWithClaimSummary(
+            any(), any(), any(), any(), anyInt(), anyInt(), any()))
         .thenReturn(
             new MessagesSummary(
                 List.of(
@@ -143,7 +144,10 @@ class SubmissionDetailsCrimeLowerViewTest extends SubmissionDetailsViewTestBase 
                 messagesPagination,
                 MessagesSource.CLAIM));
 
-    when(submissionMatterStartsDetailsBuilder.build(any())).thenReturn(List.of());
+    when(submissionMessagesService.getMessageCounts(any(), any(), any()))
+        .thenReturn(new MessagesSummary(List.of(), 1, 1, null, MessagesSource.CLAIM));
+
+    when(submissionMatterStartsDetailsService.getAll(any())).thenReturn(List.of());
   }
 
   @Test

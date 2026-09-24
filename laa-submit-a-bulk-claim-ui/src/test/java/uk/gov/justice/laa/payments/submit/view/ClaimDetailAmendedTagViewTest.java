@@ -24,7 +24,6 @@ import uk.gov.justice.laa.dstew.payments.claimsdata.model.AreaOfLaw;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.ClaimHistoryResultSet;
 import uk.gov.justice.laa.payments.submit.builder.ClaimStatusBannerBuilder;
 import uk.gov.justice.laa.payments.submit.builder.LatestAssessmentResolver;
-import uk.gov.justice.laa.payments.submit.builder.SubmissionMessagesBuilder;
 import uk.gov.justice.laa.payments.submit.client.DataClaimsRestClientV2;
 import uk.gov.justice.laa.payments.submit.controller.ClaimDetailController;
 import uk.gov.justice.laa.payments.submit.dto.submission.claim.viewmodels.ClaimFieldRow;
@@ -34,6 +33,7 @@ import uk.gov.justice.laa.payments.submit.dto.submission.messages.MessagesSummar
 import uk.gov.justice.laa.payments.submit.mapper.ClaimFeeCalculationBreakdownMapper;
 import uk.gov.justice.laa.payments.submit.mapper.ClaimSummaryMapper;
 import uk.gov.justice.laa.payments.submit.service.ClaimService;
+import uk.gov.justice.laa.payments.submit.service.SubmissionMessagesService;
 import uk.gov.justice.laa.payments.submit.service.SubmissionService;
 import uk.gov.justice.laa.payments.submit.util.MatterTypeUtil;
 import uk.gov.justice.laa.payments.submit.viewmodels.claimdetails.ClaimDetailPageData;
@@ -49,7 +49,7 @@ class ClaimDetailAmendedTagViewTest extends ViewTestBase {
   @MockitoBean private DataClaimsRestClientV2 dataClaimsRestClientV2;
   @MockitoBean private ClaimSummaryMapper claimSummaryMapper;
   @MockitoBean private ClaimFeeCalculationBreakdownMapper claimFeeCalculationBreakdownMapper;
-  @MockitoBean private SubmissionMessagesBuilder submissionMessagesBuilder;
+  @MockitoBean private SubmissionMessagesService submissionMessagesService;
   @MockitoBean private ClaimService claimService;
   @MockitoBean private ClaimDetailViewFactory claimDetailViewFactory;
   @MockitoBean private ClaimStatusBannerBuilder claimStatusBannerBuilder;
@@ -67,7 +67,7 @@ class ClaimDetailAmendedTagViewTest extends ViewTestBase {
 
     when(dataClaimsRestClient.getClaimHistory(eq(claimId)))
         .thenReturn(Mono.just(ClaimHistoryResultSet.builder().events(List.of()).build()));
-    when(submissionMessagesBuilder.buildAllWarnings(OIDC_USER, submissionId, claimId))
+    when(submissionMessagesService.getAllWarningMessages(OIDC_USER, submissionId, claimId))
         .thenReturn(MessagesSummary.builder().messages(List.of()).build());
     when(featureFlagsConfig.getIsAlternativeClaimViewEnabled()).thenReturn(true);
   }

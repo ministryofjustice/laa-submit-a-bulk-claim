@@ -25,7 +25,6 @@ import uk.gov.justice.laa.dstew.payments.claimsdata.model.ClaimResponseV2;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionResponse;
 import uk.gov.justice.laa.payments.submit.builder.ClaimStatusBannerBuilder;
 import uk.gov.justice.laa.payments.submit.builder.LatestAssessmentResolver;
-import uk.gov.justice.laa.payments.submit.builder.SubmissionMessagesBuilder;
 import uk.gov.justice.laa.payments.submit.dto.submission.claim.ClaimFeeCalculationBreakdown;
 import uk.gov.justice.laa.payments.submit.dto.submission.claim.ClaimSummary;
 import uk.gov.justice.laa.payments.submit.dto.submission.claim.viewmodels.ClaimFieldRow;
@@ -36,6 +35,7 @@ import uk.gov.justice.laa.payments.submit.helper.TestObjectCreator;
 import uk.gov.justice.laa.payments.submit.mapper.ClaimFeeCalculationBreakdownMapper;
 import uk.gov.justice.laa.payments.submit.mapper.ClaimSummaryMapper;
 import uk.gov.justice.laa.payments.submit.service.ClaimService;
+import uk.gov.justice.laa.payments.submit.service.SubmissionMessagesService;
 import uk.gov.justice.laa.payments.submit.service.SubmissionService;
 import uk.gov.justice.laa.payments.submit.util.ThymeleafHrefUtils;
 import uk.gov.justice.laa.payments.submit.viewmodels.claimdetails.ClaimDetailPageData;
@@ -52,7 +52,7 @@ class ClaimDetailControllerTest extends BaseControllerTest {
 
   @MockitoBean private ClaimSummaryMapper claimSummaryMapper;
   @MockitoBean private ClaimFeeCalculationBreakdownMapper claimFeeCalculationBreakdownMapper;
-  @MockitoBean private SubmissionMessagesBuilder submissionMessagesBuilder;
+  @MockitoBean private SubmissionMessagesService submissionMessagesService;
   @MockitoBean private ClaimService claimService;
   @MockitoBean private ClaimDetailViewFactory claimDetailViewFactory;
   @MockitoBean private ClaimStatusBannerBuilder claimStatusBannerBuilder;
@@ -86,7 +86,7 @@ class ClaimDetailControllerTest extends BaseControllerTest {
         when(claimFeeCalculationBreakdownMapper.toClaimFeeCalculationBreakdown(claimResponse))
             .thenReturn(ClaimFeeCalculationBreakdown.builder().build());
 
-        when(submissionMessagesBuilder.buildAllWarnings(OIDC_USER, submissionId, claimId))
+        when(submissionMessagesService.getAllWarningMessages(OIDC_USER, submissionId, claimId))
             .thenReturn(
                 MessagesSummary.builder()
                     .messages(singletonList(MessageRow.builder().build()))
@@ -157,7 +157,7 @@ class ClaimDetailControllerTest extends BaseControllerTest {
         when(featureFlagsConfig.getIsAlternativeClaimViewEnabled()).thenReturn(true);
         stubCommonDependencies();
 
-        when(submissionMessagesBuilder.buildAllWarnings(OIDC_USER, submissionId, claimId))
+        when(submissionMessagesService.getAllWarningMessages(OIDC_USER, submissionId, claimId))
             .thenReturn(
                 MessagesSummary.builder()
                     .messages(singletonList(MessageRow.builder().message("A warning").build()))

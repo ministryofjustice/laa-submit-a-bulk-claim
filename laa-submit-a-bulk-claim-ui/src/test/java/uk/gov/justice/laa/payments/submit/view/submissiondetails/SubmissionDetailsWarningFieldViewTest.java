@@ -1,5 +1,6 @@
 package uk.gov.justice.laa.payments.submit.view.submissiondetails;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -35,6 +36,9 @@ import uk.gov.justice.laa.payments.submit.dto.submission.messages.MessagesSource
 import uk.gov.justice.laa.payments.submit.dto.submission.messages.MessagesSummary;
 
 class SubmissionDetailsWarningFieldViewTest extends SubmissionDetailsViewTestBase {
+
+  private static final UUID WARNING_CLAIM_ID =
+      UUID.fromString("f27300ec-f4c3-42e0-9754-4b3fc4684d66");
 
   @Test
   void viewSubmissionDetailHasSortableWarningHeaders_crime() {
@@ -90,6 +94,45 @@ class SubmissionDetailsWarningFieldViewTest extends SubmissionDetailsViewTestBas
         headers.get(6), "none", "Client 2 UCN", warningSortLink("client_2_ucn"));
     assertTableHeaderIsSortable(
         headers.get(7), "none", "Messages", warningSortLink("display_message"));
+  }
+
+  @Test
+  void warningMessagesPageShowsCrimeClaimRowDetails() {
+    mockWarningMessages(CRIME_LOWER);
+
+    var doc = renderDocumentWithParams(Map.of("navTab", "CLAIM_MESSAGES"));
+    var rows = doc.select("#messages-table tbody tr");
+
+    assertThat(rows).hasSize(1);
+    var row = rows.getFirst();
+    var messageCells = row.select("td");
+
+    assertThat(selectFirst(row, "a").attr("href"))
+        .contains("/submissions/%s/claims/%s".formatted(submissionId, WARNING_CLAIM_ID));
+    assertThat(messageCells.get(1).text()).isEqualTo("Escaped");
+    assertThat(messageCells.get(2).text()).isEqualTo("First");
+    assertThat(messageCells.get(3).text()).isEqualTo("011015/125");
+    assertThat(messageCells.get(4).text()).isEqualTo("This claim is escaped");
+  }
+
+  @Test
+  void warningMessagesPageShowsLegalHelpClaimRowDetails() {
+    mockWarningMessages(LEGAL_HELP);
+
+    var doc = renderDocumentWithParams(Map.of("navTab", "CLAIM_MESSAGES"));
+    var rows = doc.select("#messages-table tbody tr");
+
+    assertThat(rows).hasSize(1);
+    var row = rows.getFirst();
+    var messageCells = row.select("td");
+
+    assertThat(selectFirst(row, "a").attr("href"))
+        .contains("/submissions/%s/claims/%s".formatted(submissionId, WARNING_CLAIM_ID));
+    assertThat(messageCells.get(1).text()).isEqualTo("Escaped");
+    assertThat(messageCells.get(2).text()).isEqualTo("First");
+    assertThat(messageCells.get(3).text()).isEqualTo("011015/125");
+    assertThat(messageCells.get(4).text()).isEqualTo("UCN125");
+    assertThat(messageCells.get(5).text()).isEqualTo("This claim is escaped");
   }
 
   @ParameterizedTest
@@ -471,11 +514,19 @@ class SubmissionDetailsWarningFieldViewTest extends SubmissionDetailsViewTestBas
         .thenReturn(
             new SubmissionClaimsDetails(
                 List.of(SubmissionClaimRow.builder().build()), pagination, BigDecimal.ONE));
-    when(submissionMessagesBuilder.build(any(), any(), any(), any(), anyInt(), anyInt(), any()))
+    when(submissionMessagesService.getMessagesWithClaimSummary(
+            any(), any(), any(), any(), anyInt(), anyInt(), any()))
         .thenReturn(
             new MessagesSummary(
                 List.of(
-                    MessageRow.builder().claimReference(Optional.of(UUID.randomUUID())).build()),
+                    MessageRow.builder()
+                        .claimReference(Optional.of(WARNING_CLAIM_ID))
+                        .clientSurname("Escaped")
+                        .clientForename("First")
+                        .ufn("011015/125")
+                        .ucn("UCN125")
+                        .message("This claim is escaped")
+                        .build()),
                 0,
                 0,
                 pagination,
@@ -506,11 +557,19 @@ class SubmissionDetailsWarningFieldViewTest extends SubmissionDetailsViewTestBas
         .thenReturn(
             new SubmissionClaimsDetails(
                 List.of(SubmissionClaimRow.builder().build()), claimPagination, BigDecimal.ONE));
-    when(submissionMessagesBuilder.build(any(), any(), any(), any(), anyInt(), anyInt(), any()))
+    when(submissionMessagesService.getMessagesWithClaimSummary(
+            any(), any(), any(), any(), anyInt(), anyInt(), any()))
         .thenReturn(
             new MessagesSummary(
                 List.of(
-                    MessageRow.builder().claimReference(Optional.of(UUID.randomUUID())).build()),
+                    MessageRow.builder()
+                        .claimReference(Optional.of(WARNING_CLAIM_ID))
+                        .clientSurname("Escaped")
+                        .clientForename("First")
+                        .ufn("011015/125")
+                        .ucn("UCN125")
+                        .message("This claim is escaped")
+                        .build()),
                 0,
                 0,
                 messagesPagination,
