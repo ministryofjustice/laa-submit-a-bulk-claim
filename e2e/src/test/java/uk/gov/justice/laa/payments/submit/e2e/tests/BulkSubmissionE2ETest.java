@@ -56,6 +56,38 @@ public class BulkSubmissionE2ETest extends BaseTest {
         .containsText("Resolve the errors and upload the file again.");
   }
 
+  @Test
+  public void bulkSubmissionNoFileUploaded() {
+    var landingPage = new LandingPagePage(page);
+    landingPage.getStartNowButton().click();
+
+    var upload = new UploadPage(page);
+    upload.getContinueButton().click();
+
+    assertThat(upload.getErrorSummary()).isVisible();
+    assertThat(upload.getErrorSummary()).containsText("Select a file");
+    assertThat(upload.getErrorMessage()).isVisible();
+    assertThat(upload.getErrorMessage()).containsText("Error: Select a file");
+  }
+
+  @Test
+  public void bulkSubmissionInvalidFileType() {
+    var landingPage = new LandingPagePage(page);
+    landingPage.getStartNowButton().click();
+
+    var upload = new UploadPage(page);
+    var csvPath = Paths.get("../docs/sample-data/README.md").toAbsolutePath();
+    upload.uploadFile(csvPath);
+
+    upload.getContinueButton().click();
+
+    assertThat(upload.getErrorSummary()).isVisible();
+    assertThat(upload.getErrorSummary())
+        .containsText("The selected file must be a valid CSV, XML or TXT file");
+    assertThat(upload.getErrorMessage()).isVisible();
+    assertThat(upload.getErrorMessage()).containsText("Error: The selected file must be a valid CSV, XML or TXT file");
+  }
+
   private static Stream<Arguments> csvFiles() {
     return Stream.of(
         Arguments.of("Crime Lower", "../docs/sample-data/crime-lower-may-2026.csv"),

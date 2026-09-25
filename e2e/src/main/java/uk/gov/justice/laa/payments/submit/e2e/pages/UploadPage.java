@@ -14,6 +14,8 @@ public class UploadPage extends BasePage {
 
   private final Locator createNilSubmissionButton;
   private final Locator continueButton;
+  private final Locator errorMessage;
+  private final Locator errorSummary;
   private final Locator fileInput;
   private final Locator searchLink;
 
@@ -28,6 +30,8 @@ public class UploadPage extends BasePage {
 
     fileInput = page.locator("#file-input");
     searchLink = page.locator("#search-link");
+    errorSummary = page.locator(".govuk-error-summary");
+    errorMessage = page.locator(".govuk-error-message");
   }
 
   public void uploadFile(Path filePath) {
