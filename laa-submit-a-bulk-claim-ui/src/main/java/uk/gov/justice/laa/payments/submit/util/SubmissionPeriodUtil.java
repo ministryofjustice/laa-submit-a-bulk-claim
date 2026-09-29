@@ -27,6 +27,9 @@ public class SubmissionPeriodUtil {
   public static final DateTimeFormatter FULL_PERIOD_FMT =
       DateTimeFormatter.ofPattern("MMMM uuuu", Locale.ENGLISH);
 
+  public static final DateTimeFormatter FILENAME_PERIOD_FMT =
+      DateTimeFormatter.ofPattern("yyyy-MMMM", Locale.ENGLISH);
+
   public SubmissionPeriodUtil(
       DateWrapperUtil dateWrapperUtil,
       @Value("${app.submission.minimum-period}") String minimumSubmissionPeriod) {

@@ -1,7 +1,6 @@
 package uk.gov.justice.laa.payments.submit.controller;
 
 import java.time.YearMonth;
-import java.time.format.DateTimeFormatter;
 import java.util.Locale;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
@@ -29,9 +28,6 @@ import uk.gov.justice.laa.payments.submit.util.SubmissionPeriodUtil;
 @RequiredArgsConstructor
 public class ExportSubmissionDetailController {
 
-  private static final DateTimeFormatter FILENAME_PERIOD_FORMATTER =
-      DateTimeFormatter.ofPattern("yyyy-MMMM", Locale.ENGLISH);
-
   private final ExportDataClaimsRestClient exportDataClaimsRestClient;
   private final SubmissionService submissionService;
 
@@ -39,7 +35,7 @@ public class ExportSubmissionDetailController {
   public Mono<ResponseEntity<Resource>> exportSubmissionDetail(
       @PathVariable UUID submissionId, @AuthenticationPrincipal OidcUser oidcUser) {
     var submission = submissionService.getSubmission(submissionId, oidcUser);
-    System.out.println("STA: " + submission.getStatus());
+
     if (submission.getStatus() != SubmissionStatus.VALIDATION_SUCCEEDED) {
       throw new ResponseStatusException(
           HttpStatus.NOT_FOUND,
@@ -47,14 +43,14 @@ public class ExportSubmissionDetailController {
     }
 
     String office = submission.getOfficeAccountNumber();
-    String areaOfLawPathVariable =
+    String areaOfLaw =
         submission.getAreaOfLaw().getValue().toLowerCase(Locale.ENGLISH).replace(" ", "-");
 
     YearMonth submissionPeriod =
         YearMonth.parse(submission.getSubmissionPeriod(), SubmissionPeriodUtil.ABBR_PERIOD_FMT);
 
     Mono<ResponseEntity<byte[]>> submissionExport =
-        exportDataClaimsRestClient.getSubmissionExport(areaOfLawPathVariable, submissionId, office);
+        exportDataClaimsRestClient.getSubmissionExport(areaOfLaw, submissionId, office);
 
     return submissionExport.map(
         file -> {
@@ -62,15 +58,16 @@ public class ExportSubmissionDetailController {
           // to duplicate this)
           HttpHeaders safeHeaders = new HttpHeaders();
           safeHeaders.setContentType(file.getHeaders().getContentType());
+          safeHeaders.setCacheControl(file.getHeaders().getCacheControl());
           safeHeaders.setContentDisposition(
               ContentDisposition.attachment()
                   .filename(
                       "%s-%s-%s-bulk-claim-summary.csv"
                           .formatted(
                               office,
-                              areaOfLawPathVariable,
+                              areaOfLaw,
                               submissionPeriod
-                                  .format(FILENAME_PERIOD_FORMATTER)
+                                  .format(SubmissionPeriodUtil.FILENAME_PERIOD_FMT)
                                   .toLowerCase(Locale.ENGLISH)))
                   .build());
 
