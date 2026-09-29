@@ -2,11 +2,11 @@ name: Daily Snyk scan
 
 on:
   schedule:
-    - cron: '0 6,15 * * *'
+    - cron: '0 6,15 1-5 * *'
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: read`
 
 jobs:
   upload-image:
