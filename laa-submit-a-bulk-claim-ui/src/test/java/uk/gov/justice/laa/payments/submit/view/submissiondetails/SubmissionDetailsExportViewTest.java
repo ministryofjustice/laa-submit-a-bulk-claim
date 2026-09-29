@@ -14,7 +14,6 @@ import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.util.List;
 import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.EnumSource;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.AreaOfLaw;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.Page;
@@ -28,13 +27,8 @@ import uk.gov.justice.laa.payments.submit.dto.submission.messages.MessagesSummar
 class SubmissionDetailsExportViewTest extends SubmissionDetailsViewTestBase {
 
   @ParameterizedTest
-  @CsvSource({
-    "LEGAL_HELP, LEGAL%20HELP",
-    "CRIME_LOWER, CRIME%20LOWER",
-    "MEDIATION, MEDIATION",
-  })
-  void acceptedSubmissionShowsExportActionForAreaOfLaw(
-      AreaOfLaw areaOfLaw, String expectedAreaOfLawParam) {
+  @EnumSource(AreaOfLaw.class)
+  void acceptedSubmissionShowsExportActionForAreaOfLaw(AreaOfLaw areaOfLaw) {
     mockAcceptedSubmission(areaOfLaw);
 
     var doc = renderDocument();
@@ -44,9 +38,7 @@ class SubmissionDetailsExportViewTest extends SubmissionDetailsViewTestBase {
     var exportButton = selectFirst(doc, "#export-button");
     assertThat(exportButton.text()).isEqualTo("Download claims");
     assertThat(exportButton.attr("href"))
-        .contains("/submissions/%s/export".formatted(submissionId))
-        .contains("office=%s".formatted(OFFICE_CODE))
-        .contains("areaOfLaw=%s".formatted(expectedAreaOfLawParam));
+        .isEqualTo("/submissions/%s/export".formatted(submissionId));
   }
 
   @ParameterizedTest
