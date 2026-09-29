@@ -58,7 +58,6 @@ public class ExportSubmissionDetailController {
           // to duplicate this)
           HttpHeaders safeHeaders = new HttpHeaders();
           safeHeaders.setContentType(file.getHeaders().getContentType());
-          safeHeaders.setCacheControl(file.getHeaders().getCacheControl());
           safeHeaders.setContentDisposition(
               ContentDisposition.attachment()
                   .filename(

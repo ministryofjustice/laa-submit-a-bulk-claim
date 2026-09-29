@@ -148,7 +148,6 @@ class ExportSubmissionDetailControllerTest extends BaseControllerTest {
 
       HttpHeaders claimsApiHeaders = new HttpHeaders();
       claimsApiHeaders.setContentType(MediaType.parseMediaType("text/csv"));
-      claimsApiHeaders.setCacheControl("no-store");
       claimsApiHeaders.setContentDisposition(
           ContentDisposition.attachment().filename("submission-claims-legal-help.csv").build());
       claimsApiHeaders.add("x-internal-header", "should-not-be-forwarded");
@@ -171,7 +170,6 @@ class ExportSubmissionDetailControllerTest extends BaseControllerTest {
               headers -> {
                 assertThat(headers.getContentType())
                     .isEqualTo(MediaType.parseMediaType("text/csv"));
-                assertThat(headers.getCacheControl()).isEqualTo("no-store");
                 assertThat(headers.getContentDisposition().getFilename())
                     .isEqualTo(expectedFilename);
                 assertThat(headers.getContentDisposition().isAttachment()).isTrue();
