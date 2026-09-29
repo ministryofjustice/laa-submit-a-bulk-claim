@@ -1,10 +1,15 @@
 package uk.gov.justice.laa.payments.submit.controller;
 
+import java.time.LocalDate;
+import java.time.format.TextStyle;
+import java.util.Locale;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
+import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.ContentDisposition;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -31,6 +36,7 @@ public class ExportSubmissionDetailController {
       @PathVariable UUID submissionId,
       @RequestParam String office,
       @RequestParam String areaOfLaw,
+      @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate submissionPeriod,
       @AuthenticationPrincipal OidcUser oidcUser) {
     var offices = oidcAttributeUtils.getUserOffices(oidcUser);
     if (!offices.contains(office)) {
@@ -48,13 +54,27 @@ public class ExportSubmissionDetailController {
         file -> {
           // Only add headers we need (Spring automatically adds some headers so don't want
           // to duplicate this)
-          HttpHeaders safeHeaders = new HttpHeaders();
-          safeHeaders.setContentType(file.getHeaders().getContentType());
-          safeHeaders.setContentDisposition(file.getHeaders().getContentDisposition());
+            HttpHeaders safeHeaders = new HttpHeaders();
+            safeHeaders.setContentType(file.getHeaders().getContentType());
+            safeHeaders.setContentDisposition(
+                    ContentDisposition.attachment()
+                            .filename(buildExportFilename(office, areaOfLawPathVariable, submissionPeriod))
+                            .build());
 
-          return ResponseEntity.ok()
-              .headers(safeHeaders)
-              .body(new ByteArrayResource(file.getBody()));
+            return ResponseEntity.ok()
+                    .headers(safeHeaders)
+                    .body(new ByteArrayResource(file.getBody()));
         });
   }
+
+    private String buildExportFilename(
+            String office, String areaOfLawPathVariable, LocalDate submissionPeriod) {
+        String month =
+                submissionPeriod
+                        .getMonth()
+                        .getDisplayName(TextStyle.FULL, Locale.ENGLISH)
+                        .toLowerCase(Locale.ENGLISH);
+        return "%s-%s-%d-%s-bulk-claim-summary.csv"
+                .formatted(office, areaOfLawPathVariable, submissionPeriod.getYear(), month);
+    }
 }
