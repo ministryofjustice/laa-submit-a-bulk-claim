@@ -1,6 +1,6 @@
 package uk.gov.justice.laa.payments.submit.controller;
 
-import java.time.LocalDate;
+import java.time.YearMonth;
 import java.time.format.DateTimeFormatter;
 import java.util.Locale;
 import java.util.UUID;
@@ -39,6 +39,7 @@ public class ExportSubmissionDetailController {
   public Mono<ResponseEntity<Resource>> exportSubmissionDetail(
       @PathVariable UUID submissionId, @AuthenticationPrincipal OidcUser oidcUser) {
     var submission = submissionService.getSubmission(submissionId, oidcUser);
+    System.out.println("STA: " + submission.getStatus());
     if (submission.getStatus() != SubmissionStatus.VALIDATION_SUCCEEDED) {
       throw new ResponseStatusException(
           HttpStatus.NOT_FOUND,
@@ -49,8 +50,8 @@ public class ExportSubmissionDetailController {
     String areaOfLawPathVariable =
         submission.getAreaOfLaw().getValue().toLowerCase(Locale.ENGLISH).replace(" ", "-");
 
-    LocalDate submissionPeriod =
-        SubmissionPeriodUtil.toSubmissionPeriodStart(submission.getSubmissionPeriod());
+    YearMonth submissionPeriod =
+        YearMonth.parse(submission.getSubmissionPeriod(), SubmissionPeriodUtil.ABBR_PERIOD_FMT);
 
     Mono<ResponseEntity<byte[]>> submissionExport =
         exportDataClaimsRestClient.getSubmissionExport(areaOfLawPathVariable, submissionId, office);

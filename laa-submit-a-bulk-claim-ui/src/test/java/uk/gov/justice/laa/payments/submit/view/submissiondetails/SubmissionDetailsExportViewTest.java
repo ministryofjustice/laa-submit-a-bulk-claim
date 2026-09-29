@@ -28,7 +28,7 @@ class SubmissionDetailsExportViewTest extends SubmissionDetailsViewTestBase {
 
   @ParameterizedTest
   @EnumSource(AreaOfLaw.class)
-  void acceptedSubmissionShowsExportActionForAreaOfLaw(AreaOfLaw areaOfLaw) {
+  void acceptedSubmissionShowsExportAction(AreaOfLaw areaOfLaw) {
     mockAcceptedSubmission(areaOfLaw);
 
     var doc = renderDocument();
