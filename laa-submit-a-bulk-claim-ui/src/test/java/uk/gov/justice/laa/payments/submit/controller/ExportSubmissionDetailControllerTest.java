@@ -3,6 +3,7 @@ package uk.gov.justice.laa.payments.submit.controller;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.oidcLogin;
@@ -10,27 +11,31 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static uk.gov.justice.laa.payments.submit.controller.ControllerTestHelper.OIDC_USER;
 
-import java.util.Collections;
-import java.util.List;
 import java.util.UUID;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
+import org.junit.jupiter.params.provider.EnumSource;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
 import org.springframework.http.ContentDisposition;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.assertj.MockMvcTester;
 import reactor.core.publisher.Mono;
+import uk.gov.justice.laa.dstew.payments.claimsdata.model.AreaOfLaw;
+import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionResponse;
+import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionStatus;
 import uk.gov.justice.laa.payments.submit.client.ExportDataClaimsRestClient;
-import uk.gov.justice.laa.payments.submit.exception.SubmitBulkClaimException;
+import uk.gov.justice.laa.payments.submit.service.SubmissionService;
 
 @WebMvcTest(ExportSubmissionDetailController.class)
 @AutoConfigureMockMvc
@@ -41,9 +46,17 @@ class ExportSubmissionDetailControllerTest extends BaseControllerTest {
 
   @MockitoBean private ExportDataClaimsRestClient exportDataClaimsRestClient;
 
+  @MockitoBean private SubmissionService submissionService;
+
   @Nested
   @DisplayName("GET: /submissions/{submissionId}/export")
   class GetExportSubmission {
+
+    @BeforeEach
+    void setUp() {
+      when(submissionService.getSubmission(any(), any()))
+          .thenReturn(succeededSubmission("12345", AreaOfLaw.LEGAL_HELP, "MAY-2026"));
+    }
 
     @Test
     @DisplayName("Should return expected result")
@@ -51,18 +64,14 @@ class ExportSubmissionDetailControllerTest extends BaseControllerTest {
       // Given
       String fileContent = "one,two,three";
       byte[] file = fileContent.getBytes();
-      String office = "12345";
-      String areaOfLaw = "legal-help";
       UUID submissionReference = UUID.fromString("3fa85f64-5717-4562-b3fc-2c963f66afa6");
       when(exportDataClaimsRestClient.getSubmissionExport(any(), any(), any()))
           .thenReturn(Mono.just(ResponseEntity.ok(file)));
-      when(oidcAttributeUtils.getUserOffices(any())).thenReturn(List.of(office));
 
       // When (first request starts async processing due to controller method using "Mono")
       var initial =
           mockMvc.perform(
-              get("/submissions/%s/export?office=%s&areaOfLaw=%s"
-                      .formatted(submissionReference, office, areaOfLaw))
+              get("/submissions/%s/export".formatted(submissionReference))
                   .with(oidcLogin().oidcUser(OIDC_USER)));
 
       // When / Then
@@ -73,51 +82,48 @@ class ExportSubmissionDetailControllerTest extends BaseControllerTest {
           .isEqualTo(fileContent);
     }
 
-    @Test
-    @DisplayName("Should throw exception")
-    void shouldThrowException() {
+    @ParameterizedTest
+    @EnumSource(
+        value = SubmissionStatus.class,
+        names = "VALIDATION_SUCCEEDED",
+        mode = EnumSource.Mode.EXCLUDE)
+    @DisplayName("Should return not found when the submission is not available for export")
+    void shouldReturnNotFoundWhenSubmissionIsNotAvailableForExport(SubmissionStatus status) {
       // Given
-      String fileContent = "one,two,three";
-      byte[] file = fileContent.getBytes();
-      String office = "12345";
-      String areaOfLaw = "legal-help";
       UUID submissionReference = UUID.fromString("3fa85f64-5717-4562-b3fc-2c963f66afa6");
-      when(exportDataClaimsRestClient.getSubmissionExport(any(), any(), any()))
-          .thenReturn(Mono.just(ResponseEntity.ok(file)));
-      when(oidcAttributeUtils.getUserOffices(any())).thenReturn(Collections.emptyList());
+      when(submissionService.getSubmission(eq(submissionReference), any()))
+          .thenReturn(SubmissionResponse.builder().status(status).build());
 
       // When / Then
       assertThat(
               mockMvc.perform(
-                  get("/submissions/%s/export?office=%s&areaOfLaw=%s"
-                          .formatted(submissionReference, office, areaOfLaw))
+                  get("/submissions/%s/export".formatted(submissionReference))
                       .with(oidcLogin().oidcUser(OIDC_USER))))
-          .failure()
-          .hasCauseInstanceOf(SubmitBulkClaimException.class)
-          .hasMessageContaining("User (test@example.com) does not have access to office: 12345");
+          .hasStatus(HttpStatus.NOT_FOUND);
+      verify(exportDataClaimsRestClient, never()).getSubmissionExport(any(), any(), any());
     }
 
     @ParameterizedTest
     @CsvSource({
-      "LEGAL HELP, legal-help",
-      "CRIME LOWER, crime-lower",
+      "LEGAL_HELP, legal-help",
+      "CRIME_LOWER, crime-lower",
       "MEDIATION, mediation",
     })
     @DisplayName("Should request the export for the area of law path variable")
     void shouldRequestExportForAreaOfLawPathVariable(
-        String areaOfLaw, String expectedPathVariable) {
+        AreaOfLaw areaOfLaw, String expectedPathVariable) {
       // Given
       String office = "12345";
       UUID submissionReference = UUID.fromString("3fa85f64-5717-4562-b3fc-2c963f66afa6");
+      when(submissionService.getSubmission(eq(submissionReference), any()))
+          .thenReturn(succeededSubmission(office, areaOfLaw, "MAY-2026"));
       when(exportDataClaimsRestClient.getSubmissionExport(any(), any(), any()))
           .thenReturn(Mono.just(ResponseEntity.ok("one,two,three".getBytes())));
-      when(oidcAttributeUtils.getUserOffices(any())).thenReturn(List.of(office));
 
       // When
       var initial =
           mockMvc.perform(
-              get("/submissions/%s/export?office=%s&areaOfLaw=%s"
-                      .formatted(submissionReference, office, areaOfLaw))
+              get("/submissions/%s/export".formatted(submissionReference))
                   .with(oidcLogin().oidcUser(OIDC_USER)));
 
       // Then
@@ -126,12 +132,19 @@ class ExportSubmissionDetailControllerTest extends BaseControllerTest {
           .getSubmissionExport(eq(expectedPathVariable), eq(submissionReference), eq(office));
     }
 
-    @Test
-    @DisplayName("Should return the content type and file name provided by the claims API")
-    void shouldReturnContentTypeAndFileNameFromClaimsApi() {
+    @ParameterizedTest
+    @CsvSource({
+      "LEGAL_HELP, 2B446C-legal-help-2026-may-bulk-claim-summary.csv",
+      "CRIME_LOWER, 2B446C-crime-lower-2026-may-bulk-claim-summary.csv",
+      "MEDIATION, 2B446C-mediation-2026-may-bulk-claim-summary.csv",
+    })
+    @DisplayName("Should return the content type and file name")
+    void shouldReturnContentTypeAndAreaOfLawFileName(AreaOfLaw areaOfLaw, String expectedFilename) {
       // Given
-      String office = "12345";
+      String office = "2B446C";
       UUID submissionReference = UUID.fromString("3fa85f64-5717-4562-b3fc-2c963f66afa6");
+      when(submissionService.getSubmission(eq(submissionReference), any()))
+          .thenReturn(succeededSubmission(office, areaOfLaw, "MAY-2026"));
 
       HttpHeaders claimsApiHeaders = new HttpHeaders();
       claimsApiHeaders.setContentType(MediaType.parseMediaType("text/csv"));
@@ -143,13 +156,10 @@ class ExportSubmissionDetailControllerTest extends BaseControllerTest {
           .thenReturn(
               Mono.just(
                   ResponseEntity.ok().headers(claimsApiHeaders).body("one,two,three".getBytes())));
-      when(oidcAttributeUtils.getUserOffices(any())).thenReturn(List.of(office));
-
       // When
       var initial =
           mockMvc.perform(
-              get("/submissions/%s/export?office=%s&areaOfLaw=%s"
-                      .formatted(submissionReference, office, "LEGAL HELP"))
+              get("/submissions/%s/export".formatted(submissionReference))
                   .with(oidcLogin().oidcUser(OIDC_USER)));
 
       // Then
@@ -161,7 +171,7 @@ class ExportSubmissionDetailControllerTest extends BaseControllerTest {
                 assertThat(headers.getContentType())
                     .isEqualTo(MediaType.parseMediaType("text/csv"));
                 assertThat(headers.getContentDisposition().getFilename())
-                    .isEqualTo("submission-claims-legal-help.csv");
+                    .isEqualTo(expectedFilename);
                 assertThat(headers.getContentDisposition().isAttachment()).isTrue();
                 assertThat(headers.headerNames()).doesNotContain("x-internal-header");
               });
@@ -173,18 +183,14 @@ class ExportSubmissionDetailControllerTest extends BaseControllerTest {
     void shouldExportFromBothMappings(String mapping) {
       // Given
       String fileContent = "one,two,three";
-      String office = "12345";
       UUID submissionReference = UUID.fromString("3fa85f64-5717-4562-b3fc-2c963f66afa6");
       when(exportDataClaimsRestClient.getSubmissionExport(any(), any(), any()))
           .thenReturn(Mono.just(ResponseEntity.ok(fileContent.getBytes())));
-      when(oidcAttributeUtils.getUserOffices(any())).thenReturn(List.of(office));
 
       // When
       var initial =
           mockMvc.perform(
-              get("%s?office=%s&areaOfLaw=%s"
-                      .formatted(mapping.formatted(submissionReference), office, "LEGAL HELP"))
-                  .with(oidcLogin().oidcUser(OIDC_USER)));
+              get(mapping.formatted(submissionReference)).with(oidcLogin().oidcUser(OIDC_USER)));
 
       // Then
       assertThat(mockMvc.perform(asyncDispatch(initial.getMvcResult())))
@@ -192,6 +198,16 @@ class ExportSubmissionDetailControllerTest extends BaseControllerTest {
           .body()
           .asString()
           .isEqualTo(fileContent);
+    }
+
+    private SubmissionResponse succeededSubmission(
+        String office, AreaOfLaw areaOfLaw, String submissionPeriod) {
+      return SubmissionResponse.builder()
+          .status(SubmissionStatus.VALIDATION_SUCCEEDED)
+          .officeAccountNumber(office)
+          .areaOfLaw(areaOfLaw)
+          .submissionPeriod(submissionPeriod)
+          .build();
     }
   }
 }
