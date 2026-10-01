@@ -93,7 +93,7 @@ jobs:
       security-events: write
     with:
       dockerfile_path: 'Dockerfile'
-      image_version: ${{ format('{0}-{1}', vars.IMAGE_PREFIX, needs.build.outputs.published_artifact_version) }}
+      image_version: ${{ format('{0}-{1}', vars.IMAGE_PREFIX, github.sha) }}
       java_version: 25
       image_scan: 'false'
     secrets:
