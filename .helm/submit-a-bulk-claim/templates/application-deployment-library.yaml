@@ -242,7 +242,7 @@ spec:
       secretName: {{ required "hostname certSecretName must be provided when hostname is enabled." .Values.ingress.externalRoute.hostname.certSecretName }}
     {{- else }}
     - hosts:
-        - {{ .Release.Name }}-{{ .Chart.Name }}-{{ .Release.Namespace }}.{{ .Values.global.clusterDomain }}
+        - {{ .Release.Name }}-{{ .Values.ingress.hostAppName | default .Chart.Name }}-{{ .Release.Namespace }}.{{ .Values.global.clusterDomain }}
     {{- end }}
   rules:
     {{- if and .Values.ingress.externalRoute.hostname (eq .Values.ingress.externalRoute.hostname.enabled true) }}
@@ -257,7 +257,7 @@ spec:
                 port:
                   number: 80
     {{- else }}
-    - host: {{ .Release.Name }}-{{ .Chart.Name }}-{{ .Release.Namespace }}.{{ .Values.global.clusterDomain }}
+    - host: {{ .Release.Name }}-{{ .Values.ingress.hostAppName | default .Chart.Name }}-{{ .Release.Namespace }}.{{ .Values.global.clusterDomain }}
       http:
         paths:
             - path: /

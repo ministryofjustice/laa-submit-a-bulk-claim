@@ -273,8 +273,7 @@ jobs:
             const releaseName = '${{ steps.deploy.outputs.release-name }}';
             const namespace = '${{ secrets.KUBE_NAMESPACE }}';
             const clusterDomain = 'apps.live.cloud-platform.service.justice.gov.uk';
-            const chartName = 'submit-a-bulk-claim';
-            const hostname = `${releaseName}-${chartName}-${namespace}.${clusterDomain}`;
+            const hostname = `${releaseName}-sabc-${namespace}.${clusterDomain}`;
             const url = `https://${hostname}`;
 
             const prNumber = context.issue.number;

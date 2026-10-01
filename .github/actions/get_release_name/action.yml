@@ -31,3 +31,4 @@ runs:
       uses: ./.github/actions/extract_release_name_from_branch
       with:
         branch_name: ${{ steps.extract_branch.outputs.branch_name }}
+        pr_number: ${{ github.event.pull_request.number }}
