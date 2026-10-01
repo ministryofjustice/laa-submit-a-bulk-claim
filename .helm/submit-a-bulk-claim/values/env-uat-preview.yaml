@@ -162,3 +162,12 @@ downtime:
     enabled: false
   page:
     enabled: false
+
+ingress:
+  hostAppName: sabc
+
+extraEnvVars:
+  - name: ALLOWED_HOSTS
+    value: '{{ .Release.Name }}-sabc-{{ .Release.Namespace }}.{{ .Values.global.clusterDomain }}'
+  - name: CANONICAL_BASE_URL
+    value: 'https://{{ .Release.Name }}-sabc-{{ .Release.Namespace }}.{{ .Values.global.clusterDomain }}'

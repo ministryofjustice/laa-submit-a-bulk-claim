@@ -1,8 +1,11 @@
 name: "Extract Release Name"
-description: "Converts branch name into a formatted Helm release name"
+description: "Converts a branch name and PR number into a Helm release name"
 inputs:
   branch_name:
     description: "The original branch name"
+    required: true
+  pr_number:
+    description: "Pull request number, keeps the release name unique per PR"
     required: true
 outputs:
   release_name:
@@ -15,7 +18,11 @@ runs:
       shell: bash
       env:
         BRANCH_NAME: ${{ inputs.branch_name }}
+        PR_NUMBER: ${{ inputs.pr_number }}
       run: |
-        truncated_branch=$(echo "$BRANCH_NAME" | tr '[:upper:]' '[:lower:]' | tr -s ' _/[]().' '-' | cut -c1-9 | sed 's/-$//')
-        echo "release_name=${truncated_branch}" >> $GITHUB_OUTPUT
-        echo "release_name being exported: ${truncated_branch}"
+        set -euo pipefail
+        suffix="pr${PR_NUMBER:?PR number is required for a unique release name}"
+        slug=$(echo "${BRANCH_NAME#*/}" | tr '[:upper:]' '[:lower:]' | tr -cs 'a-z0-9' '-' | cut -c1-$((23 - ${#suffix})) | sed 's/^[^a-z]*//; s/-*$//')
+        release_name="${slug:+${slug}-}${suffix}"
+        echo "release_name=${release_name}" >> "$GITHUB_OUTPUT"
+        echo "release_name being exported: ${release_name}"

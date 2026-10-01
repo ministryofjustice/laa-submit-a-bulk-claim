@@ -2,6 +2,11 @@ name: Delete UAT preview deployment (manual)
 
 on:
   workflow_dispatch:
+    inputs:
+      release_name:
+        description: "Helm release to remove, exactly as `helm list -n <namespace>` shows it"
+        required: true
+        type: string
   pull_request:
     types:
       - closed
@@ -23,6 +28,7 @@ jobs:
       - name: Cleanup uat
         uses: ./.github/actions/cleanup_branch
         with:
+          release-name: ${{ inputs.release_name }}
           kube-cert: ${{ secrets.KUBE_CERT }}
           kube-token: ${{ secrets.KUBE_TOKEN }}
           kube-cluster: ${{ secrets.KUBE_CLUSTER }}
