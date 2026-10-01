@@ -35,7 +35,8 @@ class SubmissionSummaryMapperTest {
         Arguments.of(SubmissionStatus.VALIDATION_FAILED, "Invalid"),
         Arguments.of(SubmissionStatus.CREATED, "In progress"),
         Arguments.of(SubmissionStatus.READY_FOR_VALIDATION, "In progress"),
-        Arguments.of(SubmissionStatus.VALIDATION_IN_PROGRESS, "In progress"));
+        Arguments.of(SubmissionStatus.VALIDATION_IN_PROGRESS, "In progress"),
+        Arguments.of(SubmissionStatus.VALIDATED_PENDING_APPROVAL, "Not submitted"));
   }
 
   @ParameterizedTest(

@@ -37,6 +37,7 @@ public interface SubmissionSummaryMapper {
     }
     return switch (status) {
       case VALIDATION_SUCCEEDED -> "Submitted";
+      case VALIDATED_PENDING_APPROVAL -> "Not submitted";
       case VALIDATION_FAILED, REPLACED -> "Invalid";
       case CREATED, READY_FOR_VALIDATION, VALIDATION_IN_PROGRESS -> "In progress";
     };

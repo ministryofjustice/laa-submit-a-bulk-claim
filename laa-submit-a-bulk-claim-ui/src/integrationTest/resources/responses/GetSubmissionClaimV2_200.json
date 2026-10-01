@@ -110,5 +110,6 @@
   "derived_claim_status":null,
   "total_warnings": 0,
   "fee_calculation_response": null,
+  "effective_total_value": null,
   "date_submitted": "2025-08-14T09:30:00Z"
 }

@@ -111,6 +111,7 @@
     "derived_claim_status": null,
     "total_warnings" : 0,
     "fee_calculation_response" : null,
+    "effective_total_value" : null,
     "date_submitted" : null
   }, {
     "id" : "019b13c8-0d40-7b6d-a43e-9c9958496268",
@@ -224,6 +225,7 @@
     "derived_claim_status": null,
     "total_warnings" : 0,
     "fee_calculation_response" : null,
+    "effective_total_value" : null,
     "date_submitted" : null
   } ],
   "total_pages" : 500,

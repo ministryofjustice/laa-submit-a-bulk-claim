@@ -59,7 +59,7 @@ sourceSets {
 }
 
 dependencies {
-    implementation 'uk.gov.justice.laa.datastewardship.payments:data-claims-api-models:1.13.2'
+    implementation 'uk.gov.justice.laa.datastewardship.payments:data-claims-api-models:1.28.0'
     compileOnly 'io.swagger.core.v3:swagger-annotations:2.2.30'
 
     implementation 'org.springframework.boot:spring-boot-starter-cache'
