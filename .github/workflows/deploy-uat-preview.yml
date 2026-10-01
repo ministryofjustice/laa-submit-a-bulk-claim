@@ -96,6 +96,8 @@ jobs:
     permissions:
       id-token: write
       contents: read
+    with:
+      branch: ${{ github.sha }}
     secrets:
       pat_token: ${{ secrets.PAT_TOKEN }}
       kube_cert: ${{ secrets.KUBE_CERT }}

@@ -25,7 +25,7 @@ import uk.gov.justice.laa.payments.submit.e2e.persistence.dao.ValidationMessageL
 class ExportE2ETest extends JdbcTemplateBaseTest {
 
   private static final String USER_ID = "e2e-test-user";
-  private static final String LEGAL_HELP_FIRST_COLUMN = "Providers LAA Office Number";
+  private static final String LEGAL_HELP_FIRST_COLUMN = "Client name";
   private static final int CLAIM_COUNT = 3;
   private static final int MESSAGE_COUNT = 2;
 

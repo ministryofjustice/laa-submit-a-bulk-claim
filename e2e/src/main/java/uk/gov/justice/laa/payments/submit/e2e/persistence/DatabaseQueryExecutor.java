@@ -32,6 +32,8 @@ public class DatabaseQueryExecutor {
     jdbcTemplate.update("DELETE FROM claims.client");
     jdbcTemplate.update("DELETE FROM claims.claim_amendment");
     jdbcTemplate.update("DELETE FROM claims.claim_case");
+    jdbcTemplate.update("DELETE FROM claims.inquest_detail");
+    jdbcTemplate.update("DELETE FROM claims.claim_interested_department");
     jdbcTemplate.update("DELETE FROM claims.claim");
     jdbcTemplate.update("DELETE FROM claims.submission");
     jdbcTemplate.update("DELETE FROM claims.bulk_submission");
