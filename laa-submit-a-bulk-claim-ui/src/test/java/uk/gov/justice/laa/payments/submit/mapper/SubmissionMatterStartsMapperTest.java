@@ -3,8 +3,9 @@ package uk.gov.justice.laa.payments.submit.mapper;
 import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.CategoryCode;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.MatterStartGet;
@@ -21,14 +22,15 @@ class SubmissionMatterStartsMapperTest {
     mapper = new SubmissionMatterStartsMapperImpl();
   }
 
-  @Test
+  @ParameterizedTest
+  @EnumSource(CategoryCode.class)
   @DisplayName("Should map submission matter starts")
-  void shouldMapSubmissionMatterStarts() {
+  void shouldMapSubmissionMatterStarts(CategoryCode categoryCode) {
     // Given
     MatterStartGet matterStartsFields =
         MatterStartGet.builder()
             .scheduleReference("Schedule Reference")
-            .categoryCode(CategoryCode.AAP)
+            .categoryCode(categoryCode)
             .procurementAreaCode("Procurement Area Code")
             .accessPointCode("Access Point Code")
             .deliveryLocation("Delivery Location")
@@ -39,7 +41,7 @@ class SubmissionMatterStartsMapperTest {
     // Then
     SoftAssertions.assertSoftly(
         softAssertions -> {
-          softAssertions.assertThat(result.description()).isEqualTo(CategoryCode.AAP.toString());
+          softAssertions.assertThat(result.description()).isEqualTo(categoryCode.toString());
           softAssertions.assertThat(result.numberOfMatterStarts()).isEqualTo(23);
         });
   }
