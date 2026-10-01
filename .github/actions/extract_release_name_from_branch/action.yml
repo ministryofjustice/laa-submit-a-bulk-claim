@@ -22,7 +22,7 @@ runs:
       run: |
         set -euo pipefail
         suffix="pr${PR_NUMBER:?PR number is required for a unique release name}"
-        slug=$(echo "${BRANCH_NAME#*/}" | tr '[:upper:]' '[:lower:]' | tr -cs 'a-z0-9' '-' | cut -c1-$((24 - ${#suffix})) | sed 's/^[^a-z]*//; s/-*$//')
+        slug=$(echo "${BRANCH_NAME#*/}" | tr '[:upper:]' '[:lower:]' | tr -cs 'a-z0-9' '-' | cut -c1-$((23 - ${#suffix})) | sed 's/^[^a-z]*//; s/-*$//')
         release_name="${slug:+${slug}-}${suffix}"
         echo "release_name=${release_name}" >> "$GITHUB_OUTPUT"
         echo "release_name being exported: ${release_name}"
