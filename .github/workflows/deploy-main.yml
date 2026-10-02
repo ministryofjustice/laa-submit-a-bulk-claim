@@ -27,10 +27,11 @@ jobs:
     needs: [ semgrep-scan ]
     uses: ./.github/workflows/build.yml
     permissions:
-      contents: read
+      contents: write
       packages: write
     with:
       branch: ${{ github.sha }}
+      release_type: ${{ github.event.inputs.release_type || '' }}
       java_version: 25
     secrets:
       PAT_TOKEN: ${{ secrets.PAT_TOKEN }}
@@ -93,7 +94,7 @@ jobs:
       security-events: write
     with:
       dockerfile_path: 'Dockerfile'
-      image_version: ${{ format('{0}-{1}', vars.IMAGE_PREFIX, github.sha) }}
+      image_version: ${{ format('{0}-{1}', vars.IMAGE_PREFIX, needs.build.outputs.published_artifact_version) }}
       java_version: 25
       image_scan: 'false'
     secrets:

@@ -11,6 +11,13 @@ on:
         required: false
         type: string
         default: ''
+      release_type:
+        description: >
+          Release type: major | minor | patch | none. Only used when no version is supplied.
+          Leave empty to auto-detect from Conventional Commits on main.
+        required: false
+        type: string
+        default: ''
       java_version:
         required: false
         type: string
@@ -28,9 +35,6 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       published_artifact_version: ${{ steps.capture-version.outputs.published_artifact_version }}
-    permissions:
-      contents: read
-      packages: write
 
     steps:
       - name: Checkout source code
@@ -39,6 +43,36 @@ jobs:
           ref: ${{ inputs.branch }}
           fetch-depth: 0
           fetch-tags: true
+
+      - name: Compute version
+        id: compute
+        if: >-
+          ${{
+            inputs.version == '' &&
+            inputs.release_type != 'none' &&
+            (inputs.release_type != '' || github.ref == 'refs/heads/main')
+          }}
+        uses: ministryofjustice/laa-ccms-common-workflows/.github/actions/compute-version@035ee98ca0047659f865532ea6234abd69529ee8 # v2.5.0
+        with:
+          bump: ${{ inputs.release_type }}
+
+      - name: Resolve version
+        id: resolve-version
+        env:
+          INPUT_VERSION: ${{ inputs.version }}
+          NEXT_VERSION: ${{ steps.compute.outputs.next_version }}
+        run: |
+          set -euo pipefail
+          # Priority: supplied version > computed release version > gradle.properties
+          if [ -n "${INPUT_VERSION:-}" ]; then
+            VERSION="$INPUT_VERSION"
+          elif [ -n "${NEXT_VERSION:-}" ]; then
+            VERSION="${NEXT_VERSION#v}"
+          else
+            VERSION=$(grep "^version=" gradle.properties | cut -d'=' -f2)
+          fi
+          echo "version=${VERSION}" >> "$GITHUB_OUTPUT"
+          echo "Resolved version: ${VERSION}"
 
       - name: Set up JDK ${{ inputs.java_version }}
         uses: actions/setup-java@de7274f081f381c8f8158605e0321c36c376e2e6 # v6.0.1
@@ -57,14 +91,10 @@ jobs:
       - name: Assemble app and run checkstyle/spotless
         env:
           GITHUB_TOKEN: ${{ secrets.PAT_TOKEN }}
-          VERSION: ${{ inputs.version }}
+          VERSION: ${{ steps.resolve-version.outputs.version }}
         run: |
           set -euo pipefail
-          BUILD_ARGS=(":laa-submit-a-bulk-claim-ui:assemble" ":laa-submit-a-bulk-claim-ui:checkstyleAll" ":laa-submit-a-bulk-claim-ui:spotlessCheck")
-          if [ -n "${VERSION:-}" ]; then
-            BUILD_ARGS+=("-Pversion=$VERSION")
-          fi
-          ./gradlew "${BUILD_ARGS[@]}"
+          ./gradlew :laa-submit-a-bulk-claim-ui:assemble :laa-submit-a-bulk-claim-ui:checkstyleAll :laa-submit-a-bulk-claim-ui:spotlessCheck -Pversion="$VERSION"
 
       - name: Upload checkstyle report
         if: always()
@@ -75,26 +105,60 @@ jobs:
           retention-days: 14
           if-no-files-found: warn
 
+      - name: Create Git tag
+        id: create-tag
+        if: ${{ steps.compute.outputs.next_version != '' }}
+        env:
+          GTAG: ${{ steps.compute.outputs.next_version }}
+        run: |
+          set -eu
+          git config user.name  "github-actions-bot[bot]"
+          git config user.email "github-actions-bot[bot]@users.noreply.github.com"
+          if git ls-remote --tags origin | grep -q "refs/tags/${GTAG}$"; then
+            echo "Tag ${GTAG} already exists on remote. Skipping."
+            echo "gtag=${GTAG}" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          echo "Creating Git tag [${GTAG}]"
+          git tag -a "$GTAG" -m "Release ${GTAG}"
+          git push origin "$GTAG" || {
+            EXIT=$?
+            if git ls-remote --tags origin | grep -q "refs/tags/${GTAG}$"; then
+              echo "Tag ${GTAG} was already pushed (race condition). Skipping."
+            else
+              echo "::error::Failed to push tag ${GTAG} (exit ${EXIT})"
+              exit $EXIT
+            fi
+          }
+          echo "gtag=${GTAG}" >> "$GITHUB_OUTPUT"
+
       - name: Publish package to GitHub Packages
         env:
           GITHUB_TOKEN: ${{ secrets.PAT_TOKEN }}
-          VERSION: ${{ inputs.version }}
+          VERSION: ${{ steps.resolve-version.outputs.version }}
         run: |
           set -euo pipefail
-          PUBLISH_ARGS=()
-          if [ -n "${VERSION:-}" ]; then
-            PUBLISH_ARGS+=("-Pversion=$VERSION")
+          ./gradlew :laa-submit-a-bulk-claim-ui:publish -Pversion="$VERSION"
+
+      - name: Create GitHub Release
+        if: ${{ steps.create-tag.outputs.gtag != '' }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GTAG: ${{ steps.create-tag.outputs.gtag }}
+        run: |
+          set -eu
+          if gh release view "$GTAG" >/dev/null 2>&1; then
+            echo "Release ${GTAG} already exists. Skipping."
+            exit 0
           fi
-          ./gradlew :laa-submit-a-bulk-claim-ui:publish "${PUBLISH_ARGS[@]}"
+          echo "Creating GitHub Release [${GTAG}]"
+          gh release create "$GTAG" --verify-tag --title "$GTAG" --generate-notes
 
       - name: Capture published versions
         id: capture-version
         env:
-          INPUT_VERSION: ${{ inputs.version }}
+          VERSION: ${{ steps.resolve-version.outputs.version }}
         run: |
           set -euo pipefail
-          VERSION="${INPUT_VERSION:-}"
-          if [ -z "$VERSION" ]; then
-            VERSION=$(grep "^version=" gradle.properties | cut -d'=' -f2)
-          fi
           echo "published_artifact_version=${VERSION}" >> "$GITHUB_OUTPUT"
+          echo "Artifact version: \`${VERSION}\`" >> "$GITHUB_STEP_SUMMARY"
