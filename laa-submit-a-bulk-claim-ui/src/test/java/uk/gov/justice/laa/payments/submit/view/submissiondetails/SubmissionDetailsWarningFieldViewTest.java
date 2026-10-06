@@ -23,6 +23,7 @@ import org.jsoup.select.Elements;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.springframework.security.oauth2.core.oidc.user.OidcUser;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.AreaOfLaw;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.Page;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionResponse;
@@ -515,7 +516,7 @@ class SubmissionDetailsWarningFieldViewTest extends SubmissionDetailsViewTestBas
             new SubmissionClaimsDetails(
                 List.of(SubmissionClaimRow.builder().build()), pagination, BigDecimal.ONE));
     when(submissionMessagesService.getMessagesWithClaimSummary(
-            any(), any(), any(), any(), anyInt(), anyInt(), any()))
+            any(OidcUser.class), any(), any(), any(), anyInt(), anyInt(), any()))
         .thenReturn(
             new MessagesSummary(
                 List.of(
@@ -558,7 +559,7 @@ class SubmissionDetailsWarningFieldViewTest extends SubmissionDetailsViewTestBas
             new SubmissionClaimsDetails(
                 List.of(SubmissionClaimRow.builder().build()), claimPagination, BigDecimal.ONE));
     when(submissionMessagesService.getMessagesWithClaimSummary(
-            any(), any(), any(), any(), anyInt(), anyInt(), any()))
+            any(OidcUser.class), any(), any(), any(), anyInt(), anyInt(), any()))
         .thenReturn(
             new MessagesSummary(
                 List.of(

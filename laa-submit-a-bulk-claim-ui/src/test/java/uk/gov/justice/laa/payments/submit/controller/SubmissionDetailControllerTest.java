@@ -28,6 +28,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
 import org.springframework.context.annotation.Import;
+import org.springframework.security.oauth2.core.oidc.user.OidcUser;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.assertj.MockMvcTester;
 import org.springframework.test.web.servlet.assertj.MvcTestResult;
@@ -131,7 +132,7 @@ class SubmissionDetailControllerTest extends BaseControllerTest {
                   "Legal aid",
                   OffsetDateTime.of(2025, 1, 1, 10, 10, 10, 0, ZoneOffset.UTC)));
       when(submissionMessagesService.getMessagesWithClaimSummary(
-              any(), any(), any(), any(), anyInt(), anyInt(), any()))
+              any(OidcUser.class), any(), any(), any(), anyInt(), anyInt(), any()))
           .thenReturn(
               new MessagesSummary(Collections.emptyList(), 0, 0, pagination, MessagesSource.CLAIM));
       when(submissionClaimDetailsBuilder.build(eq(submissionResponse), anyInt(), anyInt(), any()))
@@ -176,7 +177,8 @@ class SubmissionDetailControllerTest extends BaseControllerTest {
                   new BigDecimal("100.50"),
                   "Legal aid",
                   OffsetDateTime.of(2025, 1, 1, 10, 10, 10, 0, ZoneOffset.UTC)));
-      when(submissionMessagesService.getErrorMessages(any(), any(), anyInt(), anyInt(), any()))
+      when(submissionMessagesService.getErrorMessages(
+              any(OidcUser.class), any(), anyInt(), anyInt(), any()))
           .thenReturn(
               new MessagesSummary(Collections.emptyList(), 0, 0, pagination, MessagesSource.CLAIM));
       when(submissionMatterStartsDetailsService.getAll(any()))
@@ -223,7 +225,7 @@ class SubmissionDetailControllerTest extends BaseControllerTest {
           .thenReturn(
               new SubmissionClaimsDetails(Collections.emptyList(), pagination, BigDecimal.ZERO));
       when(submissionMessagesService.getMessagesWithClaimSummary(
-              any(), any(), any(), any(), anyInt(), anyInt(), any()))
+              any(OidcUser.class), any(), any(), any(), anyInt(), anyInt(), any()))
           .thenReturn(
               new MessagesSummary(Collections.emptyList(), 0, 0, pagination, MessagesSource.CLAIM));
       when(submissionMatterStartsDetailsService.getAll(any())).thenReturn(matterTypes);
@@ -270,7 +272,7 @@ class SubmissionDetailControllerTest extends BaseControllerTest {
           .thenReturn(
               new SubmissionClaimsDetails(Collections.emptyList(), pagination, BigDecimal.ZERO));
       when(submissionMessagesService.getMessagesWithClaimSummary(
-              any(), any(), any(), any(), anyInt(), anyInt(), any()))
+              any(OidcUser.class), any(), any(), any(), anyInt(), anyInt(), any()))
           .thenReturn(
               new MessagesSummary(
                   List.of(
@@ -343,7 +345,7 @@ class SubmissionDetailControllerTest extends BaseControllerTest {
           .thenReturn(
               new SubmissionClaimsDetails(Collections.emptyList(), pagination, BigDecimal.TEN));
       when(submissionMessagesService.getMessagesWithClaimSummary(
-              any(), any(), any(), any(), anyInt(), anyInt(), any()))
+              any(OidcUser.class), any(), any(), any(), anyInt(), anyInt(), any()))
           .thenReturn(
               new MessagesSummary(Collections.emptyList(), 0, 0, pagination, MessagesSource.CLAIM));
 
@@ -464,7 +466,7 @@ class SubmissionDetailControllerTest extends BaseControllerTest {
               new SubmissionClaimsDetails(Collections.emptyList(), pagination, BigDecimal.ZERO));
 
       when(submissionMessagesService.getMessagesWithClaimSummary(
-              any(), any(), any(), any(), anyInt(), anyInt(), any()))
+              any(OidcUser.class), any(), any(), any(), anyInt(), anyInt(), any()))
           .thenReturn(
               new MessagesSummary(Collections.emptyList(), 0, 0, pagination, MessagesSource.CLAIM));
 
@@ -509,7 +511,7 @@ class SubmissionDetailControllerTest extends BaseControllerTest {
               new SubmissionClaimsDetails(Collections.emptyList(), pagination, BigDecimal.ZERO));
 
       when(submissionMessagesService.getMessagesWithClaimSummary(
-              any(), any(), any(), any(), anyInt(), anyInt(), any()))
+              any(OidcUser.class), any(), any(), any(), anyInt(), anyInt(), any()))
           .thenReturn(
               new MessagesSummary(Collections.emptyList(), 0, 0, pagination, MessagesSource.CLAIM));
 

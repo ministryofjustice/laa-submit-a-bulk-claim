@@ -24,6 +24,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.springframework.security.oauth2.core.oidc.user.OidcUser;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.Page;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionResponse;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionStatus;
@@ -128,7 +129,7 @@ class SubmissionDetailsCrimeLowerViewTest extends SubmissionDetailsViewTestBase 
     Page messagesPagination =
         Page.builder().number(0).totalPages(1).size(PAGE_SIZE).totalElements(1).build();
     when(submissionMessagesService.getMessagesWithClaimSummary(
-            any(), any(), any(), any(), anyInt(), anyInt(), any()))
+            any(OidcUser.class), any(), any(), any(), anyInt(), anyInt(), any()))
         .thenReturn(
             new MessagesSummary(
                 List.of(

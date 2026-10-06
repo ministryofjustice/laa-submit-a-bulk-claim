@@ -89,7 +89,7 @@ public final class ClaimDetailController {
     model.addAttribute("isAssessedColumnEnabled", featureFlagsConfig.getIsAssessedColumnEnabled());
 
     final MessagesSummary messagesSummary =
-        submissionMessagesService.getAllWarningMessages(user, submissionId, claimId);
+        submissionMessagesService.getAllWarningMessages(submissionId, claimId);
     model.addAttribute("claimMessages", messagesSummary);
 
     return "pages/view-claim-detail";
@@ -132,7 +132,7 @@ public final class ClaimDetailController {
     model.addAttribute("claimSummary", claimSummaryMapper.toClaimSummary(claimResponse, areaOfLaw));
 
     final MessagesSummary messagesSummary =
-        submissionMessagesService.getAllWarningMessages(user, submissionId, claimId);
+        submissionMessagesService.getAllWarningMessages(submissionId, claimId);
     model.addAttribute("claimMessages", messagesSummary);
 
     return "pages/view-claim-detail-old";
