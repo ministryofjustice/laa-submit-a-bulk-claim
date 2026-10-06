@@ -8,6 +8,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Primary;
 import org.springframework.web.client.RestClient;
 import uk.gov.justice.laa.payments.submit.metrics.BulkClaimMetricService;
+import uk.gov.justice.laa.payments.submit.util.BulkLoadSpreadsheetFilenameUtil;
 
 @TestConfiguration
 public class ClaimsApiPactTestConfig {
@@ -23,8 +24,15 @@ public class ClaimsApiPactTestConfig {
   }
 
   @Bean
-  BulkClaimMetricService bulkClaimMetricService(PrometheusRegistry prometheusRegistry) {
-    return new BulkClaimMetricService(prometheusRegistry);
+  BulkLoadSpreadsheetFilenameUtil bulkLoadSpreadsheetFilenameUtil() {
+    return new BulkLoadSpreadsheetFilenameUtil();
+  }
+
+  @Bean
+  BulkClaimMetricService bulkClaimMetricService(
+      PrometheusRegistry prometheusRegistry,
+      BulkLoadSpreadsheetFilenameUtil bulkLoadSpreadsheetFilenameUtil) {
+    return new BulkClaimMetricService(prometheusRegistry, bulkLoadSpreadsheetFilenameUtil);
   }
 
   @Primary
