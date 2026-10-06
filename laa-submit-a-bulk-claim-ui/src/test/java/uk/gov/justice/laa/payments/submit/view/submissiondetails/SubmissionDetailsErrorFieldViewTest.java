@@ -23,6 +23,7 @@ import org.jsoup.select.Elements;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.springframework.security.oauth2.core.oidc.user.OidcUser;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.AreaOfLaw;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.Page;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionResponse;
@@ -638,7 +639,8 @@ class SubmissionDetailsErrorFieldViewTest extends SubmissionDetailsViewTestBase 
                 BigDecimal.ONE,
                 areaOfLaw.getValue(),
                 OffsetDateTime.of(2025, 1, 1, 10, 10, 10, 0, ZoneOffset.UTC)));
-    when(submissionMessagesService.getErrorMessages(any(), any(), anyInt(), anyInt(), any()))
+    when(submissionMessagesService.getErrorMessages(
+            any(OidcUser.class), any(), anyInt(), anyInt(), any()))
         .thenReturn(
             new MessagesSummary(
                 List.of(MessageRow.builder().build()), 0, 0, pagination, messagesSource));
@@ -675,7 +677,8 @@ class SubmissionDetailsErrorFieldViewTest extends SubmissionDetailsViewTestBase 
                 BigDecimal.ZERO,
                 CRIME_LOWER.getValue(),
                 OffsetDateTime.of(2025, 1, 1, 10, 10, 0, 0, ZoneOffset.UTC)));
-    when(submissionMessagesService.getErrorMessages(any(), any(), anyInt(), anyInt(), any()))
+    when(submissionMessagesService.getErrorMessages(
+            any(OidcUser.class), any(), anyInt(), anyInt(), any()))
         .thenReturn(
             new MessagesSummary(
                 List.of(

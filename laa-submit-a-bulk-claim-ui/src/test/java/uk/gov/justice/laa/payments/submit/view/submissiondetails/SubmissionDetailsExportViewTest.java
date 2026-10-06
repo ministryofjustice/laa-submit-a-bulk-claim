@@ -15,6 +15,7 @@ import java.time.ZoneOffset;
 import java.util.List;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
+import org.springframework.security.oauth2.core.oidc.user.OidcUser;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.AreaOfLaw;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.Page;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionResponse;
@@ -99,7 +100,8 @@ class SubmissionDetailsExportViewTest extends SubmissionDetailsViewTestBase {
         new MessagesSummary(List.of(), 0, 0, pagination, MessagesSource.CLAIM);
     when(submissionMessagesService.getMessageCounts(submissionId, null, WARNING))
         .thenReturn(messagesSummary);
-    when(submissionMessagesService.getErrorMessages(any(), any(), anyInt(), anyInt(), any()))
+    when(submissionMessagesService.getErrorMessages(
+            any(OidcUser.class), any(), anyInt(), anyInt(), any()))
         .thenReturn(messagesSummary);
 
     when(submissionMatterStartsDetailsService.getAll(any())).thenReturn(List.of());

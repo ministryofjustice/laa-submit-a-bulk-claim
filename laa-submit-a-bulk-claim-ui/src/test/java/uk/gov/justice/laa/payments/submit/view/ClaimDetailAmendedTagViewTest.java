@@ -67,7 +67,7 @@ class ClaimDetailAmendedTagViewTest extends ViewTestBase {
 
     when(dataClaimsRestClient.getClaimHistory(eq(claimId)))
         .thenReturn(Mono.just(ClaimHistoryResultSet.builder().events(List.of()).build()));
-    when(submissionMessagesService.getAllWarningMessages(OIDC_USER, submissionId, claimId))
+    when(submissionMessagesService.getAllWarningMessages(submissionId, claimId))
         .thenReturn(MessagesSummary.builder().messages(List.of()).build());
     when(featureFlagsConfig.getIsAlternativeClaimViewEnabled()).thenReturn(true);
   }

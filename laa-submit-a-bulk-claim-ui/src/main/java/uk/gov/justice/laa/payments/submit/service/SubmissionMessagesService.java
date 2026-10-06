@@ -31,15 +31,13 @@ public class SubmissionMessagesService {
   private final BulkClaimImportSummaryMapper bulkClaimImportSummaryMapper;
   private final PaginationUtil paginationUtil;
 
-  // TODO: Remove oidcUser
   public MessagesSummary getErrorMessages(
       OidcUser oidcUser, UUID submissionId, int page, int size, String sort) {
     return getMessagesWithClaimSummary(
         oidcUser, submissionId, null, ValidationMessageType.ERROR, page, size, sort);
   }
 
-  // TODO: Remove oidcUser
-  public MessagesSummary getAllWarningMessages(OidcUser oidcUser, UUID submissionId, UUID claimId) {
+  public MessagesSummary getAllWarningMessages(UUID submissionId, UUID claimId) {
     return getMessages(submissionId, claimId, ValidationMessageType.WARNING, null, null, null);
   }
 
