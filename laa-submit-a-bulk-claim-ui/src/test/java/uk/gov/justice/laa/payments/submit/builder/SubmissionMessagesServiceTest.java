@@ -69,10 +69,13 @@ class SubmissionMessagesServiceTest {
             "client_surname,asc"))
         .thenReturn(Mono.just(errorResponse));
 
+    when(claimService.getClaimV2(submissionId, claimId, OIDC_USER))
+        .thenReturn(new ClaimResponseV2());
+
     MessageRow mappedError =
         new MessageRow(
             submissionId,
-            Optional.empty(),
+            Optional.of(claimId),
             null,
             null,
             null,
@@ -95,7 +98,7 @@ class SubmissionMessagesServiceTest {
     assertThat(result.totalMessageCount()).isEqualTo(1);
     assertThat(result.totalClaimsWithErrors()).isEqualTo(1);
     assertThat(result.messagesSource()).isEqualTo(MessagesSource.CLAIM);
-    verifyNoInteractions(claimService);
+    verify(claimService, times(1)).getClaimV2(submissionId, claimId, OIDC_USER);
   }
 
   @Test
