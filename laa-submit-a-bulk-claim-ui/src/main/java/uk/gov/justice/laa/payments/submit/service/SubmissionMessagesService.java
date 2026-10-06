@@ -34,7 +34,8 @@ public class SubmissionMessagesService {
   // TODO: Remove oidcUser
   public MessagesSummary getErrorMessages(
       OidcUser oidcUser, UUID submissionId, int page, int size, String sort) {
-    return getMessages(submissionId, null, ValidationMessageType.ERROR, page, size, sort);
+    return getMessagesWithClaimSummary(
+        oidcUser, submissionId, null, ValidationMessageType.ERROR, page, size, sort);
   }
 
   // TODO: Remove oidcUser
