@@ -27,14 +27,6 @@ ext['tomcat.version'] = '11.0.25'
 
 dependencyManagement {
     dependencies {
-        dependency 'org.springframework:spring-beans:7.0.9'
-        dependency 'org.mock-server:mockserver-client-java:8.0.0'
-        dependency 'org.mock-server:mockserver-core:8.0.0'
-    }
-}
-
-dependencyManagement {
-    dependencies {
         dependencySet(group: 'io.sentry', version: versions.sentry) {
             entry 'sentry-spring-boot-starter'
             entry 'sentry-log4j2'
