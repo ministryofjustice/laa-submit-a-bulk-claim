@@ -1,9 +1,6 @@
 # Runtime stage
 FROM amazoncorretto:25.0.4-alpine3.24 AS base
 
-# Fix SNYK-ALPINE324-ZLIB-20541555 / CVE-2026-85091 (zlib 1.3.2-r1), not yet in the base image
-RUN apk upgrade --no-cache zlib
-
 # Set up working directory in the container
 RUN mkdir -p /opt/submit-a-bulk-claim/
 WORKDIR /opt/submit-a-bulk-claim/
