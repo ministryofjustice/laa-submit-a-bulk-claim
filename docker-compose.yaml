@@ -6,11 +6,6 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-      args:
-        - BUILD_SOURCE=internal
-      secrets:
-        - github_actor
-        - github_token
     environment:
       SERVER_MAX_FILE_SIZE: 50MB
       UPLOAD_MAX_FILE_SIZE: 10MB
