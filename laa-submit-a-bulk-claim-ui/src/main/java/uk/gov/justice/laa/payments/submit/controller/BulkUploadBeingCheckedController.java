@@ -1,6 +1,7 @@
 package uk.gov.justice.laa.payments.submit.controller;
 
 import static uk.gov.justice.laa.payments.submit.constants.SessionConstants.BULK_SUBMISSION_ID;
+import static uk.gov.justice.laa.payments.submit.constants.SessionConstants.ORIGINAL_FILENAME;
 import static uk.gov.justice.laa.payments.submit.constants.SessionConstants.SUBMISSION_ID;
 
 import java.util.List;
@@ -18,6 +19,7 @@ import uk.gov.justice.laa.dstew.payments.claimsdata.model.BulkSubmissionStatus;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.GetBulkSubmissionStatusById200Response;
 import uk.gov.justice.laa.payments.submit.client.DataClaimsRestClient;
 import uk.gov.justice.laa.payments.submit.exception.SubmitBulkClaimException;
+import uk.gov.justice.laa.payments.submit.metrics.BulkClaimMetricService;
 
 @Slf4j
 @Controller
@@ -25,6 +27,7 @@ import uk.gov.justice.laa.payments.submit.exception.SubmitBulkClaimException;
 public class BulkUploadBeingCheckedController {
 
   private final DataClaimsRestClient dataClaimsRestClient;
+  private final BulkClaimMetricService bulkClaimMetricService;
 
   private final List<BulkSubmissionStatus> completedStatuses =
       List.of(BulkSubmissionStatus.VALIDATION_SUCCEEDED, BulkSubmissionStatus.VALIDATION_FAILED);
@@ -40,7 +43,8 @@ public class BulkUploadBeingCheckedController {
   public String uploadBeingChecked(
       Model model,
       @SessionAttribute(name = SUBMISSION_ID, required = false) UUID submissionId,
-      @SessionAttribute(name = BULK_SUBMISSION_ID, required = false) UUID bulkSubmissionId) {
+      @SessionAttribute(name = BULK_SUBMISSION_ID, required = false) UUID bulkSubmissionId,
+      @SessionAttribute(name = ORIGINAL_FILENAME, required = false) String originalFilename) {
 
     if (submissionId == null || bulkSubmissionId == null) {
       log.info("Submission IDs not found in session, redirecting to landing page");
@@ -62,6 +66,7 @@ public class BulkUploadBeingCheckedController {
         return "pages/upload-being-checked";
       }
       if (completedStatuses.contains(bulkSubmissionStatus)) {
+        recordFilenameMetrics(originalFilename, bulkSubmissionStatus);
         return "redirect:/submissions/%s".formatted(submissionId.toString());
       }
       throw new SubmitBulkClaimException(
@@ -75,5 +80,14 @@ public class BulkUploadBeingCheckedController {
       }
       throw new SubmitBulkClaimException("Claims API returned an error", e);
     }
+  }
+
+  private void recordFilenameMetrics(String originalFilename, BulkSubmissionStatus outcome) {
+    if (originalFilename == null) {
+      log.debug("No original filename stashed in session, skipping filename metrics");
+      return;
+    }
+    bulkClaimMetricService.recordFileExtension(originalFilename, outcome);
+    bulkClaimMetricService.recordFileNamePattern(originalFilename, outcome);
   }
 }
