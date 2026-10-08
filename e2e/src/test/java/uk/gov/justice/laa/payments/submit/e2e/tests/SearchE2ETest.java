@@ -92,6 +92,28 @@ class SearchE2ETest extends JdbcTemplateBaseTest {
   }
 
   @Test
+  void clearSubmissionPeriodTypeahead() {
+    var landingPage = new LandingPagePage(page);
+    landingPage.getStartNowButton().click();
+
+    var uploadPage = new UploadPage(page);
+    uploadPage.getSearchLink().click();
+
+    var searchPage = new SearchPage(page);
+    searchPage.selectSubmissionPeriod("May 2026", "May 2026");
+    searchPage.getSearchButton().click();
+
+    searchPage.assertTotalSubmissions(1);
+    searchPage.assertSubmissionPeriodColumnValues("May 2026");
+
+    searchPage = new SearchPage(page);
+    searchPage.clearSubmissionPeriod();
+    searchPage.getSearchButton().click();
+
+    searchPage.assertTotalSubmissions(3);
+  }
+
+  @Test
   void sortBySubmissionPeriodHeader(){
     var landingPage = new LandingPagePage(page);
     landingPage.getStartNowButton().click();
