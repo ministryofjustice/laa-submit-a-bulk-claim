@@ -18,10 +18,10 @@ import org.springframework.stereotype.Component;
 public class BulkLoadSpreadsheetFilenameUtil {
 
   private static final Pattern MAC_PATTERN =
-      Pattern.compile("-mac-v(\\d+\\.\\d{2})\\.csv\\z", Pattern.CASE_INSENSITIVE);
+      Pattern.compile("-mac-v(\\d\\.\\d{2})\\.csv\\z", Pattern.CASE_INSENSITIVE);
 
   private static final Pattern STANDARD_PATTERN =
-      Pattern.compile("v(\\d+\\.\\d{2})\\.csv\\z", Pattern.CASE_INSENSITIVE);
+      Pattern.compile("v(\\d\\.\\d{2})\\.csv\\z", Pattern.CASE_INSENSITIVE);
 
   public BulkLoadSpreadsheetFilenameMatch detect(String filename) {
     if (filename == null || filename.isBlank()) {
