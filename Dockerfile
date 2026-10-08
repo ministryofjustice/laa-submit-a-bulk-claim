@@ -1,5 +1,5 @@
 # Runtime stage
-FROM amazoncorretto:25.0.4-alpine3.24 AS base
+FROM amazoncorretto:27.0.0-alpine3.24 AS base
 
 # Set up working directory in the container
 RUN mkdir -p /opt/submit-a-bulk-claim/
