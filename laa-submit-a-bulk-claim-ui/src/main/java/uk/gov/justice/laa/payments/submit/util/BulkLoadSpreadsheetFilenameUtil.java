@@ -12,7 +12,7 @@ import org.springframework.stereotype.Component;
  * CivilBulkload0P322FJAN2026_v2.00.csv}) which is ignored by this util — only the filename's suffix
  * is checked: {@code vN.NN.csv} (e.g. {@code ...v2.00.csv}) for the standard case, or {@code
  * -mac-vN.NN.csv} (e.g. {@code ...-mac-v1.42.csv}) for the Mac variant, which is being
- * decommissioned but some supplied may still use.
+ * decommissioned but some suppliers may still use.
  */
 @Component
 public class BulkLoadSpreadsheetFilenameUtil {
