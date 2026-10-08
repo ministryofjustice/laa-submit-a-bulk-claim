@@ -14,6 +14,7 @@ public class SearchPage extends BasePage {
   private final Locator areaOfLawSelect;
   private final Locator resultsHeading;
   private final Locator submissionPeriodHeader;
+  private final Locator submissionPeriodInput;
 
   public SearchPage(Page page) {
     super(page, "Search for a submission");
@@ -22,6 +23,22 @@ public class SearchPage extends BasePage {
     areaOfLawSelect = page.locator("#area-of-law");
     resultsHeading = page.locator("#results-heading");
     submissionPeriodHeader = page.locator("a:has-text('Submission period')");
+    submissionPeriodInput = page.locator("input#submission-period");
+  }
+
+  public void selectSubmissionPeriod(String query, String optionText) {
+    assertThat(submissionPeriodInput).isVisible();
+    submissionPeriodInput.fill(query);
+    page.locator("#submission-period__listbox li", new Page.LocatorOptions().setHasText(optionText))
+        .first()
+        .click();
+    assertThat(submissionPeriodInput).hasValue(optionText);
+  }
+
+  public void clearSubmissionPeriod() {
+    assertThat(submissionPeriodInput).isVisible();
+    submissionPeriodInput.clear();
+    submissionPeriodInput.blur();
   }
 
   public void clickOnLink(int index) {
