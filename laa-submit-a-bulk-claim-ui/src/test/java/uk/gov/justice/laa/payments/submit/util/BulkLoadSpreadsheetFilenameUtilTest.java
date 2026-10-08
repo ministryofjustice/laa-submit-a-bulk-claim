@@ -56,6 +56,7 @@ class BulkLoadSpreadsheetFilenameUtilTest {
         "claims-v2.00.xlsx",
         "claims-v2.csv",
         "claims-v2.0.csv",
+        "claims-v10.01.csv",
         "claims-v2.00.csv\n",
         "claims-mac-v1.42.csv\r\n"
       })
