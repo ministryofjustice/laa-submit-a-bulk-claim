@@ -14,7 +14,7 @@ dependencies {
     implementation 'com.fasterxml.jackson.core:jackson-databind:2.22.2'
     implementation 'org.slf4j:slf4j-simple:2.0.18'
     implementation 'org.springframework:spring-jdbc:7.0.9'
-    implementation 'org.postgresql:postgresql:42.7.12'
+    implementation 'org.postgresql:postgresql:42.7.14'
     testImplementation 'org.junit.jupiter:junit-jupiter-api:6.1.0'
     testImplementation 'org.junit.jupiter:junit-jupiter-params:6.1.0'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:6.1.0'
