@@ -90,7 +90,7 @@ class ClaimDetailViewFactoryTest {
 
   @Test
   @DisplayName(
-      "Should populate assessed from the given assessment, preserving reported and"
+      "Should populate currentCalculated from the given assessment, preserving reported and"
           + " initial calculated")
   void shouldMergeCurrentAssessmentIntoRows() {
     ClaimResponseV2 claimResponse = TestObjectCreator.buildClaimResponseV2(AreaOfLaw.CRIME_LOWER);
@@ -105,15 +105,15 @@ class ClaimDetailViewFactoryTest {
 
     ClaimFieldRow fixedFeeValueField =
         (ClaimFieldRow) result.valueRows().get(ClaimDetailsViewField.FIXED_FEE);
-    assertThat(fixedFeeValueField.assessed()).isEqualTo(new BigDecimal("999.99"));
+    assertThat(fixedFeeValueField.currentCalculated()).isEqualTo(new BigDecimal("999.99"));
     assertThat(fixedFeeValueField.initialCalculated()).isNotNull();
 
     ClaimFieldRow totalVatField =
         (ClaimFieldRow) result.totalRows().get(ClaimDetailsViewField.TOTAL_VAT);
-    assertThat(totalVatField.assessed()).isEqualTo(new BigDecimal("42.00"));
+    assertThat(totalVatField.currentCalculated()).isEqualTo(new BigDecimal("42.00"));
     ClaimFieldRow totalInclVatField =
         (ClaimFieldRow) result.totalRows().get(ClaimDetailsViewField.TOTAL_INCLUDING_VAT);
-    assertThat(totalInclVatField.assessed()).isEqualTo(new BigDecimal("242.00"));
+    assertThat(totalInclVatField.currentCalculated()).isEqualTo(new BigDecimal("242.00"));
   }
 
   @Test
@@ -130,7 +130,7 @@ class ClaimDetailViewFactoryTest {
         (ClaimFieldRow) result.valueRows().get(LegalHelpClaimDetailsViewField.LONDON_RATE);
 
     assertThat(londonRateField.reported()).isEqualTo(true);
-    assertThat(londonRateField.assessed()).isNull();
+    assertThat(londonRateField.currentCalculated()).isNull();
   }
 
   @Test
@@ -144,6 +144,6 @@ class ClaimDetailViewFactoryTest {
 
     ClaimFieldRow travelCostsField =
         (ClaimFieldRow) result.valueRows().get(CrimeLowerClaimDetailsViewField.TRAVEL_COSTS);
-    assertThat(travelCostsField.assessed()).isEqualTo(new BigDecimal("321.00"));
+    assertThat(travelCostsField.currentCalculated()).isEqualTo(new BigDecimal("321.00"));
   }
 }

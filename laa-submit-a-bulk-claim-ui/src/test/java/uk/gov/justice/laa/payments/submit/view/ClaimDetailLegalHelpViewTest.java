@@ -105,7 +105,7 @@ class ClaimDetailLegalHelpViewTest extends ViewTestBase {
     when(featureFlagsConfig.getIsAlternativeClaimViewEnabled()).thenReturn(true);
   }
 
-  /** Builds a ClaimFieldRow with distinct reported/initialCalculated/assessed values. */
+  /** Builds a ClaimFieldRow with distinct reported/initialCalculated/currentCalculated values. */
   private static ClaimFieldRow valueRow(int base) {
     return new ClaimFieldRow(
         BigDecimal.valueOf(base), BigDecimal.valueOf(base + 1), BigDecimal.valueOf(base + 2));

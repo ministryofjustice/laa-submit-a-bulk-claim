@@ -86,7 +86,7 @@ class ClaimDetailsMapperTest {
           .isEqualTo(claimResponse.getTravelWaitingCostsAmount());
       assertThat(result.getTravelCosts().initialCalculated())
           .isEqualTo(feeCalculation.getNetTravelCostsAmount());
-      assertThat(result.getTravelCosts().assessed())
+      assertThat(result.getTravelCosts().currentCalculated())
           .isEqualTo(currentAssessment.getNetTravelCostsAmount());
       assertThat(result.getWaitingCosts().reported())
           .isEqualTo(claimResponse.getNetWaitingCostsAmount());
@@ -168,7 +168,8 @@ class ClaimDetailsMapperTest {
           .isEqualTo(claimResponse.getTravelWaitingCostsAmount());
       assertThat(result.getTravelAndWaitingCosts().initialCalculated())
           .isEqualTo(feeCalculation.getTravelAndWaitingCostsAmount());
-      assertThat(result.getTravelAndWaitingCosts().assessed()).isEqualTo(new BigDecimal("125.50"));
+      assertThat(result.getTravelAndWaitingCosts().currentCalculated())
+          .isEqualTo(new BigDecimal("125.50"));
       assertThat(result.getDetentionTravelWaitingCosts().reported())
           .isEqualTo(claimResponse.getDetentionTravelWaitingCostsAmount());
       assertThat(result.getDetentionTravelWaitingCosts().initialCalculated())

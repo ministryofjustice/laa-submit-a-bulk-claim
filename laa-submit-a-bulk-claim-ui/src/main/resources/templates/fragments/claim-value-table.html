@@ -30,7 +30,7 @@
                 th:text="${@thymeleafUtils.getFormattedValue(row.initialCalculated()).resolve(#messages)}"/>
             <dd class="govuk-summary-list__value govuk-!-text-align-left"
                 th:if="${showCurrentCalculated}"
-                th:text="${@thymeleafUtils.getFormattedValue(row.assessed()).resolve(#messages)}"/>
+                th:text="${@thymeleafUtils.getFormattedValue(row.currentCalculated()).resolve(#messages)}"/>
             <dd class="govuk-summary-list__actions" th:if="${isAmended}">
               <strong class="govuk-tag govuk-tag--yellow" th:text="#{common.amended}"/>
             </dd>

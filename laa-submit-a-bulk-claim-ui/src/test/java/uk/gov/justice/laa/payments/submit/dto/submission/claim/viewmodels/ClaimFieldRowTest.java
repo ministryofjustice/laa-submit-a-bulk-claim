@@ -11,11 +11,12 @@ class ClaimFieldRowTest {
   @Test
   @DisplayName("Should report whether each value is present")
   void shouldReportPresenceOfEachValue() {
-    ClaimFieldRow claimFieldRow = new ClaimFieldRow("reported", "initial-calculated", "assessed");
+    ClaimFieldRow claimFieldRow =
+        new ClaimFieldRow("reported", "initial-calculated", "currentCalculated");
 
     assertThat(claimFieldRow.hasReportedValue()).isTrue();
     assertThat(claimFieldRow.hasInitialCalculatedValue()).isTrue();
-    assertThat(claimFieldRow.hasAssessedValue()).isTrue();
+    assertThat(claimFieldRow.hasCurrentCalculatedValue()).isTrue();
   }
 
   @Test
@@ -25,16 +26,17 @@ class ClaimFieldRowTest {
 
     assertThat(claimFieldRow.hasReportedValue()).isFalse();
     assertThat(claimFieldRow.hasInitialCalculatedValue()).isFalse();
-    assertThat(claimFieldRow.hasAssessedValue()).isFalse();
+    assertThat(claimFieldRow.hasCurrentCalculatedValue()).isFalse();
   }
 
   @Test
-  @DisplayName("Should expose the reported, initial calculated and assessed values")
+  @DisplayName("Should expose the reported, initial calculated and currentCalculated values")
   void shouldExposeValues() {
-    ClaimFieldRow claimFieldRow = new ClaimFieldRow("reported", "initial-calculated", "assessed");
+    ClaimFieldRow claimFieldRow =
+        new ClaimFieldRow("reported", "initial-calculated", "currentCalculated");
 
     assertThat(claimFieldRow.reported()).isEqualTo("reported");
     assertThat(claimFieldRow.initialCalculated()).isEqualTo("initial-calculated");
-    assertThat(claimFieldRow.assessed()).isEqualTo("assessed");
+    assertThat(claimFieldRow.currentCalculated()).isEqualTo("currentCalculated");
   }
 }

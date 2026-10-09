@@ -19,7 +19,8 @@ public enum LegalHelpClaimDetailsViewField implements ClaimViewField<LegalHelpCl
       LegalHelpClaimDetails::getMatterTypeCodeOne, MatterTypeUtil.partIdentifier(FIRST_PART)),
   MATTER_TYPE_2(
       LegalHelpClaimDetails::getMatterTypeCodeTwo, MatterTypeUtil.partIdentifier(SECOND_PART)),
-  // London rate not part of calculation - shown in the Values table with no calculated/assessed
+  // London rate not part of calculation - shown in the Values table with no
+  // calculated/currentCalculated
   // column, so it is wrapped as a ClaimFieldRow to match that table's row shape.
   LONDON_RATE(LegalHelpClaimDetailsViewField::londonRateRow, "claimSummaryFee.isLondonRate"),
 
