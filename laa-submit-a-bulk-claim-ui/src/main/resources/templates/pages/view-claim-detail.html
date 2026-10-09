@@ -94,10 +94,8 @@
       <th:block
           th:replace="~{fragments/claim-value-table :: claim-value-table(#{viewClaim.values.title}, ${claimDetailView.valueRows()}, ${showCurrentCalculated}, ${amendedFields})}"/>
 
-      <th:block th:if="${isAssessedColumnEnabled}">
-        <th:block
-            th:replace="~{fragments/claim-value-table :: claim-value-table(#{viewClaim.totalAllowedValue.title}, ${claimDetailView.totalRows()}, ${showCurrentCalculated}, ${amendedFields})}"/>
-      </th:block>
+      <th:block
+          th:replace="~{fragments/claim-value-table :: claim-value-table(#{viewClaim.totalAllowedValue.title}, ${claimDetailView.totalRows()}, ${showCurrentCalculated}, ${amendedFields})}"/>
 
     </div>
   </div>

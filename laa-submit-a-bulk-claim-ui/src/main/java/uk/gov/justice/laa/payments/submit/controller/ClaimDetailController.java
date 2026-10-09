@@ -86,8 +86,6 @@ public final class ClaimDetailController {
     model.addAttribute("banner", pageData.banner());
     model.addAttribute("amendedFields", pageData.amendedFields());
 
-    model.addAttribute("isAssessedColumnEnabled", featureFlagsConfig.getIsAssessedColumnEnabled());
-
     final MessagesSummary messagesSummary =
         submissionMessagesService.getAllWarningMessages(submissionId, claimId);
     model.addAttribute("claimMessages", messagesSummary);

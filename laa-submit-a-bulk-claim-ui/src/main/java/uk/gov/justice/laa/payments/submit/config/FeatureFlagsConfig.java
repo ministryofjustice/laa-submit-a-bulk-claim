@@ -15,7 +15,6 @@ public class FeatureFlagsConfig {
   private Boolean isNilSubmissionEnabled;
   private Boolean isAlternativeClaimViewEnabled;
   private Boolean isUpdatedCalculatedValueAvailable;
-  private Boolean isAssessedColumnEnabled;
 
   public void checkNilSubmissionEnabled() {
     if (!TRUE.equals(getIsNilSubmissionEnabled())) {
@@ -41,12 +40,6 @@ public class FeatureFlagsConfig {
     if (!TRUE.equals(getIsUpdatedCalculatedValueAvailable())) {
       throw new ResponseStatusException(
           HttpStatus.NOT_FOUND, "isUpdatedCalculatedValueAvailable is false");
-    }
-  }
-
-  public void checkAssessedColumnEnabled() {
-    if (!TRUE.equals(getIsAssessedColumnEnabled())) {
-      throw new ResponseStatusException(HttpStatus.NOT_FOUND, "isAssessedColumnEnabled is false");
     }
   }
 }
