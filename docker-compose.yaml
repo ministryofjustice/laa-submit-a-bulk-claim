@@ -23,7 +23,6 @@ services:
       JAVA_TOOL_OPTIONS: -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005
       IS_NIL_SUBMISSION_ENABLED: true
       IS_ALTERNATIVE_CLAIM_VIEW_ENABLED: true
-      IS_UPDATED_CALCULATED_VALUE_AVAILABLE: true
     # Information on why these ports here: https://github.com/ministryofjustice/laa-data-claims-parent#exposed-ports
     ports:
       - "8082:8082"
