@@ -35,7 +35,7 @@ class ClaimMapperHelperTest {
     assertThat(result.reported()).isNull();
     assertThat(result.initialCalculated())
         .isEqualTo(claimResponse.getFeeCalculationResponse().getFixedFeeAmount());
-    assertThat(result.assessed()).isEqualTo(currentAssessment.getFixedFeeAmount());
+    assertThat(result.currentCalculated()).isEqualTo(currentAssessment.getFixedFeeAmount());
   }
 
   @Test
@@ -47,7 +47,7 @@ class ClaimMapperHelperTest {
     assertThat(result.reported()).isEqualTo(claimResponse.getNetProfitCostsAmount());
     assertThat(result.initialCalculated())
         .isEqualTo(claimResponse.getFeeCalculationResponse().getNetProfitCostsAmount());
-    assertThat(result.assessed()).isEqualTo(currentAssessment.getNetProfitCostsAmount());
+    assertThat(result.currentCalculated()).isEqualTo(currentAssessment.getNetProfitCostsAmount());
   }
 
   @Test
@@ -58,7 +58,7 @@ class ClaimMapperHelperTest {
     assertThat(result.reported()).isEqualTo(claimResponse.getNetDisbursementAmount());
     assertThat(result.initialCalculated())
         .isEqualTo(claimResponse.getFeeCalculationResponse().getDisbursementAmount());
-    assertThat(result.assessed()).isEqualTo(currentAssessment.getDisbursementAmount());
+    assertThat(result.currentCalculated()).isEqualTo(currentAssessment.getDisbursementAmount());
   }
 
   @Test
@@ -70,7 +70,7 @@ class ClaimMapperHelperTest {
     assertThat(result.reported()).isEqualTo(claimResponse.getDisbursementsVatAmount());
     assertThat(result.initialCalculated())
         .isEqualTo(claimResponse.getFeeCalculationResponse().getDisbursementVatAmount());
-    assertThat(result.assessed()).isEqualTo(currentAssessment.getDisbursementVatAmount());
+    assertThat(result.currentCalculated()).isEqualTo(currentAssessment.getDisbursementVatAmount());
   }
 
   @Test
@@ -81,7 +81,7 @@ class ClaimMapperHelperTest {
     assertThat(result.reported()).isEqualTo(claimResponse.getIsVatApplicable());
     assertThat(result.initialCalculated())
         .isEqualTo(claimResponse.getFeeCalculationResponse().getVatIndicator());
-    assertThat(result.assessed()).isEqualTo(currentAssessment.getIsVatApplicable());
+    assertThat(result.currentCalculated()).isEqualTo(currentAssessment.getIsVatApplicable());
   }
 
   @Test
@@ -92,7 +92,7 @@ class ClaimMapperHelperTest {
     assertThat(result.reported()).isNull();
     assertThat(result.initialCalculated())
         .isEqualTo(claimResponse.getFeeCalculationResponse().getCalculatedVatAmount());
-    assertThat(result.assessed()).isEqualTo(currentAssessment.getAllowedTotalVat());
+    assertThat(result.currentCalculated()).isEqualTo(currentAssessment.getAllowedTotalVat());
   }
 
   @Test
@@ -103,18 +103,28 @@ class ClaimMapperHelperTest {
     assertThat(result.reported()).isNull();
     assertThat(result.initialCalculated())
         .isEqualTo(claimResponse.getFeeCalculationResponse().getTotalAmount());
-    assertThat(result.assessed()).isEqualTo(currentAssessment.getAllowedTotalInclVat());
+    assertThat(result.currentCalculated()).isEqualTo(currentAssessment.getAllowedTotalInclVat());
   }
 
   @Test
-  @DisplayName("Should tolerate a null current assessment")
+  @DisplayName("Should fall back to the initial calculation when there is no current assessment")
   void shouldTolerateNullAssessment() {
     ClaimFieldRow result = helper.disbursements(claimResponse, null);
 
     assertThat(result.reported()).isEqualTo(claimResponse.getNetDisbursementAmount());
     assertThat(result.initialCalculated())
         .isEqualTo(claimResponse.getFeeCalculationResponse().getDisbursementAmount());
-    assertThat(result.assessed()).isNull();
+    assertThat(result.currentCalculated()).isEqualTo(result.initialCalculated());
+  }
+
+  @Test
+  @DisplayName("Should fall back to the initial calculation when the assessment field is null")
+  void shouldFallBackWhenAssessmentFieldIsNull() {
+    currentAssessment.setDisbursementAmount(null);
+
+    ClaimFieldRow result = helper.disbursements(claimResponse, currentAssessment);
+
+    assertThat(result.currentCalculated()).isEqualTo(result.initialCalculated());
   }
 
   @Test
@@ -127,6 +137,6 @@ class ClaimMapperHelperTest {
 
     assertThat(result.reported()).isEqualTo(noFeeCalculation.getNetDisbursementAmount());
     assertThat(result.initialCalculated()).isNull();
-    assertThat(result.assessed()).isEqualTo(currentAssessment.getDisbursementAmount());
+    assertThat(result.currentCalculated()).isEqualTo(currentAssessment.getDisbursementAmount());
   }
 }

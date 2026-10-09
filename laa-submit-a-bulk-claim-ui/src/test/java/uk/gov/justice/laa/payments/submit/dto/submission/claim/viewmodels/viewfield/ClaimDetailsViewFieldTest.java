@@ -57,15 +57,18 @@ class ClaimDetailsViewFieldTest {
   @DisplayName("Should read every common value field via its accessor")
   void shouldReadValueFields() {
     ClaimDetails claim = new TestClaimDetails();
-    ClaimFieldRow fixedFee = new ClaimFieldRow(null, "fixed-fee", "assessed-fixed-fee");
-    ClaimFieldRow profitCosts = new ClaimFieldRow("profit-costs", null, "assessed-profit-costs");
-    ClaimFieldRow disbursements = new ClaimFieldRow("disbursements", "disb-calc", "assessed-disb");
+    ClaimFieldRow fixedFee = new ClaimFieldRow(null, "fixed-fee", "currentCalculated-fixed-fee");
+    ClaimFieldRow profitCosts =
+        new ClaimFieldRow("profit-costs", null, "currentCalculated-profit-costs");
+    ClaimFieldRow disbursements =
+        new ClaimFieldRow("disbursements", "disb-calc", "currentCalculated-disb");
     ClaimFieldRow disbursementsVat =
-        new ClaimFieldRow("disb-vat", "disb-vat-calc", "assessed-disb-vat");
+        new ClaimFieldRow("disb-vat", "disb-vat-calc", "currentCalculated-disb-vat");
     ClaimFieldRow vat = new ClaimFieldRow(true, true, false);
-    ClaimFieldRow totalVat = new ClaimFieldRow(null, "total-vat-calc", "assessed-total-vat");
+    ClaimFieldRow totalVat =
+        new ClaimFieldRow(null, "total-vat-calc", "currentCalculated-total-vat");
     ClaimFieldRow totalIncludingVat =
-        new ClaimFieldRow(null, "total-incl-vat-calc", "assessed-total-incl-vat");
+        new ClaimFieldRow(null, "total-incl-vat-calc", "currentCalculated-total-incl-vat");
     claim.setFixedFee(fixedFee);
     claim.setProfitCosts(profitCosts);
     claim.setDisbursements(disbursements);

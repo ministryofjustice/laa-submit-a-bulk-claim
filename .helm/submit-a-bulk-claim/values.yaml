@@ -156,11 +156,12 @@ env:
       configMapKeyRef:
         name: feature-flags
         key: is-updated-calculated-value-available
-  - name: IS_ASSESSED_COLUMN_ENABLED
+  - name: IS_INITIAL_CALCULATED_COLUMN_ENABLED
     valueFrom:
       configMapKeyRef:
         name: feature-flags
-        key: is-assessed-column-enabled
+        key: is-initial-calculated-column-enabled
+        optional: true
   - name: OUTAGE_BANNER_DISABLE_AT_TIMESTAMP
     valueFrom:
       configMapKeyRef:

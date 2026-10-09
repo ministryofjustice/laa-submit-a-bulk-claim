@@ -9,6 +9,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.ClaimHistoryEvent;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.ClaimHistoryEventType;
+import uk.gov.justice.laa.payments.submit.util.FieldIdentifierUtil;
 
 @DisplayName("Amended fields builder test")
 class AmendedFieldsBuilderTest {
@@ -22,7 +23,7 @@ class AmendedFieldsBuilderTest {
             amendmentEvent(change("claim.feeCode", "REQUESTED")));
 
     assertThat(AmendedFieldsBuilder.build(events))
-        .containsExactlyInAnyOrder("client.clientForename", "claim.feeCode");
+        .containsExactlyInAnyOrder("client_forename", "fee_code");
   }
 
   @Test
@@ -33,7 +34,7 @@ class AmendedFieldsBuilderTest {
             amendmentEvent(change("claim.feeCode", "REQUESTED"), change("fee.totalAmount", "FSP")));
 
     assertThat(AmendedFieldsBuilder.build(events))
-        .containsExactlyInAnyOrder("claim.feeCode", "fee.totalAmount");
+        .containsExactlyInAnyOrder("fee_code", "total_amount");
   }
 
   @Test
@@ -47,7 +48,7 @@ class AmendedFieldsBuilderTest {
                 change("fee.totalAmount", "FSP")));
 
     assertThat(AmendedFieldsBuilder.build(events))
-        .containsExactlyInAnyOrder("claim.schemeId", "fee.calculatedVatAmount", "fee.totalAmount");
+        .containsExactlyInAnyOrder("scheme_id", "calculated_vat_amount", "total_amount");
   }
 
   @Test
@@ -81,7 +82,7 @@ class AmendedFieldsBuilderTest {
     List<ClaimHistoryEvent> events = List.of(matterTypeAmendment("FAMA:FPET", "FAMA:FPRO"));
 
     assertThat(AmendedFieldsBuilder.build(events))
-        .containsExactlyInAnyOrder("claim.matterTypeCode", "claim.matterTypeCode#1");
+        .containsExactlyInAnyOrder("matter_type_code", "matter_type_code#1");
   }
 
   @Test
@@ -90,7 +91,7 @@ class AmendedFieldsBuilderTest {
     List<ClaimHistoryEvent> events = List.of(matterTypeAmendment("FAMA:FPET", "FAMB:FPET"));
 
     assertThat(AmendedFieldsBuilder.build(events))
-        .containsExactlyInAnyOrder("claim.matterTypeCode", "claim.matterTypeCode#0");
+        .containsExactlyInAnyOrder("matter_type_code", "matter_type_code#0");
   }
 
   @Test
@@ -99,8 +100,7 @@ class AmendedFieldsBuilderTest {
     List<ClaimHistoryEvent> events = List.of(matterTypeAmendment("FAMA:FPET", "FAMB:FPRO"));
 
     assertThat(AmendedFieldsBuilder.build(events))
-        .containsExactlyInAnyOrder(
-            "claim.matterTypeCode", "claim.matterTypeCode#0", "claim.matterTypeCode#1");
+        .containsExactlyInAnyOrder("matter_type_code", "matter_type_code#0", "matter_type_code#1");
   }
 
   @Test
@@ -109,7 +109,7 @@ class AmendedFieldsBuilderTest {
     List<ClaimHistoryEvent> events = List.of(matterTypeAmendment("FAMA+FPET", "FAMA+FPRO"));
 
     assertThat(AmendedFieldsBuilder.build(events))
-        .containsExactlyInAnyOrder("claim.matterTypeCode", "claim.matterTypeCode#1");
+        .containsExactlyInAnyOrder("matter_type_code", "matter_type_code#1");
   }
 
   @Test
@@ -118,7 +118,7 @@ class AmendedFieldsBuilderTest {
     List<ClaimHistoryEvent> events = List.of(matterTypeAmendment("FAMA", "FAMA:FPET"));
 
     assertThat(AmendedFieldsBuilder.build(events))
-        .containsExactlyInAnyOrder("claim.matterTypeCode", "claim.matterTypeCode#1");
+        .containsExactlyInAnyOrder("matter_type_code", "matter_type_code#1");
   }
 
   @Test
@@ -126,7 +126,7 @@ class AmendedFieldsBuilderTest {
   void shouldIdentifyNoHalfWhenMatterTypeCodeUnchanged() {
     List<ClaimHistoryEvent> events = List.of(matterTypeAmendment("FAMA:FPET", "FAMA:FPET"));
 
-    assertThat(AmendedFieldsBuilder.build(events)).containsExactly("claim.matterTypeCode");
+    assertThat(AmendedFieldsBuilder.build(events)).containsExactly("matter_type_code");
   }
 
   @Test
@@ -138,8 +138,7 @@ class AmendedFieldsBuilderTest {
             matterTypeAmendment("FAMB:FPET", "FAMB:FPRO"));
 
     assertThat(AmendedFieldsBuilder.build(events))
-        .containsExactlyInAnyOrder(
-            "claim.matterTypeCode", "claim.matterTypeCode#0", "claim.matterTypeCode#1");
+        .containsExactlyInAnyOrder("matter_type_code", "matter_type_code#0", "matter_type_code#1");
   }
 
   private static ClaimHistoryEvent matterTypeAmendment(String before, String after) {
@@ -161,7 +160,8 @@ class AmendedFieldsBuilderTest {
   private static Map<String, Object> change(
       String fieldIdentifier, String changeSource, Object before, Object after) {
     Map<String, Object> change = new LinkedHashMap<>();
-    change.put("field_identifier", fieldIdentifier);
+    // The claims API flattens identifiers to snake_case before returning them
+    change.put("field_identifier", FieldIdentifierUtil.toApiIdentifier(fieldIdentifier));
     change.put("change_source", changeSource);
     change.put("before", before);
     change.put("after", after);

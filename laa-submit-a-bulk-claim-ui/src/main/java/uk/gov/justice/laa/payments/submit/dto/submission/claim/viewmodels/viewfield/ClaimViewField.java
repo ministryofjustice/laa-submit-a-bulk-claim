@@ -10,6 +10,7 @@ import uk.gov.justice.laa.payments.submit.dto.submission.claim.viewmodels.ClaimD
 import uk.gov.justice.laa.payments.submit.dto.submission.claim.viewmodels.CrimeLowerClaimDetails;
 import uk.gov.justice.laa.payments.submit.dto.submission.claim.viewmodels.LegalHelpClaimDetails;
 import uk.gov.justice.laa.payments.submit.dto.submission.claim.viewmodels.MediationClaimDetails;
+import uk.gov.justice.laa.payments.submit.util.FieldIdentifierUtil;
 
 public interface ClaimViewField<T> {
 
@@ -27,7 +28,9 @@ public interface ClaimViewField<T> {
 
   default boolean isAmended(Set<String> amendedFields) {
     return amendedFields != null
-        && getClaimsApiFieldNames().stream().anyMatch(amendedFields::contains);
+        && getClaimsApiFieldNames().stream()
+            .map(FieldIdentifierUtil::toApiIdentifier)
+            .anyMatch(amendedFields::contains);
   }
 
   @SuppressWarnings("unchecked")

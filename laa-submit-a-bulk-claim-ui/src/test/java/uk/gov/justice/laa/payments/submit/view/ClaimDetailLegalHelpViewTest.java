@@ -105,7 +105,7 @@ class ClaimDetailLegalHelpViewTest extends ViewTestBase {
     when(featureFlagsConfig.getIsAlternativeClaimViewEnabled()).thenReturn(true);
   }
 
-  /** Builds a ClaimFieldRow with distinct reported/initialCalculated/assessed values. */
+  /** Builds a ClaimFieldRow with distinct reported/initialCalculated/currentCalculated values. */
   private static ClaimFieldRow valueRow(int base) {
     return new ClaimFieldRow(
         BigDecimal.valueOf(base), BigDecimal.valueOf(base + 1), BigDecimal.valueOf(base + 2));
@@ -223,42 +223,43 @@ class ClaimDetailLegalHelpViewTest extends ViewTestBase {
     assertRowContainsValues(summary.get(12), "Escape case", "Yes");
 
     var values = getSummaryListInCard(doc, "Values");
-    // Just two columns of values + label, current calculated should be hidden
+    // Initial calculated is feature flagged off: label, reported and current calculated only
     assertThat(values.getFirst()).hasSize(3);
-    assertRowContainsValues(values.get(1), "Fixed fee", currency(100), currency(101));
+    assertRowContainsValues(values.get(1), "Fixed fee", currency(100), currency(102));
     assertRowContainsValues(
-        values.get(2), "Profit costs (excluding VAT)", currency(110), currency(111));
+        values.get(2), "Profit costs (excluding VAT)", currency(110), currency(112));
     assertRowContainsValues(
-        values.get(3), "Disbursements (excluding VAT)", currency(120), currency(121));
-    assertRowContainsValues(values.get(4), "Disbursement VAT", currency(130), currency(131));
+        values.get(3), "Disbursements (excluding VAT)", currency(120), currency(122));
+    assertRowContainsValues(values.get(4), "Disbursement VAT", currency(130), currency(132));
     assertRowContainsValues(
-        values.get(5), "Counsel's costs (excluding VAT)", currency(140), currency(141));
+        values.get(5), "Counsel's costs (excluding VAT)", currency(140), currency(142));
     assertRowContainsValues(
-        values.get(6), "Travel and waiting costs", currency(150), currency(151));
+        values.get(6), "Travel and waiting costs", currency(150), currency(152));
     assertRowContainsValues(
-        values.get(7), "Detention, travel and waiting costs", currency(160), currency(161));
+        values.get(7), "Detention, travel and waiting costs", currency(160), currency(162));
     assertRowContainsValues(
-        values.get(8), "Judicial review or form filling", currency(170), currency(171));
-    assertRowContainsValues(values.get(9), "Adjourned hearing fee", currency(180), currency(181));
+        values.get(8), "Judicial review or form filling", currency(170), currency(172));
+    assertRowContainsValues(values.get(9), "Adjourned hearing fee", currency(180), currency(182));
     assertRowContainsValues(
         values.get(10),
         "Case management review hearing (CMRH) - oral",
         currency(190),
-        currency(191));
+        currency(192));
     assertRowContainsValues(
         values.get(11),
         "Case management review hearing (CMRH) - telephone",
         currency(200),
-        currency(201));
+        currency(202));
     assertRowContainsValues(values.get(12), "London rate", "Yes", "Not applicable");
-    assertRowContainsValues(values.get(13), "Home Office interview", currency(210), currency(211));
-    assertRowContainsValues(values.get(14), "Substantive hearing", currency(220), currency(221));
-    assertRowContainsValues(values.get(15), "VAT", currency(230), currency(231));
+    assertRowContainsValues(values.get(13), "Home Office interview", currency(210), currency(212));
+    assertRowContainsValues(values.get(14), "Substantive hearing", currency(220), currency(222));
+    assertRowContainsValues(values.get(15), "VAT", currency(230), currency(232));
   }
 
   @Test
   @DisplayName("Shows the Current calculated column and Amended banner for an amended claim")
   void shouldShowCurrentCalculatedWhenAmended() {
+    when(featureFlagsConfig.getIsInitialCalculatedColumnEnabled()).thenReturn(true);
     ClaimStatusBanner banner =
         new ClaimStatusBanner(DerivedClaimStatus.AMENDED, "01/02/2026", "10:00");
     stubClaim(DerivedClaimStatus.AMENDED, Optional.of(banner));
@@ -277,11 +278,10 @@ class ClaimDetailLegalHelpViewTest extends ViewTestBase {
   @Test
   @DisplayName("Shows the Current calculated column and Assessed banner for an assessed claim")
   void shouldShowCurrentCalculatedWhenAssessed() {
+    when(featureFlagsConfig.getIsInitialCalculatedColumnEnabled()).thenReturn(true);
     ClaimStatusBanner banner =
         new ClaimStatusBanner(DerivedClaimStatus.ASSESSED, "02/02/2026", "11:00");
     stubClaim(DerivedClaimStatus.ASSESSED, Optional.of(banner));
-
-    when(featureFlagsConfig.getIsAssessedColumnEnabled()).thenReturn(true);
 
     Document doc = renderDocument();
 
@@ -300,8 +300,9 @@ class ClaimDetailLegalHelpViewTest extends ViewTestBase {
   }
 
   @Test
-  @DisplayName("Shows the Voided banner but keeps the Current calculated column hidden")
-  void shouldRenderVoidedBannerWithoutCurrentCalculatedColumn() {
+  @DisplayName(
+      "Shows the Voided banner and the Current calculated column without Initial calculated")
+  void shouldRenderVoidedBannerWithoutInitialCalculatedColumn() {
     ClaimStatusBanner banner =
         new ClaimStatusBanner(DerivedClaimStatus.VOIDED, "03/02/2026", "12:00");
     stubClaim(DerivedClaimStatus.VOIDED, Optional.of(banner));

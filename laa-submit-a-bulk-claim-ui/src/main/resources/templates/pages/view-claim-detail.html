@@ -74,11 +74,12 @@
             <h2 class="govuk-summary-card__title" th:text="#{viewClaim.summary.title}"/>
           </div>
           <div class="govuk-summary-card__content">
-            <dl class="govuk-summary-list">
+            <dl class="govuk-summary-list"
+                th:with="anyAmended=${@thymeleafUtils.anyAmended(claimDetailView.summaryRows().keySet(), amendedFields)}">
               <div class="govuk-summary-list__row"
                    th:each="row, idx : ${claimDetailView.summaryRows()}"
                    th:with="isAmended=${row.key.isAmended(amendedFields)}"
-                   th:classappend="${isAmended} ? '' : 'govuk-summary-list__row--no-actions'">
+                   th:classappend="${isAmended or !anyAmended} ? '' : 'govuk-summary-list__row--no-actions'">
                 <dt class="govuk-summary-list__key" th:text="#{${'claimDetail.rows.' + row.key}}"/>
                 <dd class="govuk-summary-list__value"
                     th:text="${@thymeleafUtils.getFormattedValue(row.value).resolve(#messages)}"/>
@@ -92,12 +93,10 @@
       </div>
 
       <th:block
-          th:replace="~{fragments/claim-value-table :: claim-value-table(#{viewClaim.values.title}, ${claimDetailView.valueRows()}, ${showCurrentCalculated}, ${amendedFields})}"/>
+          th:replace="~{fragments/claim-value-table :: claim-value-table(#{viewClaim.values.title}, ${claimDetailView.valueRows()}, ${showInitialCalculated}, ${amendedFields})}"/>
 
-      <th:block th:if="${isAssessedColumnEnabled}">
-        <th:block
-            th:replace="~{fragments/claim-value-table :: claim-value-table(#{viewClaim.totalAllowedValue.title}, ${claimDetailView.totalRows()}, ${showCurrentCalculated}, ${amendedFields})}"/>
-      </th:block>
+      <th:block
+          th:replace="~{fragments/claim-value-table :: claim-value-table(#{viewClaim.totalAllowedValue.title}, ${claimDetailView.totalRows()}, ${showInitialCalculated}, ${amendedFields})}"/>
 
     </div>
   </div>

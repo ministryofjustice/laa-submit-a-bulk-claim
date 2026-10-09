@@ -261,7 +261,7 @@ class SubmissionDetailsCrimeLowerViewTest extends SubmissionDetailsViewTestBase 
     assertTableHeaderIsSortable(
         headers.get(3), "none", "Date work concluded", claimSortLink("case_concluded_date"));
     assertTableHeaderIsSortable(
-        headers.get(4), "none", "Initial calculated value", claimSortLink("total_amount"));
+        headers.get(4), "none", "Calculated value", claimSortLink("total_amount"));
     assertTableHeaderIsSortable(
         headers.get(5), "none", "Escape case", claimSortLink("escape_case_flag"));
     assertTableHeaderIsSortable(
@@ -340,7 +340,7 @@ class SubmissionDetailsCrimeLowerViewTest extends SubmissionDetailsViewTestBase 
     assertClaimFieldIsSortable(
         4,
         "total_amount",
-        "Initial calculated value",
+        "Calculated value",
         currentDirection,
         currentPage,
         expectedAriaDirection,

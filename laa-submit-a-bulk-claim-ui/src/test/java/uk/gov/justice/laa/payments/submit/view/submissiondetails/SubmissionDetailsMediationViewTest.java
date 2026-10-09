@@ -270,7 +270,7 @@ class SubmissionDetailsMediationViewTest extends SubmissionDetailsViewTestBase {
         headers.get(3), "none", "Client 2 UCN", claimSortLink("client_2_ucn"));
     assertTableHeaderIsSortable(headers.get(4), "none", "Fee code", claimSortLink("fee_code"));
     assertTableHeaderIsSortable(
-        headers.get(5), "none", "Initial calculated value", claimSortLink("total_amount"));
+        headers.get(5), "none", "Calculated value", claimSortLink("total_amount"));
     assertTableHeaderIsSortable(
         headers.get(6), "none", "Escape case", claimSortLink("escape_case_flag"));
     assertTableHeaderIsSortable(
@@ -372,7 +372,7 @@ class SubmissionDetailsMediationViewTest extends SubmissionDetailsViewTestBase {
     assertClaimFieldIsSortable(
         5,
         "total_amount",
-        "Initial calculated value",
+        "Calculated value",
         currentDirection,
         currentPage,
         expectedAriaDirection,
