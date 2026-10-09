@@ -1,6 +1,7 @@
 package uk.gov.justice.laa.payments.submit.mapper;
 
 import java.math.BigDecimal;
+import java.util.function.Function;
 import org.mapstruct.Context;
 import org.mapstruct.Named;
 import org.springframework.stereotype.Component;
@@ -13,6 +14,12 @@ import uk.gov.justice.laa.payments.submit.dto.submission.claim.viewmodels.ClaimF
 @Component
 public class ClaimMapperHelper {
 
+  private static Object assessedOrInitialCalculated(
+      AssessmentGet assessment, Function<AssessmentGet, Object> getter, Object initialCalculated) {
+    Object assessed = assessment == null ? null : getter.apply(assessment);
+    return assessed != null ? assessed : initialCalculated;
+  }
+
   @Named("fixedFee")
   public ClaimFieldRow fixedFee(
       ClaimResponseV2 claimResponse, @Context AssessmentGet currentAssessment) {
@@ -21,7 +28,8 @@ public class ClaimMapperHelper {
     return new ClaimFieldRow(
         null,
         initialCalculated,
-        currentAssessment == null ? initialCalculated : currentAssessment.getFixedFeeAmount());
+        assessedOrInitialCalculated(
+            currentAssessment, AssessmentGet::getFixedFeeAmount, initialCalculated));
   }
 
   @Named("profitCosts")
@@ -33,9 +41,8 @@ public class ClaimMapperHelper {
     return new ClaimFieldRow(
         claimResponse.getNetProfitCostsAmount(),
         initialCalculated,
-        currentAssessment == null
-            ? initialCalculated
-            : currentAssessment.getNetProfitCostsAmount());
+        assessedOrInitialCalculated(
+            currentAssessment, AssessmentGet::getNetProfitCostsAmount, initialCalculated));
   }
 
   @Named("disbursements")
@@ -47,7 +54,8 @@ public class ClaimMapperHelper {
     return new ClaimFieldRow(
         claimResponse.getNetDisbursementAmount(),
         initialCalculated,
-        currentAssessment == null ? initialCalculated : currentAssessment.getDisbursementAmount());
+        assessedOrInitialCalculated(
+            currentAssessment, AssessmentGet::getDisbursementAmount, initialCalculated));
   }
 
   @Named("disbursementsVat")
@@ -59,9 +67,8 @@ public class ClaimMapperHelper {
     return new ClaimFieldRow(
         claimResponse.getDisbursementsVatAmount(),
         initialCalculated,
-        currentAssessment == null
-            ? initialCalculated
-            : currentAssessment.getDisbursementVatAmount());
+        assessedOrInitialCalculated(
+            currentAssessment, AssessmentGet::getDisbursementVatAmount, initialCalculated));
   }
 
   @Named("vat")
@@ -72,7 +79,8 @@ public class ClaimMapperHelper {
     return new ClaimFieldRow(
         claimResponse.getIsVatApplicable(),
         initialCalculated,
-        currentAssessment == null ? initialCalculated : currentAssessment.getIsVatApplicable());
+        assessedOrInitialCalculated(
+            currentAssessment, AssessmentGet::getIsVatApplicable, initialCalculated));
   }
 
   @Named("totalVat")
@@ -84,7 +92,8 @@ public class ClaimMapperHelper {
     return new ClaimFieldRow(
         null,
         initialCalculated,
-        currentAssessment == null ? initialCalculated : currentAssessment.getAllowedTotalVat());
+        assessedOrInitialCalculated(
+            currentAssessment, AssessmentGet::getAllowedTotalVat, initialCalculated));
   }
 
   @Named("totalIncludingVat")
@@ -95,7 +104,8 @@ public class ClaimMapperHelper {
     return new ClaimFieldRow(
         null,
         initialCalculated,
-        currentAssessment == null ? initialCalculated : currentAssessment.getAllowedTotalInclVat());
+        assessedOrInitialCalculated(
+            currentAssessment, AssessmentGet::getAllowedTotalInclVat, initialCalculated));
   }
 
   @Named("travelCosts")
@@ -107,9 +117,8 @@ public class ClaimMapperHelper {
     return new ClaimFieldRow(
         claimResponse.getTravelWaitingCostsAmount(),
         initialCalculated,
-        currentAssessment == null
-            ? initialCalculated
-            : currentAssessment.getNetTravelCostsAmount());
+        assessedOrInitialCalculated(
+            currentAssessment, AssessmentGet::getNetTravelCostsAmount, initialCalculated));
   }
 
   @Named("waitingCosts")
@@ -121,9 +130,8 @@ public class ClaimMapperHelper {
     return new ClaimFieldRow(
         claimResponse.getNetWaitingCostsAmount(),
         initialCalculated,
-        currentAssessment == null
-            ? initialCalculated
-            : currentAssessment.getNetWaitingCostsAmount());
+        assessedOrInitialCalculated(
+            currentAssessment, AssessmentGet::getNetWaitingCostsAmount, initialCalculated));
   }
 
   @Named("counselsCosts")
@@ -135,9 +143,8 @@ public class ClaimMapperHelper {
     return new ClaimFieldRow(
         claimResponse.getNetCounselCostsAmount(),
         initialCalculated,
-        currentAssessment == null
-            ? initialCalculated
-            : currentAssessment.getNetCostOfCounselAmount());
+        assessedOrInitialCalculated(
+            currentAssessment, AssessmentGet::getNetCostOfCounselAmount, initialCalculated));
   }
 
   @Named("travelAndWaitingCosts")
@@ -149,9 +156,10 @@ public class ClaimMapperHelper {
     return new ClaimFieldRow(
         claimResponse.getTravelWaitingCostsAmount(),
         initialCalculated,
-        currentAssessment == null
-            ? initialCalculated
-            : assessedTravelAndWaitingCosts(currentAssessment));
+        assessedOrInitialCalculated(
+            currentAssessment,
+            ClaimMapperHelper::assessedTravelAndWaitingCosts,
+            initialCalculated));
   }
 
   // AssessmentGet has no combined travel-and-waiting field (unlike FeeCalculationPatch) - sum its
@@ -178,9 +186,10 @@ public class ClaimMapperHelper {
     return new ClaimFieldRow(
         claimResponse.getDetentionTravelWaitingCostsAmount(),
         initialCalculated,
-        currentAssessment == null
-            ? initialCalculated
-            : currentAssessment.getDetentionTravelAndWaitingCostsAmount());
+        assessedOrInitialCalculated(
+            currentAssessment,
+            AssessmentGet::getDetentionTravelAndWaitingCostsAmount,
+            initialCalculated));
   }
 
   @Named("jrFormFilling")
@@ -192,7 +201,8 @@ public class ClaimMapperHelper {
     return new ClaimFieldRow(
         claimResponse.getJrFormFillingAmount(),
         initialCalculated,
-        currentAssessment == null ? initialCalculated : currentAssessment.getJrFormFillingAmount());
+        assessedOrInitialCalculated(
+            currentAssessment, AssessmentGet::getJrFormFillingAmount, initialCalculated));
   }
 
   @Named("adjournedHearingFee")
@@ -203,9 +213,8 @@ public class ClaimMapperHelper {
     return new ClaimFieldRow(
         null,
         initialCalculated,
-        currentAssessment == null
-            ? initialCalculated
-            : currentAssessment.getBoltOnAdjournedHearingFee());
+        assessedOrInitialCalculated(
+            currentAssessment, AssessmentGet::getBoltOnAdjournedHearingFee, initialCalculated));
   }
 
   @Named("cmrhOral")
@@ -216,7 +225,8 @@ public class ClaimMapperHelper {
     return new ClaimFieldRow(
         null,
         initialCalculated,
-        currentAssessment == null ? initialCalculated : currentAssessment.getBoltOnCmrhOralFee());
+        assessedOrInitialCalculated(
+            currentAssessment, AssessmentGet::getBoltOnCmrhOralFee, initialCalculated));
   }
 
   @Named("cmrhTelephone")
@@ -227,9 +237,8 @@ public class ClaimMapperHelper {
     return new ClaimFieldRow(
         null,
         initialCalculated,
-        currentAssessment == null
-            ? initialCalculated
-            : currentAssessment.getBoltOnCmrhTelephoneFee());
+        assessedOrInitialCalculated(
+            currentAssessment, AssessmentGet::getBoltOnCmrhTelephoneFee, initialCalculated));
   }
 
   @Named("homeOfficeInterview")
@@ -240,9 +249,8 @@ public class ClaimMapperHelper {
     return new ClaimFieldRow(
         null,
         initialCalculated,
-        currentAssessment == null
-            ? initialCalculated
-            : currentAssessment.getBoltOnHomeOfficeInterviewFee());
+        assessedOrInitialCalculated(
+            currentAssessment, AssessmentGet::getBoltOnHomeOfficeInterviewFee, initialCalculated));
   }
 
   @Named("substantiveHearing")
@@ -253,9 +261,8 @@ public class ClaimMapperHelper {
     return new ClaimFieldRow(
         null,
         initialCalculated,
-        currentAssessment == null
-            ? initialCalculated
-            : currentAssessment.getBoltOnSubstantiveHearingFee());
+        assessedOrInitialCalculated(
+            currentAssessment, AssessmentGet::getBoltOnSubstantiveHearingFee, initialCalculated));
   }
 
   private static BoltOnPatch boltOnDetails(ClaimResponseV2 claimResponse) {

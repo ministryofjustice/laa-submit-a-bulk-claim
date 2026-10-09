@@ -118,6 +118,16 @@ class ClaimMapperHelperTest {
   }
 
   @Test
+  @DisplayName("Should fall back to the initial calculation when the assessment field is null")
+  void shouldFallBackWhenAssessmentFieldIsNull() {
+    currentAssessment.setDisbursementAmount(null);
+
+    ClaimFieldRow result = helper.disbursements(claimResponse, currentAssessment);
+
+    assertThat(result.currentCalculated()).isEqualTo(result.initialCalculated());
+  }
+
+  @Test
   @DisplayName("Should tolerate a claim response with no fee calculation response")
   void shouldTolerateMissingFeeCalculationResponse() {
     ClaimResponseV2 noFeeCalculation =
