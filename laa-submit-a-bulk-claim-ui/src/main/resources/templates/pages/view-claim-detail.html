@@ -92,10 +92,10 @@
       </div>
 
       <th:block
-          th:replace="~{fragments/claim-value-table :: claim-value-table(#{viewClaim.values.title}, ${claimDetailView.valueRows()}, ${showCurrentCalculated}, ${amendedFields})}"/>
+          th:replace="~{fragments/claim-value-table :: claim-value-table(#{viewClaim.values.title}, ${claimDetailView.valueRows()}, ${showInitialCalculated}, ${amendedFields})}"/>
 
       <th:block
-          th:replace="~{fragments/claim-value-table :: claim-value-table(#{viewClaim.totalAllowedValue.title}, ${claimDetailView.totalRows()}, ${showCurrentCalculated}, ${amendedFields})}"/>
+          th:replace="~{fragments/claim-value-table :: claim-value-table(#{viewClaim.totalAllowedValue.title}, ${claimDetailView.totalRows()}, ${showInitialCalculated}, ${amendedFields})}"/>
 
     </div>
   </div>

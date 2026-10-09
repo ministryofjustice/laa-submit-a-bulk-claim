@@ -81,7 +81,9 @@ public final class ClaimDetailController {
     final ClaimDetailPageData pageData =
         claimService.getClaimDetailPageData(submissionId, claimId, user);
     model.addAttribute("areaOfLaw", pageData.areaOfLaw().getValue());
-    model.addAttribute("showCurrentCalculated", pageData.showCurrentCalculated());
+    model.addAttribute(
+        "showInitialCalculated",
+        TRUE.equals(featureFlagsConfig.getIsInitialCalculatedColumnEnabled()));
     model.addAttribute("claimDetailView", pageData.claimDetailView());
     model.addAttribute("banner", pageData.banner());
     model.addAttribute("amendedFields", pageData.amendedFields());

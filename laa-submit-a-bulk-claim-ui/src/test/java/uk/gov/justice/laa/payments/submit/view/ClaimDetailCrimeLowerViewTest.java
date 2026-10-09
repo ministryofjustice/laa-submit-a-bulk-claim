@@ -180,22 +180,23 @@ class ClaimDetailCrimeLowerViewTest extends ViewTestBase {
     assertRowContainsValues(summary.get(12), "Escape case", "Yes");
 
     var values = getSummaryListInCard(doc, "Values");
-    // Just two columns of values + label, current calculated should be hidden
+    // Initial calculated is feature flagged off: label, reported and current calculated only
     assertThat(values.getFirst()).hasSize(3);
-    assertRowContainsValues(values.get(1), "Fixed fee", currency(100), currency(101));
+    assertRowContainsValues(values.get(1), "Fixed fee", currency(100), currency(102));
     assertRowContainsValues(
-        values.get(2), "Profit costs (excluding VAT)", currency(110), currency(111));
+        values.get(2), "Profit costs (excluding VAT)", currency(110), currency(112));
     assertRowContainsValues(
-        values.get(3), "Disbursements (excluding VAT)", currency(120), currency(121));
-    assertRowContainsValues(values.get(4), "Disbursement VAT", currency(130), currency(131));
-    assertRowContainsValues(values.get(5), "Travel costs", currency(140), currency(141));
-    assertRowContainsValues(values.get(6), "Waiting costs", currency(150), currency(151));
-    assertRowContainsValues(values.get(7), "VAT", currency(160), currency(161));
+        values.get(3), "Disbursements (excluding VAT)", currency(120), currency(122));
+    assertRowContainsValues(values.get(4), "Disbursement VAT", currency(130), currency(132));
+    assertRowContainsValues(values.get(5), "Travel costs", currency(140), currency(142));
+    assertRowContainsValues(values.get(6), "Waiting costs", currency(150), currency(152));
+    assertRowContainsValues(values.get(7), "VAT", currency(160), currency(162));
   }
 
   @Test
   @DisplayName("Shows the Current calculated column and Amended banner for an amended claim")
   void shouldShowCurrentCalculatedWhenAmended() {
+    when(featureFlagsConfig.getIsInitialCalculatedColumnEnabled()).thenReturn(true);
     ClaimStatusBanner banner =
         new ClaimStatusBanner(DerivedClaimStatus.AMENDED, "01/02/2026", "10:00");
     stubClaim(DerivedClaimStatus.AMENDED, Optional.of(banner));
@@ -214,6 +215,7 @@ class ClaimDetailCrimeLowerViewTest extends ViewTestBase {
   @Test
   @DisplayName("Shows the Current calculated column and Assessed banner for an assessed claim")
   void shouldShowCurrentCalculatedWhenAssessed() {
+    when(featureFlagsConfig.getIsInitialCalculatedColumnEnabled()).thenReturn(true);
     ClaimStatusBanner banner =
         new ClaimStatusBanner(DerivedClaimStatus.ASSESSED, "02/02/2026", "11:00");
     stubClaim(DerivedClaimStatus.ASSESSED, Optional.of(banner));
@@ -235,8 +237,9 @@ class ClaimDetailCrimeLowerViewTest extends ViewTestBase {
   }
 
   @Test
-  @DisplayName("Shows the Voided banner but keeps the Current calculated column hidden")
-  void shouldRenderVoidedBannerWithoutCurrentCalculatedColumn() {
+  @DisplayName(
+      "Shows the Voided banner and the Current calculated column without Initial calculated")
+  void shouldRenderVoidedBannerWithoutInitialCalculatedColumn() {
     ClaimStatusBanner banner =
         new ClaimStatusBanner(DerivedClaimStatus.VOIDED, "03/02/2026", "12:00");
     stubClaim(DerivedClaimStatus.VOIDED, Optional.of(banner));

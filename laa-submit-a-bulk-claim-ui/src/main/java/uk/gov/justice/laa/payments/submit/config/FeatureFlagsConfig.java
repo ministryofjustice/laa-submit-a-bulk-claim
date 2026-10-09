@@ -15,6 +15,7 @@ public class FeatureFlagsConfig {
   private Boolean isNilSubmissionEnabled;
   private Boolean isAlternativeClaimViewEnabled;
   private Boolean isUpdatedCalculatedValueAvailable;
+  private Boolean isInitialCalculatedColumnEnabled;
 
   public void checkNilSubmissionEnabled() {
     if (!TRUE.equals(getIsNilSubmissionEnabled())) {
