@@ -8,8 +8,10 @@
         <h2 class="govuk-summary-card__title" th:text="${title}"/>
       </div>
       <div class="govuk-summary-card__content">
-        <dl class="govuk-summary-list">
-          <div class="govuk-summary-list__row govuk-summary-list__row--no-actions">
+        <dl class="govuk-summary-list"
+            th:with="anyAmended=${@thymeleafUtils.anyAmended(rows.keySet(), amendedFields)}">
+          <div class="govuk-summary-list__row"
+               th:classappend="${anyAmended} ? 'govuk-summary-list__row--no-actions' : ''">
             <dt class="govuk-summary-list__key" th:text="#{viewClaim.values.item}"/>
             <dd class="govuk-summary-list__value govuk-!-font-weight-bold govuk-!-text-align-left"
                 th:text="#{viewClaim.values.reported}"/>
@@ -21,7 +23,7 @@
           </div>
           <div class="govuk-summary-list__row" th:each="rowEntry : ${rows}"
                th:with="row=${rowEntry.value}, isAmended=${rowEntry.key.isAmended(amendedFields)}"
-               th:classappend="${isAmended} ? '' : 'govuk-summary-list__row--no-actions'">
+               th:classappend="${isAmended or !anyAmended} ? '' : 'govuk-summary-list__row--no-actions'">
             <dt class="govuk-summary-list__key" th:text="#{${'claimDetail.rows.' + rowEntry.key}}"/>
             <!--/*@thymesVar id="row" type="uk.gov.justice.laa.payments.submit.dto.submission.claim.viewmodels.ClaimFieldRow"*/-->
             <dd class="govuk-summary-list__value govuk-!-text-align-left"
