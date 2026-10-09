@@ -1,10 +1,13 @@
 package uk.gov.justice.laa.payments.submit.controller;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.oidcLogin;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static uk.gov.justice.laa.payments.submit.constants.SessionConstants.BULK_SUBMISSION_ID;
+import static uk.gov.justice.laa.payments.submit.constants.SessionConstants.ORIGINAL_FILENAME;
 import static uk.gov.justice.laa.payments.submit.constants.SessionConstants.SUBMISSION_ID;
 import static uk.gov.justice.laa.payments.submit.controller.ControllerTestHelper.OIDC_USER;
 
@@ -60,6 +63,7 @@ public class BulkUploadBeingCheckedControllerTest extends BaseControllerTest {
                       .sessionAttr(BULK_SUBMISSION_ID, bulkSubmissionId)))
           .hasStatusOk()
           .hasViewName("pages/upload-being-checked");
+      verifyNoInteractions(bulkClaimMetricService);
     }
 
     @Test
@@ -87,6 +91,7 @@ public class BulkUploadBeingCheckedControllerTest extends BaseControllerTest {
                       .sessionAttr(BULK_SUBMISSION_ID, bulkSubmissionId)))
           .hasStatusOk()
           .hasViewName("pages/upload-being-checked");
+      verifyNoInteractions(bulkClaimMetricService);
     }
 
     @ParameterizedTest
@@ -95,6 +100,33 @@ public class BulkUploadBeingCheckedControllerTest extends BaseControllerTest {
         names = {"VALIDATION_SUCCEEDED", "VALIDATION_FAILED"})
     @DisplayName("Should redirect when complete")
     void shouldRedirectWhenSubmissionHasBeenCreated(BulkSubmissionStatus status) {
+      // Given
+      UUID bulkSubmissionId = UUID.fromString("5933fc67-bac7-4f48-81ed-61c8c463f056");
+      UUID submissionId = UUID.fromString("5933fc67-bac7-4f48-81ed-61c8c463f054");
+      String originalFilename = "claims-v2.00.csv";
+
+      when(dataClaimsRestClient.getBulkSubmissionSummary(bulkSubmissionId))
+          .thenReturn(
+              Mono.just(GetBulkSubmissionStatusById200Response.builder().status(status).build()));
+      assertThat(
+              mockMvc.perform(
+                  get("/upload-is-being-checked")
+                      .with(oidcLogin().oidcUser(OIDC_USER))
+                      .sessionAttr(SUBMISSION_ID, submissionId)
+                      .sessionAttr(BULK_SUBMISSION_ID, bulkSubmissionId)
+                      .sessionAttr(ORIGINAL_FILENAME, originalFilename)))
+          .hasStatus3xxRedirection()
+          .hasRedirectedUrl("/submissions/5933fc67-bac7-4f48-81ed-61c8c463f054");
+      verify(bulkClaimMetricService).recordFileExtension(originalFilename, status);
+      verify(bulkClaimMetricService).recordFileNamePattern(originalFilename, status);
+    }
+
+    @ParameterizedTest
+    @EnumSource(
+        value = BulkSubmissionStatus.class,
+        names = {"VALIDATION_SUCCEEDED", "VALIDATION_FAILED"})
+    @DisplayName("Should redirect when complete without recording metrics if filename missing")
+    void shouldRedirectWithoutRecordingMetricsWhenFilenameMissing(BulkSubmissionStatus status) {
       // Given
       UUID bulkSubmissionId = UUID.fromString("5933fc67-bac7-4f48-81ed-61c8c463f056");
       UUID submissionId = UUID.fromString("5933fc67-bac7-4f48-81ed-61c8c463f054");
@@ -110,6 +142,7 @@ public class BulkUploadBeingCheckedControllerTest extends BaseControllerTest {
                       .sessionAttr(BULK_SUBMISSION_ID, bulkSubmissionId)))
           .hasStatus3xxRedirection()
           .hasRedirectedUrl("/submissions/5933fc67-bac7-4f48-81ed-61c8c463f054");
+      verifyNoInteractions(bulkClaimMetricService);
     }
 
     @ParameterizedTest
@@ -131,6 +164,7 @@ public class BulkUploadBeingCheckedControllerTest extends BaseControllerTest {
           .failure()
           .hasCauseInstanceOf(SubmitBulkClaimException.class)
           .hasMessageContaining("Claims API returned an error");
+      verifyNoInteractions(bulkClaimMetricService);
     }
 
     @Test
@@ -154,6 +188,7 @@ public class BulkUploadBeingCheckedControllerTest extends BaseControllerTest {
           .failure()
           .hasCauseInstanceOf(SubmitBulkClaimException.class)
           .hasMessageContaining("Bulk submission parsing failed for: " + bulkSubmissionId);
+      verifyNoInteractions(bulkClaimMetricService);
     }
 
     @Test
@@ -178,6 +213,7 @@ public class BulkUploadBeingCheckedControllerTest extends BaseControllerTest {
           .hasCauseInstanceOf(SubmitBulkClaimException.class)
           .hasMessageContaining(
               "Unexpected bulk submission status returned for: " + bulkSubmissionId);
+      verifyNoInteractions(bulkClaimMetricService);
     }
   }
 }

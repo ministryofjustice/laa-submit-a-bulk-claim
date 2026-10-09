@@ -9,5 +9,7 @@ public final class SessionConstants {
   public static final String SUBMISSION_ID = "submissionId";
   public static final String CLAIM_ID = "claimId";
 
+  public static final String ORIGINAL_FILENAME = "originalFilename";
+
   public static final String NIL_SUBMISSION_FORM = "nilSubmissionForm";
 }

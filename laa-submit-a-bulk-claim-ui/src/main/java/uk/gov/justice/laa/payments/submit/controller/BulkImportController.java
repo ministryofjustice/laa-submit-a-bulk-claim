@@ -1,6 +1,7 @@
 package uk.gov.justice.laa.payments.submit.controller;
 
 import static uk.gov.justice.laa.payments.submit.constants.SessionConstants.BULK_SUBMISSION_ID;
+import static uk.gov.justice.laa.payments.submit.constants.SessionConstants.ORIGINAL_FILENAME;
 import static uk.gov.justice.laa.payments.submit.constants.SessionConstants.SUBMISSION_ID;
 
 import jakarta.servlet.http.HttpSession;
@@ -98,6 +99,7 @@ public class BulkImportController {
           bulkSubmissionResponse.getBulkSubmissionId());
       session.setAttribute(SUBMISSION_ID, bulkSubmissionResponse.getSubmissionIds().getFirst());
       session.setAttribute(BULK_SUBMISSION_ID, bulkSubmissionResponse.getBulkSubmissionId());
+      session.setAttribute(ORIGINAL_FILENAME, fileUploadForm.getFile().getOriginalFilename());
       bulkClaimMetricService.recordSuccessfulFileUploadSize(fileUploadForm.getFile());
       return "redirect:/upload-is-being-checked";
     } catch (WebClientResponseException e) {
