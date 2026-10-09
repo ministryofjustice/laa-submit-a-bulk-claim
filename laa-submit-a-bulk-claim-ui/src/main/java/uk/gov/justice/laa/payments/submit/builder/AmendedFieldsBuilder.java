@@ -10,6 +10,7 @@ import java.util.Map;
 import java.util.Set;
 import lombok.experimental.UtilityClass;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.ClaimHistoryEvent;
+import uk.gov.justice.laa.payments.submit.util.FieldIdentifierUtil;
 import uk.gov.justice.laa.payments.submit.util.MatterTypeUtil;
 
 @UtilityClass
@@ -36,12 +37,14 @@ public class AmendedFieldsBuilder {
     if (fieldIdentifier == null) {
       return;
     }
-    final String fieldName = String.valueOf(fieldIdentifier);
+    final String fieldName = FieldIdentifierUtil.toApiIdentifier(String.valueOf(fieldIdentifier));
     amendedFields.add(fieldName);
-    if (MATTER_TYPE_CODE.equals(fieldName)) {
-      amendedFields.addAll(
-          MatterTypeUtil.changedPartIdentifiers(
-              asString(change.get(BEFORE)), asString(change.get(AFTER))));
+    if (FieldIdentifierUtil.toApiIdentifier(MATTER_TYPE_CODE).equals(fieldName)) {
+      MatterTypeUtil.changedPartIdentifiers(
+              asString(change.get(BEFORE)), asString(change.get(AFTER)))
+          .stream()
+          .map(FieldIdentifierUtil::toApiIdentifier)
+          .forEach(amendedFields::add);
     }
   }
 
