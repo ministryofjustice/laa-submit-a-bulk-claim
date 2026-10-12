@@ -14,152 +14,157 @@ import uk.gov.justice.laa.payments.submit.dto.submission.claim.viewmodels.ClaimF
 @Component
 public class ClaimMapperHelper {
 
-  private static Object assessedOrInitialCalculated(
-      AssessmentGet assessment, Function<AssessmentGet, Object> getter, Object initialCalculated) {
+  private static Object assessedOrCurrentCalculated(
+      AssessmentGet assessment, Function<AssessmentGet, Object> getter, Object currentCalculated) {
     Object assessed = assessment == null ? null : getter.apply(assessment);
-    return assessed != null ? assessed : initialCalculated;
+    return assessed != null ? assessed : currentCalculated;
   }
 
   @Named("fixedFee")
   public ClaimFieldRow fixedFee(
       ClaimResponseV2 claimResponse, @Context AssessmentGet currentAssessment) {
-    FeeCalculationPatch feeCalculation = claimResponse.getFeeCalculationResponse();
-    Object initialCalculated = feeCalculation == null ? null : feeCalculation.getFixedFeeAmount();
+    FeeCalculationPatch currentFeeCalculation = claimResponse.getFeeCalculationResponse();
+    Object currentCalculated =
+        currentFeeCalculation == null ? null : currentFeeCalculation.getFixedFeeAmount();
     return new ClaimFieldRow(
         null,
-        initialCalculated,
-        assessedOrInitialCalculated(
-            currentAssessment, AssessmentGet::getFixedFeeAmount, initialCalculated));
+        currentCalculated,
+        assessedOrCurrentCalculated(
+            currentAssessment, AssessmentGet::getFixedFeeAmount, currentCalculated));
   }
 
   @Named("profitCosts")
   public ClaimFieldRow profitCosts(
       ClaimResponseV2 claimResponse, @Context AssessmentGet currentAssessment) {
-    FeeCalculationPatch feeCalculation = claimResponse.getFeeCalculationResponse();
-    Object initialCalculated =
-        feeCalculation == null ? null : feeCalculation.getNetProfitCostsAmount();
+    FeeCalculationPatch currentFeeCalculation = claimResponse.getFeeCalculationResponse();
+    Object currentCalculated =
+        currentFeeCalculation == null ? null : currentFeeCalculation.getNetProfitCostsAmount();
     return new ClaimFieldRow(
         claimResponse.getNetProfitCostsAmount(),
-        initialCalculated,
-        assessedOrInitialCalculated(
-            currentAssessment, AssessmentGet::getNetProfitCostsAmount, initialCalculated));
+        currentCalculated,
+        assessedOrCurrentCalculated(
+            currentAssessment, AssessmentGet::getNetProfitCostsAmount, currentCalculated));
   }
 
   @Named("disbursements")
   public ClaimFieldRow disbursements(
       ClaimResponseV2 claimResponse, @Context AssessmentGet currentAssessment) {
-    FeeCalculationPatch feeCalculation = claimResponse.getFeeCalculationResponse();
-    Object initialCalculated =
-        feeCalculation == null ? null : feeCalculation.getDisbursementAmount();
+    FeeCalculationPatch currentFeeCalculation = claimResponse.getFeeCalculationResponse();
+    Object currentCalculated =
+        currentFeeCalculation == null ? null : currentFeeCalculation.getDisbursementAmount();
     return new ClaimFieldRow(
         claimResponse.getNetDisbursementAmount(),
-        initialCalculated,
-        assessedOrInitialCalculated(
-            currentAssessment, AssessmentGet::getDisbursementAmount, initialCalculated));
+        currentCalculated,
+        assessedOrCurrentCalculated(
+            currentAssessment, AssessmentGet::getDisbursementAmount, currentCalculated));
   }
 
   @Named("disbursementsVat")
   public ClaimFieldRow disbursementsVat(
       ClaimResponseV2 claimResponse, @Context AssessmentGet currentAssessment) {
-    FeeCalculationPatch feeCalculation = claimResponse.getFeeCalculationResponse();
-    Object initialCalculated =
-        feeCalculation == null ? null : feeCalculation.getDisbursementVatAmount();
+    FeeCalculationPatch currentFeeCalculation = claimResponse.getFeeCalculationResponse();
+    Object currentCalculated =
+        currentFeeCalculation == null ? null : currentFeeCalculation.getDisbursementVatAmount();
     return new ClaimFieldRow(
         claimResponse.getDisbursementsVatAmount(),
-        initialCalculated,
-        assessedOrInitialCalculated(
-            currentAssessment, AssessmentGet::getDisbursementVatAmount, initialCalculated));
+        currentCalculated,
+        assessedOrCurrentCalculated(
+            currentAssessment, AssessmentGet::getDisbursementVatAmount, currentCalculated));
   }
 
   @Named("vat")
   public ClaimFieldRow vat(
       ClaimResponseV2 claimResponse, @Context AssessmentGet currentAssessment) {
-    FeeCalculationPatch feeCalculation = claimResponse.getFeeCalculationResponse();
-    Object initialCalculated = feeCalculation == null ? null : feeCalculation.getVatIndicator();
+    FeeCalculationPatch currentFeeCalculation = claimResponse.getFeeCalculationResponse();
+    Object currentCalculated =
+        currentFeeCalculation == null ? null : currentFeeCalculation.getVatIndicator();
     return new ClaimFieldRow(
         claimResponse.getIsVatApplicable(),
-        initialCalculated,
-        assessedOrInitialCalculated(
-            currentAssessment, AssessmentGet::getIsVatApplicable, initialCalculated));
+        currentCalculated,
+        assessedOrCurrentCalculated(
+            currentAssessment, AssessmentGet::getIsVatApplicable, currentCalculated));
   }
 
   @Named("totalVat")
   public ClaimFieldRow totalVat(
       ClaimResponseV2 claimResponse, @Context AssessmentGet currentAssessment) {
-    FeeCalculationPatch feeCalculation = claimResponse.getFeeCalculationResponse();
-    Object initialCalculated =
-        feeCalculation == null ? null : feeCalculation.getCalculatedVatAmount();
+    FeeCalculationPatch currentFeeCalculation = claimResponse.getFeeCalculationResponse();
+    Object currentCalculated =
+        currentFeeCalculation == null ? null : currentFeeCalculation.getCalculatedVatAmount();
     return new ClaimFieldRow(
         null,
-        initialCalculated,
-        assessedOrInitialCalculated(
-            currentAssessment, AssessmentGet::getAllowedTotalVat, initialCalculated));
+        currentCalculated,
+        assessedOrCurrentCalculated(
+            currentAssessment, AssessmentGet::getAllowedTotalVat, currentCalculated));
   }
 
   @Named("totalIncludingVat")
   public ClaimFieldRow totalIncludingVat(
       ClaimResponseV2 claimResponse, @Context AssessmentGet currentAssessment) {
-    FeeCalculationPatch feeCalculation = claimResponse.getFeeCalculationResponse();
-    Object initialCalculated = feeCalculation == null ? null : feeCalculation.getTotalAmount();
+    FeeCalculationPatch currentFeeCalculation = claimResponse.getFeeCalculationResponse();
+    Object currentCalculated =
+        currentFeeCalculation == null ? null : currentFeeCalculation.getTotalAmount();
     return new ClaimFieldRow(
         null,
-        initialCalculated,
-        assessedOrInitialCalculated(
-            currentAssessment, AssessmentGet::getAllowedTotalInclVat, initialCalculated));
+        currentCalculated,
+        assessedOrCurrentCalculated(
+            currentAssessment, AssessmentGet::getAllowedTotalInclVat, currentCalculated));
   }
 
   @Named("travelCosts")
   public ClaimFieldRow travelCosts(
       ClaimResponseV2 claimResponse, @Context AssessmentGet currentAssessment) {
-    FeeCalculationPatch feeCalculation = claimResponse.getFeeCalculationResponse();
-    Object initialCalculated =
-        feeCalculation == null ? null : feeCalculation.getNetTravelCostsAmount();
+    FeeCalculationPatch currentFeeCalculation = claimResponse.getFeeCalculationResponse();
+    Object currentCalculated =
+        currentFeeCalculation == null ? null : currentFeeCalculation.getNetTravelCostsAmount();
     return new ClaimFieldRow(
         claimResponse.getTravelWaitingCostsAmount(),
-        initialCalculated,
-        assessedOrInitialCalculated(
-            currentAssessment, AssessmentGet::getNetTravelCostsAmount, initialCalculated));
+        currentCalculated,
+        assessedOrCurrentCalculated(
+            currentAssessment, AssessmentGet::getNetTravelCostsAmount, currentCalculated));
   }
 
   @Named("waitingCosts")
   public ClaimFieldRow waitingCosts(
       ClaimResponseV2 claimResponse, @Context AssessmentGet currentAssessment) {
-    FeeCalculationPatch feeCalculation = claimResponse.getFeeCalculationResponse();
-    Object initialCalculated =
-        feeCalculation == null ? null : feeCalculation.getNetWaitingCostsAmount();
+    FeeCalculationPatch currentFeeCalculation = claimResponse.getFeeCalculationResponse();
+    Object currentCalculated =
+        currentFeeCalculation == null ? null : currentFeeCalculation.getNetWaitingCostsAmount();
     return new ClaimFieldRow(
         claimResponse.getNetWaitingCostsAmount(),
-        initialCalculated,
-        assessedOrInitialCalculated(
-            currentAssessment, AssessmentGet::getNetWaitingCostsAmount, initialCalculated));
+        currentCalculated,
+        assessedOrCurrentCalculated(
+            currentAssessment, AssessmentGet::getNetWaitingCostsAmount, currentCalculated));
   }
 
   @Named("counselsCosts")
   public ClaimFieldRow counselsCosts(
       ClaimResponseV2 claimResponse, @Context AssessmentGet currentAssessment) {
-    FeeCalculationPatch feeCalculation = claimResponse.getFeeCalculationResponse();
-    Object initialCalculated =
-        feeCalculation == null ? null : feeCalculation.getNetCostOfCounselAmount();
+    FeeCalculationPatch currentFeeCalculation = claimResponse.getFeeCalculationResponse();
+    Object currentCalculated =
+        currentFeeCalculation == null ? null : currentFeeCalculation.getNetCostOfCounselAmount();
     return new ClaimFieldRow(
         claimResponse.getNetCounselCostsAmount(),
-        initialCalculated,
-        assessedOrInitialCalculated(
-            currentAssessment, AssessmentGet::getNetCostOfCounselAmount, initialCalculated));
+        currentCalculated,
+        assessedOrCurrentCalculated(
+            currentAssessment, AssessmentGet::getNetCostOfCounselAmount, currentCalculated));
   }
 
   @Named("travelAndWaitingCosts")
   public ClaimFieldRow travelAndWaitingCosts(
       ClaimResponseV2 claimResponse, @Context AssessmentGet currentAssessment) {
-    FeeCalculationPatch feeCalculation = claimResponse.getFeeCalculationResponse();
-    Object initialCalculated =
-        feeCalculation == null ? null : feeCalculation.getTravelAndWaitingCostsAmount();
+    FeeCalculationPatch currentFeeCalculation = claimResponse.getFeeCalculationResponse();
+    Object currentCalculated =
+        currentFeeCalculation == null
+            ? null
+            : currentFeeCalculation.getTravelAndWaitingCostsAmount();
     return new ClaimFieldRow(
         claimResponse.getTravelWaitingCostsAmount(),
-        initialCalculated,
-        assessedOrInitialCalculated(
+        currentCalculated,
+        assessedOrCurrentCalculated(
             currentAssessment,
             ClaimMapperHelper::assessedTravelAndWaitingCosts,
-            initialCalculated));
+            currentCalculated));
   }
 
   // AssessmentGet has no combined travel-and-waiting field (unlike FeeCalculationPatch) - sum its
@@ -180,93 +185,95 @@ public class ClaimMapperHelper {
   @Named("detentionTravelWaitingCosts")
   public ClaimFieldRow detentionTravelWaitingCosts(
       ClaimResponseV2 claimResponse, @Context AssessmentGet currentAssessment) {
-    FeeCalculationPatch feeCalculation = claimResponse.getFeeCalculationResponse();
-    Object initialCalculated =
-        feeCalculation == null ? null : feeCalculation.getDetentionTravelAndWaitingCostsAmount();
+    FeeCalculationPatch currentFeeCalculation = claimResponse.getFeeCalculationResponse();
+    Object currentCalculated =
+        currentFeeCalculation == null
+            ? null
+            : currentFeeCalculation.getDetentionTravelAndWaitingCostsAmount();
     return new ClaimFieldRow(
         claimResponse.getDetentionTravelWaitingCostsAmount(),
-        initialCalculated,
-        assessedOrInitialCalculated(
+        currentCalculated,
+        assessedOrCurrentCalculated(
             currentAssessment,
             AssessmentGet::getDetentionTravelAndWaitingCostsAmount,
-            initialCalculated));
+            currentCalculated));
   }
 
   @Named("jrFormFilling")
   public ClaimFieldRow jrFormFilling(
       ClaimResponseV2 claimResponse, @Context AssessmentGet currentAssessment) {
-    FeeCalculationPatch feeCalculation = claimResponse.getFeeCalculationResponse();
-    Object initialCalculated =
-        feeCalculation == null ? null : feeCalculation.getJrFormFillingAmount();
+    FeeCalculationPatch currentFeeCalculation = claimResponse.getFeeCalculationResponse();
+    Object currentCalculated =
+        currentFeeCalculation == null ? null : currentFeeCalculation.getJrFormFillingAmount();
     return new ClaimFieldRow(
         claimResponse.getJrFormFillingAmount(),
-        initialCalculated,
-        assessedOrInitialCalculated(
-            currentAssessment, AssessmentGet::getJrFormFillingAmount, initialCalculated));
+        currentCalculated,
+        assessedOrCurrentCalculated(
+            currentAssessment, AssessmentGet::getJrFormFillingAmount, currentCalculated));
   }
 
   @Named("adjournedHearingFee")
   public ClaimFieldRow adjournedHearingFee(
       ClaimResponseV2 claimResponse, @Context AssessmentGet currentAssessment) {
     BoltOnPatch boltOns = boltOnDetails(claimResponse);
-    Object initialCalculated = boltOns == null ? null : boltOns.getBoltOnAdjournedHearingFee();
+    Object currentCalculated = boltOns == null ? null : boltOns.getBoltOnAdjournedHearingFee();
     return new ClaimFieldRow(
         null,
-        initialCalculated,
-        assessedOrInitialCalculated(
-            currentAssessment, AssessmentGet::getBoltOnAdjournedHearingFee, initialCalculated));
+        currentCalculated,
+        assessedOrCurrentCalculated(
+            currentAssessment, AssessmentGet::getBoltOnAdjournedHearingFee, currentCalculated));
   }
 
   @Named("cmrhOral")
   public ClaimFieldRow cmrhOral(
       ClaimResponseV2 claimResponse, @Context AssessmentGet currentAssessment) {
     BoltOnPatch boltOns = boltOnDetails(claimResponse);
-    Object initialCalculated = boltOns == null ? null : boltOns.getBoltOnCmrhOralFee();
+    Object currentCalculated = boltOns == null ? null : boltOns.getBoltOnCmrhOralFee();
     return new ClaimFieldRow(
         null,
-        initialCalculated,
-        assessedOrInitialCalculated(
-            currentAssessment, AssessmentGet::getBoltOnCmrhOralFee, initialCalculated));
+        currentCalculated,
+        assessedOrCurrentCalculated(
+            currentAssessment, AssessmentGet::getBoltOnCmrhOralFee, currentCalculated));
   }
 
   @Named("cmrhTelephone")
   public ClaimFieldRow cmrhTelephone(
       ClaimResponseV2 claimResponse, @Context AssessmentGet currentAssessment) {
     BoltOnPatch boltOns = boltOnDetails(claimResponse);
-    Object initialCalculated = boltOns == null ? null : boltOns.getBoltOnCmrhTelephoneFee();
+    Object currentCalculated = boltOns == null ? null : boltOns.getBoltOnCmrhTelephoneFee();
     return new ClaimFieldRow(
         null,
-        initialCalculated,
-        assessedOrInitialCalculated(
-            currentAssessment, AssessmentGet::getBoltOnCmrhTelephoneFee, initialCalculated));
+        currentCalculated,
+        assessedOrCurrentCalculated(
+            currentAssessment, AssessmentGet::getBoltOnCmrhTelephoneFee, currentCalculated));
   }
 
   @Named("homeOfficeInterview")
   public ClaimFieldRow homeOfficeInterview(
       ClaimResponseV2 claimResponse, @Context AssessmentGet currentAssessment) {
     BoltOnPatch boltOns = boltOnDetails(claimResponse);
-    Object initialCalculated = boltOns == null ? null : boltOns.getBoltOnHomeOfficeInterviewFee();
+    Object currentCalculated = boltOns == null ? null : boltOns.getBoltOnHomeOfficeInterviewFee();
     return new ClaimFieldRow(
         null,
-        initialCalculated,
-        assessedOrInitialCalculated(
-            currentAssessment, AssessmentGet::getBoltOnHomeOfficeInterviewFee, initialCalculated));
+        currentCalculated,
+        assessedOrCurrentCalculated(
+            currentAssessment, AssessmentGet::getBoltOnHomeOfficeInterviewFee, currentCalculated));
   }
 
   @Named("substantiveHearing")
   public ClaimFieldRow substantiveHearing(
       ClaimResponseV2 claimResponse, @Context AssessmentGet currentAssessment) {
     BoltOnPatch boltOns = boltOnDetails(claimResponse);
-    Object initialCalculated = boltOns == null ? null : boltOns.getBoltOnSubstantiveHearingFee();
+    Object currentCalculated = boltOns == null ? null : boltOns.getBoltOnSubstantiveHearingFee();
     return new ClaimFieldRow(
         null,
-        initialCalculated,
-        assessedOrInitialCalculated(
-            currentAssessment, AssessmentGet::getBoltOnSubstantiveHearingFee, initialCalculated));
+        currentCalculated,
+        assessedOrCurrentCalculated(
+            currentAssessment, AssessmentGet::getBoltOnSubstantiveHearingFee, currentCalculated));
   }
 
   private static BoltOnPatch boltOnDetails(ClaimResponseV2 claimResponse) {
-    FeeCalculationPatch feeCalculation = claimResponse.getFeeCalculationResponse();
-    return feeCalculation == null ? null : feeCalculation.getBoltOnDetails();
+    FeeCalculationPatch currentFeeCalculation = claimResponse.getFeeCalculationResponse();
+    return currentFeeCalculation == null ? null : currentFeeCalculation.getBoltOnDetails();
   }
 }
