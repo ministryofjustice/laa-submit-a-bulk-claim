@@ -1,6 +1,5 @@
 package uk.gov.justice.laa.payments.submit.builder;
 
-import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
@@ -9,6 +8,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.AssessmentGet;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.AssessmentResultSet;
+import uk.gov.justice.laa.dstew.payments.claimsdata.model.AssessmentType;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.DerivedClaimStatus;
 import uk.gov.justice.laa.payments.submit.client.DataClaimsRestClient;
 
@@ -24,9 +24,8 @@ public class LatestAssessmentResolver {
   public Optional<AssessmentGet> resolveLatestAssessment(
       UUID claimId, DerivedClaimStatus derivedClaimStatus) {
 
-    // Escape early to avoid additional call to Claims API
-    if (!List.of(DerivedClaimStatus.AMENDED, DerivedClaimStatus.ASSESSED, DerivedClaimStatus.VOIDED)
-        .contains(derivedClaimStatus)) {
+    if (derivedClaimStatus != DerivedClaimStatus.ASSESSED
+        && derivedClaimStatus != DerivedClaimStatus.VOIDED) {
       return Optional.empty();
     }
     AssessmentResultSet resultSet =
@@ -34,8 +33,18 @@ public class LatestAssessmentResolver {
             .getClaimAssessments(claimId, 0, ASSESSMENT_PAGE_SIZE, "createdOn,desc")
             .block();
 
+    // Only return the assessment related to the derived claim status
     Optional<AssessmentGet> latestAssessment =
-        resultSet.getAssessments().stream().filter(Objects::nonNull).findFirst();
+        resultSet.getAssessments().stream()
+            .filter(Objects::nonNull)
+            .filter(
+                assessment ->
+                    derivedClaimStatus == DerivedClaimStatus.VOIDED
+                        ? assessment.getAssessmentType() == AssessmentType.VOID
+                        : assessment.getAssessmentType() == AssessmentType.ESCAPE_CASE_ASSESSMENT
+                            || assessment.getAssessmentType()
+                                == AssessmentType.STAGE_DISBURSEMENT_ASSESSMENT)
+            .findFirst();
 
     if (latestAssessment.isEmpty()) {
       log.warn("No assessment found for claim {}", claimId);
