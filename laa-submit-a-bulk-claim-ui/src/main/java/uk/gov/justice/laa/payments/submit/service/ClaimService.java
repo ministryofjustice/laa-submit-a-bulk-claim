@@ -58,7 +58,7 @@ public class ClaimService {
     DerivedClaimStatus derivedClaimStatus = claimResponse.getDerivedClaimStatus();
 
     AssessmentGet currentAssessment =
-        latestAssessmentResolver.resolveLatestAssessment(claimId).orElse(null);
+        latestAssessmentResolver.resolveLatestAssessment(claimId, derivedClaimStatus).orElse(null);
 
     ClaimDetailView claimDetailView =
         claimDetailViewFactory.create(claimResponse, currentAssessment);
