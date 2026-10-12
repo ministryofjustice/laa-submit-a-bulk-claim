@@ -270,8 +270,7 @@ class ClaimDetailAmendedTagViewTest extends ViewTestBase {
   private void stubPageData(
       AreaOfLaw areaOfLaw, ClaimDetailView claimDetailView, Set<String> amendedFields) {
     when(claimService.getClaimDetailPageData(submissionId, claimId, OIDC_USER))
-        .thenReturn(
-            new ClaimDetailPageData(areaOfLaw, false, claimDetailView, null, amendedFields));
+        .thenReturn(new ClaimDetailPageData(areaOfLaw, claimDetailView, null, amendedFields));
   }
 
   private static ClaimFieldRow valueRow(int base) {

@@ -141,17 +141,10 @@ class ClaimDetailCrimeLowerViewTest extends ViewTestBase {
     claimResponse.setDerivedClaimStatus(derivedClaimStatus);
 
     CrimeClaimDetailsView claimDetailView = new CrimeClaimDetailsView(details);
-    boolean showCurrentCalculated =
-        derivedClaimStatus == DerivedClaimStatus.AMENDED
-            || derivedClaimStatus == DerivedClaimStatus.ASSESSED;
     when(claimService.getClaimDetailPageData(submissionId, claimId, OIDC_USER))
         .thenReturn(
             new ClaimDetailPageData(
-                AreaOfLaw.CRIME_LOWER,
-                showCurrentCalculated,
-                claimDetailView,
-                banner.orElse(null),
-                amendedFields));
+                AreaOfLaw.CRIME_LOWER, claimDetailView, banner.orElse(null), amendedFields));
   }
 
   @Test

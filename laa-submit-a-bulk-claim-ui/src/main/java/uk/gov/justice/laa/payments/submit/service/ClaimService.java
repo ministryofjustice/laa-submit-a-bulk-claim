@@ -56,14 +56,9 @@ public class ClaimService {
     ClaimResponseV2 claimResponse = getClaimV2(submissionId, claimId, user);
 
     DerivedClaimStatus derivedClaimStatus = claimResponse.getDerivedClaimStatus();
-    boolean showCurrentCalculated =
-        derivedClaimStatus == DerivedClaimStatus.AMENDED
-            || derivedClaimStatus == DerivedClaimStatus.ASSESSED;
 
     AssessmentGet currentAssessment =
-        showCurrentCalculated
-            ? latestAssessmentResolver.resolveLatestNonVoid(claimId).orElse(null)
-            : null;
+        latestAssessmentResolver.resolveLatestAssessment(claimId).orElse(null);
 
     ClaimDetailView claimDetailView =
         claimDetailViewFactory.create(claimResponse, currentAssessment);
@@ -76,7 +71,6 @@ public class ClaimService {
             .orElseGet(List::of);
     return new ClaimDetailPageData(
         claimResponse.getAreaOfLaw(),
-        showCurrentCalculated,
         claimDetailView,
         claimStatusBannerBuilder.build(derivedClaimStatus, historyEvents).orElse(null),
         AmendedFieldsBuilder.build(historyEvents));

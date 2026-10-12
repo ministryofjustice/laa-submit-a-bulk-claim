@@ -8,7 +8,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.AssessmentGet;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.AssessmentResultSet;
-import uk.gov.justice.laa.dstew.payments.claimsdata.model.AssessmentType;
 import uk.gov.justice.laa.payments.submit.client.DataClaimsRestClient;
 
 @Slf4j
@@ -20,24 +19,19 @@ public class LatestAssessmentResolver {
 
   private final DataClaimsRestClient dataClaimsRestClient;
 
-  public Optional<AssessmentGet> resolveLatestNonVoid(UUID claimId) {
+  public Optional<AssessmentGet> resolveLatestAssessment(UUID claimId) {
     AssessmentResultSet resultSet =
         dataClaimsRestClient
             .getClaimAssessments(claimId, 0, ASSESSMENT_PAGE_SIZE, "createdOn,desc")
             .block();
 
-    Optional<AssessmentGet> latestNonVoid =
-        resultSet.getAssessments().stream()
-            .filter(Objects::nonNull)
-            .filter(assessment -> assessment.getAssessmentType() != AssessmentType.VOID)
-            .findFirst();
+    Optional<AssessmentGet> latestAssessment =
+        resultSet.getAssessments().stream().filter(Objects::nonNull).findFirst();
 
-    if (latestNonVoid.isEmpty()) {
-      log.warn(
-          "No non-VOID assessment found for claim {} despite an AMENDED/ASSESSED derived status",
-          claimId);
+    if (latestAssessment.isEmpty()) {
+      log.warn("No assessment found for claim {}", claimId);
     }
 
-    return latestNonVoid;
+    return latestAssessment;
   }
 }

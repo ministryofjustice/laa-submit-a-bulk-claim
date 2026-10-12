@@ -133,17 +133,10 @@ class ClaimDetailMediationViewTest extends ViewTestBase {
     claimResponse.setDerivedClaimStatus(derivedClaimStatus);
 
     MediationClaimDetailsView claimDetailView = new MediationClaimDetailsView(details);
-    boolean showCurrentCalculated =
-        derivedClaimStatus == DerivedClaimStatus.AMENDED
-            || derivedClaimStatus == DerivedClaimStatus.ASSESSED;
     when(claimService.getClaimDetailPageData(submissionId, claimId, OIDC_USER))
         .thenReturn(
             new ClaimDetailPageData(
-                AreaOfLaw.MEDIATION,
-                showCurrentCalculated,
-                claimDetailView,
-                banner.orElse(null),
-                amendedFields));
+                AreaOfLaw.MEDIATION, claimDetailView, banner.orElse(null), amendedFields));
   }
 
   @Test

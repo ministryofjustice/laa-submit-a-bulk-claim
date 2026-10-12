@@ -128,11 +128,7 @@ class ClaimDetailControllerTest extends BaseControllerTest {
         when(claimService.getClaimDetailPageData(submissionId, claimId, OIDC_USER))
             .thenReturn(
                 new ClaimDetailPageData(
-                    AreaOfLaw.CRIME_LOWER,
-                    false,
-                    new CrimeClaimDetailsView(details),
-                    null,
-                    Set.of()));
+                    AreaOfLaw.CRIME_LOWER, new CrimeClaimDetailsView(details), null, Set.of()));
       }
 
       @Test

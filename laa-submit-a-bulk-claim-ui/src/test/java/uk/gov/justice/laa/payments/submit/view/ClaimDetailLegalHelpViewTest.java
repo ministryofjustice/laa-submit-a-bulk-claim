@@ -184,17 +184,10 @@ class ClaimDetailLegalHelpViewTest extends ViewTestBase {
     claimResponse.setDerivedClaimStatus(derivedClaimStatus);
 
     LegalHelpClaimDetailsView claimDetailView = new LegalHelpClaimDetailsView(details);
-    boolean showCurrentCalculated =
-        derivedClaimStatus == DerivedClaimStatus.AMENDED
-            || derivedClaimStatus == DerivedClaimStatus.ASSESSED;
     when(claimService.getClaimDetailPageData(submissionId, claimId, OIDC_USER))
         .thenReturn(
             new ClaimDetailPageData(
-                AreaOfLaw.LEGAL_HELP,
-                showCurrentCalculated,
-                claimDetailView,
-                banner.orElse(null),
-                amendedFields));
+                AreaOfLaw.LEGAL_HELP, claimDetailView, banner.orElse(null), amendedFields));
   }
 
   @Test

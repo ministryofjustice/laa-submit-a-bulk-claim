@@ -26,49 +26,29 @@ class LatestAssessmentResolverTest {
   private final UUID claimId = UUID.randomUUID();
 
   @Test
-  @DisplayName("Should return the most recent non-VOID assessment")
-  void shouldReturnTheLatestNonVoidAssessment() {
+  @DisplayName("Should return the most recent assessment")
+  void shouldReturnTheLatestAssessment() {
     AssessmentGet latest =
         new AssessmentGet().assessmentType(AssessmentType.ESCAPE_CASE_ASSESSMENT);
     stubAssessments(latest);
 
-    Optional<AssessmentGet> result = resolver.resolveLatestNonVoid(claimId);
+    Optional<AssessmentGet> result = resolver.resolveLatestAssessment(claimId);
 
     assertThat(result).contains(latest);
   }
 
   @Test
-  @DisplayName("Should skip a VOID assessment record and fall back to the next non-VOID assessment")
-  void shouldFallBackPastAVoidRecord() {
-    AssessmentGet voided = new AssessmentGet().assessmentType(AssessmentType.VOID);
-    AssessmentGet previous =
-        new AssessmentGet().assessmentType(AssessmentType.STAGE_DISBURSEMENT_ASSESSMENT);
-    stubAssessments(voided, previous);
+  @DisplayName("Should return the most recent assessment when multiple assessments exist")
+  void shouldReturnTheLatestAssessmentWhenMultipleExist() {
+    AssessmentGet latest =
+        new AssessmentGet().assessmentType(AssessmentType.ESCAPE_CASE_ASSESSMENT);
+    AssessmentGet secondLatest =
+        new AssessmentGet().assessmentType(AssessmentType.ESCAPE_CASE_ASSESSMENT);
+    stubAssessments(latest, secondLatest);
 
-    Optional<AssessmentGet> result = resolver.resolveLatestNonVoid(claimId);
+    Optional<AssessmentGet> result = resolver.resolveLatestAssessment(claimId);
 
-    assertThat(result).contains(previous);
-  }
-
-  @Test
-  @DisplayName("Should degrade to empty, not throw, when every assessment is VOID")
-  void shouldDegradeToEmptyWhenAllAssessmentsAreVoid() {
-    stubAssessments(new AssessmentGet().assessmentType(AssessmentType.VOID));
-
-    Optional<AssessmentGet> result = resolver.resolveLatestNonVoid(claimId);
-
-    assertThat(result).isEmpty();
-  }
-
-  @Test
-  @DisplayName("Should degrade to empty, not throw, when the claim has no assessments at all")
-  void shouldDegradeToEmptyWhenThereAreNoAssessments() {
-    when(dataClaimsRestClient.getClaimAssessments(eq(claimId), any(), any(), any()))
-        .thenReturn(Mono.just(new AssessmentResultSet().assessments(List.of())));
-
-    Optional<AssessmentGet> result = resolver.resolveLatestNonVoid(claimId);
-
-    assertThat(result).isEmpty();
+    assertThat(result).contains(latest);
   }
 
   private void stubAssessments(AssessmentGet... assessmentsInOrder) {
