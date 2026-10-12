@@ -1,4 +1,4 @@
-<th:block th:fragment="summary(tagModifier, statusText, showSubmissionValue, showWarnings)">
+<th:block th:fragment="summary(tagModifier, statusText, showSubmissionValue, showWarnings, dateTimeLabel)">
   <div class="govuk-grid-column-one-half-from-desktop" data-module="laa-print-button" data-print-action-container="secondary-action-container">
     <h1 class="govuk-heading-l" th:text="#{submission.summary.heading}"></h1>
   </div>
@@ -23,7 +23,7 @@
     <dl class="govuk-summary-list">
       <div class="govuk-summary-list__row" id="submission-summary__created">
         <dt class="govuk-summary-list__key"
-            th:text="#{submission.summary.properties.dateTime}"></dt>
+            th:text="${dateTimeLabel}"></dt>
         <dd class="govuk-summary-list__value"
             th:with="submittedLondonTime=${@dateTimeUtil.toLondonLocalDateTime(submissionSummary.submitted())}"
             th:text="|${#temporals.format(submittedLondonTime,'d MMM yyyy')} at ${#temporals.format(submittedLondonTime,'h:mma')}|"></dd>

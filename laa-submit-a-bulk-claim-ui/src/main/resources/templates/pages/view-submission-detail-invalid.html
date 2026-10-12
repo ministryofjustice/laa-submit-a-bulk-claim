@@ -7,7 +7,7 @@
       <th:block
           th:replace="~{fragments/submission-details/validation-error-banner :: validation-error-banner(${messagesSummary})}"></th:block>
       <th:block
-          th:replace="~{fragments/submission-details/summary :: summary(' govuk-tag--red', #{submission.summary.status.rejected}, false, false)}"></th:block>
+          th:replace="~{fragments/submission-details/summary :: summary(' govuk-tag--red', #{submission.summary.status.rejected}, false, false, #{submission.summary.properties.dateTime})}"></th:block>
       <th:block
           th:replace="~{fragments/submission-details/claim-messages-errors :: claim-messages-errors}"></th:block>
       <th:block
