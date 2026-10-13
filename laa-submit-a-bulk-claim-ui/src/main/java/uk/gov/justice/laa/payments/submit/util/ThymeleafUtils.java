@@ -3,8 +3,11 @@ package uk.gov.justice.laa.payments.submit.util;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
+import java.util.Collection;
+import java.util.Set;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;
+import uk.gov.justice.laa.payments.submit.dto.submission.claim.viewmodels.viewfield.ClaimViewField;
 import uk.gov.justice.laa.payments.submit.viewmodels.ThymeleafLiteralString;
 import uk.gov.justice.laa.payments.submit.viewmodels.ThymeleafMessage;
 import uk.gov.justice.laa.payments.submit.viewmodels.ThymeleafString;
@@ -38,5 +41,9 @@ public class ThymeleafUtils {
   public ThymeleafString getFormattedBoolean(Boolean value) {
     String key = (value != null && value) ? "common.yes" : "common.no";
     return new ThymeleafMessage(key);
+  }
+
+  public boolean anyAmended(Collection<? extends ClaimViewField<?>> fields, Set<String> amended) {
+    return fields.stream().anyMatch(field -> field.isAmended(amended));
   }
 }

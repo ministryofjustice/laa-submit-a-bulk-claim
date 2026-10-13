@@ -6,7 +6,6 @@ import uk.gov.justice.laa.payments.submit.dto.submission.claim.viewmodels.ClaimS
 
 public record ClaimDetailPageData(
     AreaOfLaw areaOfLaw,
-    boolean showCurrentCalculated,
     ClaimDetailView claimDetailView,
     ClaimStatusBanner banner,
     Set<String> amendedFields) {}

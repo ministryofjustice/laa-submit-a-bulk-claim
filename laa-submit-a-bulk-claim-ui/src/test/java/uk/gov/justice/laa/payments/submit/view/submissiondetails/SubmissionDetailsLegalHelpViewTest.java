@@ -289,7 +289,7 @@ class SubmissionDetailsLegalHelpViewTest extends SubmissionDetailsViewTestBase {
     assertTableHeaderIsSortable(headers.get(1), "none", "UFN", claimSortLink("unique_file_number"));
     assertTableHeaderIsSortable(headers.get(2), "none", "Fee code", claimSortLink("fee_code"));
     assertTableHeaderIsSortable(
-        headers.get(3), "none", "Initial calculated value", claimSortLink("total_amount"));
+        headers.get(3), "none", "Calculated value", claimSortLink("total_amount"));
     assertTableHeaderIsSortable(
         headers.get(4), "none", "UCN", claimSortLink("unique_client_number"));
     assertTableHeaderIsSortable(
@@ -359,7 +359,7 @@ class SubmissionDetailsLegalHelpViewTest extends SubmissionDetailsViewTestBase {
     assertClaimFieldIsSortable(
         3,
         "total_amount",
-        "Initial calculated value",
+        "Calculated value",
         currentDirection,
         currentPage,
         expectedAriaDirection,

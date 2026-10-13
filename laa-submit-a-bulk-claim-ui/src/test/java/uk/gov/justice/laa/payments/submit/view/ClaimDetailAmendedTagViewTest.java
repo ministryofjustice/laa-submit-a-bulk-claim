@@ -105,7 +105,6 @@ class ClaimDetailAmendedTagViewTest extends ViewTestBase {
   @Test
   @DisplayName("Should not tag the totals when the fee scheme did not reprice the claim")
   void shouldNotTagTotalsWhenNotRepriced() {
-    when(featureFlagsConfig.getIsAssessedColumnEnabled()).thenReturn(true);
     stubLegalHelpClaim(amended("claimSummaryFee.netProfitCostsAmount"));
 
     Document doc = renderDocument();
@@ -116,7 +115,6 @@ class ClaimDetailAmendedTagViewTest extends ViewTestBase {
   @Test
   @DisplayName("Should tag the totals that the fee scheme recalculated")
   void shouldTagRecalculatedTotals() {
-    when(featureFlagsConfig.getIsAssessedColumnEnabled()).thenReturn(true);
     stubLegalHelpClaim(
         amended(
             "claimSummaryFee.netProfitCostsAmount",
@@ -134,7 +132,6 @@ class ClaimDetailAmendedTagViewTest extends ViewTestBase {
   @Test
   @DisplayName("Should tag the recalculated totals when the amended field is not a displayed row")
   void shouldTagRecalculatedTotalsWhenAmendedFieldIsNotDisplayed() {
-    when(featureFlagsConfig.getIsAssessedColumnEnabled()).thenReturn(true);
     stubLegalHelpClaim(amended("claim.schemeId", "fee.calculatedVatAmount", "fee.totalAmount"));
 
     Document doc = renderDocument();
@@ -273,8 +270,7 @@ class ClaimDetailAmendedTagViewTest extends ViewTestBase {
   private void stubPageData(
       AreaOfLaw areaOfLaw, ClaimDetailView claimDetailView, Set<String> amendedFields) {
     when(claimService.getClaimDetailPageData(submissionId, claimId, OIDC_USER))
-        .thenReturn(
-            new ClaimDetailPageData(areaOfLaw, false, claimDetailView, null, amendedFields));
+        .thenReturn(new ClaimDetailPageData(areaOfLaw, claimDetailView, null, amendedFields));
   }
 
   private static ClaimFieldRow valueRow(int base) {

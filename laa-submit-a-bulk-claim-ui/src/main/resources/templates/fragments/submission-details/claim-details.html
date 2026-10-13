@@ -41,7 +41,7 @@
                 ${submissionViewQuery}, ${SubmissionViewSortField.CASE_CONCLUDED_DATE}, 'submission.summary.claims.table.dateWorkConcluded')}"></th:block>
 
             <th:block th:replace="~{fragments/sortable-header :: sortableHeader(
-                ${submissionViewQuery}, ${SubmissionViewSortField.TOTAL_AMOUNT}, 'submission.summary.claims.table.initialCalculatedValue')}"></th:block>
+                ${submissionViewQuery}, ${SubmissionViewSortField.TOTAL_AMOUNT}, 'submission.summary.claims.table.calculatedValue')}"></th:block>
 
             <th:block th:if="${showUpdatedCalculatedValueColumn}">
               <th:block th:replace="~{fragments/sortable-header :: sortableHeader(
@@ -78,7 +78,7 @@
                 ${submissionViewQuery}, ${SubmissionViewSortField.FEE_CODE}, 'submission.summary.claims.table.feeCode')}"></th:block>
 
             <th:block th:replace="~{fragments/sortable-header :: sortableHeader(
-                ${submissionViewQuery}, ${SubmissionViewSortField.TOTAL_AMOUNT}, 'submission.summary.claims.table.initialCalculatedValue')}"></th:block>
+                ${submissionViewQuery}, ${SubmissionViewSortField.TOTAL_AMOUNT}, 'submission.summary.claims.table.calculatedValue')}"></th:block>
 
             <th:block th:if="${showUpdatedCalculatedValueColumn}">
               <th:block th:replace="~{fragments/sortable-header :: sortableHeader(
