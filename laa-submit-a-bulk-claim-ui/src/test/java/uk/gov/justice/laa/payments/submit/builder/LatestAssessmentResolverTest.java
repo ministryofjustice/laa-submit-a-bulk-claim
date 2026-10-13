@@ -39,27 +39,7 @@ class LatestAssessmentResolverTest {
     Optional<AssessmentGet> result = resolver.resolveLatestAssessment(claimId, derivedClaimStatus);
 
     assertThat(result).contains(latest);
-    verify(dataClaimsRestClient).getClaimAssessments(claimId, 0, 5, "createdOn,desc");
-  }
-
-  @ParameterizedTest
-  @EnumSource(
-      value = DerivedClaimStatus.class,
-      names = {"ASSESSED", "VOIDED"})
-  @DisplayName("Should return the most recent assessment when multiple assessments exist")
-  void shouldReturnTheLatestAssessmentWhenMultipleExist(DerivedClaimStatus derivedClaimStatus) {
-    AssessmentGet latest = assessmentForStatus(derivedClaimStatus);
-    AssessmentGet secondLatest = assessmentForStatus(derivedClaimStatus);
-    AssessmentGet mismatched =
-        assessmentForStatus(
-            derivedClaimStatus == DerivedClaimStatus.VOIDED
-                ? DerivedClaimStatus.ASSESSED
-                : DerivedClaimStatus.VOIDED);
-    stubAssessments(null, new AssessmentGet(), mismatched, latest, secondLatest);
-
-    Optional<AssessmentGet> result = resolver.resolveLatestAssessment(claimId, derivedClaimStatus);
-
-    assertThat(result).contains(latest);
+    verify(dataClaimsRestClient).getClaimAssessments(claimId, 0, 1, "createdOn,desc");
   }
 
   @ParameterizedTest
@@ -73,7 +53,7 @@ class LatestAssessmentResolverTest {
     Optional<AssessmentGet> result = resolver.resolveLatestAssessment(claimId, derivedClaimStatus);
 
     assertThat(result).isEmpty();
-    verify(dataClaimsRestClient).getClaimAssessments(claimId, 0, 5, "createdOn,desc");
+    verify(dataClaimsRestClient).getClaimAssessments(claimId, 0, 1, "createdOn,desc");
   }
 
   @ParameterizedTest
@@ -108,24 +88,29 @@ class LatestAssessmentResolverTest {
   @EnumSource(
       value = AssessmentType.class,
       names = {"ESCAPE_CASE_ASSESSMENT", "STAGE_DISBURSEMENT_ASSESSMENT"})
-  @DisplayName("Should return empty when assessment types do not match the claim status")
-  void shouldReturnEmptyWhenAssessmentTypesDoNotMatch(AssessmentType assessmentType) {
-    stubAssessments(new AssessmentGet().assessmentType(assessmentType));
-    assertThat(resolver.resolveLatestAssessment(claimId, DerivedClaimStatus.VOIDED)).isEmpty();
+  @DisplayName("Should still return the assessment when its type does not match the claim status")
+  void shouldReturnAssessmentWhenTypeDoesNotMatchStatus(AssessmentType assessmentType) {
+    AssessmentGet assessedType = new AssessmentGet().assessmentType(assessmentType);
+    stubAssessments(assessedType);
+    assertThat(resolver.resolveLatestAssessment(claimId, DerivedClaimStatus.VOIDED))
+        .contains(assessedType);
 
-    stubAssessments(new AssessmentGet().assessmentType(AssessmentType.VOID));
-    assertThat(resolver.resolveLatestAssessment(claimId, DerivedClaimStatus.ASSESSED)).isEmpty();
+    AssessmentGet voidType = new AssessmentGet().assessmentType(AssessmentType.VOID);
+    stubAssessments(voidType);
+    assertThat(resolver.resolveLatestAssessment(claimId, DerivedClaimStatus.ASSESSED))
+        .contains(voidType);
   }
 
   @ParameterizedTest
   @EnumSource(
       value = DerivedClaimStatus.class,
       names = {"ASSESSED", "VOIDED"})
-  @DisplayName("Should return empty when assessments or their types are null")
-  void shouldReturnEmptyWhenAssessmentsHaveNoType(DerivedClaimStatus derivedClaimStatus) {
-    stubAssessments(null, new AssessmentGet());
+  @DisplayName("Should skip null assessments and return an assessment without a type")
+  void shouldReturnAssessmentWithNoType(DerivedClaimStatus derivedClaimStatus) {
+    AssessmentGet untyped = new AssessmentGet();
+    stubAssessments(null, untyped);
 
-    assertThat(resolver.resolveLatestAssessment(claimId, derivedClaimStatus)).isEmpty();
+    assertThat(resolver.resolveLatestAssessment(claimId, derivedClaimStatus)).contains(untyped);
   }
 
   private AssessmentGet assessmentForStatus(DerivedClaimStatus derivedClaimStatus) {
@@ -137,7 +122,7 @@ class LatestAssessmentResolverTest {
   }
 
   private void stubAssessments(AssessmentGet... assessmentsInOrder) {
-    when(dataClaimsRestClient.getClaimAssessments(claimId, 0, 5, "createdOn,desc"))
+    when(dataClaimsRestClient.getClaimAssessments(claimId, 0, 1, "createdOn,desc"))
         .thenReturn(
             Mono.just(new AssessmentResultSet().assessments(Arrays.asList(assessmentsInOrder))));
   }
