@@ -1,5 +1,6 @@
 package uk.gov.justice.laa.payments.submit.controller;
 
+import static java.lang.Boolean.TRUE;
 import static uk.gov.justice.laa.payments.submit.constants.SessionConstants.BULK_SUBMISSION_ID;
 import static uk.gov.justice.laa.payments.submit.constants.SessionConstants.SUBMISSION_ID;
 
@@ -83,13 +84,18 @@ public class SubmissionDetailController {
 
     SubmissionSummary submissionSummary = submissionSummaryBuilder.build(submission);
     boolean submissionAccepted = submission.getStatus() == SubmissionStatus.VALIDATION_SUCCEEDED;
+    boolean submissionNotSubmitted =
+        TRUE.equals(featureFlagsConfig.getIsPreSubmissionEnabled())
+            && submission.getStatus() == SubmissionStatus.VALIDATED_PENDING_APPROVAL;
 
-    if (submissionAccepted) {
+    if (submissionAccepted || submissionNotSubmitted) {
       submissionSummary =
-          handleAcceptedSubmission(
+          handleSubmissionDetails(
               model, user, submissionSummary, submission, submissionViewQuery, messageQuery);
       addCommonSubmissionAttributes(model, submissionSummary, submission, submissionViewQuery);
-      return "pages/view-submission-detail-accepted";
+      return submissionNotSubmitted
+          ? "pages/view-submission-detail-not-submitted"
+          : "pages/view-submission-detail-accepted";
     } else {
       handleInvalidSubmission(model, user, submission, messageQuery);
       addCommonSubmissionAttributes(model, submissionSummary, submission, submissionViewQuery);
@@ -97,7 +103,7 @@ public class SubmissionDetailController {
     }
   }
 
-  private SubmissionSummary handleAcceptedSubmission(
+  private SubmissionSummary handleSubmissionDetails(
       Model model,
       OidcUser user,
       SubmissionSummary submissionSummary,

@@ -86,6 +86,7 @@ feature-flags:
   # This updated calculated value is not available via API yet, will need to be enabled once available
   is-updated-calculated-value-available: ${IS_UPDATED_CALCULATED_VALUE_AVAILABLE:false}
   is-assessed-column-enabled: ${IS_ASSESSED_COLUMN_ENABLED:false}
+  is-pre-submission-enabled: ${IS_PRE_SUBMISSION_ENABLED:false}
 
 management:
   server:

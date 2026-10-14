@@ -14,6 +14,7 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
+import org.junit.jupiter.params.provider.NullSource;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
@@ -39,6 +40,55 @@ public class BulkUploadBeingCheckedControllerTest extends BaseControllerTest {
   @Nested
   @DisplayName("GET: /upload-is-being-checked")
   class UploadIsBeingChecked {
+
+    @Test
+    void shouldRedirectPendingApprovalWhenPreSubmissionEnabled() {
+      UUID submissionId = UUID.randomUUID();
+      UUID bulkSubmissionId = UUID.randomUUID();
+      when(featureFlagsConfig.getIsPreSubmissionEnabled()).thenReturn(true);
+      when(dataClaimsRestClient.getBulkSubmissionSummary(bulkSubmissionId))
+          .thenReturn(
+              Mono.just(
+                  GetBulkSubmissionStatusById200Response.builder()
+                      .status(BulkSubmissionStatus.VALIDATED_PENDING_APPROVAL)
+                      .build()));
+
+      assertThat(
+              mockMvc.perform(
+                  get("/upload-is-being-checked")
+                      .with(oidcLogin().oidcUser(OIDC_USER))
+                      .sessionAttr(SUBMISSION_ID, submissionId)
+                      .sessionAttr(BULK_SUBMISSION_ID, bulkSubmissionId)))
+          .hasStatus3xxRedirection()
+          .hasRedirectedUrl("/submissions/" + submissionId);
+    }
+
+    @ParameterizedTest
+    @NullSource
+    @ValueSource(booleans = false)
+    void shouldReturnUnexpectedStatusWhenPendingApprovalAndPreSubmissionDisabledOrUnset(
+        Boolean enabled) {
+      UUID submissionId = UUID.randomUUID();
+      UUID bulkSubmissionId = UUID.randomUUID();
+      when(featureFlagsConfig.getIsPreSubmissionEnabled()).thenReturn(enabled);
+      when(dataClaimsRestClient.getBulkSubmissionSummary(bulkSubmissionId))
+          .thenReturn(
+              Mono.just(
+                  GetBulkSubmissionStatusById200Response.builder()
+                      .status(BulkSubmissionStatus.VALIDATED_PENDING_APPROVAL)
+                      .build()));
+
+      assertThat(
+              mockMvc.perform(
+                  get("/upload-is-being-checked")
+                      .with(oidcLogin().oidcUser(OIDC_USER))
+                      .sessionAttr(SUBMISSION_ID, submissionId)
+                      .sessionAttr(BULK_SUBMISSION_ID, bulkSubmissionId)))
+          .failure()
+          .hasCauseInstanceOf(SubmitBulkClaimException.class)
+          .hasMessageContaining(
+              "Unexpected bulk submission status returned for: " + bulkSubmissionId);
+    }
 
     @ParameterizedTest
     @EnumSource(

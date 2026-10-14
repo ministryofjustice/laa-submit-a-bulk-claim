@@ -122,7 +122,7 @@
                     th:text="#{submission.summary.claims.escapeCase.no}"></span>
             </td>
             <td class="govuk-table__cell">
-              <strong th:if="${claim.status == 'VALIDATED_PENDING_APPROVAL'}" class="govuk-tag govuk-tag--grey"
+              <strong th:if="${claim.status == 'VALIDATED_PENDING_APPROVAL'}" class="govuk-tag govuk-tag--grey app-tag--not-submitted"
                       th:text="${#messages.msg('submission.summary.claims.status.' + #strings.toLowerCase(claim.status))}"></strong>
               <strong th:if="${claim.status == 'ACCEPTED'}" class="govuk-tag govuk-tag--green"
                       th:text="${#messages.msg('submission.summary.claims.status.' + #strings.toLowerCase(claim.status))}"></strong>
@@ -167,7 +167,7 @@
                     th:text="#{submission.summary.claims.escapeCase.no}"></span>
             </td>
             <td class="govuk-table__cell">
-              <strong th:if="${claim.status == 'VALIDATED_PENDING_APPROVAL'}" class="govuk-tag govuk-tag--grey"
+              <strong th:if="${claim.status == 'VALIDATED_PENDING_APPROVAL'}" class="govuk-tag govuk-tag--grey app-tag--not-submitted"
                       th:text="${#messages.msg('submission.summary.claims.status.' + #strings.toLowerCase(claim.status))}"></strong>
               <strong th:if="${claim.status == 'ACCEPTED'}" class="govuk-tag govuk-tag--green"
                       th:text="${#messages.msg('submission.summary.claims.status.' + #strings.toLowerCase(claim.status))}"></strong>

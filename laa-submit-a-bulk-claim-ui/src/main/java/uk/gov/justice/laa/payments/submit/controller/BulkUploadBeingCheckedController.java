@@ -1,5 +1,6 @@
 package uk.gov.justice.laa.payments.submit.controller;
 
+import static java.lang.Boolean.TRUE;
 import static uk.gov.justice.laa.payments.submit.constants.SessionConstants.BULK_SUBMISSION_ID;
 import static uk.gov.justice.laa.payments.submit.constants.SessionConstants.SUBMISSION_ID;
 
@@ -17,6 +18,7 @@ import org.springframework.web.reactive.function.client.WebClientResponseExcepti
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.BulkSubmissionStatus;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.GetBulkSubmissionStatusById200Response;
 import uk.gov.justice.laa.payments.submit.client.DataClaimsRestClient;
+import uk.gov.justice.laa.payments.submit.config.FeatureFlagsConfig;
 import uk.gov.justice.laa.payments.submit.exception.SubmitBulkClaimException;
 
 @Slf4j
@@ -25,6 +27,7 @@ import uk.gov.justice.laa.payments.submit.exception.SubmitBulkClaimException;
 public class BulkUploadBeingCheckedController {
 
   private final DataClaimsRestClient dataClaimsRestClient;
+  private final FeatureFlagsConfig featureFlagsConfig;
 
   private final List<BulkSubmissionStatus> completedStatuses =
       List.of(BulkSubmissionStatus.VALIDATION_SUCCEEDED, BulkSubmissionStatus.VALIDATION_FAILED);
@@ -61,7 +64,9 @@ public class BulkUploadBeingCheckedController {
         model.addAttribute("shouldRefresh", true);
         return "pages/upload-being-checked";
       }
-      if (completedStatuses.contains(bulkSubmissionStatus)) {
+      if (completedStatuses.contains(bulkSubmissionStatus)
+          || (TRUE.equals(featureFlagsConfig.getIsPreSubmissionEnabled())
+              && bulkSubmissionStatus == BulkSubmissionStatus.VALIDATED_PENDING_APPROVAL)) {
         return "redirect:/submissions/%s".formatted(submissionId.toString());
       }
       throw new SubmitBulkClaimException(
