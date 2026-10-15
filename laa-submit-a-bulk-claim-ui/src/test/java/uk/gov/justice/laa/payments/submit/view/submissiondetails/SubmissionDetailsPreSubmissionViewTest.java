@@ -77,7 +77,7 @@ class SubmissionDetailsPreSubmissionViewTest extends SubmissionDetailsViewTestBa
   void rendersPreSubmissionBannerAndStatus() {
     var doc = renderDocument();
 
-    assertPageHasTitle(doc, "Submission details");
+    assertPageHasTitle(doc, "Your bulk claim is ready for submission");
     assertPageHasHeading(doc, "Submission summary");
     assertThat(doc.select(".moj-alert--information")).isNotEmpty();
     assertPageHasContent(
@@ -149,6 +149,14 @@ class SubmissionDetailsPreSubmissionViewTest extends SubmissionDetailsViewTestBa
         .isEqualTo(
             "/submissions/%s/claims/%s?page=0&navTab=CLAIM_DETAILS"
                 .formatted(submissionId, CLAIM_ID));
+  }
+
+  @Test
+  void doesNotRenderPrintAction() {
+    var doc = renderDocument();
+
+    assertThat(doc.select("[data-module=laa-print-button]")).isEmpty();
+    assertThat(doc.select("#print-button")).isEmpty();
   }
 
   @Test

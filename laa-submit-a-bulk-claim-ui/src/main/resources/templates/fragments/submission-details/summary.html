@@ -1,5 +1,6 @@
-<th:block th:fragment="summary(tagModifier, statusText, showSubmissionValue, showWarnings, dateTimeLabel)">
-  <div class="govuk-grid-column-one-half-from-desktop" data-module="laa-print-button" data-print-action-container="secondary-action-container">
+<th:block th:fragment="summary(tagModifier, statusText, showSubmissionValue, showWarnings, dateTimeLabel, showPrint)">
+  <div class="govuk-grid-column-one-half-from-desktop"
+       th:attr="data-module=${showPrint ? 'laa-print-button' : null}, data-print-action-container=${showPrint ? 'secondary-action-container' : null}">
     <h1 class="govuk-heading-l" th:text="#{submission.summary.heading}"></h1>
   </div>
 
