@@ -22,6 +22,7 @@ import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.validation.Errors;
 import org.springframework.validation.SimpleErrors;
 import org.springframework.web.multipart.MaxUploadSizeExceededException;
+import uk.gov.justice.laa.dstew.payments.claimsdata.model.AreaOfLaw;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.BulkSubmissionStatus;
 import uk.gov.justice.laa.payments.submit.dto.FileUploadForm;
 import uk.gov.justice.laa.payments.submit.util.BulkLoadSpreadsheetFilenameUtil;
@@ -320,7 +321,7 @@ class BulkClaimMetricServiceTest {
     void shouldRecordMatchedStandardFilename() {
       // When
       bulkClaimMetricService.recordFileNamePattern(
-          "claims-v2.00.csv", BulkSubmissionStatus.VALIDATION_SUCCEEDED);
+          "claims-v2.00.csv", AreaOfLaw.LEGAL_HELP, BulkSubmissionStatus.VALIDATION_SUCCEEDED);
       // Then
       var labels =
           bulkClaimMetricService
@@ -339,7 +340,7 @@ class BulkClaimMetricServiceTest {
     void shouldRecordMatchedMacFilename() {
       // When
       bulkClaimMetricService.recordFileNamePattern(
-          "claims-mac-v1.42.csv", BulkSubmissionStatus.VALIDATION_SUCCEEDED);
+          "claims-mac-v1.42.csv", AreaOfLaw.LEGAL_HELP, BulkSubmissionStatus.VALIDATION_SUCCEEDED);
       // Then
       var labels =
           bulkClaimMetricService
@@ -358,7 +359,7 @@ class BulkClaimMetricServiceTest {
     void shouldRecordNonMatchingFilename() {
       // When
       bulkClaimMetricService.recordFileNamePattern(
-          "my-own-claims.csv", BulkSubmissionStatus.VALIDATION_SUCCEEDED);
+          "my-own-claims.csv", AreaOfLaw.LEGAL_HELP, BulkSubmissionStatus.VALIDATION_SUCCEEDED);
       // Then
       var labels =
           bulkClaimMetricService
@@ -373,6 +374,43 @@ class BulkClaimMetricServiceTest {
     }
 
     @ParameterizedTest
+    @CsvSource({"CRIME_LOWER,crime_lower", "LEGAL_HELP,legal_help", "MEDIATION,mediation"})
+    @DisplayName("Should record the area of law label")
+    void shouldRecordAreaOfLaw(AreaOfLaw areaOfLaw, String expectedLabel) {
+      // When
+      bulkClaimMetricService.recordFileNamePattern(
+          "claims-v2.00.csv", areaOfLaw, BulkSubmissionStatus.VALIDATION_SUCCEEDED);
+      // Then
+      assertThat(
+              bulkClaimMetricService
+                  .getFileNamePatternCounter()
+                  .collect()
+                  .getDataPoints()
+                  .getFirst()
+                  .getLabels()
+                  .get("area_of_law"))
+          .isEqualTo(expectedLabel);
+    }
+
+    @Test
+    @DisplayName("Should record N/A when area of law is unknown")
+    void shouldRecordNotApplicableWhenAreaOfLawNull() {
+      // When
+      bulkClaimMetricService.recordFileNamePattern(
+          "claims-v2.00.csv", null, BulkSubmissionStatus.VALIDATION_SUCCEEDED);
+      // Then
+      assertThat(
+              bulkClaimMetricService
+                  .getFileNamePatternCounter()
+                  .collect()
+                  .getDataPoints()
+                  .getFirst()
+                  .getLabels()
+                  .get("area_of_law"))
+          .isEqualTo("N/A");
+    }
+
+    @ParameterizedTest
     @EnumSource(
         value = BulkSubmissionStatus.class,
         names = {"VALIDATION_SUCCEEDED", "VALIDATION_FAILED"})
@@ -382,7 +420,8 @@ class BulkClaimMetricServiceTest {
       String expectedOutcome =
           status == BulkSubmissionStatus.VALIDATION_SUCCEEDED ? "succeeded" : "failed";
       // When
-      bulkClaimMetricService.recordFileNamePattern("claims-v2.00.csv", status);
+      bulkClaimMetricService.recordFileNamePattern(
+          "claims-v2.00.csv", AreaOfLaw.LEGAL_HELP, status);
       // Then
       assertThat(
               bulkClaimMetricService
@@ -401,7 +440,9 @@ class BulkClaimMetricServiceTest {
       assertThatThrownBy(
               () ->
                   bulkClaimMetricService.recordFileNamePattern(
-                      "claims-v2.00.csv", BulkSubmissionStatus.PARSING_FAILED))
+                      "claims-v2.00.csv",
+                      AreaOfLaw.LEGAL_HELP,
+                      BulkSubmissionStatus.PARSING_FAILED))
           .isInstanceOf(IllegalArgumentException.class);
     }
   }
