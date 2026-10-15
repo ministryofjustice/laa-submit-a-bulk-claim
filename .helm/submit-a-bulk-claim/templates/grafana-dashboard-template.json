@@ -1283,6 +1283,178 @@
       ],
       "title": "Used Tenured Gen (MB)",
       "type": "timeseries"
+    },
+    {
+      "collapsed": false,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 42
+      },
+      "id": 60,
+      "panels": [],
+      "title": "Bulk Upload Metrics",
+      "type": "row"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "description": "Indicative only. The spreadsheet version is derived from the uploaded file's name, which users can rename or edit, so these figures may not be fully accurate. Use them to understand the general distribution of spreadsheet versions, not as hard values. N/A means the filename did not match the LAA Bulk Load Spreadsheet naming convention.",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [],
+          "max": 1,
+          "min": 0,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "red",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 0.8
+              },
+              {
+                "color": "green",
+                "value": 0.95
+              }
+            ]
+          },
+          "unit": "percentunit"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 10,
+        "w": 12,
+        "x": 0,
+        "y": 43
+      },
+      "id": 61,
+      "options": {
+        "displayMode": "gradient",
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": false
+        },
+        "maxVizHeight": 300,
+        "minVizHeight": 16,
+        "minVizWidth": 8,
+        "namePlacement": "auto",
+        "orientation": "horizontal",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showUnfilled": true,
+        "sizing": "auto",
+        "valueMode": "color"
+      },
+      "pluginVersion": "11.3.0",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "editorMode": "code",
+          "expr": "sum by (version) (increase(submit_a_bulk_claim_file_name_pattern_total{namespace='{{ .Release.Namespace }}',container='$container',validation_outcome='succeeded'}[30d])) / sum by (version) (increase(submit_a_bulk_claim_file_name_pattern_total{namespace='{{ .Release.Namespace }}',container='$container'}[30d]))",
+          "instant": true,
+          "legendFormat": "{{`{{version}}`}}",
+          "range": false,
+          "refId": "A"
+        }
+      ],
+      "title": "Validation success rate by spreadsheet version (last 30 days)",
+      "type": "bargauge"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "description": "Indicative only. The spreadsheet version is derived from the uploaded file's name, which users can rename or edit, so these figures may not be fully accurate. Use them to understand the general distribution of spreadsheet versions, not as hard values. N/A means the filename did not match the LAA Bulk Load Spreadsheet naming convention.",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "decimals": 0,
+          "mappings": [],
+          "min": 0,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 10,
+        "w": 12,
+        "x": 12,
+        "y": 43
+      },
+      "id": 62,
+      "options": {
+        "displayMode": "gradient",
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": false
+        },
+        "maxVizHeight": 300,
+        "minVizHeight": 16,
+        "minVizWidth": 8,
+        "namePlacement": "auto",
+        "orientation": "horizontal",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showUnfilled": true,
+        "sizing": "auto",
+        "valueMode": "color"
+      },
+      "pluginVersion": "11.3.0",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "editorMode": "code",
+          "expr": "sum by (area_of_law, version) (increase(submit_a_bulk_claim_file_name_pattern_total{namespace='{{ .Release.Namespace }}',container='$container'}[30d]))",
+          "instant": true,
+          "legendFormat": "{{`{{area_of_law}}`}} / {{`{{version}}`}}",
+          "range": false,
+          "refId": "A"
+        }
+      ],
+      "title": "Uploads by area of law and spreadsheet version (last 30 days)",
+      "type": "bargauge"
     }
   ],
   "preload": false,
