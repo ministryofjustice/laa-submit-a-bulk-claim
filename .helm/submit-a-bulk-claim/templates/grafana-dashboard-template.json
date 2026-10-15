@@ -1461,7 +1461,7 @@
         "type": "prometheus",
         "uid": "prometheus"
       },
-      "description": "Indicative only. Shows whether the uploaded file's name matched the LAA Bulk Load Spreadsheet naming convention. 'Version in filename but not matched' means a version was found in the name but the rest of the name did not match, so the file most likely did not come from the spreadsheet and the user has added a version to the end of the file name.",
+      "description": "Indicative only. Shows whether the uploaded file's name matched the LAA Bulk Load Spreadsheet naming convention. A match (which always includes a version) means the file most likely came from the spreadsheet; no match means it most likely did not. Users can rename files, so treat these as a general distribution.",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -1523,7 +1523,7 @@
           "editorMode": "code",
           "expr": "sum(clamp_min(last_over_time(submit_a_bulk_claim_file_name_pattern_total{namespace='{{ .Release.Namespace }}',container='$container',matched='true'}[$__range]) - (submit_a_bulk_claim_file_name_pattern_total{namespace='{{ .Release.Namespace }}',container='$container',matched='true'} offset $__range or 0 * last_over_time(submit_a_bulk_claim_file_name_pattern_total{namespace='{{ .Release.Namespace }}',container='$container',matched='true'}[$__range])), 0))",
           "instant": true,
-          "legendFormat": "Matched spreadsheet filename",
+          "legendFormat": "Matched (likely from the spreadsheet)",
           "range": false,
           "refId": "A"
         },
@@ -1533,23 +1533,11 @@
             "uid": "prometheus"
           },
           "editorMode": "code",
-          "expr": "sum(clamp_min(last_over_time(submit_a_bulk_claim_file_name_pattern_total{namespace='{{ .Release.Namespace }}',container='$container',matched='false',version!='N/A'}[$__range]) - (submit_a_bulk_claim_file_name_pattern_total{namespace='{{ .Release.Namespace }}',container='$container',matched='false',version!='N/A'} offset $__range or 0 * last_over_time(submit_a_bulk_claim_file_name_pattern_total{namespace='{{ .Release.Namespace }}',container='$container',matched='false',version!='N/A'}[$__range])), 0))",
+          "expr": "sum(clamp_min(last_over_time(submit_a_bulk_claim_file_name_pattern_total{namespace='{{ .Release.Namespace }}',container='$container',matched='false'}[$__range]) - (submit_a_bulk_claim_file_name_pattern_total{namespace='{{ .Release.Namespace }}',container='$container',matched='false'} offset $__range or 0 * last_over_time(submit_a_bulk_claim_file_name_pattern_total{namespace='{{ .Release.Namespace }}',container='$container',matched='false'}[$__range])), 0))",
           "instant": true,
-          "legendFormat": "Version in filename but not matched (likely not a spreadsheet)",
+          "legendFormat": "Not matched (likely not from the spreadsheet)",
           "range": false,
           "refId": "B"
-        },
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "prometheus"
-          },
-          "editorMode": "code",
-          "expr": "sum(clamp_min(last_over_time(submit_a_bulk_claim_file_name_pattern_total{namespace='{{ .Release.Namespace }}',container='$container',matched='false',version='N/A'}[$__range]) - (submit_a_bulk_claim_file_name_pattern_total{namespace='{{ .Release.Namespace }}',container='$container',matched='false',version='N/A'} offset $__range or 0 * last_over_time(submit_a_bulk_claim_file_name_pattern_total{namespace='{{ .Release.Namespace }}',container='$container',matched='false',version='N/A'}[$__range])), 0))",
-          "instant": true,
-          "legendFormat": "No version in filename",
-          "range": false,
-          "refId": "C"
         }
       ],
       "title": "Uploads by filename match (spreadsheet vs not)",
