@@ -1371,14 +1371,14 @@
             "uid": "prometheus"
           },
           "editorMode": "code",
-          "expr": "sum by (version) (increase(submit_a_bulk_claim_file_name_pattern_total{namespace='{{ .Release.Namespace }}',container='$container',validation_outcome='succeeded'}[30d])) / sum by (version) (increase(submit_a_bulk_claim_file_name_pattern_total{namespace='{{ .Release.Namespace }}',container='$container'}[30d]))",
+          "expr": "sum by (version) (increase(submit_a_bulk_claim_file_name_pattern_total{namespace='{{ .Release.Namespace }}',container='$container',validation_outcome='succeeded'}[$__range])) / sum by (version) (increase(submit_a_bulk_claim_file_name_pattern_total{namespace='{{ .Release.Namespace }}',container='$container'}[$__range]))",
           "instant": true,
           "legendFormat": "{{`{{version}}`}}",
           "range": false,
           "refId": "A"
         }
       ],
-      "title": "Validation success rate by spreadsheet version (last 30 days)",
+      "title": "Validation success rate by spreadsheet version",
       "type": "bargauge"
     },
     {
@@ -1446,14 +1446,14 @@
             "uid": "prometheus"
           },
           "editorMode": "code",
-          "expr": "sum by (area_of_law, version) (increase(submit_a_bulk_claim_file_name_pattern_total{namespace='{{ .Release.Namespace }}',container='$container'}[30d]))",
+          "expr": "sum by (area_of_law, version) (increase(submit_a_bulk_claim_file_name_pattern_total{namespace='{{ .Release.Namespace }}',container='$container'}[$__range]))",
           "instant": true,
           "legendFormat": "{{`{{area_of_law}}`}} / {{`{{version}}`}}",
           "range": false,
           "refId": "A"
         }
       ],
-      "title": "Uploads by area of law and spreadsheet version (last 30 days)",
+      "title": "Uploads by area of law and spreadsheet version",
       "type": "bargauge"
     }
   ],
