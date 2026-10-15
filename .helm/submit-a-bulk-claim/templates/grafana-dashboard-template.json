@@ -1371,7 +1371,7 @@
             "uid": "prometheus"
           },
           "editorMode": "code",
-          "expr": "(sum by (version) (increase(submit_a_bulk_claim_file_name_pattern_total{namespace='{{ .Release.Namespace }}',container='$container',validation_outcome='succeeded'}[$__range])) or 0 * sum by (version) (increase(submit_a_bulk_claim_file_name_pattern_total{namespace='{{ .Release.Namespace }}',container='$container'}[$__range]))) / sum by (version) (increase(submit_a_bulk_claim_file_name_pattern_total{namespace='{{ .Release.Namespace }}',container='$container'}[$__range]))",
+          "expr": "(sum by (version) ((increase(submit_a_bulk_claim_file_name_pattern_total{namespace='{{ .Release.Namespace }}',container='$container',validation_outcome='succeeded'}[$__range]) and on(matched,is_mac,version,area_of_law,validation_outcome) (submit_a_bulk_claim_file_name_pattern_total{namespace='{{ .Release.Namespace }}',container='$container',validation_outcome='succeeded'} offset $__range)) or (last_over_time(submit_a_bulk_claim_file_name_pattern_total{namespace='{{ .Release.Namespace }}',container='$container',validation_outcome='succeeded'}[$__range]) unless on(matched,is_mac,version,area_of_law,validation_outcome) (submit_a_bulk_claim_file_name_pattern_total{namespace='{{ .Release.Namespace }}',container='$container',validation_outcome='succeeded'} offset $__range))) or 0 * sum by (version) ((increase(submit_a_bulk_claim_file_name_pattern_total{namespace='{{ .Release.Namespace }}',container='$container'}[$__range]) and on(matched,is_mac,version,area_of_law,validation_outcome) (submit_a_bulk_claim_file_name_pattern_total{namespace='{{ .Release.Namespace }}',container='$container'} offset $__range)) or (last_over_time(submit_a_bulk_claim_file_name_pattern_total{namespace='{{ .Release.Namespace }}',container='$container'}[$__range]) unless on(matched,is_mac,version,area_of_law,validation_outcome) (submit_a_bulk_claim_file_name_pattern_total{namespace='{{ .Release.Namespace }}',container='$container'} offset $__range)))) / sum by (version) ((increase(submit_a_bulk_claim_file_name_pattern_total{namespace='{{ .Release.Namespace }}',container='$container'}[$__range]) and on(matched,is_mac,version,area_of_law,validation_outcome) (submit_a_bulk_claim_file_name_pattern_total{namespace='{{ .Release.Namespace }}',container='$container'} offset $__range)) or (last_over_time(submit_a_bulk_claim_file_name_pattern_total{namespace='{{ .Release.Namespace }}',container='$container'}[$__range]) unless on(matched,is_mac,version,area_of_law,validation_outcome) (submit_a_bulk_claim_file_name_pattern_total{namespace='{{ .Release.Namespace }}',container='$container'} offset $__range)))",
           "instant": true,
           "legendFormat": "{{`{{version}}`}}",
           "range": false,
@@ -1446,7 +1446,7 @@
             "uid": "prometheus"
           },
           "editorMode": "code",
-          "expr": "sum by (area_of_law, version) (increase(submit_a_bulk_claim_file_name_pattern_total{namespace='{{ .Release.Namespace }}',container='$container'}[$__range]))",
+          "expr": "sum by (area_of_law, version) ((increase(submit_a_bulk_claim_file_name_pattern_total{namespace='{{ .Release.Namespace }}',container='$container'}[$__range]) and on(matched,is_mac,version,area_of_law,validation_outcome) (submit_a_bulk_claim_file_name_pattern_total{namespace='{{ .Release.Namespace }}',container='$container'} offset $__range)) or (last_over_time(submit_a_bulk_claim_file_name_pattern_total{namespace='{{ .Release.Namespace }}',container='$container'}[$__range]) unless on(matched,is_mac,version,area_of_law,validation_outcome) (submit_a_bulk_claim_file_name_pattern_total{namespace='{{ .Release.Namespace }}',container='$container'} offset $__range)))",
           "instant": true,
           "legendFormat": "{{`{{area_of_law}}`}} / {{`{{version}}`}}",
           "range": false,
@@ -1521,7 +1521,7 @@
             "uid": "prometheus"
           },
           "editorMode": "code",
-          "expr": "sum(increase(submit_a_bulk_claim_file_name_pattern_total{namespace='{{ .Release.Namespace }}',container='$container',matched='true',validation_outcome='succeeded'}[$__range]))",
+          "expr": "sum ((increase(submit_a_bulk_claim_file_name_pattern_total{namespace='{{ .Release.Namespace }}',container='$container',matched='true',validation_outcome='succeeded'}[$__range]) and on(matched,is_mac,version,area_of_law,validation_outcome) (submit_a_bulk_claim_file_name_pattern_total{namespace='{{ .Release.Namespace }}',container='$container',matched='true',validation_outcome='succeeded'} offset $__range)) or (last_over_time(submit_a_bulk_claim_file_name_pattern_total{namespace='{{ .Release.Namespace }}',container='$container',matched='true',validation_outcome='succeeded'}[$__range]) unless on(matched,is_mac,version,area_of_law,validation_outcome) (submit_a_bulk_claim_file_name_pattern_total{namespace='{{ .Release.Namespace }}',container='$container',matched='true',validation_outcome='succeeded'} offset $__range)))",
           "instant": true,
           "legendFormat": "Likely spreadsheet - succeeded",
           "range": false,
@@ -1533,7 +1533,7 @@
             "uid": "prometheus"
           },
           "editorMode": "code",
-          "expr": "sum(increase(submit_a_bulk_claim_file_name_pattern_total{namespace='{{ .Release.Namespace }}',container='$container',matched='true',validation_outcome='failed'}[$__range]))",
+          "expr": "sum ((increase(submit_a_bulk_claim_file_name_pattern_total{namespace='{{ .Release.Namespace }}',container='$container',matched='true',validation_outcome='failed'}[$__range]) and on(matched,is_mac,version,area_of_law,validation_outcome) (submit_a_bulk_claim_file_name_pattern_total{namespace='{{ .Release.Namespace }}',container='$container',matched='true',validation_outcome='failed'} offset $__range)) or (last_over_time(submit_a_bulk_claim_file_name_pattern_total{namespace='{{ .Release.Namespace }}',container='$container',matched='true',validation_outcome='failed'}[$__range]) unless on(matched,is_mac,version,area_of_law,validation_outcome) (submit_a_bulk_claim_file_name_pattern_total{namespace='{{ .Release.Namespace }}',container='$container',matched='true',validation_outcome='failed'} offset $__range)))",
           "instant": true,
           "legendFormat": "Likely spreadsheet - failed",
           "range": false,
@@ -1545,7 +1545,7 @@
             "uid": "prometheus"
           },
           "editorMode": "code",
-          "expr": "sum(increase(submit_a_bulk_claim_file_name_pattern_total{namespace='{{ .Release.Namespace }}',container='$container',matched='false',validation_outcome='succeeded'}[$__range]))",
+          "expr": "sum ((increase(submit_a_bulk_claim_file_name_pattern_total{namespace='{{ .Release.Namespace }}',container='$container',matched='false',validation_outcome='succeeded'}[$__range]) and on(matched,is_mac,version,area_of_law,validation_outcome) (submit_a_bulk_claim_file_name_pattern_total{namespace='{{ .Release.Namespace }}',container='$container',matched='false',validation_outcome='succeeded'} offset $__range)) or (last_over_time(submit_a_bulk_claim_file_name_pattern_total{namespace='{{ .Release.Namespace }}',container='$container',matched='false',validation_outcome='succeeded'}[$__range]) unless on(matched,is_mac,version,area_of_law,validation_outcome) (submit_a_bulk_claim_file_name_pattern_total{namespace='{{ .Release.Namespace }}',container='$container',matched='false',validation_outcome='succeeded'} offset $__range)))",
           "instant": true,
           "legendFormat": "Not likely spreadsheet - succeeded",
           "range": false,
@@ -1557,7 +1557,7 @@
             "uid": "prometheus"
           },
           "editorMode": "code",
-          "expr": "sum(increase(submit_a_bulk_claim_file_name_pattern_total{namespace='{{ .Release.Namespace }}',container='$container',matched='false',validation_outcome='failed'}[$__range]))",
+          "expr": "sum ((increase(submit_a_bulk_claim_file_name_pattern_total{namespace='{{ .Release.Namespace }}',container='$container',matched='false',validation_outcome='failed'}[$__range]) and on(matched,is_mac,version,area_of_law,validation_outcome) (submit_a_bulk_claim_file_name_pattern_total{namespace='{{ .Release.Namespace }}',container='$container',matched='false',validation_outcome='failed'} offset $__range)) or (last_over_time(submit_a_bulk_claim_file_name_pattern_total{namespace='{{ .Release.Namespace }}',container='$container',matched='false',validation_outcome='failed'}[$__range]) unless on(matched,is_mac,version,area_of_law,validation_outcome) (submit_a_bulk_claim_file_name_pattern_total{namespace='{{ .Release.Namespace }}',container='$container',matched='false',validation_outcome='failed'} offset $__range)))",
           "instant": true,
           "legendFormat": "Not likely spreadsheet - failed",
           "range": false,
