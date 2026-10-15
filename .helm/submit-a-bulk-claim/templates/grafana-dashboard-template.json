@@ -1521,9 +1521,9 @@
             "uid": "prometheus"
           },
           "editorMode": "code",
-          "expr": "sum(clamp_min(last_over_time(submit_a_bulk_claim_file_name_pattern_total{namespace='{{ .Release.Namespace }}',container='$container',matched='true'}[$__range]) - (submit_a_bulk_claim_file_name_pattern_total{namespace='{{ .Release.Namespace }}',container='$container',matched='true'} offset $__range or 0 * last_over_time(submit_a_bulk_claim_file_name_pattern_total{namespace='{{ .Release.Namespace }}',container='$container',matched='true'}[$__range])), 0))",
+          "expr": "sum(clamp_min(last_over_time(submit_a_bulk_claim_file_name_pattern_total{namespace='{{ .Release.Namespace }}',container='$container',matched='true',validation_outcome='succeeded'}[$__range]) - (submit_a_bulk_claim_file_name_pattern_total{namespace='{{ .Release.Namespace }}',container='$container',matched='true',validation_outcome='succeeded'} offset $__range or 0 * last_over_time(submit_a_bulk_claim_file_name_pattern_total{namespace='{{ .Release.Namespace }}',container='$container',matched='true',validation_outcome='succeeded'}[$__range])), 0))",
           "instant": true,
-          "legendFormat": "Matched (likely from the spreadsheet)",
+          "legendFormat": "Likely spreadsheet - succeeded",
           "range": false,
           "refId": "A"
         },
@@ -1533,11 +1533,35 @@
             "uid": "prometheus"
           },
           "editorMode": "code",
-          "expr": "sum(clamp_min(last_over_time(submit_a_bulk_claim_file_name_pattern_total{namespace='{{ .Release.Namespace }}',container='$container',matched='false'}[$__range]) - (submit_a_bulk_claim_file_name_pattern_total{namespace='{{ .Release.Namespace }}',container='$container',matched='false'} offset $__range or 0 * last_over_time(submit_a_bulk_claim_file_name_pattern_total{namespace='{{ .Release.Namespace }}',container='$container',matched='false'}[$__range])), 0))",
+          "expr": "sum(clamp_min(last_over_time(submit_a_bulk_claim_file_name_pattern_total{namespace='{{ .Release.Namespace }}',container='$container',matched='true',validation_outcome='failed'}[$__range]) - (submit_a_bulk_claim_file_name_pattern_total{namespace='{{ .Release.Namespace }}',container='$container',matched='true',validation_outcome='failed'} offset $__range or 0 * last_over_time(submit_a_bulk_claim_file_name_pattern_total{namespace='{{ .Release.Namespace }}',container='$container',matched='true',validation_outcome='failed'}[$__range])), 0))",
           "instant": true,
-          "legendFormat": "Not matched (likely not from the spreadsheet)",
+          "legendFormat": "Likely spreadsheet - failed",
           "range": false,
           "refId": "B"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "editorMode": "code",
+          "expr": "sum(clamp_min(last_over_time(submit_a_bulk_claim_file_name_pattern_total{namespace='{{ .Release.Namespace }}',container='$container',matched='false',validation_outcome='succeeded'}[$__range]) - (submit_a_bulk_claim_file_name_pattern_total{namespace='{{ .Release.Namespace }}',container='$container',matched='false',validation_outcome='succeeded'} offset $__range or 0 * last_over_time(submit_a_bulk_claim_file_name_pattern_total{namespace='{{ .Release.Namespace }}',container='$container',matched='false',validation_outcome='succeeded'}[$__range])), 0))",
+          "instant": true,
+          "legendFormat": "Not likely spreadsheet - succeeded",
+          "range": false,
+          "refId": "C"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "editorMode": "code",
+          "expr": "sum(clamp_min(last_over_time(submit_a_bulk_claim_file_name_pattern_total{namespace='{{ .Release.Namespace }}',container='$container',matched='false',validation_outcome='failed'}[$__range]) - (submit_a_bulk_claim_file_name_pattern_total{namespace='{{ .Release.Namespace }}',container='$container',matched='false',validation_outcome='failed'} offset $__range or 0 * last_over_time(submit_a_bulk_claim_file_name_pattern_total{namespace='{{ .Release.Namespace }}',container='$container',matched='false',validation_outcome='failed'}[$__range])), 0))",
+          "instant": true,
+          "legendFormat": "Not likely spreadsheet - failed",
+          "range": false,
+          "refId": "D"
         }
       ],
       "title": "Uploads by filename match (spreadsheet vs not)",
