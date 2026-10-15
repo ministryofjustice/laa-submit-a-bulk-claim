@@ -1371,7 +1371,7 @@
             "uid": "prometheus"
           },
           "editorMode": "code",
-          "expr": "sum by (version) (increase(submit_a_bulk_claim_file_name_pattern_total{namespace='{{ .Release.Namespace }}',container='$container',validation_outcome='succeeded'}[$__range])) / sum by (version) (increase(submit_a_bulk_claim_file_name_pattern_total{namespace='{{ .Release.Namespace }}',container='$container'}[$__range]))",
+          "expr": "(sum by (version) (clamp_min(last_over_time(submit_a_bulk_claim_file_name_pattern_total{namespace='{{ .Release.Namespace }}',container='$container',validation_outcome='succeeded'}[$__range]) - (submit_a_bulk_claim_file_name_pattern_total{namespace='{{ .Release.Namespace }}',container='$container',validation_outcome='succeeded'} offset $__range or 0 * last_over_time(submit_a_bulk_claim_file_name_pattern_total{namespace='{{ .Release.Namespace }}',container='$container',validation_outcome='succeeded'}[$__range])), 0)) or 0 * sum by (version) (clamp_min(last_over_time(submit_a_bulk_claim_file_name_pattern_total{namespace='{{ .Release.Namespace }}',container='$container'}[$__range]) - (submit_a_bulk_claim_file_name_pattern_total{namespace='{{ .Release.Namespace }}',container='$container'} offset $__range or 0 * last_over_time(submit_a_bulk_claim_file_name_pattern_total{namespace='{{ .Release.Namespace }}',container='$container'}[$__range])), 0))) / sum by (version) (clamp_min(last_over_time(submit_a_bulk_claim_file_name_pattern_total{namespace='{{ .Release.Namespace }}',container='$container'}[$__range]) - (submit_a_bulk_claim_file_name_pattern_total{namespace='{{ .Release.Namespace }}',container='$container'} offset $__range or 0 * last_over_time(submit_a_bulk_claim_file_name_pattern_total{namespace='{{ .Release.Namespace }}',container='$container'}[$__range])), 0))",
           "instant": true,
           "legendFormat": "{{`{{version}}`}}",
           "range": false,
@@ -1446,7 +1446,7 @@
             "uid": "prometheus"
           },
           "editorMode": "code",
-          "expr": "sum by (area_of_law, version) (increase(submit_a_bulk_claim_file_name_pattern_total{namespace='{{ .Release.Namespace }}',container='$container'}[$__range]))",
+          "expr": "sum by (area_of_law, version) (clamp_min(last_over_time(submit_a_bulk_claim_file_name_pattern_total{namespace='{{ .Release.Namespace }}',container='$container'}[$__range]) - (submit_a_bulk_claim_file_name_pattern_total{namespace='{{ .Release.Namespace }}',container='$container'} offset $__range or 0 * last_over_time(submit_a_bulk_claim_file_name_pattern_total{namespace='{{ .Release.Namespace }}',container='$container'}[$__range])), 0))",
           "instant": true,
           "legendFormat": "{{`{{area_of_law}}`}} / {{`{{version}}`}}",
           "range": false,
