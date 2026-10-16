@@ -41,6 +41,8 @@ public abstract class AbstractAccessibilityTest {
 
   protected static final String BULK_SUBMISSION_ID = "86d8c0df-9f4f-4688-acdc-98f6b4a16ed1";
 
+  public static final String FULLY_SUBMITTED_OFFICE = "2Q779P";
+
   protected static final AreaScenario LEGAL_HELP =
       new AreaScenario(
           "Legal help",
@@ -92,6 +94,7 @@ public abstract class AbstractAccessibilityTest {
     registry.add("CLAIMS_API_ACCESS_TOKEN", () -> "dummy-token");
     registry.add("REDIS_HOST", () -> "redis://localhost:6379");
     registry.add("spring.session.store-type", () -> "none");
+    registry.add("IS_NIL_SUBMISSION_ENABLED", () -> "true");
     registry.add("UPLOAD_MAX_FILE_SIZE", () -> "10MB");
     registry.add("SERVER_MAX_FILE_SIZE", () -> "50MB");
     registry.add("CANONICAL_BASE_URL", () -> "http://localhost:8080");
