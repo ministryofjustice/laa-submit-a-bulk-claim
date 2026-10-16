@@ -72,25 +72,29 @@ public final class GetClaimHistoryPactTest extends AbstractPactTest {
         .body(
             LambdaDsl.newJsonBody(
                     body ->
-                        body.minArrayLike(
+                        body.array(
                             "events",
-                            1,
-                            event ->
-                                historyEvent(
-                                    event,
-                                    "AMENDMENT",
-                                    metadata ->
-                                        // "before" is deliberately not pinned: it is an explicit
-                                        // null for values that were not previously set
-                                        metadata.minArrayLike(
-                                            "changes",
-                                            1,
-                                            change -> {
-                                              change.stringType(
-                                                  "field_identifier", "client.clientForename");
-                                              change.stringType("after", "Alexandra");
-                                              change.stringType("change_source", "REQUESTED");
-                                            }))))
+                            events -> {
+                              events.object(
+                                  event ->
+                                      historyEvent(
+                                          event,
+                                          "AMENDMENT",
+                                          metadata ->
+                                              // "before" is deliberately not pinned: it is an
+                                              // explicit null for values not previously set
+                                              metadata.minArrayLike(
+                                                  "changes",
+                                                  1,
+                                                  change -> {
+                                                    change.stringType(
+                                                        "field_identifier",
+                                                        "client.clientForename");
+                                                    change.stringType("after", "Alexandra");
+                                                    change.stringType("change_source", "REQUESTED");
+                                                  })));
+                              events.object(event -> historyEvent(event, "SUBMISSION", null));
+                            }))
                 .build())
         .toPact();
   }
