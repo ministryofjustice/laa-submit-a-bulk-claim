@@ -54,6 +54,12 @@ public class TestOidcUserConfig {
   @Bean
   OncePerRequestFilter accessibilityOidcUserFilter() {
     return new OncePerRequestFilter() {
+      // The logged-out page must render in its anonymous state, as users see it after logout
+      @Override
+      protected boolean shouldNotFilter(jakarta.servlet.http.HttpServletRequest request) {
+        return "/logged-out".equals(request.getRequestURI());
+      }
+
       @Override
       protected void doFilterInternal(
           jakarta.servlet.http.HttpServletRequest request,
