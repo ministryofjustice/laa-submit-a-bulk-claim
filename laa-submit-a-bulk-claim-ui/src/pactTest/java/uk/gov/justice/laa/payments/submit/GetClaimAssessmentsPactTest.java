@@ -16,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.HttpHeaders;
+import uk.gov.justice.laa.dstew.payments.claimsdata.model.AssessmentGet;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.AssessmentResultSet;
 import uk.gov.justice.laa.payments.submit.client.DataClaimsRestClient;
 import uk.gov.justice.laa.payments.submit.config.ClaimsApiPactTestConfig;
@@ -67,6 +68,9 @@ public final class GetClaimAssessmentsPactTest extends AbstractPactTest {
                                   "(PAID_IN_FULL|REDUCED_STILL_ESCAPED|REDUCED_TO_FIXED_FEE|NILLED)",
                                   "PAID_IN_FULL");
                               assessment.stringType("assessment_reason", "Reason");
+                              assessment.numberType("net_profit_costs_amount", 100.5);
+                              assessment.numberType("allowed_total_vat", 20.1);
+                              assessment.numberType("allowed_total_incl_vat", 120.6);
                               assessment.stringMatcher(
                                   "created_on", TIMESTAMP_REGEX, "2025-05-01T12:32:00Z");
                             }))
@@ -101,7 +105,11 @@ public final class GetClaimAssessmentsPactTest extends AbstractPactTest {
 
     assertThat(result).isNotNull();
     assertThat(result.getAssessments()).hasSize(1);
-    assertThat(result.getAssessments().getFirst().getAssessmentType()).isNotNull();
+    AssessmentGet assessment = result.getAssessments().getFirst();
+    assertThat(assessment.getAssessmentType()).isNotNull();
+    assertThat(assessment.getNetProfitCostsAmount()).isNotNull();
+    assertThat(assessment.getAllowedTotalVat()).isNotNull();
+    assertThat(assessment.getAllowedTotalInclVat()).isNotNull();
   }
 
   @Test
