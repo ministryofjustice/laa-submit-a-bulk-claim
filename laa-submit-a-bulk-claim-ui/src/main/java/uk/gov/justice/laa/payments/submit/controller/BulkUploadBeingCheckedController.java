@@ -9,17 +9,21 @@ import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatusCode;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.oauth2.core.oidc.user.OidcUser;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.Assert;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.SessionAttribute;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
+import uk.gov.justice.laa.dstew.payments.claimsdata.model.AreaOfLaw;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.BulkSubmissionStatus;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.GetBulkSubmissionStatusById200Response;
 import uk.gov.justice.laa.payments.submit.client.DataClaimsRestClient;
 import uk.gov.justice.laa.payments.submit.exception.SubmitBulkClaimException;
 import uk.gov.justice.laa.payments.submit.metrics.BulkClaimMetricService;
+import uk.gov.justice.laa.payments.submit.service.SubmissionService;
 
 @Slf4j
 @Controller
@@ -28,6 +32,7 @@ public class BulkUploadBeingCheckedController {
 
   private final DataClaimsRestClient dataClaimsRestClient;
   private final BulkClaimMetricService bulkClaimMetricService;
+  private final SubmissionService submissionService;
 
   private final List<BulkSubmissionStatus> completedStatuses =
       List.of(BulkSubmissionStatus.VALIDATION_SUCCEEDED, BulkSubmissionStatus.VALIDATION_FAILED);
@@ -42,6 +47,7 @@ public class BulkUploadBeingCheckedController {
   @GetMapping("/upload-is-being-checked")
   public String uploadBeingChecked(
       Model model,
+      @AuthenticationPrincipal OidcUser user,
       @SessionAttribute(name = SUBMISSION_ID, required = false) UUID submissionId,
       @SessionAttribute(name = BULK_SUBMISSION_ID, required = false) UUID bulkSubmissionId,
       @SessionAttribute(name = ORIGINAL_FILENAME, required = false) String originalFilename) {
@@ -66,7 +72,7 @@ public class BulkUploadBeingCheckedController {
         return "pages/upload-being-checked";
       }
       if (completedStatuses.contains(bulkSubmissionStatus)) {
-        recordFilenameMetrics(originalFilename, bulkSubmissionStatus);
+        recordFilenameMetrics(originalFilename, submissionId, user, bulkSubmissionStatus);
         return "redirect:/submissions/%s".formatted(submissionId.toString());
       }
       throw new SubmitBulkClaimException(
@@ -82,12 +88,23 @@ public class BulkUploadBeingCheckedController {
     }
   }
 
-  private void recordFilenameMetrics(String originalFilename, BulkSubmissionStatus outcome) {
+  private void recordFilenameMetrics(
+      String originalFilename, UUID submissionId, OidcUser user, BulkSubmissionStatus outcome) {
     if (originalFilename == null) {
       log.debug("No original filename stashed in session, skipping filename metrics");
       return;
     }
     bulkClaimMetricService.recordFileExtension(originalFilename, outcome);
-    bulkClaimMetricService.recordFileNamePattern(originalFilename, outcome);
+    bulkClaimMetricService.recordFileNamePattern(
+        originalFilename, lookupAreaOfLaw(submissionId, user), outcome);
+  }
+
+  private AreaOfLaw lookupAreaOfLaw(UUID submissionId, OidcUser user) {
+    try {
+      return submissionService.getSubmission(submissionId, user).getAreaOfLaw();
+    } catch (Exception e) {
+      log.warn("Unable to look up area of law for submission {} metrics", submissionId, e);
+      return null;
+    }
   }
 }

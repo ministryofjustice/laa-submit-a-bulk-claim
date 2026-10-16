@@ -8,13 +8,17 @@ import static uk.gov.justice.laa.payments.submit.constants.SessionConstants.SUBM
 import java.util.UUID;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import reactor.core.publisher.Mono;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.BulkSubmissionStatus;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.GetBulkSubmissionStatusById200Response;
 import uk.gov.justice.laa.payments.submit.controller.BulkUploadBeingCheckedController;
+import uk.gov.justice.laa.payments.submit.service.SubmissionService;
 
 @WebMvcTest(BulkUploadBeingCheckedController.class)
 class BulkUploadBeingCheckedPageViewTest extends ViewTestBase {
+
+  @MockitoBean private SubmissionService submissionService;
 
   BulkUploadBeingCheckedPageViewTest() {
     this.mapping = "/upload-is-being-checked";

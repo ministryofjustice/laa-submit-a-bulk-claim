@@ -12,6 +12,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;
 import org.springframework.web.multipart.MaxUploadSizeExceededException;
 import org.springframework.web.multipart.MultipartFile;
+import uk.gov.justice.laa.dstew.payments.claimsdata.model.AreaOfLaw;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.BulkSubmissionStatus;
 import uk.gov.justice.laa.payments.submit.util.BulkLoadSpreadsheetFilenameMatch;
 import uk.gov.justice.laa.payments.submit.util.BulkLoadSpreadsheetFilenameUtil;
@@ -50,7 +51,7 @@ public class BulkClaimMetricService {
             .help(
                 "Count of uploaded filenames matching the LAA Bulk Load Spreadsheet naming"
                     + " convention, by validation outcome")
-            .labelNames("matched", "is_mac", "version", "validation_outcome")
+            .labelNames("matched", "is_mac", "version", "area_of_law", "validation_outcome")
             .register(prometheusRegistry);
   }
 
@@ -60,7 +61,8 @@ public class BulkClaimMetricService {
         .inc();
   }
 
-  public void recordFileNamePattern(String originalFilename, BulkSubmissionStatus outcome) {
+  public void recordFileNamePattern(
+      String originalFilename, AreaOfLaw areaOfLaw, BulkSubmissionStatus outcome) {
     BulkLoadSpreadsheetFilenameMatch match =
         bulkLoadSpreadsheetFilenameUtil.detect(originalFilename);
     fileNamePatternCounter
@@ -68,6 +70,7 @@ public class BulkClaimMetricService {
             String.valueOf(match.matched()),
             String.valueOf(match.isMac()),
             match.matched() ? match.version() : NOT_APPLICABLE,
+            areaOfLaw == null ? NOT_APPLICABLE : areaOfLaw.name().toLowerCase(Locale.ROOT),
             mapValidationOutcome(outcome))
         .inc();
   }
