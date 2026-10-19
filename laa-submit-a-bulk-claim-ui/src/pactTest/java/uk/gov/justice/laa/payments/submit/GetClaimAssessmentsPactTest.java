@@ -68,7 +68,22 @@ public final class GetClaimAssessmentsPactTest extends AbstractPactTest {
                                   "(PAID_IN_FULL|REDUCED_STILL_ESCAPED|REDUCED_TO_FIXED_FEE|NILLED)",
                                   "PAID_IN_FULL");
                               assessment.stringType("assessment_reason", "Reason");
-                              assessment.numberType("net_profit_costs_amount", 100.5);
+                              assessment.numberType("fixed_fee_amount", 10.5);
+                              assessment.numberType("net_profit_costs_amount", 10.5);
+                              assessment.numberType("net_travel_costs_amount", 10.5);
+                              assessment.numberType("net_waiting_costs_amount", 10.5);
+                              assessment.numberType("net_cost_of_counsel_amount", 10.5);
+                              assessment.numberType("disbursement_amount", 10.5);
+                              assessment.numberType("disbursement_vat_amount", 10.5);
+                              assessment.numberType(
+                                  "detention_travel_and_waiting_costs_amount", 10.5);
+                              assessment.numberType("jr_form_filling_amount", 10.5);
+                              assessment.numberType("bolt_on_adjourned_hearing_fee", 10.5);
+                              assessment.numberType("bolt_on_cmrh_oral_fee", 10.5);
+                              assessment.numberType("bolt_on_cmrh_telephone_fee", 10.5);
+                              assessment.numberType("bolt_on_substantive_hearing_fee", 10.5);
+                              assessment.numberType("bolt_on_home_office_interview_fee", 10.5);
+                              assessment.booleanType("is_vat_applicable", true);
                               assessment.numberType("allowed_total_vat", 20.1);
                               assessment.numberType("allowed_total_incl_vat", 120.6);
                               assessment.stringMatcher(
@@ -107,9 +122,23 @@ public final class GetClaimAssessmentsPactTest extends AbstractPactTest {
     assertThat(result.getAssessments()).hasSize(1);
     AssessmentGet assessment = result.getAssessments().getFirst();
     assertThat(assessment.getAssessmentType()).isNotNull();
+    assertThat(assessment.getFixedFeeAmount()).isNotNull();
     assertThat(assessment.getNetProfitCostsAmount()).isNotNull();
+    assertThat(assessment.getNetTravelCostsAmount()).isNotNull();
+    assertThat(assessment.getNetWaitingCostsAmount()).isNotNull();
+    assertThat(assessment.getNetCostOfCounselAmount()).isNotNull();
+    assertThat(assessment.getDisbursementAmount()).isNotNull();
+    assertThat(assessment.getDisbursementVatAmount()).isNotNull();
+    assertThat(assessment.getDetentionTravelAndWaitingCostsAmount()).isNotNull();
+    assertThat(assessment.getJrFormFillingAmount()).isNotNull();
+    assertThat(assessment.getBoltOnAdjournedHearingFee()).isNotNull();
+    assertThat(assessment.getBoltOnCmrhOralFee()).isNotNull();
+    assertThat(assessment.getBoltOnCmrhTelephoneFee()).isNotNull();
+    assertThat(assessment.getBoltOnSubstantiveHearingFee()).isNotNull();
+    assertThat(assessment.getBoltOnHomeOfficeInterviewFee()).isNotNull();
     assertThat(assessment.getAllowedTotalVat()).isNotNull();
     assertThat(assessment.getAllowedTotalInclVat()).isNotNull();
+    assertThat(assessment.getIsVatApplicable()).isNotNull();
   }
 
   @Test
