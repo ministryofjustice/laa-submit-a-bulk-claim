@@ -39,6 +39,16 @@
   display: none;
 }
 
+#offices-input-container {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 10px 15px;
+}
+
+#offices-input-container .govuk-checkboxes__item {
+  margin-bottom: 0;
+}
+
 .upload-table {
   overflow-x: auto;
 }
