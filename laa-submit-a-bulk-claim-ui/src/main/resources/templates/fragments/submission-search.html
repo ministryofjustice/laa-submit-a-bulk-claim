@@ -109,37 +109,44 @@
                 </legend>
                 <th:block th:replace="~{fragments/error-components :: error-messages('offices')}"/>
 
-                  <div class="govuk-checkboxes govuk-checkboxes--small"
-                       th:if="${userOffices != null and userOffices.size() > 1}">
+                <!--/* "Select all" toggle: shown only when there is more than one office to choose from.
+                       It has no name attribute, so it is never submitted with the form. The
+                       data-target links it to the office checkbox container below, and the
+                       laa-select-all JS module wires up the toggle behaviour. */-->
+                <div class="govuk-checkboxes govuk-checkboxes--small"
+                     id="offices-select-all-container"
+                     th:if="${userOffices != null and userOffices.size() > 1}">
+                  <div class="govuk-checkboxes__item">
+                    <input class="govuk-checkboxes__input"
+                           id="offices-select-all"
+                           type="checkbox"
+                           data-module="laa-select-all"
+                           data-target="offices-input-container">
+                    <label class="govuk-label govuk-checkboxes__label"
+                           for="offices-select-all"
+                           th:text="#{search.offices.selectAll}"></label>
+                  </div>
+                </div>
+
+                <div class="govuk-checkboxes govuk-checkboxes--small"
+                     data-module="govuk-checkboxes" id="offices-input-container">
+
+                  <th:block th:each="office,idx : ${userOffices}">
                     <div class="govuk-checkboxes__item">
-                      <input class="govuk-checkboxes__input" id="offices-select-all"
-                             type="checkbox" data-module="laa-select-all"
-                             data-target="offices-input-container">
-                      <label class="govuk-label govuk-checkboxes__label" for="offices-select-all"
-                             th:text="#{search.offices.selectAll}"></label>
+                      <input class="govuk-checkboxes__input"
+                             th:id="${idx.index > 0} ? |offices-input-${idx.index}| : |offices-input|"
+                             type="checkbox"
+                             name="offices"
+                             th:checked="${submissionSearchQuery.offices != null and #arrays.contains(submissionSearchQuery.offices, office)}"
+                             th:value="${office}">
+                      <label class="govuk-label govuk-checkboxes__label"
+                             th:for="${idx.index > 0} ? |offices-input-${idx.index}| : |offices-input|"
+                             th:text="${office}">
+                      </label>
                     </div>
-                  </div>
+                  </th:block>
 
-                  <div class="govuk-checkboxes govuk-checkboxes--small"
-                       data-module="govuk-checkboxes" id="offices-input-container">
-
-                    <th:block th:each="office,idx : ${userOffices}">
-                      <div class="govuk-checkboxes__item">
-
-                        <input class="govuk-checkboxes__input"
-                               th:id="${idx.index > 0} ? |offices-input-${idx.index}| : |offices-input|"
-                               type="checkbox"
-                               name="offices"
-                               th:checked="${submissionSearchQuery.offices != null and #arrays.contains(submissionSearchQuery.offices, office)}"
-                               th:value="${office}">
-                        <label class="govuk-label govuk-checkboxes__label"
-                               th:for="${idx.index > 0} ? |offices-input-${idx.index}| : |offices-input|"
-                               th:text="${office}">
-                        </label>
-                      </div>
-                    </th:block>
-
-                  </div>
+                </div>
               </fieldset>
             </div>
           </div>

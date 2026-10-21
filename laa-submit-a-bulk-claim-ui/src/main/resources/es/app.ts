@@ -106,8 +106,8 @@ selectDropdowns.forEach(function (select: HTMLSelectElement): void {
   input?.dispatchEvent(new FocusEvent('blur'));
 });
 
-// For Select All Button
-document.querySelectorAll<HTMLInputElement>('[data-module="laa-select-all"]').forEach(function (selectAll: HTMLInputElement): void {
+// "Select all" checkboxes
+const initSelectAll = (selectAll: HTMLInputElement): void => {
   const targetId = selectAll.getAttribute('data-target');
   const container = targetId ? document.getElementById(targetId) : null;
   if (!container) {
@@ -116,25 +116,26 @@ document.querySelectorAll<HTMLInputElement>('[data-module="laa-select-all"]').fo
 
   const checkboxes = Array.from(
       container.querySelectorAll<HTMLInputElement>('input[type="checkbox"]')
-  ).filter((checkbox: HTMLInputElement) => checkbox !== selectAll);
+  ).filter((checkbox) => checkbox !== selectAll);
 
-  const syncSelectAllState = (): void => {
-    const allChecked = checkboxes.length > 0 && checkboxes.every((checkbox) => checkbox.checked);
-    const noneChecked = checkboxes.every((checkbox) => !checkbox.checked);
-    selectAll.checked = allChecked;
-    selectAll.indeterminate = !allChecked && !noneChecked;
+  const refreshSelectAll = (): void => {
+    const checkedCount = checkboxes.filter((checkbox) => checkbox.checked).length;
+    selectAll.checked = checkedCount === checkboxes.length && checkboxes.length > 0;
+    selectAll.indeterminate = checkedCount > 0 && checkedCount < checkboxes.length;
   };
 
-  selectAll.addEventListener('change', function (): void {
-    checkboxes.forEach((checkbox: HTMLInputElement) => {
+  selectAll.addEventListener('change', (): void => {
+    checkboxes.forEach((checkbox) => {
       checkbox.checked = selectAll.checked;
     });
     selectAll.indeterminate = false;
   });
 
-  checkboxes.forEach((checkbox: HTMLInputElement) => {
-    checkbox.addEventListener('change', syncSelectAllState);
+  checkboxes.forEach((checkbox) => {
+    checkbox.addEventListener('change', refreshSelectAll);
   });
 
-  syncSelectAllState();
-});
+  refreshSelectAll();
+};
+
+document.querySelectorAll<HTMLInputElement>('[data-module="laa-select-all"]').forEach(initSelectAll);
