@@ -17,16 +17,12 @@ class BulkLoadSpreadsheetFilenameUtilTest {
 
   @ParameterizedTest
   @CsvSource({
-    "claims-v2.00.csv, 2.00",
-    "claims-v3.14.csv, 3.14",
-    "CLAIMS-V2.00.CSV, 2.00",
-    "CivilBulkload0P322FJAN2026_v2.00.csv, 2.00"
+    "CivilBulkload0P322FJAN2026_v2.00.csv, 2.00",
+    "CRIMEBULKLOAD0P322FJAN2026_V3.14.CSV, 3.14"
   })
-  @DisplayName("Should detect the standard LAA Bulk Load Spreadsheet naming convention")
+  @DisplayName("Should match the standard convention and capture the version")
   void shouldDetectStandardConvention(String filename, String expectedVersion) {
-    // When
     BulkLoadSpreadsheetFilenameMatch result = bulkLoadSpreadsheetFilenameUtil.detect(filename);
-    // Then
     assertThat(result.matched()).isTrue();
     assertThat(result.isMac()).isFalse();
     assertThat(result.version()).isEqualTo(expectedVersion);
@@ -34,15 +30,13 @@ class BulkLoadSpreadsheetFilenameUtilTest {
 
   @ParameterizedTest
   @CsvSource({
-    "claims-mac-v1.42.csv, 1.42",
-    "claims-MAC-V1.42.CSV, 1.42",
-    "CivilBulkload0111EFJAN2026-mac-v9.01.csv, 9.01"
+    "MediationBulkload0P322FJAN2026_mac-v2.00.csv, 2.00",
+    "CivilBulkload0111EFJAN2026-mac-v9.01.csv, 9.01",
+    "CivilBulkload0111EFJAN2026_MAC-V1.42.CSV, 1.42"
   })
-  @DisplayName("Should detect the Mac-variant LAA Bulk Load Spreadsheet naming convention")
+  @DisplayName("Should match the Mac variant and capture the version")
   void shouldDetectMacConvention(String filename, String expectedVersion) {
-    // When
     BulkLoadSpreadsheetFilenameMatch result = bulkLoadSpreadsheetFilenameUtil.detect(filename);
-    // Then
     assertThat(result.matched()).isTrue();
     assertThat(result.isMac()).isTrue();
     assertThat(result.version()).isEqualTo(expectedVersion);
@@ -51,33 +45,32 @@ class BulkLoadSpreadsheetFilenameUtilTest {
   @ParameterizedTest
   @ValueSource(
       strings = {
-        "my-own-claims.csv",
-        "claims.csv",
-        "claims-v2.00.xlsx",
-        "claims-v2.csv",
-        "claims-v2.0.csv",
-        "claims-v10.01.csv",
-        "claims-v2.00.csv\n",
-        "claims-mac-v1.42.csv\r\n"
+        "CrimeBulkload0P322FJAN2026.csv",
+        "CivilBulkload.csv",
+        "CivilBulkload0P322FJAN2026_v10.01.csv"
       })
-  @DisplayName("Should report non-matching filenames as not matched")
-  void shouldReportNonMatchingFilenames(String filename) {
-    // When
+  @DisplayName("Should match on the filename prefix alone, with no version or Mac flag")
+  void shouldMatchWithoutVersion(String filename) {
     BulkLoadSpreadsheetFilenameMatch result = bulkLoadSpreadsheetFilenameUtil.detect(filename);
-    // Then
-    assertThat(result.matched()).isFalse();
+    assertThat(result.matched()).isTrue();
     assertThat(result.isMac()).isFalse();
     assertThat(result.version()).isNull();
   }
 
   @ParameterizedTest
-  @ValueSource(strings = {"claims.txt", "claims.xml", "claims-v2.00.txt", "claims-mac-v1.42.xml"})
-  @DisplayName(
-      "Should report .txt/.xml filenames as not matched, since the convention is .csv only")
-  void shouldReportNonCsvFilenamesAsNotMatched(String filename) {
-    // When
+  @ValueSource(
+      strings = {
+        "my-own-claims.csv",
+        "claims-v2.00.csv",
+        "claims-mac-v1.42.csv",
+        "XCivilBulkload0P322FJAN2026.csv",
+        "CivilBulkload0P322FJAN2026.xlsx",
+        "CivilBulkload0P322FJAN2026.txt",
+        "CivilBulkload0P322FJAN2026_v2.00.csv\n"
+      })
+  @DisplayName("Should report non-matching filenames as not matched")
+  void shouldReportNonMatchingFilenames(String filename) {
     BulkLoadSpreadsheetFilenameMatch result = bulkLoadSpreadsheetFilenameUtil.detect(filename);
-    // Then
     assertThat(result.matched()).isFalse();
     assertThat(result.isMac()).isFalse();
     assertThat(result.version()).isNull();
