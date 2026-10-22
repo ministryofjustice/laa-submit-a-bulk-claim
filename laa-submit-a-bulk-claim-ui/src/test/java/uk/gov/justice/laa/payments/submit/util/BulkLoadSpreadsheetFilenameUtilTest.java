@@ -54,7 +54,7 @@ class BulkLoadSpreadsheetFilenameUtilTest {
     BulkLoadSpreadsheetFilenameMatch result = bulkLoadSpreadsheetFilenameUtil.detect(filename);
     assertThat(result.matched()).isTrue();
     assertThat(result.isMac()).isFalse();
-    assertThat(result.version()).isNull();
+    assertThat(result.version()).isEqualTo("N/A");
   }
 
   @ParameterizedTest
@@ -73,7 +73,7 @@ class BulkLoadSpreadsheetFilenameUtilTest {
     BulkLoadSpreadsheetFilenameMatch result = bulkLoadSpreadsheetFilenameUtil.detect(filename);
     assertThat(result.matched()).isFalse();
     assertThat(result.isMac()).isFalse();
-    assertThat(result.version()).isNull();
+    assertThat(result.version()).isEqualTo("N/A");
   }
 
   @ParameterizedTest
@@ -85,7 +85,7 @@ class BulkLoadSpreadsheetFilenameUtilTest {
     // Then
     assertThat(result.matched()).isFalse();
     assertThat(result.isMac()).isFalse();
-    assertThat(result.version()).isNull();
+    assertThat(result.version()).isEqualTo("N/A");
   }
 
   @Test
@@ -96,6 +96,6 @@ class BulkLoadSpreadsheetFilenameUtilTest {
     // Then
     assertThat(result.matched()).isFalse();
     assertThat(result.isMac()).isFalse();
-    assertThat(result.version()).isNull();
+    assertThat(result.version()).isEqualTo("N/A");
   }
 }

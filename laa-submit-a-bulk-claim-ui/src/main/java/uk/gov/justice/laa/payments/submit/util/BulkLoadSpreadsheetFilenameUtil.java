@@ -27,8 +27,6 @@ public class BulkLoadSpreadsheetFilenameUtil {
   private static final Pattern STANDARD_PATTERN =
       Pattern.compile("v(\\d\\.\\d{2})\\.csv\\z", Pattern.CASE_INSENSITIVE);
 
-  private static final String NOT_APPLICABLE = "N/A";
-
   public BulkLoadSpreadsheetFilenameMatch detect(String filename) {
     if (filename == null || filename.isBlank() || !PREFIX_PATTERN.matcher(filename).matches()) {
       return BulkLoadSpreadsheetFilenameMatch.noMatch();
@@ -44,6 +42,7 @@ public class BulkLoadSpreadsheetFilenameUtil {
       return new BulkLoadSpreadsheetFilenameMatch(true, false, standardMatcher.group(1));
     }
 
-    return new BulkLoadSpreadsheetFilenameMatch(true, false, NOT_APPLICABLE);
+    return new BulkLoadSpreadsheetFilenameMatch(
+        true, false, BulkLoadSpreadsheetFilenameMatch.NOT_APPLICABLE);
   }
 }
