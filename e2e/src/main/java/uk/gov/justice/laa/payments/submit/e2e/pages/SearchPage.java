@@ -15,6 +15,7 @@ public class SearchPage extends BasePage {
   private final Locator resultsHeading;
   private final Locator submissionPeriodHeader;
   private final Locator submissionPeriodInput;
+  private final Locator noResultsMessage;
 
   public SearchPage(Page page) {
     super(page, "Search for a submission");
@@ -24,6 +25,7 @@ public class SearchPage extends BasePage {
     resultsHeading = page.locator("#results-heading");
     submissionPeriodHeader = page.locator("a:has-text('Submission period')");
     submissionPeriodInput = page.locator("input#submission-period");
+    noResultsMessage = page.getByText("No submissions were found.");
   }
 
   public void selectSubmissionPeriod(String query, String optionText) {
