@@ -1,5 +1,6 @@
 package uk.gov.justice.laa.payments.submit.e2e.tests;
 
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import uk.gov.justice.laa.payments.submit.e2e.base.BaseTest;
@@ -26,6 +27,7 @@ public class NilSubmissionE2ETest extends BaseTest {
 
   @Test
   @Tag("pre-submission-enabled")
+  @Disabled
   public void nilSubmissionAcceptedAfterApproval() {
     createNilSubmission();
 

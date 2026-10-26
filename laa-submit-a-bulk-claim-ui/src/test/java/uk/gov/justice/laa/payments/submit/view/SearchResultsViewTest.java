@@ -315,7 +315,7 @@ class SearchResultsViewTest extends ViewTestBase {
   }
 
   @Test
-  void searchResultsDisplaysPendingApprovalAsNotSubmitted() {
+  void searchResultsDisplaysFormattedPendingApprovalStatus() {
     var submission =
         SubmissionBase.builder()
             .submissionId(submissionId)
@@ -326,7 +326,8 @@ class SearchResultsViewTest extends ViewTestBase {
     var doc = renderDocumentWithParams(baseSearchResultsParams());
 
     assertCellContainsText(
-        doc.select("table.govuk-table tbody tr").first().select("td").get(4), "Not submitted");
+        doc.select("table.govuk-table tbody tr").first().select("td").get(4),
+        "Validated pending approval");
   }
 
   @Test

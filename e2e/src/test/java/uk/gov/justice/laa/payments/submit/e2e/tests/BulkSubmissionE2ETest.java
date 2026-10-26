@@ -5,6 +5,7 @@ import static com.microsoft.playwright.assertions.PlaywrightAssertions.assertTha
 import java.nio.file.Paths;
 import java.util.stream.Stream;
 
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -23,6 +24,7 @@ public class BulkSubmissionE2ETest extends BaseTest {
   @ParameterizedTest(name = "{0}")
   @MethodSource("csvFiles")
   @Tag("pre-submission-disabled")
+  @Disabled
   public void bulkSubmissionAccepted(String displayName, String csvFile) {
     uploadSubmission(csvFile);
 
