@@ -26,11 +26,15 @@ public class NilSubmissionE2ETest extends BaseTest {
 
   @Test
   @Tag("pre-submission-enabled")
-  public void nilSubmissionNotSubmitted() {
+  public void nilSubmissionAcceptedAfterApproval() {
     createNilSubmission();
 
     var preSubmissionDetailPage = new PreSubmissionDetailPage(page);
     preSubmissionDetailPage.assertSubmissionNotSubmitted();
+    preSubmissionDetailPage.getSubmitButton().click();
+
+    var submissionDetailPage = new SubmissionDetailPage(page);
+    submissionDetailPage.assertSubmissionAccepted();
   }
 
   private void createNilSubmission() {

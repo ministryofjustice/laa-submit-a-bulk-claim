@@ -12,6 +12,8 @@ public class PreSubmissionDetailPage extends BasePage {
   private final Locator informationBanner;
   private final Locator claimsTab;
   private final Locator messagesTab;
+  private final Locator submitButton;
+  private final Locator deleteButton;
 
   public PreSubmissionDetailPage(Page page) {
     super(page, "Submission summary");
@@ -19,6 +21,8 @@ public class PreSubmissionDetailPage extends BasePage {
     informationBanner = page.locator(".moj-alert--information");
     claimsTab = page.locator("#claims-tab");
     messagesTab = page.locator("#messages-tab");
+    submitButton = page.locator("#submit-submission-button");
+    deleteButton = page.locator("#delete-submission-button");
   }
 
   public void assertSubmissionNotSubmitted() {
@@ -26,5 +30,7 @@ public class PreSubmissionDetailPage extends BasePage {
     assertThat(claimsTab).isVisible();
     assertThat(messagesTab).isVisible();
     assertThat(informationBanner).containsText("Your bulk claim has been uploaded.");
+    assertThat(submitButton).isVisible();
+    assertThat(deleteButton).isVisible();
   }
 }

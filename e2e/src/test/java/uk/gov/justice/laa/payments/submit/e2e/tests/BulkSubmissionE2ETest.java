@@ -33,11 +33,15 @@ public class BulkSubmissionE2ETest extends BaseTest {
   @ParameterizedTest(name = "{0}")
   @MethodSource("csvFiles")
   @Tag("pre-submission-enabled")
-  public void bulkSubmissionNotSubmitted(String displayName, String csvFile) {
+  public void bulkSubmissionAcceptedAfterApproval(String displayName, String csvFile) {
     uploadSubmission(csvFile);
 
     var preSubmissionDetailPage = new PreSubmissionDetailPage(page);
     preSubmissionDetailPage.assertSubmissionNotSubmitted();
+    preSubmissionDetailPage.getSubmitButton().click();
+
+    var submissionDetailPage = new SubmissionDetailPage(page);
+    submissionDetailPage.assertSubmissionAccepted();
   }
 
   private void uploadSubmission(String csvFile) {
