@@ -19,8 +19,6 @@ public class LoggingConfig {
           "/images",
           "/fonts",
           "/favicon",
-          "/javascripts",
-          "/stylesheets",
           "/static",
           "/public",
           "/webjars");
