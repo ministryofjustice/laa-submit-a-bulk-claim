@@ -15,6 +15,7 @@ checkstyle {
 }
 repositories {
     // Use Maven Central for resolving dependencies.
+    mavenLocal()
     mavenCentral()
 }
 
@@ -51,7 +52,7 @@ sourceSets {
 }
 
 dependencies {
-    implementation 'uk.gov.justice.laa.datastewardship.payments:data-claims-api-models:1.28.0'
+    implementation 'uk.gov.justice.laa.datastewardship.payments:data-claims-api-models:0.0.0-SNAPSHOT'
     compileOnly 'io.swagger.core.v3:swagger-annotations:2.2.30'
 
     implementation 'org.springframework.boot:spring-boot-starter-cache'

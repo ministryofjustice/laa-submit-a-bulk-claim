@@ -17,6 +17,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.AreaOfLaw;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.Page;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionResponse;
@@ -63,6 +64,12 @@ public class SubmissionDetailController {
 
     var submission = submissionService.getSubmission(submissionId, user);
 
+    if (submission.getStatus() == SubmissionStatus.READY_FOR_FINAL_VALIDATION
+        || submission.getStatus() == SubmissionStatus.FINAL_VALIDATION_IN_PROGRESS) {
+      model.addAttribute("shouldRefresh", true);
+      return "pages/upload-being-checked";
+    }
+
     // Redirect based on submission status
     if (submission != null && submission.getStatus() == SubmissionStatus.VALIDATION_IN_PROGRESS) {
       session.setAttribute(SUBMISSION_ID, submissionId);
@@ -101,6 +108,14 @@ public class SubmissionDetailController {
       addCommonSubmissionAttributes(model, submissionSummary, submission, submissionViewQuery);
       return "pages/view-submission-detail-invalid";
     }
+  }
+
+  @PostMapping("/submissions/{submissionId}")
+  public String approveSubmission(
+      @PathVariable UUID submissionId, @AuthenticationPrincipal OidcUser user) {
+    featureFlagsConfig.checkPreSubmissionEnabled();
+    submissionService.approveSubmission(submissionId, user);
+    return "redirect:/submissions/" + submissionId;
   }
 
   private SubmissionSummary handleSubmissionDetails(

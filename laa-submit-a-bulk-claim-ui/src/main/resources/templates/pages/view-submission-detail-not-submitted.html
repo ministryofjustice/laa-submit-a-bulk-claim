@@ -12,16 +12,21 @@
             <th:block th:replace="~{fragments/submission-details/claim-messages-warnings :: claim-messages-warnings(pageVarName='messagesPage')}"></th:block>
             <div class="govuk-grid-column-full">
                 <div class="govuk-button-group">
-                    <button type="button"
+
+                    <form class="form" th:action="@{/submissions/{submissionId}(submissionId=${submissionSummary.submissionReference})}"
+                          method="post">
+                    <button type="submit"
                             id="submit-submission-button"
                             class="govuk-button"
                             data-module="govuk-button"
                             th:text="#{submission.preSubmission.submit}"></button>
+
                     <button type="button"
                             id="delete-submission-button"
                             class="govuk-button govuk-button--secondary"
                             data-module="govuk-button"
                             th:text="#{submission.preSubmission.delete}"></button>
+                    </form>
                 </div>
             </div>
         </div>

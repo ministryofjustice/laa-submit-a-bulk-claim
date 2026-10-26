@@ -2,12 +2,15 @@ package uk.gov.justice.laa.payments.submit.controller;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.oidcLogin;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionStatus.VALIDATION_IN_PROGRESS;
 import static uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionStatus.VALIDATION_SUCCEEDED;
 import static uk.gov.justice.laa.payments.submit.controller.ControllerTestHelper.OIDC_USER;
@@ -24,14 +27,18 @@ import java.util.UUID;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
 import org.springframework.context.annotation.Import;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.oauth2.core.oidc.user.OidcUser;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.assertj.MockMvcTester;
 import org.springframework.test.web.servlet.assertj.MvcTestResult;
+import org.springframework.web.server.ResponseStatusException;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.AreaOfLaw;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.Page;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionResponse;
@@ -82,6 +89,42 @@ class SubmissionDetailControllerTest extends BaseControllerTest {
   @MockitoBean private SubmissionService submissionService;
 
   @Nested
+  @DisplayName("POST: /submissions/{submissionId}")
+  class ApproveSubmission {
+
+    @Test
+    void shouldApproveSubmissionAndRedirect() {
+      var result =
+          mockMvc.perform(
+              post("/submissions/" + SUBMISSION_ID)
+                  .with(oidcLogin().oidcUser(OIDC_USER))
+                  .with(csrf()));
+
+      assertThat(result)
+          .hasStatus3xxRedirection()
+          .hasRedirectedUrl("/submissions/" + SUBMISSION_ID);
+      verify(featureFlagsConfig).checkPreSubmissionEnabled();
+      verify(submissionService).approveSubmission(SUBMISSION_ID, OIDC_USER);
+    }
+
+    @Test
+    void shouldNotApproveSubmissionWhenFeatureDisabled() {
+      doThrow(new ResponseStatusException(HttpStatus.NOT_FOUND))
+          .when(featureFlagsConfig)
+          .checkPreSubmissionEnabled();
+
+      var result =
+          mockMvc.perform(
+              post("/submissions/" + SUBMISSION_ID)
+                  .with(oidcLogin().oidcUser(OIDC_USER))
+                  .with(csrf()));
+
+      assertThat(result).hasStatus(HttpStatus.NOT_FOUND.value());
+      verify(submissionService, never()).approveSubmission(any(), any());
+    }
+  }
+
+  @Nested
   @DisplayName("GET: /submission/{submissionId}")
   class GetSubmission {
 
@@ -108,6 +151,32 @@ class SubmissionDetailControllerTest extends BaseControllerTest {
   @Nested
   @DisplayName("GET: /submissions/{submissionId}")
   class GetSubmissionDetail {
+
+    @ParameterizedTest
+    @EnumSource(
+        value = SubmissionStatus.class,
+        names = {"READY_FOR_FINAL_VALIDATION", "FINAL_VALIDATION_IN_PROGRESS"})
+    void shouldShowProcessingPageWhenFinalValidationIsPending(SubmissionStatus status) {
+      var submission =
+          SubmissionResponse.builder()
+              .submissionId(SUBMISSION_ID)
+              .status(status)
+              .officeAccountNumber(OFFICE_CODE)
+              .build();
+      when(submissionService.getSubmission(SUBMISSION_ID, OIDC_USER)).thenReturn(submission);
+
+      var result =
+          mockMvc.perform(
+              get("/submissions/" + SUBMISSION_ID).with(oidcLogin().oidcUser(OIDC_USER)));
+
+      assertThat(result)
+          .hasStatusOk()
+          .hasViewName("pages/upload-being-checked")
+          .model()
+          .containsEntry("shouldRefresh", true);
+      verify(submissionSummaryBuilder, never()).build(any());
+      verify(submissionClaimDetailsBuilder, never()).build(any(), anyInt(), anyInt(), any());
+    }
 
     @Test
     @DisplayName("Should return expected result")
@@ -560,14 +629,21 @@ class SubmissionDetailControllerTest extends BaseControllerTest {
           mockMvc.perform(
               get("/submissions/" + SUBMISSION_ID).with(oidcLogin().oidcUser(OIDC_USER)));
 
-      assertThat(result).hasStatusOk().hasViewName("pages/view-submission-detail-not-submitted");
-      var model = result.getMvcResult().getModelAndView().getModel();
-      assertThat(model)
+      assertThat(result)
+          .hasStatusOk()
+          .hasViewName("pages/view-submission-detail-not-submitted")
+          .model()
           .containsEntry("submissionStatus", SubmissionStatus.VALIDATED_PENDING_APPROVAL)
           .containsEntry("claimCount", 0)
           .containsKeys("claimDetails", "messagesSummary", "matterStartsDetails");
-      assertThat(((SubmissionSummary) model.get("submissionSummary")).submissionValue())
-          .isEqualByComparingTo(new BigDecimal("100.50"));
+      assertThat(result)
+          .model()
+          .extractingByKey("submissionSummary")
+          .isInstanceOfSatisfying(
+              SubmissionSummary.class,
+              summary ->
+                  assertThat(summary.submissionValue())
+                      .isEqualByComparingTo(new BigDecimal("100.50")));
 
       verify(submissionMessagesService, never())
           .getErrorMessages(any(), any(), anyInt(), anyInt(), any());
