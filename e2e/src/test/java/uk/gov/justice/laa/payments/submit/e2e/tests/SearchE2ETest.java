@@ -67,7 +67,7 @@ class SearchE2ETest extends JdbcTemplateBaseTest {
     assertThat(searchPage.getResultsTable()).isVisible();
 
     assertTableContainsHeaders(
-        "Date submitted", "Office account", "Area of law", "Submission period", "Status");
+        "Date", "Office account number", "Area of law", "Submission period", "Status");
     searchPage.assertTotalSubmissions(3);
   }
 
@@ -86,7 +86,7 @@ class SearchE2ETest extends JdbcTemplateBaseTest {
     assertThat(searchPage.getResultsTable()).isVisible();
 
     assertTableContainsHeaders(
-        "Date submitted", "Office account", "Area of law", "Submission period", "Status");
+            "Date", "Office account number", "Area of law", "Submission period", "Status");
     searchPage.assertTotalSubmissions(1);
     searchPage.assertSubmissionAreaOfLawColumnValues("Legal help");
   }
