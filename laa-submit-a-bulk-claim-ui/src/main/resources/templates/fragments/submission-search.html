@@ -109,10 +109,6 @@
                 </legend>
                 <th:block th:replace="~{fragments/error-components :: error-messages('offices')}"/>
 
-                <!--/* "Select all" toggle: shown only when there is more than one office to choose from.
-                       It has no name attribute, so it is never submitted with the form. The
-                       data-target links it to the office checkbox container below, and the
-                       laa-select-all JS module wires up the toggle behaviour. */-->
                 <div class="govuk-checkboxes govuk-checkboxes--small"
                      id="offices-select-all-container"
                      th:if="${userOffices != null and userOffices.size() > 1}">
