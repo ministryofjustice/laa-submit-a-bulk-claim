@@ -32,6 +32,8 @@ dependencyManagement {
             entry 'sentry-spring-boot-starter'
             entry 'sentry-log4j2'
         }
+        // Transitive via oauth2-oidc-sdk > json-smart > accessors-smart; not managed by the Spring Boot BOM
+        dependency 'org.ow2.asm:asm:9.11.1'
     }
 }
 
