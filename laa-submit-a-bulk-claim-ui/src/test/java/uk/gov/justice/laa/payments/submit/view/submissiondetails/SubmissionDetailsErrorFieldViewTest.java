@@ -237,24 +237,6 @@ class SubmissionDetailsErrorFieldViewTest extends SubmissionDetailsViewTestBase 
         .containsExactlyElementsOf(expectedCells);
   }
 
-  static Stream<Arguments> claimErrorRowArgs() {
-    String message = "Case Start Date must be between 01/01/1995 and today";
-    return Stream.of(
-        Arguments.of(CRIME_LOWER, List.of("Doe", "John", "010125/001", message)),
-        Arguments.of(LEGAL_HELP, List.of("Doe", "John", "010125/001", "01011990/J/DOE", message)),
-        Arguments.of(
-            MEDIATION,
-            List.of("Doe", "John", "01011990/J/DOE", "Smith", "Jane", "02021991/J/SMIT", message)));
-  }
-
-  static Stream<Arguments> claimErrorMissingValueArgs() {
-    String message = "Client Surname is required";
-    return Stream.of(
-        Arguments.of(CRIME_LOWER, List.of("-", "-", "-", message)),
-        Arguments.of(LEGAL_HELP, List.of("-", "-", "-", "-", message)),
-        Arguments.of(MEDIATION, List.of("-", "-", "-", "-", "-", "-", message)));
-  }
-
   @ParameterizedTest
   @MethodSource("detailFieldIsSortableArgs")
   void viewSubmissionDetailClientSurnameClaimErrorFieldIsSortable_crime(
@@ -836,5 +818,23 @@ class SubmissionDetailsErrorFieldViewTest extends SubmissionDetailsViewTestBase 
             claimMessage(
                 "The provider is not contracted for the category of law associated with the fee code"),
             claimMessage("A duplicate claim was found within the same submission")));
+  }
+
+  static Stream<Arguments> claimErrorRowArgs() {
+    String message = "Case Start Date must be between 01/01/1995 and today";
+    return Stream.of(
+        Arguments.of(CRIME_LOWER, List.of("Doe", "John", "010125/001", message)),
+        Arguments.of(LEGAL_HELP, List.of("Doe", "John", "010125/001", "01011990/J/DOE", message)),
+        Arguments.of(
+            MEDIATION,
+            List.of("Doe", "John", "01011990/J/DOE", "Smith", "Jane", "02021991/J/SMIT", message)));
+  }
+
+  static Stream<Arguments> claimErrorMissingValueArgs() {
+    String message = "Client Surname is required";
+    return Stream.of(
+        Arguments.of(CRIME_LOWER, List.of("-", "-", "-", message)),
+        Arguments.of(LEGAL_HELP, List.of("-", "-", "-", "-", message)),
+        Arguments.of(MEDIATION, List.of("-", "-", "-", "-", "-", "-", message)));
   }
 }

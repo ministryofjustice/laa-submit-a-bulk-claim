@@ -12,7 +12,6 @@ import org.junit.jupiter.params.provider.MethodSource;
 import uk.gov.justice.laa.payments.submit.e2e.base.BaseTest;
 import uk.gov.justice.laa.payments.submit.e2e.pages.LandingPagePage;
 import uk.gov.justice.laa.payments.submit.e2e.pages.SubmissionErrorsPage;
-import uk.gov.justice.laa.payments.submit.e2e.pages.UploadBeingCheckedPage;
 import uk.gov.justice.laa.payments.submit.e2e.pages.UploadPage;
 
 public class ValidationMessagesE2ETest extends BaseTest {
@@ -68,8 +67,6 @@ public class ValidationMessagesE2ETest extends BaseTest {
     var upload = openUploadPage();
     upload.uploadFile(Paths.get(FIXTURES + fixture).toAbsolutePath());
     upload.getContinueButton().click();
-
-    new UploadBeingCheckedPage(page);
 
     return new SubmissionErrorsPage(page);
   }
