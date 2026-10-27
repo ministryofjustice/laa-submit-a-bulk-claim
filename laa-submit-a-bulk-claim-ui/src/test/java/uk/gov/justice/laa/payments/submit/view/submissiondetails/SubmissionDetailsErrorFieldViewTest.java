@@ -18,10 +18,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Stream;
 import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.security.oauth2.core.oidc.user.OidcUser;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.AreaOfLaw;
@@ -132,6 +134,125 @@ class SubmissionDetailsErrorFieldViewTest extends SubmissionDetailsViewTestBase 
     Elements headers = getTableHeaders(doc);
     assertTableHeaderIsSortable(
         headers.get(0), "none", "Messages", errorSortLink("display_message"));
+  }
+
+  @Test
+  void rendersSubmissionErrorsWithoutClaimErrorsTable() {
+    var doc =
+        renderRejectedPage(
+            LEGAL_HELP,
+            MessagesSource.SUBMISSION,
+            2,
+            0,
+            List.of(
+                submissionMessage("Submissions for periods before JAN-2015 are not accepted."),
+                submissionMessage("The provider is not contracted for the area of law.")));
+
+    assertThat(selectFirst(doc, ".moj-alert__heading").text())
+        .isEqualTo("2 errors were found with your submission");
+    assertPageHasContent(doc, "Resolve the errors and upload the file again.");
+    assertThat(selectFirst(doc, ".govuk-tag--red").text()).isEqualTo("Rejected");
+    assertThat(selectFirst(doc, "#messages-errors-heading").text())
+        .isEqualTo("2 submission errors");
+    assertThat(selectFirst(doc, "#message-error-0").text())
+        .isEqualTo("Submissions for periods before JAN-2015 are not accepted.");
+    assertThat(selectFirst(doc, "#message-error-1").text())
+        .isEqualTo("The provider is not contracted for the area of law.");
+    assertThat(doc.select("#claim-messages-errors-heading")).isEmpty();
+    assertThat(doc.select("[id^=claim-message-error-]")).isEmpty();
+  }
+
+  @Test
+  void rendersSingularSubmissionErrorBannerAndHeading() {
+    var doc =
+        renderRejectedPage(
+            CRIME_LOWER,
+            MessagesSource.SUBMISSION,
+            1,
+            0,
+            List.of(submissionMessage("Enter a valid schedule number.")));
+
+    assertThat(selectFirst(doc, ".moj-alert__heading").text())
+        .isEqualTo("1 error was found with your submission");
+    assertThat(selectFirst(doc, "#messages-errors-heading").text()).isEqualTo("1 submission error");
+  }
+
+  @Test
+  void rendersClaimErrorsWithoutSubmissionErrorsTable() {
+    var doc =
+        renderRejectedPage(
+            CRIME_LOWER,
+            MessagesSource.CLAIM,
+            3,
+            1,
+            List.of(
+                claimMessage("Unique File Number is required"),
+                claimMessage("Outcome Code is required"),
+                claimMessage("Client Surname is required")));
+
+    assertThat(selectFirst(doc, ".moj-alert__heading").text())
+        .isEqualTo("1 claim has errors for missing or incorrect information");
+    assertThat(selectFirst(doc, "#claim-messages-errors-heading").text())
+        .isEqualTo("3 claim errors");
+    assertThat(doc.select("[id^=claim-message-error-]")).hasSize(3);
+    assertThat(doc.select("#messages-errors-heading")).isEmpty();
+    assertThat(doc.select("[id^=message-error-]")).isEmpty();
+  }
+
+  @ParameterizedTest(name = "{0}")
+  @MethodSource("claimErrorRowArgs")
+  void rendersClaimErrorRowValuesInAreaOfLawColumns(
+      AreaOfLaw areaOfLaw, List<String> expectedCells) {
+    var row =
+        MessageRow.builder()
+            .claimReference(Optional.of(UUID.randomUUID()))
+            .clientSurname("Doe")
+            .clientForename("John")
+            .ufn("010125/001")
+            .ucn("01011990/J/DOE")
+            .client2Surname("Smith")
+            .client2Forename("Jane")
+            .client2Ucn("02021991/J/SMIT")
+            .message("Case Start Date must be between 01/01/1995 and today")
+            .build();
+
+    var doc = renderRejectedPage(areaOfLaw, MessagesSource.CLAIM, 1, 1, List.of(row));
+
+    assertThat(doc.select("#claim-message-error-0 .govuk-table__cell").eachText())
+        .containsExactlyElementsOf(expectedCells);
+  }
+
+  @ParameterizedTest(name = "{0}")
+  @MethodSource("claimErrorMissingValueArgs")
+  void rendersDashForMissingClaimErrorRowValues(AreaOfLaw areaOfLaw, List<String> expectedCells) {
+    var row =
+        MessageRow.builder()
+            .claimReference(Optional.of(UUID.randomUUID()))
+            .message("Client Surname is required")
+            .build();
+
+    var doc = renderRejectedPage(areaOfLaw, MessagesSource.CLAIM, 1, 1, List.of(row));
+
+    assertThat(doc.select("#claim-message-error-0 .govuk-table__cell").eachText())
+        .containsExactlyElementsOf(expectedCells);
+  }
+
+  static Stream<Arguments> claimErrorRowArgs() {
+    String message = "Case Start Date must be between 01/01/1995 and today";
+    return Stream.of(
+        Arguments.of(CRIME_LOWER, List.of("Doe", "John", "010125/001", message)),
+        Arguments.of(LEGAL_HELP, List.of("Doe", "John", "010125/001", "01011990/J/DOE", message)),
+        Arguments.of(
+            MEDIATION,
+            List.of("Doe", "John", "01011990/J/DOE", "Smith", "Jane", "02021991/J/SMIT", message)));
+  }
+
+  static Stream<Arguments> claimErrorMissingValueArgs() {
+    String message = "Client Surname is required";
+    return Stream.of(
+        Arguments.of(CRIME_LOWER, List.of("-", "-", "-", message)),
+        Arguments.of(LEGAL_HELP, List.of("-", "-", "-", "-", message)),
+        Arguments.of(MEDIATION, List.of("-", "-", "-", "-", "-", "-", message)));
   }
 
   @ParameterizedTest
@@ -656,15 +777,20 @@ class SubmissionDetailsErrorFieldViewTest extends SubmissionDetailsViewTestBase 
                 sort));
   }
 
-  private Document renderRejectedPage() {
-    Optional<UUID> claimReference = Optional.of(UUID.randomUUID());
-    Page pagination = Page.builder().totalPages(1).totalElements(2).number(0).size(10).build();
+  private Document renderRejectedPage(
+      AreaOfLaw areaOfLaw,
+      MessagesSource messagesSource,
+      int totalMessageCount,
+      int totalClaimsWithErrors,
+      List<MessageRow> messages) {
+    Page pagination =
+        Page.builder().totalPages(1).totalElements(totalMessageCount).number(0).size(10).build();
     SubmissionResponse submissionResponse =
         SubmissionResponse.builder()
             .submissionId(submissionId)
             .status(SubmissionStatus.VALIDATION_FAILED)
             .officeAccountNumber(OFFICE_CODE)
-            .areaOfLaw(CRIME_LOWER)
+            .areaOfLaw(areaOfLaw)
             .build();
     when(submissionService.getSubmission(submissionId, OIDC_USER)).thenReturn(submissionResponse);
     when(submissionSummaryBuilder.build(any()))
@@ -675,33 +801,40 @@ class SubmissionDetailsErrorFieldViewTest extends SubmissionDetailsViewTestBase 
                 LocalDate.of(2025, 5, 1),
                 "0P322F",
                 BigDecimal.ZERO,
-                CRIME_LOWER.getValue(),
+                areaOfLaw.getValue(),
                 OffsetDateTime.of(2025, 1, 1, 10, 10, 0, 0, ZoneOffset.UTC)));
     when(submissionMessagesService.getErrorMessages(
             any(OidcUser.class), any(), anyInt(), anyInt(), any()))
         .thenReturn(
             new MessagesSummary(
-                List.of(
-                    MessageRow.builder()
-                        .claimReference(claimReference)
-                        .clientSurname("Doe")
-                        .clientForename("John")
-                        .ufn("UFN-001")
-                        .message(
-                            "The provider is not contracted for the category of law associated with the fee code")
-                        .build(),
-                    MessageRow.builder()
-                        .claimReference(claimReference)
-                        .clientSurname("Doe")
-                        .clientForename("John")
-                        .ufn("UFN-001")
-                        .message("A duplicate claim was found within the same submission")
-                        .build()),
-                2,
-                2,
-                pagination,
-                MessagesSource.CLAIM));
+                messages, totalMessageCount, totalClaimsWithErrors, pagination, messagesSource));
     when(submissionMatterStartsDetailsService.getAll(any())).thenReturn(List.of());
     return renderDocument();
+  }
+
+  private static MessageRow submissionMessage(String message) {
+    return MessageRow.builder().claimReference(Optional.empty()).message(message).build();
+  }
+
+  private static MessageRow claimMessage(String message) {
+    return MessageRow.builder()
+        .claimReference(Optional.of(UUID.randomUUID()))
+        .clientSurname("Doe")
+        .clientForename("John")
+        .ufn("010125/001")
+        .message(message)
+        .build();
+  }
+
+  private Document renderRejectedPage() {
+    return renderRejectedPage(
+        CRIME_LOWER,
+        MessagesSource.CLAIM,
+        2,
+        2,
+        List.of(
+            claimMessage(
+                "The provider is not contracted for the category of law associated with the fee code"),
+            claimMessage("A duplicate claim was found within the same submission")));
   }
 }

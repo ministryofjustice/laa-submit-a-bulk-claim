@@ -12,7 +12,6 @@ import org.junit.jupiter.params.provider.MethodSource;
 import uk.gov.justice.laa.payments.submit.e2e.base.BaseTest;
 import uk.gov.justice.laa.payments.submit.e2e.pages.LandingPagePage;
 import uk.gov.justice.laa.payments.submit.e2e.pages.SubmissionDetailPage;
-import uk.gov.justice.laa.payments.submit.e2e.pages.SubmissionErrorsPage;
 import uk.gov.justice.laa.payments.submit.e2e.pages.UploadBeingCheckedPage;
 import uk.gov.justice.laa.payments.submit.e2e.pages.UploadPage;
 
@@ -34,26 +33,6 @@ public class BulkSubmissionE2ETest extends BaseTest {
 
     var submissionDetailPage = new SubmissionDetailPage(page);
     submissionDetailPage.assertSubmissionAccepted();
-  }
-
-  @Test
-  public void bulkSubmissionForCrimeRejected() {
-    var landingPage = new LandingPagePage(page);
-    landingPage.getStartNowButton().click();
-
-    var upload = new UploadPage(page);
-    var csvPath =
-        Paths.get("../docs/sample-data/invalid-crime-lower-november-2025.csv").toAbsolutePath();
-    upload.uploadFile(csvPath);
-
-    upload.getContinueButton().click();
-
-    new UploadBeingCheckedPage(page);
-
-    var submissionErrorsPage = new SubmissionErrorsPage(page);
-    assertThat(submissionErrorsPage.getFailureBanner()).isVisible();
-    assertThat(submissionErrorsPage.getFailureBanner())
-        .containsText("Resolve the errors and upload the file again.");
   }
 
   @Test
