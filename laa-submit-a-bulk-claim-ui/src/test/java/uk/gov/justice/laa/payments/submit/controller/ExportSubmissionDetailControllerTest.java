@@ -19,6 +19,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.EnumSource;
+import org.junit.jupiter.params.provider.NullSource;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
@@ -54,6 +55,7 @@ class ExportSubmissionDetailControllerTest extends BaseControllerTest {
 
     @BeforeEach
     void setUp() {
+      when(featureFlagsConfig.getIsPreSubmissionEnabled()).thenReturn(true);
       when(submissionService.getSubmission(any(), any()))
           .thenReturn(succeededSubmission("12345", AreaOfLaw.LEGAL_HELP, "MAY-2026"));
     }
@@ -85,7 +87,7 @@ class ExportSubmissionDetailControllerTest extends BaseControllerTest {
     @ParameterizedTest
     @EnumSource(
         value = SubmissionStatus.class,
-        names = "VALIDATION_SUCCEEDED",
+        names = {"VALIDATION_SUCCEEDED", "VALIDATED_PENDING_APPROVAL"},
         mode = EnumSource.Mode.EXCLUDE)
     @DisplayName("Should return not found when the submission is not available for export")
     void shouldReturnNotFoundWhenSubmissionIsNotAvailableForExport(SubmissionStatus status) {
@@ -95,6 +97,27 @@ class ExportSubmissionDetailControllerTest extends BaseControllerTest {
           .thenReturn(SubmissionResponse.builder().status(status).build());
 
       // When / Then
+      assertThat(
+              mockMvc.perform(
+                  get("/submissions/%s/export".formatted(submissionReference))
+                      .with(oidcLogin().oidcUser(OIDC_USER))))
+          .hasStatus(HttpStatus.NOT_FOUND);
+      verify(exportDataClaimsRestClient, never()).getSubmissionExport(any(), any(), any());
+    }
+
+    @ParameterizedTest
+    @NullSource
+    @ValueSource(booleans = {false})
+    @DisplayName("Should reject unsubmitted exports when pre-submission is disabled")
+    void shouldRejectUnsubmittedExportWhenPreSubmissionIsDisabled(Boolean enabled) {
+      UUID submissionReference = UUID.randomUUID();
+      when(featureFlagsConfig.getIsPreSubmissionEnabled()).thenReturn(enabled);
+      when(submissionService.getSubmission(eq(submissionReference), any()))
+          .thenReturn(
+              SubmissionResponse.builder()
+                  .status(SubmissionStatus.VALIDATED_PENDING_APPROVAL)
+                  .build());
+
       assertThat(
               mockMvc.perform(
                   get("/submissions/%s/export".formatted(submissionReference))
@@ -178,12 +201,84 @@ class ExportSubmissionDetailControllerTest extends BaseControllerTest {
     }
 
     @ParameterizedTest
+    @CsvSource({
+      "LEGAL_HELP, 2B446C-legal-help-2026-may-bulk-claim-summary-unsubmitted.csv",
+      "CRIME_LOWER, 2B446C-crime-lower-2026-may-bulk-claim-summary-unsubmitted.csv",
+      "MEDIATION, 2B446C-mediation-2026-may-bulk-claim-summary-unsubmitted.csv",
+    })
+    @DisplayName("Should return the content type and file name for unsubmitted claims")
+    void shouldReturnContentTypeAndAreaOfLawFileNameForUnsubmittedClaims(
+        AreaOfLaw areaOfLaw, String expectedFilename) {
+      // Given
+      String office = "2B446C";
+      UUID submissionReference = UUID.fromString("3fa85f64-5717-4562-b3fc-2c963f66afa6");
+      var submission = succeededSubmission(office, areaOfLaw, "MAY-2026");
+      submission.setStatus(SubmissionStatus.VALIDATED_PENDING_APPROVAL);
+      when(submissionService.getSubmission(eq(submissionReference), any())).thenReturn(submission);
+
+      HttpHeaders claimsApiHeaders = new HttpHeaders();
+      claimsApiHeaders.setContentType(MediaType.parseMediaType("text/csv"));
+      claimsApiHeaders.setContentDisposition(
+          ContentDisposition.attachment().filename("submission-claims-legal-help.csv").build());
+      claimsApiHeaders.add("x-internal-header", "should-not-be-forwarded");
+
+      when(exportDataClaimsRestClient.getSubmissionExport(any(), any(), any()))
+          .thenReturn(
+              Mono.just(ResponseEntity.ok().headers(claimsApiHeaders).body("content".getBytes())));
+      // When
+      var initial =
+          mockMvc.perform(
+              get("/submissions/%s/export".formatted(submissionReference))
+                  .with(oidcLogin().oidcUser(OIDC_USER)));
+
+      // Then
+      assertThat(mockMvc.perform(asyncDispatch(initial.getMvcResult())))
+          .hasStatusOk()
+          .headers()
+          .satisfies(
+              headers -> {
+                assertThat(headers.getContentType())
+                    .isEqualTo(MediaType.parseMediaType("text/csv"));
+                assertThat(headers.getContentDisposition().getFilename())
+                    .isEqualTo(expectedFilename);
+                assertThat(headers.getContentDisposition().isAttachment()).isTrue();
+                assertThat(headers.headerNames()).doesNotContain("x-internal-header");
+              });
+    }
+
+    @ParameterizedTest
     @ValueSource(strings = {"/submission/%s/export", "/submissions/%s/export"})
     @DisplayName("Should export from both the singular and plural mappings")
     void shouldExportFromBothMappings(String mapping) {
       // Given
       String fileContent = "one,two,three";
       UUID submissionReference = UUID.fromString("3fa85f64-5717-4562-b3fc-2c963f66afa6");
+      when(exportDataClaimsRestClient.getSubmissionExport(any(), any(), any()))
+          .thenReturn(Mono.just(ResponseEntity.ok(fileContent.getBytes())));
+
+      // When
+      var initial =
+          mockMvc.perform(
+              get(mapping.formatted(submissionReference)).with(oidcLogin().oidcUser(OIDC_USER)));
+
+      // Then
+      assertThat(mockMvc.perform(asyncDispatch(initial.getMvcResult())))
+          .hasStatusOk()
+          .body()
+          .asString()
+          .isEqualTo(fileContent);
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {"/submission/%s/export", "/submissions/%s/export"})
+    @DisplayName("Should export unsubmitted claims from both the singular and plural mappings")
+    void shouldExportUnsubmittedClaimsFromBothMappings(String mapping) {
+      // Given
+      String fileContent = "content";
+      UUID submissionReference = UUID.fromString("3fa85f64-5717-4562-b3fc-2c963f66afa6");
+      var submission = succeededSubmission("2B446C", AreaOfLaw.LEGAL_HELP, "MAY-2026");
+      submission.setStatus(SubmissionStatus.VALIDATED_PENDING_APPROVAL);
+      when(submissionService.getSubmission(eq(submissionReference), any())).thenReturn(submission);
       when(exportDataClaimsRestClient.getSubmissionExport(any(), any(), any()))
           .thenReturn(Mono.just(ResponseEntity.ok(fileContent.getBytes())));
 

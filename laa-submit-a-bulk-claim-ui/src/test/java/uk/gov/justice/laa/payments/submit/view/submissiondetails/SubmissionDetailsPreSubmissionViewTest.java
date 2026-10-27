@@ -159,6 +159,22 @@ class SubmissionDetailsPreSubmissionViewTest extends SubmissionDetailsViewTestBa
     assertThat(doc.select("#print-button")).isEmpty();
   }
 
+  @ParameterizedTest
+  @EnumSource(AreaOfLaw.class)
+  void rendersDownloadClaimsActionOnTheRight(AreaOfLaw areaOfLaw) {
+    mockSubmission(areaOfLaw);
+
+    var doc = renderDocument();
+
+    assertPageHasSecondaryButton(doc, "Download claims");
+    var exportButton =
+        selectFirst(doc, "#secondary-action-container.sabc-container__align_right #export-button");
+    assertThat(exportButton.text()).isEqualTo("Download claims");
+    assertThat(exportButton.attr("href"))
+        .isEqualTo("/submissions/%s/export".formatted(submissionId));
+    assertThat(exportButton.attr("data-module")).isEqualTo("laa-hide-on-print-button");
+  }
+
   @Test
   void rendersSubmitAndDeleteActions() {
     var doc = renderDocument();

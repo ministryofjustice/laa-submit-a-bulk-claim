@@ -1,5 +1,7 @@
 package uk.gov.justice.laa.payments.submit.controller;
 
+import static java.lang.Boolean.TRUE;
+
 import java.time.YearMonth;
 import java.util.Locale;
 import java.util.UUID;
@@ -20,6 +22,7 @@ import org.springframework.web.server.ResponseStatusException;
 import reactor.core.publisher.Mono;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionStatus;
 import uk.gov.justice.laa.payments.submit.client.ExportDataClaimsRestClient;
+import uk.gov.justice.laa.payments.submit.config.FeatureFlagsConfig;
 import uk.gov.justice.laa.payments.submit.service.SubmissionService;
 import uk.gov.justice.laa.payments.submit.util.SubmissionPeriodUtil;
 
@@ -30,13 +33,16 @@ public class ExportSubmissionDetailController {
 
   private final ExportDataClaimsRestClient exportDataClaimsRestClient;
   private final SubmissionService submissionService;
+  private final FeatureFlagsConfig featureFlagsConfig;
 
   @GetMapping({"/submission/{submissionId}/export", "/submissions/{submissionId}/export"})
   public Mono<ResponseEntity<Resource>> exportSubmissionDetail(
       @PathVariable UUID submissionId, @AuthenticationPrincipal OidcUser oidcUser) {
     var submission = submissionService.getSubmission(submissionId, oidcUser);
 
-    if (submission.getStatus() != SubmissionStatus.VALIDATION_SUCCEEDED) {
+    if (submission.getStatus() != SubmissionStatus.VALIDATION_SUCCEEDED
+        && !(submission.getStatus() == SubmissionStatus.VALIDATED_PENDING_APPROVAL
+            && TRUE.equals(featureFlagsConfig.getIsPreSubmissionEnabled()))) {
       throw new ResponseStatusException(
           HttpStatus.NOT_FOUND,
           "Submission %s is not available for export".formatted(submissionId));
@@ -61,13 +67,16 @@ public class ExportSubmissionDetailController {
           safeHeaders.setContentDisposition(
               ContentDisposition.attachment()
                   .filename(
-                      "%s-%s-%s-bulk-claim-summary.csv"
+                      "%s-%s-%s-bulk-claim-summary%s.csv"
                           .formatted(
                               office,
                               areaOfLaw,
                               submissionPeriod
                                   .format(SubmissionPeriodUtil.FILENAME_PERIOD_FMT)
-                                  .toLowerCase(Locale.ENGLISH)))
+                                  .toLowerCase(Locale.ENGLISH),
+                              submission.getStatus() == SubmissionStatus.VALIDATED_PENDING_APPROVAL
+                                  ? "-unsubmitted"
+                                  : ""))
                   .build());
 
           return ResponseEntity.ok()
