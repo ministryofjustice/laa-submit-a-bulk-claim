@@ -1,3 +1,5 @@
+@use "govuk-frontend/dist/govuk" as govuk;
+
 .sabc-govuk-table__cell__bold-bottom {
   border-bottom: 1.5px solid #000 !important;
 }
@@ -39,22 +41,10 @@
   display: none;
 }
 
-#offices-select-all-container {
-  margin-bottom: 10px;
-}
-
-#offices-select-all-container .govuk-checkboxes__item {
-  margin-bottom: 0;
-}
-
 #offices-input-container {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
-  gap: 10px 15px;
-}
-
-#offices-input-container .govuk-checkboxes__item {
-  margin-bottom: 0;
+  gap: govuk.govuk-spacing(2) govuk.govuk-spacing(3);
 }
 
 .upload-table {

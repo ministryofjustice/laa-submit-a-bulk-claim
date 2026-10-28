@@ -75,7 +75,7 @@ class SearchFormViewTest extends ViewTestBase {
     assertPageHasInlineRadioButtons(doc);
     assertPageHasRadioButtons(
         doc, "Succeeded submissions", "Failed submissions", "All submissions");
-    assertPageHasContent(doc, "Choose office account");
+    assertPageHasContent(doc, "Choose office account number");
 
     Assertions.assertEquals("12345", doc.selectFirst("label[for=offices-input]").text());
     Assertions.assertEquals("67890", doc.selectFirst("label[for=offices-input-1]").text());

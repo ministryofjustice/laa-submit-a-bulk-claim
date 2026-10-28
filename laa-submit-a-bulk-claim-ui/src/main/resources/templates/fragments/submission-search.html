@@ -109,10 +109,10 @@
                 </legend>
                 <th:block th:replace="~{fragments/error-components :: error-messages('offices')}"/>
 
-                <div class="govuk-checkboxes govuk-checkboxes--small"
+                <div class="govuk-checkboxes govuk-checkboxes--small govuk-!-margin-bottom-2"
                      id="offices-select-all-container"
                      th:if="${userOffices != null and userOffices.size() > 1}">
-                  <div class="govuk-checkboxes__item">
+                  <div class="govuk-checkboxes__item govuk-!-margin-bottom-0">
                     <input class="govuk-checkboxes__input"
                            id="offices-select-all"
                            type="checkbox"
@@ -128,7 +128,7 @@
                      data-module="govuk-checkboxes" id="offices-input-container">
 
                   <th:block th:each="office,idx : ${userOffices}">
-                    <div class="govuk-checkboxes__item">
+                    <div class="govuk-checkboxes__item govuk-!-margin-bottom-0">
                       <input class="govuk-checkboxes__input"
                              th:id="${idx.index > 0} ? |offices-input-${idx.index}| : |offices-input|"
                              type="checkbox"

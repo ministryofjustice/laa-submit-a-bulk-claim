@@ -119,16 +119,14 @@ const initSelectAll = (selectAll: HTMLInputElement): void => {
   ).filter((checkbox) => checkbox !== selectAll);
 
   const refreshSelectAll = (): void => {
-    const checkedCount = checkboxes.filter((checkbox) => checkbox.checked).length;
-    selectAll.checked = checkedCount === checkboxes.length && checkboxes.length > 0;
-    selectAll.indeterminate = checkedCount > 0 && checkedCount < checkboxes.length;
+    selectAll.checked =
+      checkboxes.length > 0 && checkboxes.every((checkbox) => checkbox.checked);
   };
 
   selectAll.addEventListener('change', (): void => {
     checkboxes.forEach((checkbox) => {
       checkbox.checked = selectAll.checked;
     });
-    selectAll.indeterminate = false;
   });
 
   checkboxes.forEach((checkbox) => {
