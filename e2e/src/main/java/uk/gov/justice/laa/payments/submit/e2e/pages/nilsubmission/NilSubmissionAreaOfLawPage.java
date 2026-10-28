@@ -12,11 +12,15 @@ public class NilSubmissionAreaOfLawPage extends BasePage {
 
   private final Locator crimeLowerRadio;
   private final Locator continueButton;
+  private final Locator errorSummary;
+  private final Locator errorMessage;
 
   public NilSubmissionAreaOfLawPage(Page page) {
     super(page, "Select the area of law");
 
     crimeLowerRadio = page.getByLabel("Crime lower");
     continueButton = page.getByRole(BUTTON, new Page.GetByRoleOptions().setName("Continue"));
+    errorSummary = page.locator(".govuk-error-summary");
+    errorMessage = page.locator(".govuk-error-message");
   }
 }

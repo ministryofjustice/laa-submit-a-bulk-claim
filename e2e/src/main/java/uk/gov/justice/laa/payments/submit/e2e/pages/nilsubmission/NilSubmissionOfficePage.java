@@ -11,11 +11,15 @@ import uk.gov.justice.laa.payments.submit.e2e.pages.BasePage;
 public class NilSubmissionOfficePage extends BasePage {
 
   private final Locator continueButton;
+  private final Locator errorSummary;
+  private final Locator errorMessage;
 
   public NilSubmissionOfficePage(Page page) {
     super(page, "Select the office account number");
 
     continueButton = page.getByRole(BUTTON, new Page.GetByRoleOptions().setName("Continue"));
+    errorSummary = page.locator(".govuk-error-summary");
+    errorMessage = page.locator(".govuk-error-message");
   }
 
   public void selectOffice(String officeCode) {

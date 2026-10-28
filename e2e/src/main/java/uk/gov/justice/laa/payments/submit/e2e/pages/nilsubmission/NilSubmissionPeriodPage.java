@@ -12,12 +12,16 @@ public class NilSubmissionPeriodPage extends BasePage {
 
   private final Locator periodSelect;
   private final Locator continueButton;
+  private final Locator errorSummary;
+  private final Locator errorMessage;
 
   public NilSubmissionPeriodPage(Page page) {
     super(page, "Select a submission period");
 
     periodSelect = page.locator("#submissionPeriod-input");
     continueButton = page.getByRole(BUTTON, new Page.GetByRoleOptions().setName("Continue"));
+    errorSummary = page.locator(".govuk-error-summary");
+    errorMessage = page.locator(".govuk-error-message");
   }
 
   public void selectFirstAvailablePeriod() {
