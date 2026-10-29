@@ -154,6 +154,7 @@ jobs:
       branch: ${{ github.sha }}
     secrets:
       pat_token: ${{ secrets.PAT_TOKEN }}
+      e2e_checkout_token: ${{ secrets.E2E_CHECKOUT_TOKEN }}
       kube_cert: ${{ secrets.KUBE_CERT }}
       kube_cluster: ${{ secrets.KUBE_CLUSTER }}
       kube_namespace: ${{ secrets.KUBE_NAMESPACE }}

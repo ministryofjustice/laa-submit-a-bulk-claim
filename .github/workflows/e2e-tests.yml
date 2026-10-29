@@ -10,6 +10,8 @@ on:
     secrets:
       pat_token:
         required: true
+      e2e_checkout_token:
+        required: true
       kube_cert:
         required: true
       kube_cluster:
@@ -58,6 +60,7 @@ jobs:
         with:
           repository: ministryofjustice/laa-data-claims-parent
           path: laa-data-claims-parent
+          token: ${{ secrets.e2e_checkout_token }}
           submodules: 'true'
 
       - name: Update parent submodules
