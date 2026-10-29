@@ -8,7 +8,10 @@ import static uk.gov.justice.laa.payments.submit.validation.SubmissionSearchVali
 import static uk.gov.justice.laa.payments.submit.validation.SubmissionSearchValidator.SUBMISSION_PERIOD;
 import static uk.gov.justice.laa.payments.submit.validation.SubmissionSearchValidator.SUBMISSION_STATUS;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;

@@ -106,7 +106,7 @@ selectDropdowns.forEach(function (select: HTMLSelectElement): void {
   input?.dispatchEvent(new FocusEvent('blur'));
 });
 
-// "Select all" checkboxes
+// Office account numebrs checkboxes
 const initSelectAll = (selectAll: HTMLInputElement): void => {
   const targetId = selectAll.getAttribute('data-target');
   const container = targetId ? document.getElementById(targetId) : null;

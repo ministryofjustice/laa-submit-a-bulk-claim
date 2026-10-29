@@ -184,11 +184,11 @@ public class SearchController {
 
   private static List<SubmissionStatus> getSubmissionStatus(
       SubmissionSearchQuery submissionSearchQuery) {
-    var filters = submissionSearchQuery.getSubmissionStatuses();
-    if (filters == null || filters.isEmpty()) {
-      filters = List.of(SubmissionOutcomeFilter.values());
+    var statuses = submissionSearchQuery.getSubmissionStatuses();
+    if (statuses == null || statuses.isEmpty()) {
+      statuses = List.of(SubmissionOutcomeFilter.values());
     }
-    return filters.stream().flatMap(filter -> filter.getStatuses().stream()).toList();
+    return statuses.stream().flatMap(filter -> filter.getStatuses().stream()).toList();
   }
 
   private String trimToNull(String value) {
