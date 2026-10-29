@@ -10,7 +10,9 @@ import uk.gov.justice.laa.payments.submit.e2e.pages.BasePage;
 @Getter
 public class NilSubmissionAreaOfLawPage extends BasePage {
 
+  private final Locator legalHelpRadio;
   private final Locator crimeLowerRadio;
+  private final Locator mediationRadio;
   private final Locator continueButton;
   private final Locator errorSummary;
   private final Locator errorMessage;
@@ -21,6 +23,8 @@ public class NilSubmissionAreaOfLawPage extends BasePage {
     super(page, "Select the area of law");
 
     crimeLowerRadio = page.getByLabel("Crime lower");
+    mediationRadio = page.getByLabel("Mediation");
+    legalHelpRadio = page.getByLabel("Legal help");
     continueButton = page.getByRole(BUTTON, new Page.GetByRoleOptions().setName("Continue"));
     errorSummary = page.locator(".govuk-error-summary");
     errorMessage = page.locator(".govuk-error-message");

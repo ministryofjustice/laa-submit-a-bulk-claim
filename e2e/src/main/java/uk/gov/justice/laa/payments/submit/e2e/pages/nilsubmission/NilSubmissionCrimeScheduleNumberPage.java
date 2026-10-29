@@ -12,11 +12,16 @@ public class NilSubmissionCrimeScheduleNumberPage extends BasePage {
 
   private final Locator referenceInput;
   private final Locator continueButton;
+  private final Locator errorSummary;
+  private final Locator errorMessage;
 
   public NilSubmissionCrimeScheduleNumberPage(Page page) {
     super(page, "Add your crime schedule number");
 
     referenceInput = page.locator("#submissionReference-input");
     continueButton = page.getByRole(BUTTON, new Page.GetByRoleOptions().setName("Continue"));
+
+    errorSummary = page.locator(".govuk-error-summary");
+    errorMessage = page.locator(".govuk-error-message");
   }
 }

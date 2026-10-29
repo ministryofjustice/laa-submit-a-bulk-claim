@@ -2,13 +2,16 @@ package uk.gov.justice.laa.payments.submit.e2e.tests;
 
 import static com.microsoft.playwright.assertions.PlaywrightAssertions.assertThat;
 
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import uk.gov.justice.laa.payments.submit.e2e.base.BaseTest;
 import uk.gov.justice.laa.payments.submit.e2e.pages.LandingPagePage;
 import uk.gov.justice.laa.payments.submit.e2e.pages.SubmissionDetailPage;
 import uk.gov.justice.laa.payments.submit.e2e.pages.UploadPage;
 import uk.gov.justice.laa.payments.submit.e2e.pages.nilsubmission.NilSubmissionAreaOfLawPage;
+import uk.gov.justice.laa.payments.submit.e2e.pages.nilsubmission.NilSubmissionCivilSubmissionReferencePage;
 import uk.gov.justice.laa.payments.submit.e2e.pages.nilsubmission.NilSubmissionCrimeScheduleNumberPage;
+import uk.gov.justice.laa.payments.submit.e2e.pages.nilsubmission.NilSubmissionMediationSubmissionReferencePage;
 import uk.gov.justice.laa.payments.submit.e2e.pages.nilsubmission.NilSubmissionOfficePage;
 import uk.gov.justice.laa.payments.submit.e2e.pages.nilsubmission.NilSubmissionPeriodPage;
 import uk.gov.justice.laa.payments.submit.e2e.pages.nilsubmission.NilSubmissionSummaryPage;
@@ -36,68 +39,190 @@ public class NilSubmissionE2ETest extends BaseTest {
     submissionDetailPage.assertSubmissionAccepted();
   }
 
-  @Test
-  public void nilSubmissionSummaryChangeOffice() {
-    var landingPage = new LandingPagePage(page);
-    landingPage.getStartNowButton().click();
+  @Nested
+  class ChangeLinks {
 
-    var upload = new UploadPage(page);
-    upload.getCreateNilSubmissionButton().click();
+    @Test
+    public void nilSubmissionSummaryChangeOffice() {
+      var landingPage = new LandingPagePage(page);
+      landingPage.getStartNowButton().click();
 
-    populateFullNilSubmissionJourney();
+      var upload = new UploadPage(page);
+      upload.getCreateNilSubmissionButton().click();
 
-    var referencePage = new NilSubmissionCrimeScheduleNumberPage(page);
-    referencePage.getReferenceInput().fill("CRM/0P322F/2025");
-    referencePage.getContinueButton().click();
+      populateFullNilSubmissionJourney();
 
-    var summaryPage = new NilSubmissionSummaryPage(page);
-    summaryPage.getChangeOfficeLink().click();
+      var referencePage = new NilSubmissionCrimeScheduleNumberPage(page);
+      referencePage.getReferenceInput().fill("CRM/0P322F/2025");
+      referencePage.getContinueButton().click();
 
-    // Asserts that page is loaded
-    new NilSubmissionOfficePage(page);
+      var summaryPage = new NilSubmissionSummaryPage(page);
+      summaryPage.getChangeOfficeLink().click();
+
+      // Asserts that page is loaded
+      new NilSubmissionOfficePage(page);
+    }
+
+    @Test
+    public void nilSubmissionSummaryChangeAreaOfLaw() {
+      var landingPage = new LandingPagePage(page);
+      landingPage.getStartNowButton().click();
+
+      var upload = new UploadPage(page);
+      upload.getCreateNilSubmissionButton().click();
+
+      populateFullNilSubmissionJourney();
+
+      var referencePage = new NilSubmissionCrimeScheduleNumberPage(page);
+      referencePage.getReferenceInput().fill("CRM/0P322F/2025");
+      referencePage.getContinueButton().click();
+
+      var summaryPage = new NilSubmissionSummaryPage(page);
+      summaryPage.getChangeAreaOfLawLink().click();
+
+      NilSubmissionAreaOfLawPage nilSubmissionAreaOfLawPage = new NilSubmissionAreaOfLawPage(page);
+      assertThat(nilSubmissionAreaOfLawPage.getOfficeAccountNumberValue()).hasText("0P322F");
+    }
+
+    @Test
+    public void nilSubmissionSummaryChangeSubmissionPeriod() {
+      var landingPage = new LandingPagePage(page);
+      landingPage.getStartNowButton().click();
+
+      var upload = new UploadPage(page);
+      upload.getCreateNilSubmissionButton().click();
+
+      populateFullNilSubmissionJourney();
+
+      var referencePage = new NilSubmissionCrimeScheduleNumberPage(page);
+      referencePage.getReferenceInput().fill("CRM/0P322F/2025");
+      referencePage.getContinueButton().click();
+
+      var summaryPage = new NilSubmissionSummaryPage(page);
+      summaryPage.getChangeSubmissionPeriodLink().click();
+
+      NilSubmissionPeriodPage nilSubmissionPeriodPage = new NilSubmissionPeriodPage(page);
+      assertThat(nilSubmissionPeriodPage.getOfficeAccountNumberValue()).hasText("0P322F");
+      assertThat(nilSubmissionPeriodPage.getAreaOfLawValue()).hasText("Crime lower");
+    }
   }
 
-  @Test
-  public void nilSubmissionSummaryChangeAreaOfLaw() {
-    var landingPage = new LandingPagePage(page);
-    landingPage.getStartNowButton().click();
 
-    var upload = new UploadPage(page);
-    upload.getCreateNilSubmissionButton().click();
+  @Nested
+  class ValidationRedirects {
 
-    populateFullNilSubmissionJourney();
+    @Test
+    public void nilSubmissionOfficeNotSelectedShowsValidationError() {
+      var landingPage = new LandingPagePage(page);
+      landingPage.getStartNowButton().click();
 
-    var referencePage = new NilSubmissionCrimeScheduleNumberPage(page);
-    referencePage.getReferenceInput().fill("CRM/0P322F/2025");
-    referencePage.getContinueButton().click();
+      var upload = new UploadPage(page);
+      upload.getCreateNilSubmissionButton().click();
 
-    var summaryPage = new NilSubmissionSummaryPage(page);
-    summaryPage.getChangeAreaOfLawLink().click();
+      var officePage = new NilSubmissionOfficePage(page);
+      officePage.getContinueButton().click();
 
-    NilSubmissionAreaOfLawPage nilSubmissionAreaOfLawPage = new NilSubmissionAreaOfLawPage(page);
-    assertThat(nilSubmissionAreaOfLawPage.getOfficeAccountNumberValue()).hasText("0P322F");
-  }
+      var officePageWithError = new NilSubmissionOfficePage(page);
+      assertThat(officePageWithError.getErrorSummary()).isVisible();
+      assertThat(officePageWithError.getErrorSummary())
+          .containsText("Select the office account number");
+      assertThat(officePageWithError.getErrorMessage()).containsText(
+          "Select the office account number");
+    }
 
-  @Test
-  public void nilSubmissionSummaryChangeSubmissionPeriod() {
-    var landingPage = new LandingPagePage(page);
-    landingPage.getStartNowButton().click();
+    @Test
+    public void nilSubmissionAreaOfLawNotSelectedShowsValidationError() {
+      startNilSubmissionAndSelectOffice();
 
-    var upload = new UploadPage(page);
-    upload.getCreateNilSubmissionButton().click();
+      new NilSubmissionAreaOfLawPage(page).getContinueButton().click();
 
-    populateFullNilSubmissionJourney();
+      var areaOfLawPageWithError = new NilSubmissionAreaOfLawPage(page);
+      assertThat(areaOfLawPageWithError.getErrorSummary()).containsText("Select the area of law");
+      assertThat(areaOfLawPageWithError.getErrorMessage()).containsText("Select the area of law");
+    }
 
-    var referencePage = new NilSubmissionCrimeScheduleNumberPage(page);
-    referencePage.getReferenceInput().fill("CRM/0P322F/2025");
-    referencePage.getContinueButton().click();
+    @Test
+    public void nilSubmissionPeriodNotSelectedShowsValidationError() {
+      startNilSubmissionAndSelectOffice();
 
-    var summaryPage = new NilSubmissionSummaryPage(page);
-    summaryPage.getChangeSubmissionPeriodLink().click();
+      var areaOfLawPage = new NilSubmissionAreaOfLawPage(page);
+      areaOfLawPage.getCrimeLowerRadio().click();
+      areaOfLawPage.getContinueButton().click();
 
-    NilSubmissionPeriodPage nilSubmissionPeriodPage = new NilSubmissionPeriodPage(page);
-    assertThat(nilSubmissionPeriodPage.getOfficeAccountNumberValue()).hasText("0P322F");
-    assertThat(nilSubmissionPeriodPage.getAreaOfLawValue()).hasText("Crime lower");
+      new NilSubmissionPeriodPage(page).getContinueButton().click();
+
+      var periodPageWithError = new NilSubmissionPeriodPage(page);
+      assertThat(periodPageWithError.getErrorSummary()).containsText("Select a submission period");
+      assertThat(periodPageWithError.getErrorMessage()).containsText("Select a submission period");
+    }
+
+    @Test
+    public void nilSubmissionCrimeRefNotEnteredShowsValidationError() {
+      startNilSubmissionAndSelectOffice();
+
+      var areaOfLawPage = new NilSubmissionAreaOfLawPage(page);
+      areaOfLawPage.getCrimeLowerRadio().click();
+      areaOfLawPage.getContinueButton().click();
+
+      NilSubmissionPeriodPage nilSubmissionPeriodPage = new NilSubmissionPeriodPage(page);
+      nilSubmissionPeriodPage.selectFirstAvailablePeriod();
+      nilSubmissionPeriodPage.getContinueButton().click();
+
+      new NilSubmissionCrimeScheduleNumberPage(page).getContinueButton().click();
+
+      var scheduleNumberPag = new NilSubmissionCrimeScheduleNumberPage(page);
+      scheduleNumberPag.getContinueButton().click();
+
+      assertThat(scheduleNumberPag.getErrorSummary()).containsText("Enter a crime schedule number");
+      assertThat(scheduleNumberPag.getErrorMessage()).containsText("Enter a crime schedule number");
+    }
+
+    @Test
+    public void nilSubmissionCivilRefNotEnteredShowsValidationError() {
+      startNilSubmissionAndSelectOffice();
+
+      var areaOfLawPage = new NilSubmissionAreaOfLawPage(page);
+      areaOfLawPage.getLegalHelpRadio().click();
+      areaOfLawPage.getContinueButton().click();
+
+      NilSubmissionPeriodPage nilSubmissionPeriodPage = new NilSubmissionPeriodPage(page);
+      nilSubmissionPeriodPage.selectFirstAvailablePeriod();
+      nilSubmissionPeriodPage.getContinueButton().click();
+
+      new NilSubmissionCivilSubmissionReferencePage(page).getContinueButton().click();
+
+      var scheduleNumberPag = new NilSubmissionCivilSubmissionReferencePage(page);
+      scheduleNumberPag.getContinueButton().click();
+
+      assertThat(scheduleNumberPag.getErrorSummary()).containsText(
+          "Enter a civil submission reference");
+      assertThat(scheduleNumberPag.getErrorMessage()).containsText(
+          "Enter a civil submission reference");
+    }
+
+    @Test
+    public void nilSubmissionMediationRefNotEnteredShowsValidationError() {
+      startNilSubmissionAndSelectOffice();
+
+      var areaOfLawPage = new NilSubmissionAreaOfLawPage(page);
+      areaOfLawPage.getMediationRadio().click();
+      areaOfLawPage.getContinueButton().click();
+
+      NilSubmissionPeriodPage nilSubmissionPeriodPage = new NilSubmissionPeriodPage(page);
+      nilSubmissionPeriodPage.selectFirstAvailablePeriod();
+      nilSubmissionPeriodPage.getContinueButton().click();
+
+      new NilSubmissionMediationSubmissionReferencePage(page).getContinueButton().click();
+
+      var scheduleNumberPag = new NilSubmissionMediationSubmissionReferencePage(page);
+      scheduleNumberPag.getContinueButton().click();
+
+      assertThat(scheduleNumberPag.getErrorSummary()).containsText(
+          "Enter a mediation submission reference");
+      assertThat(scheduleNumberPag.getErrorMessage()).containsText(
+          "Enter a mediation submission reference");
+    }
+
   }
 
   private void populateFullNilSubmissionJourney() {
@@ -114,50 +239,6 @@ public class NilSubmissionE2ETest extends BaseTest {
     periodPage.getContinueButton().click();
   }
 
-  @Test
-  public void nilSubmissionOfficeNotSelectedShowsValidationError() {
-    var landingPage = new LandingPagePage(page);
-    landingPage.getStartNowButton().click();
-
-    var upload = new UploadPage(page);
-    upload.getCreateNilSubmissionButton().click();
-
-    var officePage = new NilSubmissionOfficePage(page);
-    officePage.getContinueButton().click();
-
-    var officePageWithError = new NilSubmissionOfficePage(page);
-    assertThat(officePageWithError.getErrorSummary()).isVisible();
-    assertThat(officePageWithError.getErrorSummary())
-        .containsText("Select the office account number");
-    assertThat(officePageWithError.getErrorMessage()).containsText(
-        "Select the office account number");
-  }
-
-  @Test
-  public void nilSubmissionAreaOfLawNotSelectedShowsValidationError() {
-    startNilSubmissionAndSelectOffice();
-
-    new NilSubmissionAreaOfLawPage(page).getContinueButton().click();
-
-    var areaOfLawPageWithError = new NilSubmissionAreaOfLawPage(page);
-    assertThat(areaOfLawPageWithError.getErrorSummary()).containsText("Select the area of law");
-    assertThat(areaOfLawPageWithError.getErrorMessage()).containsText("Select the area of law");
-  }
-
-  @Test
-  public void nilSubmissionPeriodNotSelectedShowsValidationError() {
-    startNilSubmissionAndSelectOffice();
-
-    var areaOfLawPage = new NilSubmissionAreaOfLawPage(page);
-    areaOfLawPage.getCrimeLowerRadio().click();
-    areaOfLawPage.getContinueButton().click();
-
-    new NilSubmissionPeriodPage(page).getContinueButton().click();
-
-    var periodPageWithError = new NilSubmissionPeriodPage(page);
-    assertThat(periodPageWithError.getErrorSummary()).containsText("Select a submission period");
-    assertThat(periodPageWithError.getErrorMessage()).containsText("Select a submission period");
-  }
 
   private void startNilSubmissionAndSelectOffice() {
     new LandingPagePage(page).getStartNowButton().click();
