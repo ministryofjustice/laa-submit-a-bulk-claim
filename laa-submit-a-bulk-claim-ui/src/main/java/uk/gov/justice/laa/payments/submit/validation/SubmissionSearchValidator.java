@@ -72,7 +72,7 @@ public class SubmissionSearchValidator implements Validator {
     if (Objects.isNull(query.getSubmissionStatuses())) {
       errors.rejectValue(
           SUBMISSION_STATUS,
-          "search.error.submissionOutcome.invalid",
+          "search.error.submissionStatus.invalid",
           "Submission status must be one of the following: "
               + Arrays.toString(SubmissionOutcomeFilter.values()));
     }

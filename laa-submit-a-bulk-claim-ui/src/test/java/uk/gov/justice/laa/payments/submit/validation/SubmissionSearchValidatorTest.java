@@ -121,7 +121,7 @@ class SubmissionSearchValidatorTest {
       // Then
       assertTrue(errors.hasFieldErrors(SUBMISSION_STATUS));
       assertEquals(
-          "search.error.submissionOutcome.invalid",
+          "search.error.submissionStatus.invalid",
           Objects.requireNonNull(errors.getFieldError(SUBMISSION_STATUS)).getCode());
     }
   }
