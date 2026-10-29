@@ -19,6 +19,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.NullAndEmptySource;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -67,14 +69,16 @@ class SearchControllerTest {
   @DisplayName("Search GET should initialise query and default offices/status if not present")
   void searchShouldAddQueryIfNotPresent() {
     when(model.containsAttribute("submissionSearchQuery")).thenReturn(false);
-    when(oidcAttributeUtils.getUserOffices(any())).thenReturn(List.of("12345", "67890"));
+    when(oidcAttributeUtils.getUserOffices(any()))
+        .thenReturn(List.of("2B3456", "1B3456", "1A3456"));
 
     String view = searchController.search(model, sessionStatus, OIDC_USER);
 
     ArgumentCaptor<SubmissionSearchQuery> queryCaptor =
         ArgumentCaptor.forClass(SubmissionSearchQuery.class);
     verify(model).addAttribute(eq("submissionSearchQuery"), queryCaptor.capture());
-    assertEquals(List.of("12345", "67890"), queryCaptor.getValue().getOffices());
+    assertEquals(List.of("1A3456", "1B3456", "2B3456"), queryCaptor.getValue().getOffices());
+    verify(model).addAttribute("userOffices", List.of("1A3456", "1B3456", "2B3456"));
     assertEquals(
         List.of(SubmissionOutcomeFilter.SUCCEEDED), queryCaptor.getValue().getSubmissionStatuses());
     verify(sessionStatus).setComplete();
@@ -85,7 +89,8 @@ class SearchControllerTest {
   @DisplayName("Handle search should redirect to query if validation errors")
   void handleSearchShouldRedirectBackOnErrors() {
     when(bindingResult.hasErrors()).thenReturn(true);
-    when(oidcAttributeUtils.getUserOffices(any())).thenReturn(List.of("12345"));
+    when(oidcAttributeUtils.getUserOffices(any()))
+        .thenReturn(List.of("2B3456", "1B3456", "1A3456"));
     final SubmissionSearchQuery query =
         SubmissionSearchQuery.builder().submissionPeriod("01/01/2024").build();
     final Model localModel = new ExtendedModelMap();
@@ -94,6 +99,7 @@ class SearchControllerTest {
 
     assertEquals("pages/submissions-search", view);
     assertEquals(query, localModel.getAttribute("submissionSearchQuery"));
+    assertEquals(List.of("1A3456", "1B3456", "2B3456"), localModel.getAttribute("userOffices"));
   }
 
   @Test
@@ -130,7 +136,8 @@ class SearchControllerTest {
     response.setSize(50);
     response.setTotalPages(1);
 
-    when(oidcAttributeUtils.getUserOffices(any())).thenReturn(List.of("1"));
+    when(oidcAttributeUtils.getUserOffices(any()))
+        .thenReturn(List.of("2B3456", "1B3456", "1A3456"));
     when(claimsRestService.search(anyList(), any(), any(), any(), anyInt(), anyInt(), any()))
         .thenReturn(Mono.just(response));
     when(paginationUtil.fromSubmissionsResultSet(response, 0, 50))
@@ -151,6 +158,7 @@ class SearchControllerTest {
     verify(sessionStatus).setComplete();
     verify(model).addAttribute(eq("pagination"), any(Page.class));
     verify(model).addAttribute("submissions", response);
+    verify(model).addAttribute("userOffices", List.of("1A3456", "1B3456", "2B3456"));
     verify(session).setAttribute("submissions", response);
     assertEquals("pages/submissions-search-results", view);
   }
@@ -210,6 +218,23 @@ class SearchControllerTest {
         .search(eq(List.of("1")), eq("JAN-2024"), any(), any(), anyInt(), anyInt(), any());
   }
 
+  @ParameterizedTest
+  @NullAndEmptySource
+  void handleSearchShouldRedirectWithNoSelectedStatuses(List<SubmissionOutcomeFilter> statuses) {
+    when(oidcAttributeUtils.getUserOffices(any())).thenReturn(List.of("12345"));
+    var query =
+        SubmissionSearchQuery.builder()
+            .offices(List.of("12345"))
+            .submissionStatuses(statuses)
+            .build();
+
+    String view = searchController.handleSearch(OIDC_USER, query, bindingResult, model);
+
+    assertEquals(
+        "redirect:/submissions/search/results?page=0&offices=12345&sort=createdOn,desc#results-heading",
+        view);
+  }
+
   @Test
   void submissionsSearchResultsPassesMultipleStatusesToApi() {
     when(oidcAttributeUtils.getUserOffices(any())).thenReturn(List.of("1"));
@@ -237,17 +262,30 @@ class SearchControllerTest {
             any());
   }
 
-  @Test
-  @DisplayName("Search results should pass null submission statuses through to API")
-  void submissionsSearchResultsPassesNullSubmissionStatuses() {
+  @ParameterizedTest
+  @NullAndEmptySource
+  @DisplayName("Search results should search all three statuses when none selected")
+  void submissionsSearchResultsSearchesAllStatusesWhenNoneSelected(
+      List<SubmissionOutcomeFilter> statuses) {
     when(oidcAttributeUtils.getUserOffices(any())).thenReturn(List.of("1"));
     mockApiSuccess();
 
-    var query = new SubmissionSearchQuery(0, null, null, null, List.of("1"), null);
+    var query = new SubmissionSearchQuery(0, null, null, null, List.of("1"), statuses);
     searchController.submissionsSearchResults(query, model, OIDC_USER, sessionStatus, session);
 
     verify(claimsRestService)
-        .search(eq(List.of("1")), any(), any(), isNull(), anyInt(), anyInt(), any());
+        .search(
+            eq(List.of("1")),
+            any(),
+            any(),
+            eq(
+                List.of(
+                    SubmissionStatus.VALIDATION_SUCCEEDED,
+                    SubmissionStatus.VALIDATION_FAILED,
+                    SubmissionStatus.VALIDATED_PENDING_APPROVAL)),
+            anyInt(),
+            anyInt(),
+            any());
   }
 
   @Nested
@@ -264,7 +302,18 @@ class SearchControllerTest {
       searchController.submissionsSearchResults(query, model, OIDC_USER, sessionStatus, session);
 
       verify(claimsRestService)
-          .search(any(), isNull(), isNull(), isNull(), anyInt(), anyInt(), any());
+          .search(
+              any(),
+              isNull(),
+              isNull(),
+              eq(
+                  List.of(
+                      SubmissionStatus.VALIDATION_SUCCEEDED,
+                      SubmissionStatus.VALIDATION_FAILED,
+                      SubmissionStatus.VALIDATED_PENDING_APPROVAL)),
+              anyInt(),
+              anyInt(),
+              any());
     }
 
     @Test

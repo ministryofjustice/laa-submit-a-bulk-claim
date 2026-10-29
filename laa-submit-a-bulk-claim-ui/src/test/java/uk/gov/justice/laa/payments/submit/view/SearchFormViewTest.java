@@ -83,18 +83,6 @@ class SearchFormViewTest extends ViewTestBase {
   }
 
   @Test
-  void searchFormRequiresAtLeastOneStatus() {
-    when(oidcAttributeUtils.getUserOffices(any())).thenReturn(List.of("12345"));
-    var params = new LinkedMultiValueMap<String, String>();
-    params.add("offices", "12345");
-
-    var doc = renderSearchFormPost(params);
-
-    assertPageHasErrorSummary(doc, "submissionStatuses-input");
-    assertFormFieldHasErrorMessage(doc, "Select a valid submission status");
-  }
-
-  @Test
   void searchFormDisplaysOfficeValidationErrorIfNoAccountSelected() {
     when(oidcAttributeUtils.getUserOffices(any())).thenReturn(List.of("12345"));
 

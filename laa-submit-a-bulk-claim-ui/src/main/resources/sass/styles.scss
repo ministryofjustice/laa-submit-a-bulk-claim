@@ -41,12 +41,6 @@
   display: none;
 }
 
-#offices-input-container {
-  display: grid;
-  grid-template-columns: repeat(7, 1fr);
-  gap: govuk.govuk-spacing(2) govuk.govuk-spacing(3);
-}
-
 .upload-table {
   overflow-x: auto;
 }

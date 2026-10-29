@@ -27,6 +27,7 @@ import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionBase;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionStatus;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionsResultSet;
 import uk.gov.justice.laa.payments.submit.client.DataClaimsRestClient;
+import uk.gov.justice.laa.payments.submit.dto.SubmissionOutcomeFilter;
 import uk.gov.justice.laa.payments.submit.dto.SubmissionSearchResultRow;
 import uk.gov.justice.laa.payments.submit.dto.submission.search.SubmissionSearchQuery;
 import uk.gov.justice.laa.payments.submit.dto.submission.search.SubmissionSearchSortField;
@@ -58,7 +59,8 @@ public class SearchController {
   @GetMapping("/submissions/search")
   public String search(
       Model model, SessionStatus sessionStatus, @AuthenticationPrincipal OidcUser oidcUser) {
-    List<String> userOffices = oidcAttributeUtils.getUserOffices(oidcUser);
+    List<String> userOffices =
+        oidcAttributeUtils.getUserOffices(oidcUser).stream().sorted().toList();
     if (!model.containsAttribute(SUBMISSION_SEARCH_QUERY)) {
       model.addAttribute(
           SUBMISSION_SEARCH_QUERY,
@@ -80,7 +82,7 @@ public class SearchController {
       BindingResult bindingResult,
       Model model) {
 
-    var userOffices = oidcAttributeUtils.getUserOffices(oidcUser);
+    var userOffices = oidcAttributeUtils.getUserOffices(oidcUser).stream().sorted().toList();
     var userOfficesSet = new HashSet<>(userOffices); // For performance of containsAll call below
     if (submissionSearchQuery.getOffices() != null
         && !userOfficesSet.containsAll(submissionSearchQuery.getOffices())) {
@@ -118,7 +120,8 @@ public class SearchController {
     model.addAttribute(SUBMISSION_SEARCH_QUERY, submissionSearchQuery);
     model.addAttribute("SubmissionSearchSortField", SubmissionSearchSortField.class);
 
-    List<String> userOffices = oidcAttributeUtils.getUserOffices(oidcUser);
+    List<String> userOffices =
+        oidcAttributeUtils.getUserOffices(oidcUser).stream().sorted().toList();
     model.addAttribute("userOffices", userOffices);
     // If both lists differ in size, user has changed what office to filter by and different by
     // default so show this change to the user
@@ -181,11 +184,11 @@ public class SearchController {
 
   private static List<SubmissionStatus> getSubmissionStatus(
       SubmissionSearchQuery submissionSearchQuery) {
-    return Objects.isNull(submissionSearchQuery.getSubmissionStatuses())
-        ? null
-        : submissionSearchQuery.getSubmissionStatuses().stream()
-            .flatMap(filter -> filter.getStatuses().stream())
-            .toList();
+    var filters = submissionSearchQuery.getSubmissionStatuses();
+    if (filters == null || filters.isEmpty()) {
+      filters = List.of(SubmissionOutcomeFilter.values());
+    }
+    return filters.stream().flatMap(filter -> filter.getStatuses().stream()).toList();
   }
 
   private String trimToNull(String value) {
