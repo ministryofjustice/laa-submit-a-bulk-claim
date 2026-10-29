@@ -105,6 +105,111 @@ public class NilSubmissionE2ETest extends BaseTest {
       assertThat(nilSubmissionPeriodPage.getOfficeAccountNumberValue()).hasText("0P322F");
       assertThat(nilSubmissionPeriodPage.getAreaOfLawValue()).hasText("Crime lower");
     }
+
+    @Test
+    public void nilSubmissionSummaryChangeCivilRefNumber() {
+      var landingPage = new LandingPagePage(page);
+      landingPage.getStartNowButton().click();
+
+      var upload = new UploadPage(page);
+      upload.getCreateNilSubmissionButton().click();
+
+      var officePage = new NilSubmissionOfficePage(page);
+      officePage.selectOffice("0P322F");
+      officePage.getContinueButton().click();
+
+      var areaOfLawPage = new NilSubmissionAreaOfLawPage(page);
+      areaOfLawPage.getLegalHelpRadio().click();
+      areaOfLawPage.getContinueButton().click();
+
+      var periodPage = new NilSubmissionPeriodPage(page);
+      periodPage.selectFirstAvailablePeriod();
+      var value = periodPage.getPeriodSelect().inputValue();
+      periodPage.getContinueButton().click();
+
+      var referencePage = new NilSubmissionCivilSubmissionReferencePage(page);
+      referencePage.getReferenceInput().fill("0P322F/Civil/01");
+      referencePage.getContinueButton().click();
+
+      var summaryPage = new NilSubmissionSummaryPage(page);
+      summaryPage.getChangeSubmissionReferenceLink().click();
+
+      NilSubmissionCivilSubmissionReferencePage civilSubmissionReferencePage =
+          new NilSubmissionCivilSubmissionReferencePage(page);
+      assertThat(civilSubmissionReferencePage.getOfficeAccountNumberValue()).hasText("0P322F");
+      assertThat(civilSubmissionReferencePage.getAreaOfLawValue()).hasText("Legal help");
+      assertThat(civilSubmissionReferencePage.getSubmissionPeriodValue()).hasText(value);
+    }
+
+    @Test
+    public void nilSubmissionSummaryChangeCrimeRefNumber() {
+      var landingPage = new LandingPagePage(page);
+      landingPage.getStartNowButton().click();
+
+      var upload = new UploadPage(page);
+      upload.getCreateNilSubmissionButton().click();
+
+      var officePage = new NilSubmissionOfficePage(page);
+      officePage.selectOffice("0P322F");
+      officePage.getContinueButton().click();
+
+      var areaOfLawPage = new NilSubmissionAreaOfLawPage(page);
+      areaOfLawPage.getCrimeLowerRadio().click();
+      areaOfLawPage.getContinueButton().click();
+
+      var periodPage = new NilSubmissionPeriodPage(page);
+      periodPage.selectFirstAvailablePeriod();
+      var value = periodPage.getPeriodSelect().inputValue();
+      periodPage.getContinueButton().click();
+
+      var referencePage = new NilSubmissionCrimeScheduleNumberPage(page);
+      referencePage.getReferenceInput().fill("CRM/0P322F/2025");
+      referencePage.getContinueButton().click();
+
+      var summaryPage = new NilSubmissionSummaryPage(page);
+      summaryPage.getChangeSubmissionReferenceLink().click();
+
+      NilSubmissionCrimeScheduleNumberPage crimeScheduleNumberPage =
+          new NilSubmissionCrimeScheduleNumberPage(page);
+      assertThat(crimeScheduleNumberPage.getOfficeAccountNumberValue()).hasText("0P322F");
+      assertThat(crimeScheduleNumberPage.getAreaOfLawValue()).hasText("Crime lower");
+      assertThat(crimeScheduleNumberPage.getSubmissionPeriodValue()).hasText(value);
+    }
+
+    @Test
+    public void nilSubmissionSummaryChangeMediationRefNumber() {
+      var landingPage = new LandingPagePage(page);
+      landingPage.getStartNowButton().click();
+
+      var upload = new UploadPage(page);
+      upload.getCreateNilSubmissionButton().click();
+
+      var officePage = new NilSubmissionOfficePage(page);
+      officePage.selectOffice("0P322F");
+      officePage.getContinueButton().click();
+
+      var areaOfLawPage = new NilSubmissionAreaOfLawPage(page);
+      areaOfLawPage.getMediationRadio().click();
+      areaOfLawPage.getContinueButton().click();
+
+      var periodPage = new NilSubmissionPeriodPage(page);
+      periodPage.selectFirstAvailablePeriod();
+      var value = periodPage.getPeriodSelect().inputValue();
+      periodPage.getContinueButton().click();
+
+      var referencePage = new NilSubmissionMediationSubmissionReferencePage(page);
+      referencePage.getReferenceInput().fill("MED/0P322F/2025");
+      referencePage.getContinueButton().click();
+
+      var summaryPage = new NilSubmissionSummaryPage(page);
+      summaryPage.getChangeSubmissionReferenceLink().click();
+
+      NilSubmissionMediationSubmissionReferencePage mediationReferencePage =
+          new NilSubmissionMediationSubmissionReferencePage(page);
+      assertThat(mediationReferencePage.getOfficeAccountNumberValue()).hasText("0P322F");
+      assertThat(mediationReferencePage.getAreaOfLawValue()).hasText("Mediation");
+      assertThat(mediationReferencePage.getSubmissionPeriodValue()).hasText(value);
+    }
   }
 
 

@@ -15,6 +15,10 @@ public class NilSubmissionMediationSubmissionReferencePage extends BasePage {
   private final Locator errorSummary;
   private final Locator errorMessage;
 
+  private final Locator officeAccountNumberValue;
+  private final Locator areaOfLawValue;
+  private final Locator submissionPeriodValue;
+
   public NilSubmissionMediationSubmissionReferencePage(Page page) {
     super(page, "Add your mediation submission reference");
 
@@ -23,5 +27,8 @@ public class NilSubmissionMediationSubmissionReferencePage extends BasePage {
 
     errorSummary = page.locator(".govuk-error-summary");
     errorMessage = page.locator(".govuk-error-message");
+    officeAccountNumberValue = page.getByTestId("nil-submission-office-value");
+    areaOfLawValue = page.getByTestId("nil-submission-areaoflaw-value");
+    submissionPeriodValue = page.getByTestId("nil-submission-period-value");
   }
 }

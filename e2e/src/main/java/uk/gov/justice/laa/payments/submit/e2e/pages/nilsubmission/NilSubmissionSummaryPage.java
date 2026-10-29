@@ -15,6 +15,7 @@ public class NilSubmissionSummaryPage extends BasePage {
   private final Locator changeOfficeLink;
   private final Locator changeAreaOfLawLink;
   private final Locator changeSubmissionPeriodLink;
+  private final Locator changeSubmissionReferenceLink;
 
   public NilSubmissionSummaryPage(Page page) {
     super(page, "Check your nil submission");
@@ -23,5 +24,6 @@ public class NilSubmissionSummaryPage extends BasePage {
     changeOfficeLink = page.getByTestId("nil-submission-office");
     changeAreaOfLawLink = page.getByTestId("nil-submission-areaoflaw");
     changeSubmissionPeriodLink = page.getByTestId("nil-submission-period");
+    changeSubmissionReferenceLink = page.getByTestId("nil-submission-reference");
   }
 }
