@@ -15,6 +15,9 @@ public class NilSubmissionPeriodPage extends BasePage {
   private final Locator errorSummary;
   private final Locator errorMessage;
 
+  private final Locator officeAccountNumberValue;
+  private final Locator areaOfLawValue;
+
   public NilSubmissionPeriodPage(Page page) {
     super(page, "Select a submission period");
 
@@ -22,6 +25,9 @@ public class NilSubmissionPeriodPage extends BasePage {
     continueButton = page.getByRole(BUTTON, new Page.GetByRoleOptions().setName("Continue"));
     errorSummary = page.locator(".govuk-error-summary");
     errorMessage = page.locator(".govuk-error-message");
+
+    officeAccountNumberValue = page.getByTestId("nil-submission-office-value");
+    areaOfLawValue = page.getByTestId("nil-submission-areaoflaw-value");
   }
 
   public void selectFirstAvailablePeriod() {

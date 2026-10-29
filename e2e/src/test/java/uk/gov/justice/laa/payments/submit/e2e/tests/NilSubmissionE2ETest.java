@@ -23,6 +23,84 @@ public class NilSubmissionE2ETest extends BaseTest {
     var upload = new UploadPage(page);
     upload.getCreateNilSubmissionButton().click();
 
+    populateFullNilSubmissionJourney();
+
+    var referencePage = new NilSubmissionCrimeScheduleNumberPage(page);
+    referencePage.getReferenceInput().fill("CRM/0P322F/2025");
+    referencePage.getContinueButton().click();
+
+    var summaryPage = new NilSubmissionSummaryPage(page);
+    summaryPage.getSubmitButton().click();
+
+    var submissionDetailPage = new SubmissionDetailPage(page);
+    submissionDetailPage.assertSubmissionAccepted();
+  }
+
+  @Test
+  public void nilSubmissionSummaryChangeOffice() {
+    var landingPage = new LandingPagePage(page);
+    landingPage.getStartNowButton().click();
+
+    var upload = new UploadPage(page);
+    upload.getCreateNilSubmissionButton().click();
+
+    populateFullNilSubmissionJourney();
+
+    var referencePage = new NilSubmissionCrimeScheduleNumberPage(page);
+    referencePage.getReferenceInput().fill("CRM/0P322F/2025");
+    referencePage.getContinueButton().click();
+
+    var summaryPage = new NilSubmissionSummaryPage(page);
+    summaryPage.getChangeOfficeLink().click();
+
+    // Asserts that page is loaded
+    new NilSubmissionOfficePage(page);
+  }
+
+  @Test
+  public void nilSubmissionSummaryChangeAreaOfLaw() {
+    var landingPage = new LandingPagePage(page);
+    landingPage.getStartNowButton().click();
+
+    var upload = new UploadPage(page);
+    upload.getCreateNilSubmissionButton().click();
+
+    populateFullNilSubmissionJourney();
+
+    var referencePage = new NilSubmissionCrimeScheduleNumberPage(page);
+    referencePage.getReferenceInput().fill("CRM/0P322F/2025");
+    referencePage.getContinueButton().click();
+
+    var summaryPage = new NilSubmissionSummaryPage(page);
+    summaryPage.getChangeAreaOfLawLink().click();
+
+    NilSubmissionAreaOfLawPage nilSubmissionAreaOfLawPage = new NilSubmissionAreaOfLawPage(page);
+    assertThat(nilSubmissionAreaOfLawPage.getOfficeAccountNumberValue()).hasText("0P322F");
+  }
+
+  @Test
+  public void nilSubmissionSummaryChangeSubmissionPeriod() {
+    var landingPage = new LandingPagePage(page);
+    landingPage.getStartNowButton().click();
+
+    var upload = new UploadPage(page);
+    upload.getCreateNilSubmissionButton().click();
+
+    populateFullNilSubmissionJourney();
+
+    var referencePage = new NilSubmissionCrimeScheduleNumberPage(page);
+    referencePage.getReferenceInput().fill("CRM/0P322F/2025");
+    referencePage.getContinueButton().click();
+
+    var summaryPage = new NilSubmissionSummaryPage(page);
+    summaryPage.getChangeSubmissionPeriodLink().click();
+
+    NilSubmissionPeriodPage nilSubmissionPeriodPage = new NilSubmissionPeriodPage(page);
+    assertThat(nilSubmissionPeriodPage.getOfficeAccountNumberValue()).hasText("0P322F");
+    assertThat(nilSubmissionPeriodPage.getAreaOfLawValue()).hasText("Crime lower");
+  }
+
+  private void populateFullNilSubmissionJourney() {
     var officePage = new NilSubmissionOfficePage(page);
     officePage.selectOffice("0P322F");
     officePage.getContinueButton().click();
@@ -34,16 +112,6 @@ public class NilSubmissionE2ETest extends BaseTest {
     var periodPage = new NilSubmissionPeriodPage(page);
     periodPage.selectFirstAvailablePeriod();
     periodPage.getContinueButton().click();
-
-    var referencePage = new NilSubmissionCrimeScheduleNumberPage(page);
-    referencePage.getReferenceInput().fill("CRM/0P322F/2025");
-    referencePage.getContinueButton().click();
-
-    var summaryPage = new NilSubmissionSummaryPage(page);
-    summaryPage.getSubmitButton().click();
-
-    var submissionDetailPage = new SubmissionDetailPage(page);
-    submissionDetailPage.assertSubmissionAccepted();
   }
 
   @Test
@@ -61,7 +129,8 @@ public class NilSubmissionE2ETest extends BaseTest {
     assertThat(officePageWithError.getErrorSummary()).isVisible();
     assertThat(officePageWithError.getErrorSummary())
         .containsText("Select the office account number");
-    assertThat(officePageWithError.getErrorMessage()).containsText("Select the office account number");
+    assertThat(officePageWithError.getErrorMessage()).containsText(
+        "Select the office account number");
   }
 
   @Test

@@ -15,6 +15,8 @@ public class NilSubmissionAreaOfLawPage extends BasePage {
   private final Locator errorSummary;
   private final Locator errorMessage;
 
+  private final Locator officeAccountNumberValue;
+
   public NilSubmissionAreaOfLawPage(Page page) {
     super(page, "Select the area of law");
 
@@ -22,5 +24,6 @@ public class NilSubmissionAreaOfLawPage extends BasePage {
     continueButton = page.getByRole(BUTTON, new Page.GetByRoleOptions().setName("Continue"));
     errorSummary = page.locator(".govuk-error-summary");
     errorMessage = page.locator(".govuk-error-message");
+    officeAccountNumberValue = page.getByTestId("nil-submission-office-value");
   }
 }

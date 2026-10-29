@@ -12,9 +12,16 @@ public class NilSubmissionSummaryPage extends BasePage {
 
   private final Locator submitButton;
 
+  private final Locator changeOfficeLink;
+  private final Locator changeAreaOfLawLink;
+  private final Locator changeSubmissionPeriodLink;
+
   public NilSubmissionSummaryPage(Page page) {
     super(page, "Check your nil submission");
 
     submitButton = page.getByRole(BUTTON, new Page.GetByRoleOptions().setName("Submit"));
+    changeOfficeLink = page.getByTestId("nil-submission-office");
+    changeAreaOfLawLink = page.getByTestId("nil-submission-areaoflaw");
+    changeSubmissionPeriodLink = page.getByTestId("nil-submission-period");
   }
 }
