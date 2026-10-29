@@ -83,6 +83,35 @@ class SearchFormViewTest extends ViewTestBase {
   }
 
   @Test
+  void searchFormDisplaysSelectAllWithMultipleOffices() {
+    when(oidcAttributeUtils.getUserOffices(any())).thenReturn(List.of("12345", "67890"));
+
+    var doc = renderDocument();
+
+    assertThat(doc.select("#offices-select-all")).hasSize(1);
+    assertPageHasLabel(doc, "offices-select-all", "Select all");
+  }
+
+  @Test
+  void searchFormDoesNotDisplaySelectAllWithOneOffice() {
+    when(oidcAttributeUtils.getUserOffices(any())).thenReturn(List.of("12345"));
+
+    var doc = renderDocument();
+
+    assertThat(doc.select("#offices-select-all")).isEmpty();
+  }
+
+  @Test
+  void searchFormInitiallySelectsAllOffices() {
+    when(oidcAttributeUtils.getUserOffices(any())).thenReturn(List.of("12345", "67890"));
+
+    var doc = renderDocument();
+
+    assertThat(doc.select("#offices-input-container input[checked]").eachAttr("value"))
+        .containsExactly("12345", "67890");
+  }
+
+  @Test
   void searchFormDisplaysOfficeValidationErrorIfNoAccountSelected() {
     when(oidcAttributeUtils.getUserOffices(any())).thenReturn(List.of("12345"));
 
