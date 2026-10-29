@@ -95,7 +95,9 @@ public class SearchController {
       return "pages/submissions-search";
     }
 
-    return "redirect:" + SubmissionSearchQuery.from(submissionSearchQuery).getRedirectUrl();
+    return "redirect:"
+        + SubmissionSearchQuery.from(submissionSearchQuery).getRedirectUrl()
+        + "#results-heading";
   }
 
   /**

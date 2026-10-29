@@ -116,7 +116,7 @@ class SearchControllerTest {
     assertEquals(
         "redirect:/submissions/search/results?page=0&submissionPeriod=JAN-2024&areaOfLaw=CRIME "
             + "LOWER&offices=12345&submissionStatuses=SUCCEEDED&submissionStatuses=NOT_SUBMITTED"
-            + "&sort=createdOn,desc",
+            + "&sort=createdOn,desc#results-heading",
         view);
   }
 

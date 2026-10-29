@@ -298,6 +298,7 @@ class SearchResultsViewTest extends ViewTestBase {
     mockEmptySearchResults();
     var doc = renderDocumentWithParams(baseSearchResultsParams());
     assertPageHasContent(doc, "No submissions were found.");
+    assertEquals("No submissions were found.", doc.selectFirst("#results-heading").text());
   }
 
   @Test
@@ -305,6 +306,7 @@ class SearchResultsViewTest extends ViewTestBase {
     mockSearchResults(0, 1, 3);
     var doc = renderDocumentWithParams(baseSearchResultsParams());
     assertPageHasContent(doc, "3 Search results");
+    assertEquals("3 Search results", doc.selectFirst("#results-heading h2").text());
   }
 
   @Test
@@ -328,11 +330,18 @@ class SearchResultsViewTest extends ViewTestBase {
             .submissionId(UUID.randomUUID())
             .officeAccountNumber("12345")
             .areaOfLaw(AreaOfLaw.MEDIATION)
-            .status(SubmissionStatus.VALIDATION_SUCCEEDED)
+            .status(SubmissionStatus.VALIDATION_FAILED)
+            .build();
+    var submission3 =
+        SubmissionBase.builder()
+            .submissionId(UUID.randomUUID())
+            .officeAccountNumber("12345")
+            .areaOfLaw(AreaOfLaw.LEGAL_HELP)
+            .status(SubmissionStatus.VALIDATED_PENDING_APPROVAL)
             .build();
 
     when(submissionPeriodUtil.getSubmissionPeriod(any())).thenReturn("January 2024");
-    mockSearchResultsWithSubmissions(List.of(submission1, submission2), 1);
+    mockSearchResultsWithSubmissions(List.of(submission1, submission2, submission3), 1);
 
     var doc = renderDocumentWithParams(baseSearchResultsParams());
 
@@ -348,9 +357,12 @@ class SearchResultsViewTest extends ViewTestBase {
     assertCellContainsText(cells2.get(1), "12345");
     assertCellContainsText(cells2.get(2), "Mediation");
     assertCellContainsText(cells2.get(3), "January 2024");
-    assertCellContainsText(cells2.get(4), "Accepted");
+    assertCellContainsText(cells2.get(4), "Rejected");
 
-    assertEquals(2, rows.size());
+    List<Element> cells3 = rows.get(2).select("td").stream().toList();
+    assertCellContainsText(cells3.get(4), "Not submitted");
+
+    assertEquals(3, rows.size());
   }
 
   private void mockEmptySearchResults() {
