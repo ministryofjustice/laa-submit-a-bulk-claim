@@ -68,17 +68,47 @@ class SearchFormViewTest extends ViewTestBase {
 
     var doc = renderDocument();
 
-    assertPageHasContent(doc, "Filter");
     assertPageHasLabel(doc, "submission-period", "Submission period");
     assertAutocompleteDropDownList(doc, "Submission period", "January 2024");
     assertDropDownList(doc, "Area of law", "All", "Legal help", "Crime lower", "Mediation");
-    assertPageHasInlineRadioButtons(doc);
-    assertPageHasRadioButtons(
-        doc, "Succeeded submissions", "Failed submissions", "All submissions");
-    assertPageHasContent(doc, "Choose office account");
+    assertThat(doc.select(".govuk-fieldset__legend").eachText()).contains("Submission status");
+    assertThat(doc.select("#submission-statuses-input .govuk-checkboxes__label").eachText())
+        .containsExactly("Accepted", "Rejected", "Not submitted");
+    assertThat(doc.select("#submission-statuses-input input[checked]").eachAttr("value"))
+        .containsExactly("SUCCEEDED");
+    assertPageHasContent(doc, "Choose office account number");
 
     Assertions.assertEquals("12345", doc.selectFirst("label[for=offices-input]").text());
     Assertions.assertEquals("67890", doc.selectFirst("label[for=offices-input-1]").text());
+  }
+
+  @Test
+  void searchFormDisplaysSelectAllWithMultipleOffices() {
+    when(oidcAttributeUtils.getUserOffices(any())).thenReturn(List.of("12345", "67890"));
+
+    var doc = renderDocument();
+
+    assertThat(doc.select("#offices-select-all")).hasSize(1);
+    assertPageHasLabel(doc, "offices-select-all", "Select all");
+  }
+
+  @Test
+  void searchFormDoesNotDisplaySelectAllWithOneOffice() {
+    when(oidcAttributeUtils.getUserOffices(any())).thenReturn(List.of("12345"));
+
+    var doc = renderDocument();
+
+    assertThat(doc.select("#offices-select-all")).isEmpty();
+  }
+
+  @Test
+  void searchFormInitiallySelectsAllOffices() {
+    when(oidcAttributeUtils.getUserOffices(any())).thenReturn(List.of("12345", "67890"));
+
+    var doc = renderDocument();
+
+    assertThat(doc.select("#offices-input-container input[checked]").eachAttr("value"))
+        .containsExactly("12345", "67890");
   }
 
   @Test

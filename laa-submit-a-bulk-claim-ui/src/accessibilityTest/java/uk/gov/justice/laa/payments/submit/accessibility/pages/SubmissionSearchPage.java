@@ -5,7 +5,8 @@ import com.microsoft.playwright.Page;
 public final class SubmissionSearchPage {
 
   private static final String SEARCH_RESULTS_QUERY =
-      "/submissions/search/results?page=0&offices=0P322F&areaOfLaw=LEGAL_HELP&submissionStatuses=ALL";
+      "/submissions/search/results?page=0&offices=0P322F&areaOfLaw=LEGAL_HELP"
+          + "&submissionStatuses=SUCCEEDED&submissionStatuses=FAILED&submissionStatuses=NOT_SUBMITTED";
 
   private final Page page;
 

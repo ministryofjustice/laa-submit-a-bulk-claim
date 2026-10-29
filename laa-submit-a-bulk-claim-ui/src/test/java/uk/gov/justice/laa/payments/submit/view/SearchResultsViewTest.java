@@ -1,6 +1,7 @@
 package uk.gov.justice.laa.payments.submit.view;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.params.provider.Arguments.of;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
@@ -41,7 +42,7 @@ class SearchResultsViewTest extends ViewTestBase {
 
   private static final int PAGE_SIZE = 50;
   private static final String OFFICE = "12345";
-  private static final String SUBMISSION_STATUSES = SubmissionOutcomeFilter.ALL.name();
+  private static final String SUBMISSION_STATUSES = SubmissionOutcomeFilter.SUCCEEDED.name();
 
   @MockitoBean SubmissionSearchValidator submissionSearchValidator;
   @MockitoBean PaginationUtil paginationUtil;
@@ -63,13 +64,13 @@ class SearchResultsViewTest extends ViewTestBase {
     assertTableHeaderIsSortable(
         headers.get(0),
         "descending",
-        "Date submitted",
+        "Date",
         "/submissions/search/results?page=0&offices=%s&submissionStatuses=%s&sort=createdOn,asc"
             .formatted(OFFICE, SUBMISSION_STATUSES));
     assertTableHeaderIsSortable(
         headers.get(1),
         "none",
-        "Office account",
+        "Office account number",
         "/submissions/search/results?page=0&offices=%s&submissionStatuses=%s&sort=officeAccountNumber,asc"
             .formatted(OFFICE, SUBMISSION_STATUSES));
     assertTableHeaderIsSortable(
@@ -109,7 +110,7 @@ class SearchResultsViewTest extends ViewTestBase {
     searchResultsFieldIsSortable(
         0,
         "createdOn",
-        "Date submitted",
+        "Date",
         currentDirection,
         currentPage,
         expectedAriaDirection,
@@ -126,7 +127,7 @@ class SearchResultsViewTest extends ViewTestBase {
     searchResultsFieldIsSortable(
         1,
         "officeAccountNumber",
-        "Office account",
+        "Office account number",
         currentDirection,
         currentPage,
         expectedAriaDirection,
@@ -298,6 +299,7 @@ class SearchResultsViewTest extends ViewTestBase {
     mockEmptySearchResults();
     var doc = renderDocumentWithParams(baseSearchResultsParams());
     assertPageHasContent(doc, "No submissions were found.");
+    assertNotNull(doc.selectFirst("#results-heading"));
   }
 
   @Test
@@ -305,6 +307,7 @@ class SearchResultsViewTest extends ViewTestBase {
     mockSearchResults(0, 1, 3);
     var doc = renderDocumentWithParams(baseSearchResultsParams());
     assertPageHasContent(doc, "3 Search results");
+    assertNotNull(doc.selectFirst("#results-heading"));
   }
 
   @Test
@@ -328,11 +331,18 @@ class SearchResultsViewTest extends ViewTestBase {
             .submissionId(UUID.randomUUID())
             .officeAccountNumber("12345")
             .areaOfLaw(AreaOfLaw.MEDIATION)
-            .status(SubmissionStatus.VALIDATION_SUCCEEDED)
+            .status(SubmissionStatus.VALIDATION_FAILED)
+            .build();
+    var submission3 =
+        SubmissionBase.builder()
+            .submissionId(UUID.randomUUID())
+            .officeAccountNumber("12345")
+            .areaOfLaw(AreaOfLaw.LEGAL_HELP)
+            .status(SubmissionStatus.VALIDATED_PENDING_APPROVAL)
             .build();
 
     when(submissionPeriodUtil.getSubmissionPeriod(any())).thenReturn("January 2024");
-    mockSearchResultsWithSubmissions(List.of(submission1, submission2), 1);
+    mockSearchResultsWithSubmissions(List.of(submission1, submission2, submission3), 1);
 
     var doc = renderDocumentWithParams(baseSearchResultsParams());
 
@@ -342,15 +352,18 @@ class SearchResultsViewTest extends ViewTestBase {
     assertCellContainsText(cells1.get(1), "12345");
     assertCellContainsText(cells1.get(2), "Crime lower");
     assertCellContainsText(cells1.get(3), "January 2024");
-    assertCellContainsText(cells1.get(4), "Validation succeeded");
+    assertCellContainsText(cells1.get(4), "Accepted");
 
     List<Element> cells2 = rows.get(1).select("td").stream().toList();
     assertCellContainsText(cells2.get(1), "12345");
     assertCellContainsText(cells2.get(2), "Mediation");
     assertCellContainsText(cells2.get(3), "January 2024");
-    assertCellContainsText(cells2.get(4), "Validation succeeded");
+    assertCellContainsText(cells2.get(4), "Rejected");
 
-    assertEquals(2, rows.size());
+    List<Element> cells3 = rows.get(2).select("td").stream().toList();
+    assertCellContainsText(cells3.get(4), "Not submitted");
+
+    assertEquals(3, rows.size());
   }
 
   private void mockEmptySearchResults() {

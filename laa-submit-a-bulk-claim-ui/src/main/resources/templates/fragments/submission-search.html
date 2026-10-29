@@ -2,12 +2,8 @@
   <div class="search-panel govuk-!-margin-bottom-6">
     <div class="govuk-grid-row">
 
-      <div class="govuk-grid-column-full">
-        <h2 class="govuk-heading-m" th:text="#{search.filter.subheading}"></h2>
-      </div>
-
       <div class="govuk-grid-column-one-third">
-        <fieldset class="govuk-fieldset" id="submissionStatuses-input">
+        <fieldset class="govuk-fieldset">
 
           <div class="govuk-body govuk-input--width-10">
             <div class="autocomplete-wrapper ">
@@ -54,46 +50,33 @@
         </fieldset>
       </div>
       <div class="govuk-grid-column-full">
-        <fieldset class="govuk-fieldset">
-
-          <div class="govuk-body">
-
-            <div class="govuk-form-group">
-              <fieldset class="govuk-fieldset">
-                <legend class="govuk-fieldset__legend govuk-fieldset__legend--s"
-                        th:text="#{search.outcome}">
-                </legend>
-                <div class="govuk-radios govuk-radios--inline govuk-radios--small"
-                     data-module="govuk-radios">
-                  <div class="govuk-radios__item">
-                    <input class="govuk-radios__input" id="succeeded-radio-option"
-                           th:field="*{submissionStatuses}"
-                           type="radio"
-                           value="SUCCEEDED">
-                    <label class="govuk-label govuk-radios__label" for="succeeded-radio-option"
-                           th:text="#{search.outcome.succeeded}"/>
-                  </div>
-                  <div class="govuk-radios__item">
-                    <input class="govuk-radios__input" id="failed-radio-option"
-                           th:field="*{submissionStatuses}"
-                           type="radio"
-                           value="FAILED">
-                    <label class="govuk-label govuk-radios__label" for="failed-radio-option"
-                           th:text="#{search.outcome.failed}"/>
-                  </div>
-                  <div class="govuk-radios__item">
-                    <input class="govuk-radios__input" id="all-radio-option" type="radio"
-                           th:field="*{submissionStatuses}"
-                           value="ALL">
-                    <label class="govuk-label govuk-radios__label" for="all-radio-option"
-                           th:text="#{search.outcome.all}"/>
-                  </div>
-                </div>
-              </fieldset>
+        <div class="govuk-form-group"
+             th:classappend="${#fields.hasErrors('submissionStatuses')} ? 'govuk-form-group--error' : ''">
+          <fieldset class="govuk-fieldset">
+            <legend class="govuk-fieldset__legend govuk-fieldset__legend--s"
+                    th:text="#{search.outcome}">
+            </legend>
+            <th:block th:replace="~{fragments/error-components :: error-messages('submissionStatuses')}"/>
+            <div class="govuk-checkboxes govuk-checkboxes--small"
+                 data-module="govuk-checkboxes" id="submission-statuses-input">
+              <div class="govuk-checkboxes__item"
+                   th:each="status, idx : ${T(uk.gov.justice.laa.payments.submit.dto.SubmissionOutcomeFilter).values()}">
+                <input class="govuk-checkboxes__input"
+                       type="checkbox"
+                       name="submissionStatuses"
+                       th:id="${idx.first} ? 'submissionStatuses-input' : |submission-status-${status.name()}|"
+                       th:value="${status.name()}"
+                       th:checked="${submissionSearchQuery.submissionStatuses != null and #lists.contains(submissionSearchQuery.submissionStatuses, status)}">
+                <label class="govuk-label govuk-checkboxes__label"
+                       th:for="${idx.first} ? 'submissionStatuses-input' : |submission-status-${status.name()}|"
+                       th:text="#{${'search.outcome.' + status.name()}}">
+                </label>
+              </div>
             </div>
-          </div>
-        </fieldset>
+          </fieldset>
+        </div>
       </div>
+
 
       <div class="govuk-grid-column-full">
         <details class="govuk-details" th:open="${#fields.hasErrors('offices') || shouldOpenOfficeDetails == true}">
@@ -111,11 +94,27 @@
                         th:text="#{search.offices}">
                 </legend>
                 <th:block th:replace="~{fragments/error-components :: error-messages('offices')}"/>
+
+                <div class="govuk-checkboxes govuk-checkboxes--small govuk-!-margin-bottom-2 requires-js"
+                     id="offices-select-all-container"
+                     th:if="${userOffices != null and userOffices.size() > 1}">
+                  <div class="govuk-checkboxes__item govuk-!-margin-bottom-0">
+                    <input class="govuk-checkboxes__input"
+                           id="offices-select-all"
+                           type="checkbox"
+                           data-module="laa-select-all"
+                           data-target="offices-input-container">
+                    <label class="govuk-label govuk-checkboxes__label"
+                           for="offices-select-all"
+                           th:text="#{search.offices.selectAll}"></label>
+                  </div>
+                </div>
+
                 <div class="govuk-checkboxes govuk-radios--inline govuk-checkboxes--small"
                      data-module="govuk-checkboxes" id="offices-input-container">
-                  <th:block th:each="office,idx : ${userOffices}">
-                    <div class="govuk-checkboxes__item">
 
+                  <th:block th:each="office,idx : ${userOffices}">
+                    <div class="govuk-checkboxes__item govuk-!-margin-bottom-0">
                       <input class="govuk-checkboxes__input"
                              th:id="${idx.index > 0} ? |offices-input-${idx.index}| : |offices-input|"
                              type="checkbox"

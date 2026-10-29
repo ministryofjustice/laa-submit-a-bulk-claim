@@ -22,7 +22,7 @@ public class SearchPage extends BasePage {
     searchButton = page.locator("#searchButton");
     resultsTable = page.locator(".govuk-table");
     areaOfLawSelect = page.locator("#area-of-law");
-    resultsHeading = page.locator("#results-heading");
+    resultsHeading = page.locator("#results-heading h2");
     submissionPeriodHeader = page.locator("a:has-text('Submission period')");
     submissionPeriodInput = page.locator("input#submission-period");
     noResultsMessage = page.getByText("No submissions were found.");

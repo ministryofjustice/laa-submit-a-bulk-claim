@@ -20,12 +20,11 @@
         </div>
       </form>
 
-      <div class="govuk-grid-column-full">
+      <div class="govuk-grid-column-full" id="results-heading">
         <p class="govuk-body" th:if="${#lists.isEmpty(submissions.content)}">
           No submissions were found.
         </p>
         <h2 class="govuk-heading-m govuk-!-margin-bottom-0"
-            id="results-heading"
             th:if="${!#lists.isEmpty(submissions.content)}"
             th:text="#{search.result.heading(${submissions.totalElements})}">
         </h2>
@@ -66,8 +65,18 @@
 
               <td class="govuk-table__cell"
                   th:text="${submissionRow.submissionPeriod}"></td>
-              <td class="govuk-table__cell" th:text="${submission.getStatus != null ?
-                             #strings.replace(#strings.capitalize(#strings.toLowerCase(submission.getStatus)), '_', ' ') : '-' }"></td>
+              <td class="govuk-table__cell"
+                  th:switch="${submission.getStatus != null ? submission.getStatus.name() : ''}">
+                <strong th:case="'VALIDATION_SUCCEEDED'" class="govuk-tag govuk-tag--green"
+                        th:text="#{search.result.status.succeeded}"></strong>
+                <strong th:case="'VALIDATION_FAILED'" class="govuk-tag govuk-tag--red"
+                        th:text="#{search.result.status.rejected}"></strong>
+                <strong th:case="'VALIDATED_PENDING_APPROVAL'" class="govuk-tag govuk-tag--grey"
+                        th:text="#{search.result.status.notSubmitted}"></strong>
+                <span th:case="*"
+                      th:text="${submission.getStatus != null ?
+                        #strings.replace(#strings.capitalize(#strings.toLowerCase(submission.getStatus)), '_', ' ') : '-' }"></span>
+              </td>
             </tr>
             </tbody>
           </table>

@@ -22,7 +22,7 @@ public class SubmissionSearchQuery
   private String submissionPeriod;
   private AreaOfLaw areaOfLaw;
   private List<String> offices;
-  private SubmissionOutcomeFilter submissionStatuses;
+  private List<SubmissionOutcomeFilter> submissionStatuses;
 
   public SubmissionSearchQuery(
       Integer page,
@@ -30,7 +30,7 @@ public class SubmissionSearchQuery
       String submissionPeriod,
       AreaOfLaw areaOfLaw,
       List<String> offices,
-      SubmissionOutcomeFilter submissionStatuses) {
+      List<SubmissionOutcomeFilter> submissionStatuses) {
     this.page = Objects.requireNonNullElse(page, DEFAULT_PAGE);
     this.sort = Objects.requireNonNullElse(sort, SubmissionSearchSort.defaults());
     this.submissionPeriod = submissionPeriod;
@@ -62,7 +62,7 @@ public class SubmissionSearchQuery
     addQueryParam(builder, "submissionPeriod", submissionPeriod);
     addQueryParam(builder, "areaOfLaw", areaOfLaw);
     addQueryParamIfNotEmptyList(builder, "offices", offices);
-    addQueryParam(builder, "submissionStatuses", submissionStatuses);
+    addQueryParamIfNotEmptyList(builder, "submissionStatuses", submissionStatuses);
     addQueryParam(builder, "sort", Objects.toString(sort, null));
 
     return builder.build().toUriString();

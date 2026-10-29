@@ -19,7 +19,6 @@ import uk.gov.justice.laa.payments.submit.util.SubmissionPeriodUtil;
  *
  * <ul>
  *   <li>Validates the submission period to ensure it is one of the available submission periods.
- *   <li>Validates the submission status to ensure it matches one of the predefined options.
  * </ul>
  *
  * <p>Does not handle office validation, as {@link
@@ -52,7 +51,6 @@ public class SubmissionSearchValidator implements Validator {
     SubmissionSearchQuery query = (SubmissionSearchQuery) target;
 
     validateSubmissionPeriod(errors, query);
-    validateSubmissionStatus(errors, query);
     validateOffices(errors, query);
   }
 
@@ -65,16 +63,6 @@ public class SubmissionSearchValidator implements Validator {
           SUBMISSION_PERIOD,
           "search.error.submissionPeriod.invalid",
           "Submission period must be one of the following: " + availableSubmissionPeriods.values());
-    }
-  }
-
-  private void validateSubmissionStatus(Errors errors, SubmissionSearchQuery query) {
-    if (Objects.isNull(query.getSubmissionStatuses())) {
-      errors.rejectValue(
-          SUBMISSION_STATUS,
-          "search.error.submissionOutcome.invalid",
-          "Submission status must be one of the following: "
-              + Arrays.toString(SubmissionOutcomeFilter.values()));
     }
   }
 

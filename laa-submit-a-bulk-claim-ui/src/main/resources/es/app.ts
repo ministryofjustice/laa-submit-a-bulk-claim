@@ -105,3 +105,35 @@ selectDropdowns.forEach(function (select: HTMLSelectElement): void {
   input?.dispatchEvent(new FocusEvent('focus'));
   input?.dispatchEvent(new FocusEvent('blur'));
 });
+
+// Office account numebrs checkboxes
+const initSelectAll = (selectAll: HTMLInputElement): void => {
+  const targetId = selectAll.getAttribute('data-target');
+  const container = targetId ? document.getElementById(targetId) : null;
+  if (!container) {
+    return;
+  }
+
+  const checkboxes = Array.from(
+      container.querySelectorAll<HTMLInputElement>('input[type="checkbox"]')
+  ).filter((checkbox) => checkbox !== selectAll);
+
+  const refreshSelectAll = (): void => {
+    selectAll.checked =
+      checkboxes.length > 0 && checkboxes.every((checkbox) => checkbox.checked);
+  };
+
+  selectAll.addEventListener('change', (): void => {
+    checkboxes.forEach((checkbox) => {
+      checkbox.checked = selectAll.checked;
+    });
+  });
+
+  checkboxes.forEach((checkbox) => {
+    checkbox.addEventListener('change', refreshSelectAll);
+  });
+
+  refreshSelectAll();
+};
+
+document.querySelectorAll<HTMLInputElement>('[data-module="laa-select-all"]').forEach(initSelectAll);

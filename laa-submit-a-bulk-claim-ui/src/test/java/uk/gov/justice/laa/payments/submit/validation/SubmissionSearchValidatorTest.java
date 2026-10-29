@@ -19,6 +19,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
+import org.junit.jupiter.params.provider.NullAndEmptySource;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.validation.BeanPropertyBindingResult;
@@ -102,7 +103,7 @@ class SubmissionSearchValidatorTest {
     void shouldHaveNoErrorsWhenValidSubmissionStatus(SubmissionOutcomeFilter submissionStatus) {
       // Given
       SubmissionSearchQuery query =
-          SubmissionSearchQuery.builder().submissionStatuses(submissionStatus).build();
+          SubmissionSearchQuery.builder().submissionStatuses(List.of(submissionStatus)).build();
       final BindingResult errors = new BeanPropertyBindingResult(query, "submissionSearchQuery");
 
       // When
@@ -111,18 +112,20 @@ class SubmissionSearchValidatorTest {
       assertFalse(errors.hasFieldErrors(SUBMISSION_STATUS));
     }
 
-    @Test
-    @DisplayName("Should have errors when submission status empty")
-    void shouldHaveErrorsWhenSubmissionStatusEmpty() {
+    @ParameterizedTest
+    @NullAndEmptySource
+    @DisplayName("Should accept no selected submission statuses")
+    void shouldAcceptNoSelectedSubmissionStatuses(List<SubmissionOutcomeFilter> statuses) {
       // Given
-      SubmissionSearchQuery query = SubmissionSearchQuery.builder().build();
+      SubmissionSearchQuery query =
+          SubmissionSearchQuery.builder().submissionStatuses(statuses).build();
       final BindingResult errors = new BeanPropertyBindingResult(query, "submissionSearchQuery");
 
       // When
       validator.validate(query, errors);
 
       // Then
-      assertTrue(errors.hasFieldErrors(SUBMISSION_STATUS));
+      assertFalse(errors.hasFieldErrors(SUBMISSION_STATUS));
     }
   }
 

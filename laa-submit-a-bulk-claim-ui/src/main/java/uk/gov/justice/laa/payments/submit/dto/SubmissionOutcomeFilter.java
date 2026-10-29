@@ -1,6 +1,5 @@
 package uk.gov.justice.laa.payments.submit.dto;
 
-import java.util.Arrays;
 import java.util.List;
 import lombok.Getter;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionStatus;
@@ -9,7 +8,7 @@ import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionStatus;
 public enum SubmissionOutcomeFilter {
   SUCCEEDED(List.of(SubmissionStatus.VALIDATION_SUCCEEDED)),
   FAILED(List.of(SubmissionStatus.VALIDATION_FAILED)),
-  ALL(Arrays.asList(SubmissionStatus.values()));
+  NOT_SUBMITTED(List.of(SubmissionStatus.VALIDATED_PENDING_APPROVAL));
 
   private final List<SubmissionStatus> statuses;
 
