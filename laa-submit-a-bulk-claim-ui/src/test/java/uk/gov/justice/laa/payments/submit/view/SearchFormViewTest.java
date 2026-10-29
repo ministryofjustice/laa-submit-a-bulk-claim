@@ -68,11 +68,11 @@ class SearchFormViewTest extends ViewTestBase {
 
     var doc = renderDocument();
 
-    assertPageHasContent(doc, "Filter");
     assertPageHasLabel(doc, "submission-period", "Submission period");
     assertAutocompleteDropDownList(doc, "Submission period", "January 2024");
     assertDropDownList(doc, "Area of law", "All", "Legal help", "Crime lower", "Mediation");
     assertPageHasInlineRadioButtons(doc);
+    assertThat(doc.select(".govuk-fieldset__legend").eachText()).contains("Submission status");
     assertPageHasRadioButtons(
         doc, "Succeeded submissions", "Failed submissions", "All submissions");
     assertPageHasContent(doc, "Choose office account number");

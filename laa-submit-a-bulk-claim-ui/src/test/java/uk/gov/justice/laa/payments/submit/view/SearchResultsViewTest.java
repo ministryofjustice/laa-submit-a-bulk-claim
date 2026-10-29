@@ -63,13 +63,13 @@ class SearchResultsViewTest extends ViewTestBase {
     assertTableHeaderIsSortable(
         headers.get(0),
         "descending",
-        "Date submitted",
+        "Date",
         "/submissions/search/results?page=0&offices=%s&submissionStatuses=%s&sort=createdOn,asc"
             .formatted(OFFICE, SUBMISSION_STATUSES));
     assertTableHeaderIsSortable(
         headers.get(1),
         "none",
-        "Office account",
+        "Office account number",
         "/submissions/search/results?page=0&offices=%s&submissionStatuses=%s&sort=officeAccountNumber,asc"
             .formatted(OFFICE, SUBMISSION_STATUSES));
     assertTableHeaderIsSortable(
@@ -109,7 +109,7 @@ class SearchResultsViewTest extends ViewTestBase {
     searchResultsFieldIsSortable(
         0,
         "createdOn",
-        "Date submitted",
+        "Date",
         currentDirection,
         currentPage,
         expectedAriaDirection,
@@ -126,7 +126,7 @@ class SearchResultsViewTest extends ViewTestBase {
     searchResultsFieldIsSortable(
         1,
         "officeAccountNumber",
-        "Office account",
+        "Office account number",
         currentDirection,
         currentPage,
         expectedAriaDirection,
@@ -342,13 +342,13 @@ class SearchResultsViewTest extends ViewTestBase {
     assertCellContainsText(cells1.get(1), "12345");
     assertCellContainsText(cells1.get(2), "Crime lower");
     assertCellContainsText(cells1.get(3), "January 2024");
-    assertCellContainsText(cells1.get(4), "Validation succeeded");
+    assertCellContainsText(cells1.get(4), "Accepted");
 
     List<Element> cells2 = rows.get(1).select("td").stream().toList();
     assertCellContainsText(cells2.get(1), "12345");
     assertCellContainsText(cells2.get(2), "Mediation");
     assertCellContainsText(cells2.get(3), "January 2024");
-    assertCellContainsText(cells2.get(4), "Validation succeeded");
+    assertCellContainsText(cells2.get(4), "Accepted");
 
     assertEquals(2, rows.size());
   }
