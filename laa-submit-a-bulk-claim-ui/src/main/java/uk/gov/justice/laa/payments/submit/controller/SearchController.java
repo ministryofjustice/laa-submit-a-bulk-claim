@@ -60,13 +60,11 @@ public class SearchController {
       Model model, SessionStatus sessionStatus, @AuthenticationPrincipal OidcUser oidcUser) {
     List<String> userOffices = oidcAttributeUtils.getUserOffices(oidcUser);
     if (!model.containsAttribute(SUBMISSION_SEARCH_QUERY)) {
-      // Only submissionStatuses has to be set to "All" as default to select the default radio
-      // option on the frontend.
       model.addAttribute(
           SUBMISSION_SEARCH_QUERY,
           SubmissionSearchQuery.builder()
               .offices(userOffices)
-              .submissionStatuses(SUCCEEDED)
+              .submissionStatuses(List.of(SUCCEEDED))
               .build());
     }
     model.addAttribute("userOffices", userOffices);
@@ -183,7 +181,9 @@ public class SearchController {
       SubmissionSearchQuery submissionSearchQuery) {
     return Objects.isNull(submissionSearchQuery.getSubmissionStatuses())
         ? null
-        : submissionSearchQuery.getSubmissionStatuses().getStatuses();
+        : submissionSearchQuery.getSubmissionStatuses().stream()
+            .flatMap(filter -> filter.getStatuses().stream())
+            .toList();
   }
 
   private String trimToNull(String value) {

@@ -71,14 +71,27 @@ class SearchFormViewTest extends ViewTestBase {
     assertPageHasLabel(doc, "submission-period", "Submission period");
     assertAutocompleteDropDownList(doc, "Submission period", "January 2024");
     assertDropDownList(doc, "Area of law", "All", "Legal help", "Crime lower", "Mediation");
-    assertPageHasInlineRadioButtons(doc);
     assertThat(doc.select(".govuk-fieldset__legend").eachText()).contains("Submission status");
-    assertPageHasRadioButtons(
-        doc, "Succeeded submissions", "Failed submissions", "All submissions");
+    assertThat(doc.select("#submission-statuses-input .govuk-checkboxes__label").eachText())
+        .containsExactly("Accepted", "Rejected", "Not submitted");
+    assertThat(doc.select("#submission-statuses-input input[checked]").eachAttr("value"))
+        .containsExactly("SUCCEEDED");
     assertPageHasContent(doc, "Choose office account number");
 
     Assertions.assertEquals("12345", doc.selectFirst("label[for=offices-input]").text());
     Assertions.assertEquals("67890", doc.selectFirst("label[for=offices-input-1]").text());
+  }
+
+  @Test
+  void searchFormRequiresAtLeastOneStatus() {
+    when(oidcAttributeUtils.getUserOffices(any())).thenReturn(List.of("12345"));
+    var params = new LinkedMultiValueMap<String, String>();
+    params.add("offices", "12345");
+
+    var doc = renderSearchFormPost(params);
+
+    assertPageHasErrorSummary(doc, "submissionStatuses-input");
+    assertFormFieldHasErrorMessage(doc, "Select a valid submission status");
   }
 
   @Test

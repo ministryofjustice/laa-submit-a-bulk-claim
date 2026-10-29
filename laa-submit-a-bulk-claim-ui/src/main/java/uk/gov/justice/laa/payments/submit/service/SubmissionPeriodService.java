@@ -35,7 +35,7 @@ public class SubmissionPeriodService {
         SubmissionSearchQuery.builder()
             .areaOfLaw(selection.getAreaOfLaw())
             .offices(List.of(selection.getOffice()))
-            .submissionStatuses(SUCCEEDED)
+            .submissionStatuses(List.of(SUCCEEDED))
             .build();
 
     return claimsRestService
@@ -43,7 +43,7 @@ public class SubmissionPeriodService {
             submissionSearchQuery.getOffices(),
             null,
             submissionSearchQuery.getAreaOfLaw(),
-            submissionSearchQuery.getSubmissionStatuses().getStatuses(),
+            SUCCEEDED.getStatuses(),
             submissionSearchQuery.getPage(),
             // 12 is used here as we can only expect to get a maximum of 12 periods back from the
             // API, so we can set the page size to 12 to avoid multiple calls to the API

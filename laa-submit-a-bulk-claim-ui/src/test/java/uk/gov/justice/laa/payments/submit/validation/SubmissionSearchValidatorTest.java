@@ -99,7 +99,7 @@ class SubmissionSearchValidatorTest {
     void shouldHaveNoErrorsWhenValidSubmissionStatus(SubmissionOutcomeFilter submissionStatus) {
       // Given
       SubmissionSearchQuery query =
-          SubmissionSearchQuery.builder().submissionStatuses(submissionStatus).build();
+          SubmissionSearchQuery.builder().submissionStatuses(List.of(submissionStatus)).build();
       final BindingResult errors = new BeanPropertyBindingResult(query, "submissionSearchQuery");
 
       // When

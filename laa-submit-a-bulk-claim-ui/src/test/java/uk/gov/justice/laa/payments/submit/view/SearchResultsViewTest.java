@@ -41,7 +41,7 @@ class SearchResultsViewTest extends ViewTestBase {
 
   private static final int PAGE_SIZE = 50;
   private static final String OFFICE = "12345";
-  private static final String SUBMISSION_STATUSES = SubmissionOutcomeFilter.ALL.name();
+  private static final String SUBMISSION_STATUSES = SubmissionOutcomeFilter.SUCCEEDED.name();
 
   @MockitoBean SubmissionSearchValidator submissionSearchValidator;
   @MockitoBean PaginationUtil paginationUtil;

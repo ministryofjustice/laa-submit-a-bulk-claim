@@ -75,7 +75,8 @@ class SearchControllerTest {
         ArgumentCaptor.forClass(SubmissionSearchQuery.class);
     verify(model).addAttribute(eq("submissionSearchQuery"), queryCaptor.capture());
     assertEquals(List.of("12345", "67890"), queryCaptor.getValue().getOffices());
-    assertEquals(SubmissionOutcomeFilter.SUCCEEDED, queryCaptor.getValue().getSubmissionStatuses());
+    assertEquals(
+        List.of(SubmissionOutcomeFilter.SUCCEEDED), queryCaptor.getValue().getSubmissionStatuses());
     verify(sessionStatus).setComplete();
     assertEquals("pages/submissions-search", view);
   }
@@ -96,7 +97,7 @@ class SearchControllerTest {
   }
 
   @Test
-  @DisplayName("Handle search should redirect with query params when valid")
+  @DisplayName("Handle search should redirect with repeated status params when valid")
   void handleSearchShouldRedirectWithParamsOnSuccess() {
     when(bindingResult.hasErrors()).thenReturn(false);
     when(oidcAttributeUtils.getUserOffices(any())).thenReturn(List.of("12345"));
@@ -105,7 +106,8 @@ class SearchControllerTest {
             .submissionPeriod("JAN-2024")
             .areaOfLaw(CRIME_LOWER)
             .offices(List.of("12345"))
-            .submissionStatuses(SubmissionOutcomeFilter.SUCCEEDED)
+            .submissionStatuses(
+                List.of(SubmissionOutcomeFilter.SUCCEEDED, SubmissionOutcomeFilter.NOT_SUBMITTED))
             .build();
     final Model localModel = new ExtendedModelMap();
 
@@ -113,7 +115,8 @@ class SearchControllerTest {
 
     assertEquals(
         "redirect:/submissions/search/results?page=0&submissionPeriod=JAN-2024&areaOfLaw=CRIME "
-            + "LOWER&offices=12345&submissionStatuses=SUCCEEDED&sort=createdOn,desc",
+            + "LOWER&offices=12345&submissionStatuses=SUCCEEDED&submissionStatuses=NOT_SUBMITTED"
+            + "&sort=createdOn,desc",
         view);
   }
 
@@ -135,7 +138,12 @@ class SearchControllerTest {
 
     var query =
         new SubmissionSearchQuery(
-            null, null, "JAN-2024", CRIME_LOWER, List.of(), SubmissionOutcomeFilter.SUCCEEDED);
+            null,
+            null,
+            "JAN-2024",
+            CRIME_LOWER,
+            List.of(),
+            List.of(SubmissionOutcomeFilter.SUCCEEDED));
 
     String view =
         searchController.submissionsSearchResults(query, model, OIDC_USER, sessionStatus, session);
@@ -203,6 +211,33 @@ class SearchControllerTest {
   }
 
   @Test
+  void submissionsSearchResultsPassesMultipleStatusesToApi() {
+    when(oidcAttributeUtils.getUserOffices(any())).thenReturn(List.of("1"));
+    mockApiSuccess();
+    var query =
+        SubmissionSearchQuery.builder()
+            .offices(List.of("1"))
+            .submissionStatuses(
+                List.of(SubmissionOutcomeFilter.SUCCEEDED, SubmissionOutcomeFilter.NOT_SUBMITTED))
+            .build();
+
+    searchController.submissionsSearchResults(query, model, OIDC_USER, sessionStatus, session);
+
+    verify(claimsRestService)
+        .search(
+            eq(List.of("1")),
+            any(),
+            any(),
+            eq(
+                List.of(
+                    SubmissionStatus.VALIDATION_SUCCEEDED,
+                    SubmissionStatus.VALIDATED_PENDING_APPROVAL)),
+            anyInt(),
+            anyInt(),
+            any());
+  }
+
+  @Test
   @DisplayName("Search results should pass null submission statuses through to API")
   void submissionsSearchResultsPassesNullSubmissionStatuses() {
     when(oidcAttributeUtils.getUserOffices(any())).thenReturn(List.of("1"));
@@ -266,7 +301,7 @@ class SearchControllerTest {
 
       var query =
           new SubmissionSearchQuery(
-              0, null, null, null, List.of("1"), SubmissionOutcomeFilter.SUCCEEDED);
+              0, null, null, null, List.of("1"), List.of(SubmissionOutcomeFilter.SUCCEEDED));
       searchController.submissionsSearchResults(query, model, OIDC_USER, sessionStatus, session);
 
       verify(claimsRestService)
@@ -293,7 +328,7 @@ class SearchControllerTest {
               "JAN-2024",
               CRIME_LOWER,
               List.of("12345"),
-              SubmissionOutcomeFilter.SUCCEEDED);
+              List.of(SubmissionOutcomeFilter.SUCCEEDED));
       searchController.submissionsSearchResults(query, model, OIDC_USER, sessionStatus, session);
 
       verify(claimsRestService)

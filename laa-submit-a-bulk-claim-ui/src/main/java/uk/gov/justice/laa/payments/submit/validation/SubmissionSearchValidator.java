@@ -69,7 +69,7 @@ public class SubmissionSearchValidator implements Validator {
   }
 
   private void validateSubmissionStatus(Errors errors, SubmissionSearchQuery query) {
-    if (Objects.isNull(query.getSubmissionStatuses())) {
+    if (Objects.isNull(query.getSubmissionStatuses()) || query.getSubmissionStatuses().isEmpty()) {
       errors.rejectValue(
           SUBMISSION_STATUS,
           "search.error.submissionStatus.invalid",
