@@ -134,4 +134,31 @@ class SearchE2ETest extends JdbcTemplateBaseTest {
     searchPage.getSubmissionPeriodHeader().click();
     searchPage.assertSubmissionPeriodColumnValues("July 2026", "June 2026", "May 2026");
   }
+
+  @Test
+  void searchWithNoMatchingSubmissionsShowsNoResultsMessage() {
+    var landingPage = new LandingPagePage(page);
+    landingPage.getStartNowButton().click();
+
+    var uploadPage = new UploadPage(page);
+    uploadPage.getSearchLink().click();
+
+    var searchPage = new SearchPage(page);
+    // Legal help is only seeded for May 2026, so this combination matches nothing
+    searchPage.getAreaOfLawSelect().selectOption("LEGAL HELP");
+    searchPage.selectSubmissionPeriod("June 2026", "June 2026");
+    searchPage.getSearchButton().click();
+
+    assertThat(searchPage.getNoResultsMessage()).isVisible();
+    assertThat(searchPage.getResultsHeading()).hasCount(0);
+    assertThat(searchPage.getResultsTable()).hasCount(0);
+
+    // The form remains usable: clearing the filters returns all seeded submissions
+    searchPage = new SearchPage(page);
+    searchPage.getAreaOfLawSelect().selectOption("");
+    searchPage.clearSubmissionPeriod();
+    searchPage.getSearchButton().click();
+
+    searchPage.assertTotalSubmissions(3);
+  }
 }

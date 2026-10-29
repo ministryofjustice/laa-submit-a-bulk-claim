@@ -20,10 +20,11 @@ repositories {
 
 // Property version names found here: https://docs.spring.io/spring-boot/appendix/dependency-versions/properties.html
 
-ext['jackson-2-bom.version'] = '2.21.7'
-ext['jackson-bom.version'] = '3.1.7'
+ext['jackson-2-bom.version'] = '2.21.8'
+ext['jackson-bom.version'] = '3.1.8'
 ext['netty.version'] = '4.2.18.Final'
-ext['tomcat.version'] = '11.0.26'
+ext['tomcat.version'] = '11.0.27'
+ext['hibernate-validator.version'] = '9.1.5.Final'
 
 dependencyManagement {
     dependencies {
@@ -31,6 +32,8 @@ dependencyManagement {
             entry 'sentry-spring-boot-starter'
             entry 'sentry-log4j2'
         }
+        // Transitive via oauth2-oidc-sdk > json-smart > accessors-smart; not managed by the Spring Boot BOM
+        dependency 'org.ow2.asm:asm:9.11.1'
     }
 }
 

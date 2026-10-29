@@ -321,7 +321,9 @@ class BulkClaimMetricServiceTest {
     void shouldRecordMatchedStandardFilename() {
       // When
       bulkClaimMetricService.recordFileNamePattern(
-          "claims-v2.00.csv", AreaOfLaw.LEGAL_HELP, BulkSubmissionStatus.VALIDATION_SUCCEEDED);
+          "CivilBulkload0P322FJAN2026_v2.00.csv",
+          AreaOfLaw.LEGAL_HELP,
+          BulkSubmissionStatus.VALIDATION_SUCCEEDED);
       // Then
       var labels =
           bulkClaimMetricService
@@ -340,7 +342,9 @@ class BulkClaimMetricServiceTest {
     void shouldRecordMatchedMacFilename() {
       // When
       bulkClaimMetricService.recordFileNamePattern(
-          "claims-mac-v1.42.csv", AreaOfLaw.LEGAL_HELP, BulkSubmissionStatus.VALIDATION_SUCCEEDED);
+          "CivilBulkload0P322FJAN2026_mac-v1.42.csv",
+          AreaOfLaw.LEGAL_HELP,
+          BulkSubmissionStatus.VALIDATION_SUCCEEDED);
       // Then
       var labels =
           bulkClaimMetricService
@@ -379,7 +383,9 @@ class BulkClaimMetricServiceTest {
     void shouldRecordAreaOfLaw(AreaOfLaw areaOfLaw, String expectedLabel) {
       // When
       bulkClaimMetricService.recordFileNamePattern(
-          "claims-v2.00.csv", areaOfLaw, BulkSubmissionStatus.VALIDATION_SUCCEEDED);
+          "CivilBulkload0P322FJAN2026_v2.00.csv",
+          areaOfLaw,
+          BulkSubmissionStatus.VALIDATION_SUCCEEDED);
       // Then
       assertThat(
               bulkClaimMetricService
@@ -397,7 +403,7 @@ class BulkClaimMetricServiceTest {
     void shouldRecordNotApplicableWhenAreaOfLawNull() {
       // When
       bulkClaimMetricService.recordFileNamePattern(
-          "claims-v2.00.csv", null, BulkSubmissionStatus.VALIDATION_SUCCEEDED);
+          "CivilBulkload0P322FJAN2026_v2.00.csv", null, BulkSubmissionStatus.VALIDATION_SUCCEEDED);
       // Then
       assertThat(
               bulkClaimMetricService
@@ -421,7 +427,7 @@ class BulkClaimMetricServiceTest {
           status == BulkSubmissionStatus.VALIDATION_SUCCEEDED ? "succeeded" : "failed";
       // When
       bulkClaimMetricService.recordFileNamePattern(
-          "claims-v2.00.csv", AreaOfLaw.LEGAL_HELP, status);
+          "CivilBulkload0P322FJAN2026_v2.00.csv", AreaOfLaw.LEGAL_HELP, status);
       // Then
       assertThat(
               bulkClaimMetricService
@@ -440,7 +446,7 @@ class BulkClaimMetricServiceTest {
       assertThatThrownBy(
               () ->
                   bulkClaimMetricService.recordFileNamePattern(
-                      "claims-v2.00.csv",
+                      "CivilBulkload0P322FJAN2026_v2.00.csv",
                       AreaOfLaw.LEGAL_HELP,
                       BulkSubmissionStatus.PARSING_FAILED))
           .isInstanceOf(IllegalArgumentException.class);

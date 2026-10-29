@@ -20,6 +20,8 @@ public abstract class AbstractPactTest {
   protected static final String UUID_REGEX =
       "[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}";
   protected static final String OFFICE_CODE_REGEX = "([A-Z0-9]{6})";
+  protected static final String TIMESTAMP_REGEX =
+      "\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(\\.\\d+)?(Z|[+-]\\d{2}:\\d{2})";
   protected static final String ANY_FORMAT_REGEX =
       "([a-zA-Z0-9 !\"£$%^&*()_+\\-=\\[\\]{};'#:@~,./<>?\\\\|`¬]+)";
 
