@@ -105,6 +105,7 @@
   "is_amended": true,
   "has_assessment": true,
   "version": 2,
+  "inquest_detail": null,
   "area_of_law": "LEGAL HELP",
   "office_code": "0P322F",
   "derived_claim_status":null,
