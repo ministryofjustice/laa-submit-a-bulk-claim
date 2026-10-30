@@ -1,23 +1,23 @@
 package uk.gov.justice.laa.payments.submit.e2e.pages.nilsubmission;
 
-import static com.microsoft.playwright.options.AriaRole.BUTTON;
-
 import com.microsoft.playwright.Locator;
 import com.microsoft.playwright.Page;
 import lombok.Getter;
-import uk.gov.justice.laa.payments.submit.e2e.pages.BasePage;
+import uk.gov.justice.laa.payments.submit.e2e.pages.AbstractQuestionPage;
 
 @Getter
-public class NilSubmissionPeriodPage extends BasePage {
+public class NilSubmissionPeriodPage extends AbstractQuestionPage {
 
   private final Locator periodSelect;
-  private final Locator continueButton;
+  private final Locator officeAccountNumberValue;
+  private final Locator areaOfLawValue;
 
   public NilSubmissionPeriodPage(Page page) {
     super(page, "Select a submission period");
 
     periodSelect = page.locator("#submissionPeriod-input");
-    continueButton = page.getByRole(BUTTON, new Page.GetByRoleOptions().setName("Continue"));
+    officeAccountNumberValue = page.getByTestId("nil-submission-office-value");
+    areaOfLawValue = page.getByTestId("nil-submission-areaoflaw-value");
   }
 
   public void selectFirstAvailablePeriod() {
