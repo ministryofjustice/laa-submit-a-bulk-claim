@@ -14,7 +14,7 @@ jobs:
       contents: read
       id-token: write
       security-events: write
-    uses: ministryofjustice/laa-ccms-common-workflows/.github/workflows/ecr-publish-image.yml@035ee98ca0047659f865532ea6234abd69529ee8 # v2.5.0
+    uses: ministryofjustice/laa-ccms-common-workflows/.github/workflows/ecr-publish-image.yml@57f8d08c0cf807ea64fc121500669c4d3dada733 # v2.5.1
     with:
       jar_subproject: 'laa-submit-a-bulk-claim-ui'
       dockerfile_path: Dockerfile

@@ -63,7 +63,7 @@ jobs:
 
   pact-test:
     needs: [ build ]
-    uses: ministryofjustice/laa-ccms-common-workflows/.github/workflows/pact-and-publish.yml@035ee98ca0047659f865532ea6234abd69529ee8 # v2.5.0
+    uses: ministryofjustice/laa-ccms-common-workflows/.github/workflows/pact-and-publish.yml@57f8d08c0cf807ea64fc121500669c4d3dada733 # v2.5.1
     permissions:
       contents: write
       packages: write
@@ -86,7 +86,7 @@ jobs:
       - build
       - unit-test
       - integration-test
-    uses: ministryofjustice/laa-ccms-common-workflows/.github/workflows/ecr-publish-image.yml@035ee98ca0047659f865532ea6234abd69529ee8 # v2.5.0
+    uses: ministryofjustice/laa-ccms-common-workflows/.github/workflows/ecr-publish-image.yml@57f8d08c0cf807ea64fc121500669c4d3dada733 # v2.5.1
     permissions:
       contents: read
       id-token: write
