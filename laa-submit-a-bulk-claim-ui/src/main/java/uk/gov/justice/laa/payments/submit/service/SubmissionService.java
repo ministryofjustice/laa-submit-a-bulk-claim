@@ -38,6 +38,10 @@ public class SubmissionService {
 
   public void approveSubmission(UUID submissionId, OidcUser user) {
     var submission = getSubmission(submissionId, user);
+    if (submission.getStatus() != SubmissionStatus.VALIDATED_PENDING_APPROVAL) {
+      throw new ResponseStatusException(
+          HttpStatus.CONFLICT, "Submission %s is not pending approval".formatted(submissionId));
+    }
 
     var patch =
         new SubmissionPatch()

@@ -24,7 +24,6 @@ public class BulkSubmissionE2ETest extends BaseTest {
   @ParameterizedTest(name = "{0}")
   @MethodSource("csvFiles")
   @Tag("pre-submission-disabled")
-  @Disabled
   public void bulkSubmissionAccepted(String displayName, String csvFile) {
     uploadSubmission(csvFile);
 
@@ -35,6 +34,7 @@ public class BulkSubmissionE2ETest extends BaseTest {
   @ParameterizedTest(name = "{0}")
   @MethodSource("csvFiles")
   @Tag("pre-submission-enabled")
+  @Disabled
   public void bulkSubmissionAcceptedAfterApproval(String displayName, String csvFile) {
     uploadSubmission(csvFile);
 

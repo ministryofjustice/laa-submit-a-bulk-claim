@@ -13,6 +13,7 @@
   background-color: white !important;
 }
 
+/* Stop the "Not Submitted" status text from wrapping onto 2 lines */
 .app-tag--not-submitted {
   white-space: nowrap;
 }

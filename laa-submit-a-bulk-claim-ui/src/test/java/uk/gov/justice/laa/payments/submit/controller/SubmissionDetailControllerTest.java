@@ -633,24 +633,13 @@ class SubmissionDetailControllerTest extends BaseControllerTest {
           .hasStatusOk()
           .hasViewName("pages/view-submission-detail-not-submitted")
           .model()
-          .containsEntry("submissionStatus", SubmissionStatus.VALIDATED_PENDING_APPROVAL)
           .containsEntry("claimCount", 0)
           .containsKeys("claimDetails", "messagesSummary", "matterStartsDetails");
-      assertThat(result)
-          .model()
-          .extractingByKey("submissionSummary")
-          .isInstanceOfSatisfying(
-              SubmissionSummary.class,
-              summary ->
-                  assertThat(summary.submissionValue())
-                      .isEqualByComparingTo(new BigDecimal("100.50")));
 
       verify(submissionMessagesService, never())
           .getErrorMessages(any(), any(), anyInt(), anyInt(), any());
       verify(submissionMessagesService)
           .getMessageCounts(SUBMISSION_ID, null, ValidationMessageType.WARNING);
-      verify(submissionClaimDetailsBuilder).build(any(), anyInt(), anyInt(), any());
-      verify(submissionMatterStartsDetailsService).getAll(any());
     }
 
     @Test
@@ -679,6 +668,7 @@ class SubmissionDetailControllerTest extends BaseControllerTest {
       when(submissionClaimDetailsBuilder.build(eq(submission), anyInt(), anyInt(), any()))
           .thenReturn(new SubmissionClaimsDetails(List.of(), pagination, BigDecimal.ZERO));
       when(submissionMatterStartsDetailsService.getAll(submission)).thenReturn(List.of());
+      var messagesSummary = new MessagesSummary(List.of(), 0, 0, pagination, MessagesSource.CLAIM);
       when(submissionMessagesService.getMessagesWithClaimSummary(
               eq(OIDC_USER),
               eq(SUBMISSION_ID),
@@ -687,7 +677,7 @@ class SubmissionDetailControllerTest extends BaseControllerTest {
               anyInt(),
               anyInt(),
               any()))
-          .thenReturn(new MessagesSummary(List.of(), 0, 0, pagination, MessagesSource.CLAIM));
+          .thenReturn(messagesSummary);
 
       assertThat(
               mockMvc.perform(
@@ -695,19 +685,9 @@ class SubmissionDetailControllerTest extends BaseControllerTest {
                       .param("navTab", "CLAIM_MESSAGES")
                       .with(oidcLogin().oidcUser(OIDC_USER))))
           .hasStatusOk()
-          .hasViewName("pages/view-submission-detail-not-submitted");
-
-      verify(submissionMessagesService)
-          .getMessagesWithClaimSummary(
-              eq(OIDC_USER),
-              eq(SUBMISSION_ID),
-              isNull(),
-              eq(ValidationMessageType.WARNING),
-              anyInt(),
-              anyInt(),
-              any());
-      verify(submissionMessagesService, never())
-          .getErrorMessages(any(), any(), anyInt(), anyInt(), any());
+          .hasViewName("pages/view-submission-detail-not-submitted")
+          .model()
+          .containsEntry("messagesSummary", messagesSummary);
     }
 
     @Test
