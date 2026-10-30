@@ -2,12 +2,15 @@ package uk.gov.justice.laa.payments.submit.controller;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.oidcLogin;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionStatus.VALIDATION_IN_PROGRESS;
 import static uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionStatus.VALIDATION_SUCCEEDED;
 import static uk.gov.justice.laa.payments.submit.controller.ControllerTestHelper.OIDC_USER;
@@ -24,14 +27,18 @@ import java.util.UUID;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
 import org.springframework.context.annotation.Import;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.oauth2.core.oidc.user.OidcUser;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.assertj.MockMvcTester;
 import org.springframework.test.web.servlet.assertj.MvcTestResult;
+import org.springframework.web.server.ResponseStatusException;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.AreaOfLaw;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.Page;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionResponse;
@@ -82,6 +89,42 @@ class SubmissionDetailControllerTest extends BaseControllerTest {
   @MockitoBean private SubmissionService submissionService;
 
   @Nested
+  @DisplayName("POST: /submissions/{submissionId}")
+  class ApproveSubmission {
+
+    @Test
+    void shouldApproveSubmissionAndRedirect() {
+      var result =
+          mockMvc.perform(
+              post("/submissions/" + SUBMISSION_ID)
+                  .with(oidcLogin().oidcUser(OIDC_USER))
+                  .with(csrf()));
+
+      assertThat(result)
+          .hasStatus3xxRedirection()
+          .hasRedirectedUrl("/submissions/" + SUBMISSION_ID);
+      verify(featureFlagsConfig).checkPreSubmissionEnabled();
+      verify(submissionService).approveSubmission(SUBMISSION_ID, OIDC_USER);
+    }
+
+    @Test
+    void shouldNotApproveSubmissionWhenFeatureDisabled() {
+      doThrow(new ResponseStatusException(HttpStatus.NOT_FOUND))
+          .when(featureFlagsConfig)
+          .checkPreSubmissionEnabled();
+
+      var result =
+          mockMvc.perform(
+              post("/submissions/" + SUBMISSION_ID)
+                  .with(oidcLogin().oidcUser(OIDC_USER))
+                  .with(csrf()));
+
+      assertThat(result).hasStatus(HttpStatus.NOT_FOUND.value());
+      verify(submissionService, never()).approveSubmission(any(), any());
+    }
+  }
+
+  @Nested
   @DisplayName("GET: /submission/{submissionId}")
   class GetSubmission {
 
@@ -108,6 +151,32 @@ class SubmissionDetailControllerTest extends BaseControllerTest {
   @Nested
   @DisplayName("GET: /submissions/{submissionId}")
   class GetSubmissionDetail {
+
+    @ParameterizedTest
+    @EnumSource(
+        value = SubmissionStatus.class,
+        names = {"READY_FOR_FINAL_VALIDATION", "FINAL_VALIDATION_IN_PROGRESS"})
+    void shouldShowProcessingPageWhenFinalValidationIsPending(SubmissionStatus status) {
+      var submission =
+          SubmissionResponse.builder()
+              .submissionId(SUBMISSION_ID)
+              .status(status)
+              .officeAccountNumber(OFFICE_CODE)
+              .build();
+      when(submissionService.getSubmission(SUBMISSION_ID, OIDC_USER)).thenReturn(submission);
+
+      var result =
+          mockMvc.perform(
+              get("/submissions/" + SUBMISSION_ID).with(oidcLogin().oidcUser(OIDC_USER)));
+
+      assertThat(result)
+          .hasStatusOk()
+          .hasViewName("pages/upload-being-checked")
+          .model()
+          .containsEntry("shouldRefresh", true);
+      verify(submissionSummaryBuilder, never()).build(any());
+      verify(submissionClaimDetailsBuilder, never()).build(any(), anyInt(), anyInt(), any());
+    }
 
     @Test
     @DisplayName("Should return expected result")
@@ -524,6 +593,138 @@ class SubmissionDetailControllerTest extends BaseControllerTest {
 
       verify(submissionClaimDetailsBuilder)
           .build(eq(submissionResponse), eq(0), anyInt(), eq("line_number,asc"));
+    }
+
+    @Test
+    @DisplayName("Should return pre-submission details when pre-submission is enabled")
+    void shouldReturnPreSubmissionViewWhenEnabled() {
+      when(featureFlagsConfig.getIsPreSubmissionEnabled()).thenReturn(true);
+      var submission =
+          SubmissionResponse.builder()
+              .submissionId(SUBMISSION_ID)
+              .status(SubmissionStatus.VALIDATED_PENDING_APPROVAL)
+              .officeAccountNumber(OFFICE_CODE)
+              .areaOfLaw(AreaOfLaw.LEGAL_HELP)
+              .build();
+      var pagination = Page.builder().totalPages(1).totalElements(0).number(0).size(10).build();
+      when(submissionService.getSubmission(SUBMISSION_ID, OIDC_USER)).thenReturn(submission);
+      when(submissionSummaryBuilder.build(submission))
+          .thenReturn(
+              new SubmissionSummary(
+                  SUBMISSION_ID,
+                  "Not submitted",
+                  LocalDate.of(2025, 5, 1),
+                  OFFICE_CODE,
+                  null,
+                  "Legal help",
+                  OffsetDateTime.of(2025, 1, 1, 10, 10, 10, 0, ZoneOffset.UTC)));
+      when(submissionClaimDetailsBuilder.build(eq(submission), anyInt(), anyInt(), any()))
+          .thenReturn(new SubmissionClaimsDetails(List.of(), pagination, new BigDecimal("100.50")));
+      when(submissionMessagesService.getMessageCounts(
+              SUBMISSION_ID, null, ValidationMessageType.WARNING))
+          .thenReturn(new MessagesSummary(List.of(), 0, 0, pagination, MessagesSource.CLAIM));
+      when(submissionMatterStartsDetailsService.getAll(submission)).thenReturn(List.of());
+
+      var result =
+          mockMvc.perform(
+              get("/submissions/" + SUBMISSION_ID).with(oidcLogin().oidcUser(OIDC_USER)));
+
+      assertThat(result)
+          .hasStatusOk()
+          .hasViewName("pages/view-submission-detail-not-submitted")
+          .model()
+          .containsEntry("claimCount", 0)
+          .containsKeys("claimDetails", "messagesSummary", "matterStartsDetails");
+
+      verify(submissionMessagesService, never())
+          .getErrorMessages(any(), any(), anyInt(), anyInt(), any());
+      verify(submissionMessagesService)
+          .getMessageCounts(SUBMISSION_ID, null, ValidationMessageType.WARNING);
+    }
+
+    @Test
+    @DisplayName("Should load warning messages for a pending submission")
+    void shouldLoadWarningMessagesForPendingSubmission() {
+      when(featureFlagsConfig.getIsPreSubmissionEnabled()).thenReturn(true);
+      var submission =
+          SubmissionResponse.builder()
+              .submissionId(SUBMISSION_ID)
+              .status(SubmissionStatus.VALIDATED_PENDING_APPROVAL)
+              .officeAccountNumber(OFFICE_CODE)
+              .areaOfLaw(AreaOfLaw.LEGAL_HELP)
+              .build();
+      var pagination = Page.builder().totalPages(1).totalElements(0).number(0).size(10).build();
+      when(submissionService.getSubmission(SUBMISSION_ID, OIDC_USER)).thenReturn(submission);
+      when(submissionSummaryBuilder.build(submission))
+          .thenReturn(
+              new SubmissionSummary(
+                  SUBMISSION_ID,
+                  "Not submitted",
+                  LocalDate.of(2025, 5, 1),
+                  OFFICE_CODE,
+                  BigDecimal.ZERO,
+                  "Legal help",
+                  OffsetDateTime.of(2025, 1, 1, 10, 10, 10, 0, ZoneOffset.UTC)));
+      when(submissionClaimDetailsBuilder.build(eq(submission), anyInt(), anyInt(), any()))
+          .thenReturn(new SubmissionClaimsDetails(List.of(), pagination, BigDecimal.ZERO));
+      when(submissionMatterStartsDetailsService.getAll(submission)).thenReturn(List.of());
+      var messagesSummary = new MessagesSummary(List.of(), 0, 0, pagination, MessagesSource.CLAIM);
+      when(submissionMessagesService.getMessagesWithClaimSummary(
+              eq(OIDC_USER),
+              eq(SUBMISSION_ID),
+              isNull(),
+              eq(ValidationMessageType.WARNING),
+              anyInt(),
+              anyInt(),
+              any()))
+          .thenReturn(messagesSummary);
+
+      assertThat(
+              mockMvc.perform(
+                  get("/submissions/" + SUBMISSION_ID)
+                      .param("navTab", "CLAIM_MESSAGES")
+                      .with(oidcLogin().oidcUser(OIDC_USER))))
+          .hasStatusOk()
+          .hasViewName("pages/view-submission-detail-not-submitted")
+          .model()
+          .containsEntry("messagesSummary", messagesSummary);
+    }
+
+    @Test
+    @DisplayName(
+        "Should return invalid details for a pending submission when pre-submission is disabled")
+    void shouldReturnInvalidViewForPendingSubmissionWhenDisabled() {
+      when(featureFlagsConfig.getIsPreSubmissionEnabled()).thenReturn(false);
+      var submission =
+          SubmissionResponse.builder()
+              .submissionId(SUBMISSION_ID)
+              .status(SubmissionStatus.VALIDATED_PENDING_APPROVAL)
+              .officeAccountNumber(OFFICE_CODE)
+              .build();
+      var pagination = Page.builder().totalPages(1).totalElements(0).number(0).size(10).build();
+      when(submissionService.getSubmission(SUBMISSION_ID, OIDC_USER)).thenReturn(submission);
+      when(submissionSummaryBuilder.build(submission))
+          .thenReturn(
+              new SubmissionSummary(
+                  SUBMISSION_ID,
+                  "Not submitted",
+                  LocalDate.of(2025, 5, 1),
+                  OFFICE_CODE,
+                  BigDecimal.ZERO,
+                  "Legal help",
+                  OffsetDateTime.of(2025, 1, 1, 10, 10, 10, 0, ZoneOffset.UTC)));
+      when(submissionMessagesService.getErrorMessages(
+              eq(OIDC_USER), eq(SUBMISSION_ID), anyInt(), anyInt(), any()))
+          .thenReturn(new MessagesSummary(List.of(), 0, 0, pagination, MessagesSource.CLAIM));
+
+      assertThat(
+              mockMvc.perform(
+                  get("/submissions/" + SUBMISSION_ID).with(oidcLogin().oidcUser(OIDC_USER))))
+          .hasStatusOk()
+          .hasViewName("pages/view-submission-detail-invalid");
+      verify(submissionClaimDetailsBuilder, never()).build(any(), anyInt(), anyInt(), any());
+      verify(submissionMessagesService)
+          .getErrorMessages(eq(OIDC_USER), eq(SUBMISSION_ID), anyInt(), anyInt(), any());
     }
   }
 }

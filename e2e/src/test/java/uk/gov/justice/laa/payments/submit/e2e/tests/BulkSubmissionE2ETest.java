@@ -5,12 +5,15 @@ import static com.microsoft.playwright.assertions.PlaywrightAssertions.assertTha
 import java.nio.file.Paths;
 import java.util.stream.Stream;
 
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import uk.gov.justice.laa.payments.submit.e2e.base.BaseTest;
 import uk.gov.justice.laa.payments.submit.e2e.pages.LandingPagePage;
+import uk.gov.justice.laa.payments.submit.e2e.pages.PreSubmissionDetailPage;
 import uk.gov.justice.laa.payments.submit.e2e.pages.SubmissionDetailPage;
 import uk.gov.justice.laa.payments.submit.e2e.pages.UploadBeingCheckedPage;
 import uk.gov.justice.laa.payments.submit.e2e.pages.UploadPage;
@@ -19,7 +22,30 @@ public class BulkSubmissionE2ETest extends BaseTest {
 
   @ParameterizedTest(name = "{0}")
   @MethodSource("csvFiles")
+  @Tag("pre-submission-disabled")
   public void bulkSubmissionAccepted(String displayName, String csvFile) {
+    uploadSubmission(csvFile);
+
+    var submissionDetailPage = new SubmissionDetailPage(page);
+    submissionDetailPage.assertSubmissionAccepted();
+  }
+
+  @ParameterizedTest(name = "{0}")
+  @MethodSource("csvFiles")
+  @Tag("pre-submission-enabled")
+  @Disabled
+  public void bulkSubmissionAcceptedAfterApproval(String displayName, String csvFile) {
+    uploadSubmission(csvFile);
+
+    var preSubmissionDetailPage = new PreSubmissionDetailPage(page);
+    preSubmissionDetailPage.assertSubmissionNotSubmitted();
+    preSubmissionDetailPage.getSubmitButton().click();
+
+    var submissionDetailPage = new SubmissionDetailPage(page);
+    submissionDetailPage.assertSubmissionAccepted();
+  }
+
+  private void uploadSubmission(String csvFile) {
     var landingPage = new LandingPagePage(page);
     landingPage.getStartNowButton().click();
 
@@ -30,9 +56,6 @@ public class BulkSubmissionE2ETest extends BaseTest {
     upload.getContinueButton().click();
 
     new UploadBeingCheckedPage(page);
-
-    var submissionDetailPage = new SubmissionDetailPage(page);
-    submissionDetailPage.assertSubmissionAccepted();
   }
 
   @Test

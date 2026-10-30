@@ -2,6 +2,9 @@ package uk.gov.justice.laa.payments.submit.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.util.List;
@@ -10,13 +13,17 @@ import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.oauth2.core.oidc.user.OidcUser;
 import org.springframework.web.server.ResponseStatusException;
 import reactor.core.publisher.Mono;
+import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionPatch;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionResponse;
+import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionStatus;
 import uk.gov.justice.laa.payments.submit.client.DataClaimsRestClient;
 import uk.gov.justice.laa.payments.submit.util.OidcAttributeUtils;
 
@@ -84,5 +91,72 @@ class SubmissionServiceTest {
     assertThat(exception.getStatusCode().value()).isEqualTo(HttpStatus.NOT_FOUND.value());
     assertThat(exception.getMessage())
         .isEqualTo("404 NOT_FOUND \"User 1111111111 does not have access to office 123456\"");
+  }
+
+  @Test
+  void approveSubmission_patchesSubmission_whenOfficeAccessAllowed() {
+    var submission =
+        SubmissionResponse.builder()
+            .submissionId(SUBMISSION_ID)
+            .officeAccountNumber(OFFICE_CODE)
+            .status(SubmissionStatus.VALIDATED_PENDING_APPROVAL)
+            .build();
+    var submissionPatch =
+        new SubmissionPatch()
+            .status(SubmissionStatus.READY_FOR_FINAL_VALIDATION)
+            .officeAccountNumber(OFFICE_CODE)
+            .createdByUserId("USER_ID");
+
+    when(dataClaimsRestClient.getSubmission(SUBMISSION_ID)).thenReturn(Mono.just(submission));
+    when(oidcUser.getAttributes()).thenReturn(Map.of("LAA_ACCOUNTS", List.of(OFFICE_CODE)));
+    when(oidcUser.getPreferredUsername()).thenReturn("USER_ID");
+    when(dataClaimsRestClient.patchSubmission(SUBMISSION_ID, submissionPatch))
+        .thenReturn(Mono.empty());
+
+    submissionService.approveSubmission(SUBMISSION_ID, oidcUser);
+    verify(dataClaimsRestClient).patchSubmission(SUBMISSION_ID, submissionPatch);
+  }
+
+  @ParameterizedTest
+  @EnumSource(
+      value = SubmissionStatus.class,
+      names = {"VALIDATION_SUCCEEDED", "VALIDATION_FAILED", "REPLACED"})
+  void approveSubmission_doesNotPatch_whenSubmissionIsNotPendingApproval(SubmissionStatus status) {
+    var submission =
+        SubmissionResponse.builder()
+            .submissionId(SUBMISSION_ID)
+            .officeAccountNumber(OFFICE_CODE)
+            .status(status)
+            .build();
+    when(dataClaimsRestClient.getSubmission(SUBMISSION_ID)).thenReturn(Mono.just(submission));
+    when(oidcUser.getAttributes()).thenReturn(Map.of("LAA_ACCOUNTS", List.of(OFFICE_CODE)));
+
+    var exception =
+        assertThrows(
+            ResponseStatusException.class,
+            () -> submissionService.approveSubmission(SUBMISSION_ID, oidcUser));
+
+    assertThat(exception.getStatusCode()).isEqualTo(HttpStatus.CONFLICT);
+    verify(dataClaimsRestClient, never()).patchSubmission(any(), any());
+  }
+
+  @Test
+  void approveSubmission_doesNotPatch_whenOfficeAccessIsForbidden() {
+    var submission =
+        SubmissionResponse.builder()
+            .submissionId(SUBMISSION_ID)
+            .officeAccountNumber(OFFICE_CODE)
+            .build();
+    when(dataClaimsRestClient.getSubmission(SUBMISSION_ID)).thenReturn(Mono.just(submission));
+    when(oidcUser.getAttributes()).thenReturn(Map.of("LAA_ACCOUNTS", List.of("Different")));
+    when(oidcUser.getAttribute("oid")).thenReturn("1111111111");
+
+    var exception =
+        assertThrows(
+            ResponseStatusException.class,
+            () -> submissionService.approveSubmission(SUBMISSION_ID, oidcUser));
+
+    assertThat(exception.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
+    verify(dataClaimsRestClient, never()).patchSubmission(any(), any());
   }
 }

@@ -1,5 +1,6 @@
 package uk.gov.justice.laa.payments.submit.controller;
 
+import static java.lang.Boolean.TRUE;
 import static uk.gov.justice.laa.payments.submit.constants.SessionConstants.BULK_SUBMISSION_ID;
 import static uk.gov.justice.laa.payments.submit.constants.SessionConstants.SUBMISSION_ID;
 
@@ -16,6 +17,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.AreaOfLaw;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.Page;
 import uk.gov.justice.laa.dstew.payments.claimsdata.model.SubmissionResponse;
@@ -62,6 +64,12 @@ public class SubmissionDetailController {
 
     var submission = submissionService.getSubmission(submissionId, user);
 
+    if (submission.getStatus() == SubmissionStatus.READY_FOR_FINAL_VALIDATION
+        || submission.getStatus() == SubmissionStatus.FINAL_VALIDATION_IN_PROGRESS) {
+      model.addAttribute("shouldRefresh", true);
+      return "pages/upload-being-checked";
+    }
+
     // Redirect based on submission status
     if (submission != null && submission.getStatus() == SubmissionStatus.VALIDATION_IN_PROGRESS) {
       session.setAttribute(SUBMISSION_ID, submissionId);
@@ -83,13 +91,18 @@ public class SubmissionDetailController {
 
     SubmissionSummary submissionSummary = submissionSummaryBuilder.build(submission);
     boolean submissionAccepted = submission.getStatus() == SubmissionStatus.VALIDATION_SUCCEEDED;
+    boolean submissionNotSubmitted =
+        TRUE.equals(featureFlagsConfig.getIsPreSubmissionEnabled())
+            && submission.getStatus() == SubmissionStatus.VALIDATED_PENDING_APPROVAL;
 
-    if (submissionAccepted) {
+    if (submissionAccepted || submissionNotSubmitted) {
       submissionSummary =
-          handleAcceptedSubmission(
+          handleSubmissionDetails(
               model, user, submissionSummary, submission, submissionViewQuery, messageQuery);
       addCommonSubmissionAttributes(model, submissionSummary, submission, submissionViewQuery);
-      return "pages/view-submission-detail-accepted";
+      return submissionNotSubmitted
+          ? "pages/view-submission-detail-not-submitted"
+          : "pages/view-submission-detail-accepted";
     } else {
       handleInvalidSubmission(model, user, submission, messageQuery);
       addCommonSubmissionAttributes(model, submissionSummary, submission, submissionViewQuery);
@@ -97,7 +110,15 @@ public class SubmissionDetailController {
     }
   }
 
-  private SubmissionSummary handleAcceptedSubmission(
+  @PostMapping("/submissions/{submissionId}")
+  public String approveSubmission(
+      @PathVariable UUID submissionId, @AuthenticationPrincipal OidcUser user) {
+    featureFlagsConfig.checkPreSubmissionEnabled();
+    submissionService.approveSubmission(submissionId, user);
+    return "redirect:/submissions/" + submissionId;
+  }
+
+  private SubmissionSummary handleSubmissionDetails(
       Model model,
       OidcUser user,
       SubmissionSummary submissionSummary,

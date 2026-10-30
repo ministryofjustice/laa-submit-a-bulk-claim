@@ -315,6 +315,22 @@ class SearchResultsViewTest extends ViewTestBase {
   }
 
   @Test
+  void searchResultsDisplaysFormattedPendingApprovalStatus() {
+    var submission =
+        SubmissionBase.builder()
+            .submissionId(submissionId)
+            .status(SubmissionStatus.VALIDATED_PENDING_APPROVAL)
+            .build();
+    mockSearchResultsWithSubmissions(List.of(submission), 1);
+
+    var doc = renderDocumentWithParams(baseSearchResultsParams());
+
+    assertCellContainsText(
+        doc.select("table.govuk-table tbody tr").first().select("td").get(4),
+        "Validated pending approval");
+  }
+
+  @Test
   void searchResultsDisplaysSubmissionRowData() {
     var submission1 =
         SubmissionBase.builder()

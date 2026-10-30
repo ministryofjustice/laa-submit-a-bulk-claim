@@ -4,10 +4,13 @@ import static com.microsoft.playwright.assertions.PlaywrightAssertions.assertTha
 
 import com.microsoft.playwright.Locator;
 import java.util.function.Function;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import uk.gov.justice.laa.payments.submit.e2e.base.BaseTest;
 import uk.gov.justice.laa.payments.submit.e2e.pages.LandingPagePage;
+import uk.gov.justice.laa.payments.submit.e2e.pages.PreSubmissionDetailPage;
 import uk.gov.justice.laa.payments.submit.e2e.pages.SubmissionDetailPage;
 import uk.gov.justice.laa.payments.submit.e2e.pages.UploadPage;
 import uk.gov.justice.laa.payments.submit.e2e.pages.nilsubmission.NilSubmissionAreaOfLawPage;
@@ -24,9 +27,25 @@ public class NilSubmissionE2ETest extends BaseTest {
   private static final String OFFICE = "0P322F";
 
   @Test
+  @Tag("pre-submission-disabled")
   public void nilSubmission() {
     var summaryPage = completeCrimeNilSubmission();
     summaryPage.getSubmitButton().click();
+
+    var submissionDetailPage = new SubmissionDetailPage(page);
+    submissionDetailPage.assertSubmissionAccepted();
+  }
+
+  @Test
+  @Tag("pre-submission-enabled")
+  @Disabled
+  public void nilSubmissionAcceptedAfterApproval() {
+    var summaryPage = completeCrimeNilSubmission();
+    summaryPage.getSubmitButton().click();
+
+    var preSubmissionDetailPage = new PreSubmissionDetailPage(page);
+    preSubmissionDetailPage.assertSubmissionNotSubmitted();
+    preSubmissionDetailPage.getSubmitButton().click();
 
     var submissionDetailPage = new SubmissionDetailPage(page);
     submissionDetailPage.assertSubmissionAccepted();

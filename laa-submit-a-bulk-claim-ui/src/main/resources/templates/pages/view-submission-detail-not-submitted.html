@@ -1,0 +1,35 @@
+<!DOCTYPE HTML>
+<html lang="en" class="govuk-template" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{ main-layout :: layout(#{submission.preSubmission.title},~{::main},~{}, 'search-submissions')}">
+<main class="govuk-main-wrapper" id="main-content">
+    <div class="govuk-width-container">
+        <div class="govuk-grid-row">
+            <th:block th:replace="~{fragments/submission-details/pre-submission-banner :: pre-submission-banner}"></th:block>
+            <th:block th:replace="~{fragments/submission-details/summary :: summary(' govuk-tag--grey', #{submission.summary.status.notSubmitted}, true, true, #{submission.summary.properties.uploadDateTime}, false)}"></th:block>
+            <th:block th:replace="~{fragments/submission-details/navigation :: navigation(${claimCount}, ${messageCount}, ${matterStartsCount})}"></th:block>
+            <th:block th:insert="~{fragments/submission-details/claim-details :: claim-details}"></th:block>
+            <th:block th:replace="~{fragments/submission-details/matter-starts :: matter-starts}"></th:block>
+            <th:block th:replace="~{fragments/submission-details/claim-messages-warnings :: claim-messages-warnings(pageVarName='messagesPage')}"></th:block>
+            <div class="govuk-grid-column-full">
+                <div class="govuk-button-group">
+
+                    <form class="form" th:action="@{/submissions/{submissionId}(submissionId=${submissionSummary.submissionReference})}"
+                          method="post">
+                    <button type="submit"
+                            id="submit-submission-button"
+                            class="govuk-button"
+                            data-module="govuk-button"
+                            th:text="#{submission.preSubmission.submit}"></button>
+
+                    <button type="button"
+                            id="delete-submission-button"
+                            class="govuk-button govuk-button--secondary"
+                            data-module="govuk-button"
+                            th:text="#{submission.preSubmission.delete}"></button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+</html>
