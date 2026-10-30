@@ -9,6 +9,7 @@
             </dt>
 
             <dd class="govuk-summary-list__value"
+                th:data-testid="nil-submission-office-value"
                 th:text="${nilSubmissionForm.office}">
             </dd>
             <dd class="govuk-summary-list__actions">
@@ -32,6 +33,7 @@
             </dt>
 
             <dd class="govuk-summary-list__value"
+                th:data-testid="nil-submission-areaoflaw-value"
                 th:text="#{__${'areaOfLaw.' + nilSubmissionForm.areaOfLaw}__}">
 
             </dd>
@@ -51,10 +53,12 @@
              th:if="${nilSubmissionForm.submissionPeriod != null}">
 
             <dt class="govuk-summary-list__key"
+                th:data-testid="nil-submission-period-key"
                 th:text="#{nilSubmission.period.changeValue}">
             </dt>
 
             <dd class="govuk-summary-list__value"
+                th:data-testid="nil-submission-period-value"
                 th:text="${nilSubmissionForm.submissionPeriod}">
             </dd>
             <dd class="govuk-summary-list__actions">
@@ -76,6 +80,7 @@
             </dt>
 
             <dd class="govuk-summary-list__value"
+                th:data-testid="nil-submission-reference-value"
                 th:text="${nilSubmissionForm.submissionReference}">
             </dd>
             <dd class="govuk-summary-list__actions">
