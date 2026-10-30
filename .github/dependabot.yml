@@ -65,3 +65,7 @@ updates:
       interval: "daily"
     cooldown:
       default-days: 7
+    ignore:
+      # Stay on JDK 25 (LTS); still receive 25.x patch/minor updates
+      - dependency-name: "amazoncorretto"
+        update-types: ["version-update:semver-major"]

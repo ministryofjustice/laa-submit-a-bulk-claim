@@ -12,7 +12,12 @@ import com.github.tomakehurst.wiremock.WireMockServer;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
+import java.time.YearMonth;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Locale;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 final class AccessibilityWiremockSupport {
 
@@ -98,6 +103,12 @@ final class AccessibilityWiremockSupport {
                             crimeLower.invalidSubmissionId(),
                             mediation.validSubmissionId(),
                             mediation.invalidSubmissionId()))));
+
+    wiremock.stubFor(
+        get(urlPathEqualTo("/api/v1/submissions"))
+            .atPriority(2)
+            .withQueryParam("offices", equalTo(AbstractAccessibilityTest.FULLY_SUBMITTED_OFFICE))
+            .willReturn(okJson(fullySubmittedOfficeResponse())));
 
     for (AbstractAccessibilityTest.AreaScenario scenario :
         List.of(legalHelp, crimeLower, mediation)) {
@@ -240,6 +251,35 @@ final class AccessibilityWiremockSupport {
                 okJson(
                     template("wiremock/claim-api/get-matter-starts-empty.json")
                         .formatted(scenario.invalidSubmissionId()))));
+  }
+
+  /** One submission for each of the twelve months the nil-submission period page considers. */
+  private static String fullySubmittedOfficeResponse() {
+    DateTimeFormatter periodFormat = DateTimeFormatter.ofPattern("MMM-uuuu", Locale.ENGLISH);
+    YearMonth now = YearMonth.now();
+    String content =
+        IntStream.rangeClosed(1, 12)
+            .mapToObj(
+                monthsAgo ->
+                    """
+                    {
+                      "submission_id": "%s",
+                      "office_account_number": "%s",
+                      "submission_period": "%s",
+                      "is_nil_submission": false,
+                      "number_of_claims": 1,
+                      "area_of_law": "LEGAL HELP",
+                      "status": "VALIDATION_SUCCEEDED",
+                      "submitted": "2025-05-01T12:32:00Z"
+                    }"""
+                        .formatted(
+                            java.util.UUID.randomUUID(),
+                            AbstractAccessibilityTest.FULLY_SUBMITTED_OFFICE,
+                            now.minusMonths(monthsAgo).format(periodFormat).toUpperCase()))
+            .collect(Collectors.joining(","));
+    return """
+        {"total_pages": 1, "total_elements": 12, "number": 0, "size": 12, "content": [%s]}"""
+        .formatted(content);
   }
 
   private static String template(String resourcePath) {

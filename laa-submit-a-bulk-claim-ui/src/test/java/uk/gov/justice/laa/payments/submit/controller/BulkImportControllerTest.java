@@ -8,8 +8,12 @@ import static org.springframework.security.test.web.servlet.request.SecurityMock
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.model;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.request;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
+import static uk.gov.justice.laa.payments.submit.constants.SessionConstants.BULK_SUBMISSION_ID;
+import static uk.gov.justice.laa.payments.submit.constants.SessionConstants.ORIGINAL_FILENAME;
+import static uk.gov.justice.laa.payments.submit.constants.SessionConstants.SUBMISSION_ID;
 import static uk.gov.justice.laa.payments.submit.controller.ControllerTestHelper.OIDC_USER;
 
 import java.util.Collections;
@@ -186,6 +190,8 @@ class BulkImportControllerTest {
       MockMultipartFile file =
           new MockMultipartFile("fileUpload", "test.csv", "text/csv", "text".getBytes());
       FileUploadForm input = new FileUploadForm(file);
+      UUID bulkSubmissionId = UUID.randomUUID();
+      UUID submissionId = UUID.randomUUID();
 
       when(dataClaimsRestClient.upload(any(), any(), any()))
           .thenReturn(
@@ -193,8 +199,8 @@ class BulkImportControllerTest {
                   ResponseEntity.of(
                       Optional.of(
                           new CreateBulkSubmission201Response()
-                              .bulkSubmissionId(UUID.randomUUID())
-                              .submissionIds(List.of(UUID.randomUUID()))))));
+                              .bulkSubmissionId(bulkSubmissionId)
+                              .submissionIds(List.of(submissionId))))));
       mockMvc
           .perform(
               post("/upload")
@@ -202,7 +208,10 @@ class BulkImportControllerTest {
                   .with(csrf())
                   .with(oidcLogin().oidcUser(OIDC_USER)))
           .andExpect(status().is3xxRedirection())
-          .andExpect(view().name("redirect:/upload-is-being-checked"));
+          .andExpect(view().name("redirect:/upload-is-being-checked"))
+          .andExpect(request().sessionAttribute(SUBMISSION_ID, submissionId))
+          .andExpect(request().sessionAttribute(BULK_SUBMISSION_ID, bulkSubmissionId))
+          .andExpect(request().sessionAttribute(ORIGINAL_FILENAME, "test.csv"));
     }
 
     @DisplayName("Should throw web client exception with provided error details")

@@ -14,8 +14,11 @@ public class LoggingConfig {
           "/actuator",
           "/health",
           "/assets",
-          "/javascripts",
-          "/stylesheets",
+          "/css",
+          "/js",
+          "/images",
+          "/fonts",
+          "/favicon",
           "/static",
           "/public",
           "/webjars");
