@@ -74,6 +74,8 @@ public final class PostSubmissionPactTest extends AbstractPactTest {
                               "calculated_total_amount",
                               "assessed_total_amount",
                               "submitted",
+                              "approved_on",
+                              "approved_by_user_id",
                               "error_messages")
                           .forEach(body::nullValue);
                     })
